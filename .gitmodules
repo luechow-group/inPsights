@@ -1,0 +1,3 @@
+[submodule "src/amolqc"]
+	path = src/amolqc
+	url = git@tcrocks.pc.rwth-aachen.de:amolqc
