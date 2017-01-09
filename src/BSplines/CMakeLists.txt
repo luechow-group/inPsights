@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 3.6)
 #============= PROJECT BSplines ===================
 project(BSplines)
 
-set ( PROJECT_FOLDER_NAME BSplines )
+set ( PROJECT_FOLDER_NAME ${PROJECT_NAME})
 
 set ( PROJECT_PATH ${PROJECT_NAME})
 set ( OUTPUT_NAME "${PROJECT_FOLDER_NAME}" )
@@ -82,10 +82,10 @@ add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES})
 #target_link_libraries(BSpline_Main BSpline)
 
 
-target_include_directories(BSplines PUBLIC
+target_include_directories(${PROJECT_NAME} PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         )
 
-add_library(AmolqcGUI::BSplines ALIAS BSplines)
+add_library(AmolqcGUI::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 
 add_subdirectory(tests)

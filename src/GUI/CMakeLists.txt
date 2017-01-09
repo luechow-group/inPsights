@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.6)
 
 project(GUI)
 
-set ( PROJECT_FOLDER_NAME GUI )
+set ( PROJECT_FOLDER_NAME ${PROJECT_NAME} )
 
 set ( PROJECT_PATH ${PROJECT_NAME})
 set ( OUTPUT_NAME "${PROJECT_FOLDER_NAME}" )
@@ -56,16 +56,11 @@ set(SOURCE_FILES
         source/Bond.cpp
         )
 
-set(TEST_SOURCE_FILES
-        test/unit_test/ExampleTest.cpp
-        )
-
 add_executable("${PROJECT_NAME}_main" ${SOURCE_FILES} ${HEADER_FILES} main.cpp)
 
 
 # links the libraries to the executable
 target_link_libraries("${PROJECT_NAME}_main"
-        #${PROJECT_NAME}
         AmolqcGUI::BSplines
         Qt5::Core
         Qt5::Gui
