@@ -41,4 +41,4 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 
 add_library(AmolqcGUI::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 
-#add_subdirectory(tests)
+add_subdirectory(tests)
