@@ -14,7 +14,6 @@ using namespace testing;
 class ABSplineTest : public Test {
 public:
   unsigned p;
-  unsigned dim;
   BSpline bs;
   void SetUp() override {
 
@@ -28,9 +27,6 @@ public:
 
     BSplineFromControlPolygon bsGenerator(data,p, true);
     bs = bsGenerator.generateBSpline(-1);
-
-    //ContainerConverter::printVectorXdForMathematica(bs.getKnotVector(1));
-    //ContainerConverter::printMatrixXdForMathematica(bs.getControlPointMatrix(1));
   }
 };
 

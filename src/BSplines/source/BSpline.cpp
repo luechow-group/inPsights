@@ -111,7 +111,7 @@ void BSpline::deriveControlPointMatrices(const unsigned highestDerivativeToCalcu
 }
 
 void BSpline::calculateDerivatives(const unsigned highestDerivativeToCalculate) {
-  assert( highestDerivativeToCalculate >=0 );
+  assert( highestDerivativeToCalculate >= 0 );
 
   if ( highestDerivativeToCalculate > p_) {
     deriveKnotVectors(highestDerivativeToCalculate);
