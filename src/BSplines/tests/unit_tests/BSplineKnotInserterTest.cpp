@@ -29,11 +29,11 @@ TEST_F(ABSplineKnotInserterTest, InsertNonExistingKnotDegree3 ) {
   p = 3;
 
   Eigen::MatrixXd data(5,2);
-  data.row(0) =Eigen::Vector2d(1,1);
-  data.row(1) =Eigen::Vector2d(2,0);
-  data.row(2) =Eigen::Vector2d(3,1);
-  data.row(3) =Eigen::Vector2d(4,0);
-  data.row(4) =Eigen::Vector2d(5,1);
+  data << 1, 1,
+          2, 0,
+          3, 1,
+          4, 0,
+          5, 1;
 
   BSplineFromControlPolygon myBSplineGenerator_(data,p,true);
   bs= myBSplineGenerator_.generateBSpline();
