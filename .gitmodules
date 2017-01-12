@@ -1,3 +1,3 @@
 [submodule "src/amolqc"]
-	path = src/amolqc
+	path = src/LibAmolqc/amolqc
 	url = git@tcrocks.pc.rwth-aachen.de:amolqc
