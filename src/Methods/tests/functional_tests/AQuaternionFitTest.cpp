@@ -17,7 +17,7 @@ public:
   }
 };
 
-TEST_F(AQuaternionFitTest, IdenticalGeometriesRMSD) {
+TEST_F(AQuaternionFitTest, IdenticalGeometries) {
   MatrixXd refMat(2,3);
   MatrixXd fitMat(2,3);
 
@@ -29,12 +29,67 @@ TEST_F(AQuaternionFitTest, IdenticalGeometriesRMSD) {
 
   QuaternionFit quatFit = QuaternionFit(refMat,fitMat);
 
-  ASSERT_EQ(quatFit.getRMSD(), 0.0); // checks if two doubles are almost equal
-  //https://github.com/google/googletest/blob/master/googletest/docs/AdvancedGuide.md
+  std::cout <<
+  std::endl << quatFit.getRotationMatrix() << std::endl;
+  std::cout << quatFit.getRMSD() << std::endl;
 
-  //By "almost equal", we mean the two values are within 4 ULP's from each other.
-  //ASSERT_NEAR( quatFit.getRMSD(), 0, 0.0000001 );
+  Matrix3d refRotMat;
+  refRotMat <<  1,  0,  0,
+                0,  1,  0,
+                0,  0,  1;
+
+  ASSERT_TRUE( quatFit.getRotationMatrix().isApprox(refRotMat));
+  ASSERT_EQ(quatFit.getRMSD(), 0.0);
 }
+
+TEST_F(AQuaternionFitTest, RotateIdenticalGeometriesBy180Degree1) {
+  MatrixXd refMat(2, 3);
+  MatrixXd fitMat(2, 3);
+
+  refMat <<  0, +1,  0,
+             0, -1,  0;
+
+  // rotated 180° around z axis
+  fitMat <<  0, -1,  1,
+             0, +1,  0;
+
+  QuaternionFit quatFit = QuaternionFit(refMat, fitMat);
+
+  Matrix3d refRotMat;
+  refRotMat << -1,  0,  0,
+                0, -1,  0,
+                0,  0,  1;
+
+  std::cout <<
+  std::endl << quatFit.getRotationMatrix() << std::endl;
+  std::cout << quatFit.getRMSD() << std::endl;
+
+  ASSERT_TRUE( quatFit.getRotationMatrix().isApprox(refRotMat));
+  ASSERT_EQ(quatFit.getRMSD(), 0.0);
+}
+
+TEST_F(AQuaternionFitTest, RotateIdenticalGeometriesBy180Degree2) {
+  MatrixXd refMat(2, 3);
+  MatrixXd fitMat(2, 3);
+
+  refMat <<  0,  0,  0,
+             0, -1,  0;
+
+  // rotated 180° around z axis
+  fitMat <<  0,  0,  1,
+             0, +1,  0;
+
+  QuaternionFit quatFit = QuaternionFit(refMat, fitMat);
+
+  Matrix3d refRotMat;
+  refRotMat << -1,  0,  0,
+                0, -1,  0,
+                0,  0,  1;
+
+  ASSERT_TRUE( quatFit.getRotationMatrix().isApprox(refRotMat));
+  ASSERT_EQ(quatFit.getRMSD(), 0.0);
+}
+
 
 TEST_F(AQuaternionFitTest, DifferentGeometriesRMSD) {
   // Acetylacetone geometry
@@ -42,20 +97,20 @@ TEST_F(AQuaternionFitTest, DifferentGeometriesRMSD) {
   MatrixXd refMat(15,3);
   MatrixXd fitMat(15,3);
 
-  refMat <<  0.807885933698,  0.034713426007,  2.524751492477,
-             0.478749565998,  0.911663008528,  3.081848148239,
-             1.888410774041,  0.057732055006,  2.416018936208,
-             0.517505535617, -0.846061511818,  3.097060472785,
-             0.134542340451,  0.008553783896,  1.197861199576,
+  refMat <<  0.837039463013,  0.016788427320, -2.525595956526,
+             1.543513550153, -0.813089574597, -2.549514746791,
+             1.414756694727,  0.939615423053, -2.588330890913,
+             0.157123350877, -0.049408205921, -3.369553256885,
+             0.060071572521, -0.006488221348, -1.238960132765,
              0.794033293747,  0.018022065819,  0.000474852563,
              1.872442556461,  0.045447119532, -0.009796692884,
-             0.060071572521, -0.006488221348, -1.238960132765,
-             0.837039463013,  0.016788427320, -2.525595956526,
-             1.543513550153, -0.813089574597, -2.549514746791,
-             0.157123350877, -0.049408205921, -3.369553256885,
-             1.414756694727,  0.939615423053, -2.588330890913,
-            -1.190036824170, -0.024442923129,  1.268285673962,
+             0.134542340451,  0.008553783896,  1.197861199576,
+             0.807885933698,  0.034713426007,  2.524751492477,
+             1.888410774041,  0.057732055006,  2.416018936208,
+             0.478749565998,  0.911663008528,  3.081848148239,
+             0.517505535617, -0.846061511818,  3.097060472785,
             -1.188496502471, -0.042294663829, -1.261659669635,
+            -1.190036824170, -0.024442923129,  1.268285673962,
             -1.499835119606, -0.039635177950,  0.311246144880;
 
   fitMat << -2.5344764741,   -0.7559439560,    0.0000783747,
