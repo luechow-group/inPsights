@@ -9,7 +9,9 @@ include_directories(SYSTEM
         ${EIGEN3_INCLUDE_DIR}
         )
 
-FILE(GLOB TEST_SOURCE_FILES unit_tests/*)
+FILE(GLOB TEST_SOURCE_FILES
+        unit_tests/*
+        )
 
 add_executable("${PROJECT_NAME}_RunAllTests" ${TEST_SOURCE_FILES})
 

@@ -11,10 +11,8 @@ set ( OUTPUT_NAME "${PROJECT_FOLDER_NAME}" )
 message ( "-- ++ CREATING PROJECT OR MAKEFILE ---> ${OUTPUT_NAME}" )
 
 set(CMAKE_CXX_STANDARD 11)
-#set(CMAKE_CXX_FLAGS "-g -Wall") # TODO needed?
+set(CMAKE_CXX_FLAGS "-g -Wall")
 
-
-# Find Eigen lib
 find_package(Eigen3 REQUIRED)
 
 include_directories(

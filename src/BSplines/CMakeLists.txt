@@ -10,13 +10,11 @@ set ( PROJECT_PATH ${PROJECT_NAME})
 set ( OUTPUT_NAME "${PROJECT_FOLDER_NAME}" )
 message ( "-- ++ CREATING PROJECT OR MAKEFILE ---> ${OUTPUT_NAME}" )
 
-set(CMAKE_CXX_STANDARD 11) # TODO needed?
-set(CMAKE_CXX_FLAGS "-g -Wall") # TODO needed?
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_FLAGS "-g -Wall")
 
 # Find includes in corresponding build directories
 #set(CMAKE_INCLUDE_CURRENT_DIR ON) # TODO needed?
-# Instruct CMake to run moc automatically when needed.
-#set(CMAKE_AUTOMOC ON) # TODO needed?
 
 # Find Eigen lib
 find_package(Eigen3 REQUIRED)
