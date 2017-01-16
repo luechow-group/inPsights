@@ -1,4 +1,5 @@
-build/
-.idea/
+build
+.idea
+TestLists.txt
 CMakeListsForAmolqc.txt
 MakefileForAmolqc
