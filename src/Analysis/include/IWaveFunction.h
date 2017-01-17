@@ -6,3 +6,6 @@
 #define AMOLQCGUI_IWAVEFUNCTION_H
 
 #endif //AMOLQCGUI_IWAVEFUNCTION_H
+
+//TODO define Interface for wave functions
+
