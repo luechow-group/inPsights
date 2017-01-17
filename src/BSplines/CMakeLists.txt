@@ -24,7 +24,8 @@ include_directories(
         source
         ${GTEST_INCLUDE_DIRS}
         #${Gmock_INCLUDE_DIR} ${Gtest_INCLUDE_DIR}
-        ${EIGEN3_INCLUDE_DIR})
+        ${EIGEN3_INCLUDE_DIR}
+        )
 
 set(HEADER_FILES
         include/ArcLengthParametrizedBSpline.h
