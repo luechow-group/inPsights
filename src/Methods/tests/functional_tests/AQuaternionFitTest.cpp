@@ -18,78 +18,66 @@ public:
 };
 
 TEST_F(AQuaternionFitTest, IdenticalGeometries) {
-  MatrixXd refMat(2,3);
-  MatrixXd fitMat(2,3);
+  MatrixXd refMat(4,3);
+  MatrixXd fitMat(4,3);
 
-  refMat << 1, 2, 3,
-            4, 5, 6;
+  refMat << \
+  1,0,0,\
+  0,1,0,\
+  0,0,1,\
+  1,1,1;
 
-  fitMat << 1, 2, 3,
-            4, 5, 6;
+  fitMat << \
+  1,0,0,\
+  0,1,0,\
+  0,0,1,\
+  1,1,1;
 
   QuaternionFit quatFit = QuaternionFit(refMat,fitMat);
-
-  std::cout <<
-  std::endl << quatFit.getRotationMatrix() << std::endl;
-  std::cout << quatFit.getRMSD() << std::endl;
-
-  Matrix3d refRotMat;
-  refRotMat <<  1,  0,  0,
-                0,  1,  0,
-                0,  0,  1;
-
-  ASSERT_TRUE( quatFit.getRotationMatrix().isApprox(refRotMat));
-  ASSERT_EQ(quatFit.getRMSD(), 0.0);
+  ASSERT_TRUE( quatFit.getRotationMatrix().isApprox(Eigen::Matrix3d::Identity()) );
 }
 
-TEST_F(AQuaternionFitTest, RotateIdenticalGeometriesBy180Degree1) {
-  MatrixXd refMat(2, 3);
-  MatrixXd fitMat(2, 3);
+TEST_F(AQuaternionFitTest, ThreeCollinearPoints) {
+  ASSERT_TRUE(false);
+}
 
-  refMat <<  0, +1,  0,
-             0, -1,  0;
+TEST_F(AQuaternionFitTest, CoplanarPoints) {
+  ASSERT_TRUE(false);
+}
 
-  // rotated 180° around z axis
-  fitMat <<  0, -1,  1,
-             0, +1,  0;
+TEST_F(AQuaternionFitTest, TwoPoints) {
+  ASSERT_TRUE(false);
+}
+
+TEST_F(AQuaternionFitTest, SinglePoint) {
+  ASSERT_TRUE(false);
+}
+
+TEST_F(AQuaternionFitTest, RotateIdenticalGeometriesBy90DegreeAroundZAxis) {
+  MatrixXd refMat(4, 3);
+  MatrixXd fitMat(4, 3);
+
+  refMat <<
+    1, 0, 0,\
+    0, 1, 0,\
+    0, 0, 1,\
+    1, 0, 1;
+
+  fitMat <<
+     0, 1, 0,\
+    -1, 0, 0,\
+     0, 0, 1,\
+     0, 1, 1;
 
   QuaternionFit quatFit = QuaternionFit(refMat, fitMat);
-
   Matrix3d refRotMat;
-  refRotMat << -1,  0,  0,
-                0, -1,  0,
-                0,  0,  1;
+  refRotMat << \
+   0,1,0,\
+  -1,0,0,\
+   0,0,1;
 
-  std::cout <<
-  std::endl << quatFit.getRotationMatrix() << std::endl;
-  std::cout << quatFit.getRMSD() << std::endl;
-
-  ASSERT_TRUE( quatFit.getRotationMatrix().isApprox(refRotMat));
-  ASSERT_EQ(quatFit.getRMSD(), 0.0);
+  ASSERT_TRUE(quatFit.getRotationMatrix().isApprox(refRotMat));
 }
-
-TEST_F(AQuaternionFitTest, RotateIdenticalGeometriesBy180Degree2) {
-  MatrixXd refMat(2, 3);
-  MatrixXd fitMat(2, 3);
-
-  refMat <<  0,  0,  0,
-             0, -1,  0;
-
-  // rotated 180° around z axis
-  fitMat <<  0,  0,  1,
-             0, +1,  0;
-
-  QuaternionFit quatFit = QuaternionFit(refMat, fitMat);
-
-  Matrix3d refRotMat;
-  refRotMat << -1,  0,  0,
-                0, -1,  0,
-                0,  0,  1;
-
-  ASSERT_TRUE( quatFit.getRotationMatrix().isApprox(refRotMat));
-  ASSERT_EQ(quatFit.getRMSD(), 0.0);
-}
-
 
 TEST_F(AQuaternionFitTest, DifferentGeometriesRMSD) {
   // Acetylacetone geometry
@@ -130,8 +118,4 @@ TEST_F(AQuaternionFitTest, DifferentGeometriesRMSD) {
              0.3235786053,    1.5521309757,    0.0000008317;
 
   QuaternionFit quatFit = QuaternionFit(refMat,fitMat);
-  std::cout << std::endl << quatFit.getRMSD() << std::endl;
-
-  //ASSERT_EQ(quatFit.getRMSD(), 0.0);
-  //ASSERT_NEAR( quatFit.getRMSD(), 0, 0.0000001 );
 }

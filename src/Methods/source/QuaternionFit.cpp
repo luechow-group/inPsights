@@ -1,212 +1,241 @@
-#include "QuaternionFit.h"
+//
+// Created by Michael Heuer on 16.01.17.
+//
 
+#include "QuaternionFit.h"
 #include <Eigen/Eigenvalues>
+
+#include "iostream"
 
 using namespace std;
 using namespace Eigen;
 
-QuaternionFit::QuaternionFit(const MatrixXd& refMat,
-                             const MatrixXd& fitMat,
+QuaternionFit::QuaternionFit(const MatrixXd& referencePositionCollection,
+                             const MatrixXd& targetPositionCollection,
                              const VectorXd& weights)
-	: weights_(weights),
-		refMat_(refMat),
-		fitMat_(fitMat)
+  : weights_(weights),
+    referencePositionCollection_(referencePositionCollection),
+    targetPositionCollection_(targetPositionCollection),
+    atomNumber_((unsigned)referencePositionCollection.rows())
 {
-	assert(refMat_.rows() == fitMat_.rows());
-	assert(refMat_.rows() == weights_.rows());
-
-	align();
+  assert(atomNumber_ > 0);
+  assert(referencePositionCollection_.rows() == targetPositionCollection_.rows());
+  assert(referencePositionCollection_.rows() == weights_.rows());
+  align();
 }
 
-QuaternionFit::QuaternionFit(const MatrixXd& refMat,
-														 const MatrixXd& fitMat)
-	: refMat_(refMat),
-		fitMat_(fitMat)
+QuaternionFit::QuaternionFit(const MatrixXd& referencePositionCollection,
+                             const MatrixXd& targetPositionCollection)
+  : referencePositionCollection_(referencePositionCollection),
+    targetPositionCollection_(targetPositionCollection),
+    atomNumber_((unsigned)referencePositionCollection.rows())
 {
-	assert(refMat.rows() == fitMat.rows());
-	weights_ = VectorXd::Ones(refMat_.rows());
+  assert(atomNumber_ > 0);
+  assert(referencePositionCollection.rows() == targetPositionCollection.rows());
 
-	align();
+  weights_ = VectorXd::Ones(referencePositionCollection_.rows());
+
+  align();
 }
 
-QuaternionFit::QuaternionFit(const MatrixXd& refMat)
-	: refMat_(refMat)
- {
-	weights_ = VectorXd::Ones(refMat_.rows());
+QuaternionFit::QuaternionFit(const MatrixXd& referencePositionCollection)
+  : referencePositionCollection_(referencePositionCollection),
+    atomNumber_((unsigned)referencePositionCollection.rows())
+{
+  assert(atomNumber_ > 0);
+  weights_ = VectorXd::Ones(referencePositionCollection_.rows());
 }
 
 QuaternionFit::~QuaternionFit() {}
 
+void QuaternionFit::align(const MatrixXd& targetPositionCollection, const VectorXd& weights) {
+  assert(referencePositionCollection_.rows() == weights.rows());
+  weights_ = weights;
+
+  align(targetPositionCollection);
+}
+
+void QuaternionFit::align(const MatrixXd& targetPositionCollection) {
+  assert(targetPositionCollection.cols() == 3);
+  assert(targetPositionCollection.rows() == referencePositionCollection_.rows());
+  targetPositionCollection_ = targetPositionCollection;
+
+  align();
+}
+
 void QuaternionFit::align() {
-	calcRotMat();
+
+  referenceCenter_ = calculateCenter(referencePositionCollection_, weights_);
+  targetCenter_ = calculateCenter(targetPositionCollection_, weights_);
+
+  assert(atomNumber_ > 0);
+
+  if (atomNumber_ > 3) {
+    calculateCorrelationMatrix();
+    findMaximalEigenvalue();
+    alignTargetWithReference();
+    //calculateRMSD();
+  }
+  else if ( atomNumber_== 3){
+    assert(false && "implementation needed");
+  }
+  else if ( atomNumber_== 2){
+    // make target and reference collinear
+    assert(false && "implementation needed");
+  }
+  else {
+    // translate target to reference
+    assert(false && "implementation needed");
+  }
 }
 
-void QuaternionFit::align(const MatrixXd& fitMat) {
-	assert(fitMat.cols() == 3);
-	assert(fitMat.rows() == refMat_.rows());
-	fitMat_ = fitMat;
-	calcRotMat();
+Eigen::Vector3d QuaternionFit::calculateCenter(const MatrixXd& mat, const VectorXd& weights) {
+  assert(weights.rows() == mat.rows());
+
+  Vector3d center = Vector3d::Zero();
+  for (unsigned i = 0; i < mat.rows(); i++)
+    center += mat.row(i).transpose() * weights(i);
+
+  center /= weights.sum();
+
+  return center;
 }
 
-void QuaternionFit::align(const MatrixXd& fitMat, const VectorXd& weights) {
-	assert(fitMat.cols() == 3);
-	assert(fitMat.rows() == refMat_.rows());
-	assert(refMat_.rows() == weights.rows());
-	weights_ = weights;
-	calcRotMat();
+void QuaternionFit::calculateCorrelationMatrix() {
+  correlationMatrix_ = Matrix4d::Zero();
+  double c11 = 0.0, c22 = 0.0, c33 = 0.0;
+  double c23 = 0.0, c32 = 0.0;
+  double c13 = 0.0, c31 = 0.0;
+  double c12 = 0.0, c21 = 0.0;
+
+  auto w = 0.0;
+
+  for (unsigned i = 0; i < atomNumber_; i++) {
+
+    // translate target and reference to origin
+    auto targetPosition = (targetPositionCollection_.row(i) - targetCenter_.transpose()).eval();
+    auto referencePosition = (referencePositionCollection_.row(i) - referenceCenter_.transpose()).eval();
+    w = weights_(i);
+
+    c11 += targetPosition(0) * referencePosition(0) * w;
+    c12 += targetPosition(0) * referencePosition(1) * w;
+    c13 += targetPosition(0) * referencePosition(2) * w;
+    c21 += targetPosition(1) * referencePosition(0) * w;
+    c22 += targetPosition(1) * referencePosition(1) * w;
+    c23 += targetPosition(1) * referencePosition(2) * w;
+    c31 += targetPosition(2) * referencePosition(0) * w;
+    c32 += targetPosition(2) * referencePosition(1) * w;
+    c33 += targetPosition(2) * referencePosition(2) * w;
+  }
+
+  correlationMatrix_ = Matrix4d::Zero();
+
+  correlationMatrix_(0, 0) = c11 + c22 + c33;
+
+  correlationMatrix_(0, 1) = c23 - c32;
+  correlationMatrix_(1, 1) = c11 - c22 - c33;
+
+  correlationMatrix_(0, 2) = c31 - c13;
+  correlationMatrix_(1, 2) = c12 + c21;
+  correlationMatrix_(2, 2) = -c11 + c22 - c33;
+
+  correlationMatrix_(0, 3) = c12 - c21;
+  correlationMatrix_(1, 3) = c13 + c31;
+  correlationMatrix_(2, 3) = c23 + c32;
+  correlationMatrix_(3, 3) = -c11 - c22 + c33;
+
+  // mirror correlation matrix along diagonal
+  for (unsigned i = 0; i < 3; i++) {
+    for (unsigned j = i+1; j < 4; j++) {
+      correlationMatrix_(j, i) = correlationMatrix_(i, j);
+    }
+  }
 }
 
-void QuaternionFit::calcRotMat() {
-	int NAtoms = static_cast<int>(refMat_.rows());
-
-	c_ = Matrix4d::Zero();
-
-	refCenter_ = calcCenter(refMat_, weights_);
-	fitCenter_ = calcCenter(fitMat_, weights_);
-	transVector_ = fitCenter_ - refCenter_;
-
-	//for (int i = 0; i < NAtoms; i++) {
-	//	cRefMat.row(i) -= refCenter_;
-	//	cFitMat.row(i) -= fitCenter_;
-	//}
-
-	double R11 = 0.0, R22 = 0.0, R33 = 0.0;
-	double R23 = 0.0, R32 = 0.0;
-	double R13 = 0.0, R31 = 0.0;
-	double R12 = 0.0, R21 = 0.0;
-
-	auto w = 0.0;
-
-	for (int i = 0; i < NAtoms; i++) {
-		auto fitPos = (fitMat_.row(i) - fitCenter_.transpose()).eval();
-		auto refPos = (refMat_.row(i) - refCenter_.transpose()).eval();
-		w = weights_(i);
-
-		R11 += fitPos(0) * refPos(0) * w;
-		R12 += fitPos(0) * refPos(1) * w;
-		R13 += fitPos(0) * refPos(2) * w;
-		R21 += fitPos(1) * refPos(0) * w;
-		R22 += fitPos(1) * refPos(1) * w;
-		R23 += fitPos(1) * refPos(2) * w;
-		R31 += fitPos(2) * refPos(0) * w;
-		R32 += fitPos(2) * refPos(1) * w;
-		R33 += fitPos(2) * refPos(2) * w;
-	}
-
-	c_(0, 0) = R11 + R22 + R33;
-
-	c_(0, 1) = R23 - R32;
-	c_(1, 1) = R11 - R22 - R33;
-
-	c_(0, 2) = R31 - R13;
-	c_(1, 2) = R12 + R21;
-	c_(2, 2) = -R11 + R22 - R33;
-
-	c_(0, 3) = R12 - R21;
-	c_(1, 3) = R13 + R31;
-	c_(2, 3) = R23 + R32;
-	c_(3, 3) = -R11 - R22 + R33;
-
-	for (unsigned i = 0; i < 4; i++) {
-		for (unsigned j = 0; j < 4; j++) {
-			c_(j, i) = c_(i, j);
-		}
-	}
-
-	SelfAdjointEigenSolver<Matrix4d> eigensolver(c_);
-	eigenvalues_ = eigensolver.eigenvalues();
-	eigenvectors_ = eigensolver.eigenvectors();
+void QuaternionFit::findMaximalEigenvalue() {
+  SelfAdjointEigenSolver<Matrix4d> eigensolver(correlationMatrix_);
+  eigenvalues_ = eigensolver.eigenvalues();
+  eigenvectors_ = eigensolver.eigenvectors();
 
 
-
-	int index;
-	if (eigensolver.eigenvalues().maxCoeff() > -eigensolver.eigenvalues().minCoeff()) 
-	{
-		eigensolver.eigenvalues().maxCoeff(&index);
-		rotMat_ = rotMatFromQuat(eigensolver.eigenvectors().col(index));
-	} 
-	else 
-	{
-		eigensolver.eigenvalues().minCoeff(&index);
-		rotMat_ = -rotMatFromQuat(eigensolver.eigenvectors().col(index));
-	}
-	maxEigenvalue_ = eigensolver.eigenvalues()(index);
-
-
-	fittedMat_ = fitMat_;
-	for (unsigned i = 0; i < fittedMat_.rows(); i++) {
-		fittedMat_.row(i) -= fitCenter_; 
-		fittedMat_.row(i) = rotMat_ * fittedMat_.row(i).transpose();
-		fittedMat_.row(i) += refCenter_;
-	}
-
-	auto sum = 0.0;
-	for (int i = 0; i < NAtoms; i++) {
-		auto fitPos = fitMat_.row(i) - fitCenter_.transpose();
-		auto refPos = refMat_.row(i) - refCenter_.transpose();
-		sum += fitPos.squaredNorm() + refPos.squaredNorm();
-	}
-	sum -= 2.0 * abs(maxEigenvalue_);
-
-	if (sum < 1e-7) {
-		rotRMSD_ = 0.0;
-	} else {
-		rotRMSD_ = sqrt(sum/NAtoms);
-	}
+  int index;
+  if (eigenvalues_.maxCoeff() >= -eigenvalues_.minCoeff()) {
+    eigenvalues_.maxCoeff(&index);
+    rotationMatrix_ = rotationMatrixFromQuaternion(eigenvectors_.col(index));
+  } else {
+    eigenvalues_.minCoeff(&index);
+    rotationMatrix_ = -rotationMatrixFromQuaternion(eigenvectors_.col(index));
+  }
+  maxEigenvalue_ = eigenvalues_(index);
+  //TODO check degeneracy
+  //TODO select maximal, degenerate eigenvector with most zeros
 }
 
-Vector3d QuaternionFit::calcCenter(const MatrixXd& mat, const VectorXd& weights) {
-	assert(weights.rows() == mat.rows());
+Matrix3d QuaternionFit::rotationMatrixFromQuaternion(const Vector4d& q) {
+  Matrix3d rotMat = Matrix3d::Zero();
 
-	Vector3d center = Vector3d::Zero();
-	for (unsigned i = 0; i < mat.rows(); i++)
-		center += mat.row(i).transpose() * weights(i);
+  double q11, q22, q33;
+  double q01, q02, q03, q12, q13, q23;
 
-	center /= weights.sum();
+  q11 = q(1) * q(1);
+  q22 = q(2) * q(2);
+  q33 = q(3) * q(3);
 
-	return center;
+  q01 = q(0) * q(1);
+  q02 = q(0) * q(2);
+  q03 = q(0) * q(3);
+  q12 = q(1) * q(2);
+  q13 = q(1) * q(3);
+  q23 = q(2) * q(3);
+
+  rotMat(0, 0) = 1 - 2*(q22 + q33);
+  rotMat(1, 0) = 2*(q12 + q03);
+  rotMat(2, 0) = 2*(q13 - q02);
+
+  rotMat(0, 1) = 2*(q12 - q03);
+  rotMat(1, 1) = 1 - 2*(q11 + q33);
+  rotMat(2, 1) = 2*(q23 + q01);
+
+  rotMat(0, 2) = 2*(q13 + q02);
+  rotMat(1, 2) = 2*(q23 - q01);
+  rotMat(2, 2) = 1 - 2*(q11 - q22);
+  // PAPER IS WRONG! HERE IT IS CORRECT
+  //http://www.euclideanspace.com/maths/geometry/rotations/conversions/quaternionToMatrix/
+  return rotMat;
 }
 
-double QuaternionFit::getRMSD() const {
-	auto sum = 0.0;
+void QuaternionFit::alignTargetWithReference() {
 
-	for (unsigned i = 0; i < refMat_.rows(); i++)
-		sum += (refMat_.row(i) - fittedMat_.row(i)).squaredNorm();
-
-	if (sum < 1e-7) return 0.0;
-
-	return sqrt(sum/(refMat_.rows()*3));
+  fittedTargetPositionCollection_ = targetPositionCollection_;
+  for (unsigned i = 0; i < fittedTargetPositionCollection_.rows(); i++) {
+    // move to origin
+    fittedTargetPositionCollection_.row(i) -= targetCenter_;
+    // rotate
+    fittedTargetPositionCollection_.row(i) = rotationMatrix_ * fittedTargetPositionCollection_.row(i).transpose();
+    // move to reference center
+    fittedTargetPositionCollection_.row(i) += referenceCenter_;
+  }
 }
 
-Matrix3d rotMatFromQuat(const Vector4d& q) {
-	Matrix3d rotMat = Matrix3d::Zero();
+void QuaternionFit::calculateRMSD() {
+  auto sum = 0.0;
 
-	double q00, q11, q22, q33;
-	double q01, q02, q03, q12, q13, q23;
+  // TODO FIX THIS
 
-	q00 = q(0) * q(0);
-	q11 = q(1) * q(1);
-	q22 = q(2) * q(2);
-	q33 = q(3) * q(3);
+  for (unsigned i = 0; i < atomNumber_; i++) {
+    auto targetPosition = targetPositionCollection_.row(i) - targetCenter_.transpose();
+    auto referencePosition = referencePositionCollection_.row(i) - referenceCenter_.transpose();
+    sum +=  targetPosition.squaredNorm() - referencePosition.squaredNorm(); // MACHT SO KEINEN SINN
+  }
+  sum -= 2.0 * abs(maxEigenvalue_);
 
-	q01 = q(0) * q(1);
-	q02 = q(0) * q(2);
-	q03 = q(0) * q(3);
-	q12 = q(1) * q(2);
-	q13 = q(1) * q(3);
-	q23 = q(2) * q(3);
-
-	rotMat(0, 0) = q00 + q11 - q22 - q33;
-	rotMat(1, 0) = 2.0 * (q12 + q03);
-	rotMat(2, 0) = 2.0 * (q13 - q02);
-
-	rotMat(0, 1) = 2.0 * (q12 - q03);
-	rotMat(1, 1) = q00 - q11 + q22 - q33;
-	rotMat(2, 1) = 2.0 * (q23 + q01);
-
-	rotMat(0, 2) = 2.0 * (q13 + q02);
-	rotMat(1, 2) = 2.0 * (q23 - q01);
-	rotMat(2, 2) = q00 - q11 - q22 + q33;
-
-	return rotMat;
+  /*
+  if (sum < 1e-7) {
+    rotRMSD_ = 0.0;
+  } else {
+    rotRMSD_ = sqrt(sum / atomNumber_);
+  }*/
+  rotRMSD_ = sqrt(sum / atomNumber_);
 }
+
+
