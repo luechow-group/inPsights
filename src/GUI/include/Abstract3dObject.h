@@ -27,15 +27,15 @@ public:
   //void setColor(const QColor& color){ this->color = color;};
   //void setLocation(const QVector3D& location){ this->location = location;};
 
-  QColor getColor() const { return color; };
-  QVector3D getLocation() const { return location; };
+  QColor getColor() const { return color_; };
+  QVector3D getLocation() const { return location_; };
 
 public slots:
   void onPressed(bool pressed);
 
 protected:
-  QColor color;
-  QVector3D location;
+  QColor color_;
+  QVector3D location_;
 };
 
 #endif //AMOLQC_ABSTRACT3DOBJECT_H

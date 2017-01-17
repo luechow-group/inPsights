@@ -16,7 +16,7 @@ public:
        const QVector3D& location,
        const Elements::ElementType& elementType);
 
-  Elements::ElementType getElementType() const { return elementType; };
+  Elements::ElementType getElementType() const { return elementType_; };
 
   Qt3DRender::QObjectPicker *picker;
 
@@ -24,7 +24,7 @@ public:
   //void onPressed(bool pressed);
 
 private:
-  const Elements::ElementType elementType;
+  const Elements::ElementType elementType_;
 };
 
 #endif //AMOLQCGUI_ATOM_H

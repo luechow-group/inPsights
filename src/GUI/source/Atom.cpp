@@ -10,7 +10,7 @@ Atom::Atom(Qt3DCore::QEntity *root, const QVector3D& location, const Elements::E
            QColorFromElementType(elementType),
            location,
            float(Elements::ElementInfo::vdwRadius(elementType))),
-    elementType(elementType) {
+    elementType_(elementType) {
 
   //connect(picker, &Qt3DRender::QObjectPicker::pressedChanged, this, &Atom::onPressed);
 }
@@ -21,7 +21,7 @@ Atom::Atom(const Atom &atom)
            atom.getColor(),
            atom.getLocation(),
            atom.getRadius()),
-    elementType(atom.getElementType()){
+    elementType_(atom.getElementType()){
 
   //connect(picker, &Qt3DRender::QObjectPicker::pressedChanged, this, &Atom::onPressed);
 }

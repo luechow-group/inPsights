@@ -19,16 +19,16 @@ public:
 
   ~Cylinder() {};
 
-  float getRadius() const { return radius; };
-  float getLength() const { return length; };
+  float getRadius() const { return radius_; };
+  float getLength() const { return length_; };
 
 private:
   void rotateToOrientation(const QVector3D orientation);
 
-  float radius, length;
-  QVector3D start, end;
-  QVector3D difference;
-  Qt3DExtras::QCylinderMesh *mesh;
+  float radius_, length_;
+  QVector3D start_, end_;
+  QVector3D difference_;
+  Qt3DExtras::QCylinderMesh *mesh_;
 
 };
 

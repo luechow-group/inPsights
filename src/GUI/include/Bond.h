@@ -14,7 +14,7 @@ public:
   //Bond(Atom* src, Atom* dest);
 
 private:
-  const Atom& src,dest;
+  const Atom& src_,dest_;
 };
 
 /* TODO delete if not needed

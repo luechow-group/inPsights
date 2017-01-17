@@ -8,8 +8,8 @@
 
 Abstract3dObject::Abstract3dObject(Qt3DCore::QEntity *root, QColor color, const QVector3D location)
   : QEntity(root),
-    color(color),
-    location(location) {
+    color_(color),
+    location_(location) {
 
   entity = new Qt3DCore::QEntity(root);
   material = new Qt3DExtras::QPhongMaterial(root);

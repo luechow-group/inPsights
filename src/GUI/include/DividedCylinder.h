@@ -18,7 +18,7 @@ public:
 
 
 private:
-  Cylinder srcCylinder,destCylinder;
+  Cylinder srcCylinder_,destCylinder_;
 };
 
 #endif //AMOLQCGUI_DIVIDEDCYLINDER_H

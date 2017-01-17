@@ -12,24 +12,24 @@ Cylinder::Cylinder(Qt3DCore::QEntity *root,
                    const std::pair<QVector3D, QVector3D> pair,
                    const float radius)
   : Abstract3dObject(root, QColor(), MidPointVector(pair)),
-    radius(radius),
-    start(pair.first),
-    end(pair.second) {
+    radius_(radius),
+    start_(pair.first),
+    end_(pair.second) {
 
-  difference = end - start;
-  length = difference.length();
+  difference_ = end_ - start_;
+  length_ = difference_.length();
 
-  mesh = new Qt3DExtras::QCylinderMesh;
-  mesh->setRadius(radius);
-  mesh->setLength(length);
-  mesh->setRings(100);
-  mesh->setSlices(10);
+  mesh_ = new Qt3DExtras::QCylinderMesh;
+  mesh_->setRadius(radius);
+  mesh_->setLength(length_);
+  mesh_->setRings(100);
+  mesh_->setSlices(10);
 
-  rotateToOrientation(difference);
+  rotateToOrientation(difference_);
 
   material->setAmbient(color);
 
-  entity->addComponent(mesh);
+  entity->addComponent(mesh_);
 }
 
 void Cylinder::rotateToOrientation(const QVector3D orientation) {
@@ -50,8 +50,8 @@ void Cylinder::rotateToOrientation(const QVector3D orientation) {
   } else {
     // Nearly negatively aligned; axis is any vector perpendicular
     // to either vector, and angle is 180 degrees
-    auto tmp = start;
-    start = end;
-    end = tmp;
+    auto tmp = start_;
+    start_ = end_;
+    end_ = tmp;
   }
 }
