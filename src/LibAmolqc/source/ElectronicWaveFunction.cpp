@@ -33,33 +33,35 @@ void ElectronicWaveFunction::createRandomElectronPositionCollection(unsigned ele
   double *electronPositionCollectionArray = new double[electronNumber*3];
   amolqc_initial_positions(electronPositioningModeType, electronNumber,electronPositionCollectionArray);
 
-  electronPositionCollection = arrayToEigenMatrix(electronPositionCollectionArray, electronNumber);
+  electronPositionCollection_ = arrayToEigenMatrix(electronPositionCollectionArray, electronNumber);
 
   delete electronPositionCollectionArray;
 }
 
 void ElectronicWaveFunction::initialize() {
-  atomNumber=0;
-  electronNumber=0;
+  atomNumber_=0;
+  electronNumber_=0;
   amolqc_init();
-  amolqc_set_wf((int*)&electronNumber, (int*)&atomNumber);
+  amolqc_set_wf((int*)&electronNumber_, (int*)&atomNumber_);
 
-  createRandomElectronPositionCollection(electronNumber, ElectronPositioningMode::DENSITY);
+  createRandomElectronPositionCollection(electronNumber_, ElectronPositioningMode::DENSITY);
 }
 
 void ElectronicWaveFunction::evaluate(Eigen::MatrixXd electronPositionCollection) {
   assert(electronPositionCollection.rows() > 0);
   assert(electronPositionCollection.cols() == 3);
 
+  electronPositionCollection_ = electronPositionCollection;
+
   long electronCoordinatesNumber = electronPositionCollection.rows()* electronPositionCollection.cols();
   double *electronPositionCollectionArray = new double[electronCoordinatesNumber];
   double *electronDriftCollectionArray= new double[electronCoordinatesNumber];
 
   eigenMatrixToArray(electronPositionCollection, electronPositionCollectionArray);
-  amolqc_eloc(electronPositionCollectionArray, electronNumber, &determinantProbabilityAmplitude, &jastrowFactor, electronDriftCollectionArray, &localEnergy);
+  amolqc_eloc(electronPositionCollectionArray, electronNumber_, &determinantProbabilityAmplitude_, &jastrowFactor_, electronDriftCollectionArray, &localEnergy_);
 
 
-  electronDriftCollection = arrayToEigenMatrix(electronDriftCollectionArray, electronNumber);
+  electronDriftCollection_ = arrayToEigenMatrix(electronDriftCollectionArray, electronNumber_);
 
   delete electronPositionCollectionArray;
   delete electronDriftCollectionArray;
@@ -72,17 +74,22 @@ void ElectronicWaveFunction::eigenMatrixToArray(Eigen::MatrixXd mat, double *arr
       arr[i*3 + j] = mat(i,j);
     }
   }
+  /*
+  delete arr;
+  arr = nullptr;
+  Eigen::Map<Eigen::MatrixXd>( arr, mat.rows(), mat.cols() ) = mat;
+   */
 }
 
 Eigen::MatrixXd ElectronicWaveFunction::arrayToEigenMatrix(double *arr, unsigned electronNumber) {
-  Eigen::MatrixXd mat(electronNumber,3);
-
+  /*Eigen::MatrixXd mat(electronNumber,3);
   for (unsigned i = 0; i < electronNumber; ++i) {
     for (unsigned j = 0; j < 3; ++j) {
       mat(i, j) = arr[i * 3 + j];
     }
-  }
-  return mat;
+  }*/
+
+  return Eigen::Map<Eigen::MatrixXd>(arr, electronNumber, 3);
 }
 
 
