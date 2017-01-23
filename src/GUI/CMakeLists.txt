@@ -66,6 +66,7 @@ add_executable("${PROJECT_NAME}_main" ${SOURCE_FILES} ${HEADER_FILES} main.cpp)
 # links the libraries to the executable
 target_link_libraries("${PROJECT_NAME}_main"
         AmolqcGUI::BSplines
+        Externals::alglib
         Qt5::Core
         Qt5::Gui
         Qt5::Widgets
