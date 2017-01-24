@@ -3,7 +3,6 @@
 //
 
 #include "BSpline.h"
-#include <iostream>
 #include "BSplineTools.h"
 
 BSpline::BSpline(){}

@@ -55,6 +55,6 @@ TEST_F(ABSplineFromLeastSquaresFitTest, Penalized ) {
   matCheck << 1,1, 1.5,0.5, 2.25,0.25, 3.25,0.75, 4,0, 5,1;
   //ASSERT_TRUE(matResult.isApprox(matCheck));
 
-  assert(false && 'Test missing');
+  assert(false && "Test missing");
 
 }

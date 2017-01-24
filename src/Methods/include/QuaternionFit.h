@@ -37,8 +37,7 @@ public:
   //double getRotRMSD() const { return rotRMSD_; };
   //double getRMSD() const;
   Eigen::MatrixXd getRotationMatrix(){ return rotationMatrix_; };
-
-  void checkSpecialCases();
+  
 
 private:
   Eigen::VectorXd weights_;
