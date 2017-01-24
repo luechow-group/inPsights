@@ -11,9 +11,6 @@ message ( "-- ++ CREATING PROJECT OR MAKEFILE ---> ${OUTPUT_NAME}" )
 # Instruct CMake to run moc automatically when needed. Required for Qt to detect Q_OBJECT
 set(CMAKE_AUTOMOC ON)
 
-set(CMAKE_CXX_STANDARD 11)
-set(CMAKE_CXX_FLAGS "-g -Wall")
-
 
 # Find Eigen lib
 find_package(Eigen3 REQUIRED)
