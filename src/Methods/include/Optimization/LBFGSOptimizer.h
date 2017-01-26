@@ -5,17 +5,17 @@
 #ifndef AMOLQCGUI_LBFGSOPTIMIZER_H
 #define AMOLQCGUI_LBFGSOPTIMIZER_H
 
-#include "IOptimizer.h"
+#include "NewtonTypeOptimizer.h"
 //#include "ElectronicWaveFunction.h"
-//#include <optimization.h> //alglib
+#include <>
 
-
-class LBFGSOptimizer : public IOptimizer {
+class LBFGSOptimizer : public NewtonTypeOptimizer {
 
 public:
   LBFGSOptimizer();
 
   void performStep() override;
+  void constructHessian() override;
 
   // LBFGS specific methods
   //std::vector<std::vector<CartesionCoordinate>> getHessian(){ return hessian_; };

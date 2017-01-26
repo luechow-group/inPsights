@@ -3,12 +3,12 @@
 //
 
 #include <assert.h>
-#include "LBFGSOptimizer.h"
+#include "Optimization/LBFGSOptimizer.h"
 
 //#include "ElectronicWaveFunction.h"
 
 LBFGSOptimizer::LBFGSOptimizer()
-  : IOptimizer() {
+  : NewtonTypeOptimizer() {
 
   //wf_.createRandomElectronPositionCollection(18,ElectronPositioningMode::DENSITY); //TODO allow user to specify EPC
 
@@ -54,3 +54,7 @@ void LBFGSOptimizer::performStep() {
   grad = temp.data();
 
 }*/
+
+void LBFGSOptimizer::constructHessian() {
+  assert(false && "To be implemented");
+}

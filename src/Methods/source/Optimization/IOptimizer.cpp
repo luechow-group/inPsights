@@ -2,8 +2,7 @@
 // Created by Michael Heuer on 23.01.17.
 //
 
-#include <assert.h> //TODO why are several assert.h available here and in BSpline there is not?
-#include "IOptimizer.h"
+#include "Optimization/IOptimizer.h"
 
 IOptimizer::IOptimizer()
   : stepCount_(0) {

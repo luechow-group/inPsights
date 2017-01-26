@@ -23,9 +23,12 @@ include_directories(
 set(HEADER_FILES
         include/QuaternionFit.h
         include/Optimization/IOptimizer.h
-        include/Optimization/LBFGSOptimizer.h
         include/Optimization/OptimizerFactory.h
+        include/Optimization/NewtonTypeOptimizer.h
+        include/Optimization/LBFGSOptimizer.h
         include/Optimization/NewtonRaphsonOptimizer.h
+        include/NumercialDifferentiator.h
+        include/HessianFromGradientCalculator.h
         )
 
 set(SOURCE_FILES
@@ -33,6 +36,8 @@ set(SOURCE_FILES
         source/Optimization/IOptimizer.cpp
         source/Optimization/LBFGSOptimizer.cpp
         source/Optimization/NewtonRaphsonOptimizer.cpp
+        source/NumercialDifferentiator.cpp
+        source/HessianFromGradientCalculator.cpp
         )
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES})
@@ -43,5 +48,10 @@ target_include_directories(${PROJECT_NAME} PUBLIC
         )
 
 add_library(AmolqcGUI::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
+
+target_link_libraries(${PROJECT_NAME}
+        AmolqcGUI::BSplines
+        Externals::cppoptlib
+        )
 
 add_subdirectory(tests)
