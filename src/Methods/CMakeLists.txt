@@ -15,17 +15,24 @@ message ( "-- ++ CREATING PROJECT OR MAKEFILE ---> ${OUTPUT_NAME}" )
 find_package(Eigen3 REQUIRED)
 
 include_directories(
-        include
-        source
+        include/*
+        source/*
         ${EIGEN3_INCLUDE_DIR}
         )
 
 set(HEADER_FILES
-       include/QuaternionFit.h
+        include/QuaternionFit.h
+        include/Optimization/IOptimizer.h
+        include/Optimization/LBFGSOptimizer.h
+        include/Optimization/OptimizerFactory.h
+        include/Optimization/NewtonRaphsonOptimizer.h
         )
 
 set(SOURCE_FILES
         source/QuaternionFit.cpp
+        source/Optimization/IOptimizer.cpp
+        source/Optimization/LBFGSOptimizer.cpp
+        source/Optimization/NewtonRaphsonOptimizer.cpp
         )
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES})

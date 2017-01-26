@@ -5,7 +5,7 @@
 #include <gmock/gmock.h>
 #include <Eigen/Core>
 
-#include "LBFGSOptimizer.h"
+#include "Optimization/LBFGSOptimizer.h"
 
 using namespace testing;
 using namespace Eigen;

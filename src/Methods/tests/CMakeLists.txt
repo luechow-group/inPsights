@@ -10,7 +10,7 @@ include_directories(SYSTEM
         )
 
 FILE(GLOB TEST_SOURCE_FILES
-        #unit_tests/*
+        unit_tests/*
         #integration_tests/*
         functional_tests/*
         )
