@@ -6,7 +6,6 @@
 #define AMOLQCGUI_ELECTRONICWAVEFUNCTION_H
 
 #include <Eigen/Core>
-//#include <cmath>
 
 namespace ElectronPositioningMode {
   typedef enum {
@@ -14,18 +13,28 @@ namespace ElectronPositioningMode {
   } electronPositioningModeType;
 }
 
+/*TODO Remember to set the amolqc path for runtime in the configuration file
+ ** AMOLQC=/Users/michaelheuer/amolqcGUI/src/LibAmolqc/amolqc/
+ *TODO Remember to put the t.wf file in the executable folders
+ **    /Users/michaelheuer/amolqcGUI/build/cmake-build-debug/src/LibAmolqc/t.wf
+ **    /Users/michaelheuer/amolqcGUI/build/cmake-build-release/src/LibAmolqc/t.wf
+ */
+
+
 class ElectronicWaveFunction {
+
 public:
   ElectronicWaveFunction();
 
   ~ElectronicWaveFunction();
 
   void initialize();
+  //void initialize(const Eigen::VectorXd &electronPositionCollection);
 
-  void createRandomElectronPositionCollection(unsigned electronNumber,
-                                              ElectronPositioningMode::electronPositioningModeType);
+  void setRandomElectronPositionCollection(unsigned electronNumber,
+                                           ElectronPositioningMode::electronPositioningModeType);
 
-  void evaluate(Eigen::MatrixXd electronPositionCollection);
+  void evaluate(const Eigen::VectorXd &electronPositionCollection);
 
   double getLocalEnergy(){ return localEnergy_; };
 
@@ -33,21 +42,28 @@ public:
 
   double getJastrowFactor(){ return jastrowFactor_; };
 
-  double getProbabilityAmplitude(){ return determinantProbabilityAmplitude_*jastrowFactor_; };
+  double getProbabilityAmplitude(){ return determinantProbabilityAmplitude_ * exp(jastrowFactor_); };
 
   double getProbabilityDensity(){ return pow(getProbabilityAmplitude(),2); };
 
-  Eigen::MatrixXd getElectronDriftCollection(){ return electronDriftCollection_; };
+  double getNegativeLogarithmizedProbabilityDensity(){ return -log(pow(getProbabilityAmplitude(),2)); };
 
-  Eigen::MatrixXd getElectronPositionCollection(){ return electronPositionCollection_; };
+  Eigen::VectorXd getElectronPositionCollection(){ return electronPositionCollection_; };
+
+  Eigen::VectorXd getElectronDriftCollection(){ return electronDriftCollection_; };
+
+  Eigen::VectorXd getSquaredElectronDriftCollection(){ return electronDriftCollection_.array().square(); };
+
+  Eigen::VectorXd getNegativeLogarithmizedSquaredElectronDriftCollection(){
+    return -Eigen::log(getSquaredElectronDriftCollection().array());
+  };
+
+
 
 private:
-  void eigenMatrixToArray(Eigen::MatrixXd mat, double *arr);
-  Eigen::MatrixXd arrayToEigenMatrix(double *arr, unsigned electronNumber);
-
   unsigned atomNumber_,electronNumber_;
   double determinantProbabilityAmplitude_, jastrowFactor_, localEnergy_;
-  Eigen::MatrixXd electronPositionCollection_, electronDriftCollection_;
+  Eigen::VectorXd electronPositionCollection_, electronDriftCollection_;
 
 };
 
