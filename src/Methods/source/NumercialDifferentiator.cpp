@@ -4,7 +4,6 @@
 
 #include "NumercialDifferentiator.h"
 #include <unsupported/Eigen/NumericalDiff>
-//#include <unsupported/Eigen/AutoDiff>
 
 #include "iostream"
 

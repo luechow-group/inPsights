@@ -2,15 +2,14 @@
 // Created by Michael Heuer on 23.01.17.
 //
 
-#include <assert.h>
-#include "Optimization/LBFGSOptimizer.h"
+#include "LBFGSOptimizer.h"
 
 //#include "ElectronicWaveFunction.h"
 
 LBFGSOptimizer::LBFGSOptimizer()
   : NewtonTypeOptimizer() {
 
-  //wf_.createRandomElectronPositionCollection(18,ElectronPositioningMode::DENSITY); //TODO allow user to specify EPC
+  //wf_.setRandomElectronPositionCollection(18,ElectronPositioningMode::DENSITY); //TODO allow user to specify EPC
 
   // convert to positions vector
   //auto temp = wf_.getElectronPositionCollection();

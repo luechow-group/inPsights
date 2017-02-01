@@ -2,7 +2,9 @@
 // Created by Michael Heuer on 23.01.17.
 //
 
-#include "Optimization/IOptimizer.h"
+//#include "Optimization/IOptimizer.h"
+
+#include "IOptimizer.h"
 
 IOptimizer::IOptimizer()
   : stepCount_(0) {

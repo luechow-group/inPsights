@@ -6,9 +6,9 @@
 #define AMOLQCGUI_NEWTONRAPHSONMINIMIZATION_H
 
 #include "NewtonTypeOptimizer.h"
-#include "HessianFromGradientCalculator.h"
+//#include "HessianFromGradientCalculator.h"
 
-#include <cppoptlib/solver/newtondescentsolver.h>
+//#include <cppoptlib/solver/newtondescentsolver.h>
 
 class NewtonRaphsonOptimizer : NewtonTypeOptimizer {
 
@@ -23,7 +23,7 @@ public:
 
 private:
   Eigen::MatrixXd hessian_;
-  HessianFromGradientCalculator hessianFromGradientCalculator_;
+  //HessianFromGradientCalculator hessianFromGradientCalculator_;
 };
 
 #endif //AMOLQCGUI_NEWTONRAPHSONMINIMIZATION_H

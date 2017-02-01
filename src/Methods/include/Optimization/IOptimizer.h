@@ -5,7 +5,6 @@
 #ifndef AMOLQCGUI_IOPTIMIZER_H
 #define AMOLQCGUI_IOPTIMIZER_H
 
-#include <vector>
 #include <Eigen/Core>
 
 /*struct CartesionCoordinate{

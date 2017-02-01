@@ -2,7 +2,7 @@
 // Created by Michael Heuer on 26.01.17.
 //
 
-#include "Optimization/NewtonRaphsonOptimizer.h"
+#include "NewtonRaphsonOptimizer.h"
 
 NewtonRaphsonOptimizer::NewtonRaphsonOptimizer() {
 
