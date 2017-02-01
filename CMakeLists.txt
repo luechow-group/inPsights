@@ -5,6 +5,9 @@ set(CMAKE_CXX_COMPILER "/usr/local/bin/g++-6")
 set(CMAKE_Fortran_COMPILER "/usr/local/bin/gfortran ")
 set(CMAKE_CXX_STANDARD 11)
 
+set(CMAKE_CXX_FLAGS "-g -Wall -fopenmp -llapack -lblas -lgfortran")
+set(CMAKE_Fortran_FLAGS "-g -fopenmp -llapack -lblas -lstdc++")
+
 #enable_language (C CXX Fortran)
 
 project(AmolqcGUI)

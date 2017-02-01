@@ -31,21 +31,29 @@ set(SOURCE_FILES
         source/ElectronicWaveFunction.cpp
         )
 
-link_directories(
-        amolqc/src
-        amolqc/utils
-        ) #searches the specified directories for libraries
+get_filename_component(PATH_TO_LIBAMOLQC amolqc/src/libamolqc.a REALPATH)
+get_filename_component(PATH_TO_LIBUTILS amolqc/utils/libutils.a REALPATH)
 
-add_executable("${PROJECT_NAME}_main" ${SOURCE_FILES} ${HEADER_FILES} main.cpp)
-target_link_libraries("${PROJECT_NAME}_main"
-        amolqc
-        utils
-        ) #adds links to amolqc/utils/libamolqc.a and amolqc/src/libutils.a
+
+add_library(libamolqc STATIC IMPORTED GLOBAL)
+set_property(TARGET libamolqc PROPERTY IMPORTED_LOCATION ${PATH_TO_LIBAMOLQC})
+
+add_library(libutils STATIC IMPORTED GLOBAL)
+set_property(TARGET libutils PROPERTY IMPORTED_LOCATION ${PATH_TO_LIBUTILS})
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES})
 target_include_directories(${PROJECT_NAME} PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         )
+target_link_libraries(${PROJECT_NAME}
+        libamolqc
+        libutils
+        )
 add_library(AmolqcGUI::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 
+add_executable("${PROJECT_NAME}_main" main.cpp)
+target_link_libraries("${PROJECT_NAME}_main" ${PROJECT_NAME})
+
 add_subdirectory(tests)
+
+
