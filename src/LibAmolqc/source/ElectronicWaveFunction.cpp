@@ -32,15 +32,6 @@ void ElectronicWaveFunction::setRandomElectronPositionCollection(unsigned electr
   delete electronPositionCollectionArray;
 }
 
-/*void ElectronicWaveFunction::initialize(const Eigen::VectorXd &electronPositionCollection) {
-  atomNumber_=0;
-  electronNumber_=0;
-  amolqc_init();
-  amolqc_set_wf((int*)&electronNumber_, (int*)&atomNumber_);
-
-  setElectronPositionCollection(electronPositionCollection); //TODO IMPLEMENT
-}*/
-
 void ElectronicWaveFunction::initialize() {
   atomNumber_=0;
   electronNumber_=0;
@@ -70,4 +61,47 @@ void ElectronicWaveFunction::evaluate(const Eigen::VectorXd &electronPositionCol
   delete electronDriftCollectionArray;
 }
 
+double ElectronicWaveFunction::getLocalEnergy(){
+  return localEnergy_;
+};
 
+double ElectronicWaveFunction::getDeterminantProbabilityAmplitude(){
+  return determinantProbabilityAmplitude_;
+};
+
+double ElectronicWaveFunction::getJastrowFactor(){
+  return jastrowFactor_;
+};
+
+double ElectronicWaveFunction::getProbabilityAmplitude(){
+  return determinantProbabilityAmplitude_ * exp(jastrowFactor_);
+};
+
+double ElectronicWaveFunction::getProbabilityDensity(){
+  return pow(getProbabilityAmplitude(),2);
+};
+
+double ElectronicWaveFunction::getNegativeLogarithmizedProbabilityDensity(){
+  return -std::log(pow(getProbabilityAmplitude(),2));
+};
+
+Eigen::VectorXd ElectronicWaveFunction::getElectronPositionCollection(){
+  return electronPositionCollection_;
+};
+
+Eigen::VectorXd ElectronicWaveFunction::getElectronDriftCollection(){
+  return electronDriftCollection_;
+};
+
+Eigen::VectorXd ElectronicWaveFunction::getProbabilityAmplitudeGradientCollection(){
+  return getProbabilityAmplitude()*electronDriftCollection_;
+};
+
+Eigen::VectorXd ElectronicWaveFunction::getProbabilityDensityGradientCollection(){
+  return 2.0*getProbabilityAmplitude()* getProbabilityAmplitudeGradientCollection();
+};
+
+/*
+Eigen::VectorXd ElectronicWaveFunction::getNegativeLogarithmizedProbabilityDensityGradientCollection(){
+  return -Eigen::log(getProbabilityDensityGradientCollection().array());
+};*/

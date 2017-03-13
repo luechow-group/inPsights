@@ -52,7 +52,9 @@ target_link_libraries(${PROJECT_NAME}
 add_library(AmolqcGUI::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 
 add_executable("${PROJECT_NAME}_main" main.cpp)
-target_link_libraries("${PROJECT_NAME}_main" ${PROJECT_NAME})
+target_link_libraries("${PROJECT_NAME}_main" ${PROJECT_NAME}
+        Externals::cppoptlib
+        )
 
 add_subdirectory(tests)
 

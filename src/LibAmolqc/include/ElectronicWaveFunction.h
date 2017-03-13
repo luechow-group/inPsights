@@ -29,36 +29,34 @@ public:
   ~ElectronicWaveFunction();
 
   void initialize();
-  //void initialize(const Eigen::VectorXd &electronPositionCollection);
 
   void setRandomElectronPositionCollection(unsigned electronNumber,
                                            ElectronPositioningMode::electronPositioningModeType);
 
   void evaluate(const Eigen::VectorXd &electronPositionCollection);
 
-  double getLocalEnergy(){ return localEnergy_; };
+  double getLocalEnergy();
 
-  double getDeterminantProbabilityAmplitude(){ return determinantProbabilityAmplitude_; };
+  double getDeterminantProbabilityAmplitude();
 
-  double getJastrowFactor(){ return jastrowFactor_; };
+  double getJastrowFactor();
 
-  double getProbabilityAmplitude(){ return determinantProbabilityAmplitude_ * exp(jastrowFactor_); };
+  double getProbabilityAmplitude();
 
-  double getProbabilityDensity(){ return pow(getProbabilityAmplitude(),2); };
+  double getProbabilityDensity();
 
-  double getNegativeLogarithmizedProbabilityDensity(){ return -log(pow(getProbabilityAmplitude(),2)); };
+  double getNegativeLogarithmizedProbabilityDensity();
 
-  Eigen::VectorXd getElectronPositionCollection(){ return electronPositionCollection_; };
+  Eigen::VectorXd getElectronPositionCollection();
 
-  Eigen::VectorXd getElectronDriftCollection(){ return electronDriftCollection_; };
+  Eigen::VectorXd getElectronDriftCollection();
 
-  Eigen::VectorXd getSquaredElectronDriftCollection(){ return electronDriftCollection_.array().square(); };
+  Eigen::VectorXd getProbabilityAmplitudeGradientCollection();
 
-  Eigen::VectorXd getNegativeLogarithmizedSquaredElectronDriftCollection(){
-    return -Eigen::log(getSquaredElectronDriftCollection().array());
-  };
+  Eigen::VectorXd getProbabilityDensityGradientCollection();
 
-
+  //Eigen::VectorXd getNegativeLogarithmizedProbabilityDensityGradientCollection();
+  // not allowed - gradient can be negative
 
 private:
   unsigned atomNumber_,electronNumber_;
