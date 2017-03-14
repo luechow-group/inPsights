@@ -33,7 +33,11 @@ public:
   void setRandomElectronPositionCollection(unsigned electronNumber,
                                            ElectronPositioningMode::electronPositioningModeType);
 
-  void evaluate(const Eigen::VectorXd &electronPositionCollection);
+  void setElectronPositionCollection(const Eigen::VectorXd &electronPositionCollection);
+
+  void calculateWaveFunctionValues();
+
+  void calculateWaveFunctionDrift();
 
   double getLocalEnergy();
 

@@ -9,7 +9,10 @@ extern "C" {
   void amolqc_init();
   void amolqc_set_wf(int *nElecs, int *nAtoms);
   void amolqc_initial_positions(ElectronPositioningMode::electronPositioningModeType mode, int nElecs, double x[]);
-  void amolqc_eloc(double x[], int n, double *phi, double *u, double grad[], double *elocal);
+  void amolqc_set_electron_positions(double x[], int n);
+  void amolqc_get_wave_function_values(double *phi, double *u);
+  void amolqc_get_local_energy(double *elocal);
+  void amolqc_get_drift(double drift[],int n);
 }
 
 ElectronicWaveFunction::ElectronicWaveFunction() {
@@ -41,29 +44,35 @@ void ElectronicWaveFunction::initialize() {
   setRandomElectronPositionCollection(electronNumber_, ElectronPositioningMode::DENSITY);
 }
 
+double ElectronicWaveFunction::getLocalEnergy(){
+  amolqc_get_local_energy(&localEnergy_);
+  return localEnergy_;
+}
 
-void ElectronicWaveFunction::evaluate(const Eigen::VectorXd &electronPositionCollection) {
+void ElectronicWaveFunction::setElectronPositionCollection(const Eigen::VectorXd &electronPositionCollection) {
   assert(electronPositionCollection.rows() > 0);
   assert(electronPositionCollection.rows() % 3 == 0);
 
   electronPositionCollection_ = electronPositionCollection;
-
-  double *electronDriftCollectionArray = new double[electronPositionCollection.rows()];
-
   Eigen::VectorXd copy = electronPositionCollection; // TODO ugly - redesign
 
-  amolqc_eloc(copy.data(), electronNumber_, &determinantProbabilityAmplitude_, &jastrowFactor_,
-              electronDriftCollectionArray, &localEnergy_);
+  amolqc_set_electron_positions(copy.data(),electronNumber_);
+};
 
-  electronDriftCollection_ = Eigen::Map<Eigen::VectorXd>( electronDriftCollectionArray,
-                                                          electronPositionCollection.rows(), 1);
-
-  delete electronDriftCollectionArray;
+void ElectronicWaveFunction::calculateWaveFunctionValues() {
+  amolqc_get_wave_function_values(&determinantProbabilityAmplitude_, &jastrowFactor_);
 }
 
-double ElectronicWaveFunction::getLocalEnergy(){
-  return localEnergy_;
-};
+void ElectronicWaveFunction::calculateWaveFunctionDrift() {
+
+  double *electronDriftCollectionArray = new double[electronPositionCollection_.rows()];
+
+  amolqc_get_drift(electronDriftCollectionArray, electronNumber_);
+
+  electronDriftCollection_ = Eigen::Map<Eigen::VectorXd>( electronDriftCollectionArray,
+                                                          electronPositionCollection_.rows(), 1);
+  delete electronDriftCollectionArray;
+}
 
 double ElectronicWaveFunction::getDeterminantProbabilityAmplitude(){
   return determinantProbabilityAmplitude_;
@@ -100,8 +109,3 @@ Eigen::VectorXd ElectronicWaveFunction::getProbabilityAmplitudeGradientCollectio
 Eigen::VectorXd ElectronicWaveFunction::getProbabilityDensityGradientCollection(){
   return 2.0*getProbabilityAmplitude()* getProbabilityAmplitudeGradientCollection();
 };
-
-/*
-Eigen::VectorXd ElectronicWaveFunction::getNegativeLogarithmizedProbabilityDensityGradientCollection(){
-  return -Eigen::log(getProbabilityDensityGradientCollection().array());
-};*/

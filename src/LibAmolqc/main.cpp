@@ -11,15 +11,19 @@ public:
   ElectronicWaveFunctionProblem(){}
 
   double value(const Eigen::VectorXd &x) {
-    wf.evaluate(x);
+    wf.setElectronPositionCollection(x);
+    wf.calculateWaveFunctionValues();
     return -wf.getProbabilityDensity();
-    //return wf.getNegativeLogarithmizedProbabilityDensity();
   }
 
   void gradient(const Eigen::VectorXd &x, Eigen::VectorXd &grad) {
-    wf.evaluate(x);
+    wf.setElectronPositionCollection(x);
+    wf.calculateWaveFunctionValues();
+    wf.calculateWaveFunctionDrift();
+    /*TODO: weird dependency, for some reason the call to the amolqc_get_drift(...) is
+    TODO: necessary on the amolqc side of code. Otherwise arrays seem to be not allocated properly.
+    TODO: Rewrite eloc.*/
     grad = -wf.getProbabilityDensityGradientCollection();
-    //grad = wf.getNegativeLogarithmizedProbabilityDensityGradientCollection();
   }
 
   bool callback(const cppoptlib::Criteria<double> &state, const Eigen::VectorXd &x) {
@@ -29,8 +33,8 @@ public:
             << " f(x) = "     << std::fixed << std::setw(8) << std::setprecision(8) << value(x)
             << " gradNorm = " << std::setw(8) << state.gradNorm
             //<< " xDelta = "   << std::setw(8) << state.xDelta
-            << " g = [" << std::setprecision(16) << grad.transpose() << "]"
-            //<< " x = [" << std::setprecision(16) << x.transpose() << "]"
+            //<< " g = [" << std::setprecision(16) << grad.transpose() << "]"
+            << " x = [" << std::setprecision(16) << x.transpose() << "]"
             << std::endl;
   return true;
   }
@@ -60,6 +64,5 @@ int main(int argc, char const *argv[]) {
   std::cout << "Solver status: " << solver.status() << std::endl;
   std::cout << "Final criteria values: " << std::endl << solver.criteria() << std::endl;
 
-  // f in argmin -0.0644447530112681 // with analytical gradient
   return 0;
 }
