@@ -4,9 +4,9 @@
 
 project(AmolqcGUI)
 
+add_subdirectory(BaseLib)
 add_subdirectory(LibAmolqc)
 add_subdirectory(BSplines)
 add_subdirectory(GUI)
-#add_subdirectory(Analysis)
 add_subdirectory(Methods)
 add_subdirectory(Externals)
