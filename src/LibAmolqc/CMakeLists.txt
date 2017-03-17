@@ -56,6 +56,6 @@ target_link_libraries("${PROJECT_NAME}_main" ${PROJECT_NAME}
         Externals::cppoptlib
         )
 
-add_subdirectory(tests)
+#add_subdirectory(tests)
 
 
