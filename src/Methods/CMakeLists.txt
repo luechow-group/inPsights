@@ -27,17 +27,10 @@ set(HEADER_FILES
         #include/Optimization/NewtonTypeOptimizer.h
         #include/Optimization/LBFGSOptimizer.h
         #include/Optimization/NewtonRaphsonOptimizer.h
-        #include/NumercialDifferentiator.h
-        #include/HessianFromGradientCalculator.h
         )
 
 set(SOURCE_FILES
         source/QuaternionFit.cpp
-        #source/Optimization/IOptimizer.cpp
-        #source/Optimization/LBFGSOptimizer.cpp
-        #source/Optimization/NewtonRaphsonOptimizer.cpp
-        #source/NumercialDifferentiator.cpp
-        #source/HessianFromGradientCalculator.cpp
         )
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES})
