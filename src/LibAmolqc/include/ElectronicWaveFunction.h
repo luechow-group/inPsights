@@ -33,11 +33,7 @@ public:
   void setRandomElectronPositionCollection(unsigned electronNumber,
                                            ElectronPositioningMode::electronPositioningModeType);
 
-  void setElectronPositionCollection(const Eigen::VectorXd &electronPositionCollection);
-
-  void calculateWaveFunctionValues();
-
-  void calculateWaveFunctionDrift();
+  void evaluate(const Eigen::VectorXd &electronPositionCollection);
 
   double getLocalEnergy();
 
@@ -59,8 +55,7 @@ public:
 
   Eigen::VectorXd getProbabilityDensityGradientCollection();
 
-  //Eigen::VectorXd getNegativeLogarithmizedProbabilityDensityGradientCollection();
-  // not allowed - gradient can be negative
+  Eigen::VectorXd getNegativeLogarithmizedProbabilityDensityGradientCollection();
 
 private:
   unsigned atomNumber_,electronNumber_;
