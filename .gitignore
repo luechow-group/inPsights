@@ -1,6 +1,3 @@
 build
 .idea
-src/Externals/alglib
 TestLists.txt
-CMakeListsForAmolqc.txt
-MakefileForAmolqc
