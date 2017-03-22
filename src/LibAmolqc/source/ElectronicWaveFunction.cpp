@@ -101,5 +101,5 @@ Eigen::VectorXd ElectronicWaveFunction::getProbabilityDensityGradientCollection(
 };
 
 Eigen::VectorXd ElectronicWaveFunction::getNegativeLogarithmizedProbabilityDensityGradientCollection() {
-  return -2.0 / getProbabilityAmplitude() * getProbabilityAmplitudeGradientCollection() ;
+  return -2.0 * electronDriftCollection_;
 }
