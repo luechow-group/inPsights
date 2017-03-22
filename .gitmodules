@@ -10,4 +10,6 @@
 [submodule "src/BSplines"]
 	path = src/BSplines
 	url = git@git.rwth-aachen.de:michael.heuer/BSplines.git
-
+[submodule "src/Externals/eigen"]
+	path = src/Externals/eigen
+	url = https://github.com/RLovelett/eigen.git
