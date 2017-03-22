@@ -8,16 +8,19 @@
 class ElectronicWaveFunctionProblem : public cppoptlib::Problem<double,Eigen::Dynamic> {
 public:
 
-  ElectronicWaveFunctionProblem(){}
+  ElectronicWaveFunctionProblem()
+    : valueCallCount_(0), gradientCallCount_(0) {}
 
   double value(const Eigen::VectorXd &x) {
-    wf.evaluate(x);
-    return wf.getNegativeLogarithmizedProbabilityDensity();
+    valueCallCount_++;
+    wf_.evaluate(x);
+    return wf_.getNegativeLogarithmizedProbabilityDensity();
   }
 
   void gradient(const Eigen::VectorXd &x, Eigen::VectorXd &grad) {
-    wf.evaluate(x);
-    grad = wf.getNegativeLogarithmizedProbabilityDensityGradientCollection();
+    gradientCallCount_++;
+    wf_.evaluate(x);
+    grad = wf_.getNegativeLogarithmizedProbabilityDensityGradientCollection();
   }
 
   bool callback(const cppoptlib::Criteria<double> &state, const Eigen::VectorXd &x) {
@@ -33,8 +36,26 @@ public:
   return true;
   }
 
+  unsigned getValueCallCount(){
+    return valueCallCount_;
+  }
+
+  unsigned getGradientCallCount(){
+    return gradientCallCount_;
+  }
+
+  unsigned getTotalElocCalls(){
+    return getValueCallCount()+getGradientCallCount();
+  }
+
+  void resetCounters(){
+    valueCallCount_ = 0;
+    gradientCallCount_ = 0;
+  }
+
 private:
-  ElectronicWaveFunction wf;
+  unsigned valueCallCount_, gradientCallCount_;
+  ElectronicWaveFunction wf_;
 };
 
 int main(int argc, char const *argv[]) {
@@ -119,8 +140,9 @@ int main(int argc, char const *argv[]) {
   std::cout << "f in argmin " << f(x) << std::endl;
   std::cout << "Solver status: " << solver.status() << std::endl;
   std::cout << "Final criteria values: " << std::endl << solver.criteria() << std::endl;
+  std::cout << "Total eloc calls: " << f.getTotalElocCalls() << std::endl;
 
-  /**
+  /*
    *
    */
 
@@ -173,6 +195,7 @@ int main(int argc, char const *argv[]) {
   solver2.setStopCriteria(crit);
 
   x = amolqcInput2;
+  f.resetCounters();
   solver2.minimize(f, x);
 
   Eigen::VectorXi permutation2(18);
@@ -198,8 +221,7 @@ int main(int argc, char const *argv[]) {
   std::cout << "f in argmin " << f(x) << std::endl;
   std::cout << "Solver status: " << solver.status() << std::endl;
   std::cout << "Final criteria values: " << std::endl << solver.criteria() << std::endl;
-
-
+  std::cout << "Total eloc calls: " << f.getTotalElocCalls() << std::endl;
 
   /*
   ElectronicWaveFunctionProblem f;
