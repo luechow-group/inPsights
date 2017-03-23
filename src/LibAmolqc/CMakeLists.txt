@@ -15,12 +15,10 @@ set ( OUTPUT_NAME "${PROJECT_FOLDER_NAME}" )
 message ( "-- ++ CREATING PROJECT OR MAKEFILE ---> ${OUTPUT_NAME}" )
 
 
-find_package(Eigen3 REQUIRED)
 
 include_directories(
         include
         source
-        ${EIGEN3_INCLUDE_DIR}
         )
 
 set(HEADER_FILES
@@ -48,6 +46,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 target_link_libraries(${PROJECT_NAME}
         libamolqc
         libutils
+        eigen
         )
 add_library(AmolqcGUI::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 
@@ -56,6 +55,24 @@ target_link_libraries("${PROJECT_NAME}_main" ${PROJECT_NAME}
         Externals::cppoptlib
         )
 
+add_custom_target(exportAmolqcPath
+        DEPENDS wrapper.sh
+        COMMAND /bin/sh ${CMAKE_CURRENT_SOURCE_DIR}/wrapper.sh #<real_command> args...
+        #COMMAND ${PROJECT_NAME}_main
+        COMMENT "exporting amolqc path"
+        )
+
+
+#add_custom_target(LibAmolqcWithExport
+#        COMMAND ${CMAKE_COMMAND} -E env "AMOLQC=/Users/michaelheuer/amolqcGUI/src/LibAmolqc/amolqc;$ENV{AMOLQC}"
+#        export
+#        )
+
+#set($ENV{AMOLQC} "/Users/michaelheuer/amolqcGUI/src/LibAmolqc/amolqc")
+
+
+#add_custom_target(LibAmolqcWithExport ALL -E env
+#        "AMOLQC=/Users/michaelheuer/amolqcGUI/src/LibAmolqc/amolqc;$ENV{AMOLQC}" #export
+#        )
+
 #add_subdirectory(tests)
-
-
