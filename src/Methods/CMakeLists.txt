@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.6)
+cmake_minimum_required(VERSION 3.5)
 
 
 #============= PROJECT Methods ===================
@@ -9,15 +9,9 @@ set ( PROJECT_PATH ${PROJECT_NAME})
 set ( OUTPUT_NAME "${PROJECT_FOLDER_NAME}" )
 message ( "-- ++ CREATING PROJECT OR MAKEFILE ---> ${OUTPUT_NAME}" )
 
-# Find Eigen lib
-find_package(Eigen3 REQUIRED)
-
 include_directories(
-        include/Optimization
         include
-        source/Optimization
         source
-        ${EIGEN3_INCLUDE_DIR}
         )
 
 set(HEADER_FILES
@@ -39,8 +33,9 @@ target_include_directories(${PROJECT_NAME} PUBLIC
         )
 target_link_libraries(${PROJECT_NAME}
         AmolqcGUI::LibAmolqc
+        AmolqcGUI::BSplines
         Externals::cppoptlib
-        #AmolqcGUI::BSplines
+        eigen
         )
 add_library(AmolqcGUI::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 

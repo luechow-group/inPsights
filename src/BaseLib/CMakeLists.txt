@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.6)
+cmake_minimum_required(VERSION 3.5)
 
 
 #============= PROJECT Analysis ===================
@@ -12,12 +12,9 @@ message ( "-- ++ CREATING PROJECT OR MAKEFILE ---> ${OUTPUT_NAME}" )
 
 #set(CMAKE_AUTOMOC ON)
 
-find_package(Eigen3 REQUIRED)
-
 include_directories(
         include
         source
-        ${EIGEN3_INCLUDE_DIR}
         )
 
 find_package(Qt5 REQUIRED COMPONENTS
@@ -38,6 +35,7 @@ add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES})
 
 target_link_libraries(${PROJECT_NAME}
         Qt5::Core
+        eigen
         )
 
 target_include_directories(${PROJECT_NAME} PUBLIC

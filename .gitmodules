@@ -1,15 +1,9 @@
 [submodule "src/amolqc"]
 	path = src/LibAmolqc/amolqc
 	url = git@tcrocks.pc.rwth-aachen.de:amolqc
-[submodule "src/Externals/googletest"]
-	path = src/Externals/googletest
-	url = https://github.com/google/googletest.git
 [submodule "src/Externals/CppNumericalSolvers"]
 	path = src/Externals/cppoptlib
 	url = https://github.com/MonteCarloMichael/CppNumericalSolvers.git
 [submodule "src/BSplines"]
 	path = src/BSplines
 	url = git@git.rwth-aachen.de:michael.heuer/BSplines.git
-[submodule "src/Externals/eigen"]
-	path = src/Externals/eigen
-	url = https://github.com/RLovelett/eigen.git

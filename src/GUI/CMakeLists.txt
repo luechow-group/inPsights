@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.6)
+cmake_minimum_required(VERSION 3.5)
 
 project(GUI)
 
@@ -13,11 +13,9 @@ set(CMAKE_AUTOMOC ON)
 
 
 # Find Eigen lib
-find_package(Eigen3 REQUIRED)
 include_directories(
         include
         source
-        ${EIGEN3_INCLUDE_DIR}
         )
 
 
@@ -63,7 +61,7 @@ add_executable("${PROJECT_NAME}_main" ${SOURCE_FILES} ${HEADER_FILES} main.cpp)
 # links the libraries to the executable
 target_link_libraries("${PROJECT_NAME}_main"
         AmolqcGUI::BSplines
-        #Externals::alglib
+        eigen
         Qt5::Core
         Qt5::Gui
         Qt5::Widgets
