@@ -11,7 +11,7 @@ if(APPLE)
     message("using apple compiler options")
     set(CMAKE_C_COMPILER "/usr/local/bin/gcc-6")
     set(CMAKE_CXX_COMPILER "/usr/local/bin/g++-6")
-    set(CMAKE_Fortran_COMPILER "/usr/local/bin/gfortran ")
+    set(CMAKE_Fortran_COMPILER "/usr/local/bin/gfortran")
 endif(APPLE)
 
 set(CMAKE_CXX_FLAGS "-g -Wall -fopenmp -llapack -lblas -lgfortran")

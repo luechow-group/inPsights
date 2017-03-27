@@ -14,8 +14,6 @@ set ( PROJECT_PATH ${PROJECT_NAME})
 set ( OUTPUT_NAME "${PROJECT_FOLDER_NAME}" )
 message ( "-- ++ CREATING PROJECT OR MAKEFILE ---> ${OUTPUT_NAME}" )
 
-
-
 include_directories(
         include
         source
@@ -55,12 +53,12 @@ target_link_libraries("${PROJECT_NAME}_main" ${PROJECT_NAME}
         Externals::cppoptlib
         )
 
-add_custom_target(exportAmolqcPath
-        DEPENDS wrapper.sh
-        COMMAND /bin/sh ${CMAKE_CURRENT_SOURCE_DIR}/wrapper.sh #<real_command> args...
-        #COMMAND ${PROJECT_NAME}_main
-        COMMENT "exporting amolqc path"
-        )
+#add_custom_target(exportAmolqcPath
+#        DEPENDS wrapper.sh
+#        COMMAND /bin/sh ${CMAKE_CURRENT_SOURCE_DIR}/wrapper.sh #<real_command> args...
+#        #COMMAND ${PROJECT_NAME}_main
+#        COMMENT "exporting amolqc path"
+#        )
 
 
 #add_custom_target(LibAmolqcWithExport

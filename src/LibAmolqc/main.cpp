@@ -107,8 +107,8 @@ int main(int argc, char const *argv[]) {
   ElectronicWaveFunctionProblem f;
 
   cppoptlib::Criteria<double> crit = cppoptlib::Criteria<double>::nonsmoothDefaults();
-  crit.iterations = 1000;
-  crit.xDelta = 1e-4; // for 1e-5 the gradient in convex hull opt becomes NaN
+  //crit.iterations = 1000;
+  crit.xDelta = 1e-5;
   cppoptlib::BfgsnsSolver<ElectronicWaveFunctionProblem> solver;
   solver.setDebug(cppoptlib::DebugLevel::High);
   solver.setStopCriteria(crit);
@@ -133,10 +133,23 @@ int main(int argc, char const *argv[]) {
   std::cout << std::endl;
   std::cout << Eigen::Map<Eigen::Matrix<double ,18,3,Eigen::RowMajor>> (optimResultPermuted1.data()) << std::endl;
   std::cout << std::endl;
+
   std::cout << "diff to amolqc result:" << std::endl;
   Eigen::VectorXd diff(optimResultPermuted1 - amolqcOutput1);
   std::cout << Eigen::Map<Eigen::Matrix<double ,18,3,Eigen::RowMajor>>(diff.data())<< std::endl;
   std::cout << std::endl;
+
+  std::cout << "gradients:" << std::endl;
+  Eigen::VectorXd grad1;
+  f.gradient(x,grad1);
+  Eigen::VectorXd gradientsPermuted1(18*3);
+  for (int i = 0; i < 18 ; ++i) {
+    gradientsPermuted1.segment(i*3,3) = grad1.segment(permutation1(i)*3,3);
+  }
+  std::cout << Eigen::Map<Eigen::Matrix<double ,18,3,Eigen::RowMajor>>(gradientsPermuted1.data())<< std::endl;
+  std::cout << std::endl;
+
+
   std::cout << "f in argmin " << f(x) << std::endl;
   std::cout << "Solver status: " << solver.status() << std::endl;
   std::cout << "Final criteria values: " << std::endl << solver.criteria() << std::endl;
@@ -214,10 +227,22 @@ int main(int argc, char const *argv[]) {
   std::cout << std::endl;
   std::cout << Eigen::Map<Eigen::Matrix<double ,18,3,Eigen::RowMajor>> (optimResultPermuted2.data()) << std::endl;
   std::cout << std::endl;
+
   std::cout << "diff to amolqc result:" << std::endl;
   Eigen::VectorXd diff2(optimResultPermuted2 - amolqcOutput2);
   std::cout << Eigen::Map<Eigen::Matrix<double ,18,3,Eigen::RowMajor>>(diff2.data())<< std::endl;
   std::cout << std::endl;
+
+  std::cout << "gradients:" << std::endl;
+  Eigen::VectorXd grad2;
+  f.gradient(x,grad2);
+  Eigen::VectorXd gradientsPermuted2(18*3);
+  for (int i = 0; i < 18 ; ++i) {
+    gradientsPermuted2.segment(i*3,3) = grad2.segment(permutation2(i)*3,3);
+  }
+  std::cout << Eigen::Map<Eigen::Matrix<double ,18,3,Eigen::RowMajor>>(gradientsPermuted2.data())<< std::endl;
+  std::cout << std::endl;
+
   std::cout << "f in argmin " << f(x) << std::endl;
   std::cout << "Solver status: " << solver.status() << std::endl;
   std::cout << "Final criteria values: " << std::endl << solver.criteria() << std::endl;
