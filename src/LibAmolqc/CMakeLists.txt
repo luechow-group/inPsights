@@ -1,7 +1,12 @@
 cmake_minimum_required(VERSION 3.5)
 
 #============= PROJECT LibAmolqc ===================
-project(LibAmolqc)
+project(LibAmolqc C CXX Fortran)
+message("C compiler: ${CMAKE_C_COMPILER}")
+message("CXX compiler: ${CMAKE_CXX_COMPILER}")
+message("Fortran compiler: ${CMAKE_Fortran_COMPILER}")
+
+#enable_language()
 
 set ( PROJECT_FOLDER_NAME ${PROJECT_NAME})
 
@@ -11,6 +16,9 @@ message ( "-- ++ CREATING PROJECT OR MAKEFILE ---> ${OUTPUT_NAME}" )
 
 set(CMAKE_CXX_FLAGS "-Wall -fopenmp")
 
+#find_package(OpenMP REQUIRED)
+
+# Require LAPACK Library which req uires BLAS library implicitly
 find_package(LAPACK REQUIRED)
 
 include_directories(
@@ -40,19 +48,28 @@ add_library(libutils STATIC IMPORTED GLOBAL)
 set_property(TARGET libutils PROPERTY IMPORTED_LOCATION ${PATH_TO_LIBUTILS})
 
 
-add_library(${PROJECT_NAME} STATIC dummy.cpp)
+add_library(${PROJECT_NAME} STATIC dummy.f90 dummy.cpp)
 target_link_libraries(${PROJECT_NAME}
         ${PROJECT_NAME}_interface
         Externals::cppoptlib
         libamolqc
         libutils
-        "-llapack -lblas -lgfortran"
+        "${LAPACK_LIBRARIES}"
+        "${BLAS_LIBRARIES}"
+        "${LAPACK_LINKER_FLAGS}"
+        "${BLAS_LINKER_FLAGS}"
+        "-llapack -lblas"
+        "-lgfortran"
         )
 target_include_directories(${PROJECT_NAME} PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         )
 
-add_executable("${PROJECT_NAME}_main" main.cpp)
+add_executable("${PROJECT_NAME}_main" dummy.f90 main.cpp)
 target_link_libraries("${PROJECT_NAME}_main"
         ${PROJECT_NAME}
+        "${LAPACK_LINKER_FLAGS}"
+        "${BLAS_LINKER_FLAGS}"
+        "-llapack -lblas"
+        "-lgfortran"
         )

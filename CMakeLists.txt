@@ -5,19 +5,20 @@ if (UNIX)
         message("using apple compiler options")
         set(CMAKE_C_COMPILER "/usr/local/bin/gcc-6")
         set(CMAKE_CXX_COMPILER "/usr/local/bin/g++-6")
-        set(CMAKE_Fortran_COMPILER "/usr/local/bin/gfortran")
+        set(CMAKE_Fortran_COMPILER "/usr/local/bin/gfortran-6")
     else()
+        #ubuntu machine
         message("using UNIX compiler options")
-        set(CMAKE_C_COMPILER gcc)
-        set(CMAKE_CXX_COMPILER g++)
-        set(CMAKE_Fortran_COMPILER gfortran)
+        set(CMAKE_C_COMPILER "/usr/bin/gcc-6")
+        set(CMAKE_CXX_COMPILER "/usr/bin/g++-6")
+        set(CMAKE_Fortran_COMPILER "/usr/bin/gfortran-6")
     endif(APPLE)
 endif(UNIX)
 
-
 set(CMAKE_CXX_STANDARD 11)
 
-project(AmolqcGUI C CXX Fortran)
+project(AmolqcGUI)
+
 message("C compiler: ${CMAKE_C_COMPILER}")
 message("CXX compiler: ${CMAKE_CXX_COMPILER}")
 message("Fortran compiler: ${CMAKE_Fortran_COMPILER}")
