@@ -1,13 +1,11 @@
 cmake_minimum_required(VERSION 3.5)
 
-#============= PROJECT LibAmolqc ===================
-project(LibAmolqc C CXX Fortran)
+project(AmolqcInterface C CXX Fortran)
 
 set ( PROJECT_FOLDER_NAME ${PROJECT_NAME})
 set ( PROJECT_PATH ${PROJECT_NAME})
 set ( OUTPUT_NAME "${PROJECT_FOLDER_NAME}" )
 message ( "-- ++ CREATING PROJECT OR MAKEFILE ---> ${OUTPUT_NAME}" )
-
 
 find_package(OpenMP REQUIRED)
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")

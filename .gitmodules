@@ -1,5 +1,5 @@
 [submodule "src/amolqc"]
-	path = src/LibAmolqc/amolqc
+	path = src/AmolqcInterface/amolqc
 	url = git@tcrocks.pc.rwth-aachen.de:amolqc
 [submodule "src/Externals/CppNumericalSolvers"]
 	path = src/Externals/cppoptlib
