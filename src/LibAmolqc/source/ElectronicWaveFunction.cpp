@@ -5,13 +5,6 @@
 #include "ElectronicWaveFunction.h"
 #include <iostream>
 
-extern "C" {
-  void amolqc_init();
-  void amolqc_set_wf(int *nElecs, int *nAtoms);
-  void amolqc_initial_positions(ElectronPositioningMode::electronPositioningModeType mode, int nElecs, double x[]);
-  void amolqc_eloc(double x[], int n, double *phi, double *u, double grad[], double *elocal);
-}
-
 ElectronicWaveFunction::ElectronicWaveFunction() {
   initialize();
 }
