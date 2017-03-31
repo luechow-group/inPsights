@@ -13,8 +13,7 @@ find_package(OpenMP REQUIRED)
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
 
-
-# Require LAPACK Library which req uires BLAS library implicitly
+# Require LAPACK Library which requires BLAS library implicitly
 find_package(LAPACK REQUIRED)
 
 include_directories(
@@ -33,23 +32,10 @@ set(SOURCE_FILES
 get_filename_component(PATH_TO_LIBAMOLQC amolqc/src/libamolqc.a REALPATH)
 get_filename_component(PATH_TO_LIBUTILS amolqc/utils/libutils.a REALPATH)
 
-add_library(${PROJECT_NAME}_interface STATIC ${SOURCE_FILES} ${HEADER_FILES})
-target_link_libraries(${PROJECT_NAME}_interface
-        eigen
-        )
-
-#add_library(libamolqc STATIC IMPORTED GLOBAL)
-#set_property(TARGET libamolqc PROPERTY IMPORTED_LOCATION ${PATH_TO_LIBAMOLQC})
-#add_library(libutils STATIC IMPORTED GLOBAL)
-#set_property(TARGET libutils PROPERTY IMPORTED_LOCATION ${PATH_TO_LIBUTILS})
-
-
-add_library(${PROJECT_NAME} STATIC dummy.f90 dummy.cpp)
+add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES} dummy.f90)
 target_link_libraries(${PROJECT_NAME}
-        ${PROJECT_NAME}_interface
+        eigen
         Externals::cppoptlib
-        #libamolqc
-        #libutils
         ${PATH_TO_LIBAMOLQC}
         ${PATH_TO_LIBUTILS}
         ${LAPACK_LIBRARIES}
