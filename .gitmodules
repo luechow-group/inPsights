@@ -1,4 +1,4 @@
-[submodule "src/amolqc"]
+[submodule "src/AmolqcInterface/amolqc"]
 	path = src/AmolqcInterface/amolqc
 	url = git@tcrocks.pc.rwth-aachen.de:amolqc
 [submodule "src/Externals/CppNumericalSolvers"]
