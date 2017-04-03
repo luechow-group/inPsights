@@ -1,0 +1,27 @@
+#! /bin/bash
+rm -f *in *out*
+echo " Initial sampling tests(AE) ..."
+for i in density gaussian
+do
+  echo "   Starting $i sampling test ..."
+  cp ../../templates/sample.in $i.in
+  sed -i "s/XXX/$i/" $i.in
+  $AMOLQCRUN $i
+
+  if [ $GEN == 1 ] ; then
+       mv $i.out $i.$REF
+       rm -f *.in
+  else
+   R=`grep "<E>_allnodes" $i.$REF |awk {'print $3'}`
+   C=`grep "<E>_allnodes" $i.out |awk {'print $3'}`
+      if [ $R == $C ] ; then
+        echo -e "    $i sampling test \e[32mpassed.\e[39m"
+        rm -f $i.in $i.out
+      else
+        export FAILED=1
+        echo -e "    $i sampling test \e[31mfailed.\e[39m"
+        echo "    Check $PWD/$i.out for more information."
+      fi
+   fi
+done
+

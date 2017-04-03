@@ -1,0 +1,17 @@
+$sample(change_size,new_size=1,last)
+x$qmc(vmc,accumulate,acc_step=10,move=umr,acc_size=1000,accept_ratio=0.5,
+discard_all)
+$sample(remove_outliers,no_replace)
+x$begin_loop(count=5)
+$optimize_parameters(jastrow,method=newton)
+$sample(change_size,new_size=1,last)
+$qmc(vmc,move=umr,steps=500,blocks=3,accept_ratio=0.5,discard_all)
+x$qmc(vmc,accumulate,acc_step=10,move=umr,acc_size=10000,accept_ratio=0.5,
+discard_all)
+$sample(remove_outliers,no_replace)
+x$stop_if(variance>15.0)
+$save_result(idx=$idx)
+x$wf(write,file='$idx.wf')
+$end_loop()
+$sample(change_size,new_size=init_size,last)
+$print_results()

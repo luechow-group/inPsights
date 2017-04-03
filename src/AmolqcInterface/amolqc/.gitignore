@@ -1,0 +1,44 @@
+# OS X folders
+.DS_Store
+.settings
+
+# Sublime Text project files
+.*project
+*.sublime-workspace
+sftp-config.json
+
+# gedit shadow copies
+*~
+
+# binaries
+*.a
+*.mod
+*.o
+*.pyc
+
+rules.mk
+src/depends.mk
+utils/depends.mk
+
+configs/*.cfg
+
+mod
+
+src/amolqc
+src/amolqc_mpi
+src/cuspt
+src/rwSamplet
+version
+
+# output files - if you actually want to add them to the repository, use
+# git add -f file
+*.out*
+fort.*
+
+utils/atom_t
+utils/list_int_std_t
+utils/rngtest
+utils/sdiagt
+utils/statisticst
+utils/statistics-par-t
+/.externalToolBuilders

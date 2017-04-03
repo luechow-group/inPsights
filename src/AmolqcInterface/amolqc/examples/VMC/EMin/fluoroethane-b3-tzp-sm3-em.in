@@ -1,0 +1,16 @@
+$gen(seed=201)
+$wf(read,file='fluoroethane-b3-tzp-sm3-vm.wf')
+$sample(create,start=density,size=1)
+$qmc(vmc,steps=500,blocks=3,accept_ratio=0.5,discard_all)
+$jastrow_emin_fast(acc_size=1000,count=4,file='fluoroethane-b3-tzp-sm3-em$idx.wf',stop_if(variance>15.0))
+!You can run VMC after optimization with last parameter set.
+!but it is better to take a look on energy and variance of parameter set then
+!choose the best set manually.
+!If you want to do this uncomment rest
+!$sample(change_size,new_size=100)
+!$qmc(vmc,steps=10,blocks=3,persist=9,discard_all)
+!$qmc(vmc,steps=10,blocks=40,discard_all)
+!$sample(remove_outliers,no_replace)
+!$qmc(vmc,steps=200,blocks=40,discard=5,accept_ratio=0.5,stddev=0.002)
+
+

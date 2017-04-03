@@ -1,0 +1,49 @@
+#Dunnings cc-pVTZ basis without f-functions more contracted
+#Nickname: 8cc-pVTZ-f 
+#
+
+####Oxygen
+ 8   0
+ S    8 1.00      8.01561       12.0183   0.148438   0.150938
+  0.1533000000D+05  0.5201983071D-03
+  0.2299000000D+04  0.4023344781D-02
+  0.5224000000D+03  0.2072908333D-01
+  0.1473000000D+03  0.8108232708D-01
+  0.4755000000D+02  0.2362263521D+00
+  0.1676000000D+02  0.4435182094D+00
+  0.6207000000D+01  0.3586705887D+00
+  0.6882000000D+00 -0.8349797237D-02
+ S    8 1.00      6.75564      -3.26658      0.118346      0.120846
+  0.1533000000D+05 -0.1972360117D-03
+  0.2299000000D+04 -0.1535010700D-02
+  0.5224000000D+03 -0.7951183914D-02
+  0.1473000000D+03 -0.3211345289D-01
+  0.4755000000D+02 -0.1002696430D+00
+  0.1676000000D+02 -0.2340471118D+00
+  0.6207000000D+01 -0.3014109278D+00
+  0.6882000000D+00  0.1034919650D+01
+ S    1 1.00      0.00000000    0.00000000    0.00000000    0.00000000
+  0.1752000000D+01  0.1000000000D+01
+ S    1 1.00      0.00000000    0.00000000    0.00000000    0.00000000
+  0.2384000000D+00  0.1000000000D+01
+ P    3 1.00      0.00000000    0.00000000    0.00000000    0.00000000
+  0.3446000000D+02  0.4116348957D-01
+  0.7749000000D+01  0.2577628359D+00
+  0.2280000000D+01  0.8024192744D+00
+ P    1 1.00      0.00000000    0.00000000    0.00000000    0.00000000
+  0.7156000000D+00  0.1000000000D+01
+ P    1 1.00      0.00000000    0.00000000    0.00000000    0.00000000
+  0.2140000000D+00  0.1000000000D+01
+ D    1 1.00      0.00000000    0.00000000    0.00000000    0.00000000
+  0.2314000000D+01  0.1000000000D+01
+ D    1 1.00      0.00000000    0.00000000    0.00000000    0.00000000
+  0.6450000000D+00  0.1000000000D+01
+ ****
+####
+ 0
+
+# from the elms library (http://www.emsl.pnl.gov/forms/basisform.html)
+# please quote that page and the text below if using this basis:
+# Basis sets were obtained from the Extensible Computational Chemistry Environment Basis Set Database, Version 02/25/04, as developed and distributed by the Molecular Science Computing Facility, Environmental and Molecular Sciences Laboratory which is part of the Pacific Northwest Laboratory, P.O. Box 999, Richland, Washington 99352, USA, and funded by the U.S. Department of Energy. The Pacific Northwest Laboratory is a multi-program laboratory operated by Battelle Memorial Institute for the U.S. Department of Energy under contract DE-AC06-76RLO 1830. Contact David Feller or Karen Schuchardt for further information.
+
+

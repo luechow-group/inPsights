@@ -1,0 +1,27 @@
+#! /bin/bash
+rm -f *in *out*
+echo " Jastrow tests(AE) ..."
+for i in sm1 sm2 sm3 sm31 sm4 sm41 ic222 ic444 ic666 de222 de444 de666
+do
+  echo "   Starting $i Jastrow test ..."
+  cp ../../templates/JAS.in $i.in
+  sed -i "s/XXX/$i/" $i.in
+  $AMOLQCRUN $i
+
+  if [ $GEN == 1 ] ; then
+       mv $i.out $i.$REF
+       rm -f *.in
+  else
+   R=`grep "total energy" $i.$REF|tail -n 1|awk {'print $4;'}`
+   C=`grep "total energy" $i.out|tail -n 1|awk {'print $4;'}`
+      if [ $R == $C ] ; then
+        echo -e "    $i Jastrow test \e[32mpassed.\e[39m"
+        rm -f $i.in $i.out
+      else
+        export FAILED=1
+        echo -e "    $i Jastrow test \e[31mfailed.\e[39m"
+        echo "    Check $PWD/$i.out for more information."
+      fi
+   fi
+done
+

@@ -1,0 +1,5 @@
+$gen(seed=101)
+$wf(read,file='Ethane-em.wf')
+$generate_sample(size=30,blocks=10)
+$sed(vmc,steps=100,discard=5,accept_ratio=0.5,stddev=0.001,
+     epart,ref_file='Ethane-pos.ref',grid=4.0) 

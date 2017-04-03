@@ -1,0 +1,432 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass article
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry true
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 3cm
+\topmargin 3cm
+\rightmargin 3cm
+\bottommargin 3cm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Documentation of the algorithms
+\begin_inset Newline newline
+\end_inset
+
+implemented in amolqc
+\end_layout
+
+\begin_layout Author
+Arne Lüchow
+\end_layout
+
+\begin_layout Date
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+today
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Determinantal part
+\end_layout
+
+\begin_layout Standard
+TODO (MOs as in Gaussian, Gamess)
+\end_layout
+
+\begin_layout Section
+Jastrow correlation factors
+\end_layout
+
+\begin_layout Standard
+Jastrow factor 
+\begin_inset Formula $J=e^{U}$
+\end_inset
+
+ where 
+\begin_inset Formula $U$
+\end_inset
+
+ is expanded into many-particle terms: ee, en, een, eee, enn, eenn, ...
+ (e=electron, n=nucleus)
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+U=U^{ee}+U^{en}+U^{een}+\ldots
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Each term is expanded into distance-dependent terms
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+U^{ee}=\sum_{i<j}^{n_{elec}}U_{ij}^{ee}(r_{ij})
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+U^{en}=\sum_{a=1}^{n_{nuc}}\sum_{i}^{n_{elec}}U_{ai}^{en}(r_{ai})
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+U^{een}=\sum_{a=1}^{n_{nuc}}\sum_{i<j}^{n_{elec}}U_{aij}^{een}(r_{ai},r_{aj},r_{ij})
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Schmidt-Moskowitz-stype Jastrow (sm)
+\end_layout
+
+\begin_layout Standard
+The 
+\begin_inset Formula $U$
+\end_inset
+
+-terms are expanded into scaled distanceswith the scaled distances 
+\begin_inset Formula 
+\begin{equation}
+\bar{r}_{ij}:=\frac{ar_{ij}}{1+ar_{ij}},\qquad\bar{r}_{ai}:=\frac{b_{a}r_{ai}}{1+b_{a}r_{ai}}
+\end{equation}
+
+\end_inset
+
+with individual parameter 
+\begin_inset Formula $b_{a}$
+\end_inset
+
+ for each nucleus 
+\begin_inset Formula $a$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+U_{ij}^{ee}=\sum_{k=1}^{k_{max}}c_{k}^{ee}\bar{r}_{ij}^{k}
+\]
+
+\end_inset
+
+where 
+\begin_inset Formula $c_{1}^{ee}=\frac{1}{2a}$
+\end_inset
+
+ (ee cusp).
+ It is possible (with type 
+\begin_inset Quotes eld
+\end_inset
+
+7
+\begin_inset Quotes erd
+\end_inset
+
+) to satisfy like-spin cusp with 
+\begin_inset Formula $c_{1}^{ee}=\frac{1}{4a}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+U_{ai}^{en}=(n-1)\sum_{m=1}^{m_{max}}c_{m}^{en}\bar{r}_{ai}^{m}
+\]
+
+\end_inset
+
+please note the factor 
+\begin_inset Formula $n-1$
+\end_inset
+
+ that makes the coefficients identical to the coefficients in the original
+ paper by Schmidt and Moskowitz.
+\end_layout
+
+\begin_layout Standard
+The een terms are restricted to 
+\begin_inset Formula $\bar{r}_{ij}^{k}\cdot(\bar{r}_{ai}^{m}+\bar{r}_{aj}^{m})$
+\end_inset
+
+ and 
+\begin_inset Formula $\bar{r}_{ai}^{m}\bar{r}_{aj}^{m}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsubsection
+sm1
+\end_layout
+
+\begin_layout Standard
+This is 
+\begin_inset Formula $k_{max}=2$
+\end_inset
+
+, 
+\begin_inset Formula $m_{max}=2$
+\end_inset
+
+, no een terms.
+ The first terms are fixed for cusp conditions, 
+\begin_inset Formula $c_{1}^{ee}=\frac{1}{2}$
+\end_inset
+
+, 
+\begin_inset Formula $c_{1}^{en}=0$
+\end_inset
+
+.
+ Therefore, sm1 has one ee parameter, and one en parameter for each 
+\begin_inset Quotes eld
+\end_inset
+
+symmetry equivalent
+\begin_inset Quotes erd
+\end_inset
+
+ nucleus.
+ Default behavior is to use the same parameters for the same nucleus.
+ The order of the parameters is taken from the order in the geometry.
+ Different parameters for identical nuclei can be obtained by adding a 
+\begin_inset Quotes eld
+\end_inset
+
+sa
+\begin_inset Quotes erd
+\end_inset
+
+ entry in the geometry (see user manual).
+\end_layout
+
+\begin_layout Standard
+CH
+\begin_inset Formula $_{4}$
+\end_inset
+
+ and C
+\begin_inset Formula $_{2}$
+\end_inset
+
+H
+\begin_inset Formula $_{6}$
+\end_inset
+
+ and all hydrocarbons have thus three parameters: 
+\begin_inset Formula $c_{2}^{ee}$
+\end_inset
+
+, 
+\begin_inset Formula $c_{2}^{en}$
+\end_inset
+
+(C), 
+\begin_inset Formula $c_{2}^{en}$
+\end_inset
+
+(H) in this order.
+\end_layout
+
+\begin_layout Subsubsection
+sm2
+\end_layout
+
+\begin_layout Standard
+Like sm1 with 
+\begin_inset Formula $k_{max}=4$
+\end_inset
+
+, 
+\begin_inset Formula $m_{max}=4$
+\end_inset
+
+, i.e.
+ three parameters for ee and three parameters for each nucleus.
+\end_layout
+
+\begin_layout Subsubsection
+sm3
+\end_layout
+
+\begin_layout Standard
+Like sm2 with additional two een terms: 
+\begin_inset Formula $\bar{r}_{ij}^{2}\cdot(\bar{r}_{ai}^{2}+\bar{r}_{aj}^{2})$
+\end_inset
+
+ and 
+\begin_inset Formula $\bar{r}_{ai}^{2}\bar{r}_{aj}^{2}$
+\end_inset
+
+ for each nucleus.
+ The order is ee, en(nuc1) een(nuc1), en(nuc2), een(nuc2), ...
+ The number of parameters is 
+\begin_inset Formula $3+5n_{nuc}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsection
+Drummond-Towler-Needs Jastrow (dtn)
+\end_layout
+
+\begin_layout Subsection
+Generic Jastrow (ic)
+\end_layout
+
+\begin_layout Standard
+This Jastrow factor implements a generic power series with 
+\begin_inset Formula $U_{ij}^{ee}$
+\end_inset
+
+ as in Schmidt-Moskowitz and 
+\begin_inset Formula 
+\[
+U_{ai}^{en}=\sum_{m=1}^{m_{max}}c_{m}^{en}\bar{r}_{ai}^{m}
+\]
+
+\end_inset
+
+(note the missing factor 
+\begin_inset Formula $(n-1)$
+\end_inset
+
+ in comparison with Schmidt-Moskowitz).
+\end_layout
+
+\begin_layout Standard
+The form of the een terms is described in the report on Jastrow factors.
+\end_layout
+
+\begin_layout Subsubsection
+Schmidt-Moskowitz-like form
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\bar{r}$
+\end_inset
+
+ is defined as in Schmidt-Moskowitz
+\end_layout
+
+\begin_layout Subsubsection
+double exponential form
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\bar{r}$
+\end_inset
+
+ is defined as 
+\begin_inset Formula $\bar{r}=1-\exp(-a\cdot r)$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Section
+Parameter optimization routines
+\end_layout
+
+\begin_layout Standard
+TODO
+\end_layout
+
+\end_body
+\end_document

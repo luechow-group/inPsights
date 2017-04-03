@@ -1,0 +1,644 @@
+ Maximum    1 data Count=   16054 mode= 2
+   3   4   1   0.010   0.008    no_correlation
+   3   5   2   0.086   0.008    no_correlation
+   3   6   3   0.090   0.008    no_correlation
+   3   7   4  -0.005   0.008    no_correlation
+   3   8   5  -0.065   0.008    no_correlation
+   3   9   6  -0.020   0.008    no_correlation
+   3  12   7   0.020   0.008    no_correlation
+   3  13   8   0.005   0.008    no_correlation
+   3  14   9   1.000   0.000    ELECTRON_PAIR!
+   3  15  10  -0.010   0.008    no_correlation
+   3  16  11  -0.086   0.008    no_correlation
+   3  17  12   0.065   0.008    no_correlation
+   3  18  13  -0.090   0.008    no_correlation
+   4   5  14  -0.021   0.008    no_correlation
+   4   6  15  -0.056   0.008    no_correlation
+   4   7  16  -0.076   0.008    no_correlation
+   4   8  17   0.072   0.008    no_correlation
+   4   9  18  -0.056   0.008    no_correlation
+   4  12  19   0.056   0.008    no_correlation
+   4  13  20   0.076   0.008    no_correlation
+   4  14  21  -0.010   0.008    no_correlation
+   4  15  22   1.000   0.000    ELECTRON_PAIR!
+   4  16  23   0.021   0.008    no_correlation
+   4  17  24  -0.072   0.008    no_correlation
+   4  18  25   0.056   0.008    no_correlation
+   5   6  26  -0.103   0.008    weak_triplet
+   5   7  27   0.020   0.008    no_correlation
+   5   8  28   0.064   0.008    no_correlation
+   5   9  29   0.006   0.008    no_correlation
+   5  12  30  -0.006   0.008    no_correlation
+   5  13  31  -0.020   0.008    no_correlation
+   5  14  32  -0.086   0.008    no_correlation
+   5  15  33   0.021   0.008    no_correlation
+   5  16  34   1.000   0.000    ELECTRON_PAIR!
+   5  17  35  -0.064   0.008    no_correlation
+   5  18  36   0.103   0.008    weak_pair
+   6   7  37   0.010   0.008    no_correlation
+   6   8  38   0.073   0.008    no_correlation
+   6   9  39   0.020   0.008    no_correlation
+   6  12  40  -0.020   0.008    no_correlation
+   6  13  41  -0.010   0.008    no_correlation
+   6  14  42  -0.090   0.008    no_correlation
+   6  15  43   0.056   0.008    no_correlation
+   6  16  44   0.103   0.008    weak_pair
+   6  17  45  -0.073   0.008    no_correlation
+   6  18  46   1.000   0.000    ELECTRON_PAIR!
+   7   8  47   0.043   0.008    no_correlation
+   7   9  48  -0.090   0.008    no_correlation
+   7  12  49   0.090   0.008    no_correlation
+   7  13  50   1.000   0.000    ELECTRON_PAIR!
+   7  14  51   0.005   0.008    no_correlation
+   7  15  52   0.076   0.008    no_correlation
+   7  16  53  -0.020   0.008    no_correlation
+   7  17  54  -0.043   0.008    no_correlation
+   7  18  55  -0.010   0.008    no_correlation
+   8   9  56   0.040   0.008    no_correlation
+   8  12  57  -0.040   0.008    no_correlation
+   8  13  58  -0.043   0.008    no_correlation
+   8  14  59   0.065   0.008    no_correlation
+   8  15  60  -0.072   0.008    no_correlation
+   8  16  61  -0.064   0.008    no_correlation
+   8  17  62   1.000   0.000    ELECTRON_PAIR!
+   8  18  63  -0.073   0.008    no_correlation
+   9  12  64   1.000   0.000    ELECTRON_PAIR!
+   9  13  65   0.090   0.008    no_correlation
+   9  14  66   0.020   0.008    no_correlation
+   9  15  67   0.056   0.008    no_correlation
+   9  16  68  -0.006   0.008    no_correlation
+   9  17  69  -0.040   0.008    no_correlation
+   9  18  70  -0.020   0.008    no_correlation
+  12  13  71  -0.090   0.008    no_correlation
+  12  14  72  -0.020   0.008    no_correlation
+  12  15  73  -0.056   0.008    no_correlation
+  12  16  74   0.006   0.008    no_correlation
+  12  17  75   0.040   0.008    no_correlation
+  12  18  76   0.020   0.008    no_correlation
+  13  14  77  -0.005   0.008    no_correlation
+  13  15  78  -0.076   0.008    no_correlation
+  13  16  79   0.020   0.008    no_correlation
+  13  17  80   0.043   0.008    no_correlation
+  13  18  81   0.010   0.008    no_correlation
+  14  15  82   0.010   0.008    no_correlation
+  14  16  83   0.086   0.008    no_correlation
+  14  17  84  -0.065   0.008    no_correlation
+  14  18  85   0.090   0.008    no_correlation
+  15  16  86  -0.021   0.008    no_correlation
+  15  17  87   0.072   0.008    no_correlation
+  15  18  88  -0.056   0.008    no_correlation
+  16  17  89   0.064   0.008    no_correlation
+  16  18  90  -0.103   0.008    weak_triplet
+  17  18  91   0.073   0.008    no_correlation
+ Maximum    2 data Count=       2 mode= 2
+   3   4   1  -1.000   0.000    triplet
+   3   5   2   0.000   1.000    no_correlation
+   3   6   3   0.000   1.000    no_correlation
+   3   7   4   0.000   1.000    no_correlation
+   3   8   5   1.000   0.000    ELECTRON_PAIR!
+   3   9   6   0.000   1.000    no_correlation
+   3  12   7   0.000   1.000    no_correlation
+   3  13   8  -1.000   0.000    triplet
+   3  14   9   0.000   1.000    no_correlation
+   3  15  10   0.000   1.000    no_correlation
+   3  16  11   1.000   0.000    ELECTRON_PAIR!
+   3  17  12   0.000   1.000    no_correlation
+   3  18  13   1.000   0.000    ELECTRON_PAIR!
+   4   5  14   0.000   1.000    no_correlation
+   4   6  15   0.000   1.000    no_correlation
+   4   7  16   0.000   1.000    no_correlation
+   4   8  17   1.000   0.000    ELECTRON_PAIR!
+   4   9  18   0.000   1.000    no_correlation
+   4  12  19   0.000   1.000    no_correlation
+   4  13  20  -1.000   0.000    triplet
+   4  14  21   0.000   1.000    no_correlation
+   4  15  22   0.000   1.000    no_correlation
+   4  16  23   1.000   0.000    ELECTRON_PAIR!
+   4  17  24   0.000   1.000    no_correlation
+   4  18  25   1.000   0.000    ELECTRON_PAIR!
+   5   6  26  -1.000   0.000    triplet
+   5   7  27  -1.000   0.000    triplet
+   5   8  28   0.000   1.000    no_correlation
+   5   9  29   1.000   0.000    ELECTRON_PAIR!
+   5  12  30   1.000   0.000    ELECTRON_PAIR!
+   5  13  31   0.000   1.000    no_correlation
+   5  14  32   1.000   0.000    ELECTRON_PAIR!
+   5  15  33   1.000   0.000    ELECTRON_PAIR!
+   5  16  34   0.000   1.000    no_correlation
+   5  17  35  -1.000   0.000    triplet
+   5  18  36   0.000   1.000    no_correlation
+   6   7  37  -1.000   0.000    triplet
+   6   8  38   0.000   1.000    no_correlation
+   6   9  39   1.000   0.000    ELECTRON_PAIR!
+   6  12  40   1.000   0.000    ELECTRON_PAIR!
+   6  13  41   0.000   1.000    no_correlation
+   6  14  42   1.000   0.000    ELECTRON_PAIR!
+   6  15  43   1.000   0.000    ELECTRON_PAIR!
+   6  16  44   0.000   1.000    no_correlation
+   6  17  45  -1.000   0.000    triplet
+   6  18  46   0.000   1.000    no_correlation
+   7   8  47   0.000   1.000    no_correlation
+   7   9  48   1.000   0.000    ELECTRON_PAIR!
+   7  12  49   1.000   0.000    ELECTRON_PAIR!
+   7  13  50   0.000   1.000    no_correlation
+   7  14  51   1.000   0.000    ELECTRON_PAIR!
+   7  15  52   1.000   0.000    ELECTRON_PAIR!
+   7  16  53   0.000   1.000    no_correlation
+   7  17  54  -1.000   0.000    triplet
+   7  18  55   0.000   1.000    no_correlation
+   8   9  56   0.000   1.000    no_correlation
+   8  12  57   0.000   1.000    no_correlation
+   8  13  58   1.000   0.000    ELECTRON_PAIR!
+   8  14  59   0.000   1.000    no_correlation
+   8  15  60   0.000   1.000    no_correlation
+   8  16  61  -1.000   0.000    triplet
+   8  17  62   0.000   1.000    no_correlation
+   8  18  63  -1.000   0.000    triplet
+   9  12  64  -1.000   0.000    triplet
+   9  13  65   0.000   1.000    no_correlation
+   9  14  66  -1.000   0.000    triplet
+   9  15  67  -1.000   0.000    triplet
+   9  16  68   0.000   1.000    no_correlation
+   9  17  69   1.000   0.000    ELECTRON_PAIR!
+   9  18  70   0.000   1.000    no_correlation
+  12  13  71   0.000   1.000    no_correlation
+  12  14  72  -1.000   0.000    triplet
+  12  15  73  -1.000   0.000    triplet
+  12  16  74   0.000   1.000    no_correlation
+  12  17  75   1.000   0.000    ELECTRON_PAIR!
+  12  18  76   0.000   1.000    no_correlation
+  13  14  77   0.000   1.000    no_correlation
+  13  15  78   0.000   1.000    no_correlation
+  13  16  79   1.000   0.000    ELECTRON_PAIR!
+  13  17  80   0.000   1.000    no_correlation
+  13  18  81   1.000   0.000    ELECTRON_PAIR!
+  14  15  82  -1.000   0.000    triplet
+  14  16  83   0.000   1.000    no_correlation
+  14  17  84   1.000   0.000    ELECTRON_PAIR!
+  14  18  85   0.000   1.000    no_correlation
+  15  16  86   0.000   1.000    no_correlation
+  15  17  87   1.000   0.000    ELECTRON_PAIR!
+  15  18  88   0.000   1.000    no_correlation
+  16  17  89   0.000   1.000    no_correlation
+  16  18  90  -1.000   0.000    triplet
+  17  18  91   0.000   1.000    no_correlation
+ Maximum    3 data Count=       2 mode= 2
+   3   4   1  -1.000   0.000    triplet
+   3   5   2   0.000   1.000    no_correlation
+   3   6   3  -1.000   0.000    triplet
+   3   7   4   0.000   1.000    no_correlation
+   3   8   5   0.000   1.000    no_correlation
+   3   9   6   1.000   0.000    ELECTRON_PAIR!
+   3  12   7   0.000   1.000    no_correlation
+   3  13   8   1.000   0.000    ELECTRON_PAIR!
+   3  14   9   1.000   0.000    ELECTRON_PAIR!
+   3  15  10  -1.000   0.000    triplet
+   3  16  11   1.000   0.000    ELECTRON_PAIR!
+   3  17  12   0.000   1.000    no_correlation
+   3  18  13   0.000   1.000    no_correlation
+   4   5  14   0.000   1.000    no_correlation
+   4   6  15  -1.000   0.000    triplet
+   4   7  16   0.000   1.000    no_correlation
+   4   8  17   0.000   1.000    no_correlation
+   4   9  18   1.000   0.000    ELECTRON_PAIR!
+   4  12  19   0.000   1.000    no_correlation
+   4  13  20   1.000   0.000    ELECTRON_PAIR!
+   4  14  21   1.000   0.000    ELECTRON_PAIR!
+   4  15  22  -1.000   0.000    triplet
+   4  16  23   1.000   0.000    ELECTRON_PAIR!
+   4  17  24   0.000   1.000    no_correlation
+   4  18  25   0.000   1.000    no_correlation
+   5   6  26   0.000   1.000    no_correlation
+   5   7  27  -1.000   0.000    triplet
+   5   8  28  -1.000   0.000    triplet
+   5   9  29   0.000   1.000    no_correlation
+   5  12  30   1.000   0.000    ELECTRON_PAIR!
+   5  13  31   0.000   1.000    no_correlation
+   5  14  32   0.000   1.000    no_correlation
+   5  15  33   0.000   1.000    no_correlation
+   5  16  34   0.000   1.000    no_correlation
+   5  17  35   1.000   0.000    ELECTRON_PAIR!
+   5  18  36   1.000   0.000    ELECTRON_PAIR!
+   6   7  37   0.000   1.000    no_correlation
+   6   8  38   0.000   1.000    no_correlation
+   6   9  39   1.000   0.000    ELECTRON_PAIR!
+   6  12  40   0.000   1.000    no_correlation
+   6  13  41   1.000   0.000    ELECTRON_PAIR!
+   6  14  42   1.000   0.000    ELECTRON_PAIR!
+   6  15  43  -1.000   0.000    triplet
+   6  16  44   1.000   0.000    ELECTRON_PAIR!
+   6  17  45   0.000   1.000    no_correlation
+   6  18  46   0.000   1.000    no_correlation
+   7   8  47  -1.000   0.000    triplet
+   7   9  48   0.000   1.000    no_correlation
+   7  12  49   1.000   0.000    ELECTRON_PAIR!
+   7  13  50   0.000   1.000    no_correlation
+   7  14  51   0.000   1.000    no_correlation
+   7  15  52   0.000   1.000    no_correlation
+   7  16  53   0.000   1.000    no_correlation
+   7  17  54   1.000   0.000    ELECTRON_PAIR!
+   7  18  55   1.000   0.000    ELECTRON_PAIR!
+   8   9  56   0.000   1.000    no_correlation
+   8  12  57   1.000   0.000    ELECTRON_PAIR!
+   8  13  58   0.000   1.000    no_correlation
+   8  14  59   0.000   1.000    no_correlation
+   8  15  60   0.000   1.000    no_correlation
+   8  16  61   0.000   1.000    no_correlation
+   8  17  62   1.000   0.000    ELECTRON_PAIR!
+   8  18  63   1.000   0.000    ELECTRON_PAIR!
+   9  12  64   0.000   1.000    no_correlation
+   9  13  65  -1.000   0.000    triplet
+   9  14  66  -1.000   0.000    triplet
+   9  15  67   1.000   0.000    ELECTRON_PAIR!
+   9  16  68  -1.000   0.000    triplet
+   9  17  69   0.000   1.000    no_correlation
+   9  18  70   0.000   1.000    no_correlation
+  12  13  71   0.000   1.000    no_correlation
+  12  14  72   0.000   1.000    no_correlation
+  12  15  73   0.000   1.000    no_correlation
+  12  16  74   0.000   1.000    no_correlation
+  12  17  75  -1.000   0.000    triplet
+  12  18  76  -1.000   0.000    triplet
+  13  14  77  -1.000   0.000    triplet
+  13  15  78   1.000   0.000    ELECTRON_PAIR!
+  13  16  79  -1.000   0.000    triplet
+  13  17  80   0.000   1.000    no_correlation
+  13  18  81   0.000   1.000    no_correlation
+  14  15  82   1.000   0.000    ELECTRON_PAIR!
+  14  16  83  -1.000   0.000    triplet
+  14  17  84   0.000   1.000    no_correlation
+  14  18  85   0.000   1.000    no_correlation
+  15  16  86   1.000   0.000    ELECTRON_PAIR!
+  15  17  87   0.000   1.000    no_correlation
+  15  18  88   0.000   1.000    no_correlation
+  16  17  89   0.000   1.000    no_correlation
+  16  18  90   0.000   1.000    no_correlation
+  17  18  91  -1.000   0.000    triplet
+ Maximum    4 data Count=       1 mode= 2
+   3   4   1  1.000
+   3   5   2 -1.000
+   3   6   3 -1.000
+   3   7   4  1.000
+   3   8   5  1.000
+   3   9   6  1.000
+   3  12   7 -1.000
+   3  13   8 -1.000
+   3  14   9  1.000
+   3  15  10  1.000
+   3  16  11  1.000
+   3  17  12 -1.000
+   3  18  13 -1.000
+   4   5  14  1.000
+   4   6  15  1.000
+   4   7  16 -1.000
+   4   8  17 -1.000
+   4   9  18 -1.000
+   4  12  19  1.000
+   4  13  20  1.000
+   4  14  21 -1.000
+   4  15  22 -1.000
+   4  16  23 -1.000
+   4  17  24  1.000
+   4  18  25  1.000
+   5   6  26 -1.000
+   5   7  27  1.000
+   5   8  28  1.000
+   5   9  29  1.000
+   5  12  30 -1.000
+   5  13  31 -1.000
+   5  14  32  1.000
+   5  15  33  1.000
+   5  16  34  1.000
+   5  17  35 -1.000
+   5  18  36 -1.000
+   6   7  37  1.000
+   6   8  38  1.000
+   6   9  39  1.000
+   6  12  40 -1.000
+   6  13  41 -1.000
+   6  14  42  1.000
+   6  15  43  1.000
+   6  16  44  1.000
+   6  17  45 -1.000
+   6  18  46 -1.000
+   7   8  47 -1.000
+   7   9  48 -1.000
+   7  12  49  1.000
+   7  13  50  1.000
+   7  14  51 -1.000
+   7  15  52 -1.000
+   7  16  53 -1.000
+   7  17  54  1.000
+   7  18  55  1.000
+   8   9  56 -1.000
+   8  12  57  1.000
+   8  13  58  1.000
+   8  14  59 -1.000
+   8  15  60 -1.000
+   8  16  61 -1.000
+   8  17  62  1.000
+   8  18  63  1.000
+   9  12  64  1.000
+   9  13  65  1.000
+   9  14  66 -1.000
+   9  15  67 -1.000
+   9  16  68 -1.000
+   9  17  69  1.000
+   9  18  70  1.000
+  12  13  71 -1.000
+  12  14  72  1.000
+  12  15  73  1.000
+  12  16  74  1.000
+  12  17  75 -1.000
+  12  18  76 -1.000
+  13  14  77  1.000
+  13  15  78  1.000
+  13  16  79  1.000
+  13  17  80 -1.000
+  13  18  81 -1.000
+  14  15  82 -1.000
+  14  16  83 -1.000
+  14  17  84  1.000
+  14  18  85  1.000
+  15  16  86 -1.000
+  15  17  87  1.000
+  15  18  88  1.000
+  16  17  89  1.000
+  16  18  90  1.000
+  17  18  91 -1.000
+ Maximum    5 data Count=       0 mode= 2
+   3   4   1 no data!
+   3   5   2 no data!
+   3   6   3 no data!
+   3   7   4 no data!
+   3   8   5 no data!
+   3   9   6 no data!
+   3  12   7 no data!
+   3  13   8 no data!
+   3  14   9 no data!
+   3  15  10 no data!
+   3  16  11 no data!
+   3  17  12 no data!
+   3  18  13 no data!
+   4   5  14 no data!
+   4   6  15 no data!
+   4   7  16 no data!
+   4   8  17 no data!
+   4   9  18 no data!
+   4  12  19 no data!
+   4  13  20 no data!
+   4  14  21 no data!
+   4  15  22 no data!
+   4  16  23 no data!
+   4  17  24 no data!
+   4  18  25 no data!
+   5   6  26 no data!
+   5   7  27 no data!
+   5   8  28 no data!
+   5   9  29 no data!
+   5  12  30 no data!
+   5  13  31 no data!
+   5  14  32 no data!
+   5  15  33 no data!
+   5  16  34 no data!
+   5  17  35 no data!
+   5  18  36 no data!
+   6   7  37 no data!
+   6   8  38 no data!
+   6   9  39 no data!
+   6  12  40 no data!
+   6  13  41 no data!
+   6  14  42 no data!
+   6  15  43 no data!
+   6  16  44 no data!
+   6  17  45 no data!
+   6  18  46 no data!
+   7   8  47 no data!
+   7   9  48 no data!
+   7  12  49 no data!
+   7  13  50 no data!
+   7  14  51 no data!
+   7  15  52 no data!
+   7  16  53 no data!
+   7  17  54 no data!
+   7  18  55 no data!
+   8   9  56 no data!
+   8  12  57 no data!
+   8  13  58 no data!
+   8  14  59 no data!
+   8  15  60 no data!
+   8  16  61 no data!
+   8  17  62 no data!
+   8  18  63 no data!
+   9  12  64 no data!
+   9  13  65 no data!
+   9  14  66 no data!
+   9  15  67 no data!
+   9  16  68 no data!
+   9  17  69 no data!
+   9  18  70 no data!
+  12  13  71 no data!
+  12  14  72 no data!
+  12  15  73 no data!
+  12  16  74 no data!
+  12  17  75 no data!
+  12  18  76 no data!
+  13  14  77 no data!
+  13  15  78 no data!
+  13  16  79 no data!
+  13  17  80 no data!
+  13  18  81 no data!
+  14  15  82 no data!
+  14  16  83 no data!
+  14  17  84 no data!
+  14  18  85 no data!
+  15  16  86 no data!
+  15  17  87 no data!
+  15  18  88 no data!
+  16  17  89 no data!
+  16  18  90 no data!
+  17  18  91 no data!
+ Maximum    6 data Count=       1 mode= 2
+   3   4   1 -1.000
+   3   5   2 -1.000
+   3   6   3 -1.000
+   3   7   4 -1.000
+   3   8   5 -1.000
+   3   9   6 -1.000
+   3  12   7  1.000
+   3  13   8  1.000
+   3  14   9  1.000
+   3  15  10  1.000
+   3  16  11  1.000
+   3  17  12  1.000
+   3  18  13  1.000
+   4   5  14 -1.000
+   4   6  15 -1.000
+   4   7  16 -1.000
+   4   8  17 -1.000
+   4   9  18 -1.000
+   4  12  19  1.000
+   4  13  20  1.000
+   4  14  21  1.000
+   4  15  22  1.000
+   4  16  23  1.000
+   4  17  24  1.000
+   4  18  25  1.000
+   5   6  26 -1.000
+   5   7  27 -1.000
+   5   8  28 -1.000
+   5   9  29 -1.000
+   5  12  30  1.000
+   5  13  31  1.000
+   5  14  32  1.000
+   5  15  33  1.000
+   5  16  34  1.000
+   5  17  35  1.000
+   5  18  36  1.000
+   6   7  37 -1.000
+   6   8  38 -1.000
+   6   9  39 -1.000
+   6  12  40  1.000
+   6  13  41  1.000
+   6  14  42  1.000
+   6  15  43  1.000
+   6  16  44  1.000
+   6  17  45  1.000
+   6  18  46  1.000
+   7   8  47 -1.000
+   7   9  48 -1.000
+   7  12  49  1.000
+   7  13  50  1.000
+   7  14  51  1.000
+   7  15  52  1.000
+   7  16  53  1.000
+   7  17  54  1.000
+   7  18  55  1.000
+   8   9  56 -1.000
+   8  12  57  1.000
+   8  13  58  1.000
+   8  14  59  1.000
+   8  15  60  1.000
+   8  16  61  1.000
+   8  17  62  1.000
+   8  18  63  1.000
+   9  12  64  1.000
+   9  13  65  1.000
+   9  14  66  1.000
+   9  15  67  1.000
+   9  16  68  1.000
+   9  17  69  1.000
+   9  18  70  1.000
+  12  13  71 -1.000
+  12  14  72 -1.000
+  12  15  73 -1.000
+  12  16  74 -1.000
+  12  17  75 -1.000
+  12  18  76 -1.000
+  13  14  77 -1.000
+  13  15  78 -1.000
+  13  16  79 -1.000
+  13  17  80 -1.000
+  13  18  81 -1.000
+  14  15  82 -1.000
+  14  16  83 -1.000
+  14  17  84 -1.000
+  14  18  85 -1.000
+  15  16  86 -1.000
+  15  17  87 -1.000
+  15  18  88 -1.000
+  16  17  89 -1.000
+  16  18  90 -1.000
+  17  18  91 -1.000
+ Maximum    7 data Count=       0 mode= 2
+   3   4   1 no data!
+   3   5   2 no data!
+   3   6   3 no data!
+   3   7   4 no data!
+   3   8   5 no data!
+   3   9   6 no data!
+   3  12   7 no data!
+   3  13   8 no data!
+   3  14   9 no data!
+   3  15  10 no data!
+   3  16  11 no data!
+   3  17  12 no data!
+   3  18  13 no data!
+   4   5  14 no data!
+   4   6  15 no data!
+   4   7  16 no data!
+   4   8  17 no data!
+   4   9  18 no data!
+   4  12  19 no data!
+   4  13  20 no data!
+   4  14  21 no data!
+   4  15  22 no data!
+   4  16  23 no data!
+   4  17  24 no data!
+   4  18  25 no data!
+   5   6  26 no data!
+   5   7  27 no data!
+   5   8  28 no data!
+   5   9  29 no data!
+   5  12  30 no data!
+   5  13  31 no data!
+   5  14  32 no data!
+   5  15  33 no data!
+   5  16  34 no data!
+   5  17  35 no data!
+   5  18  36 no data!
+   6   7  37 no data!
+   6   8  38 no data!
+   6   9  39 no data!
+   6  12  40 no data!
+   6  13  41 no data!
+   6  14  42 no data!
+   6  15  43 no data!
+   6  16  44 no data!
+   6  17  45 no data!
+   6  18  46 no data!
+   7   8  47 no data!
+   7   9  48 no data!
+   7  12  49 no data!
+   7  13  50 no data!
+   7  14  51 no data!
+   7  15  52 no data!
+   7  16  53 no data!
+   7  17  54 no data!
+   7  18  55 no data!
+   8   9  56 no data!
+   8  12  57 no data!
+   8  13  58 no data!
+   8  14  59 no data!
+   8  15  60 no data!
+   8  16  61 no data!
+   8  17  62 no data!
+   8  18  63 no data!
+   9  12  64 no data!
+   9  13  65 no data!
+   9  14  66 no data!
+   9  15  67 no data!
+   9  16  68 no data!
+   9  17  69 no data!
+   9  18  70 no data!
+  12  13  71 no data!
+  12  14  72 no data!
+  12  15  73 no data!
+  12  16  74 no data!
+  12  17  75 no data!
+  12  18  76 no data!
+  13  14  77 no data!
+  13  15  78 no data!
+  13  16  79 no data!
+  13  17  80 no data!
+  13  18  81 no data!
+  14  15  82 no data!
+  14  16  83 no data!
+  14  17  84 no data!
+  14  18  85 no data!
+  15  16  86 no data!
+  15  17  87 no data!
+  15  18  88 no data!
+  16  17  89 no data!
+  16  18  90 no data!
+  17  18  91 no data!

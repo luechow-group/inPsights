@@ -1,0 +1,27 @@
+#! /bin/bash
+rm -f *in *out*
+echo " DMC tests(AE) ..."
+for i in DMC
+do
+  echo "   Starting $i  test ..."
+  cp ../../templates/DMC.in .
+
+  $AMOLQCRUN $i
+
+  if [ $GEN == 1 ] ; then
+       mv $i.out $i.$REF
+       rm -f *.in
+  else
+   R=`grep "total energy" $i.$REF |awk {'print $4'}`
+   C=`grep "total energy" $i.out |awk {'print $4'}`
+      if [ $R == $C ] ; then
+        echo -e "     DMC test \e[32mpassed.\e[39m."
+        rm -f $i.in $i.out
+      else
+        export FAILED=1
+        echo -e "     DMC test \e[31mfailed.\e[39m"
+        echo "    Check $PWD/$i.out for more information."
+      fi
+   fi
+done
+

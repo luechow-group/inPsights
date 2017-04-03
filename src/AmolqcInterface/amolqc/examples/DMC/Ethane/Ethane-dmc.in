@@ -1,0 +1,4 @@
+$gen(seed=101)
+$wf(read,file='Ethane-vm.wf')
+$generate_sample(size=30,blocks=10)
+$qmc(dmc,steps=2000,discard=3,tau=0.002,stddev=0.001,E_ref=-79.738)
