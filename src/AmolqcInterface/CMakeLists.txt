@@ -2,10 +2,13 @@ cmake_minimum_required(VERSION 3.5)
 
 project(AmolqcInterface C CXX Fortran)
 
+
 set ( PROJECT_FOLDER_NAME ${PROJECT_NAME})
 set ( PROJECT_PATH ${PROJECT_NAME})
 set ( OUTPUT_NAME "${PROJECT_FOLDER_NAME}" )
 message ( "-- ++ CREATING PROJECT OR MAKEFILE ---> ${OUTPUT_NAME}" )
+
+set(CMAKE_CXX_STANDARD 11)
 
 find_package(OpenMP REQUIRED)
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
@@ -33,7 +36,7 @@ get_filename_component(PATH_TO_LIBUTILS amolqc/utils/libutils.a REALPATH)
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES} dummy.f90)
 target_link_libraries(${PROJECT_NAME}
         eigen
-        Externals::cppoptlib
+        cppoptlib
         ${PATH_TO_LIBAMOLQC}
         ${PATH_TO_LIBUTILS}
         ${LAPACK_LIBRARIES}
@@ -46,7 +49,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC
         )
 
 add_executable(${PROJECT_NAME}_main dummy.f90 main.cpp)
-target_link_libraries("${PROJECT_NAME}_main"
+target_link_libraries(${PROJECT_NAME}_main
         ${PROJECT_NAME}
         ${LAPACK_LINKER_FLAGS}
         ${BLAS_LINKER_FLAGS}

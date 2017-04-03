@@ -1,13 +1,14 @@
 cmake_minimum_required(VERSION 3.5)
 
+project(Methods CXX)
 
-#============= PROJECT Methods ===================
-project(Methods)
 
 set ( PROJECT_FOLDER_NAME ${PROJECT_NAME} )
 set ( PROJECT_PATH ${PROJECT_NAME})
 set ( OUTPUT_NAME "${PROJECT_FOLDER_NAME}" )
 message ( "-- ++ CREATING PROJECT OR MAKEFILE ---> ${OUTPUT_NAME}" )
+
+set(CMAKE_CXX_STANDARD 11)
 
 include_directories(
         include
@@ -32,13 +33,11 @@ target_include_directories(${PROJECT_NAME} PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         )
 target_link_libraries(${PROJECT_NAME}
-        AmolqcGUI::LibAmolqc
-        AmolqcGUI::BSplines
-        Externals::cppoptlib
         eigen
+        cppoptlib
+        BSplines
+        AmolqcInterface
         )
-add_library(AmolqcGUI::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
-
 
 add_executable("${PROJECT_NAME}_main" main.cpp )
 target_link_libraries("${PROJECT_NAME}_main" ${PROJECT_NAME})

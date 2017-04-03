@@ -1,8 +1,7 @@
 cmake_minimum_required(VERSION 3.5)
 
+project(BaseLib CXX)
 
-#============= PROJECT Analysis ===================
-project(BaseLib)
 
 set ( PROJECT_FOLDER_NAME ${PROJECT_NAME} )
 
@@ -32,18 +31,17 @@ set(SOURCE_FILES
         )
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES})
-
 target_link_libraries(${PROJECT_NAME}
         Qt5::Core
         eigen
         )
-
 target_include_directories(${PROJECT_NAME} PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         )
 
 add_executable(${PROJECT_NAME}_main main.cpp)
-
-add_library(AmolqcGUI::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
+target_link_libraries(${PROJECT_NAME}_main
+        ${PROJECT_NAME}
+        )
 
 add_subdirectory(tests)
