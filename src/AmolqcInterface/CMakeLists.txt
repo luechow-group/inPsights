@@ -25,10 +25,12 @@ include_directories(
 
 set(HEADER_FILES
         include/ElectronicWaveFunction.h
+        include/ElectronicWaveFunctionProblem.h
         )
 
 set(SOURCE_FILES
         source/ElectronicWaveFunction.cpp
+        source/ElectronicWaveFunctionProblem.cpp
         )
 
 get_filename_component(PATH_TO_LIBAMOLQC amolqc/src/libamolqc.a REALPATH)

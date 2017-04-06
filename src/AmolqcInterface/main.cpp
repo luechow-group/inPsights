@@ -1,62 +1,8 @@
 #include <iostream>
 #include <iomanip>
-#include <ElectronicWaveFunction.h>
-#include "problem.h"
+#include "ElectronicWaveFunctionProblem.h"
 #include "solver/bfgsnssolver.h"
 
-
-class ElectronicWaveFunctionProblem : public cppoptlib::Problem<double,Eigen::Dynamic> {
-public:
-
-  ElectronicWaveFunctionProblem()
-    : valueCallCount_(0), gradientCallCount_(0) {}
-
-  double value(const Eigen::VectorXd &x) {
-    valueCallCount_++;
-    wf_.evaluate(x);
-    return wf_.getNegativeLogarithmizedProbabilityDensity();
-  }
-
-  void gradient(const Eigen::VectorXd &x, Eigen::VectorXd &grad) {
-    gradientCallCount_++;
-    wf_.evaluate(x);
-    grad = wf_.getNegativeLogarithmizedProbabilityDensityGradientCollection();
-  }
-
-  bool callback(const cppoptlib::Criteria<double> &state, const Eigen::VectorXd &x) {
-    Eigen::VectorXd grad;
-    gradient(x,grad);
-    std::cout << "(" << std::setw(2) << state.iterations << ")"
-            << " f(x) = "     << std::fixed << std::setw(8) << std::setprecision(8) << value(x)
-            << " gradNorm = " << std::setw(8) << state.gradNorm
-            << " xDelta = "   << std::setw(8) << state.xDelta
-            //<< " g = [" << std::setprecision(16) << grad.transpose() << "]"
-            //<< " x = [" << std::setprecision(16) << x.transpose() << "]"
-            << std::endl;
-  return true;
-  }
-
-  unsigned getValueCallCount(){
-    return valueCallCount_;
-  }
-
-  unsigned getGradientCallCount(){
-    return gradientCallCount_;
-  }
-
-  unsigned getTotalElocCalls(){
-    return getValueCallCount()+getGradientCallCount();
-  }
-
-  void resetCounters(){
-    valueCallCount_ = 0;
-    gradientCallCount_ = 0;
-  }
-
-private:
-  unsigned valueCallCount_, gradientCallCount_;
-  ElectronicWaveFunction wf_;
-};
 
 int main(int argc, char const *argv[]) {
 
