@@ -13,6 +13,8 @@
 #include "Atom.h"
 #include "Bond.h"
 
+#include "BSpline.h"
+
 
 Qt3DCore::QEntity* createTestScene()
 {
@@ -59,6 +61,8 @@ Qt3DCore::QEntity* createTestScene()
 int main(int argc, char* argv[])
 {
 
+    BSpline bs;
+    
     QGuiApplication app(argc, argv);
 
     Qt3DExtras::Qt3DWindow view;

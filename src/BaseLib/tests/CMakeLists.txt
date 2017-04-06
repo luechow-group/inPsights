@@ -1,13 +1,5 @@
-cmake_minimum_required(VERSION 3.6)
+cmake_minimum_required(VERSION 3.5)
 enable_testing()
-
-find_package(GTest REQUIRED)
-find_package(Eigen3 REQUIRED)
-
-include_directories(SYSTEM
-        ${GTEST_INCLUDE_DIRS}
-        ${EIGEN3_INCLUDE_DIR}
-        )
 
 FILE(GLOB TEST_SOURCE_FILES
         *

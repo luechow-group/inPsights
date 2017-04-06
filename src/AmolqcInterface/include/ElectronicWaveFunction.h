@@ -13,13 +13,12 @@ namespace ElectronPositioningMode {
   } electronPositioningModeType;
 }
 
-/*TODO Remember to set the amolqc path for runtime in the configuration file
- ** AMOLQC=/Users/michaelheuer/amolqcGUI/src/LibAmolqc/amolqc/
- *TODO Remember to put the t.wf file in the executable folders
- **    /Users/michaelheuer/amolqcGUI/build/cmake-build-debug/src/LibAmolqc/t.wf
- **    /Users/michaelheuer/amolqcGUI/build/cmake-build-release/src/LibAmolqc/t.wf
- */
-
+extern "C" {
+void amolqc_init();
+void amolqc_set_wf(int *nElecs, int *nAtoms);
+void amolqc_initial_positions(ElectronPositioningMode::electronPositioningModeType mode, int nElecs, double x[]);
+void amolqc_eloc(double x[], int n, double *phi, double *u, double grad[], double *elocal);
+}
 
 class ElectronicWaveFunction {
 
