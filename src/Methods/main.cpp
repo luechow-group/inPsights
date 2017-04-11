@@ -4,11 +4,13 @@
 
 #include <iostream>
 #include "StringMethod.h"
+#include "solver/bfgsnssolver.h"
 
 int main(int argc, char const *argv[]) {
+    ElectronicWaveFunctionProblem f; // is an ObservableProblem
+    StringMethod stringMethod(f); // is a ProblemObserver
 
-    ElectronicWaveFunctionProblem f;
-    StringMethod stringMethod(f);
+    f.addObserver(&stringMethod);
 
     Eigen::VectorXd x(18*3);
 
@@ -32,6 +34,11 @@ int main(int argc, char const *argv[]) {
  -0.544636, -2.204059, -3.499582,\
   0.005195,  0.207915, -1.906905;
 
-    stringMethod.evaluateString(x);
+    cppoptlib::Criteria<double> crit = cppoptlib::Criteria<double>::nonsmoothDefaults();
+    cppoptlib::BfgsnsSolver<ElectronicWaveFunctionProblem> solver;
+    solver.setDebug(cppoptlib::DebugLevel::High);
+    solver.setStopCriteria(crit);
+
+    solver.minimize(f, x);
 
 }
