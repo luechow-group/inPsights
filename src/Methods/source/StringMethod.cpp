@@ -10,3 +10,7 @@ void StringMethod::evaluateString(Eigen::VectorXd &x) {
     double f = objFunc_.value(x);
     std::cout << f << std::endl;
 }
+
+void StringMethod::stepPerformed() {
+   std::cout << problemReference.getObserverCount() << " oberservers are listening" << std::endl;
+}

@@ -8,8 +8,9 @@
 #include <Eigen/Core>
 #include <vector>
 #include "ElectronicWaveFunctionProblem.h"
+#include "ProblemObserver.h"
 
-class StringMethod {
+class StringMethod : public ProblemObserver{
     //using Scalar = typename ProblemType_::Scalar;
     //using ProblemType = ProblemType_;
 
@@ -18,6 +19,9 @@ public:
             : objFunc_( objFunc ) {}
 
     void evaluateString(Eigen::VectorXd &x);
+
+    void stepPerformed() override;
+
 
 private:
     ElectronicWaveFunctionProblem &objFunc_;
