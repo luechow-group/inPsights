@@ -3,12 +3,14 @@
 //
 
 #include <iostream>
+#include "ElectronicWaveFunctionProblem.h"
 #include "StringMethod.h"
 #include "solver/bfgsnssolver.h"
 
 int main(int argc, char const *argv[]) {
     ElectronicWaveFunctionProblem f; // is an ObservableProblem
-    StringMethod stringMethod(f); // is a ProblemObserver
+    StringMethod<ElectronicWaveFunctionProblem,
+            cppoptlib::BfgsnsSolver<ElectronicWaveFunctionProblem>,1> stringMethod(f,4); // is a ProblemObserver
 
     f.addObserver(&stringMethod);
 

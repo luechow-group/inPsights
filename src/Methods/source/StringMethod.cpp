@@ -4,15 +4,20 @@
 
 #include "StringMethod.h"
 
-void StringMethod::resetString() {
+template<typename ProblemType, typename SolverType, int Ord>
+void StringMethod<ProblemType,SolverType,Ord>::resetString(unsigned numberOfStates) {
+    //intialize solvers
+    solvers_.clear();
+
+    for (unsigned i = 0; i < numberOfStates; ++i) {
+        SolverType solver;
+        solvers_.push_back(solver);
+    }
 
 }
 
-void StringMethod::evaluateString(Eigen::VectorXd &x) {
+template<typename ProblemType,typename SolverType, int Ord>
+void StringMethod<ProblemType,SolverType,Ord>::evaluateString(Eigen::VectorXd &x) {
     double f = problemReference.value(x);
     std::cout << f << std::endl;
-}
-
-void StringMethod::stepPerformed() {
-   std::cout << problemReference.getObserverCount() << " oberservers are listening" << std::endl;
 }
