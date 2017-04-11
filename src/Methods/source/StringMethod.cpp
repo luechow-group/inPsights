@@ -6,8 +6,12 @@
 #include "StringMethod.h"
 #include "problem.h"
 
+void StringMethod::resetString() {
+
+}
+
 void StringMethod::evaluateString(Eigen::VectorXd &x) {
-    double f = objFunc_.value(x);
+    double f = problemReference.value(x);
     std::cout << f << std::endl;
 }
 

@@ -15,8 +15,10 @@ class StringMethod : public ProblemObserver{
     //using ProblemType = ProblemType_;
 
 public:
-    StringMethod( ElectronicWaveFunctionProblem &objFunc )
-            : objFunc_( objFunc ) {}
+    StringMethod( ElectronicWaveFunctionProblem &problem )
+            : problemReference( problem ) {}
+
+    void resetString();
 
     void evaluateString(Eigen::VectorXd &x);
 
@@ -24,7 +26,7 @@ public:
 
 
 private:
-    ElectronicWaveFunctionProblem &objFunc_;
+    ElectronicWaveFunctionProblem &problemReference;
 };
 
 #endif //AMOLQCGUI_STRINGMETHOD_H
