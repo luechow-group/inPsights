@@ -2,9 +2,7 @@
 // Created by heuer on 06.04.17.
 //
 
-
 #include "StringMethod.h"
-#include "problem.h"
 
 void StringMethod::resetString() {
 

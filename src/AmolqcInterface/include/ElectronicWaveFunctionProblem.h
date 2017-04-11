@@ -12,7 +12,7 @@
 #include "problemobserver.h"
 
 class ElectronicWaveFunctionProblem : public cppoptlib::Problem<double,Eigen::Dynamic>,
-                                      public ObservableProblem
+                                      public cppoptlib::ObservableProblem
 {
 public:
 

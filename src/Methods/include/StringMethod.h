@@ -11,7 +11,7 @@
 #include "problemobserver.h"
 
 //template
-class StringMethod : public ProblemObserver{
+class StringMethod : public cppoptlib::ProblemObserver{
     //using Scalar = typename ProblemType_::Scalar;
     //using ProblemType = ProblemType_;
 
