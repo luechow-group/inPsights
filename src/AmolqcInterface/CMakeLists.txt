@@ -22,7 +22,6 @@ include_directories(
 set(HEADER_FILES
         include/ElectronicWaveFunction.h
         include/ElectronicWaveFunctionProblem.h
-        include/ProblemObserver.h
         )
 
 set(SOURCE_FILES

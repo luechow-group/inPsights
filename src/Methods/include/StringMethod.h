@@ -8,8 +8,9 @@
 #include <Eigen/Core>
 #include <vector>
 #include "ElectronicWaveFunctionProblem.h"
-#include "ProblemObserver.h"
+#include "problemobserver.h"
 
+//template
 class StringMethod : public ProblemObserver{
     //using Scalar = typename ProblemType_::Scalar;
     //using ProblemType = ProblemType_;
