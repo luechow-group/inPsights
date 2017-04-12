@@ -8,11 +8,9 @@
 #include "solver/bfgsnssolver.h"
 
 int main(int argc, char const *argv[]) {
-    ElectronicWaveFunctionProblem f; // is an ObservableProblem
-    StringMethod<ElectronicWaveFunctionProblem,
-            cppoptlib::BfgsnsSolver<ElectronicWaveFunctionProblem>,1> stringMethod(f,4); // is a ProblemObserver
 
-    f.addObserver(&stringMethod);
+    StringMethod<ElectronicWaveFunctionProblem,
+            cppoptlib::BfgsnsSolver<ElectronicWaveFunctionProblem>,1> stringMethod(4); // is a ProblemObserver
 
     Eigen::VectorXd x(18*3);
 
@@ -35,12 +33,5 @@ int main(int argc, char const *argv[]) {
  -1.987497,  0.072370,  1.736939,\
  -0.544636, -2.204059, -3.499582,\
   0.005195,  0.207915, -1.906905;
-
-    cppoptlib::Criteria<double> crit = cppoptlib::Criteria<double>::nonsmoothDefaults();
-    cppoptlib::BfgsnsSolver<ElectronicWaveFunctionProblem> solver;
-    solver.setDebug(cppoptlib::DebugLevel::High);
-    solver.setStopCriteria(crit);
-
-    solver.minimize(f, x);
 
 }

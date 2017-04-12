@@ -22,7 +22,6 @@ set(HEADER_FILES
 
 set(SOURCE_FILES
         source/QuaternionFit.cpp
-        source/StringMethod.cpp
         )
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES})

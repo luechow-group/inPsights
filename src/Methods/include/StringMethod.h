@@ -17,13 +17,23 @@ public:
     using Scalar    = typename ProblemType::Scalar;
     using TVector   = typename ProblemType::TVector;
 
-    StringMethod( ProblemType &problem, unsigned numberOfStates)
-            : numberOfStates(numberOfStates),
-              problemReference(problem) {}
+    StringMethod(unsigned numberOfStates)
+            : numberOfStates(numberOfStates) {
+        problem.addObserver(this);
+        resetString(numberOfStates);
+    }
 
-    void resetString(unsigned numberOfStates);
+    void resetString(unsigned numberOfStates) {
+        solvers_.clear();
+        for (unsigned i = 0; i < numberOfStates; ++i) {
+            solvers_.push_back(SolverType());
+        }
+    }
 
-    void evaluateString(Eigen::VectorXd &x);
+    void evaluateString(Eigen::VectorXd &x) {
+        double f = problem.value(x);
+        std::cout << f << std::endl;
+    }
 
     void stepPerformed() override{
         std::cout << "step performed" << std::endl;
@@ -31,8 +41,8 @@ public:
 
 private:
     unsigned numberOfStates;
-    ProblemType& problemReference;
-    std::vector<cppoptlib::ISolver<ProblemType,Ord>> solvers_;
+    ProblemType problem;
+    std::vector<SolverType> solvers_;
 };
 
 #endif //AMOLQCGUI_STRINGMETHOD_H
