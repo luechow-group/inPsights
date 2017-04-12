@@ -11,11 +11,12 @@
 #include "problemobserver.h"
 #include "solver/isolver.h"
 
-template<typename ProblemType, typename SolverType, int Ord>
+template<typename SolverType>
 class StringMethod : public cppoptlib::ProblemObserver{
 public:
-    using Scalar    = typename ProblemType::Scalar;
-    using TVector   = typename ProblemType::TVector;
+    using ProblemType = typename SolverType::ProblemType;
+    using Scalar = typename SolverType::Scalar;
+    using TVector = typename SolverType::TVector;
 
     StringMethod(unsigned numberOfStates)
             : numberOfStates(numberOfStates) {
@@ -28,6 +29,7 @@ public:
         for (unsigned i = 0; i < numberOfStates; ++i) {
             solvers_.push_back(SolverType());
         }
+        std::cout << "Number of Solvers " << solvers_.size() << std::endl;
     }
 
     void evaluateString(Eigen::VectorXd &x) {
