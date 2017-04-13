@@ -39,7 +39,7 @@ double StringMethodProblem::value(const Eigen::VectorXd &systemCoordVector) {
 
         wf_.evaluate(stateCoordVector);
         chain_(i,0) = wf_.getNegativeLogarithmizedProbabilityDensity();
-        //chain_.block(i,1,1,numberOfCoords_) = stateCoordVector;
+        chain_.block(i,1,1,numberOfCoords_) = stateCoordVector.transpose();
     }
 
     return chain_.col(0).sum();
