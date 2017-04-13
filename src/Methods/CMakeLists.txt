@@ -17,11 +17,13 @@ include_directories(
 
 set(HEADER_FILES
         include/QuaternionFit.h
-        include/StringMethod.h
+        include/StringMethodProblem.h
+        #include/StringMethod.h
         )
 
 set(SOURCE_FILES
         source/QuaternionFit.cpp
+        source/StringMethodProblem.cpp
         )
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES})
