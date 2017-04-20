@@ -24,9 +24,25 @@ int main(int argc, char const *argv[]) {
     xB << 0.0,0.0,-0.7,0.0,0.0,+0.7;
 
     Eigen::VectorXd systemVector(5*2*3);
+    Eigen::VectorXd orthogonalGradient(5*2*3);
+
     systemVector << xA, x1, x2, x3, xB;
-    std::cout << systemVector;
 
     StringMethodProblem stringMethodProblem(5,2*3);
-    std::cout << stringMethodProblem.value(systemVector) << std::endl;
+    //std::cout << stringMethodProblem.value(systemVector) << std::endl;
+
+    stringMethodProblem.reparametrizeString();
+    stringMethodProblem.getChainOfStatesFromSpline();
+    stringMethodProblem.calculateUnitTangentVector();
+
+    stringMethodProblem.gradient(systemVector,orthogonalGradient);
+
+    cppoptlib::BfgsnsSolver<StringMethodProblem> solver;
+
+    solver.setStopCriteria(cppoptlib::Criteria<double>::nonsmoothDefaults());
+    solver.minimize(stringMethodProblem,systemVector);
+
+    std::cout << "f in argmin " << stringMethodProblem(systemVector) << std::endl;
+    std::cout << "Solver status: " << solver.status() << std::endl;
+    std::cout << "Final criteria values: " << std::endl << solver.criteria() << std::endl;
 }

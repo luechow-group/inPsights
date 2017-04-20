@@ -21,9 +21,13 @@ public:
 
     bool callback(const cppoptlib::Criteria<double> &state, const Eigen::VectorXd &x);
 
-    void resetString();
+    void resetOptimizer();
     void reparametrizeString();
-    void constructChainOfStates();
+    void calculateUnitTangentVector();
+
+    void setChainOfStates(const Eigen::VectorXd &systemCoordVector);
+
+    void getChainOfStatesFromSpline();
 
     unsigned getValueCallCount(){
         return valueCallCount_;
@@ -43,9 +47,10 @@ public:
     }
 
 private:
-    Eigen::MatrixXd chain_;
-    Eigen::VectorXd chainGradient_;
+    unsigned stepCounter_;
     long numberOfStates_, numberOfCoords_;
+    Eigen::MatrixXd chain_;
+    Eigen::VectorXd unitTangentVector_, uValues_;
     unsigned valueCallCount_, gradientCallCount_;
     ElectronicWaveFunction wf_;
     //BSplines::ArcLengthParametrizedBSpline arcLengthParametrizedBSpline_; // use arclength parametrized spline

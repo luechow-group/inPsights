@@ -8,14 +8,18 @@
 
 StringMethodProblem::StringMethodProblem(long numberOfStates,
                                          long numberOfCoords)
-        : numberOfStates_(numberOfStates),
+        : stepCounter_(0),
+          numberOfStates_(numberOfStates),
           numberOfCoords_(numberOfCoords),
+          chain_(numberOfStates,numberOfCoords),
+          //chainGradient_(numberOfStates*numberOfCoords),
+          unitTangentVector_(numberOfStates*numberOfCoords),
+          uValues_(numberOfStates),
           valueCallCount_(0),
           gradientCallCount_(0)
 {
     assert(numberOfStates_ > 2);
     assert( (numberOfCoords_ > 0) && ( numberOfCoords_%3 == 0) );
-    chain_.resize(numberOfStates,numberOfCoords+1);
 }
 /*StringMethodProblem::StringMethodProblem(const Eigen::MatrixXd &coords)
         : chain_(Eigen::MatrixXd(coords.rows(),coords.cols()+1)),
@@ -32,23 +36,25 @@ StringMethodProblem::StringMethodProblem(long numberOfStates,
     chain_.rightCols(numberOfCoords_) = coords;
 }*/
 
+
 double StringMethodProblem::value(const Eigen::VectorXd &systemCoordVector) {
+
+    double value = 0;
     for (int i = 0; i < numberOfStates_; ++i) {
-        valueCallCount_++;
         Eigen::VectorXd stateCoordVector(systemCoordVector.segment(i*numberOfCoords_, numberOfCoords_) );
 
+        valueCallCount_++;
         wf_.evaluate(stateCoordVector);
-        chain_(i,0) = wf_.getNegativeLogarithmizedProbabilityDensity();
-        chain_.block(i,1,1,numberOfCoords_) = stateCoordVector.transpose();
-    }
 
-    return chain_.col(0).sum();
+        value += wf_.getNegativeLogarithmizedProbabilityDensity();
+        //chain_(i,0) = wf_.getNegativeLogarithmizedProbabilityDensity();
+    }
+    return value;//chain_.col(0).sum();
 }
 
 void StringMethodProblem::gradient(const Eigen::VectorXd &systemCoordVector,
-                                   Eigen::VectorXd &systenGradientVector) {
-
-
+                                   Eigen::VectorXd &systemGradientVector) {
+    Eigen::VectorXd chainGradient_(systemCoordVector.size());
     for (int i = 0; i < numberOfStates_; ++i) {
         gradientCallCount_++;
 
@@ -57,37 +63,63 @@ void StringMethodProblem::gradient(const Eigen::VectorXd &systemCoordVector,
                 wf_.getNegativeLogarithmizedProbabilityDensityGradientCollection();
     }
 
-    // calculate the single state gradients orthogonal to string
-
-    // make one giant system state vector out of
+    calculateUnitTangentVector();
+    systemGradientVector = chainGradient_ - (chainGradient_.dot(unitTangentVector_))*unitTangentVector_;
 }
 
 bool StringMethodProblem::callback(const cppoptlib::Criteria<double> &state, const Eigen::VectorXd &x) {
-    return false;
+    stepCounter_++;
+    std::cout << "callback" << std::endl;
+    setChainOfStates(x);
+
+    if(stepCounter_ > 4) {
+        stepCounter_ = 0;
+        reparametrizeString();
+        std::cout << "reparametrized" << std::endl;
+    }
+
+    return true;
 }
 
-void StringMethodProblem::resetString() {
+void StringMethodProblem::getChainOfStatesFromSpline() {
+    double u;
+
+    for (int i = 0; i < numberOfStates_ ; ++i) {
+        u = double(i)/double(numberOfStates_-1);
+        uValues_(i) = u;
+        chain_.row(i) = bSpline_.evaluate(u);
+        //systemGradientVector.segment(i*numberOfCoords_, numberOfCoords_) =
+        //unitTangentVector_.block(i*numberOfCoords_,1,numberOfCoords_,1) = bSpline_.evaluate(uValues_(i),1);
+    }
+}
+
+void StringMethodProblem::setChainOfStates(const Eigen::VectorXd &systemCoordVector) {
+    for (int i = 0; i < numberOfStates_; ++i) {
+        chain_.row(i) = systemCoordVector.segment(i*numberOfCoords_, numberOfCoords_);
+    }
+}
+
+void StringMethodProblem::calculateUnitTangentVector() {
+
+    for (int i = 0; i < numberOfStates_ ; ++i) {
+        unitTangentVector_.block(i*numberOfCoords_,0,numberOfCoords_,1) = bSpline_.evaluate(uValues_(i),1);
+    }
+    unitTangentVector_.normalize();
+}
+
+
+void StringMethodProblem::resetOptimizer() {
 
 }
 
 void StringMethodProblem::reparametrizeString() {
     // include probability density in the interpolation
-
     // construct (value weighted) arclength parametrized spline
 
-    BSplines::PointInterpolationGenerator interpolator(chain_,3);
+    BSplines::PointInterpolationGenerator interpolator(chain_,3,true);
     /*Eigen::VectorXi excludedDimensions(1);
     excludedDimensions << 1;
     arcLengthParametrizedBSpline_ = BSplines::ArcLengthParametrizedBSpline(interpolator.generateBSpline(1),
                                                                            excludedDimensions);*/
     bSpline_ = interpolator.generateBSpline(1);
-}
-
-
-void StringMethodProblem::constructChainOfStates() {
-
-
-
-    // how many states?
-    //wf_.evaluate(x);
 }
