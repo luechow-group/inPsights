@@ -4,7 +4,7 @@
 
 #include <iostream>
 #include "ElectronicWaveFunctionProblem.h"
-#include "StringMethodProblem.h"
+#include "StringOptimizationProblem.h"
 #include "solver/bfgsnssolver.h"
 
 int main(int argc, char const *argv[]) {
@@ -23,26 +23,23 @@ int main(int argc, char const *argv[]) {
     x3 << 0.0,0.0,-0.3,0.0,0.0,+0.3;
     xB << 0.0,0.0,-0.7,0.0,0.0,+0.7;
 
-    Eigen::VectorXd systemVector(5*2*3);
-    Eigen::VectorXd orthogonalGradient(5*2*3);
+    Eigen::MatrixXd initialChain(5,2*3);
 
-    systemVector << xA, x1, x2, x3, xB;
+    initialChain.row(0) = xA;
+    initialChain.row(1) = x1;
+    initialChain.row(2) = x2;
+    initialChain.row(3) = x3;
+    initialChain.row(4) = xB;
 
-    StringMethodProblem stringMethodProblem(5,2*3);
-    //std::cout << stringMethodProblem.value(systemVector) << std::endl;
+    StringMethod stringMethod(initialChain);
 
-    stringMethodProblem.reparametrizeString();
-    stringMethodProblem.getChainOfStatesFromSpline();
-    stringMethodProblem.calculateUnitTangentVector();
+    std::cout << stringMethod.getChain().coordinates() << std::endl;
 
-    stringMethodProblem.gradient(systemVector,orthogonalGradient);
+    stringMethod.optimizeString();
 
-    cppoptlib::BfgsnsSolver<StringMethodProblem> solver;
 
-    solver.setStopCriteria(cppoptlib::Criteria<double>::nonsmoothDefaults());
-    solver.minimize(stringMethodProblem,systemVector);
-
-    std::cout << "f in argmin " << stringMethodProblem(systemVector) << std::endl;
-    std::cout << "Solver status: " << solver.status() << std::endl;
-    std::cout << "Final criteria values: " << std::endl << solver.criteria() << std::endl;
+    /*
+    stringMethod.reparametrizeString();
+    stringMethod.discretizeSplineToChain();
+    stringMethod.performStep();*/
 }
