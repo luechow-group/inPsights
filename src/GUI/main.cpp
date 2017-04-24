@@ -61,7 +61,7 @@ Qt3DCore::QEntity* createTestScene()
 int main(int argc, char* argv[])
 {
 
-    BSpline bs;
+    BSplines::BSpline bs;
     
     QGuiApplication app(argc, argv);
 
