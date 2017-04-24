@@ -21,7 +21,7 @@ StringMethod::StringMethod(ChainOfStates initialChain)
 void StringMethod::optimizeString() {
     reparametrizeString();
     discretizeStringToChain();
-    calculateUnitTangent();
+    calculateUnitTangents();
     do {
         performStep();
     } while (status_ == cppoptlib::Status::IterationLimit);
@@ -35,10 +35,10 @@ void StringMethod::performStep() {
 }
 
 void StringMethod::minimizeOrthogonalToString() {
-    StringOptimizationProblem problem(chain_.statesNumber(), chain_.coordinatesNumber(), wf_, unitTangent_);
+    StringOptimizationProblem problem(chain_.statesNumber(), chain_.coordinatesNumber(), wf_, unitTangents_);
     cppoptlib::BfgsnsSolver<StringOptimizationProblem> solver;
     auto crit = cppoptlib::Criteria<double>::nonsmoothDefaults();
-    crit.iterations = 20;
+    crit.iterations = 10;
     solver.setStopCriteria(crit);
 
     Eigen::VectorXd vec = chain_.coordinatesAsVector();
@@ -63,7 +63,7 @@ void StringMethod::reparametrizeString() {
     bSpline_ = interpolator.generateBSpline(1);
 
     calculateParameterValues();
-    calculateUnitTangent();
+    calculateUnitTangents();
 }
 
 void StringMethod::calculateParameterValues() {
@@ -80,11 +80,10 @@ void StringMethod::discretizeStringToChain() {
     //std::cout << "spline \n"<< chain_.coordinates() << std::endl;
 }
 
-void StringMethod::calculateUnitTangent() {
-    unitTangent_.resize(chain_.statesNumber()*chain_.coordinatesNumber());
+void StringMethod::calculateUnitTangents() {
+    unitTangents_.resize(chain_.statesNumber(),chain_.coordinatesNumber());
 
     for (int i = 0; i < chain_.statesNumber() ; ++i) {
-        unitTangent_.segment(i*chain_.coordinatesNumber(), chain_.coordinatesNumber()) = bSpline_.evaluate(uValues_(i),1);
+        unitTangents_.row(i) = bSpline_.evaluate(uValues_(i),1).normalized();
     }
-    unitTangent_.normalize();
 }

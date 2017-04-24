@@ -21,14 +21,14 @@ public:
     StringOptimizationProblem(long numberOfStates,
                               long numberOfCoords,
                               ElectronicWaveFunction &wf,
-                              const Eigen::VectorXd &unitTangent
+                              Eigen::MatrixXd &unitTangents //TODO make const
                               //Eigen::MatrixXd &chain
                               );
     //StringMethodProblem(const Eigen::MatrixXd &initalChainGuess);
 
     double value(const Eigen::VectorXd &x);
 
-    void gradient(const Eigen::VectorXd &x, Eigen::VectorXd &orthogonalGrad);
+    void gradient(const Eigen::VectorXd &x, Eigen::VectorXd &grad);
 
     bool callback(cppoptlib::Criteria<double> &state, Eigen::VectorXd &x);
 
@@ -57,7 +57,7 @@ private:
     long numberOfStates_, numberOfCoords_;
     //Eigen::MatrixXd &chain_;
     ElectronicWaveFunction &wf_;
-    const Eigen::VectorXd &unitTangent_;
+    Eigen::MatrixXd &unitTangents_; //TODO make const
     unsigned valueCallCount_, gradientCallCount_;
 
 

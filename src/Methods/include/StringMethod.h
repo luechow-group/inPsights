@@ -58,7 +58,8 @@ private:
     //BSplines::ArcLengthParametrizedBSpline arcLengthParametrizedBSpline_; // use arclength parametrized spline
     BSplines::BSpline bSpline_;
     ChainOfStates chain_;
-    Eigen::VectorXd unitTangent_, uValues_;
+    Eigen::MatrixXd unitTangents_;
+    Eigen::VectorXd uValues_;
     cppoptlib::Status status_;
 
 //TODO make
@@ -69,7 +70,7 @@ private:
     void reparametrizeString(); // specify u values
     void calculateParameterValues();
     void discretizeStringToChain();
-    void calculateUnitTangent();
+    void calculateUnitTangents();
 };
 
 /*

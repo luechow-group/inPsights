@@ -11,14 +11,14 @@
 StringOptimizationProblem::StringOptimizationProblem(long numberOfStates,
                                                      long numberOfCoords,
                                                      ElectronicWaveFunction &wf,
-                                                     const Eigen::VectorXd &unitTangent
+                                                     Eigen::MatrixXd &unitTangents //TODO make const
                                                      //Eigen::MatrixXd &chain
                                                      )
         : stepCounter_(0),
           numberOfStates_(numberOfStates),
           numberOfCoords_(numberOfCoords),
           wf_(wf),
-          unitTangent_(unitTangent),
+          unitTangents_(unitTangents),
           //chain_(chain),
           valueCallCount_(0),
           gradientCallCount_(0)
@@ -43,18 +43,24 @@ double StringOptimizationProblem::value(const Eigen::VectorXd &x) {
     return value;//chain_.col(0).sum();
 }
 
-void StringOptimizationProblem::gradient(const Eigen::VectorXd &x,
-                                   Eigen::VectorXd &orthogonalGrad) {
-    Eigen::VectorXd grad(x.size());
+void StringOptimizationProblem::gradient(const Eigen::VectorXd &x, Eigen::VectorXd &grad) {
+    Eigen::VectorXd stateGrad(numberOfCoords_);
+    Eigen::VectorXd unitTangent(numberOfCoords_);
+
     for (int i = 0; i < numberOfStates_; ++i) {
         gradientCallCount_++;
 
         wf_.evaluate(x.segment(i*numberOfCoords_, numberOfCoords_));
         grad.segment(i*numberOfCoords_, numberOfCoords_) =
                 wf_.getNegativeLogarithmizedProbabilityDensityGradientCollection();
+
+        stateGrad = wf_.getNegativeLogarithmizedProbabilityDensityGradientCollection();
+
+        unitTangent = unitTangents_.row(i);
+        grad.segment(i*numberOfCoords_, numberOfCoords_) = stateGrad - (stateGrad.dot(unitTangent))*unitTangent;
+
     }
 
-    orthogonalGrad = grad - unitTangent_*(grad.dot(unitTangent_));
     //std::cout << "grad\n" << grad.transpose() << std::endl;
     //std::cout << "grad orthogonal\n" << orthogonalGrad.transpose() << std::endl;
 }
