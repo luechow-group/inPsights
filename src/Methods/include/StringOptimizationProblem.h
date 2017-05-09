@@ -8,6 +8,8 @@
 #include "problem.h"
 #include "StringMethod.h"
 
+enum StateType{ Simple, Orthogonal, Fixed, ClimbingImage};
+
 class StringOptimizationProblem : public cppoptlib::Problem<double,Eigen::Dynamic>{
 public:
 
@@ -55,11 +57,11 @@ public:
 private:
     unsigned stepCounter_;
     long numberOfStates_, numberOfCoords_;
-    //Eigen::MatrixXd &chain_;
     ElectronicWaveFunction &wf_;
     Eigen::MatrixXd &unitTangents_; //TODO make const
     unsigned valueCallCount_, gradientCallCount_;
 
+    std::vector<StateType> stateTypes_;
 
 };
 

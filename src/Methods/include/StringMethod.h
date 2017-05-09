@@ -17,8 +17,6 @@ public:
               values_(this->statesNumber())
     {}
 
-    //ChainOfStates(Eigen::MatrixXd chain, std::vector<unsigned> valuePositins);
-
     long statesNumber(){return coordinates_.rows();}
     long coordinatesNumber(){return coordinates_.cols();}
 
@@ -26,14 +24,11 @@ public:
     //Eigen::MatrixXd   coordinatesCopy() { return coordinates_; }
     //const Eigen::MatrixXd & coordinates() { return coordinates_; }
 
-    Eigen::VectorXd coordinatesAsVector() {
-        return Eigen::VectorXd(Eigen::Map<Eigen::VectorXd>(coordinates_.data(),
-                                                    statesNumber()*coordinatesNumber()));
-    };
+    Eigen::VectorXd coordinatesAsVector();
 
     void storeVectorInChain(long statesNumber,
                             long coordinatesNumber,
-                            const Eigen::VectorXd &vec//, std::vector<unsigned> valuePositions
+                            Eigen::VectorXd &vec//, std::vector<unsigned> valuePositions
     );
 
     void setCoordinates(Eigen::MatrixXd coordinates){
@@ -41,7 +36,8 @@ public:
     }
 
 private:
-    Eigen::MatrixXd coordinates_;
+    //Eigen::MatrixXd coordinates_;
+    Eigen::Matrix<double,Eigen::Dynamic,Eigen::Dynamic> coordinates_;//TODO should be row major
     Eigen::VectorXd values_;
 };
 
@@ -55,16 +51,14 @@ public:
 
 private:
     ElectronicWaveFunction wf_;
-    //BSplines::ArcLengthParametrizedBSpline arcLengthParametrizedBSpline_; // use arclength parametrized spline
-    BSplines::BSpline bSpline_;
+    BSplines::ArcLengthParametrizedBSpline arcLengthParametrizedBSpline_; // use arclength parametrized spline
+    //BSplines::BSpline bSpline_;
     ChainOfStates chain_;
     Eigen::MatrixXd unitTangents_;
     Eigen::VectorXd uValues_;
     cppoptlib::Status status_;
 
-//TODO make
 private:
-// public:
     void minimizeOrthogonalToString();
     void performStep();
     void reparametrizeString(); // specify u values

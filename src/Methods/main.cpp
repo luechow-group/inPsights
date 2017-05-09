@@ -12,34 +12,28 @@ int main(int argc, char const *argv[]) {
     //StringMethod<cppoptlib::BfgsnsSolver<ElectronicWaveFunctionProblem>> stringMethod(4); // is a ProblemObserver
 
     Eigen::VectorXd xA(2*3);
-    Eigen::VectorXd x1(2*3);
-    Eigen::VectorXd x2(2*3);
-    Eigen::VectorXd x3(2*3);
     Eigen::VectorXd xB(2*3);
 
-    xA << 0.0,0.0,+0.7,0.0,0.0,-0.7;
-    x1 << 0.0,0.0,+0.3,0.0,0.0,-0.3;
-    x2 << 0.0,0.0,+0.0,0.0,0.0,+0.0;
-    x3 << 0.0,0.0,-0.3,0.0,0.0,+0.3;
-    xB << 0.0,0.0,-0.7,0.0,0.0,+0.7;
+    xA << 0.0,  0.01,  0.70014273,  0.02, 0.09,-0.70014273;//0.0,0.00,+0.7,0.0,0.0,-0.7;
+    xB << 0.01,-0.0, +0.70014273,  -0.05, 0.01,+0.70014273;//0.0,0.00,-0.7,0.0,0.0,+0.7;
 
-    Eigen::MatrixXd initialChain(5,2*3);
+  unsigned numberOfStates = 15;
 
-    initialChain.row(0) = xA;
-    initialChain.row(1) = x1;
-    initialChain.row(2) = x2;
-    initialChain.row(3) = x3;
-    initialChain.row(4) = xB;
+  Eigen::MatrixXd initialChain(numberOfStates,2*3);
+
+  Eigen::VectorXd delta = xB-xA;
+  for (int i = 0; i < numberOfStates ; ++i) {
+    double rel = double(i)/double(numberOfStates-1);
+
+    initialChain.row(i) = xA + (delta * rel);
+  }
+
+
+
 
     StringMethod stringMethod(initialChain);
 
     std::cout << stringMethod.getChain().coordinates() << std::endl;
 
     stringMethod.optimizeString();
-
-
-    /*
-    stringMethod.reparametrizeString();
-    stringMethod.discretizeSplineToChain();
-    stringMethod.performStep();*/
 }
