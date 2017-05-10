@@ -8,9 +8,12 @@
 #include <iomanip>
 #include "ElectronicWaveFunction.h"
 #include "problem.h"
+#include "observableproblem.h"
+#include "problemobserver.h"
 
-
-class ElectronicWaveFunctionProblem : public cppoptlib::Problem<double,Eigen::Dynamic> {
+class ElectronicWaveFunctionProblem : public cppoptlib::Problem<double,Eigen::Dynamic>,
+                                      public cppoptlib::ObservableProblem
+{
 public:
 
     ElectronicWaveFunctionProblem();

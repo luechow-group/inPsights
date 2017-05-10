@@ -20,14 +20,11 @@ void ElectronicWaveFunctionProblem::gradient(const Eigen::VectorXd &x, Eigen::Ve
 }
 
 bool ElectronicWaveFunctionProblem::callback(const cppoptlib::Criteria<double> &state, const Eigen::VectorXd &x) {
-    Eigen::VectorXd grad;
-    gradient(x,grad);
+    notifyObserversAboutPerformedStep();
+
     std::cout << "(" << std::setw(2) << state.iterations << ")"
               << " f(x) = "     << std::fixed << std::setw(8) << std::setprecision(8) << value(x)
-              << " gradNorm = " << std::setw(8) << state.gradNorm
               << " xDelta = "   << std::setw(8) << state.xDelta
-              //<< " g = [" << std::setprecision(16) << grad.transpose() << "]"
-              //<< " x = [" << std::setprecision(16) << x.transpose() << "]"
               << std::endl;
     return true;
 }
