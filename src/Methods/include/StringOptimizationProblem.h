@@ -34,6 +34,7 @@ public:
 
     bool callback(cppoptlib::Criteria<double> &state, Eigen::VectorXd &x);
 
+    Eigen::VectorXd stateValues(const Eigen::VectorXd &x);
 
     //void setChainOfStates(const Eigen::VectorXd &systemCoordVector);
 
@@ -59,6 +60,7 @@ private:
     long numberOfStates_, numberOfCoords_;
     ElectronicWaveFunction &wf_;
     Eigen::MatrixXd &unitTangents_; //TODO make const
+    Eigen::VectorXd values_;
     unsigned valueCallCount_, gradientCallCount_;
 
     std::vector<StateType> stateTypes_;

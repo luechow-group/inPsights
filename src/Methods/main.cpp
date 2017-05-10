@@ -19,13 +19,13 @@ int main(int argc, char const *argv[]) {
 
   unsigned numberOfStates = 15;
 
-  Eigen::MatrixXd initialChain(numberOfStates,2*3);
+  Eigen::MatrixXd initialChain(2*3,numberOfStates);
 
   Eigen::VectorXd delta = xB-xA;
   for (int i = 0; i < numberOfStates ; ++i) {
     double rel = double(i)/double(numberOfStates-1);
 
-    initialChain.row(i) = xA + (delta * rel);
+    initialChain.col(i) = xA + (delta * rel);
   }
 
 

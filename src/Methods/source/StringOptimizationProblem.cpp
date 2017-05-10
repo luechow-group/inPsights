@@ -17,7 +17,7 @@ StringOptimizationProblem::StringOptimizationProblem(long numberOfStates,
           numberOfCoords_(numberOfCoords),
           wf_(wf),
           unitTangents_(unitTangents),
-        //chain_(chain),
+          values_(numberOfStates),
           valueCallCount_(0),
           gradientCallCount_(0)
 {
@@ -33,11 +33,22 @@ double StringOptimizationProblem::value(const Eigen::VectorXd &x) {
 
     valueCallCount_++;
     wf_.evaluate(xi);
-
     value += wf_.getNegativeLogarithmizedProbabilityDensity();
-    //chain_(i,0) = wf_.getNegativeLogarithmizedProbabilityDensity();
   }
-  return value;//chain_.col(0).sum();
+  return value;
+}
+
+Eigen::VectorXd StringOptimizationProblem::stateValues(const Eigen::VectorXd &x) {
+
+  Eigen::VectorXd stateValues(numberOfStates_);
+  for (int i = 0; i < numberOfStates_; ++i) {
+    Eigen::VectorXd xi(x.segment(i * numberOfCoords_, numberOfCoords_));
+
+    valueCallCount_++;
+    wf_.evaluate(xi);
+    stateValues(i) += wf_.getNegativeLogarithmizedProbabilityDensity();
+  }
+  return stateValues;
 }
 
 void StringOptimizationProblem::gradient(const Eigen::VectorXd &x, Eigen::VectorXd &grad) {
@@ -60,7 +71,8 @@ void StringOptimizationProblem::gradient(const Eigen::VectorXd &x, Eigen::Vector
 
     gradientCallCount_++;
     wf_.evaluate(x.segment(i * numberOfCoords_, numberOfCoords_));
-    //std::cout << "geom " << i << " " << x.segment(i * numberOfCoords_, numberOfCoords_).transpose() << std::endl;
+    values_(i) = wf_.getNegativeLogarithmizedProbabilityDensity();
+
     switch (stateTypes_[i]) {
       case StateType::Simple : {
         stateGrad = stateGrad = wf_.getNegativeLogarithmizedProbabilityDensityGradientCollection();
