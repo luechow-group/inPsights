@@ -43,6 +43,7 @@ set(HEADER_FILES
         include/Atom.h
         include/Bond.h
         include/Helper.h
+        include/Electron.h
         )
 
 set(SOURCE_FILES
@@ -54,6 +55,7 @@ set(SOURCE_FILES
         source/DividedCylinder.cpp
         source/Atom.cpp
         source/Bond.cpp
+        source/Electron.cpp
         )
 
 add_executable("${PROJECT_NAME}_main" ${SOURCE_FILES} ${HEADER_FILES} main.cpp)
