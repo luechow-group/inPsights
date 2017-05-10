@@ -12,6 +12,7 @@
 #include "DividedCylinder.h"
 #include "Atom.h"
 #include "Bond.h"
+#include "Electron.h"
 
 #include "BSpline.h"
 
@@ -34,6 +35,9 @@ Qt3DCore::QEntity* createTestScene()
     Atom N(root,p1,Elements::ElementType::N);
     Atom O(root,p2,Elements::ElementType::O);
     Atom C(root,p3,Elements::ElementType::C);
+
+    Electron e1(root,QVector3D(12.0f, 1.0f, 7.0f),Spin::SpinType::Alpha);
+    Electron e2(root,QVector3D( 9.0f, 1.2f, 7.0f),Spin::SpinType::Beta);
 
     Bond b1(N,O);
     Bond b2(C,O);
