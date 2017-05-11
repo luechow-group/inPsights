@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
 
-project(GUI CXX)
+project(GUI C CXX Fortran)
 
 
 set ( PROJECT_FOLDER_NAME ${PROJECT_NAME} )
@@ -43,6 +43,7 @@ set(HEADER_FILES
         include/Atom.h
         include/Bond.h
         include/Helper.h
+        include/Electron.h
         )
 
 set(SOURCE_FILES
@@ -54,6 +55,7 @@ set(SOURCE_FILES
         source/DividedCylinder.cpp
         source/Atom.cpp
         source/Bond.cpp
+        source/Electron.cpp
         )
 
 add_executable("${PROJECT_NAME}_main" ${SOURCE_FILES} ${HEADER_FILES} main.cpp)
@@ -62,7 +64,8 @@ add_executable("${PROJECT_NAME}_main" ${SOURCE_FILES} ${HEADER_FILES} main.cpp)
 # links the libraries to the executable
 target_link_libraries("${PROJECT_NAME}_main"
         BSplines
-        eigen
+        Methods
+        #eigen
         Qt5::Core
         Qt5::Gui
         Qt5::Widgets
