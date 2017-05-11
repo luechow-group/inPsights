@@ -3,9 +3,7 @@
 //
 
 #include <iostream>
-#include "ElectronicWaveFunctionProblem.h"
-#include "StringOptimizationProblem.h"
-#include "solver/bfgsnssolver.h"
+#include "StringMethod.h"
 
 int main(int argc, char const *argv[]) {
 
