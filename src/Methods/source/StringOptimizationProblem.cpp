@@ -46,7 +46,7 @@ Eigen::VectorXd StringOptimizationProblem::stateValues(const Eigen::VectorXd &x)
 
     valueCallCount_++;
     wf_.evaluate(xi);
-    stateValues(i) += wf_.getNegativeLogarithmizedProbabilityDensity();
+    stateValues(i) = wf_.getNegativeLogarithmizedProbabilityDensity();
   }
   return stateValues;
 }
