@@ -10,6 +10,8 @@ message ( "-- ++ CREATING PROJECT OR MAKEFILE ---> ${OUTPUT_NAME}" )
 
 set(CMAKE_CXX_STANDARD 11)
 
+find_package(Eigen3 REQUIRED)
+include_directories( ${EIGEN3_INCLUDE_DIR} )
 
 # Require LAPACK Library which requires BLAS library implicitly
 find_package(LAPACK REQUIRED)
@@ -34,7 +36,7 @@ get_filename_component(PATH_TO_LIBUTILS amolqc/utils/libutils.a REALPATH)
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES} dummy.f90)
 target_link_libraries(${PROJECT_NAME}
-        eigen
+        #eigen
         cppoptlib
         ${PATH_TO_LIBAMOLQC}
         ${PATH_TO_LIBUTILS}
