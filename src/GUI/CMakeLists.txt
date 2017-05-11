@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
 
-project(GUI CXX)
+project(GUI C CXX Fortran)
 
 
 set ( PROJECT_FOLDER_NAME ${PROJECT_NAME} )
