@@ -19,7 +19,7 @@ Eigen::VectorXd ChainOfStates::coordinatesAsVector() {
 void ChainOfStates::storeCoordinateVectorInChain(long coordinatesNumber, long statesNumber,
                                                  Eigen::VectorXd &coordinateVector) {
     // map is performed in column major
-    coordinates_.Map(coordinateVector.data(), coordinatesNumber, statesNumber);
+    coordinates_ = Eigen::Map<Eigen::MatrixXd>(coordinateVector.data(), coordinatesNumber, statesNumber);
 }
 
 
