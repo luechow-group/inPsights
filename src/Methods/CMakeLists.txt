@@ -22,13 +22,13 @@ set(HEADER_FILES
         include/QuaternionFit.h
         include/StringOptimizationProblem.h
         include/StringMethod.h
-        )
+        include/ChainOfStates.h)
 
 set(SOURCE_FILES
         source/QuaternionFit.cpp
         source/StringOptimizationProblem.cpp
         source/StringMethod.cpp
-        )
+        source/ChainOfStates.cpp)
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES})
 target_include_directories(${PROJECT_NAME} PUBLIC
