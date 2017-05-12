@@ -27,7 +27,7 @@ Qt3DCore::QEntity *createTestScene() {
   xA << 0.0, 0.0, 0.70014273,  0.0, 0.00, -0.70014273;
   xB << 0.0, 0.0, -0.70014273, 0.0, 0.00, +0.70014273;
 
-  unsigned numberOfStates = 7;
+  unsigned numberOfStates = 20;
   Eigen::MatrixXd initialCoordinates(2 * 3, numberOfStates);
 
   Eigen::VectorXd delta = xB - xA;
@@ -35,17 +35,16 @@ Qt3DCore::QEntity *createTestScene() {
     double rel = double(i) / double(numberOfStates - 1);
 
     Eigen::VectorXd randVec(2*3);
-    if ( i == 0  || i == (numberOfStates-1)) randVec.setZero();
-    else randVec.setRandom();
-
-    randVec *= 0.5;
+    randVec.setZero();
+    if ( i != 0  && i != (numberOfStates-1)) randVec.setRandom();
+    randVec *= 0.25;
 
     initialCoordinates.col(i) = xA + ((delta+randVec) * rel);
   }
 
   StringMethod stringMethod(initialCoordinates);
   std::cout << stringMethod.getChain().coordinates() << std::endl;
-  //stringMethod.optimizeString();
+  stringMethod.optimizeString();
 
 
   Qt3DCore::QEntity *root = new Qt3DCore::QEntity();
@@ -56,15 +55,8 @@ Qt3DCore::QEntity *createTestScene() {
 
   BSplinePlotter bSplinePlotter(root, stringMethod.getArcLengthParametrizedBSpline(), 50, 0.005f);
 
-  //Sphere s0(root, Qt::black, QVector3D(0, 0, 0), 0.5f);
-  //Cylinder x(root, Qt::red, {QVector3D(0, 0, 0), QVector3D(20, 0, 0)}, .25f);
-  //Cylinder y(root, Qt::green, {QVector3D(0, 0, 0), QVector3D(0, 20, 0)}, .25f);
-  //Cylinder z(root, Qt::blue, {QVector3D(0, 0, 0), QVector3D(0, 0, 20)}, .25f);
-
   //Electron e1(root, QVector3D(12.0f, 1.0f, 7.0f), Spin::SpinType::Alpha);
   //Electron e2(root, QVector3D(9.0f, 1.2f, 7.0f), Spin::SpinType::Beta);
-  //Bond b1(N, O);
-  //Bond b2(C, O);
 
   //Qt3DRender::QObjectPicker(); // emits signals for you to handle
   //Qt3DRender::QPickingSettings* pickingSettings = new Qt3DRender::QPickingSettings();
