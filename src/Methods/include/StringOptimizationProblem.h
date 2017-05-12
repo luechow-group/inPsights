@@ -6,7 +6,7 @@
 #define AMOLQCGUI_STRINGMETHODPROBLEM_H
 
 #include "problem.h"
-#include "StringMethod.h"
+#include "ElectronicWaveFunction.h"
 
 enum StateType{ Simple, Orthogonal, Fixed, ClimbingImage};
 
