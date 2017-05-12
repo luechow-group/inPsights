@@ -32,6 +32,15 @@ Cylinder::Cylinder(Qt3DCore::QEntity *root,
   entity->addComponent(mesh_);
 }
 
+Cylinder::Cylinder(const Cylinder &cylinder)
+        : radius_(cylinder.getRadius()),
+          length_(cylinder.getLength()),
+          start_(cylinder.getStart()),
+          end_(cylinder.getEnd()),
+          difference_(cylinder.difference_)
+{
+}
+
 void Cylinder::rotateToOrientation(const QVector3D orientation) {
 
   auto origVec = QVector3D(0, 1, 0);

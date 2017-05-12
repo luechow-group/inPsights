@@ -10,6 +10,6 @@ Bond::Bond(const Atom &src, const Atom &dest)
                      QColorFromElementType(dest.getElementType())},
                     {src.getLocation(),
                      dest.getLocation()},
-                    2.4f*std::exp(-0.1f*(src.getLocation()-dest.getLocation()).length())),
+                    2.4f/40.0f*std::exp(-0.1f*(src.getLocation()-dest.getLocation()).length())),
     src_(src),
     dest_(dest) {}
