@@ -13,8 +13,10 @@
 #include "Atom.h"
 #include "Bond.h"
 #include "Electron.h"
+#include "Polyline.h"
 
 #include "BSpline.h"
+#include "BSplinePlotter.h"
 #include "StringMethod.h"
 
 
@@ -22,55 +24,51 @@ Qt3DCore::QEntity *createTestScene() {
 
   Eigen::VectorXd xA(2 * 3);
   Eigen::VectorXd xB(2 * 3);
+  xA << 0.0, 0.0, 0.70014273,  0.0, 0.00, -0.70014273;
+  xB << 0.0, 0.0, -0.70014273, 0.0, 0.00, +0.70014273;
 
-  xA << 0.0, 0.01, 0.70014273, 0.02, 0.09, -0.70014273;//0.0,0.00,+0.7,0.0,0.0,-0.7;
-  xB << 0.01, -0.0, +0.70014273, -0.05, 0.01, +0.70014273;//0.0,0.00,-0.7,0.0,0.0,+0.7;
-
-  unsigned numberOfStates = 15;
-
-  Eigen::MatrixXd initialChain(2 * 3, numberOfStates);
+  unsigned numberOfStates = 7;
+  Eigen::MatrixXd initialCoordinates(2 * 3, numberOfStates);
 
   Eigen::VectorXd delta = xB - xA;
   for (int i = 0; i < numberOfStates; ++i) {
     double rel = double(i) / double(numberOfStates - 1);
 
-    initialChain.col(i) = xA + (delta * rel);
+    Eigen::VectorXd randVec(2*3);
+    if ( i == 0  || i == (numberOfStates-1)) randVec.setZero();
+    else randVec.setRandom();
+
+    randVec *= 0.5;
+
+    initialCoordinates.col(i) = xA + ((delta+randVec) * rel);
   }
 
-
-  StringMethod stringMethod(initialChain);
-
+  StringMethod stringMethod(initialCoordinates);
   std::cout << stringMethod.getChain().coordinates() << std::endl;
+  //stringMethod.optimizeString();
 
-  stringMethod.optimizeString();
 
   Qt3DCore::QEntity *root = new Qt3DCore::QEntity();
 
-  auto p1 = QVector3D(10.0f, 0.0f, 4.0f);
-  auto p2 = QVector3D(-5.0f, -10.0f, 3.0f);
-  auto p3 = QVector3D(-0.0f, -10.0f, -5.0f);
+  Atom H1(root, QVector3D(0.f,0.f,+0.70014273f), Elements::ElementType::C);
+  Atom H2(root, QVector3D(0.f,0.f,-0.70014273f), Elements::ElementType::C);
+  //Bond b1(H1, H2);
 
-  Sphere s0(root, Qt::black, QVector3D(0, 0, 0), 0.5f);
+  BSplinePlotter bSplinePlotter(root, stringMethod.getArcLengthParametrizedBSpline(), 50, 0.005f);
 
-  Cylinder x(root, Qt::red, {QVector3D(0, 0, 0), QVector3D(20, 0, 0)}, .25f);
-  Cylinder y(root, Qt::green, {QVector3D(0, 0, 0), QVector3D(0, 20, 0)}, .25f);
-  Cylinder z(root, Qt::blue, {QVector3D(0, 0, 0), QVector3D(0, 0, 20)}, .25f);
+  //Sphere s0(root, Qt::black, QVector3D(0, 0, 0), 0.5f);
+  //Cylinder x(root, Qt::red, {QVector3D(0, 0, 0), QVector3D(20, 0, 0)}, .25f);
+  //Cylinder y(root, Qt::green, {QVector3D(0, 0, 0), QVector3D(0, 20, 0)}, .25f);
+  //Cylinder z(root, Qt::blue, {QVector3D(0, 0, 0), QVector3D(0, 0, 20)}, .25f);
 
-  Atom N(root, p1, Elements::ElementType::N);
-  Atom O(root, p2, Elements::ElementType::O);
-  Atom C(root, p3, Elements::ElementType::C);
-
-  Electron e1(root, QVector3D(12.0f, 1.0f, 7.0f), Spin::SpinType::Alpha);
-  Electron e2(root, QVector3D(9.0f, 1.2f, 7.0f), Spin::SpinType::Beta);
-
-  Bond b1(N, O);
-  Bond b2(C, O);
-
+  //Electron e1(root, QVector3D(12.0f, 1.0f, 7.0f), Spin::SpinType::Alpha);
+  //Electron e2(root, QVector3D(9.0f, 1.2f, 7.0f), Spin::SpinType::Beta);
+  //Bond b1(N, O);
+  //Bond b2(C, O);
 
   //Qt3DRender::QObjectPicker(); // emits signals for you to handle
   //Qt3DRender::QPickingSettings* pickingSettings = new Qt3DRender::QPickingSettings();
   //pickingSettings->setPickMethod(Qt3DRender::QPickingSettings::PickMethod::BoundingVolumePicking);
-
 
   return root;
 }
@@ -87,8 +85,8 @@ int main(int argc, char *argv[]) {
 
   // camera
   Qt3DRender::QCamera *camera = view.camera();
-  camera->lens()->setPerspectiveProjection(45.0f, 16.0f / 9.0f, 0.1f, 1000.0f);
-  camera->setPosition(QVector3D(0, 0, 100.0f));
+  camera->lens()->setPerspectiveProjection(45.0f, 16.0f / 9.0f, 0.1f, 100.0f);
+  camera->setPosition(QVector3D(0, 0, 2.0));
   camera->setViewCenter(QVector3D(0, 0, 0));
   //camera->setFarPlane(1000);
   //camera->setNearPlane(0.1);
