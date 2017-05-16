@@ -1,0 +1,14 @@
+//
+// Created by Moria on 16.05.2017.
+//
+
+#ifndef LOCALSPINMULTIPLICITY_CORE_H
+#define LOCALSPINMULTIPLICITY_CORE_H
+
+
+class Core {
+
+};
+
+
+#endif //LOCALSPINMULTIPLICITY_CORE_H
