@@ -7,3 +7,6 @@
 [submodule "src/Externals/CppNumericalSolvers"]
 	path = src/Externals/cppoptlib
 	url = https://github.com/MonteCarloMichael/CppNumericalSolvers.git
+[submodule "src/Externals/LocalSpinMultiplicity"]
+	path = src/Externals/LocalSpinMultiplicity
+	url = git@git.rwth-aachen.de:morian.sonnet/LocalSpinMultiplicity.git
