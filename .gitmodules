@@ -1,0 +1,3 @@
+[submodule "HungarianAlgorithm"]
+	path = HungarianAlgorithm
+	url = https://github.com/emmarose88/HungarianAlgorithm.git
