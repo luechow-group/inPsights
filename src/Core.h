@@ -5,7 +5,6 @@
 #ifndef LOCALSPINMULTIPLICITY_CORE_H
 #define LOCALSPINMULTIPLICITY_CORE_H
 
-
 class Core {
  // ULF
 };
