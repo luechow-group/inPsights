@@ -52,6 +52,7 @@ void FileXyzInput::readElectronCoreAssignations(const std::vector<Core> &cores, 
         }
         assignations.push_back(ea.assign(cores,tempElectrons));
         tempElectrons.clear();
+        streams[0].ignore(std::numeric_limits<std::streamsize>::max(),'\n');  // go to next line
     }
 }
 

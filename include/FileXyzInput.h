@@ -22,7 +22,6 @@ public:
     virtual ~FileXyzInput();
 private:
     std::vector<Assignation> assignations;
-
 };
 
 

@@ -3,6 +3,18 @@
 #include "FileXyzInput.h"
 #include "Molecule.h"
 #include "TestElectronAssigner.h"
+#include "HungarianElectronAssigner.h"
+
+int testHungarianElectronAssigner() {
+    Molecule newMolecule;
+    FileXyzInput input("../input/EPA.ref","../input/EPA.xyz");
+    input.readMoleculeCores(newMolecule);
+    HungarianElectronAssigner tea;
+    input.readElectronCoreAssignations(newMolecule.getCores(),tea);
+    input.printAssignations();
+    return 0;
+}
+
 
 int testTestElectronAssigner() {
     Molecule newMolecule;
@@ -40,5 +52,6 @@ int main() {
     if(testFindElement())return 1;
     if(testFileXyzInput())return 1;
     if(testTestElectronAssigner())return 1;
+    if(testHungarianElectronAssigner())return 1;
     return 0;
 }
