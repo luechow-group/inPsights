@@ -22,9 +22,14 @@ void StringMethod::optimizeString() {
     reparametrizeString();
     discretizeStringToChain();
     calculateUnitTangents();
+
+  unsigned maxIterations = 20;
+  unsigned iterations = 0;
+
     do {
         performStep();
-    } while (status_ == cppoptlib::Status::IterationLimit);
+      iterations++;
+    } while (status_ == cppoptlib::Status::IterationLimit && iterations < maxIterations);
 }
 
 void StringMethod::performStep() {
@@ -52,9 +57,9 @@ void StringMethod::minimizeOrthogonalToString() {
     // maybe another value call is necessary
     chain_.setValues(problem.stateValues(vec));
 
-    std::cout << chain_.coordinates() << std::endl;
-    std::cout << chain_.values().transpose() << std::endl;
-    std::cout << "--Solver status: " << status_ << std::endl;
+    //std::cout << chain_.coordinates() << std::endl;
+    //std::cout << chain_.values().transpose() << std::endl;
+    std::cout << "Solver status: " << status_ << std::endl;
 }
 
 void StringMethod::reparametrizeString() {
