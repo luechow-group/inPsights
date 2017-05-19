@@ -15,3 +15,7 @@ void Electron::setAssignedCore(int toAssignCore) {
     this->assignedCore=toAssignCore;
     std::cout<<"Assigned Electron to Core " << assignedCore << std::endl;
 }
+
+spintype Electron::getSpin() const {
+    return spin;
+}

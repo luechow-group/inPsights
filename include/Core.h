@@ -7,6 +7,7 @@
 
 #include <vector>
 #include "Particle.h"
+#include "Electron.h"
 
 class Core :public Particle {
 public:
@@ -19,6 +20,7 @@ public:
     int getCharge() const;
     void setCharge(int charge);
     std::vector<int> assignedElectrons;
+    int getLocalSpinQuantumNumber(const std::vector<Electron> &electrons);
     // ULF
 };
 

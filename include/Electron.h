@@ -12,6 +12,7 @@ class Electron : public Particle {
 public:
     Electron(spintype spin, double x, double y, double z);
     void setAssignedCore(int toAssignCore);
+    spintype getSpin() const;
 private:
     spintype spin;
     int assignedCore=-1;

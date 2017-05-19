@@ -29,3 +29,11 @@ void Core::setAssignedElectrons(const std::vector<int> &toAssignElectrons) {
     std::cout << std::endl;
 
 }
+
+int Core::getLocalSpinQuantumNumber(const std::vector<Electron> &electrons) {
+    int localSpin=0;
+    for(std::vector<int>::const_iterator i=assignedElectrons.begin();i!=assignedElectrons.end();i++){
+        localSpin+=(int)electrons[*i].getSpin();
+    }
+    return localSpin;
+}

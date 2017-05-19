@@ -6,16 +6,32 @@
 #include "HungarianElectronAssigner.h"
 
 int testReadElectronStructureOwnAssignment() {
+    const std::vector<int> CH1={0,1};
+    const std::vector<int> CH2={0,2};
+    const std::vector<int> CH3={0,3};
+    const std::vector<int> CH4={0,4};
     Molecule newMolecule;
     FileXyzInput input("../input/EPA.ref","../input/EPA.xyz");
     input.readMoleculeCores(newMolecule);
     HungarianElectronAssigner hea;
     SpinDeterminer sd(5);
-    while(!input.readElectronStructure(newMolecule, sd, &hea));
+    std::cerr << "SpinQZTotalMolecule\tSpinQZonlyC\tSpinQZfragmentCandH1\tSpinQZfragmentCandH2\tSpinQZfragmentCandH3\tSpinQZfragmentCandH4\t" << std::endl;
+    while(!input.readElectronStructure(newMolecule, sd, &hea)){
+        std::cerr << newMolecule.getTotalSpinQuantumNumber() << '\t'
+                  << newMolecule.getLocalSpinQuantumNumber(0) << '\t'
+                  << newMolecule.getLocalSpinQuantumNumber(CH1) << '\t'
+                  << newMolecule.getLocalSpinQuantumNumber(CH2) << '\t'
+                  << newMolecule.getLocalSpinQuantumNumber(CH3) << '\t'
+                  << newMolecule.getLocalSpinQuantumNumber(CH4) << std::endl;
+    }
     return 0;
 }
 
 int testReadElectronStructure() {
+    const std::vector<int> CH1={0,1};
+    const std::vector<int> CH2={0,2};
+    const std::vector<int> CH3={0,3};
+    const std::vector<int> CH4={0,4};
     Molecule newMolecule;
     FileXyzInput input("../input/EPA.ref","../input/EPA.xyz");
     input.readMoleculeCores(newMolecule);
@@ -23,7 +39,15 @@ int testReadElectronStructure() {
     input.readElectronCoreAssignations(newMolecule.getCores(),hea);
     input.printAssignations();
     SpinDeterminer sd(5);
-    while(!input.readElectronStructure(newMolecule, sd));
+    std::cerr << "SpinQZTotalMolecule\tSpinQZonlyC\tSpinQZfragmentCandH1\tSpinQZfragmentCandH2\tSpinQZfragmentCandH3\tSpinQZfragmentCandH4\t" << std::endl;
+    while(!input.readElectronStructure(newMolecule, sd)) {
+        std::cerr << newMolecule.getTotalSpinQuantumNumber() << '\t'
+                  << newMolecule.getLocalSpinQuantumNumber(0) << '\t'
+                  << newMolecule.getLocalSpinQuantumNumber(CH1) << '\t'
+                  << newMolecule.getLocalSpinQuantumNumber(CH2) << '\t'
+                  << newMolecule.getLocalSpinQuantumNumber(CH3) << '\t'
+                  << newMolecule.getLocalSpinQuantumNumber(CH4) << std::endl;
+    }
     return 0;
 }
 

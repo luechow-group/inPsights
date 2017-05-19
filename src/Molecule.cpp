@@ -42,3 +42,23 @@ void Molecule::assign(const Assignation &assignation) {
         }
     }
 }
+
+int Molecule::getTotalSpinQuantumNumber() {
+    int totalSpin=0;
+    for(std::vector<Electron>::const_iterator i=electrons.begin(); i!=electrons.end();i++){
+        totalSpin+=(int)(*i).getSpin();
+    }
+    return totalSpin;
+}
+
+int Molecule::getLocalSpinQuantumNumber(int coreToLookAt) {
+    return cores[coreToLookAt].getLocalSpinQuantumNumber(electrons);
+}
+
+int Molecule::getLocalSpinQuantumNumber(std::vector<int> coresToLookAt) {
+    int LocalFragmentSpin=0;
+    for(std::vector<int>::const_iterator i=coresToLookAt.begin();i!=coresToLookAt.end();i++){
+        LocalFragmentSpin+= cores[*i].getLocalSpinQuantumNumber(electrons);
+    }
+    return LocalFragmentSpin;
+}
