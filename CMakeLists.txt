@@ -18,6 +18,18 @@ set(SOURCE_FILES
         include/Electron.h
         src/Core.cpp
         include/Core.h
-        src/InputOutput.cpp include/InputOutput.h src/FileXyzInput.cpp include/FileXyzInput.h src/Molecule.cpp include/Molecule.h src/pse.cpp)
+        src/InputOutput.cpp
+        include/InputOutput.h
+        src/FileXyzInput.cpp
+        include/FileXyzInput.h
+        src/Molecule.cpp
+        include/Molecule.h
+        src/pse.cpp
+        src/ElectronRefArrangement.cpp
+        include/ElectronRefArrangement.h
+        src/ElectronPermutation.cpp include/ElectronPermutation.h include/Assignation.h src/ElectronAssigner.cpp include/ElectronAssigner.h src/HungarianElectronAssigner.cpp include/HungarianElectronAssigner.h src/TestElectronAssigner.cpp include/TestElectronAssigner.h)
 
-add_executable(LocalSpinMultiplicity ${SOURCE_FILES} ${EIGEN3_INCLUDE_DIR})
+add_executable(LocalSpinMultiplicity
+        ${SOURCE_FILES}
+        ${EIGEN3_INCLUDE_DIR}
+        )

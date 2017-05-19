@@ -1,0 +1,14 @@
+//
+// Created by Moria on 19.05.2017.
+//
+
+#ifndef LOCALSPINMULTIPLICITY_HUNGARIANELECTRONASSIGNER_H
+#define LOCALSPINMULTIPLICITY_HUNGARIANELECTRONASSIGNER_H
+#include "ElectronAssigner.h"
+
+class HungarianElectronAssigneri: public ElectronAssigner {
+
+};
+
+
+#endif //LOCALSPINMULTIPLICITY_HUNGARIANELECTRONASSIGNER_H

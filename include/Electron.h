@@ -6,8 +6,13 @@
 #define LOCALSPINMULTIPLICITY_ELECTRON_H
 #include "Particle.h"
 
+enum struct spintype {SPIN_ALPHA = 1, SPIN_BETA = -1, SPIN_NA=0};
+
 class Electron : public Particle {
-    Electron(double x, double y, double z);
+public:
+    Electron(spintype spin, double x, double y, double z);
+private:
+    spintype spin;
 
 };
 

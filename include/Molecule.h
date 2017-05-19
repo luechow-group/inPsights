@@ -5,6 +5,7 @@
 #ifndef LOCALSPINMULTIPLICITY_MOLECULE_H
 #define LOCALSPINMULTIPLICITY_MOLECULE_H
 #include "Core.h"
+#include "Electron.h"
 #include <vector>
 
 class Molecule {
@@ -12,8 +13,11 @@ public:
     Molecule();
     virtual ~Molecule();
     void addCore(std::string& elementType,double x, double y, double z);
+    void addElectron(spintype spin,double x, double y, double z);
+    const std::vector<Core> &getCores() const;
 private:
     std::vector<Core> cores;
+    std::vector<Electron> electrons;
 };
 
 

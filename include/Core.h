@@ -11,7 +11,11 @@ public:
     Core(std::string elementType, double x, double y, double z);
 private:
     std::string elementType;
- // ULF
+    int charge;
+public:
+    int getCharge() const;
+    void setCharge(int charge);
+    // ULF
 };
 
 

@@ -35,3 +35,33 @@ FileXyzInput::~FileXyzInput() {
 void FileXyzInput::readElectronStructure(Molecule &molecule) {
 
 }
+
+void FileXyzInput::readElectronCoreAssignations(const std::vector<Core> &cores, ElectronAssigner &ea) {
+    int numRefs;
+    streams[0]>>numRefs;
+    streams[0].ignore(std::numeric_limits<std::streamsize>::max(),'\n');  // go to next line
+    for(int i=0;i<numRefs;i++){
+        streams[0].ignore(std::numeric_limits<std::streamsize>::max(),'\n');  // go to next line
+        std::vector<Particle> tempElectrons;
+        int numElectrons;
+        streams[0]>>numElectrons;
+        for(int j=0;j<numElectrons;j++){
+            double x,y,z;
+            streams[0]>>x>>y>>z;
+            tempElectrons.emplace_back(x,y,z);
+        }
+        assignations.push_back(ea.assign(cores,tempElectrons));
+        tempElectrons.clear();
+    }
+}
+
+void FileXyzInput::printAssignations() {
+    for(int i=0;i<assignations.size();i++){
+        std::cout << "Printing Assignation number " << i << std::endl;
+        for(int j=0;j<assignations[i].size();j++){
+            std::cout << "For core " << assignations[i][j].first << " the following electrons are assigned" << std::endl;
+            for(int k=0;k<assignations[i][j].second.size();k++)std::cout << assignations[i][j].second[k] << " ";
+            std::cout << std::endl;
+        }
+    }
+}

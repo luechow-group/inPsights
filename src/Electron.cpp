@@ -4,7 +4,7 @@
 
 #include "Electron.h"
 
-Electron::Electron(double x, double y, double z): Particle(x,y,z) {
+Electron::Electron(spintype spin, double x, double y, double z): spin(spin), Particle(x,y,z) {
 
 
 }

@@ -2,6 +2,17 @@
 #include "pse.h"
 #include "FileXyzInput.h"
 #include "Molecule.h"
+#include "TestElectronAssigner.h"
+
+int testTestElectronAssigner() {
+    Molecule newMolecule;
+    FileXyzInput input("../input/EPA.ref","../input/EPA.xyz");
+    input.readMoleculeCores(newMolecule);
+    TestElectronAssigner tea;
+    input.readElectronCoreAssignations(newMolecule.getCores(),tea);
+    input.printAssignations();
+    return 0;
+}
 
 int testFileXyzInput(){
     Molecule newMolecule;
@@ -28,5 +39,6 @@ int testFindElement() {
 int main() {
     if(testFindElement())return 1;
     if(testFileXyzInput())return 1;
+    if(testTestElectronAssigner())return 1;
     return 0;
 }
