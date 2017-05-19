@@ -14,6 +14,9 @@ set(CMAKE_AUTOMOC ON)
 
 
 # Find Eigen lib
+find_package(Eigen3 REQUIRED)
+include_directories( ${EIGEN3_INCLUDE_DIR} )
+
 include_directories(
         include
         source
@@ -31,11 +34,6 @@ find_package(Qt5 REQUIRED COMPONENTS
         )
 
 set(HEADER_FILES
-        include/NaturalConstants.h
-        include/ElementTypes.h
-        include/ElementColor.h
-        include/ElementInfo.h
-        include/pElementInfo.h
         include/Abstract3dObject.h
         include/Sphere.h
         include/Cylinder.h
@@ -44,12 +42,11 @@ set(HEADER_FILES
         include/Bond.h
         include/Helper.h
         include/Electron.h
-        include/Polyline.h include/BSplinePlotter.h
+        include/Polyline.h
+        include/BSplinePlotter.h
         )
 
 set(SOURCE_FILES
-        source/ElementInfo.cpp
-        source/pElementInfo.cpp
         source/Abstract3dObject.cpp
         source/Sphere.cpp
         source/Cylinder.cpp
@@ -65,6 +62,7 @@ add_executable("${PROJECT_NAME}_main" ${SOURCE_FILES} ${HEADER_FILES} main.cpp)
 
 # links the libraries to the executable
 target_link_libraries("${PROJECT_NAME}_main"
+        BaseLib
         BSplines
         Methods
         #eigen

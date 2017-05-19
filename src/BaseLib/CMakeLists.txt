@@ -11,29 +11,41 @@ message ( "-- ++ CREATING PROJECT OR MAKEFILE ---> ${OUTPUT_NAME}" )
 
 #set(CMAKE_AUTOMOC ON)
 
+
+
 include_directories(
         include
         source
         )
+
+find_package(Eigen3 REQUIRED)
+include_directories( ${EIGEN3_INCLUDE_DIR} )
 
 find_package(Qt5 REQUIRED COMPONENTS
         Core
         )
 
 set(HEADER_FILES
-        include/ChemicalSystem.h
-        include/MaxRefParser.h
+        include/ElementColor.h
+        include/ElementInfo.h
+        include/ElementTypes.h
+        include/pElementInfo.h
+        include/NaturalConstants.h
+        #include/ChemicalSystem.h
+        #include/MaxRefParser.h
         )
 
 set(SOURCE_FILES
-        source/ChemicalSystem.cpp
-        source/MaxRefParser.cpp
+        source/pElementInfo.cpp
+        source/ElementInfo.cpp
+        #source/ChemicalSystem.cpp
+        #source/MaxRefParser.cpp
         )
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES})
 target_link_libraries(${PROJECT_NAME}
         Qt5::Core
-        eigen
+        #eigen
         )
 target_include_directories(${PROJECT_NAME} PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
