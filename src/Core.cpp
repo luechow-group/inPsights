@@ -3,3 +3,8 @@
 //
 
 #include "Core.h"
+
+Core::Core(double x, double y, double z): Particle(x,y,z) {
+
+
+}

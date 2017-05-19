@@ -3,3 +3,8 @@
 //
 
 #include "Electron.h"
+
+Electron::Electron(double x, double y, double z): Particle(x,y,z) {
+
+
+}
