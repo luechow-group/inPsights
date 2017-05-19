@@ -7,6 +7,7 @@
 #include "Molecule.h"
 #include <iostream>
 #include <limits>
+#include <SpinDeterminer.h>
 
 FileXyzInput::FileXyzInput(const std::string &refFilename, const std::string &xyzFilename) : InputOutput(refFilename, true) {
     this->openFile(xyzFilename, true);
@@ -32,8 +33,25 @@ FileXyzInput::~FileXyzInput() {
 
 }
 
-void FileXyzInput::readElectronStructure(Molecule &molecule) {
-
+int FileXyzInput::readElectronStructure(Molecule &molecule, const SpinDeterminer &spinDeterminer) {
+    molecule.cleanElectrons();
+    std::string helpString;
+    streams[1]>>helpString;
+    while(helpString.compare("xyz:")){streams[1]>>helpString;if(streams[1].eof())return 1;}
+    int assignmentToUse;
+    streams[1]>>assignmentToUse;
+    assignmentToUse--;
+    streams[1].ignore(std::numeric_limits<std::streamsize>::max(),'\n');  // go to next line
+    int numElectrons;
+    streams[1]>>numElectrons;
+    double x,y,z;
+    int index;
+    for(int i=0;i<numElectrons;i++){
+        streams[1]>>x>>y>>z>>index;
+        molecule.addElectron(spinDeterminer.determineSpin(index),x,y,z);
+    }
+    molecule.assign(assignations[assignmentToUse]);
+    return 0;
 }
 
 void FileXyzInput::readElectronCoreAssignations(const std::vector<Core> &cores, ElectronAssigner &ea) {

@@ -19,3 +19,13 @@ int Core::getCharge() const {
 void Core::setCharge(int charge) {
     Core::charge = charge;
 }
+
+void Core::setAssignedElectrons(const std::vector<int> &toAssignElectrons) {
+    assignedElectrons=toAssignElectrons;
+    std::cout << "Assigned the Electrons ";
+    for(int i=0;i<assignedElectrons.size();i++){
+        std::cout << assignedElectrons[i] << ' ';
+    }
+    std::cout << std::endl;
+
+}

@@ -5,6 +5,18 @@
 #include "TestElectronAssigner.h"
 #include "HungarianElectronAssigner.h"
 
+int testReadElectronStructure() {
+    Molecule newMolecule;
+    FileXyzInput input("../input/EPA.ref","../input/EPA.xyz");
+    input.readMoleculeCores(newMolecule);
+    HungarianElectronAssigner tea;
+    input.readElectronCoreAssignations(newMolecule.getCores(),tea);
+    input.printAssignations();
+    SpinDeterminer sd(5);
+    while(!input.readElectronStructure(newMolecule, sd));
+    return 0;
+}
+
 int testHungarianElectronAssigner() {
     Molecule newMolecule;
     FileXyzInput input("../input/EPA.ref","../input/EPA.xyz");
@@ -53,5 +65,6 @@ int main() {
     if(testFileXyzInput())return 1;
     if(testTestElectronAssigner())return 1;
     if(testHungarianElectronAssigner())return 1;
+    if(testReadElectronStructure())return 1;
     return 0;
 }

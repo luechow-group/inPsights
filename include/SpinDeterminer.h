@@ -11,7 +11,7 @@ class SpinDeterminer {
 public:
     SpinDeterminer(int highestAlphaIndex);
     virtual ~SpinDeterminer();
-    spintype determineSpin(int index);
+    spintype determineSpin(int index) const;
 private:
     int highestAlphaIndex;
 

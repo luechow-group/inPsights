@@ -12,6 +12,6 @@ SpinDeterminer::~SpinDeterminer() {
 
 }
 
-spintype SpinDeterminer::determineSpin(int index) {
+spintype SpinDeterminer::determineSpin(int index) const {
     return index<=highestAlphaIndex?spintype::SPIN_ALPHA:spintype::SPIN_BETA;
 }

@@ -7,6 +7,7 @@
 #include "Core.h"
 #include "Electron.h"
 #include <vector>
+#include "Assignation.h"
 
 class Molecule {
 public:
@@ -15,6 +16,8 @@ public:
     void addCore(std::string& elementType,double x, double y, double z);
     void addElectron(spintype spin,double x, double y, double z);
     const std::vector<Core> &getCores() const;
+    void cleanElectrons();
+    void assign(const Assignation &assignation);
 private:
     std::vector<Core> cores;
     std::vector<Electron> electrons;

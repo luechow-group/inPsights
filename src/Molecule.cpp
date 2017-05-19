@@ -3,6 +3,7 @@
 //
 
 #include "Molecule.h"
+#include <iostream>
 
 Molecule::Molecule() {
 
@@ -22,4 +23,18 @@ void Molecule::addElectron(spintype spin, double x, double y, double z) {
 
 const std::vector<Core> &Molecule::getCores() const {
     return this->cores;
+}
+
+void Molecule::cleanElectrons() {
+    electrons.clear();
+    std::cout << "Cleared all those filthy Electrons" << std::endl;
+}
+
+void Molecule::assign(const Assignation &assignation) {
+    for(int i=0;i<assignation.size();i++){
+        cores[assignation[i].first].setAssignedElectrons(assignation[i].second);
+        for(int j=0;j<assignation[i].second.size();j++){
+            electrons[assignation[i].second[j]].setAssignedCore(assignation[i].first);
+        }
+    }
 }
