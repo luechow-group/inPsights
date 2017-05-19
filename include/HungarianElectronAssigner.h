@@ -10,6 +10,12 @@
 class HungarianElectronAssigner: public ElectronAssigner {
 public:
     virtual Assignation assign(const std::vector<Core> &cores, const std::vector<Particle> &electrons) override;
+private:
+    void generateDistanceMatrix(const std::vector<Core> &cores, const std::vector<Particle> &electrons);
+    void findMatching();
+    void generateAssignation(const std::vector<Core> &cores, const std::vector<Particle> &electrons);
+    Eigen::MatrixXd DistanceMatrix,MatchMatrix;
+    Assignation resultAssignation;
 };
 
 
