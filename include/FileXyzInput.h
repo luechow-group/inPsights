@@ -17,7 +17,7 @@ class FileXyzInput : public InputOutput{
 public:
     FileXyzInput(const std::string &refFilename, const std::string &xyzFilename);
     void readMoleculeCores(Molecule& molecule);
-    int readElectronStructure(Molecule &molecule, const SpinDeterminer &spinDeterminer);
+    int readElectronStructure(Molecule &molecule, const SpinDeterminer &spinDeterminer, ElectronAssigner *ea=0);
     void readElectronCoreAssignations(const std::vector<Core> &cores, ElectronAssigner &ea);
     void printAssignations();
     virtual ~FileXyzInput();

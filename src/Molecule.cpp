@@ -21,6 +21,10 @@ void Molecule::addElectron(spintype spin, double x, double y, double z) {
     this->electrons.emplace_back(spin,x,y,z);
 }
 
+void Molecule::assign(ElectronAssigner &electronAssigner) {
+    this->assign(electronAssigner.assign(cores,electrons));
+}
+
 const std::vector<Core> &Molecule::getCores() const {
     return this->cores;
 }

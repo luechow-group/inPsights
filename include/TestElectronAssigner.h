@@ -9,6 +9,7 @@
 class TestElectronAssigner : public ElectronAssigner{
 public:
     virtual Assignation assign(const std::vector<Core> &cores, const std::vector<Particle> &electrons) override;
+    virtual Assignation assign(const std::vector<Core> &cores, const std::vector<Electron> &electrons) override;
 };
 
 

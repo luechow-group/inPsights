@@ -13,6 +13,7 @@ class ElectronAssigner {
 public:
     ElectronAssigner();
     virtual Assignation assign(const std::vector<Core> &, const std::vector<Particle> &) = 0;
+    virtual Assignation assign(const std::vector<Core> &, const std::vector<Electron> &) = 0;
     virtual ~ElectronAssigner();
 private:
 };

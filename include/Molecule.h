@@ -8,6 +8,7 @@
 #include "Electron.h"
 #include <vector>
 #include "Assignation.h"
+#include "ElectronAssigner.h"
 
 class Molecule {
 public:
@@ -18,6 +19,7 @@ public:
     const std::vector<Core> &getCores() const;
     void cleanElectrons();
     void assign(const Assignation &assignation);
+    void assign(ElectronAssigner &electronAssigner);
 private:
     std::vector<Core> cores;
     std::vector<Electron> electrons;

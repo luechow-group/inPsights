@@ -33,7 +33,8 @@ FileXyzInput::~FileXyzInput() {
 
 }
 
-int FileXyzInput::readElectronStructure(Molecule &molecule, const SpinDeterminer &spinDeterminer) {
+int
+FileXyzInput::readElectronStructure(Molecule &molecule, const SpinDeterminer &spinDeterminer, ElectronAssigner *ea) {
     molecule.cleanElectrons();
     std::string helpString;
     streams[1]>>helpString;
@@ -50,7 +51,11 @@ int FileXyzInput::readElectronStructure(Molecule &molecule, const SpinDeterminer
         streams[1]>>x>>y>>z>>index;
         molecule.addElectron(spinDeterminer.determineSpin(index),x,y,z);
     }
-    molecule.assign(assignations[assignmentToUse]);
+    if(ea){
+        molecule.assign(*ea);
+    } else {
+        molecule.assign(assignations[assignmentToUse]);
+    }
     return 0;
 }
 
