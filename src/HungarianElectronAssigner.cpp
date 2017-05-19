@@ -3,7 +3,6 @@
 //
 
 #include "HungarianElectronAssigner.h"
-#include <Eigen/Dense>
 #include <iostream>
 #include "Hungarian.h"
 
@@ -24,5 +23,17 @@ Assignation HungarianElectronAssigner::assign(const std::vector<Core> &cores, co
     Hungarian::findMatching(distanceMatrix,resultMatrix,MATCH_MIN);
     std::cout << "und jetzt die neue Matrix" << std::endl;
     std::cout << "\n\n" << resultMatrix << std::endl;
-    return Assignation();
+
+    rownumber=0;
+    Assignation toReturn;
+    for(int i=0;i<cores.size();i++){
+        toReturn.emplace_back(i,std::vector<int>());
+        for(int j=0;j<cores[i].getCharge();j++){
+            for(int k=0;k<electrons.size();k++){
+                if(resultMatrix(rownumber,k)>0)toReturn[i].second.push_back(k);
+            }
+            rownumber++;
+        }
+    }
+    return toReturn;
 }
