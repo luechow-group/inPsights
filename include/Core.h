@@ -7,7 +7,10 @@
 #include "Particle.h"
 
 class Core :public Particle {
-    Core(double x, double y, double z);
+public:
+    Core(std::string elementType, double x, double y, double z);
+private:
+    std::string elementType;
  // ULF
 };
 

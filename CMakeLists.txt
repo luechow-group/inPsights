@@ -18,6 +18,6 @@ set(SOURCE_FILES
         include/Electron.h
         src/Core.cpp
         include/Core.h
-    )
+        src/InputOutput.cpp include/InputOutput.h src/FileXyzInput.cpp include/FileXyzInput.h src/Molecule.cpp include/Molecule.h src/pse.cpp)
 
 add_executable(LocalSpinMultiplicity ${SOURCE_FILES} ${EIGEN3_INCLUDE_DIR})
