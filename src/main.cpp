@@ -5,6 +5,7 @@
 #include "TestElectronAssigner.h"
 #include "HungarianElectronAssigner.h"
 
+
 int testReadElectronStructureOwnAssignment() {
     const std::vector<int> CH1={0,1};
     const std::vector<int> CH2={0,2};
