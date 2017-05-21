@@ -8,9 +8,6 @@
 #include <iostream>
 #include <limits>
 #include <SpinDeterminer.h>
-#include <mutex>
-
-std::mutex mtxInput;
 
 FileXyzInput::FileXyzInput(const std::string &refFilename, const std::string &xyzFilename) : InputOutput(refFilename, true) {
     this->openFile(xyzFilename, true);
@@ -40,9 +37,6 @@ int
 FileXyzInput::readElectronStructure(Molecule &molecule, const SpinDeterminer &spinDeterminer, ElectronAssigner *ea) {
     molecule.cleanElectrons();
     std::string helpString;
-
-    mtxInput.lock();
-
     streams[1]>>helpString;
     while(helpString.compare("xyz:")){streams[1]>>helpString;if(streams[1].eof())return 1;}
     int assignmentToUse;
@@ -57,9 +51,6 @@ FileXyzInput::readElectronStructure(Molecule &molecule, const SpinDeterminer &sp
         streams[1]>>x>>y>>z>>index;
         molecule.addElectron(spinDeterminer.determineSpin(index),x,y,z);
     }
-
-   mtxInput.unlock();
-
     if(ea){
         molecule.assign(*ea);
     } else {
