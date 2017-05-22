@@ -31,7 +31,7 @@ const std::vector<Core> &Molecule::getCores() const {
 
 void Molecule::cleanElectrons() {
     electrons.clear();
-    std::cout << "Cleared all those filthy Electrons" << std::endl;
+    //std::cout << "Cleared all those filthy Electrons" << std::endl;
 }
 
 void Molecule::assign(const Assignation &assignation) {

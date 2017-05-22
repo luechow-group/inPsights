@@ -29,13 +29,13 @@ void HungarianElectronAssigner::generateDistanceMatrix(const std::vector<Core> &
             rownumber++;
         }
     }
-    std::cout << DistanceMatrix << std::endl;
+   // std::cout << DistanceMatrix << std::endl;
 }
 
 void HungarianElectronAssigner::findMatching() {
     Hungarian::findMatching(DistanceMatrix,MatchMatrix,MATCH_MIN);
-    std::cout << "Gematche Matrix: " << std::endl;
-    std::cout << "\n\n" << MatchMatrix << std::endl;
+    //std::cout << "Gematche Matrix: " << std::endl;
+    //std::cout << "\n\n" << MatchMatrix << std::endl;
 }
 
 void HungarianElectronAssigner::generateAssignation(const std::vector<Core> &cores, const std::vector<Particle> &electrons) {

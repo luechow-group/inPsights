@@ -16,7 +16,7 @@ FileXyzInput::FileXyzInput(const std::string &refFilename, const std::string &xy
 void FileXyzInput::readMoleculeCores(Molecule &molecule) {
     int numCores;
     this->streams[0]>>numCores;
-    std::cout << "Num of Cores is " << numCores << std::endl;
+    //std::cout << "Num of Cores is " << numCores << std::endl;
     streams[0].ignore(std::numeric_limits<std::streamsize>::max(),'\n');  // go to next line
     for(int i=0;i<numCores;i++){
         int id;

@@ -98,18 +98,20 @@ int testFindElement() {
 void show_usage()
 {
     std::cout << "Usage: \n"
-            "LocalSpinMultiplicity reffile xyzfile numOfalphaElectrons bmax/bstart atomnumber\n"
+            "LocalSpinMultiplicity reffile xyzfile numOfalphaElectrons bmax/bstart atomnumber StatOnly\n"
             "bmax for assignment based on maximum positions, bstart for assignment based on starting positions\n"
             "atomnumber is the number of the atom for Local Spin Calculation" << std::endl;
 }
 
 int main(int argc, char **argv) {
-    if(argc!=6){
+    if(argc!=7){
         show_usage();
         return 1;
     }
-    bool basedOnMax;
+    bool basedOnMax=false;
     if(strcmp(argv[4],"bmax")==0)basedOnMax=true;
+    bool onlyStat=false;
+    if(strcmp(argv[6],"StatOnly")==0)onlyStat=true;
     Molecule newMolecule;
     FileXyzInput input(argv[1],argv[2]);
     input.readMoleculeCores(newMolecule);
@@ -119,10 +121,29 @@ int main(int argc, char **argv) {
     }
     SpinDeterminer sd(atoi(argv[3]));
     int LocalSpinAtomNumber=atoi(argv[5]);
-    std::cerr << "SpinQZTotalMolecule\tSpinQZonlyAtomNumber"<<LocalSpinAtomNumber << std::endl;
+    if(!onlyStat)std::cout << "SpinQZTotalMolecule\tSpinQZonlyAtomNumber"<<LocalSpinAtomNumber << std::endl;
+    std::vector<std::pair<int,int> > SpinQuantumNumbers;
     while(!input.readElectronStructure(newMolecule, sd,basedOnMax?0:&hea)) {
-        std::cerr << newMolecule.getTotalSpinQuantumNumber() << '\t'
-                  << newMolecule.getLocalSpinQuantumNumber(LocalSpinAtomNumber)  << std::endl;
+        int TotalSpinQuantumNumber=newMolecule.getTotalSpinQuantumNumber();
+        int LocalSpinQuantumNumber=newMolecule.getLocalSpinQuantumNumber(LocalSpinAtomNumber);
+        if(!onlyStat) {
+            std::cout << TotalSpinQuantumNumber << '\t'
+                      << LocalSpinQuantumNumber << std::endl;
+        }
+        std::vector<std::pair<int,int> >::iterator i;
+        for(i=SpinQuantumNumbers.begin();i!=SpinQuantumNumbers.end();i++) {
+            if (LocalSpinQuantumNumber == i->first)i->second++;
+            break;
+        }
+        if(i==SpinQuantumNumbers.end()) {
+            SpinQuantumNumbers.emplace_back(LocalSpinQuantumNumber,1);
+        }
     }
+    std::cout << "Statistics\n"
+            "SpinQuantumNumber Count" << std::endl;
+    for(std::vector<std::pair<int,int> >::iterator i=SpinQuantumNumbers.begin();i!=SpinQuantumNumbers.end();i++){
+        std::cout << i->first << '\t' << i->second << std::endl;
+    }
+    std::cout << "Like a Charm!" << std::endl;
     return 0;
 }
