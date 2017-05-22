@@ -7,12 +7,13 @@ enable_testing()
         #integration_tests/*
         #functional_tests/*
 #        )
-set(TEST_SOURCE_FILES testing.cpp)
+set(TEST_SOURCE_FILES testmain.cpp ATestElectronAssigner.cpp AFindElement.cpp)
 
-add_executable("${PROJECT_NAME}_RunAllTests" ${TEST_SOURCE_FILES} ${SOURCE_FILES})
-
+add_executable("${PROJECT_NAME}_RunAllTests" ${TEST_SOURCE_FILES})
+message(STATUS ${SOURCE_FILES} bla)
 target_link_libraries("${PROJECT_NAME}_RunAllTests"
         gtest gtest_main
         pthread
+        ${PROJECT_NAME}_lib
         )
 
