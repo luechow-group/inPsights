@@ -6,7 +6,7 @@
 #include "HungarianElectronAssigner.h"
 
 
-int testReadElectronStructureOwnAssignment() {
+/*int testReadElectronStructureOwnAssignment() {
     const std::vector<int> CH1={0,1};
     const std::vector<int> CH2={0,2};
     const std::vector<int> CH3={0,3};
@@ -93,14 +93,36 @@ int testFindElement() {
 
     }
     return 0;
+}*/
+
+void show_usage()
+{
+    std::cout << "Usage: \n"
+            "LocalSpinMultiplicity reffile xyzfile numOfalphaElectrons bmax/bstart atomnumber\n"
+            "bmax for assignment based on maximum positions, bstart for assignment based on starting positions\n"
+            "atomnumber is the number of the atom for Local Spin Calculation" << std::endl;
 }
 
-int main() {
-    if(testFindElement())return 1;
-    if(testFileXyzInput())return 1;
-    if(testTestElectronAssigner())return 1;
-    if(testHungarianElectronAssigner())return 1;
-    if(testReadElectronStructure())return 1;
-    if(testReadElectronStructureOwnAssignment())return 1;
+int main(int argc, char **argv) {
+    if(argc!=5){
+        show_usage();
+        return 1;
+    }
+    bool basedOnMax;
+    if(strcmp(argv[4],"bmax")==0)basedOnMax=true;
+    Molecule newMolecule;
+    FileXyzInput input(argv[1],argv[2]);
+    input.readMoleculeCores(newMolecule);
+    HungarianElectronAssigner hea;
+    if(basedOnMax) {
+        input.readElectronCoreAssignations(newMolecule.getCores(), hea);
+    }
+    SpinDeterminer sd(atoi(argv[3]));
+    int LocalSpinAtomNumber=atoi(argv[5]);
+    std::cerr << "SpinQZTotalMolecule\tSpinQZonlyAtomNumber"<<LocalSpinAtomNumber << std::endl;
+    while(!input.readElectronStructure(newMolecule, sd,basedOnMax?0:&hea)) {
+        std::cerr << newMolecule.getTotalSpinQuantumNumber() << '\t'
+                  << newMolecule.getLocalSpinQuantumNumber(LocalSpinAtomNumber)  << std::endl;
+    }
     return 0;
 }
