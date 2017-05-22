@@ -12,7 +12,7 @@ int testReadElectronStructureOwnAssignment() {
     const std::vector<int> CH3={0,3};
     const std::vector<int> CH4={0,4};
     Molecule newMolecule;
-    FileXyzInput input("../input/EPA.ref","../input/EPA.xyz");
+    FileXyzInput input("../testinput/EPA.ref","../testinput/EPA.xyz");
     input.readMoleculeCores(newMolecule);
     HungarianElectronAssigner hea;
     SpinDeterminer sd(5);
@@ -34,7 +34,7 @@ int testReadElectronStructure() {
     const std::vector<int> CH3={0,3};
     const std::vector<int> CH4={0,4};
     Molecule newMolecule;
-    FileXyzInput input("../input/EPA.ref","../input/EPA.xyz");
+    FileXyzInput input("../testinput/EPA.ref","../testinput/EPA.xyz");
     input.readMoleculeCores(newMolecule);
     HungarianElectronAssigner hea;
     input.readElectronCoreAssignations(newMolecule.getCores(),hea);
@@ -54,7 +54,7 @@ int testReadElectronStructure() {
 
 int testHungarianElectronAssigner() {
     Molecule newMolecule;
-    FileXyzInput input("../input/EPA.ref","../input/EPA.xyz");
+    FileXyzInput input("../testinput/EPA.ref","../testinput/EPA.xyz");
     input.readMoleculeCores(newMolecule);
     HungarianElectronAssigner tea;
     input.readElectronCoreAssignations(newMolecule.getCores(),tea);
@@ -65,7 +65,7 @@ int testHungarianElectronAssigner() {
 
 int testTestElectronAssigner() {
     Molecule newMolecule;
-    FileXyzInput input("../input/EPA.ref","../input/EPA.xyz");
+    FileXyzInput input("../testinput/EPA.ref","../testinput/EPA.xyz");
     input.readMoleculeCores(newMolecule);
     TestElectronAssigner tea;
     input.readElectronCoreAssignations(newMolecule.getCores(),tea);
@@ -75,7 +75,7 @@ int testTestElectronAssigner() {
 
 int testFileXyzInput(){
     Molecule newMolecule;
-    FileXyzInput input("../input/EPA.ref","../input/EPA.xyz");
+    FileXyzInput input("../testinput/EPA.ref","../testinput/EPA.xyz");
     input.readMoleculeCores(newMolecule);
     return 0;
 }

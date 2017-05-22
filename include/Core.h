@@ -18,6 +18,7 @@ private:
     int charge;
 public:
     int getCharge() const;
+    const std::string &getElementType() const;
     void setCharge(int charge);
     std::vector<int> assignedElectrons;
     int getLocalSpinQuantumNumber(const std::vector<Electron> &electrons);

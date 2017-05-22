@@ -14,4 +14,13 @@ TEST(FindElementTest, ExistingElements)
     }
 }
 
+TEST(FindElementTest, NotExistingElements)
+{
+    std::string testElements[3]= {"L", "Osdorf", "Ze"};
+    for(int i=0;i<3;i++){
+        EXPECT_EQ(0,Pse::findElement(testElements[i]));
+    }
+}
+
+
 

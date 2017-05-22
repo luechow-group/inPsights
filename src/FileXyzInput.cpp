@@ -26,6 +26,7 @@ void FileXyzInput::readMoleculeCores(Molecule &molecule) {
         molecule.addCore(elementType,x,y,z);
     }
 
+
 }
 
 FileXyzInput::~FileXyzInput() {

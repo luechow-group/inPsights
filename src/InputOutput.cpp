@@ -3,6 +3,8 @@
 //
 
 #include "InputOutput.h"
+#include <iostream>
+
 
 InputOutput::InputOutput(const std::string &filename, bool isRead) {
     this->openFile(filename, isRead);
@@ -15,6 +17,11 @@ InputOutput::~InputOutput() {
 void InputOutput::openFile(const std::string &filename, bool isRead) {
     this->filenames.push_back(filename);
     this->streams.emplace_back(filename,isRead?std::fstream::in:std::fstream::out);
+    if(!streams.rbegin()->is_open()){
+        std::cerr << "Error: File " << filename << " does not exist." << std::endl;
+        exit(1);
+    }
+
 }
 
 void InputOutput::closeAllFiles() {

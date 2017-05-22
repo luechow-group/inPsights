@@ -7,12 +7,12 @@ enable_testing()
         #integration_tests/*
         #functional_tests/*
 #        )
-set(TEST_SOURCE_FILES testmain.cpp ATestElectronAssigner.cpp AFindElement.cpp)
+set(TEST_SOURCE_FILES testmain.cpp ATestElectronAssignerTest.cpp AFindElementTest.cpp AHungarianTest.cpp AFileXyzInputTest.cpp)
 
 add_executable("${PROJECT_NAME}_RunAllTests" ${TEST_SOURCE_FILES})
-message(STATUS ${SOURCE_FILES} bla)
+
 target_link_libraries("${PROJECT_NAME}_RunAllTests"
-        gtest gtest_main
+        gtest gtest_main gmock
         pthread
         ${PROJECT_NAME}_lib
         )

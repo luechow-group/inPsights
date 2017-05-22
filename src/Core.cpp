@@ -37,3 +37,7 @@ int Core::getLocalSpinQuantumNumber(const std::vector<Electron> &electrons) {
     }
     return localSpin;
 }
+
+const std::string &Core::getElementType() const {
+    return elementType;
+}
