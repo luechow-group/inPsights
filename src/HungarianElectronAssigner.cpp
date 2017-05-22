@@ -74,7 +74,7 @@ void HungarianElectronAssigner::generateDistanceMatrix(const std::vector<Core> &
             rownumber++;
         }
     }
-    std::cout << DistanceMatrix << std::endl;
+    //std::cout << DistanceMatrix << std::endl;
 }
 
 void HungarianElectronAssigner::generateAssignation(const std::vector<Core> &cores, const std::vector<Electron> &electrons) {
