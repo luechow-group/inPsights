@@ -17,22 +17,27 @@ else()
                  WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/googletest-download )
         execute_process(COMMAND ${CMAKE_COMMAND} --build .
                  WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/googletest-download )
-endif(APPLE)
 
 # Prevent GoogleTest from overriding our compiler/linker options
 # when building with Visual Studio
-set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+        set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 
 # Add googletest directly to our build. This adds
 # the following targets: gtest, gtest_main, gmock
 # and gmock_main
 
-add_subdirectory(${CMAKE_BINARY_DIR}/googletest-src
-        ${CMAKE_BINARY_DIR}/googletest-build)
+        add_subdirectory(${CMAKE_BINARY_DIR}/googletest-src
+                ${CMAKE_BINARY_DIR}/googletest-build)
 
+endif(APPLE)
+
+add_subdirectory(src/tests)
+
+#find_package(GTest REQUIRED)
+
+set(MAIN_FILE src/main.cpp)
 
 set(SOURCE_FILES
-        src/main.cpp
         include/pse.h
         src/Particle.cpp
         include/Particle.h
@@ -49,9 +54,12 @@ set(SOURCE_FILES
         src/pse.cpp
         src/ElectronRefArrangement.cpp
         include/ElectronRefArrangement.h
-        src/ElectronPermutation.cpp include/ElectronPermutation.h include/Assignation.h src/ElectronAssigner.cpp include/ElectronAssigner.h src/HungarianElectronAssigner.cpp include/HungarianElectronAssigner.h src/TestElectronAssigner.cpp include/TestElectronAssigner.h src/Hungarian.cpp include/Hungarian.h src/SpinDeterminer.cpp include/SpinDeterminer.h)
+        src/ElectronPermutation.cpp include/ElectronPermutation.h include/Assignation.h src/ElectronAssigner.cpp include/ElectronAssigner.h src/HungarianElectronAssigner.cpp include/HungarianElectronAssigner.h src/TestElectronAssigner.cpp include/TestElectronAssigner.h src/Hungarian.cpp include/Hungarian.h src/SpinDeterminer.cpp include/SpinDeterminer.h src/tests/testing.cpp)
 
 add_executable(LocalSpinMultiplicity
+        ${MAIN_FILE}
         ${SOURCE_FILES}
         ${EIGEN3_INCLUDE_DIR}
         )
+
+#target_link_libraries(gtest gtest_main)
