@@ -27,6 +27,7 @@ find_package(Qt5 REQUIRED COMPONENTS
         3DCore
         3DExtras
         3DRender
+        Charts
         #3DInput
         )
 
@@ -74,6 +75,7 @@ target_link_libraries("${PROJECT_NAME}_main"
         Qt5::3DCore
         Qt5::3DExtras
         Qt5::3DRender
+        Qt5::Charts
         #Qt5::3DInput
         #pthread #TODO needed?
         )
