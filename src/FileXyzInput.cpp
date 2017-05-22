@@ -90,3 +90,7 @@ void FileXyzInput::printAssignations() {
         }
     }
 }
+
+const std::vector<Assignation> &FileXyzInput::getAssignations() const {
+    return assignations;
+}

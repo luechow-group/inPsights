@@ -19,6 +19,7 @@ public:
     void readMoleculeCores(Molecule& molecule);
     int readElectronStructure(Molecule &molecule, const SpinDeterminer &spinDeterminer, ElectronAssigner *ea=0);
     void readElectronCoreAssignations(const std::vector<Core> &cores, ElectronAssigner &ea);
+    const std::vector<Assignation> &getAssignations() const;
     void printAssignations();
     virtual ~FileXyzInput();
 private:
