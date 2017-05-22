@@ -132,8 +132,10 @@ int main(int argc, char **argv) {
         }
         std::vector<std::pair<int,int> >::iterator i;
         for(i=SpinQuantumNumbers.begin();i!=SpinQuantumNumbers.end();i++) {
-            if (LocalSpinQuantumNumber == i->first)i->second++;
-            break;
+            if (LocalSpinQuantumNumber == i->first){
+                i->second++;
+                break;
+            }
         }
         if(i==SpinQuantumNumbers.end()) {
             SpinQuantumNumbers.emplace_back(LocalSpinQuantumNumber,1);
