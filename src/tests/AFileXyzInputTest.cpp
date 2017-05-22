@@ -6,7 +6,7 @@
 #include "gmock/gmock.h"
 #include "Molecule.h"
 #include "FileXyzInput.h"
-#include "Eigen/dense"
+//#include "Eigen/dense"
 
 TEST(TestFileXyzInput,MoleculeCores)
 {
