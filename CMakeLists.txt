@@ -56,13 +56,13 @@ set(SOURCE_FILES
         include/ElectronRefArrangement.h
         src/ElectronPermutation.cpp include/ElectronPermutation.h include/Assignation.h src/ElectronAssigner.cpp include/ElectronAssigner.h src/HungarianElectronAssigner.cpp include/HungarianElectronAssigner.h src/TestElectronAssigner.cpp include/TestElectronAssigner.h src/Hungarian.cpp include/Hungarian.h src/SpinDeterminer.cpp include/SpinDeterminer.h)
 
-add_library(${PROJECT_NAME}_lib STATIC ${SOURCE_FILES})
+
+add_library(${PROJECT_NAME}_lib STATIC ${SOURCE_FILES} ${EIGEN3_INCLUDE_DIR})
 
 add_subdirectory(src/tests)
 
 add_executable(LocalSpinMultiplicity
         ${MAIN_FILE}
-        ${EIGEN3_INCLUDE_DIR}
         )
 
 target_link_libraries(LocalSpinMultiplicity ${PROJECT_NAME}_lib)
