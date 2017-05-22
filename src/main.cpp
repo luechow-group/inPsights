@@ -104,7 +104,7 @@ void show_usage()
 }
 
 int main(int argc, char **argv) {
-    if(argc!=5){
+    if(argc!=6){
         show_usage();
         return 1;
     }
