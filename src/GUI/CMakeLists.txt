@@ -45,7 +45,9 @@ set(HEADER_FILES
         include/Bond.h
         include/Helper.h
         include/Electron.h
-        include/Polyline.h include/BSplinePlotter.h
+        include/Polyline.h
+        include/StringMethodCoordinatesPlotter.h
+        include/StringMethodValuePlotter.h
         )
 
 set(SOURCE_FILES
@@ -59,6 +61,7 @@ set(SOURCE_FILES
         source/Bond.cpp
         source/Electron.cpp
         source/Polyline.cpp
+        include/MolecularGeometry.h
         )
 
 add_executable("${PROJECT_NAME}_main" ${SOURCE_FILES} ${HEADER_FILES} main.cpp)

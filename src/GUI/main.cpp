@@ -22,12 +22,28 @@
 #include "Electron.h"
 #include "Polyline.h"
 
-#include "BSpline.h"
-#include "BSplinePlotter.h"
+#include "ArcLengthParametrizedBSpline.h"
+#include "StringMethodCoordinatesPlotter.h"
+#include "StringMethodValuePlotter.h"
 #include "StringMethod.h"
 
 
-Qt3DCore::QEntity* createTestScene() {
+int main(int argc, char *argv[]) {
+
+
+
+  //Electron e1(root, QVector3D(12.0f, 1.0f, 7.0f), Spin::SpinType::Alpha);
+  //Electron e2(root, QVector3D(9.0f, 1.2f, 7.0f), Spin::SpinType::Beta);
+
+  //Qt3DRender::QObjectPicker(); // emits signals for you to handle
+  //Qt3DRender::QPickingSettings* pickingSettings = new Qt3DRender::QPickingSettings();
+  //pickingSettings->setPickMethod(Qt3DRender::QPickingSettings::PickMethod::BoundingVolumePicking);
+
+
+
+  //QGuiApplication app(argc, argv);
+  QApplication app(argc, argv);
+
 
   Eigen::VectorXd xA(2 * 3);
   Eigen::VectorXd xB(2 * 3);
@@ -59,33 +75,15 @@ Qt3DCore::QEntity* createTestScene() {
   Atom H2(root, QVector3D(0.f,0.f,-0.70014273f), Elements::ElementType::H);
   //Bond b1(H1, H2);
 
-  BSplinePlotter bSplinePlotter(root, stringMethod.getArcLengthParametrizedBSpline(), 50, 0.005f);
-
-  //Electron e1(root, QVector3D(12.0f, 1.0f, 7.0f), Spin::SpinType::Alpha);
-  //Electron e2(root, QVector3D(9.0f, 1.2f, 7.0f), Spin::SpinType::Beta);
-
-  //Qt3DRender::QObjectPicker(); // emits signals for you to handle
-  //Qt3DRender::QPickingSettings* pickingSettings = new Qt3DRender::QPickingSettings();
-  //pickingSettings->setPickMethod(Qt3DRender::QPickingSettings::PickMethod::BoundingVolumePicking);
-
-
-  return root;
-}
-
-
-int main(int argc, char *argv[]) {
-
-  BSplines::BSpline bs;
-
-  //QGuiApplication app(argc, argv);
-  QApplication app(argc, argv);
+  BSplines::ArcLengthParametrizedBSpline bs = stringMethod.getArcLengthParametrizedBSpline();
+  StringMethodCoordinatesPlotter bSplinePlotter(root,bs, 50, 0.005f);
 
   Qt3DExtras::Qt3DWindow *view = new Qt3DExtras::Qt3DWindow();
   view->defaultFrameGraph()->setClearColor(Qt::gray);
 
   QWidget *container = QWidget::createWindowContainer(view);
 
-  Qt3DCore::QEntity *scene = createTestScene();
+  Qt3DCore::QEntity *scene = root;
 
   // camera
   Qt3DRender::QCamera *camera = view->camera();
@@ -104,16 +102,8 @@ int main(int argc, char *argv[]) {
 
   view->setRootEntity(scene);
 
-
-
-  QtCharts::QLineSeries *series = new QtCharts::QLineSeries();
-
-  series->append(0, 6);
-  series->append(2, 4);
-  series->append(3, 8);
-  series->append(7, 4);
-  series->append(10, 5);
-  *series << QPointF(11, 1) << QPointF(13, 3) << QPointF(17, 6) << QPointF(18, 3) << QPointF(20, 2);
+  StringMethodValuesPlotter stringMethodValuesPlotter;
+  QtCharts::QLineSeries *series = stringMethodValuesPlotter.getLineSeries(bs,200);
 
   QtCharts::QChart *chart = new QtCharts::QChart();
   chart->legend()->hide();
