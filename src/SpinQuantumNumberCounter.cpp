@@ -59,8 +59,8 @@ void SpinQuantumNumberCounter::printStatsSpinQuantumNumber(){
     std::cout << "Statistics Spin Quantum Number\n"
             "SpinQuantumNumber Count" << std::endl;
     for(std::vector<std::tuple<int,int,int> >::iterator i=SpinQuantumNumbers.begin();i!=SpinQuantumNumbers.end();i++){
-        std::cout << std::get<0>(*i) << '\t' << std::get<1>(*i) << std::endl;
-        if(std::get<0>(*i)!=0) std::cout << -std::get<0>(*i) << '\t' << std::get<2>(*i) << std::endl;
+        std::cout << static_cast<double>(std::get<0>(*i))/2 << '\t' << std::get<1>(*i) << std::endl;
+        if(std::get<0>(*i)!=0) std::cout << -static_cast<double>(std::get<0>(*i))/2 << '\t' << std::get<2>(*i) << std::endl;
     }
 }
 
@@ -101,7 +101,7 @@ void SpinQuantumNumberCounter::printStatsMultiplicities(){
     std::cout<< "Statistics Multiplicity\n"
             "Multiplicity Count Percentage" << std::endl;
     for(std::vector<std::tuple<int,int,double> >::iterator i=Multiplicities.begin();i!=Multiplicities.end();i++){
-        std::cout << std::get<0>(*i) << '\t' << std::get<1>(*i) << '\t' << std::get<2>(*i) << std::endl;
+        std::cout << std::get<0>(*i)+1 << '\t' << std::get<1>(*i) << '\t' << std::get<2>(*i) << std::endl;
     }
 }
 

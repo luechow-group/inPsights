@@ -128,7 +128,7 @@ int main(int argc, char **argv) {
     while(!input.readElectronStructure(newMolecule, sd,basedOnMax?0:&hea)) {
         int LocalSpinQuantumNumber=newMolecule.getLocalSpinQuantumNumber(LocalSpinAtomNumber);
         if(!onlyStat) {
-            std::cout << SQNCounter.addNumber(newMolecule.getLocalSpinQuantumNumber(LocalSpinAtomNumber)) << std::endl;
+            std::cout << static_cast<double>(SQNCounter.addNumber(newMolecule.getLocalSpinQuantumNumber(LocalSpinAtomNumber)))/2 << std::endl;
         } else {
             SQNCounter.addNumber(newMolecule.getLocalSpinQuantumNumber(LocalSpinAtomNumber));
         }
