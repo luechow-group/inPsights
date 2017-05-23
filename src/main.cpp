@@ -4,6 +4,7 @@
 #include "Molecule.h"
 #include "TestElectronAssigner.h"
 #include "HungarianElectronAssigner.h"
+#include "SpinQuantumNumberCounter.h"
 
 
 /*int testReadElectronStructureOwnAssignment() {
@@ -121,31 +122,19 @@ int main(int argc, char **argv) {
     }
     SpinDeterminer sd(atoi(argv[3]));
     int LocalSpinAtomNumber=atoi(argv[5]);
-    if(!onlyStat)std::cout << "SpinQZTotalMolecule\tSpinQZonlyAtomNumber"<<LocalSpinAtomNumber << std::endl;
+    if(!onlyStat)std::cout << "SpinQZonlyAtomNumber"<<LocalSpinAtomNumber << std::endl;
     std::vector<std::pair<int,int> > SpinQuantumNumbers;
+    SpinQuantumNumberCounter SQNCounter;
     while(!input.readElectronStructure(newMolecule, sd,basedOnMax?0:&hea)) {
-        int TotalSpinQuantumNumber=newMolecule.getTotalSpinQuantumNumber();
         int LocalSpinQuantumNumber=newMolecule.getLocalSpinQuantumNumber(LocalSpinAtomNumber);
         if(!onlyStat) {
-            std::cout << TotalSpinQuantumNumber << '\t'
-                      << LocalSpinQuantumNumber << std::endl;
-        }
-        std::vector<std::pair<int,int> >::iterator i;
-        for(i=SpinQuantumNumbers.begin();i!=SpinQuantumNumbers.end();i++) {
-            if (LocalSpinQuantumNumber == i->first){
-                i->second++;
-                break;
-            }
-        }
-        if(i==SpinQuantumNumbers.end()) {
-            SpinQuantumNumbers.emplace_back(LocalSpinQuantumNumber,1);
+            std::cout << SQNCounter.addNumber(newMolecule.getLocalSpinQuantumNumber(LocalSpinAtomNumber)) << std::endl;
+        } else {
+            SQNCounter.addNumber(newMolecule.getLocalSpinQuantumNumber(LocalSpinAtomNumber));
         }
     }
-    std::cout << "Statistics\n"
-            "SpinQuantumNumber Count" << std::endl;
-    for(std::vector<std::pair<int,int> >::iterator i=SpinQuantumNumbers.begin();i!=SpinQuantumNumbers.end();i++){
-        std::cout << i->first << '\t' << i->second << std::endl;
-    }
+    SQNCounter.printStatsSpinQuantumNumber();
+    SQNCounter.printStatsMultiplicities();
     std::cout << "Like a Charm!" << std::endl;
     return 0;
 }

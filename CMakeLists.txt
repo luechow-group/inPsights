@@ -54,7 +54,7 @@ set(SOURCE_FILES
         src/pse.cpp
         src/ElectronRefArrangement.cpp
         include/ElectronRefArrangement.h
-        src/ElectronPermutation.cpp include/ElectronPermutation.h include/Assignation.h src/ElectronAssigner.cpp include/ElectronAssigner.h src/HungarianElectronAssigner.cpp include/HungarianElectronAssigner.h src/TestElectronAssigner.cpp include/TestElectronAssigner.h src/Hungarian.cpp include/Hungarian.h src/SpinDeterminer.cpp include/SpinDeterminer.h)
+        src/ElectronPermutation.cpp include/ElectronPermutation.h include/Assignation.h src/ElectronAssigner.cpp include/ElectronAssigner.h src/HungarianElectronAssigner.cpp include/HungarianElectronAssigner.h src/TestElectronAssigner.cpp include/TestElectronAssigner.h src/Hungarian.cpp include/Hungarian.h src/SpinDeterminer.cpp include/SpinDeterminer.h src/SpinQuantumNumberCounter.cpp src/SpinQuantumNumberCounter.h)
 
 
 add_library(${PROJECT_NAME}_lib STATIC ${SOURCE_FILES} ${EIGEN3_INCLUDE_DIR})
