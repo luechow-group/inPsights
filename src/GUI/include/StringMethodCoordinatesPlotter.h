@@ -8,20 +8,19 @@
 #include "Polyline.h"
 #include "ArcLengthParametrizedBSpline.h"
 
-/* Plots a 3N dimensional spline by creating N 3D-dimensional splines
- *
+/* Plots a 3N dimensional spline by creating N 3D-dimensional spline
  * */
 
-class BSplinePlotter{
+class StringMethodCoordinatesPlotter{
 public:
 
-    BSplinePlotter(Qt3DCore::QEntity *root,
+    StringMethodCoordinatesPlotter(Qt3DCore::QEntity *root,
             const BSplines::ArcLengthParametrizedBSpline& arcLengthParametrizedBSpline,
                    const unsigned resolution, const float radius){
 
       long reducedDim = arcLengthParametrizedBSpline.getReducedDim();
 
-      assert( reducedDim%3 == 0 );
+      assert( reducedDim%3 == 0 && reducedDim > 0 );
 
       std::vector<std::vector<QVector3D>> pointsList(reducedDim/3);
 

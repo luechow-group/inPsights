@@ -30,6 +30,7 @@ find_package(Qt5 REQUIRED COMPONENTS
         3DCore
         3DExtras
         3DRender
+        Charts
         #3DInput
         )
 
@@ -43,7 +44,8 @@ set(HEADER_FILES
         include/Helper.h
         include/Electron.h
         include/Polyline.h
-        include/BSplinePlotter.h
+        include/StringMethodCoordinatesPlotter.h
+        include/StringMethodValuePlotter.h
         )
 
 set(SOURCE_FILES
@@ -55,6 +57,7 @@ set(SOURCE_FILES
         source/Bond.cpp
         source/Electron.cpp
         source/Polyline.cpp
+        include/MolecularGeometry.h
         )
 
 add_executable("${PROJECT_NAME}_main" ${SOURCE_FILES} ${HEADER_FILES} main.cpp)
@@ -72,6 +75,7 @@ target_link_libraries("${PROJECT_NAME}_main"
         Qt5::3DCore
         Qt5::3DExtras
         Qt5::3DRender
+        Qt5::Charts
         #Qt5::3DInput
         #pthread #TODO needed?
         )
