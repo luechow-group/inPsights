@@ -32,17 +32,21 @@ set(HEADER_FILES
         include/pElementInfo.h
         include/NaturalConstants.h
         #include/ChemicalSystem.h
-        #include/MaxRefParser.h
+        include/WaveFunctionParser.h
+        include/Atom.h
+        include/AtomCollection.h
         )
 
 set(SOURCE_FILES
         source/pElementInfo.cpp
         source/ElementInfo.cpp
         #source/ChemicalSystem.cpp
-        #source/MaxRefParser.cpp
+        source/WaveFunctionParser.cpp
+        source/Atom.cpp
+        source/AtomCollection.cpp
         )
 
-add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES})
+add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES} include/Atom.h)
 target_link_libraries(${PROJECT_NAME}
         Qt5::Core
         #eigen

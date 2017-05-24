@@ -7,23 +7,13 @@
 #include <string>
 
 #include "ChemicalSystem.h"
-#include "MaxRefParser.h"
+#include "WaveFunctionParser.h"
 
 int main(int argc, char const *argv[]) {
 
-  Eigen::VectorXd t(3);
-  t << 1,2,3;
+  std::string filename = "t.wf";
 
-  PositionCollection pc;
+  WaveFunctionParser waveFunctionParser(filename);
 
-  std::string filename;
-  filename = "./Ethane-max.ref";
-
-  MaxRefParser maxRefParser;
-  maxRefParser.parseFile(filename);
-
-
-  std::cout << pc.getPositionCollection().size() << std::endl;
-  std::cout << pc.getPositionCollection() << std::endl;
-
+  waveFunctionParser.readNuclei();
 }
