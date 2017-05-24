@@ -2,10 +2,10 @@
 // Created by heuer on 09.12.16.
 //
 
-#include "Atom.h"
+#include "Atom3D.h"
 #include "Helper.h"
 
-Atom::Atom(Qt3DCore::QEntity *root, const QVector3D& location, const Elements::ElementType& elementType)
+Atom3D::Atom3D(Qt3DCore::QEntity *root, const QVector3D& location, const Elements::ElementType& elementType)
   : Sphere(root,
            QColorFromElementType(elementType),
            location,
@@ -16,7 +16,7 @@ Atom::Atom(Qt3DCore::QEntity *root, const QVector3D& location, const Elements::E
 }
 
 
-Atom::Atom(const Atom &atom)
+Atom3D::Atom3D(const Atom3D &atom)
   : Sphere(atom.parentEntity(),
            atom.getColor(),
            atom.getLocation(),

@@ -39,13 +39,14 @@ set(HEADER_FILES
         include/Sphere.h
         include/Cylinder.h
         include/DividedCylinder.h
-        include/Atom.h
-        include/Bond.h
+        include/Atom3D.h
+        include/Bond3D.h
         include/Helper.h
-        include/Electron.h
+        include/Electron3D.h
         include/Polyline.h
         include/StringMethodCoordinatesPlotter.h
         include/StringMethodValuePlotter.h
+        include/MolecularGeometry3D.h
         )
 
 set(SOURCE_FILES
@@ -53,12 +54,12 @@ set(SOURCE_FILES
         source/Sphere.cpp
         source/Cylinder.cpp
         source/DividedCylinder.cpp
-        source/Atom.cpp
-        source/Bond.cpp
-        source/Electron.cpp
+        source/Atom3D.cpp
+        source/Bond3D.cpp
+        source/Electron3D.cpp
         source/Polyline.cpp
-        include/MolecularGeometry.h
-        )
+
+        source/MolecularGeometry3D.cpp)
 
 add_executable("${PROJECT_NAME}_main" ${SOURCE_FILES} ${HEADER_FILES} main.cpp)
 

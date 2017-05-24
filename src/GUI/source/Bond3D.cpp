@@ -1,10 +1,10 @@
-#include "Bond.h"
+#include "Bond3D.h"
 
 #include "Helper.h"
 #include "cmath"
 // bond is internally attached to the src root
 
-Bond::Bond(const Atom &src, const Atom &dest)
+Bond3D::Bond3D(const Atom3D &src, const Atom3D &dest)
   : DividedCylinder(src.parentEntity(),
                     {QColorFromElementType(src.getElementType()),
                      QColorFromElementType(dest.getElementType())},

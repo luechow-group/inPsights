@@ -2,9 +2,9 @@
 // Created by heuer on 10.05.17.
 //
 
-#include "Electron.h"
+#include "Electron3D.h"
 
-Electron::Electron(Qt3DCore::QEntity *root, const QVector3D& location, const Spin::SpinType& spinType)
+Electron3D::Electron3D(Qt3DCore::QEntity *root, const QVector3D& location, const Spin::SpinType& spinType)
         : Sphere(root,
                  Spin::QColorFromSpinType(spinType),
                  location,
@@ -15,7 +15,7 @@ Electron::Electron(Qt3DCore::QEntity *root, const QVector3D& location, const Spi
 }
 
 
-Electron::Electron(const Electron &electron)
+Electron3D::Electron3D(const Electron3D &electron)
         : Sphere(electron.parentEntity(),
                  electron.getColor(),
                  electron.getLocation(),

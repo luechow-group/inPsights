@@ -11,16 +11,20 @@
 #include <QtCharts/QChartView>
 #include <QtCharts/QLineSeries>
 #include <QtWidgets/QHBoxLayout>
+#include <MolecularGeometry3D.h>
 
 #include "ElementInfo.h"
 #include "ElementTypes.h"
 #include "Sphere.h"
 #include "Cylinder.h"
 #include "DividedCylinder.h"
-#include "Atom.h"
-#include "Bond.h"
-#include "Electron.h"
+#include "Atom3D.h"
+#include "Bond3D.h"
+#include "Electron3D.h"
 #include "Polyline.h"
+
+#include "WaveFunctionParser.h"
+#include "Atom.h"
 
 #include "ArcLengthParametrizedBSpline.h"
 #include "StringMethodCoordinatesPlotter.h"
@@ -29,21 +33,15 @@
 
 
 int main(int argc, char *argv[]) {
-
-
-
-  //Electron e1(root, QVector3D(12.0f, 1.0f, 7.0f), Spin::SpinType::Alpha);
-  //Electron e2(root, QVector3D(9.0f, 1.2f, 7.0f), Spin::SpinType::Beta);
+  //Electron3D e1(root, QVector3D(12.0f, 1.0f, 7.0f), Spin::SpinType::Alpha);
+  //Electron3D e2(root, QVector3D(9.0f, 1.2f, 7.0f), Spin::SpinType::Beta);
 
   //Qt3DRender::QObjectPicker(); // emits signals for you to handle
   //Qt3DRender::QPickingSettings* pickingSettings = new Qt3DRender::QPickingSettings();
   //pickingSettings->setPickMethod(Qt3DRender::QPickingSettings::PickMethod::BoundingVolumePicking);
 
-
-
   //QGuiApplication app(argc, argv);
   QApplication app(argc, argv);
-
 
   Eigen::VectorXd xA(2 * 3);
   Eigen::VectorXd xB(2 * 3);
@@ -71,9 +69,12 @@ int main(int argc, char *argv[]) {
 
   Qt3DCore::QEntity *root = new Qt3DCore::QEntity();
 
-  Atom H1(root, QVector3D(0.f,0.f,+0.70014273f), Elements::ElementType::H);
-  Atom H2(root, QVector3D(0.f,0.f,-0.70014273f), Elements::ElementType::H);
-  //Bond b1(H1, H2);
+  // draw molecular geometry
+  std::string filename = "t.wf";
+  WaveFunctionParser waveFunctionParser(filename);
+  waveFunctionParser.readNuclei();
+  MolecularGeometry3D molecularGeometry3D (root, waveFunctionParser.getAtomCollection());
+
 
   BSplines::ArcLengthParametrizedBSpline bs = stringMethod.getArcLengthParametrizedBSpline();
   StringMethodCoordinatesPlotter bSplinePlotter(root,bs, 50, 0.005f);
