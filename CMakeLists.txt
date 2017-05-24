@@ -8,6 +8,9 @@ find_package(Eigen3 REQUIRED)
 include_directories(${EIGEN3_INCLUDE_DIR})
 include_directories(include)
 
+find_package(Boost REQUIRED)
+include_directories(${Boost_INCLUDE_DIRS})
+
 if(APPLE)
     add_subdirectory(../../../cmake-build-debug/googletest-src ../../../cmake-build-debug/googletest-build)
 else()
@@ -57,7 +60,7 @@ set(SOURCE_FILES
         src/ElectronPermutation.cpp include/ElectronPermutation.h include/Assignation.h src/ElectronAssigner.cpp include/ElectronAssigner.h src/HungarianElectronAssigner.cpp include/HungarianElectronAssigner.h src/TestElectronAssigner.cpp include/TestElectronAssigner.h src/Hungarian.cpp include/Hungarian.h src/SpinDeterminer.cpp include/SpinDeterminer.h src/SpinQuantumNumberCounter.cpp src/SpinQuantumNumberCounter.h)
 
 
-add_library(${PROJECT_NAME}_lib STATIC ${SOURCE_FILES} ${EIGEN3_INCLUDE_DIR})
+add_library(${PROJECT_NAME}_lib STATIC ${SOURCE_FILES} ${EIGEN3_INCLUDE_DIR} ${Boost_INCLUDE_DIRS})
 
 add_subdirectory(src/tests)
 

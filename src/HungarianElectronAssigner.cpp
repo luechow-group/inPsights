@@ -56,11 +56,27 @@ Assignation HungarianElectronAssigner::assign(const std::vector<Core> &cores, co
     resultAssignation.clear();
     DistanceMatrix.resize(electrons.size(),electrons.size());
     generateDistanceMatrix(cores,electrons);
+
+    //std::cout << "\n\n\n";
+    //std::cout << DistanceMatrix << std::endl;
+
     MatchMatrix.resize(electrons.size(),electrons.size());
+
     findMatching();
+   // std::cout << MatchMatrix << std::endl;
+
     DistanceMatrix.resize(0,0);
     generateAssignation(cores,electrons);
     MatchMatrix.resize(0,0);
+
+    /*
+    std::cout << "Assignment:\n";
+    for(std::vector<int>::const_iterator i=resultAssignation[0].second.begin();i!=resultAssignation[0].second.end();i++){
+        std::cout << *i << ' ';
+    }
+    std::cout << std::endl;
+    */
+
     return resultAssignation;
 }
 
