@@ -99,20 +99,28 @@ int testFindElement() {
 void show_usage()
 {
     std::cout << "Usage: \n"
-            "LocalSpinMultiplicity reffile xyzfile numOfalphaElectrons bmax/bstart atomnumber StatOnly\n"
+            "LocalSpinMultiplicity reffile xyzfile numOfalphaElectrons bmax/bstart StatOnly atomnumbers \n"
             "bmax for assignment based on maximum positions, bstart for assignment based on starting positions\n"
-            "atomnumber is the number of the atom for Local Spin Calculation" << std::endl;
+            "atomnumbers are the numbers of the atoms for Local Spin Calculation\n Given none, whole molecule will be looked at." << std::endl;
 }
 
 int main(int argc, char **argv) {
-    if(argc!=7){
+    if(argc<6){
         show_usage();
         return 1;
     }
+
     bool basedOnMax=false;
     if(strcmp(argv[4],"bmax")==0)basedOnMax=true;
+
     bool onlyStat=false;
-    if(strcmp(argv[6],"StatOnly")==0)onlyStat=true;
+    if(strcmp(argv[5],"StatOnly")==0)onlyStat=true;
+
+    std::vector<int> fragmentAtomNumbers;
+    for(int i=6;i<argc;i++){
+        fragmentAtomNumbers.emplace_back(atoi(argv[i]));
+    }
+
     Molecule newMolecule;
     FileXyzInput input(argv[1],argv[2]);
     input.readMoleculeCores(newMolecule);
@@ -121,16 +129,28 @@ int main(int argc, char **argv) {
         input.readElectronCoreAssignations(newMolecule.getCores(), hea);
     }
     SpinDeterminer sd(atoi(argv[3]));
-    int LocalSpinAtomNumber=atoi(argv[5]);
-    if(!onlyStat)std::cout << "SpinQZonlyAtomNumber"<<LocalSpinAtomNumber << std::endl;
-    std::vector<std::pair<int,int> > SpinQuantumNumbers;
+    switch(fragmentAtomNumbers.size()){
+        case 0:
+            std::cout << "SpinQZwholeMolecule" << std::endl;
+            break;
+        case 1:
+            std::cout << "SpinQZonlyAtomNumber "<< fragmentAtomNumbers[0] << std::endl;
+            break;
+        default:
+            std::cout << "SpinQZonlyAtomNumbers ";
+            for(std::vector<int>::iterator i=fragmentAtomNumbers.begin();i!=fragmentAtomNumbers.end();i++){
+                std::cout << *i << ' ';
+            }
+            std::cout << std::endl;
+            break;
+    }
     SpinQuantumNumberCounter SQNCounter;
     while(!input.readElectronStructure(newMolecule, sd,basedOnMax?0:&hea)) {
-        int LocalSpinQuantumNumber=newMolecule.getLocalSpinQuantumNumber(LocalSpinAtomNumber);
+        int LocalSpinQuantumNumber=newMolecule.getLocalSpinQuantumNumber(fragmentAtomNumbers);
         if(!onlyStat) {
-            std::cout << static_cast<double>(SQNCounter.addNumber(newMolecule.getLocalSpinQuantumNumber(LocalSpinAtomNumber)))/2 << std::endl;
+            std::cout << static_cast<double>(SQNCounter.addNumber(newMolecule.getLocalSpinQuantumNumber(fragmentAtomNumbers)))/2 << std::endl;
         } else {
-            SQNCounter.addNumber(newMolecule.getLocalSpinQuantumNumber(LocalSpinAtomNumber));
+            SQNCounter.addNumber(newMolecule.getLocalSpinQuantumNumber(fragmentAtomNumbers));
         }
     }
     SQNCounter.printStatsSpinQuantumNumber();

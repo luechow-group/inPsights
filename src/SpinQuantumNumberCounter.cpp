@@ -58,7 +58,7 @@ int SpinQuantumNumberCounter::getCountOfSpinQuantumNumber(int SpinQuantumNumber)
 
 void SpinQuantumNumberCounter::printStatsSpinQuantumNumber(){
     this->sortSpinQuantumNumbers();
-    std::cout << "Statistics Spin Quantum Number\n"
+    std::cout << "Statistics SpinQuantumNumber\n"
             "SpinQuantumNumber Count" << std::endl;
     for(std::vector<std::tuple<int,int,int> >::iterator i=SpinQuantumNumbers.begin();i!=SpinQuantumNumbers.end();i++){
         std::cout << static_cast<double>(std::get<0>(*i))/2 << '\t' << std::get<1>(*i) << std::endl;

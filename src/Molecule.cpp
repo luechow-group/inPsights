@@ -56,6 +56,7 @@ int Molecule::getLocalSpinQuantumNumber(int coreToLookAt) {
 }
 
 int Molecule::getLocalSpinQuantumNumber(std::vector<int> coresToLookAt) {
+    if(coresToLookAt.size()==0)return getTotalSpinQuantumNumber();
     int LocalFragmentSpin=0;
     for(std::vector<int>::const_iterator i=coresToLookAt.begin();i!=coresToLookAt.end();i++){
         LocalFragmentSpin+= cores[*i].getLocalSpinQuantumNumber(electrons);
