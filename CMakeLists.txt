@@ -8,8 +8,8 @@ find_package(Eigen3 REQUIRED)
 include_directories(${EIGEN3_INCLUDE_DIR})
 include_directories(include)
 
-find_package(Boost REQUIRED)
-include_directories(${Boost_INCLUDE_DIRS})
+#find_package(Boost REQUIRED)
+#include_directories(${Boost_INCLUDE_DIRS})
 
 if(APPLE)
     add_subdirectory(../../../cmake-build-debug/googletest-src ../../../cmake-build-debug/googletest-build)
