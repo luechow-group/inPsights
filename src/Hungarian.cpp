@@ -27,7 +27,7 @@ using namespace std;
 void Hungarian::reduce(MatrixXd& m) {
     // subtract row minimum from each row
     for (int i=0; i<m.rows(); i++) {
-        float minElement = m.row(i).minCoeff();
+        double minElement = m.row(i).minCoeff();
         VectorXd rMinusMin(m.rows());
         rMinusMin.fill(-minElement);
         m.row(i) += rMinusMin;
@@ -118,7 +118,7 @@ void Hungarian::findMatching(MatrixXd& m, MatrixXd& result, matchtype type) {
     // to do maximization rather than minimization, we have to
     // transform the matrix by subtracting every value from the maximum
     if (type == MATCH_MAX) {
-        float max = n.maxCoeff();
+        double max = n.maxCoeff();
         MatrixXd maxMat(n.rows(), n.cols());
         maxMat.fill(max);
         n = maxMat - n;
@@ -196,7 +196,7 @@ void Hungarian::findMatching(MatrixXd& m, MatrixXd& result, matchtype type) {
         // Step 6
         // Should now be no more uncovered zeroes
         // Get the minimum uncovered element
-        float min = 1000000;
+        double min = 1000000;
         for (int i=0; i<n.rows(); i++) {
             for (int j=0; j<n.cols(); j++) {
                 if (!rowCover(i) && !colCover(j) && n(i,j) < min) {
