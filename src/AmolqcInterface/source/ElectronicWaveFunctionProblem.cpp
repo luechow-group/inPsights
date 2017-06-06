@@ -5,7 +5,7 @@
 #include "ElectronicWaveFunctionProblem.h"
 
 ElectronicWaveFunctionProblem::ElectronicWaveFunctionProblem()
-        : valueCallCount_(0), gradientCallCount_(0) {}
+        : wf_(ElectronicWaveFunction::getInstance()),valueCallCount_(0), gradientCallCount_(0) {}
 
 double ElectronicWaveFunctionProblem::value(const Eigen::VectorXd &x) {
     valueCallCount_++;

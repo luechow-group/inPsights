@@ -43,7 +43,7 @@ public:
 
 private:
     unsigned valueCallCount_, gradientCallCount_;
-    ElectronicWaveFunction wf_;
+    ElectronicWaveFunction& wf_;
 };
 
 #endif //AMOLQCGUI_ELECTRONICWAVEFUNCTIONPROBLEM_H

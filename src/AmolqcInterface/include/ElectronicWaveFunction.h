@@ -23,9 +23,7 @@ void amolqc_eloc(double x[], int n, double *phi, double *u, double grad[], doubl
 class ElectronicWaveFunction {
 
 public:
-  ElectronicWaveFunction();
-
-  ~ElectronicWaveFunction();
+  static ElectronicWaveFunction& getInstance();
 
   void initialize();
 
@@ -57,6 +55,7 @@ public:
   Eigen::VectorXd getNegativeLogarithmizedProbabilityDensityGradientCollection();
 
 private:
+  ElectronicWaveFunction();
   unsigned atomNumber_,electronNumber_;
   double determinantProbabilityAmplitude_, jastrowFactor_, localEnergy_;
   Eigen::VectorXd electronPositionCollection_, electronDriftCollection_;

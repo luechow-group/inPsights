@@ -5,11 +5,13 @@
 #include "ElectronicWaveFunction.h"
 #include <iostream>
 
-ElectronicWaveFunction::ElectronicWaveFunction() {
-  initialize();
+ElectronicWaveFunction &ElectronicWaveFunction::getInstance() {
+  static ElectronicWaveFunction electronicWaveFunction;
+  return electronicWaveFunction;
 }
 
-ElectronicWaveFunction::~ElectronicWaveFunction() {
+ElectronicWaveFunction::ElectronicWaveFunction() {
+  initialize();
 }
 
 void ElectronicWaveFunction::setRandomElectronPositionCollection(unsigned electronNumber,

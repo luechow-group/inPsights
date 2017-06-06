@@ -11,7 +11,9 @@
 
 
 StringMethod::StringMethod(ChainOfStates initialChain)
-        : chain_(initialChain)
+        :
+        wf_(ElectronicWaveFunction::getInstance()),
+        chain_(initialChain)
 {
   StringOptimizationProblem problem(chain_.statesNumber(), chain_.coordinatesNumber(), wf_, unitTangents_);
   chain_.setValues(problem.stateValues(chain_.coordinatesAsVector()));
@@ -22,9 +24,13 @@ void StringMethod::optimizeString() {
     reparametrizeString();
     discretizeStringToChain();
     calculateUnitTangents();
+
+  unsigned maxIterations = 20;
+  unsigned iterations = 0;
     do {
-        performStep();
-    } while (status_ == cppoptlib::Status::IterationLimit);
+      performStep();
+      ++iterations;
+    } while (status_ == cppoptlib::Status::IterationLimit && iterations < maxIterations);
 }
 
 void StringMethod::performStep() {
@@ -52,8 +58,8 @@ void StringMethod::minimizeOrthogonalToString() {
     // maybe another value call is necessary
     chain_.setValues(problem.stateValues(vec));
 
-    std::cout << chain_.coordinates() << std::endl;
-    std::cout << chain_.values().transpose() << std::endl;
+    //std::cout << chain_.coordinates() << std::endl;
+    //std::cout << chain_.values().transpose() << std::endl;
     std::cout << "--Solver status: " << status_ << std::endl;
 }
 
