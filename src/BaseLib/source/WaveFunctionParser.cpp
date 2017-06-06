@@ -1,6 +1,7 @@
 #include <sstream>
 #include <iostream>
 #include <regex>
+#include <string>
 
 #include "WaveFunctionParser.h"
 #include "ElementInfo.h"
@@ -19,8 +20,10 @@ static std::string extractRegExMatchingSubstring(const std::string str, std::reg
 
   std::smatch match;
 
-  if (std::regex_search(str.begin(), str.end(), match, rgx))
+  if (std::regex_search(str.begin(), str.end(), match, rgx)) {
+    std::cout << match[1];
     return match[1];
+  }
   else return  "not found";
 }
 
@@ -60,7 +63,7 @@ void WaveFunctionParser::readNuclei() {
   std::string word;
 
   std::regex chargeNumberRegEx("^charge=(-?[0-9]+),$");
-  std::regex spinNumberRegEx("^spin=([0-9]+),$");
+  std::regex spinNumberRegEx("^spin=([0-9]+),?$");
   std::regex angstromRegEx("^geom=angstrom$");
   //std::regex decimalNumberRegEx("^(-?[0-9]+\.[0-9]+)$");
 
@@ -68,6 +71,8 @@ void WaveFunctionParser::readNuclei() {
   int charge = std::stoi(extractRegExMatchingSubstring(word,chargeNumberRegEx));
 
   iss >> word;
+  auto a =  extractRegExMatchingSubstring(word,spinNumberRegEx);
+  std::cout << a;
   unsigned long spin = std::stoul(extractRegExMatchingSubstring(word,spinNumberRegEx));
 
   iss >> word;
@@ -102,8 +107,10 @@ void WaveFunctionParser::readNuclei() {
     iss >> y;
     iss >> z;
 
-    // convert to bohr for amolqc
+    // if angstrom convert to bohr for amolqc
     if(angstromQ){
+
+      std::cout << AU::length*1e10;
       x /= AU::length*1e10;
       y /= AU::length*1e10;
       z /= AU::length*1e10;
