@@ -129,6 +129,7 @@ int main(int argc, char **argv) {
         input.readElectronCoreAssignations(newMolecule.getCores(), hea);
     }
     SpinDeterminer sd(atoi(argv[3]));
+    std::cout << (basedOnMax?"bmax ":"bstart ");
     switch(fragmentAtomNumbers.size()){
         case 0:
             std::cout << "SpinQZwholeMolecule" << std::endl;
