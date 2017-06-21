@@ -57,26 +57,29 @@ void WaveFunctionParser::readNuclei() {
 
   std::getline(file_,line);
   std::getline(file_,line);
-  std::getline(file_,line);
 
+  std::getline(file_,line);
   std::istringstream iss (line);
   std::string word;
 
-  std::regex chargeNumberRegEx("^charge=(-?[0-9]+),$");
-  std::regex spinNumberRegEx("^spin=([0-9]+),?$");
+  std::regex basisRegEx("^basis=([a-z]+),$");
+  std::regex jastrowRegEx("^jastrow=([a-z]+),$");
   std::regex angstromRegEx("^geom=angstrom$");
-  //std::regex decimalNumberRegEx("^(-?[0-9]+\.[0-9]+)$");
 
   iss >> word;
-  int charge = std::stoi(extractRegExMatchingSubstring(word,chargeNumberRegEx));
-
   iss >> word;
-  auto a =  extractRegExMatchingSubstring(word,spinNumberRegEx);
-  std::cout << a;
-  unsigned long spin = std::stoul(extractRegExMatchingSubstring(word,spinNumberRegEx));
-
   iss >> word;
   bool angstromQ = std::regex_match(word,angstromRegEx);
+
+  std::getline(file_,line);
+  iss = std::istringstream(line);
+  std::regex chargeNumberRegEx("^charge=(-?[0-9]+),$");
+  std::regex spinNumberRegEx("^spin=([0-9]+),?$");
+  iss >> word;
+  int charge = std::stoi(extractRegExMatchingSubstring(word,chargeNumberRegEx));
+  iss >> word;
+  unsigned long spin = std::stoul(extractRegExMatchingSubstring(word,spinNumberRegEx));
+
 
   std::getline(file_,line);
   std::getline(file_,line);
