@@ -8,7 +8,7 @@
 #include "problem.h"
 #include "ElectronicWaveFunction.h"
 
-enum StateType{ Simple, Orthogonal, Fixed, ClimbingImage};
+enum StateGradientType{ SimpleGradient, OrthogonalToString, Fixed, ClimbingImage};
 
 class StringOptimizationProblem : public cppoptlib::Problem<double,Eigen::Dynamic>{
 public:
@@ -63,7 +63,7 @@ private:
     Eigen::VectorXd values_;
     unsigned valueCallCount_, gradientCallCount_;
 
-    std::vector<StateType> stateTypes_;
+    std::vector<StateGradientType> stateTypes_;
 
 };
 

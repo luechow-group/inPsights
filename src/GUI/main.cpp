@@ -34,6 +34,7 @@
 
 #include "solver/newtonraphsonsolver.h"
 #include "ElectronicWaveFunctionProblem.h"
+#include <Eigen/Eigenvalues>
 
 
 int main(int argc, char *argv[]) {
@@ -98,93 +99,89 @@ int main(int argc, char *argv[]) {
  0.044374,-0.025617,-0.695900,\
 -0.756913, 0.437007,-1.772876;
 
-
-
   Eigen::Vector3d el9= xA.segment((9-1)*3,3);
   Eigen::Vector3d el17= xA.segment((17-1)*3,3);
 
-  std::cout << el9 << std::endl;
-  std::cout << el17 << std::endl;
+  //Eigen::Vector3d el6= xA.segment((6-1)*3,3);
+  //Eigen::Vector3d el7= xA.segment((7-1)*3,3);
+  //Eigen::Vector3d el18= xA.segment((18-1)*3,3);
+
 
   xB = xA;
   xB.segment((9-1)*3,3) = el17;
   xB.segment((17-1)*3,3) = el9;
+  //xB.segment((6-1)*3,3) = el7;
+  //xB.segment((7-1)*3,3) = el18;
+  //xB.segment((18-1)*3,3) = el6;
+
+  ElectronicWaveFunction::getInstance().evaluate(xA);
+  std::cout << "phi " << ElectronicWaveFunction::getInstance().getDeterminantProbabilityAmplitude() << std::endl;
+  std::cout << "U " << ElectronicWaveFunction::getInstance().getJastrowFactor() << std::endl;
+  std::cout << "phi*exp(U) " << ElectronicWaveFunction::getInstance().getProbabilityAmplitude() << std::endl;
+  std::cout << "eloc " << ElectronicWaveFunction::getInstance().getLocalEnergy() << std::endl;
+  std::cout << "drift " << ElectronicWaveFunction::getInstance().getElectronDriftCollection().transpose() << std::endl;
+
+  ElectronicWaveFunction::getInstance().evaluate(xB);
+  std::cout << ElectronicWaveFunction::getInstance().getDeterminantProbabilityAmplitude() << std::endl;
 
 
-  unsigned numberOfStates = 6;
-  //Eigen::MatrixXd initialCoordinates(2 * 3, numberOfStates);
-
+  unsigned numberOfStates = 10;
   Eigen::MatrixXd initialCoordinates(18 * 3, numberOfStates);
-
   Eigen::VectorXd delta = xB - xA;
   for (int i = 0; i < numberOfStates; ++i) {
     double rel = double(i) / double(numberOfStates - 1);
-
-    //Eigen::VectorXd randVec(18*3);
-    //randVec.setZero();
-    //if ( i != 0  && i != (numberOfStates-1)) randVec.setRandom();
-    //randVec *= 0.001;
-    //initialCoordinates.col(i) = xA + ((delta+randVec) * rel);
     initialCoordinates.col(i) = xA + (delta * rel);
   }
-  Eigen::VectorXd bend(6);
-  bend << 0.0, 0.1, 0.5, 0.5, 0.1, 0.0;
 
+  //Eigen::VectorXd bend(numberOfStates);
+  //bend << 0.0, 0.0, 0.0, 0.0, 0.0, 0.0;
   //x-bend
   //initialCoordinates.row((9-1)*3+0) += bend; //+x bend
   //initialCoordinates.row((17-1)*3+0) -= bend;//-x bend
 
   //y-bend
-  initialCoordinates.row((9-1)*3+1) += bend; //+y bend
-  initialCoordinates.row((17-1)*3+1) -= bend;//-y bend
+  //initialCoordinates.row((9-1)*3+1) += bend; //+y bend
+  //initialCoordinates.row((17-1)*3+1) -= bend;//-y bend
 
   StringMethod stringMethod(initialCoordinates);
-  std::cout << stringMethod.getChain().coordinates() << std::endl;
   stringMethod.optimizeString();
 
   BSplines::ArcLengthParametrizedBSpline arcLengthParametrizedBSpline = stringMethod.getArcLengthParametrizedBSpline();
+  BSplines::BSpline bspline(arcLengthParametrizedBSpline.getKnotVector(0),
+                       arcLengthParametrizedBSpline.getControlPointMatrix(0),
+                       arcLengthParametrizedBSpline.getDegree(),2);
 
-  BSplines::StationaryPointFinder stationaryPointFinder(arcLengthParametrizedBSpline);
+  BSplines::StationaryPointFinder stationaryPointFinder(bspline);
   std::vector<double> result = stationaryPointFinder.getMaxima(0);
 
+  Eigen::VectorXd tsGuessGeom = bspline.evaluate(0).tail(18*3);
+  std::cout << "u=" << result[0] << "\n" << tsGuessGeom.transpose() << std::endl;
 
 
+  ElectronicWaveFunctionProblem f;
+  Eigen::MatrixXd hess(18*3,18*3);
+  f.hessian(tsGuessGeom,hess);
+  //std::cout << hess << std::endl;
+  Eigen::EigenSolver<Eigen::MatrixXd> eigenSolver(hess,false);
+  auto eigenvalues = eigenSolver.eigenvalues();
+  std::cout << eigenvalues << std::endl;
 
-
-  /*for (std::vector<double>::const_iterator it = result.begin(); it != result.end(); ++it){
-    std::cout << *it << std::endl;
 
     //Eigen::VectorXd tsGuessGeom = arcLengthParametrizedBSpline.evaluate(*it).tail(18*3);
 
-
-    Eigen::VectorXd tsGuessGeom (18*3);
-    tsGuessGeom << \
-    0.00000000, 0.00000000, 1.44308900,\
-    0.00000000, 0.00000000,-1.44308900,\
-   -1.66311000, 0.96020800,-2.19399100,\
-    0.00000000, 1.92039600, 2.19399100,\
-   -1.66311000,-0.96020800, 2.19399100,\
-    0.00063700,-0.88133500,-1.75207200,\
-    0.76282600, 0.44131200,-1.75478700,\
-    0.76221900,-0.44182700, 1.75445000,\
-   -0.11771930, 0.06914695, 0.28646868,\
-    0.00000000, 0.00000000, 1.44308900,\
-    0.00000000, 0.00000000,-1.44308900,\
-    1.66311000,-0.96020800, 2.19399100,\
-    0.00000000,-1.92039600,-2.19399100,\
-    1.66311000, 0.96020800,-2.19399100,\
-   -0.00026100, 0.88121400, 1.75238900,\
-   -0.76245300,-0.44167000, 1.75528900,\
-    0.11158377,-0.06590523, 0.48572435,\
-   -0.76250400, 0.44187100,-1.75363100;
-
-    ElectronicWaveFunctionProblem f;
     cppoptlib::NewtonRaphsonSolver<ElectronicWaveFunctionProblem> solver;
     solver.setDebug(cppoptlib::DebugLevel::High);
     cppoptlib::Criteria<double> crit = cppoptlib::Criteria<double>::defaults();
+    crit.iterations = 100;
+    crit.gradNorm = 1e-3;
     solver.setStopCriteria(crit);
     solver.minimize(f,tsGuessGeom);
-  }*/
+
+  f.hessian(tsGuessGeom,hess);
+  //std::cout << hess << std::endl;
+  eigenSolver = Eigen::EigenSolver<Eigen::MatrixXd>(hess,false);
+  eigenvalues = eigenSolver.eigenvalues();
+  std::cout << eigenvalues << std::endl;
 
 
 
@@ -207,8 +204,6 @@ int main(int argc, char *argv[]) {
     else
       Electron3D(root,qVector3D,Spin::Beta);
   }
-
-
 
   BSplines::ArcLengthParametrizedBSpline bs = stringMethod.getArcLengthParametrizedBSpline();
   StringMethodCoordinatesPlotter bSplinePlotter(root,bs, 50, 0.005f);

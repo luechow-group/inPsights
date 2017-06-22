@@ -54,6 +54,7 @@ int main(int argc, char const *argv[]) {
 
   cppoptlib::Criteria<double> crit = cppoptlib::Criteria<double>::nonsmoothDefaults();
   //crit.iterations = 1000;
+  crit.gradNorm = 0.5;
   cppoptlib::BfgsnsSolver<ElectronicWaveFunctionProblem> solver;
   solver.setDebug(cppoptlib::DebugLevel::High);
   solver.setStopCriteria(crit);

@@ -3,7 +3,6 @@
 //
 
 #include "StringOptimizationProblem.h"
-#include <iostream>
 #include <iomanip>
 
 
@@ -27,7 +26,7 @@ StringOptimizationProblem::StringOptimizationProblem(long numberOfStates,
 
 double StringOptimizationProblem::value(const Eigen::VectorXd &x) {
 
-  double value = 0;
+  /*double value = 0;
   for (int i = 0; i < numberOfStates_; ++i) {
     Eigen::VectorXd xi(x.segment(i * numberOfCoords_, numberOfCoords_));
 
@@ -36,6 +35,9 @@ double StringOptimizationProblem::value(const Eigen::VectorXd &x) {
     value += wf_.getNegativeLogarithmizedProbabilityDensity();
   }
   return value;
+   *///TODO delete
+  //std::cout << "StringOptimizationProblem::value(const Eigen::VectorXd &x)" << std::endl;
+  return stateValues(x).sum();
 }
 
 Eigen::VectorXd StringOptimizationProblem::stateValues(const Eigen::VectorXd &x) {
@@ -44,9 +46,14 @@ Eigen::VectorXd StringOptimizationProblem::stateValues(const Eigen::VectorXd &x)
   for (int i = 0; i < numberOfStates_; ++i) {
     Eigen::VectorXd xi(x.segment(i * numberOfCoords_, numberOfCoords_));
 
+    //std::cout << "single state " << i << std::endl;
+    //if (std::abs(x(0)) > 100){
+    //  std::cout << "assert!" << std::endl;
+    //}
     valueCallCount_++;
     wf_.evaluate(xi);
     stateValues(i) = wf_.getNegativeLogarithmizedProbabilityDensity();
+    //std::cout << " value "<< stateValues(i) << std::endl;
   }
   return stateValues;
 }
@@ -58,11 +65,11 @@ void StringOptimizationProblem::gradient(const Eigen::VectorXd &x, Eigen::Vector
 
   stateTypes_.resize(0);
 
-  stateTypes_.push_back(StateType::Simple);
+  stateTypes_.push_back(StateGradientType::SimpleGradient);
   for (int i = 1; i < numberOfStates_-1; ++i) {
-    stateTypes_.push_back(StateType::Orthogonal);
+    stateTypes_.push_back(StateGradientType::OrthogonalToString);
   }
-  stateTypes_.push_back(StateType::Simple);
+  stateTypes_.push_back(StateGradientType::SimpleGradient);
 
   assert(stateTypes_.size() == numberOfStates_ );
 
@@ -74,22 +81,22 @@ void StringOptimizationProblem::gradient(const Eigen::VectorXd &x, Eigen::Vector
     values_(i) = wf_.getNegativeLogarithmizedProbabilityDensity();
 
     switch (stateTypes_[i]) {
-      case StateType::Simple : {
+      case StateGradientType::SimpleGradient : {
         stateGrad = stateGrad = wf_.getNegativeLogarithmizedProbabilityDensityGradientCollection();
         break;
       }
-      case StateType::Orthogonal : {
+      case StateGradientType::OrthogonalToString : {
         stateGrad = wf_.getNegativeLogarithmizedProbabilityDensityGradientCollection();
         unitTangent = unitTangents_.row(i);
 
         stateGrad = stateGrad - (stateGrad.dot(unitTangent)) * unitTangent;
         break;
       }
-      case StateType::Fixed : {
+      case StateGradientType::Fixed : {
         stateGrad = Eigen::VectorXd::Zero(numberOfCoords_);
         break;
       }
-      case StateType::ClimbingImage : {
+      case StateGradientType::ClimbingImage : {
         stateGrad = wf_.getNegativeLogarithmizedProbabilityDensityGradientCollection();
         unitTangent = unitTangents_.row(i);
 
@@ -106,6 +113,7 @@ bool StringOptimizationProblem::callback(cppoptlib::Criteria<double> &state, Eig
   std::cout << "(" << std::setw(2) << state.iterations << ")"
             << " f(x) = " << std::fixed << std::setw(8) << std::setprecision(8) << value(x)
             << " xDelta = " << std::setw(8) << state.xDelta
+            << " gradNorm = " << std::setw(8) << state.gradNorm
             << std::endl;
   return true;
 }

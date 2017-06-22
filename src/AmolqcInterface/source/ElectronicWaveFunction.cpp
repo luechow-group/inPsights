@@ -96,5 +96,25 @@ Eigen::VectorXd ElectronicWaveFunction::getProbabilityDensityGradientCollection(
 };
 
 Eigen::VectorXd ElectronicWaveFunction::getNegativeLogarithmizedProbabilityDensityGradientCollection() {
+  electronDriftCollection_.segment((1-1)*3,3) = Eigen::VectorXd::Zero(3);
+  electronDriftCollection_.segment((2-1)*3,3) = Eigen::VectorXd::Zero(3);
+  electronDriftCollection_.segment((3-1)*3,3) = Eigen::VectorXd::Zero(3);
+  electronDriftCollection_.segment((4-1)*3,3) = Eigen::VectorXd::Zero(3);
+  electronDriftCollection_.segment((5-1)*3,3) = Eigen::VectorXd::Zero(3);
+
+  //electronDriftCollection_.segment((6-1)*3,3) = Eigen::VectorXd::Zero(3);
+  //electronDriftCollection_.segment((7-1)*3,3) = Eigen::VectorXd::Zero(3);
+  //electronDriftCollection_.segment((8-1)*3,3) = Eigen::VectorXd::Zero(3);
+
+  electronDriftCollection_.segment((10-1)*3,3) = Eigen::VectorXd::Zero(3);
+  electronDriftCollection_.segment((11-1)*3,3) = Eigen::VectorXd::Zero(3);
+  electronDriftCollection_.segment((12-1)*3,3) = Eigen::VectorXd::Zero(3);
+  electronDriftCollection_.segment((13-1)*3,3) = Eigen::VectorXd::Zero(3);
+  electronDriftCollection_.segment((14-1)*3,3) = Eigen::VectorXd::Zero(3);
+
+  //electronDriftCollection_.segment((15-1)*3,3) = Eigen::VectorXd::Zero(3);
+  //electronDriftCollection_.segment((16-1)*3,3) = Eigen::VectorXd::Zero(3);
+  //electronDriftCollection_.segment((18-1)*3,3) = Eigen::VectorXd::Zero(3);
+
   return -2.0 * electronDriftCollection_;
 }

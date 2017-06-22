@@ -22,6 +22,8 @@ public:
 
     void gradient(const Eigen::VectorXd &x, Eigen::VectorXd &grad);
 
+    void hessian(const Eigen::VectorXd&x, Eigen::MatrixXd &hessian);
+
     bool callback(const cppoptlib::Criteria<double> &state, const Eigen::VectorXd &x);
 
     unsigned getValueCallCount(){
