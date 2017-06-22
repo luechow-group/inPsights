@@ -31,10 +31,8 @@ void StringMethod::optimizeString() {
   unsigned maxIterations = 100;
   unsigned iterations = 0;
     do {
-      std::cout << "it " << iterations << std::endl;
-      performStep();
-      ++iterations;
-
+        performStep();
+      iterations++;
     } while (status_ == cppoptlib::Status::IterationLimit && iterations < maxIterations);
 }
 
