@@ -5,13 +5,26 @@
 #include "ElectronicWaveFunction.h"
 #include <iostream>
 
-ElectronicWaveFunction &ElectronicWaveFunction::getInstance() {
-  static ElectronicWaveFunction electronicWaveFunction;
+ElectronicWaveFunction &ElectronicWaveFunction::getInstance(const std::string& fileName) {
+
+  // these members are static and thus only initialized once
+  static ElectronicWaveFunction electronicWaveFunction(fileName);
+  static const std::string fileName_ = fileName;
+
+  if( fileName != fileName_ && fileName != "" )
+    std::cout << "The current wavefunction filename is" << fileName_ << ".\n"
+              << " It cannot be reinitialized to " << fileName << "."
+              << std::endl;
+
   return electronicWaveFunction;
 }
 
-ElectronicWaveFunction::ElectronicWaveFunction() {
-  initialize();
+const std::string &ElectronicWaveFunction::getFileName() {
+  return fileName_;
+}
+
+ElectronicWaveFunction::ElectronicWaveFunction(const std::string& fileName) {
+  initialize(fileName);
 }
 
 void ElectronicWaveFunction::setRandomElectronPositionCollection(unsigned electronNumber,
@@ -27,11 +40,15 @@ void ElectronicWaveFunction::setRandomElectronPositionCollection(unsigned electr
   delete electronPositionCollectionArray;
 }
 
-void ElectronicWaveFunction::initialize() {
+void ElectronicWaveFunction::initialize(const std::string& fileName) {
   atomNumber_=0;
   electronNumber_=0;
+
+  char* f = (char*) fileName.c_str();
+  std::cout << f << std::endl;
+
   amolqc_init();
-  amolqc_set_wf((int*)&electronNumber_, (int*)&atomNumber_);
+  amolqc_set_wf((int*)&electronNumber_, (int*)&atomNumber_, f);
   std::cout << electronNumber_ << ", " << atomNumber_ << std::endl;
   setRandomElectronPositionCollection(electronNumber_, ElectronPositioningMode::DENSITY);
 }
@@ -115,6 +132,7 @@ Eigen::VectorXd ElectronicWaveFunction::getNegativeLogarithmizedProbabilityDensi
   //electronDriftCollection_.segment((15-1)*3,3) = Eigen::VectorXd::Zero(3);
   //electronDriftCollection_.segment((16-1)*3,3) = Eigen::VectorXd::Zero(3);
   //electronDriftCollection_.segment((18-1)*3,3) = Eigen::VectorXd::Zero(3);
+
 
   return -2.0 * electronDriftCollection_;
 }

@@ -114,7 +114,7 @@ int main(int argc, char *argv[]) {
   //xB.segment((7-1)*3,3) = el18;
   //xB.segment((18-1)*3,3) = el6;
 
-  ElectronicWaveFunction::getInstance().evaluate(xA);
+  ElectronicWaveFunction::getInstance("t.wf").evaluate(xA);
   std::cout << "phi " << ElectronicWaveFunction::getInstance().getDeterminantProbabilityAmplitude() << std::endl;
   std::cout << "U " << ElectronicWaveFunction::getInstance().getJastrowFactor() << std::endl;
   std::cout << "phi*exp(U) " << ElectronicWaveFunction::getInstance().getProbabilityAmplitude() << std::endl;

@@ -4,8 +4,8 @@
 
 #include "ElectronicWaveFunctionProblem.h"
 
-ElectronicWaveFunctionProblem::ElectronicWaveFunctionProblem()
-        : wf_(ElectronicWaveFunction::getInstance()),valueCallCount_(0), gradientCallCount_(0) {}
+ElectronicWaveFunctionProblem::ElectronicWaveFunctionProblem(const std::string fileName)
+        : wf_(ElectronicWaveFunction::getInstance(fileName)),valueCallCount_(0), gradientCallCount_(0) {}
 
 double ElectronicWaveFunctionProblem::value(const Eigen::VectorXd &x) {
     valueCallCount_++;
@@ -14,9 +14,18 @@ double ElectronicWaveFunctionProblem::value(const Eigen::VectorXd &x) {
 }
 
 void ElectronicWaveFunctionProblem::gradient(const Eigen::VectorXd &x, Eigen::VectorXd &grad) {
-    gradientCallCount_++;
-    wf_.evaluate(x);
-    grad = wf_.getNegativeLogarithmizedProbabilityDensityGradientCollection();
+  gradientCallCount_++;
+  wf_.evaluate(x);
+  grad = wf_.getNegativeLogarithmizedProbabilityDensityGradientCollection();
+
+  unsigned dims = x.size();
+  std::vector<unsigned> ignoredIdx({0,1,2,3,4,9,10,11,12,13});
+  assert(ignoredIdx.size() < dims);
+
+  for (std::vector<unsigned>::const_iterator it = ignoredIdx.begin(); it != ignoredIdx.end(); ++it){
+    assert( *it < dims);
+    grad.segment(*it*3,3) = Eigen::VectorXd::Zero(3);
+  }
 }
 
 void

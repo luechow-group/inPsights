@@ -50,7 +50,7 @@ int main(int argc, char const *argv[]) {
   0.010891, -0.034989, -0.645852;
 
 
-  ElectronicWaveFunctionProblem f;
+  ElectronicWaveFunctionProblem f("t.wf");
 
   cppoptlib::Criteria<double> crit = cppoptlib::Criteria<double>::nonsmoothDefaults();
   //crit.iterations = 1000;

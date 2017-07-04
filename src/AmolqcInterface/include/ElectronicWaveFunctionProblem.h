@@ -16,7 +16,7 @@ class ElectronicWaveFunctionProblem : public cppoptlib::Problem<double,Eigen::Dy
 {
 public:
 
-    ElectronicWaveFunctionProblem();
+    ElectronicWaveFunctionProblem(const std::string fileName);
 
     double value(const Eigen::VectorXd &x);
 
