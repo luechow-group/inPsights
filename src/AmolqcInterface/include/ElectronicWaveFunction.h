@@ -15,7 +15,7 @@ namespace ElectronPositioningMode {
 
 extern "C" {
 void amolqc_init();
-void amolqc_set_wf(int *nElecs, int *nAtoms);
+void amolqc_set_wf(int *nElecs, int *nAtoms, const char* fileName);
 void amolqc_initial_positions(ElectronPositioningMode::electronPositioningModeType mode, int nElecs, double x[]);
 void amolqc_eloc(double x[], int n, double *phi, double *u, double grad[], double *elocal);
 }
@@ -23,11 +23,11 @@ void amolqc_eloc(double x[], int n, double *phi, double *u, double grad[], doubl
 class ElectronicWaveFunction {
 
 public:
-  ElectronicWaveFunction();
+  static ElectronicWaveFunction& getInstance(const std::string& fileName = "");
 
-  ~ElectronicWaveFunction();
+  const std::string& getFileName();
 
-  void initialize();
+  void initialize(const std::string& fileName);
 
   void setRandomElectronPositionCollection(unsigned electronNumber,
                                            ElectronPositioningMode::electronPositioningModeType);
@@ -57,6 +57,8 @@ public:
   Eigen::VectorXd getNegativeLogarithmizedProbabilityDensityGradientCollection();
 
 private:
+  ElectronicWaveFunction(const std::string& fileName);
+  const std::string fileName_;
   unsigned atomNumber_,electronNumber_;
   double determinantProbabilityAmplitude_, jastrowFactor_, localEnergy_;
   Eigen::VectorXd electronPositionCollection_, electronDriftCollection_;

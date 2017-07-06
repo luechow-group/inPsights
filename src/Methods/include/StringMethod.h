@@ -29,7 +29,7 @@ private:
     void discretizeStringToChain();
     void calculateUnitTangents();
 
-    ElectronicWaveFunction wf_;
+    ElectronicWaveFunction& wf_;
     BSplines::ArcLengthParametrizedBSpline arcLengthParametrizedBSpline_; // use arclength parametrized spline
     ChainOfStates chain_;
     Eigen::MatrixXd unitTangents_;

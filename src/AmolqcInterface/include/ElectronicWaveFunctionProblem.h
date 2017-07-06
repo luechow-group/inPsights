@@ -16,11 +16,13 @@ class ElectronicWaveFunctionProblem : public cppoptlib::Problem<double,Eigen::Dy
 {
 public:
 
-    ElectronicWaveFunctionProblem();
+    ElectronicWaveFunctionProblem(const std::string fileName);
 
     double value(const Eigen::VectorXd &x);
 
     void gradient(const Eigen::VectorXd &x, Eigen::VectorXd &grad);
+
+    void hessian(const Eigen::VectorXd&x, Eigen::MatrixXd &hessian);
 
     bool callback(const cppoptlib::Criteria<double> &state, const Eigen::VectorXd &x);
 
@@ -43,7 +45,7 @@ public:
 
 private:
     unsigned valueCallCount_, gradientCallCount_;
-    ElectronicWaveFunction wf_;
+    ElectronicWaveFunction& wf_;
 };
 
 #endif //AMOLQCGUI_ELECTRONICWAVEFUNCTIONPROBLEM_H

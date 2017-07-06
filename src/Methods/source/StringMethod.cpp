@@ -2,16 +2,21 @@
 // Created by heuer on 21.04.17.
 //
 
+//#include <solver/timeintegrationsolver.h>
 #include "StringMethod.h"
 #include "StringOptimizationProblem.h"
 #include "solver/bfgsnssolver.h"
+#include "solver/bfgssolver.h"
+#include "solver/timeintegrationsolver.h"
 #include "PointInterpolationGenerator.h"
 #include "PenalizedLeastSquaresFitWithFixedEndsGenerator.h"
 #include "PenalizedLeastSquaresFitWithLooseEndsGenerator.h"
 
 
 StringMethod::StringMethod(ChainOfStates initialChain)
-        : chain_(initialChain)
+        :
+        wf_(ElectronicWaveFunction::getInstance()),
+        chain_(initialChain)
 {
   StringOptimizationProblem problem(chain_.statesNumber(), chain_.coordinatesNumber(), wf_, unitTangents_);
   chain_.setValues(problem.stateValues(chain_.coordinatesAsVector()));
@@ -22,9 +27,13 @@ void StringMethod::optimizeString() {
     reparametrizeString();
     discretizeStringToChain();
     calculateUnitTangents();
+
+  unsigned maxIterations = 100;
+  unsigned iterations = 0;
     do {
         performStep();
-    } while (status_ == cppoptlib::Status::IterationLimit);
+      iterations++;
+    } while (status_ == cppoptlib::Status::IterationLimit && iterations < maxIterations);
 }
 
 void StringMethod::performStep() {
@@ -32,15 +41,16 @@ void StringMethod::performStep() {
     reparametrizeString();
     discretizeStringToChain();
     calculateUnitTangents();
-    // for discretized states //it inside discretize chain -> it makes no sense to call it to a different point in time
 }
 
 void StringMethod::minimizeOrthogonalToString() {
     StringOptimizationProblem problem(chain_.statesNumber(), chain_.coordinatesNumber(), wf_, unitTangents_);
-    cppoptlib::BfgsnsSolver<StringOptimizationProblem> solver;
-    auto crit = cppoptlib::Criteria<double>::nonsmoothDefaults();
-    crit.gradNorm = 0.5;
-    crit.iterations = 10;
+    cppoptlib::TimeIntegrationSolver<StringOptimizationProblem> solver;
+    //cppoptlib::BfgsnsSolver<StringOptimizationProblem> solver;
+  auto crit = cppoptlib::Criteria<double>::nonsmoothDefaults();
+    crit.gradNorm = 1e-4;
+    crit.iterations = 30;
+    //crit.xDelta = 0.00000010;
     solver.setStopCriteria(crit);
 
     Eigen::VectorXd vec = chain_.coordinatesAsVector();
@@ -50,10 +60,10 @@ void StringMethod::minimizeOrthogonalToString() {
     status_ = solver.status();
     chain_.storeCoordinateVectorInChain(chain_.coordinatesNumber(), chain_.statesNumber(), vec);
     // maybe another value call is necessary
-    chain_.setValues(problem.stateValues(vec));
+    chain_.setValues(problem.stateValues(vec)); //TODO redesign?
 
-    std::cout << chain_.coordinates() << std::endl;
-    std::cout << chain_.values().transpose() << std::endl;
+    //std::cout << chain_.coordinates() << std::endl;
+    //std::cout << chain_.values().transpose() << std::endl;
     std::cout << "--Solver status: " << status_ << std::endl;
 }
 
@@ -67,10 +77,10 @@ void StringMethod::reparametrizeString() {
     data.block(1,0,chain_.coordinatesNumber(),chain_.statesNumber()) = chain_.coordinates();
 
     //TODO also fit energies, employ energy weighting
-    //BSplines::PointInterpolationGenerator generator(chain_.coordinates(),3,true);
-    BSplines::PenalizedLeastSquaresFitWithFixedEndsGenerator generator(data.transpose(),//Transpose to account for different data layout
-                                                                       unsigned(chain_.statesNumber()-1),
-                                                                       3,true,0.4);
+    BSplines::PointInterpolationGenerator generator(data.transpose(),3,true);
+    //BSplines::PenalizedLeastSquaresFitWithFixedEndsGenerator generator(data.transpose(),//Transpose to account for different data layout
+    //                                                                   unsigned(chain_.statesNumber()-1),
+    //                                                                   4,true,0.0);
     Eigen::VectorXi excludedDimensions(1);
     excludedDimensions << 0;
 

@@ -32,7 +32,6 @@ private:
   float radius_, length_;
   QVector3D start_, end_, difference_;
   Qt3DExtras::QCylinderMesh *mesh_;
-
 };
 
 #endif //AMOLQCGUI_CYLINDER_H

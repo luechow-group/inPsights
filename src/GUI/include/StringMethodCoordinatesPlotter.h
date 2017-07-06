@@ -34,7 +34,10 @@ public:
         }
       }
 
-      for (int j = 0; j < pointsList.size(); ++j) {
+      for (int j = 0; j < pointsList.size()/2; ++j) {
+        Polyline pl(root, Qt::blue, pointsList[j], radius);
+      }
+      for (int j = pointsList.size()/2; j < pointsList.size(); ++j) {
         Polyline pl(root, Qt::red, pointsList[j], radius);
       }
 

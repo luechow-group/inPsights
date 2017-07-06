@@ -5,11 +5,26 @@
 #include "ElectronicWaveFunction.h"
 #include <iostream>
 
-ElectronicWaveFunction::ElectronicWaveFunction() {
-  initialize();
+ElectronicWaveFunction &ElectronicWaveFunction::getInstance(const std::string& fileName) {
+
+  // these members are static and thus only initialized once
+  static ElectronicWaveFunction electronicWaveFunction(fileName);
+
+  if( fileName != electronicWaveFunction.getFileName() && fileName != "" )
+    std::cout << "The current wavefunction file is " << electronicWaveFunction.getFileName() << ".\n"
+              << " It cannot be reinitialized to " << fileName << "."
+              << std::endl;
+
+  return electronicWaveFunction;
 }
 
-ElectronicWaveFunction::~ElectronicWaveFunction() {
+const std::string &ElectronicWaveFunction::getFileName() {
+  return fileName_;
+}
+
+ElectronicWaveFunction::ElectronicWaveFunction(const std::string& fileName)
+        :fileName_(fileName) {
+  initialize(fileName);
 }
 
 void ElectronicWaveFunction::setRandomElectronPositionCollection(unsigned electronNumber,
@@ -25,11 +40,15 @@ void ElectronicWaveFunction::setRandomElectronPositionCollection(unsigned electr
   delete electronPositionCollectionArray;
 }
 
-void ElectronicWaveFunction::initialize() {
+void ElectronicWaveFunction::initialize(const std::string& fileName) {
   atomNumber_=0;
   electronNumber_=0;
+
+  char* f = (char*) fileName.c_str();
+  std::cout << f << std::endl;
+
   amolqc_init();
-  amolqc_set_wf((int*)&electronNumber_, (int*)&atomNumber_);
+  amolqc_set_wf((int*)&electronNumber_, (int*)&atomNumber_, f);
   std::cout << electronNumber_ << ", " << atomNumber_ << std::endl;
   setRandomElectronPositionCollection(electronNumber_, ElectronPositioningMode::DENSITY);
 }
@@ -94,5 +113,26 @@ Eigen::VectorXd ElectronicWaveFunction::getProbabilityDensityGradientCollection(
 };
 
 Eigen::VectorXd ElectronicWaveFunction::getNegativeLogarithmizedProbabilityDensityGradientCollection() {
+  electronDriftCollection_.segment((1-1)*3,3) = Eigen::VectorXd::Zero(3);
+  electronDriftCollection_.segment((2-1)*3,3) = Eigen::VectorXd::Zero(3);
+  electronDriftCollection_.segment((3-1)*3,3) = Eigen::VectorXd::Zero(3);
+  electronDriftCollection_.segment((4-1)*3,3) = Eigen::VectorXd::Zero(3);
+  electronDriftCollection_.segment((5-1)*3,3) = Eigen::VectorXd::Zero(3);
+
+  //electronDriftCollection_.segment((6-1)*3,3) = Eigen::VectorXd::Zero(3);
+  //electronDriftCollection_.segment((7-1)*3,3) = Eigen::VectorXd::Zero(3);
+  //electronDriftCollection_.segment((8-1)*3,3) = Eigen::VectorXd::Zero(3);
+
+  electronDriftCollection_.segment((10-1)*3,3) = Eigen::VectorXd::Zero(3);
+  electronDriftCollection_.segment((11-1)*3,3) = Eigen::VectorXd::Zero(3);
+  electronDriftCollection_.segment((12-1)*3,3) = Eigen::VectorXd::Zero(3);
+  electronDriftCollection_.segment((13-1)*3,3) = Eigen::VectorXd::Zero(3);
+  electronDriftCollection_.segment((14-1)*3,3) = Eigen::VectorXd::Zero(3);
+
+  //electronDriftCollection_.segment((15-1)*3,3) = Eigen::VectorXd::Zero(3);
+  //electronDriftCollection_.segment((16-1)*3,3) = Eigen::VectorXd::Zero(3);
+  //electronDriftCollection_.segment((18-1)*3,3) = Eigen::VectorXd::Zero(3);
+
+
   return -2.0 * electronDriftCollection_;
 }
