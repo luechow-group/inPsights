@@ -9,10 +9,9 @@ ElectronicWaveFunction &ElectronicWaveFunction::getInstance(const std::string& f
 
   // these members are static and thus only initialized once
   static ElectronicWaveFunction electronicWaveFunction(fileName);
-  static const std::string fileName_ = fileName;
 
-  if( fileName != fileName_ && fileName != "" )
-    std::cout << "The current wavefunction filename is" << fileName_ << ".\n"
+  if( fileName != electronicWaveFunction.getFileName() && fileName != "" )
+    std::cout << "The current wavefunction file is " << electronicWaveFunction.getFileName() << ".\n"
               << " It cannot be reinitialized to " << fileName << "."
               << std::endl;
 
@@ -23,7 +22,8 @@ const std::string &ElectronicWaveFunction::getFileName() {
   return fileName_;
 }
 
-ElectronicWaveFunction::ElectronicWaveFunction(const std::string& fileName) {
+ElectronicWaveFunction::ElectronicWaveFunction(const std::string& fileName)
+        :fileName_(fileName) {
   initialize(fileName);
 }
 
