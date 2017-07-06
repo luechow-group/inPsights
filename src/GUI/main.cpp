@@ -125,7 +125,7 @@ int main(int argc, char *argv[]) {
   std::cout << ElectronicWaveFunction::getInstance().getDeterminantProbabilityAmplitude() << std::endl;
 
 
-  unsigned numberOfStates = 10;
+  unsigned numberOfStates = 8;
   Eigen::MatrixXd initialCoordinates(18 * 3, numberOfStates);
   Eigen::VectorXd delta = xB - xA;
   for (int i = 0; i < numberOfStates; ++i) {
@@ -153,8 +153,8 @@ int main(int argc, char *argv[]) {
 
   BSplines::StationaryPointFinder stationaryPointFinder(bspline);
   std::vector<double> result = stationaryPointFinder.getMaxima(0);
-
-  Eigen::VectorXd tsGuessGeom = bspline.evaluate(0).tail(18*3);
+/*
+  Eigen::VectorXd tsGuessGeom = bspline.evaluate(result[0]).tail(18*3);
   std::cout << "u=" << result[0] << "\n" << tsGuessGeom.transpose() << std::endl;
 
 
@@ -173,7 +173,7 @@ int main(int argc, char *argv[]) {
     solver.setDebug(cppoptlib::DebugLevel::High);
     cppoptlib::Criteria<double> crit = cppoptlib::Criteria<double>::defaults();
     crit.iterations = 100;
-    crit.gradNorm = 1e-3;
+    crit.gradNorm = 1e-6;
     solver.setStopCriteria(crit);
     solver.minimize(f,tsGuessGeom);
 
@@ -182,16 +182,16 @@ int main(int argc, char *argv[]) {
   eigenSolver = Eigen::EigenSolver<Eigen::MatrixXd>(hess,false);
   eigenvalues = eigenSolver.eigenvalues();
   std::cout << eigenvalues << std::endl;
-
-
+*/
 
 
 
   Qt3DCore::QEntity *root = new Qt3DCore::QEntity();
 
   // draw molecular geometry
-  std::string filename = "t.wf";
-  WaveFunctionParser waveFunctionParser(filename);
+
+  std::cout << "wf:" << ElectronicWaveFunction::getInstance().getFileName() << std::endl;
+  WaveFunctionParser waveFunctionParser(ElectronicWaveFunction::getInstance().getFileName());
   waveFunctionParser.readNuclei();
   MolecularGeometry3D molecularGeometry3D (root, waveFunctionParser.getAtomCollection());
 
