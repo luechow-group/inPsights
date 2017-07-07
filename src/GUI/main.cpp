@@ -103,18 +103,32 @@ int main(int argc, char *argv[]) {
 
   Eigen::Vector3d el9= xA.segment((9-1)*3,3);
   Eigen::Vector3d el17= xA.segment((17-1)*3,3);
-
+  Eigen::Vector3d el15= xA.segment((15-1)*3,3);
+  Eigen::Vector3d el16= xA.segment((16-1)*3,3);
   //Eigen::Vector3d el6= xA.segment((6-1)*3,3);
   //Eigen::Vector3d el7= xA.segment((7-1)*3,3);
   //Eigen::Vector3d el18= xA.segment((18-1)*3,3);
 
 
   xB = xA;
-  xB.segment((9-1)*3,3) = el17;
-  xB.segment((17-1)*3,3) = el9;
+  //xB.segment((9-1)*3,3) = el17;
+  //xB.segment((17-1)*3,3) = el9;
+  xB.segment((15-1)*3,3) = el16;
+  xB.segment((16-1)*3,3) = el15;
   //xB.segment((6-1)*3,3) = el7;
   //xB.segment((7-1)*3,3) = el18;
   //xB.segment((18-1)*3,3) = el6;
+
+  //Eigen::VectorXd bend(numberOfStates);
+  //bend << 0.0, 0.0, 0.0, 0.0, 0.0, 0.0;
+  //x-bend
+  //initialCoordinates.row((9-1)*3+0) += bend; //+x bend
+  //initialCoordinates.row((17-1)*3+0) -= bend;//-x bend
+
+  //y-bend
+  //initialCoordinates.row((9-1)*3+1) += bend; //+y bend
+  //initialCoordinates.row((17-1)*3+1) -= bend;//-y bend
+
 
   ElectronicWaveFunction::getInstance("t.wf").evaluate(xA);
   std::cout << "phi " << ElectronicWaveFunction::getInstance().getDeterminantProbabilityAmplitude() << std::endl;
@@ -135,16 +149,6 @@ int main(int argc, char *argv[]) {
     initialCoordinates.col(i) = xA + (delta * rel);
   }
 
-  //Eigen::VectorXd bend(numberOfStates);
-  //bend << 0.0, 0.0, 0.0, 0.0, 0.0, 0.0;
-  //x-bend
-  //initialCoordinates.row((9-1)*3+0) += bend; //+x bend
-  //initialCoordinates.row((17-1)*3+0) -= bend;//-x bend
-
-  //y-bend
-  //initialCoordinates.row((9-1)*3+1) += bend; //+y bend
-  //initialCoordinates.row((17-1)*3+1) -= bend;//-y bend
-
   StringMethod stringMethod(initialCoordinates);
   stringMethod.optimizeString();
 
@@ -153,11 +157,11 @@ int main(int argc, char *argv[]) {
                        arcLengthParametrizedBSpline.getControlPointMatrix(0),
                        arcLengthParametrizedBSpline.getDegree(),2);
 
-  /*
+
   BSplines::StationaryPointFinder stationaryPointFinder(bspline);
   std::vector<double> result = stationaryPointFinder.getMaxima(0);
 
-  Eigen::VectorXd tsGuessGeom = bspline.evaluate(result[0]).tail(18*3);
+  Eigen::VectorXd tsGuessGeom = bspline.evaluate(1).tail(18*3);
   std::cout << "u=" << result[0] << "\n" << tsGuessGeom.transpose() << std::endl;
 
 
@@ -186,13 +190,21 @@ int main(int argc, char *argv[]) {
   eigenvalues = eigenSolver.eigenvalues();
   std::cout << eigenvalues << std::endl;
 
-*/
+
 
 
   Qt3DCore::QEntity *root = new Qt3DCore::QEntity();
 
-  // draw molecular geometry
+  //Draw tsguess
+  for (int j = 0; j < tsGuessGeom.rows()/3 ; ++j) {
+    Eigen::Vector3d vec3d = tsGuessGeom.segment(j * 3, 3);
+    QVector3D qVector3D(vec3d(0), vec3d(1), vec3d(2));
 
+    if (j < (xA.rows() / 3) / 2) Electron3D(root, qVector3D, Spin::Alpha);
+    else Electron3D(root, qVector3D, Spin::Beta);
+  }
+
+  // draw molecular geometry
   std::cout << "wf:" << ElectronicWaveFunction::getInstance().getFileName() << std::endl;
   WaveFunctionParser waveFunctionParser(ElectronicWaveFunction::getInstance().getFileName());
   waveFunctionParser.readNuclei();
@@ -228,7 +240,7 @@ int main(int argc, char *argv[]) {
         textTransform->setScale(.05f);
         textMesh->setDepth(.1f);
         textMesh->setFont(font);
-        textMesh->setText(QString::fromStdString(std::to_string(j)));
+        textMesh->setText(QString::fromStdString(std::to_string(j+1)));
         textMaterial->setDiffuse(e->getColor());
 
         text->addComponent(textMaterial);
