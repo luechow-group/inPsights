@@ -9,7 +9,7 @@ Atom3D::Atom3D(Qt3DCore::QEntity *root, const QVector3D& location, const Element
   : Sphere(root,
            QColorFromElementType(elementType),
            location,
-           float(Elements::ElementInfo::vdwRadius(elementType)/20.0f)),
+           float(Elements::ElementInfo::vdwRadius(elementType)/10.0f)),
     elementType_(elementType) {
 
   //connect(picker, &Qt3DRender::QObjectPicker::pressedChanged, this, &Atom::onPressed);

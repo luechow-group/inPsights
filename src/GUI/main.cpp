@@ -11,7 +11,9 @@
 #include <QtCharts/QChartView>
 #include <QtCharts/QLineSeries>
 #include <QtWidgets/QHBoxLayout>
-#include <MolecularGeometry3D.h>
+#include <Qt3DExtras>
+
+#include "MolecularGeometry3D.h"
 
 #include "ElementInfo.h"
 #include "ElementTypes.h"
@@ -151,6 +153,7 @@ int main(int argc, char *argv[]) {
                        arcLengthParametrizedBSpline.getControlPointMatrix(0),
                        arcLengthParametrizedBSpline.getDegree(),2);
 
+  /*
   BSplines::StationaryPointFinder stationaryPointFinder(bspline);
   std::vector<double> result = stationaryPointFinder.getMaxima(0);
 
@@ -183,7 +186,7 @@ int main(int argc, char *argv[]) {
   eigenvalues = eigenSolver.eigenvalues();
   std::cout << eigenvalues << std::endl;
 
-
+*/
 
 
   Qt3DCore::QEntity *root = new Qt3DCore::QEntity();
@@ -200,10 +203,38 @@ int main(int argc, char *argv[]) {
     Eigen::Vector3d vec3d = xA.segment(j*3,3);
     QVector3D qVector3D (vec3d(0),vec3d(1),vec3d(2));
 
-    if ( j < (xA.rows()/3)/2 )
-      Electron3D(root,qVector3D,Spin::Alpha);
-    else
-      Electron3D(root,qVector3D,Spin::Beta);
+    Electron3D *e;
+    if ( j < (xA.rows()/3)/2 ){
+      e = new Electron3D(root,qVector3D,Spin::Alpha);
+    }
+    else {
+      e = new Electron3D(root, qVector3D, Spin::Beta);
+    }
+
+    auto *textMaterial = new Qt3DExtras::QPhongMaterial(e);
+    { // text
+        auto *text = new Qt3DCore::QEntity(e);
+        auto *textMesh = new Qt3DExtras::QExtrudedTextMesh();
+
+        auto *textTransform = new Qt3DCore::QTransform();
+        QFont font(QString("Arial"), 10, 0, false);
+      QVector3D shift;
+
+      if(e->getSpinType() == Spin::Alpha) shift = QVector3D(0.0f,0.05f,0.05f);
+      else shift = QVector3D(-0.0f,-0.05f,-0.05f);
+
+        textTransform->setTranslation(qVector3D+shift);
+        textTransform->setRotationY(90);
+        textTransform->setScale(.05f);
+        textMesh->setDepth(.1f);
+        textMesh->setFont(font);
+        textMesh->setText(QString::fromStdString(std::to_string(j)));
+        textMaterial->setDiffuse(e->getColor());
+
+        text->addComponent(textMaterial);
+        text->addComponent(textMesh);
+        text->addComponent(textTransform);
+    }
   }
 
   BSplines::ArcLengthParametrizedBSpline bs = stringMethod.getArcLengthParametrizedBSpline();
@@ -212,10 +243,9 @@ int main(int argc, char *argv[]) {
   Qt3DExtras::Qt3DWindow *view = new Qt3DExtras::Qt3DWindow();
   view->defaultFrameGraph()->setClearColor(Qt::gray);
 
-  QWidget *container = QWidget::createWindowContainer(view);
+  QWidget *moleculeView = QWidget::createWindowContainer(view);
 
   Qt3DCore::QEntity *scene = root;
-
   // camera
   Qt3DRender::QCamera *camera = view->camera();
   camera->lens()->setPerspectiveProjection(45.0f, 16.0f / 9.0f, 0.1f, 100.0f);
@@ -248,7 +278,7 @@ int main(int argc, char *argv[]) {
 
   QWidget *widget = new QWidget;
   QVBoxLayout *vLayout = new QVBoxLayout(widget);
-  vLayout->addWidget(container,2);
+  vLayout->addWidget(moleculeView,2);
   vLayout->addWidget(chartView,1);
 
   widget->setWindowTitle(QStringLiteral("String Method Result"));
