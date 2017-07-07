@@ -153,12 +153,12 @@ int main(int argc, char *argv[]) {
 
   BSplines::StationaryPointFinder stationaryPointFinder(bspline);
   std::vector<double> result = stationaryPointFinder.getMaxima(0);
-/*
+
   Eigen::VectorXd tsGuessGeom = bspline.evaluate(result[0]).tail(18*3);
   std::cout << "u=" << result[0] << "\n" << tsGuessGeom.transpose() << std::endl;
 
 
-  ElectronicWaveFunctionProblem f;
+  ElectronicWaveFunctionProblem f("t.wf");
   Eigen::MatrixXd hess(18*3,18*3);
   f.hessian(tsGuessGeom,hess);
   //std::cout << hess << std::endl;
@@ -182,7 +182,7 @@ int main(int argc, char *argv[]) {
   eigenSolver = Eigen::EigenSolver<Eigen::MatrixXd>(hess,false);
   eigenvalues = eigenSolver.eigenvalues();
   std::cout << eigenvalues << std::endl;
-*/
+
 
 
 
@@ -195,6 +195,7 @@ int main(int argc, char *argv[]) {
   waveFunctionParser.readNuclei();
   MolecularGeometry3D molecularGeometry3D (root, waveFunctionParser.getAtomCollection());
 
+  // draw electrons
   for (int j = 0; j < xA.rows()/3 ; ++j) {
     Eigen::Vector3d vec3d = xA.segment(j*3,3);
     QVector3D qVector3D (vec3d(0),vec3d(1),vec3d(2));

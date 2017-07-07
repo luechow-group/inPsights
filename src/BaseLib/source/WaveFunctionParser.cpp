@@ -2,6 +2,7 @@
 #include <iostream>
 #include <regex>
 #include <string>
+#include <algorithm>
 
 #include "WaveFunctionParser.h"
 #include "ElementInfo.h"
@@ -47,6 +48,7 @@ static std::vector<std::string> extractAllRegExMatchingSubstrings(const std::str
   return foundSubstrings;
 }
 
+
 void WaveFunctionParser::readNuclei() {
 
   //string str = "File names are readme.txt and my.cmd.";
@@ -72,7 +74,10 @@ void WaveFunctionParser::readNuclei() {
   bool angstromQ = std::regex_match(word,angstromRegEx);
 
   std::getline(file_,line);
-  iss = std::istringstream(line);
+  //std::string::iterator end_pos = std::remove(line.begin(), line.end(), ' ');
+  //line.erase(end_pos,line.end());
+
+  iss = std::istringstream(line); //TODO!!! trim string at ","
   std::regex chargeNumberRegEx("^charge=(-?[0-9]+),$");
   std::regex spinNumberRegEx("^spin=([0-9]+),?$");
   iss >> word;
@@ -81,7 +86,6 @@ void WaveFunctionParser::readNuclei() {
   unsigned long spin = std::stoul(extractRegExMatchingSubstring(word,spinNumberRegEx));
 
 
-  std::getline(file_,line);
   std::getline(file_,line);
   std::getline(file_,line);
   std::getline(file_,line);

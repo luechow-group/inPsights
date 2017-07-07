@@ -12,13 +12,14 @@ Abstract3dObject::Abstract3dObject(Qt3DCore::QEntity *root, QColor color, const 
     location_(location) {
 
   entity = new Qt3DCore::QEntity(root);
-  material = new Qt3DExtras::QPhongMaterial(root);
+  material = new Qt3DExtras::QPhongAlphaMaterial(root);
   transform = new Qt3DCore::QTransform;
   picker = new Qt3DRender::QObjectPicker;
 
   material->setSpecular(Qt::white);
   material->setShininess(10);
   material->setAmbient(color);
+  material->setAlpha(0.5f);
   transform->setTranslation(location);
 
   entity->addComponent(transform);
