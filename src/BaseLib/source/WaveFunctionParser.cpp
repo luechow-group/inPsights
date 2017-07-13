@@ -117,7 +117,6 @@ void WaveFunctionParser::readNuclei() {
     // if angstrom convert to bohr for amolqc
     if(angstromQ){
 
-      std::cout << AU::length*1e10;
       x /= AU::length*1e10;
       y /= AU::length*1e10;
       z /= AU::length*1e10;
