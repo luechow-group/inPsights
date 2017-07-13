@@ -10,6 +10,7 @@
 #include <QtWidgets/QMainWindow>
 #include <QtCharts/QChartView>
 #include <QtCharts/QLineSeries>
+#include <QtCharts/QValueAxis>
 #include <QtWidgets/QHBoxLayout>
 #include <Qt3DExtras>
 
@@ -37,6 +38,7 @@
 #include "solver/newtonraphsonsolver.h"
 #include "ElectronicWaveFunctionProblem.h"
 #include <Eigen/Eigenvalues>
+#include <QtCharts/QScatterSeries>
 
 
 int main(int argc, char *argv[]) {
@@ -111,10 +113,10 @@ int main(int argc, char *argv[]) {
 
 
   xB = xA;
-  //xB.segment((9-1)*3,3) = el17;
-  //xB.segment((17-1)*3,3) = el9;
-  xB.segment((15-1)*3,3) = el16;
-  xB.segment((16-1)*3,3) = el15;
+  xB.segment((9-1)*3,3) = el17;
+  xB.segment((17-1)*3,3) = el9;
+  //xB.segment((15-1)*3,3) = el16;
+  //xB.segment((16-1)*3,3) = el15;
   //xB.segment((6-1)*3,3) = el7;
   //xB.segment((7-1)*3,3) = el18;
   //xB.segment((18-1)*3,3) = el6;
@@ -141,7 +143,7 @@ int main(int argc, char *argv[]) {
   std::cout << ElectronicWaveFunction::getInstance().getDeterminantProbabilityAmplitude() << std::endl;
 
 
-  unsigned numberOfStates = 8;
+  unsigned numberOfStates = 9;
   Eigen::MatrixXd initialCoordinates(18 * 3, numberOfStates);
   Eigen::VectorXd delta = xB - xA;
   for (int i = 0; i < numberOfStates; ++i) {
@@ -161,7 +163,7 @@ int main(int argc, char *argv[]) {
   BSplines::StationaryPointFinder stationaryPointFinder(bspline);
   std::vector<double> result = stationaryPointFinder.getMaxima(0);
 
-  Eigen::VectorXd tsGuessGeom = bspline.evaluate(1).tail(18*3);
+  Eigen::VectorXd tsGuessGeom = bspline.evaluate(result[0]).tail(18*3);
   std::cout << "u=" << result[0] << "\n" << tsGuessGeom.transpose() << std::endl;
 
 
@@ -180,7 +182,7 @@ int main(int argc, char *argv[]) {
     solver.setDebug(cppoptlib::DebugLevel::High);
     cppoptlib::Criteria<double> crit = cppoptlib::Criteria<double>::defaults();
     crit.iterations = 100;
-    crit.gradNorm = 1e-6;
+    crit.gradNorm = 1e-5;
     solver.setStopCriteria(crit);
     solver.minimize(f,tsGuessGeom);
 
@@ -276,16 +278,42 @@ int main(int argc, char *argv[]) {
   view->setRootEntity(scene);
 
   StringMethodValuesPlotter stringMethodValuesPlotter;
-  QtCharts::QLineSeries *series = stringMethodValuesPlotter.getLineSeries(bs,200);
+  QtCharts::QLineSeries *lineSeries = stringMethodValuesPlotter.getLineSeries(bs,200);
+  lineSeries->setColor(Qt::black);
+  lineSeries->setName("string");
 
-  QtCharts::QChart *chart = new QtCharts::QChart();
-  chart->legend()->hide();
-  chart->addSeries(series);
-  chart->createDefaultAxes();
-  chart->setTitle("Probability Density");
+  QtCharts::QScatterSeries *scatterSeries = new QtCharts::QScatterSeries();
+  scatterSeries->setColor(Qt::gray);
+  scatterSeries->setName("states");
+  scatterSeries->setMarkerSize(10.0);
+  Eigen::VectorXd values = stringMethod.getChain().values();
+  for (int i = 0; i < values.size(); ++i) {
 
-  QtCharts::QChartView *chartView = new QtCharts::QChartView(chart);
+    double u = double(i)/double(values.size());
+
+    scatterSeries->append(u,values(i));
+  }
+
+
+
+  QtCharts::QChartView *chartView = new QtCharts::QChartView();
   chartView->setRenderHint(QPainter::Antialiasing);
+
+  //chartView->chart()->legend()->hide();
+  chartView->chart()->addSeries(lineSeries);
+  chartView->chart()->addSeries(scatterSeries);
+  //chartView->chart()->createDefaultAxes();
+  //chartView->chart()->setTitle("Probability Density");
+
+  QtCharts::QValueAxis *axisX = new QtCharts::QValueAxis;
+  axisX->setTitleText("rel. (weighted) arc length <i>u</i>");
+  //axisX->setRange(0, 1);
+  //axisX->setTickCount(10);
+  chartView->chart()->setAxisX(axisX,lineSeries);
+
+  QtCharts::QValueAxis *axisY = new QtCharts::QValueAxis;
+  axisY->setTitleText("-ln(|Ψ|²)");
+  chartView->chart()->setAxisY(axisY,lineSeries);
 
 
   QWidget *widget = new QWidget;
