@@ -7,7 +7,14 @@ enable_testing()
         #integration_tests/*
         #functional_tests/*
 #        )
-set(TEST_SOURCE_FILES testmain.cpp ATestElectronAssignerTest.cpp AFindElementTest.cpp AHungarianTest.cpp AFileXyzInputTest.cpp)
+
+set(TEST_SOURCE_FILES
+        testmain.cpp
+        ATestElectronAssignerTest.cpp
+        AFindElementTest.cpp
+        AHungarianTest.cpp
+        AFileXyzInputTest.cpp
+    )
 
 add_executable("${PROJECT_NAME}_RunAllTests" ${TEST_SOURCE_FILES})
 
