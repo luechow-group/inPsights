@@ -1,5 +1,5 @@
 //
-// Created by Moria on 16.05.2017.
+// Created by Morian Sonneton 16.05.2017.
 //
 
 #include "Core.h"

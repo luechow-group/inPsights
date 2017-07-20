@@ -1,5 +1,5 @@
 //
-// Created by Moria on 19.05.2017.
+// Created by Morian Sonneton 19.05.2017.
 //
 
 #include "Molecule.h"
@@ -34,7 +34,7 @@ void Molecule::cleanElectrons() {
     //std::cout << "Cleared all those filthy Electrons" << std::endl;
 }
 
-void Molecule::assign(const Assignation &assignation) {
+void Molecule::assign(const Assignment &assignation) {
     for(int i=0;i<assignation.size();i++){
         cores[assignation[i].first].setAssignedElectrons(assignation[i].second);
         for(int j=0;j<assignation[i].second.size();j++){

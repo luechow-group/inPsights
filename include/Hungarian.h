@@ -1,5 +1,5 @@
 //
-// Created by Moria on 19.05.2017.
+// Created by Morian Sonneton 19.05.2017.
 //
 
 #ifndef LOCALSPINMULTIPLICITY_HUNGARIAN_H

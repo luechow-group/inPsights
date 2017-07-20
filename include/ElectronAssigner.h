@@ -1,5 +1,5 @@
 //
-// Created by Moria on 19.05.2017.
+// Created by Morian Sonneton 19.05.2017.
 //
 
 #ifndef LOCALSPINMULTIPLICITY_ELECTRONASSIGNER_H
@@ -7,13 +7,13 @@
 #include "Core.h"
 #include "Electron.h"
 #include <vector>
-#include "Assignation.h"
+#include "Assignment.h"
 
 class ElectronAssigner {
 public:
     ElectronAssigner();
-    virtual Assignation assign(const std::vector<Core> &, const std::vector<Particle> &) = 0;
-    virtual Assignation assign(const std::vector<Core> &, const std::vector<Electron> &) = 0;
+    virtual Assignment assign(const std::vector<Core> &, const std::vector<Particle> &) = 0;
+    virtual Assignment assign(const std::vector<Core> &, const std::vector<Electron> &) = 0;
     virtual ~ElectronAssigner();
 private:
 };

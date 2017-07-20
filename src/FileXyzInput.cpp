@@ -1,5 +1,5 @@
 //
-// Created by Moria on 19.05.2017.
+// Created by Morian Sonneton 19.05.2017.
 //
 
 #include "FileXyzInput.h"
@@ -60,7 +60,7 @@ FileXyzInput::readElectronStructure(Molecule &molecule, const SpinDeterminer &sp
     return 0;
 }
 
-void FileXyzInput::readElectronCoreAssignations(const std::vector<Core> &cores, ElectronAssigner &ea) {
+void FileXyzInput::readElectronCoreAssignments(const std::vector<Core> &cores, ElectronAssigner &ea) {
     int numRefs;
     streams[0]>>numRefs;
     streams[0].ignore(std::numeric_limits<std::streamsize>::max(),'\n');  // go to next line
@@ -80,9 +80,9 @@ void FileXyzInput::readElectronCoreAssignations(const std::vector<Core> &cores, 
     }
 }
 
-void FileXyzInput::printAssignations() {
+void FileXyzInput::printAssignments() {
     for(int i=0;i<assignations.size();i++){
-        std::cout << "Printing Assignation number " << i << std::endl;
+        std::cout << "Printing Assignment number " << i << std::endl;
         for(int j=0;j<assignations[i].size();j++){
             std::cout << "For core " << assignations[i][j].first << " the following electrons are assigned" << std::endl;
             for(int k=0;k<assignations[i][j].second.size();k++)std::cout << assignations[i][j].second[k] << " ";
@@ -91,6 +91,6 @@ void FileXyzInput::printAssignations() {
     }
 }
 
-const std::vector<Assignation> &FileXyzInput::getAssignations() const {
+const std::vector<Assignment> &FileXyzInput::getAssignments() const {
     return assignations;
 }

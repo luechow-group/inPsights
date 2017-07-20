@@ -1,5 +1,5 @@
 //
-// Created by Moria on 22.05.2017.
+// Created by Morian Sonneton 22.05.2017.
 //
 #include "gtest/gtest.h"
 #include "gmock/gmock.h"

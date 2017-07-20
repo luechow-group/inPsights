@@ -38,8 +38,8 @@ int testReadElectronStructure() {
     FileXyzInput input("../testinput/EPA.ref","../testinput/EPA.xyz");
     input.readMoleculeCores(newMolecule);
     HungarianElectronAssigner hea;
-    input.readElectronCoreAssignations(newMolecule.getCores(),hea);
-    input.printAssignations();
+    input.readElectronCoreAssignments(newMolecule.getCores(),hea);
+    input.printAssignments();
     SpinDeterminer sd(5);
     std::cerr << "SpinQZTotalMolecule\tSpinQZonlyC\tSpinQZfragmentCandH1\tSpinQZfragmentCandH2\tSpinQZfragmentCandH3\tSpinQZfragmentCandH4\t" << std::endl;
     while(!input.readElectronStructure(newMolecule, sd)) {
@@ -58,8 +58,8 @@ int testHungarianElectronAssigner() {
     FileXyzInput input("../testinput/EPA.ref","../testinput/EPA.xyz");
     input.readMoleculeCores(newMolecule);
     HungarianElectronAssigner tea;
-    input.readElectronCoreAssignations(newMolecule.getCores(),tea);
-    input.printAssignations();
+    input.readElectronCoreAssignments(newMolecule.getCores(),tea);
+    input.printAssignments();
     return 0;
 }
 
@@ -69,8 +69,8 @@ int testTestElectronAssigner() {
     FileXyzInput input("../testinput/EPA.ref","../testinput/EPA.xyz");
     input.readMoleculeCores(newMolecule);
     TestElectronAssigner tea;
-    input.readElectronCoreAssignations(newMolecule.getCores(),tea);
-    input.printAssignations();
+    input.readElectronCoreAssignments(newMolecule.getCores(),tea);
+    input.printAssignments();
     return 0;
 }
 
@@ -126,7 +126,7 @@ int main(int argc, char **argv) {
     input.readMoleculeCores(newMolecule);
     HungarianElectronAssigner hea;
     if(basedOnMax) {
-        input.readElectronCoreAssignations(newMolecule.getCores(), hea);
+        input.readElectronCoreAssignments(newMolecule.getCores(), hea);
     }
     SpinDeterminer sd(atoi(argv[3]));
     std::cout << (basedOnMax?"bmax ":"bstart ");

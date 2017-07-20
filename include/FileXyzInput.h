@@ -1,5 +1,5 @@
 //
-// Created by Moria on 19.05.2017.
+// Created by Morian Sonneton 19.05.2017.
 //
 
 #ifndef LOCALSPINMULTIPLICITY_FILEXYZINPUT_H
@@ -7,7 +7,7 @@
 #include "InputOutput.h"
 #include "Molecule.h"
 #include <vector>
-#include "Assignation.h"
+#include "Assignment.h"
 #include "Core.h"
 #include "ElectronAssigner.h"
 #include "SpinDeterminer.h"
@@ -18,12 +18,12 @@ public:
     FileXyzInput(const std::string &refFilename, const std::string &xyzFilename);
     void readMoleculeCores(Molecule& molecule);
     int readElectronStructure(Molecule &molecule, const SpinDeterminer &spinDeterminer, ElectronAssigner *ea=0);
-    void readElectronCoreAssignations(const std::vector<Core> &cores, ElectronAssigner &ea);
-    const std::vector<Assignation> &getAssignations() const;
-    void printAssignations();
+    void readElectronCoreAssignments(const std::vector<Core> &cores, ElectronAssigner &ea);
+    const std::vector<Assignment> &getAssignments() const;
+    void printAssignments();
     virtual ~FileXyzInput();
 private:
-    std::vector<Assignation> assignations;
+    std::vector<Assignment> assignations;
 };
 
 

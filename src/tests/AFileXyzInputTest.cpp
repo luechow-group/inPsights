@@ -1,5 +1,5 @@
 //
-// Created by Moria on 22.05.2017.
+// Created by Morian Sonneton 22.05.2017.
 //
 
 #include <HungarianElectronAssigner.h>
@@ -46,11 +46,11 @@ TEST(TestFileXyzInput, ReadAssignment)
     FileXyzInput input("../../../testinput/EPA.ref","../../../testinput/EPA.xyz");
     input.readMoleculeCores(newMolecule);
     HungarianElectronAssigner hea;
-    input.readElectronCoreAssignations(newMolecule.getCores(),hea);
-    EXPECT_EQ(input.getAssignations().size(),15);
-    EXPECT_THAT(input.getAssignations()[0][0].second,::testing::UnorderedElementsAre(0,1,2,3,4,5));
-    EXPECT_THAT(input.getAssignations()[0][1].second,::testing::UnorderedElementsAre(6));
-    EXPECT_THAT(input.getAssignations()[0][2].second,::testing::UnorderedElementsAre(7));
-    EXPECT_THAT(input.getAssignations()[0][3].second,::testing::UnorderedElementsAre(8));
-    EXPECT_THAT(input.getAssignations()[0][4].second,::testing::UnorderedElementsAre(9));
+    input.readElectronCoreAssignments(newMolecule.getCores(),hea);
+    EXPECT_EQ(input.getAssignments().size(),15);
+    EXPECT_THAT(input.getAssignments()[0][0].second,::testing::UnorderedElementsAre(0,1,2,3,4,5));
+    EXPECT_THAT(input.getAssignments()[0][1].second,::testing::UnorderedElementsAre(6));
+    EXPECT_THAT(input.getAssignments()[0][2].second,::testing::UnorderedElementsAre(7));
+    EXPECT_THAT(input.getAssignments()[0][3].second,::testing::UnorderedElementsAre(8));
+    EXPECT_THAT(input.getAssignments()[0][4].second,::testing::UnorderedElementsAre(9));
 }

@@ -1,5 +1,5 @@
 //
-// Created by Moria on 19.05.2017.
+// Created by Morian Sonneton 19.05.2017.
 //
 
 #ifndef LOCALSPINMULTIPLICITY_TESTELECTRONASSIGNER_H
@@ -8,8 +8,8 @@
 
 class TestElectronAssigner : public ElectronAssigner{
 public:
-    virtual Assignation assign(const std::vector<Core> &cores, const std::vector<Particle> &electrons) override;
-    virtual Assignation assign(const std::vector<Core> &cores, const std::vector<Electron> &electrons) override;
+    virtual Assignment assign(const std::vector<Core> &cores, const std::vector<Particle> &electrons) override;
+    virtual Assignment assign(const std::vector<Core> &cores, const std::vector<Electron> &electrons) override;
 };
 
 

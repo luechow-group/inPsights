@@ -1,5 +1,5 @@
 //
-// Created by Moria on 19.05.2017.
+// Created by Morian Sonneton 19.05.2017.
 //
 
 #ifndef LOCALSPINMULTIPLICITY_MOLECULE_H
@@ -7,7 +7,7 @@
 #include "Core.h"
 #include "Electron.h"
 #include <vector>
-#include "Assignation.h"
+#include "Assignment.h"
 #include "ElectronAssigner.h"
 
 class Molecule {
@@ -18,7 +18,7 @@ public:
     void addElectron(spintype spin,double x, double y, double z);
     const std::vector<Core> &getCores() const;
     void cleanElectrons();
-    void assign(const Assignation &assignation);
+    void assign(const Assignment &assignation);
     void assign(ElectronAssigner &electronAssigner);
     int getTotalSpinQuantumNumber();
     int getLocalSpinQuantumNumber(int coreToLookAt);
