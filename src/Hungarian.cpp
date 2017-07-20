@@ -8,9 +8,6 @@ using Eigen::MatrixXd;
 using Eigen::VectorXd;
 using namespace std;
 
-
-
-
 /*
  * reduce
  * reduces matrix based on row and column minimums
