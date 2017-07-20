@@ -9,20 +9,25 @@
 #include "Particle.h"
 #include "Electron.h"
 
-class Core :public Particle {
-public:
-    Core(std::string elementType, double x, double y, double z);
-    void setAssignedElectrons(const std::vector<int> & toAssignElectrons);
+/*
+ * This class represents a Core, being derived from a Particle.
+ * Additional features are ...
+ * ... a set of assigned Electrons.
+ * ... charge of the Core itself.
+ * ... element Type.
+ */
+class Core:public Particle {
 private:
     std::string elementType;
     int charge;
+    std::vector<int> assignedElectrons;
 public:
+    Core(std::string elementType, double x, double y, double z);
     int getCharge() const;
     const std::string &getElementType() const;
     void setCharge(int charge);
-    std::vector<int> assignedElectrons;
+    void setAssignedElectrons(const std::vector<int> & toAssignElectrons);
     int getLocalSpinQuantumNumber(const std::vector<Electron> &electrons);
-    // ULF
 };
 
 

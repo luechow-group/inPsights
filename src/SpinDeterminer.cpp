@@ -5,11 +5,9 @@
 #include "SpinDeterminer.h"
 
 SpinDeterminer::SpinDeterminer(int highestAlphaIndex): highestAlphaIndex(highestAlphaIndex) {
-
 }
 
 SpinDeterminer::~SpinDeterminer() {
-
 }
 
 spintype SpinDeterminer::determineSpin(int index) const {

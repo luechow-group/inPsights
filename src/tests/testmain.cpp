@@ -1,7 +1,7 @@
 //
 // Created by Morian Sonnet on 22.05.2017.
 //
-#include <iostream>
+
 #include "gtest/gtest.h"
 
 

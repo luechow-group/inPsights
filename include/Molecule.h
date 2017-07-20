@@ -10,6 +10,12 @@
 #include "Assignment.h"
 #include "ElectronAssigner.h"
 
+/*
+ * This class represent a Molecule.
+ * It contains a set of Cores and Electrons.
+ * It can assign its electrons to cores based on a given assignment or given ElectronAssigner.
+ * Furthermore it can return the SpinProjectionQuantumNumber of a Fragment, the whole molecule, or a single Atom.
+ */
 class Molecule {
 public:
     Molecule();

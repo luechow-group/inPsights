@@ -1,17 +1,8 @@
 //
-// Created by Morian Sonnet on 19.05.2017.
+// Created by emmarose88: See https://github.com/emmarose88/HungarianAlgorithm
 //
 
 #include "Hungarian.h"
-#include <cstdlib>
-#include <iostream>
-#include <cmath>
-#include <ctime>
-#include <string>
-#include <vector>
-#include <fstream>
-#include <algorithm>
-#include <Eigen/Dense>
 
 using Eigen::MatrixXd;
 using Eigen::VectorXd;

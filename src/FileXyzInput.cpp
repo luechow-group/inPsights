@@ -3,10 +3,8 @@
 //
 
 #include "FileXyzInput.h"
-#include "pse.h"
 #include "Molecule.h"
 #include <iostream>
-#include <limits>
 #include <SpinDeterminer.h>
 
 FileXyzInput::FileXyzInput(const std::string &refFilename, const std::string &xyzFilename) : InputOutput(refFilename, true) {
@@ -16,7 +14,6 @@ FileXyzInput::FileXyzInput(const std::string &refFilename, const std::string &xy
 void FileXyzInput::readMoleculeCores(Molecule &molecule) {
     int numCores;
     this->streams[0]>>numCores;
-    //std::cout << "Num of Cores is " << numCores << std::endl;
     streams[0].ignore(std::numeric_limits<std::streamsize>::max(),'\n');  // go to next line
     for(int i=0;i<numCores;i++){
         int id;
@@ -34,8 +31,7 @@ FileXyzInput::~FileXyzInput() {
 
 }
 
-int
-FileXyzInput::readElectronStructure(Molecule &molecule, const SpinDeterminer &spinDeterminer, ElectronAssigner *ea) {
+int FileXyzInput::readElectronStructure(Molecule &molecule, const SpinDeterminer &spinDeterminer, ElectronAssigner *ea) {
     molecule.cleanElectrons();
     std::string helpString;
     streams[1]>>helpString;
@@ -55,7 +51,7 @@ FileXyzInput::readElectronStructure(Molecule &molecule, const SpinDeterminer &sp
     if(ea){
         molecule.assign(*ea);
     } else {
-        molecule.assign(assignations[assignmentToUse]);
+        molecule.assign(assignments[assignmentToUse]);
     }
     return 0;
 }
@@ -74,23 +70,23 @@ void FileXyzInput::readElectronCoreAssignments(const std::vector<Core> &cores, E
             streams[0]>>x>>y>>z;
             tempElectrons.emplace_back(x,y,z);
         }
-        assignations.push_back(ea.assign(cores,tempElectrons));
+        assignments.push_back(ea.assign(cores,tempElectrons));
         tempElectrons.clear();
         streams[0].ignore(std::numeric_limits<std::streamsize>::max(),'\n');  // go to next line
     }
 }
 
 void FileXyzInput::printAssignments() {
-    for(int i=0;i<assignations.size();i++){
+    for(int i=0;i<assignments.size();i++){
         std::cout << "Printing Assignment number " << i << std::endl;
-        for(int j=0;j<assignations[i].size();j++){
-            std::cout << "For core " << assignations[i][j].first << " the following electrons are assigned" << std::endl;
-            for(int k=0;k<assignations[i][j].second.size();k++)std::cout << assignations[i][j].second[k] << " ";
+        for(int j=0;j<assignments[i].size();j++){
+            std::cout << "For core " << assignments[i][j].first << " the following electrons are assigned" << std::endl;
+            for(int k=0;k<assignments[i][j].second.size();k++)std::cout << assignments[i][j].second[k] << " ";
             std::cout << std::endl;
         }
     }
 }
 
 const std::vector<Assignment> &FileXyzInput::getAssignments() const {
-    return assignations;
+    return assignments;
 }

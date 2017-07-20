@@ -7,6 +7,10 @@
 #include "ElectronAssigner.h"
 #include "Assignment.h"
 
+/*
+ * This class represents a ElectronAssigner using the Hungarian Method for assigning Electrons to Cores.
+ * It is thus derived of the abstract base class ElectronAssigner.
+ */
 class HungarianElectronAssigner: public ElectronAssigner {
 public:
     virtual Assignment assign(const std::vector<Core> &cores, const std::vector<Particle> &electrons) override;

@@ -1,122 +1,28 @@
+//
+// Created by Morian Sonnet on 16.05.2017.
+//
+
 #include <iostream>
-#include "pse.h"
-#include "FileXyzInput.h"
 #include "Molecule.h"
-#include "TestElectronAssigner.h"
+#include "FileXyzInput.h"
 #include "HungarianElectronAssigner.h"
-#include "SpinQuantumNumberCounter.h"
+#include "SpinProjectionQuantumNumberCounter.h"
 
-
-/*int testReadElectronStructureOwnAssignment() {
-    const std::vector<int> CH1={0,1};
-    const std::vector<int> CH2={0,2};
-    const std::vector<int> CH3={0,3};
-    const std::vector<int> CH4={0,4};
-    Molecule newMolecule;
-    FileXyzInput input("../testinput/EPA.ref","../testinput/EPA.xyz");
-    input.readMoleculeCores(newMolecule);
-    HungarianElectronAssigner hea;
-    SpinDeterminer sd(5);
-    std::cerr << "SpinQZTotalMolecule\tSpinQZonlyC\tSpinQZfragmentCandH1\tSpinQZfragmentCandH2\tSpinQZfragmentCandH3\tSpinQZfragmentCandH4\t" << std::endl;
-    while(!input.readElectronStructure(newMolecule, sd, &hea)){
-        std::cerr << newMolecule.getTotalSpinQuantumNumber() << '\t'
-                  << newMolecule.getLocalSpinQuantumNumber(0) << '\t'
-                  << newMolecule.getLocalSpinQuantumNumber(CH1) << '\t'
-                  << newMolecule.getLocalSpinQuantumNumber(CH2) << '\t'
-                  << newMolecule.getLocalSpinQuantumNumber(CH3) << '\t'
-                  << newMolecule.getLocalSpinQuantumNumber(CH4) << std::endl;
-    }
-    return 0;
-}
-
-int testReadElectronStructure() {
-    const std::vector<int> CH1={0,1};
-    const std::vector<int> CH2={0,2};
-    const std::vector<int> CH3={0,3};
-    const std::vector<int> CH4={0,4};
-    Molecule newMolecule;
-    FileXyzInput input("../testinput/EPA.ref","../testinput/EPA.xyz");
-    input.readMoleculeCores(newMolecule);
-    HungarianElectronAssigner hea;
-    input.readElectronCoreAssignments(newMolecule.getCores(),hea);
-    input.printAssignments();
-    SpinDeterminer sd(5);
-    std::cerr << "SpinQZTotalMolecule\tSpinQZonlyC\tSpinQZfragmentCandH1\tSpinQZfragmentCandH2\tSpinQZfragmentCandH3\tSpinQZfragmentCandH4\t" << std::endl;
-    while(!input.readElectronStructure(newMolecule, sd)) {
-        std::cerr << newMolecule.getTotalSpinQuantumNumber() << '\t'
-                  << newMolecule.getLocalSpinQuantumNumber(0) << '\t'
-                  << newMolecule.getLocalSpinQuantumNumber(CH1) << '\t'
-                  << newMolecule.getLocalSpinQuantumNumber(CH2) << '\t'
-                  << newMolecule.getLocalSpinQuantumNumber(CH3) << '\t'
-                  << newMolecule.getLocalSpinQuantumNumber(CH4) << std::endl;
-    }
-    return 0;
-}
-
-int testHungarianElectronAssigner() {
-    Molecule newMolecule;
-    FileXyzInput input("../testinput/EPA.ref","../testinput/EPA.xyz");
-    input.readMoleculeCores(newMolecule);
-    HungarianElectronAssigner tea;
-    input.readElectronCoreAssignments(newMolecule.getCores(),tea);
-    input.printAssignments();
-    return 0;
-}
-
-
-int testTestElectronAssigner() {
-    Molecule newMolecule;
-    FileXyzInput input("../testinput/EPA.ref","../testinput/EPA.xyz");
-    input.readMoleculeCores(newMolecule);
-    TestElectronAssigner tea;
-    input.readElectronCoreAssignments(newMolecule.getCores(),tea);
-    input.printAssignments();
-    return 0;
-}
-
-int testFileXyzInput(){
-    Molecule newMolecule;
-    FileXyzInput input("../testinput/EPA.ref","../testinput/EPA.xyz");
-    input.readMoleculeCores(newMolecule);
-    return 0;
-}
-
-int testFindElement() {
-    std::string testElement[11] = {"C", "H", "Xe", "Pb", "Kr", "Ni", "Cl", "At", "Ra", "Lu", "Hg"};
-    int testElementOT[11] = {6,1,54,82,36,28,17,85,88,71,80};
-    for (int i = 0; i < 11; i++) {
-        int OZ=Pse::findElement(testElement[i]);
-        std::cout << testElement[i] << ": " << OZ << " should be: " << testElementOT[i] << std::endl;
-        if(OZ!=testElementOT[i]){
-            std::cout << "Test failed" << std::endl;
-            return 1;
-        }
-
-    }
-    return 0;
-}*/
-
-void show_usage()
-{
-    std::cout << "Usage: \n"
-            "LocalSpinMultiplicity reffile xyzfile numOfalphaElectrons bmax/bstart StatOnly atomnumbers \n"
-            "bmax for assignment based on maximum positions, bstart for assignment based on starting positions\n"
-            "atomnumbers are the numbers of the atoms for Local Spin Calculation\n Given none, whole molecule will be looked at." << std::endl;
-}
+void show_usage();
 
 int main(int argc, char **argv) {
-    if(argc<6){
+    if(argc<6){        //assume user is not aware of usage
         show_usage();
-        return 1;
+        return 1;       //exit with error code 1
     }
 
-    bool basedOnMax=false;
+    bool basedOnMax=false; //check for bmode
     if(strcmp(argv[4],"bmax")==0)basedOnMax=true;
 
-    bool onlyStat=false;
+    bool onlyStat=false;   //check for StatMode
     if(strcmp(argv[5],"StatOnly")==0)onlyStat=true;
 
-    std::vector<int> fragmentAtomNumbers;
+    std::vector<int> fragmentAtomNumbers;   //add atoms taken into account for local spin calculation
     for(int i=6;i<argc;i++){
         fragmentAtomNumbers.emplace_back(atoi(argv[i]));
     }
@@ -125,12 +31,12 @@ int main(int argc, char **argv) {
     FileXyzInput input(argv[1],argv[2]);
     input.readMoleculeCores(newMolecule);
     HungarianElectronAssigner hea;
-    if(basedOnMax) {
+    if(basedOnMax) {        //in this case the Assignments need to be done only once
         input.readElectronCoreAssignments(newMolecule.getCores(), hea);
     }
-    SpinDeterminer sd(atoi(argv[3]));
-    std::cout << (basedOnMax?"bmax ":"bstart ");
-    switch(fragmentAtomNumbers.size()){
+    SpinDeterminer sd(atoi(argv[3]));       //pass number of electrons with alpha-spin to SpinDeterminer
+    std::cout << (basedOnMax?"bmax ":"bstart ");        //show bmode
+    switch(fragmentAtomNumbers.size()){                 //show used Fragment
         case 0:
             std::cout << "SpinQZwholeMolecule" << std::endl;
             break;
@@ -145,16 +51,35 @@ int main(int argc, char **argv) {
             std::cout << std::endl;
             break;
     }
-    SpinQuantumNumberCounter SQNCounter;
-    while(!input.readElectronStructure(newMolecule, sd,basedOnMax?0:&hea)) {
+    SpinProjectionQuantumNumberCounter SQNCounter;
+    while(!input.readElectronStructure(newMolecule, sd, basedOnMax?nullptr:&hea)) { //for every Electron Arrangement
         if(!onlyStat) {
-            std::cout << static_cast<double>(SQNCounter.addNumber(newMolecule.getLocalSpinQuantumNumber(fragmentAtomNumbers)))/2 << std::endl;
+            std::cout <<
+                static_cast<double>(SQNCounter.addNumber(newMolecule.getLocalSpinQuantumNumber(fragmentAtomNumbers)))/2
+                      << std::endl;
         } else {
-            SQNCounter.addNumber(newMolecule.getLocalSpinQuantumNumber(fragmentAtomNumbers));
+            SQNCounter.addNumber(newMolecule.getLocalSpinQuantumNumber(fragmentAtomNumbers));//add MS value to Statistics
         }
     }
-    SQNCounter.printStatsSpinQuantumNumber();
-    SQNCounter.printStatsMultiplicities();
-    std::cout << "Like a Charm!" << std::endl;
+    SQNCounter.printStatsSpinProjectionQuantumNumber();
+    SQNCounter.printStatsMultiplicity();
+    std::cout << "Like a Charm!" << std::endl; //A wonderful phrase one can grep on
     return 0;
+}
+
+void show_usage()
+{
+    std::cout << "Usage: \n"
+            "LocalSpinMultiplicity reffile xyzfile numAlpha bmode StatMode atomnumbers \n"
+            "------------------------------------------------------------------------------------------------\n"
+            "reffile:    Reference File obtained from Electron-Pair-Analysis-Calculation\n"
+            "xyzfile:    xyz-File obtained from Electron-Pair-Analysis-Calculation with write_xyz option\n"
+            "numAlpha:   Number of Electrons with alpha-Spin\n"
+            "bmode:      Electronarrangement the Calculation should be based on\n"
+            "               bmax for Maximumarrangements\n"
+            "               bstart for Arrangements according to amount square of wavefunction\n"
+            "StatMode:   StatOnly for only Statistics of S and Ms. Anything else for MS of every Arrangemengt\n"
+            "atomnumbers:Atoms of Fragment to calculate Local Spin. Given none, whole molecule is taken"
+              << std::endl;
+
 }

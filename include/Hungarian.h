@@ -1,5 +1,5 @@
 //
-// Created by Morian Sonnet on 19.05.2017.
+// Created by emmarose88: See https://github.com/emmarose88/HungarianAlgorithm
 //
 
 #ifndef LOCALSPINMULTIPLICITY_HUNGARIAN_H

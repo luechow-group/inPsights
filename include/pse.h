@@ -6,6 +6,9 @@
 #define LOCALSPINMULTIPLICITY_PSE_H
 #include <string>
 
+/*
+ * This class evaluates for a given chemical element like "Sc" the atomic number like 21.
+ */
 class Pse{
 private:
     static const std::string pse[];

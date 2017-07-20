@@ -8,6 +8,10 @@
 #include <vector>
 #include <fstream>
 
+/*
+ * This class handles the used filestreams.
+ * It is intended to also use this class for Output, which is not implemented yet.
+ */
 class InputOutput {
 public:
     InputOutput(const std::string &filename, bool isRead);

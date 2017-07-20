@@ -10,7 +10,6 @@ enable_testing()
 
 set(TEST_SOURCE_FILES
         testmain.cpp
-        ATestElectronAssignerTest.cpp
         AFindElementTest.cpp
         AHungarianTest.cpp
         AFileXyzInputTest.cpp

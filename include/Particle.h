@@ -7,7 +7,9 @@
 #include <Eigen/Dense>
 #include <Eigen/Core>
 
-
+/*
+ * This class represents a particle, having a 3-dimensional position.
+ */
 class Particle {
 public:
     Particle(double &x, double &y, double &z);
