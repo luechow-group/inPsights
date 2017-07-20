@@ -1,6 +1,6 @@
 [submodule "src/AmolqcInterface/amolqc"]
 	path = src/AmolqcInterface/amolqc
-	url = git@tcrocks.pc.rwth-aachen.de:amolqc
+	url = git@tcrocks.pc.rwth-aachen.de:amolqc.git
 	ignore = dirty
 [submodule "src/Externals/BSplines"]
     path = src/Externals/BSplines
