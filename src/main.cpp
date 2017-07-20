@@ -70,16 +70,16 @@ int main(int argc, char **argv) {
 void show_usage()
 {
     std::cout << "Usage: \n"
-            "LocalSpinMultiplicity reffile xyzfile numAlpha bmode StatMode atomnumbers \n"
-            "------------------------------------------------------------------------------------------------\n"
-            "reffile:    Reference File obtained from Electron-Pair-Analysis-Calculation\n"
-            "xyzfile:    xyz-File obtained from Electron-Pair-Analysis-Calculation with write_xyz option\n"
-            "numAlpha:   Number of Electrons with alpha-Spin\n"
-            "bmode:      Electronarrangement the Calculation should be based on\n"
-            "               bmax for Maximumarrangements\n"
-            "               bstart for Arrangements according to amount square of wavefunction\n"
-            "StatMode:   StatOnly for only Statistics of S and Ms. Anything else for MS of every Arrangemengt\n"
-            "atomnumbers:Atoms of Fragment to calculate Local Spin. Given none, whole molecule is taken"
+        "LocalSpinMultiplicity reffile xyzfile numAlpha bmode StatMode atomnumbers \n"
+        "\n"
+        "reffile:    Reference File obtained from Electron-Pair-Analysis-Calculation\n"
+        "xyzfile:    xyz-File obtained from Electron-Pair-Analysis-Calculation with write_xyz option\n"
+        "numAlpha:   Number of Electrons with alpha-Spin\n"
+        "bmode:      Electronarrangement the Calculation should be based on\n"
+        "               bmax for Maximumarrangements\n"
+        "               bstart for Arrangements according to amount square of wavefunction\n"
+        "StatMode:   StatOnly for only Statistics of S and Ms. Anything else for MS of every Arrangement\n"
+        "atomnumbers:Atoms of Fragment to calculate Local Spin. Given none, whole molecule is taken"
               << std::endl;
 
 }
