@@ -12,5 +12,5 @@
 	ignore = dirty
 [submodule "src/Externals/LocalSpinMultiplicity"]
 	path = src/Externals/LocalSpinMultiplicity
-	url = git@git.rwth-aachen.de:morian.sonnet/LocalSpinMultiplicity.git
+	url = " git@tcrocks.pc.rwth-aachen.de:LocalSpinMultiplicity"
 	ignore = dirty
