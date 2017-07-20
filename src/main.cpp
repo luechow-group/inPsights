@@ -55,10 +55,11 @@ int main(int argc, char **argv) {
     while(!input.readElectronStructure(newMolecule, sd, basedOnMax?nullptr:&hea)) { //for every Electron Arrangement
         if(!onlyStat) {
             std::cout <<
-                static_cast<double>(SQNCounter.addNumber(newMolecule.getLocalSpinQuantumNumber(fragmentAtomNumbers)))/2
+                static_cast<double>(SQNCounter.addNumber(
+                        newMolecule.getLocalSpinProjectionQuantumNumber(fragmentAtomNumbers)))/2
                       << std::endl;
         } else {
-            SQNCounter.addNumber(newMolecule.getLocalSpinQuantumNumber(fragmentAtomNumbers));//add MS value to Statistics
+            SQNCounter.addNumber(newMolecule.getLocalSpinProjectionQuantumNumber(fragmentAtomNumbers));//add MS value to Statistics
         }
     }
     SQNCounter.printStatsSpinProjectionQuantumNumber();

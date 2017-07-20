@@ -24,11 +24,11 @@ public:
     void addElectron(spintype spin,double x, double y, double z);
     const std::vector<Core> &getCores() const;
     void cleanElectrons();
-    void assign(const Assignment &assignation);
+    void assign(const Assignment &assignment);
     void assign(ElectronAssigner &electronAssigner);
-    int getTotalSpinQuantumNumber();
-    int getLocalSpinQuantumNumber(int coreToLookAt);
-    int getLocalSpinQuantumNumber(std::vector<int> coresToLookAt);
+    int getTotalSpinProjectionQuantumNumber();
+    int getLocalSpinProjectionQuantumNumber(int coreToLookAt);
+    int getLocalSpinProjectionQuantumNumber(std::vector<int> coresToLookAt);
 private:
     std::vector<Core> cores;
     std::vector<Electron> electrons;
