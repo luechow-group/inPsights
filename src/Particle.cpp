@@ -1,5 +1,5 @@
 //
-// Created by Morian Sonneton 16.05.2017.
+// Created by Morian Sonnet on 16.05.2017.
 //
 
 #include "Particle.h"

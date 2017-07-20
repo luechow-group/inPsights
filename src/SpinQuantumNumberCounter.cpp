@@ -1,5 +1,5 @@
 //
-// Created by Morian Sonneton 23.05.2017.
+// Created by Morian Sonnet on 23.05.2017.
 //
 
 #include "SpinQuantumNumberCounter.h"

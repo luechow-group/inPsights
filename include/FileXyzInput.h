@@ -1,5 +1,5 @@
 //
-// Created by Morian Sonneton 19.05.2017.
+// Created by Morian Sonnet on 19.05.2017.
 //
 
 #ifndef LOCALSPINMULTIPLICITY_FILEXYZINPUT_H

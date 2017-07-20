@@ -1,5 +1,5 @@
 //
-// Created by Morian Sonneton 22.05.2017.
+// Created by Morian Sonnet on 22.05.2017.
 //
 
 #include "pse.h"
