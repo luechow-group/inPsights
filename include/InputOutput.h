@@ -17,10 +17,10 @@ public:
     InputOutput(const std::string &filename, bool isRead);
     virtual ~InputOutput();
     void openFile(const std::string &filename, bool isRead);
-    void closeAllFiles();
 protected:
     std::vector<std::fstream> streams;
 private:
+    void closeAllFiles();
     std::vector<std::string> filenames;
 };
 

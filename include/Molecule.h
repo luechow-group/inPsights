@@ -26,9 +26,9 @@ public:
     void cleanElectrons();
     void assign(const Assignment &assignation);
     void assign(ElectronAssigner &electronAssigner);
-    int getTotalSpinQuantumNumber();
-    int getLocalSpinQuantumNumber(int coreToLookAt);
-    int getLocalSpinQuantumNumber(std::vector<int> coresToLookAt);
+    int getTotalSpinProjectionQuantumNumber();
+    int getLocalSpinProjectionQuantumNumber(int coreToLookAt);
+    int getLocalSpinProjectionQuantumNumber(std::vector<int> coresToLookAt);
 private:
     std::vector<Core> cores;
     std::vector<Electron> electrons;
