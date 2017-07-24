@@ -52,7 +52,7 @@ int main(int argc, char **argv) {
             break;
     }
     SpinProjectionQuantumNumberCounter SQNCounter;
-    while(!input.readElectronStructure(newMolecule, sd, basedOnMax?nullptr:&hea)) { //for every Electron Arrangement
+    while(input.readElectronStructure(newMolecule, sd, basedOnMax?nullptr:&hea)) { //for every Electron Arrangement
         if(!onlyStat) {
             std::cout <<
                 static_cast<double>(SQNCounter.addNumber(

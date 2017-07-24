@@ -11,7 +11,7 @@ InputOutput::InputOutput(const std::string &filename, bool isRead) {
 }
 
 InputOutput::~InputOutput() {
-
+    this->closeAllFiles();
 }
 
 void InputOutput::openFile(const std::string &filename, bool isRead) {

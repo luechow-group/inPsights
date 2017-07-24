@@ -22,7 +22,7 @@ void Core::setAssignedElectrons(const std::vector<int> &toAssignElectrons) {
     assignedElectrons=toAssignElectrons;
 }
 
-int Core::getLocalSpinQuantumNumber(const std::vector<Electron> &electrons) {
+int Core::getLocalSpinProjectionQuantumNumber(const std::vector<Electron> &electrons) {
     int localSpin=0;
     for(std::vector<int>::const_iterator i=assignedElectrons.begin();i!=assignedElectrons.end();i++){
         localSpin+=(int)electrons[*i].getSpin();

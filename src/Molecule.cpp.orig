@@ -51,7 +51,11 @@ int Molecule::getTotalSpinProjectionQuantumNumber() {
 }
 
 int Molecule::getLocalSpinProjectionQuantumNumber(int coreToLookAt) {
+<<<<<<< HEAD
+    return cores[coreToLookAt].getLocalSpinQuantumNumber(electrons);
+=======
     return cores[coreToLookAt].getLocalSpinProjectionQuantumNumber(electrons);
+>>>>>>> develop
 }
 
 int Molecule::getLocalSpinProjectionQuantumNumber(std::vector<int> coresToLookAt) {

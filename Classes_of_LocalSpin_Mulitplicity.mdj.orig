@@ -17,6 +17,11 @@
 					"_parent": {
 						"$ref": "AAAAAAFF+qBWK6M3Z8Y="
 					},
+<<<<<<< HEAD
+					"name": "Main",
+					"visible": true,
+					"defaultDiagram": true
+=======
 					"name": "Molecule",
 					"visible": true,
 					"defaultDiagram": true,
@@ -10656,6 +10661,7 @@
 					"isFinalSpecialization": false,
 					"isLeaf": false,
 					"isActive": false
+>>>>>>> develop
 				}
 			],
 			"visibility": "public"

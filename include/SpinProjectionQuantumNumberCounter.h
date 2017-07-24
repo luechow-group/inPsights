@@ -9,36 +9,36 @@
 
 /*
  * This class represents the SpinProjectionQuantumNumberCounter.
- * It is responsible for counting the occurence of different SpinProjectionQuantumNumbers
+ * It is responsible for counting the occurence of different spinProjectionQuantumNumbers
  * and analyzing the SpinProjectionQuantumNumber-Statistics, returning the occurence of the different
- * SpinProjectionQuantumNumbers.
+ * spinProjectionQuantumNumbers.
  */
 class SpinProjectionQuantumNumberCounter {
 public:
     SpinProjectionQuantumNumberCounter();
     virtual ~SpinProjectionQuantumNumberCounter();
     const int & addNumber(const int &newNumber);
-    const std::vector<std::tuple<int,int,int> >& getSpinQuantumNumbers() const;
+    const std::vector<std::tuple<int,int,int> >& getSpinProjectionQuantumNumbers() const;
     int getCountOfSpinProjectionQuantumNumber(int SpinProjectionQuantumNumber) const;
     void printStatsSpinProjectionQuantumNumber();
     void printStatsMultiplicity();
-    const std::vector<std::tuple<int,int,double> > &getSpinQuantumNumbers();
+    void calcSpinQuantumNumbers();
 private:
-    void sortSpinQuantumNumbers();
-    static bool pairCompare(const std::tuple<int,int,int> &pair1, const std::tuple<int,int,int> &pair2);
+    void sortSpinProjectionQuantumNumbers();
+    static bool tupleMSCompare(const std::tuple<int, int, int> &tupleMS1, const std::tuple<int, int, int> &tupleMS2);
 
     /*
-     *  SpinProjectionQuantumNumbers datastructure
+     *  spinProjectionQuantumNumbers datastructure
      *  Each tuple represents <abs(Ms),count of positive Ms, count of negative Ms>
      *  for Ms=0 the tuple represents <0, count of Ms=0, 0>
      */
-    std::vector<std::tuple<int,int,int> > SpinProjectionQuantumNumbers;
+    std::vector<std::tuple<int,int,int> > spinProjectionQuantumNumbers;
 
     /*
-     *  SpinQuantumNumbers datastructure
+     *  spinQuantumNumbers datastructure
      *  Each tuple represents <2*S,count of S,relative count of S in percent>
      */
-    std::vector<std::tuple<int,int,double> > SpinQuantumNumbers;
+    std::vector<std::tuple<int,int,double> > spinQuantumNumbers;
 };
 
 

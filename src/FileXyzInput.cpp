@@ -27,15 +27,13 @@ void FileXyzInput::readMoleculeCores(Molecule &molecule) {
 }
 
 FileXyzInput::~FileXyzInput() {
-    this->closeAllFiles();
-
 }
 
-int FileXyzInput::readElectronStructure(Molecule &molecule, const SpinDeterminer &spinDeterminer, ElectronAssigner *ea) {
+bool FileXyzInput::readElectronStructure(Molecule &molecule, const SpinDeterminer &spinDeterminer, ElectronAssigner *ea) {
     molecule.cleanElectrons();
     std::string helpString;
     streams[1]>>helpString;
-    while(helpString.compare("xyz:")){streams[1]>>helpString;if(streams[1].eof())return 1;}
+    while(helpString.compare("xyz:")){streams[1]>>helpString;if(streams[1].eof())return false;}
     int assignmentToUse;
     streams[1]>>assignmentToUse;
     assignmentToUse--;
@@ -53,7 +51,7 @@ int FileXyzInput::readElectronStructure(Molecule &molecule, const SpinDeterminer
     } else {
         molecule.assign(assignments[assignmentToUse]);
     }
-    return 0;
+    return true;
 }
 
 void FileXyzInput::readElectronCoreAssignments(const std::vector<Core> &cores, ElectronAssigner &ea) {

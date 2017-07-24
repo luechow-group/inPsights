@@ -23,7 +23,7 @@ class FileXyzInput : public InputOutput{
 public:
     FileXyzInput(const std::string &refFilename, const std::string &xyzFilename);
     void readMoleculeCores(Molecule& molecule);
-    int readElectronStructure(Molecule &molecule, const SpinDeterminer &spinDeterminer, ElectronAssigner *ea=nullptr);
+    bool readElectronStructure(Molecule &molecule, const SpinDeterminer &spinDeterminer, ElectronAssigner *ea = nullptr);
     void readElectronCoreAssignments(const std::vector<Core> &cores, ElectronAssigner &ea);
     const std::vector<Assignment> &getAssignments() const;
     void printAssignments();
