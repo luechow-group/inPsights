@@ -41,16 +41,24 @@ void ElectronicWaveFunction::setRandomElectronPositionCollection(unsigned electr
 }
 
 void ElectronicWaveFunction::initialize(const std::string& fileName) {
-  atomNumber_=0;
-  electronNumber_=0;
+  numberOfNuclei_=0;
+  numberOfElectrons_=0;
 
   char* f = (char*) fileName.c_str();
   std::cout << f << std::endl;
 
   amolqc_init();
-  amolqc_set_wf((int*)&electronNumber_, (int*)&atomNumber_, f);
-  std::cout << electronNumber_ << ", " << atomNumber_ << std::endl;
-  setRandomElectronPositionCollection(electronNumber_, ElectronPositioningMode::DENSITY);
+  amolqc_set_wf((int*)&numberOfElectrons_, (int*)&numberOfNuclei_, f);
+  std::cout << numberOfElectrons_ << ", " << numberOfNuclei_ << std::endl;
+  setRandomElectronPositionCollection(numberOfElectrons_, ElectronPositioningMode::DENSITY);
+}
+
+int ElectronicWaveFunction::getNumberOfNuclei() const {
+  return numberOfNuclei_;
+}
+
+int ElectronicWaveFunction::getNumberOfElectrons() const {
+  return numberOfElectrons_;
 }
 
 void ElectronicWaveFunction::evaluate(const Eigen::VectorXd &electronPositionCollection) {
@@ -63,7 +71,7 @@ void ElectronicWaveFunction::evaluate(const Eigen::VectorXd &electronPositionCol
 
   Eigen::VectorXd copy = electronPositionCollection; // TODO ugly - redesign
 
-  amolqc_eloc(copy.data(), electronNumber_, &determinantProbabilityAmplitude_, &jastrowFactor_,
+  amolqc_eloc(copy.data(), numberOfElectrons_, &determinantProbabilityAmplitude_, &jastrowFactor_,
               electronDriftCollectionArray, &localEnergy_);
 
   electronDriftCollection_ = Eigen::Map<Eigen::VectorXd>( electronDriftCollectionArray,
@@ -113,6 +121,11 @@ Eigen::VectorXd ElectronicWaveFunction::getProbabilityDensityGradientCollection(
 };
 
 Eigen::VectorXd ElectronicWaveFunction::getNegativeLogarithmizedProbabilityDensityGradientCollection() {
+  for (std::vector<int>::const_iterator it = frozenElectrons_.begin(); it != frozenElectrons_.end(); ++it ){
+    // index of the elctrons start at 0
+    electronDriftCollection_.segment(((*it)-1)*3,3) = Eigen::VectorXd::Zero(3);
+  }
+    /*
   electronDriftCollection_.segment((1-1)*3,3) = Eigen::VectorXd::Zero(3);
   electronDriftCollection_.segment((2-1)*3,3) = Eigen::VectorXd::Zero(3);
   electronDriftCollection_.segment((3-1)*3,3) = Eigen::VectorXd::Zero(3);
@@ -127,7 +140,7 @@ Eigen::VectorXd ElectronicWaveFunction::getNegativeLogarithmizedProbabilityDensi
   electronDriftCollection_.segment((11-1)*3,3) = Eigen::VectorXd::Zero(3);
   electronDriftCollection_.segment((12-1)*3,3) = Eigen::VectorXd::Zero(3);
   electronDriftCollection_.segment((13-1)*3,3) = Eigen::VectorXd::Zero(3);
-  electronDriftCollection_.segment((14-1)*3,3) = Eigen::VectorXd::Zero(3);
+  electronDriftCollection_.segment((14-1)*3,3) = Eigen::VectorXd::Zero(3);*/
 
   //electronDriftCollection_.segment((15-1)*3,3) = Eigen::VectorXd::Zero(3);
   //electronDriftCollection_.segment((16-1)*3,3) = Eigen::VectorXd::Zero(3);
@@ -135,4 +148,8 @@ Eigen::VectorXd ElectronicWaveFunction::getNegativeLogarithmizedProbabilityDensi
 
 
   return -2.0 * electronDriftCollection_;
+}
+
+void ElectronicWaveFunction::setFrozenElectrons(const std::vector<int>& frozenElectrons) {
+  frozenElectrons_= frozenElectrons;
 }

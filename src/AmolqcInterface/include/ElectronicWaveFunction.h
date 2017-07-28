@@ -56,13 +56,20 @@ public:
 
   Eigen::VectorXd getNegativeLogarithmizedProbabilityDensityGradientCollection();
 
+  int getNumberOfNuclei() const;
+
+  int getNumberOfElectrons() const;
+
+  void setFrozenElectrons(const std::vector<int>& frozenElectrons);
+
 private:
   ElectronicWaveFunction(const std::string& fileName);
   const std::string fileName_;
-  unsigned atomNumber_,electronNumber_;
+  unsigned numberOfNuclei_, numberOfElectrons_;
   double determinantProbabilityAmplitude_, jastrowFactor_, localEnergy_;
   Eigen::VectorXd electronPositionCollection_, electronDriftCollection_;
 
+  std::vector<int> frozenElectrons_;
 };
 
 #endif //AMOLQCGUI_ELECTRONICWAVEFUNCTION_H
