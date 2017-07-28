@@ -17,7 +17,7 @@ Abstract3dObject::Abstract3dObject(Qt3DCore::QEntity *root, QColor color, const 
   picker = new Qt3DRender::QObjectPicker;
 
   material->setSpecular(Qt::white);
-  material->setShininess(10);
+  material->setShininess(0);
   material->setAmbient(color);
   material->setAlpha(1.0f);
   transform->setTranslation(location);

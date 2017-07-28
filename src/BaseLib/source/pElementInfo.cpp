@@ -29,12 +29,12 @@ namespace Elements {
         }
 
         void pElementInfo::init_data() {
-            d_container.insert(std::pair<ElementType,ElementData>(ElementType::H,  ElementData("H" ,   1, 1.0079, {237,255,255}, 120.0)));
+            d_container.insert(std::pair<ElementType,ElementData>(ElementType::H,  ElementData("H" ,   1, 1.0079, {175,175,175}, 120.0)));
             d_container.insert(std::pair<ElementType,ElementData>(ElementType::He, ElementData("He",   2, 4.0026, {213,255,255}, 140.0)));
             d_container.insert(std::pair<ElementType,ElementData>(ElementType::Li, ElementData("Li",   3, 6.941 , {204,139,254}, 182.0)));
             d_container.insert(std::pair<ElementType,ElementData>(ElementType::Be, ElementData("Be",   4, 9.0122, {196,246, 11}, 153.0)));
             d_container.insert(std::pair<ElementType,ElementData>(ElementType::B,  ElementData("B" ,   5, 10.811, {255,181,181}, 192.0)));
-            d_container.insert(std::pair<ElementType,ElementData>(ElementType::C,  ElementData("C" ,   6, 12.011, {144,144,144}, 170.0)));
+            d_container.insert(std::pair<ElementType,ElementData>(ElementType::C,  ElementData("C" ,   6, 12.011, { 50, 50, 50}, 170.0)));
             d_container.insert(std::pair<ElementType,ElementData>(ElementType::N,  ElementData("N" ,   7, 14.007, { 74,112,227}, 155.0)));
             d_container.insert(std::pair<ElementType,ElementData>(ElementType::O,  ElementData("O" ,   8, 15.999, {204, 51, 49}, 152.0)));
             d_container.insert(std::pair<ElementType,ElementData>(ElementType::F,  ElementData("F" ,   9, 18.988, {148,218,104}, 147.0)));

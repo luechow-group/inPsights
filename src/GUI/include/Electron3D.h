@@ -9,7 +9,7 @@
 #include "ElementInfo.h"
 
 namespace Spin {
-    enum SpinType { Alpha, Beta };
+    enum SpinType { Alpha, Beta, None };
 
     static QColor QColorFromSpinType(const SpinType& spinType){
       switch (spinType){
@@ -17,6 +17,8 @@ namespace Spin {
           return Qt::blue;
         case Beta:
           return Qt::red;
+        case None:
+          return Qt::black;
       }
     }
 }

@@ -22,6 +22,12 @@ public:
   ~Cylinder() {};
 
   float getRadius() const { return radius_; };
+
+  void setRadius(const float radius) {
+      radius_ = radius;
+      mesh_->setRadius(radius);
+  };
+
   float getLength() const { return length_; };
   QVector3D getStart() const{ return start_; };
   QVector3D getEnd() const{ return end_; };
