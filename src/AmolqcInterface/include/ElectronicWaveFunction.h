@@ -46,6 +46,8 @@ public:
 
   double getNegativeLogarithmizedProbabilityDensity();
 
+    double getInverseNegativeLogarithmizedProbabilityDensity();
+
   Eigen::VectorXd getElectronPositionCollection();
 
   Eigen::VectorXd getElectronDriftCollection();
@@ -55,6 +57,8 @@ public:
   Eigen::VectorXd getProbabilityDensityGradientCollection();
 
   Eigen::VectorXd getNegativeLogarithmizedProbabilityDensityGradientCollection();
+
+    Eigen::VectorXd getInverseNegativeLogarithmizedProbabilityDensityGradientCollection();
 
   int getNumberOfNuclei() const;
 

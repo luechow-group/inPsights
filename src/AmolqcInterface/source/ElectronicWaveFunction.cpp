@@ -92,7 +92,8 @@ double ElectronicWaveFunction::getJastrowFactor(){
 };
 
 double ElectronicWaveFunction::getProbabilityAmplitude(){
-  return determinantProbabilityAmplitude_ * exp(jastrowFactor_);
+  return determinantProbabilityAmplitude_ * std::exp(jastrowFactor_) /
+          std::exp(-339); // TODO - this diminishes the jastrow factor effect
 };
 
 double ElectronicWaveFunction::getProbabilityDensity(){
@@ -103,12 +104,16 @@ double ElectronicWaveFunction::getNegativeLogarithmizedProbabilityDensity(){
   return -std::log(pow(getProbabilityAmplitude(),2));
 };
 
+double ElectronicWaveFunction::getInverseNegativeLogarithmizedProbabilityDensity() {
+  //return 1.0/ElectronicWaveFunction::getNegativeLogarithmizedProbabilityDensity();
+  return -1.0/std::log(pow(getProbabilityAmplitude(),2));
+}
+
 Eigen::VectorXd ElectronicWaveFunction::getElectronPositionCollection(){
   return electronPositionCollection_;
 };
 
 Eigen::VectorXd ElectronicWaveFunction::getElectronDriftCollection(){
-  std::cout << electronDriftCollection_ << std::endl;
   return electronDriftCollection_;
 };
 
@@ -117,6 +122,11 @@ Eigen::VectorXd ElectronicWaveFunction::getProbabilityAmplitudeGradientCollectio
 };
 
 Eigen::VectorXd ElectronicWaveFunction::getProbabilityDensityGradientCollection(){
+  for (std::vector<int>::const_iterator it = frozenElectrons_.begin(); it != frozenElectrons_.end(); ++it ){
+    // index of the elctrons start at 0
+    electronDriftCollection_.segment(((*it)-1)*3,3) = Eigen::VectorXd::Zero(3);
+  }
+
   return 2.0*getProbabilityAmplitude()* getProbabilityAmplitudeGradientCollection();
 };
 
@@ -125,29 +135,14 @@ Eigen::VectorXd ElectronicWaveFunction::getNegativeLogarithmizedProbabilityDensi
     // index of the elctrons start at 0
     electronDriftCollection_.segment(((*it)-1)*3,3) = Eigen::VectorXd::Zero(3);
   }
-    /*
-  electronDriftCollection_.segment((1-1)*3,3) = Eigen::VectorXd::Zero(3);
-  electronDriftCollection_.segment((2-1)*3,3) = Eigen::VectorXd::Zero(3);
-  electronDriftCollection_.segment((3-1)*3,3) = Eigen::VectorXd::Zero(3);
-  electronDriftCollection_.segment((4-1)*3,3) = Eigen::VectorXd::Zero(3);
-  electronDriftCollection_.segment((5-1)*3,3) = Eigen::VectorXd::Zero(3);
-
-  //electronDriftCollection_.segment((6-1)*3,3) = Eigen::VectorXd::Zero(3);
-  //electronDriftCollection_.segment((7-1)*3,3) = Eigen::VectorXd::Zero(3);
-  //electronDriftCollection_.segment((8-1)*3,3) = Eigen::VectorXd::Zero(3);
-
-  electronDriftCollection_.segment((10-1)*3,3) = Eigen::VectorXd::Zero(3);
-  electronDriftCollection_.segment((11-1)*3,3) = Eigen::VectorXd::Zero(3);
-  electronDriftCollection_.segment((12-1)*3,3) = Eigen::VectorXd::Zero(3);
-  electronDriftCollection_.segment((13-1)*3,3) = Eigen::VectorXd::Zero(3);
-  electronDriftCollection_.segment((14-1)*3,3) = Eigen::VectorXd::Zero(3);*/
-
-  //electronDriftCollection_.segment((15-1)*3,3) = Eigen::VectorXd::Zero(3);
-  //electronDriftCollection_.segment((16-1)*3,3) = Eigen::VectorXd::Zero(3);
-  //electronDriftCollection_.segment((18-1)*3,3) = Eigen::VectorXd::Zero(3);
-
-
   return -2.0 * electronDriftCollection_;
+
+}
+
+Eigen::VectorXd ElectronicWaveFunction::getInverseNegativeLogarithmizedProbabilityDensityGradientCollection() {
+  //return getNegativeLogarithmizedProbabilityDensityGradientCollection();//.cwiseInverse();
+  return (-2.0 * electronDriftCollection_).cwiseInverse();
+  //return 0.5*getProbabilityAmplitude()*getProbabilityAmplitudeGradientCollection().cwiseInverse();
 }
 
 void ElectronicWaveFunction::setFrozenElectrons(const std::vector<int>& frozenElectrons) {

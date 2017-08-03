@@ -10,13 +10,17 @@ ElectronicWaveFunctionProblem::ElectronicWaveFunctionProblem(const std::string f
 double ElectronicWaveFunctionProblem::value(const Eigen::VectorXd &x) {
     valueCallCount_++;
     wf_.evaluate(x);
-    return wf_.getNegativeLogarithmizedProbabilityDensity();
+  //return wf_.getNegativeLogarithmizedProbabilityDensity();
+  return wf_.getProbabilityDensity();
+
 }
 
 void ElectronicWaveFunctionProblem::gradient(const Eigen::VectorXd &x, Eigen::VectorXd &grad) {
   gradientCallCount_++;
   wf_.evaluate(x);
-  grad = wf_.getNegativeLogarithmizedProbabilityDensityGradientCollection();
+  //grad = wf_.getNegativeLogarithmizedProbabilityDensityGradientCollection();
+  grad = wf_.getProbabilityDensityGradientCollection();
+
 
   unsigned dims = x.size();
   std::vector<unsigned> ignoredIdx({0,1,2,3,4,9,10,11,12,13});

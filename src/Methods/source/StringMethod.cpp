@@ -28,7 +28,7 @@ void StringMethod::optimizeString() {
     discretizeStringToChain();
     calculateUnitTangents();
 
-  unsigned maxIterations = 500;
+  unsigned maxIterations = 5;
   unsigned iterations = 0;
     do {
         performStep();
@@ -48,7 +48,7 @@ void StringMethod::minimizeOrthogonalToString() {
     cppoptlib::TimeIntegrationSolver<StringOptimizationProblem> solver;
     //cppoptlib::BfgsnsSolver<StringOptimizationProblem> solver;
   auto crit = cppoptlib::Criteria<double>::nonsmoothDefaults();
-    crit.gradNorm = 1e-5;
+    crit.gradNorm = 1e-6;
     crit.iterations = 50;
     solver.setStopCriteria(crit);
 
@@ -76,7 +76,7 @@ void StringMethod::reparametrizeString() {
     BSplines::PointInterpolationGenerator generator(data.transpose(),3,true);
     //BSplines::PenalizedLeastSquaresFitWithFixedEndsGenerator generator(data.transpose(),//Transpose to account for different data layout
     //                                                                   unsigned(chain_.statesNumber()-1),
-    //                                                                   4,true,0.0);
+    //                                                                   3,true,0.1);
     Eigen::VectorXi excludedDimensions(1);
     excludedDimensions << 0;
 

@@ -49,7 +49,7 @@ int main(int argc, char *argv[]) {
   //QGuiApplication app(argc, argv);
   QApplication app(argc, argv);
 
-  /*ElectronicWaveFunction::getInstance("Ethane-em-5.wf");
+  ElectronicWaveFunction::getInstance("Ethane-em-5.wf");
   ElectronicWaveFunction::getInstance().setFrozenElectrons({1,2,3,4,5, 10,11,12,13,14});
 
   Eigen::VectorXd xA(ElectronicWaveFunction::getInstance().getNumberOfElectrons()*3);
@@ -73,36 +73,69 @@ int main(int argc, char *argv[]) {
 -0.658423,-0.380140, 1.752435,\
  0.034847, 0.020120, 0.660096;
 
+  Eigen::Vector3d el8= xA.segment((8-1)*3,3);
   Eigen::Vector3d el9= xA.segment((9-1)*3,3);
+  Eigen::Vector3d el17= xA.segment((17-1)*3,3);
   Eigen::Vector3d el18= xA.segment((18-1)*3,3);
+
+  Eigen::Vector3d el15= xA.segment((15-1)*3,3);
+  Eigen::Vector3d el16= xA.segment((16-1)*3,3);
+
   Eigen::VectorXd xB(ElectronicWaveFunction::getInstance().getNumberOfElectrons()*3);
   xB = xA;
-  xB.segment((9-1)*3,3) = el18;
-  xB.segment((18-1)*3,3) = el9;*/
+  //xB.segment((9-1)*3,3) = el18;
+  //xB.segment((18-1)*3,3) = el9;
+  xB.segment((9-1)*3,3) = el8;
+  xB.segment((8-1)*3,3) = el9;
+  //xB.segment((17-1)*3,3) = el18;
+  //xB.segment((18-1)*3,3) = el17;
 
-
+/*
   ElectronicWaveFunction::getInstance("Ethylene-em-5.wf");
   ElectronicWaveFunction::getInstance().setFrozenElectrons({1,2,3,4, 9,10,11,12});
 
   Eigen::VectorXd xA(ElectronicWaveFunction::getInstance().getNumberOfElectrons()*3);
   xA <<\
- 0.000000, 0.000000, 1.251320,\
- 0.000000, 0.000000,-1.251320,\
- 0.000000, 1.738964,-2.326820,\
- 0.000000, 1.738964, 2.326820,\
- 0.065175,-0.700893,-1.734994,\
--0.065176,-0.700880, 1.734990,\
--0.560405, 0.001751,-0.796635,\
- 0.560397, 0.001751, 0.796612,\
- 0.000000, 0.000000, 1.251320,\
- 0.000000, 0.000000,-1.251320,\
- 0.000000,-1.738964, 2.326820,\
- 0.000000,-1.738964,-2.326820,\
- -0.065175, 0.700891,-1.734992,\
- 0.065173, 0.700883, 1.734990,\
- 0.560406,-0.001752,-0.796632,\
--0.560402,-0.001747, 0.796618;
+      0.00000000, 0.00000000, 1.25132000,\
+ 0.00000000, 0.00000000,-1.25132000,\
+ 0.00000000, 1.73896400,-2.32682000,\
+ 0.00000000, 1.73896400, 2.32682000,\
+ 0.06517605,-0.70088655,-1.73499063,\
+-0.06517605,-0.70088655, 1.73499063,\
+-0.56040160, 0.00175003,-0.79662456,\
+ 0.56040160, 0.00175003, 0.79662456,\
+ 0.00000000, 0.00000000, 1.25132000,\
+ 0.00000000, 0.00000000,-1.25132000,\
+ 0.00000000,-1.73896400, 2.32682000,\
+ 0.00000000,-1.73896400,-2.32682000,\
+-0.06517605, 0.70088655,-1.73499063,\
+ 0.06517605, 0.70088655, 1.73499063,\
+ 0.56040160,-0.00175003,-0.79662456,\
+-0.56040160,-0.00175003, 0.79662456;
 
+
+  Eigen::VectorXd xB(ElectronicWaveFunction::getInstance().getNumberOfElectrons()*3);
+  xB <<\
+ 0.00000000, 0.00000000, 1.25132000,\
+ 0.00000000, 0.00000000,-1.25132000,\
+ 0.00000000, 1.73896400,-2.32682000,\
+ 0.00000000, 1.73896400, 2.32682000,\
+ 0.00001705,-0.68411983,-1.75563538,\
+ 0.00000116,-0.72989937, 1.71567587,\
+-0.55865730, 0.01191069,-0.79672667,\
+ 0.55863148, 0.01192229,-0.79668313,\
+ 0.00000000, 0.00000000, 1.25132000,\
+ 0.00000000, 0.00000000,-1.25132000,\
+ 0.00000000,-1.73896400, 2.32682000,\
+ 0.00000000,-1.73896400,-2.32682000,\
+ 0.00000116, 0.72989937,-1.71567587,\
+ 0.00001705, 0.68411983, 1.75563538,\
+ 0.55863148,-0.01192229, 0.79668313,\
+-0.55865730,-0.01191069, 0.79672667;*/
+
+
+/*
+  // Direct rectangle exchange
   Eigen::Vector3d el7= xA.segment((7-1)*3,3);
   Eigen::Vector3d el8= xA.segment((8-1)*3,3);
   Eigen::Vector3d el15= xA.segment((15-1)*3,3);
@@ -110,23 +143,13 @@ int main(int argc, char *argv[]) {
   Eigen::VectorXd xB(ElectronicWaveFunction::getInstance().getNumberOfElectrons()*3);
 
   xB = xA;
-  xB.segment((7-1)*3,3)  = el15;
-  xB.segment((8-1)*3,3)  = el16;
-  xB.segment((15-1)*3,3) = el7;
-  xB.segment((16-1)*3,3) = el8;
-
-  //Eigen::VectorXd bend(numberOfStates);
-  //bend << 0.0, 0.0, 0.0, 0.0, 0.0, 0.0;
-  //x-bend
-  //initialCoordinates.row((9-1)*3+0) += bend; //+x bend
-  //initialCoordinates.row((17-1)*3+0) -= bend;//-x bend
-  //y-bend
-  //initialCoordinates.row((9-1)*3+1) += bend; //+y bend
-  //initialCoordinates.row((17-1)*3+1) -= bend;//-y bend
+  xB.segment((7-1)*3,3)  = el8;
+  xB.segment((8-1)*3,3)  = el7;
+  xB.segment((15-1)*3,3) = el16;
+  xB.segment((16-1)*3,3) = el15;*/
 
 
-
-
+  ElectronicWaveFunction::getInstance().evaluate(xA);
   std::cout << "phi " << ElectronicWaveFunction::getInstance().getDeterminantProbabilityAmplitude() << std::endl;
   std::cout << "U " << ElectronicWaveFunction::getInstance().getJastrowFactor() << std::endl;
   std::cout << "phi*exp(U) " << ElectronicWaveFunction::getInstance().getProbabilityAmplitude() << std::endl;
@@ -138,12 +161,42 @@ int main(int argc, char *argv[]) {
 
 
   unsigned numberOfStates = 11;
+
   Eigen::MatrixXd initialCoordinates(ElectronicWaveFunction::getInstance().getNumberOfElectrons()*3, numberOfStates);
   Eigen::VectorXd delta = xB - xA;
   for (int i = 0; i < numberOfStates; ++i) {
     double rel = double(i) / double(numberOfStates - 1);
     initialCoordinates.col(i) = xA + (delta * rel);
   }
+
+  /*Eigen::VectorXd bend1(numberOfStates);
+  bend1  << 0,0.1,0.3,0.4,0.5,0.6,0.8,0.6,0.3,0.1,0;
+  initialCoordinates.row((15-1)*3+1) -= bend1; //+y bend
+
+  Eigen::VectorXd bend2(numberOfStates);
+  bend2  << 0,0,0.2,0.4,0.3,0.2,0.1,0,0,0,0;
+  initialCoordinates.row((8-1)*3+1) += 0.5*bend2; //+y bend*/
+
+  // BEND FUNCTION
+  double shift = 0.4;
+  Eigen::VectorXd bend(numberOfStates);
+  for (int k = 0; k < numberOfStates/2+1; ++k) {
+    bend(k) = std::sqrt(shift/(numberOfStates/2)*k);
+  }
+  //bend(numberOfStates/2+1) = bend(numberOfStates/2);
+
+  for (int k = numberOfStates-1; k >= numberOfStates/2; --k) {
+    bend(k) = bend(numberOfStates-k-1);
+  }
+  std::cout << bend.transpose() << std::endl;
+
+  //y-bend
+  initialCoordinates.row((8-1)*3+1) -= 0.5*bend;//-y bend
+  initialCoordinates.row((9-1)*3+1) += 0.5*bend; //+y bend
+  //initialCoordinates.row((17-1)*3+1) -= 0.5*bend;//-y bend
+  //initialCoordinates.row((18-1)*3+1) += 0.5*bend; //+y bend
+
+
 
   StringMethod stringMethod(initialCoordinates);
   stringMethod.optimizeString();
@@ -155,13 +208,24 @@ int main(int argc, char *argv[]) {
 
 
   BSplines::StationaryPointFinder stationaryPointFinder(bspline);
-  std::vector<double> result = stationaryPointFinder.getMaxima(0);
+  std::vector<double> minima = stationaryPointFinder.getMinima(0);
+  std::vector<double> maxima = stationaryPointFinder.getMaxima(0);
 
-  Eigen::VectorXd tsGuessGeom = bspline.evaluate(result[0]).tail(ElectronicWaveFunction::getInstance().getNumberOfElectrons()*3);
-  std::cout << "u=" << result[0] << "\n" << tsGuessGeom.transpose() << std::endl;
+  for (int l = 0; l < minima.size(); ++l) {
+    std::cout << "l=" << l << ", u="<< minima[l]<< std::endl;
+    std::cout << bspline.evaluate(minima[l]).tail(ElectronicWaveFunction::getInstance().getNumberOfElectrons()*3).transpose() << std::endl;
+  }
 
-/*
-  ElectronicWaveFunctionProblem f("t.wf");
+  std::cout << bspline.evaluate(0).tail(ElectronicWaveFunction::getInstance().getNumberOfElectrons()*3).transpose() << std::endl;
+  std::cout << bspline.evaluate(1).tail(ElectronicWaveFunction::getInstance().getNumberOfElectrons()*3).transpose() << std::endl;
+
+  Eigen::VectorXd tsGuessGeom = bspline.evaluate(maxima[0]).tail(ElectronicWaveFunction::getInstance().getNumberOfElectrons()*3);
+  std::cout << "u=" << maxima[0] << "\n" << tsGuessGeom.transpose() << std::endl;
+  std::cout << "0_to_ts: " << bspline.evaluate(maxima[0])(0)-bspline.evaluate(0)(0) << std::endl;
+  std::cout << "ts_to_1: " << bspline.evaluate(maxima[0])(0)-bspline.evaluate(1)(0) << std::endl;
+
+  /*
+  ElectronicWaveFunctionProblem f("");
   Eigen::MatrixXd hess(18*3,18*3);
   f.hessian(tsGuessGeom,hess);
   //std::cout << hess << std::endl;
@@ -175,7 +239,7 @@ int main(int argc, char *argv[]) {
     cppoptlib::NewtonRaphsonSolver<ElectronicWaveFunctionProblem> solver;
     solver.setDebug(cppoptlib::DebugLevel::High);
     cppoptlib::Criteria<double> crit = cppoptlib::Criteria<double>::defaults();
-    crit.iterations = 100;
+    crit.iterations = 15;
     crit.gradNorm = 1e-5;
     solver.setStopCriteria(crit);
     solver.minimize(f,tsGuessGeom);
@@ -184,8 +248,8 @@ int main(int argc, char *argv[]) {
   //std::cout << hess << std::endl;
   eigenSolver = Eigen::EigenSolver<Eigen::MatrixXd>(hess,false);
   eigenvalues = eigenSolver.eigenvalues();
-  std::cout << eigenvalues << std::endl;
-*/
+  std::cout << eigenvalues << std::endl;*/
+
 
   Qt3DCore::QEntity *root = new Qt3DCore::QEntity();
 
@@ -196,9 +260,6 @@ int main(int argc, char *argv[]) {
 
     Electron3D* e = new Electron3D(root, qVector3D, Spin::None);
     e->setRadius(0.025f);
-
-    //if (j < (xA.rows() / 3) / 2) Electron3D(root, qVector3D, Spin::Alpha);
-    //else Electron3D(root, qVector3D, Spin::Beta);
   }
 
   // draw molecular geometry
@@ -220,6 +281,7 @@ int main(int argc, char *argv[]) {
       e = new Electron3D(root, qVector3D, Spin::Beta);
     }
 
+    /*
     auto *textMaterial = new Qt3DExtras::QPhongMaterial(e);
     { // text
         auto *text = new Qt3DCore::QEntity(e);
@@ -245,6 +307,7 @@ int main(int argc, char *argv[]) {
         text->addComponent(textMesh);
         text->addComponent(textTransform);
     }
+     */
   }
 
   BSplines::ArcLengthParametrizedBSpline bs = stringMethod.getArcLengthParametrizedBSpline();
@@ -259,7 +322,8 @@ int main(int argc, char *argv[]) {
   // camera
   Qt3DRender::QCamera *camera = view->camera();
   camera->lens()->setPerspectiveProjection(45.0f, 16.0f / 9.0f, 0.1f, 100.0f);
-  camera->setPosition(QVector3D(4.25, 4.25, 0.0)); // ethane
+  //camera->setPosition(QVector3D(4.25, 4.25, 0.0)); // ethane
+  camera->setPosition(QVector3D(2.5, -5.00, 0.0)); // ethane
   camera->setViewCenter(QVector3D(0, 0, 0));
   //camera->setFarPlane(1000);
   //camera->setNearPlane(0.1);

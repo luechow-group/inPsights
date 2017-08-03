@@ -25,18 +25,6 @@ StringOptimizationProblem::StringOptimizationProblem(long numberOfStates,
 }
 
 double StringOptimizationProblem::value(const Eigen::VectorXd &x) {
-
-  /*double value = 0;
-  for (int i = 0; i < numberOfStates_; ++i) {
-    Eigen::VectorXd xi(x.segment(i * numberOfCoords_, numberOfCoords_));
-
-    valueCallCount_++;
-    wf_.evaluate(xi);
-    value += wf_.getNegativeLogarithmizedProbabilityDensity();
-  }
-  return value;
-   *///TODO delete
-  //std::cout << "StringOptimizationProblem::value(const Eigen::VectorXd &x)" << std::endl;
   return stateValues(x).sum();
 }
 
@@ -46,14 +34,12 @@ Eigen::VectorXd StringOptimizationProblem::stateValues(const Eigen::VectorXd &x)
   for (int i = 0; i < numberOfStates_; ++i) {
     Eigen::VectorXd xi(x.segment(i * numberOfCoords_, numberOfCoords_));
 
-    //std::cout << "single state " << i << std::endl;
-    //if (std::abs(x(0)) > 100){
-    //  std::cout << "assert!" << std::endl;
-    //}
     valueCallCount_++;
     wf_.evaluate(xi);
-    stateValues(i) = wf_.getNegativeLogarithmizedProbabilityDensity();
-    //std::cout << " value "<< stateValues(i) << std::endl;
+    //stateValues(i) = wf_.getNegativeLogarithmizedProbabilityDensity();
+    stateValues(i) = -wf_.getProbabilityDensity();
+    //stateValues(i) = -wf_.getInverseNegativeLogarithmizedProbabilityDensity();
+
   }
   return stateValues;
 }
@@ -78,15 +64,22 @@ void StringOptimizationProblem::gradient(const Eigen::VectorXd &x, Eigen::Vector
 
     gradientCallCount_++;
     wf_.evaluate(x.segment(i * numberOfCoords_, numberOfCoords_));
-    values_(i) = wf_.getNegativeLogarithmizedProbabilityDensity();
+    //values_(i) = wf_.getNegativeLogarithmizedProbabilityDensity();
+    values_(i) = -wf_.getProbabilityDensity();
+    //values_(i) = -wf_.getInverseNegativeLogarithmizedProbabilityDensity();
 
     switch (stateTypes_[i]) {
+      std::cout << " U = "<<  ElectronicWaveFunction::getInstance().getJastrowFactor() << std::endl;
       case StateGradientType::SimpleGradient : {
-        stateGrad = stateGrad = wf_.getNegativeLogarithmizedProbabilityDensityGradientCollection();
+        //stateGrad = wf_.getNegativeLogarithmizedProbabilityDensityGradientCollection();
+        stateGrad = -wf_.getProbabilityDensityGradientCollection();
+        //stateGrad = -wf_.getInverseNegativeLogarithmizedProbabilityDensityGradientCollection();
         break;
       }
       case StateGradientType::OrthogonalToString : {
-        stateGrad = wf_.getNegativeLogarithmizedProbabilityDensityGradientCollection();
+        //stateGrad = wf_.getNegativeLogarithmizedProbabilityDensityGradientCollection();
+        stateGrad = -wf_.getProbabilityDensityGradientCollection();
+        //stateGrad = -wf_.getInverseNegativeLogarithmizedProbabilityDensityGradientCollection();
         unitTangent = unitTangents_.row(i);
 
         stateGrad = stateGrad - (stateGrad.dot(unitTangent)) * unitTangent;
@@ -97,7 +90,9 @@ void StringOptimizationProblem::gradient(const Eigen::VectorXd &x, Eigen::Vector
         break;
       }
       case StateGradientType::ClimbingImage : {
-        stateGrad = wf_.getNegativeLogarithmizedProbabilityDensityGradientCollection();
+        //stateGrad = wf_.getNegativeLogarithmizedProbabilityDensityGradientCollection();
+        stateGrad = -wf_.getProbabilityDensityGradientCollection();
+        //stateGrad = -wf_.getInverseNegativeLogarithmizedProbabilityDensityGradientCollection();
         unitTangent = unitTangents_.row(i);
 
         stateGrad = -stateGrad + 2 * (stateGrad.dot(unitTangent)) * unitTangent;
@@ -111,9 +106,9 @@ void StringOptimizationProblem::gradient(const Eigen::VectorXd &x, Eigen::Vector
 bool StringOptimizationProblem::callback(cppoptlib::Criteria<double> &state, Eigen::VectorXd &x) {
   stepCounter_++;
   std::cout << "(" << std::setw(2) << state.iterations << ")"
-            << " f(x) = " << std::fixed << std::setw(8) << std::setprecision(8) << value(x)
-            << " xDelta = " << std::setw(8) << state.xDelta
-            << " gradNorm = " << std::setw(8) << state.gradNorm
+            << " f(x) = " << std::fixed << std::setw(10) << std::setprecision(10) << value(x)
+            << " xDelta = " << std::setw(10) << state.xDelta
+            << " gradNorm = " << std::setw(10) << state.gradNorm
             << std::endl;
   return true;
 }
