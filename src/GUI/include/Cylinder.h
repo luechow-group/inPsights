@@ -8,8 +8,6 @@
 #include <Qt3DExtras/QCylinderMesh>
 #include "Abstract3dObject.h"
 
-#include "iostream"
-
 class Cylinder : public Abstract3dObject {
 
 public:
@@ -34,7 +32,7 @@ public:
   QVector3D getDifference() const{ return difference_; };
 
 private:
-  void rotateToOrientation(const QVector3D orientation);
+  void rotateToOrientation(const QVector3D &orientation);
 
   float radius_, length_;
   QVector3D start_, end_, difference_;

@@ -1,29 +1,32 @@
-//
-// Created by heuer on 06.12.16.
-//
 
 #include <cmath>
-#include "Cylinder.h"
+#include "Cone.h"
 #include "Helper.h"
 
-Cylinder::Cylinder(Qt3DCore::QEntity *root,
-                   QColor color,
-                   const std::pair<QVector3D, QVector3D>& pair,
-                   const float radius,
-                   const float alpha)
-  : Abstract3dObject(root, QColor(), MidPointVector(pair)),
-    radius_(radius),
-    start_(pair.first),
-    end_(pair.second) {
+Cone::Cone(Qt3DCore::QEntity *root,
+           QColor color,
+           const std::pair<QVector3D, QVector3D>& pair,
+           const float bottomRadius,
+           const float topRadius,
+           const float alpha)
+        : Abstract3dObject(root, QColor(), MidPointVector(pair)),
+          topRadius_(topRadius),
+          bottomRadius_(bottomRadius),
+          start_(pair.first),
+          end_(pair.second) {
 
   difference_ = end_ - start_;
   length_ = difference_.length();
 
-  mesh_ = new Qt3DExtras::QCylinderMesh;
-  mesh_->setRadius(radius);
+  mesh_ = new Qt3DExtras::QConeMesh;
+  mesh_->setTopRadius(topRadius);
+  mesh_->hasTopEndcapChanged(true);
+  mesh_->setBottomRadius(bottomRadius);
+  mesh_->hasBottomEndcapChanged(true);
   mesh_->setLength(length_);
   mesh_->setRings(100);
   mesh_->setSlices(10);
+
   material->setAlpha(alpha);
 
   rotateToOrientation(difference_);
@@ -33,16 +36,16 @@ Cylinder::Cylinder(Qt3DCore::QEntity *root,
   entity->addComponent(mesh_);
 }
 
-Cylinder::Cylinder(const Cylinder &cylinder)
-        : radius_(cylinder.getRadius()),
-          length_(cylinder.getLength()),
-          start_(cylinder.getStart()),
-          end_(cylinder.getEnd()),
-          difference_(cylinder.difference_)
+Cone::Cone(const Cone &cone)
+        : bottomRadius_(cone.getBottomRadius()),
+          length_(cone.getLength()),
+          start_(cone.getStart()),
+          end_(cone.getEnd()),
+          difference_(cone.difference_)
 {
 }
 
-void Cylinder::rotateToOrientation(const QVector3D &orientation) {
+void Cone::rotateToOrientation(const QVector3D &orientation) {
 
   auto origVec = QVector3D(0, 1, 0);
 
