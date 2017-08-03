@@ -27,6 +27,8 @@ public:
   //void setColor(const QColor& color){ this->color = color;};
   //void setLocation(const QVector3D& location){ this->location = location;};
 
+  void setAlpha(float alpha);
+
   QColor getColor() const { return color_; };
   QVector3D getLocation() const { return location_; };
 
@@ -35,6 +37,7 @@ public slots:
 
 protected:
   QColor color_;
+  float alpha_;
   QVector3D location_;
 };
 

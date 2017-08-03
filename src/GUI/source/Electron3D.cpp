@@ -10,7 +10,7 @@ Electron3D::Electron3D(Qt3DCore::QEntity *root, const QVector3D& location, const
                  location,
                  float(Elements::ElementInfo::vdwRadius(Elements::ElementType::H)/10.0f/4.0f)),
           spinType_(spinType) {
-  material->setAlpha(0.5f);
+  setAlpha(0.5f);
   //connect(picker, &Qt3DRender::QObjectPicker::pressedChanged, this, &Atom::onPressed);
 }
 
@@ -20,7 +20,8 @@ Electron3D::Electron3D(const Electron3D &electron)
                  electron.getColor(),
                  electron.getLocation(),
                  electron.getRadius()),
-          spinType_(electron.getSpinType()){
-  material->setAlpha(0.5f);
+          spinType_(electron.getSpinType())
+{
+  setAlpha(0.5f);
   //connect(picker, &Qt3DRender::QObjectPicker::pressedChanged, this, &Atom::onPressed);
 }
