@@ -35,10 +35,10 @@ public:
       }
 
       for (int j = 0; j < pointsList.size()/2; ++j) {
-        Polyline pl(root, Qt::blue, pointsList[j], radius);
+        Polyline pl(root,Spin::QColorFromSpinType(Spin::Alpha), pointsList[j], radius);
       }
       for (int j = pointsList.size()/2; j < pointsList.size(); ++j) {
-        Polyline pl(root, Qt::red, pointsList[j], radius);
+        Polyline pl(root, Spin::QColorFromSpinType(Spin::Beta), pointsList[j], radius);
       }
 
     }
