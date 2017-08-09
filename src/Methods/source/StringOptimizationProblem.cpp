@@ -36,10 +36,9 @@ Eigen::VectorXd StringOptimizationProblem::stateValues(const Eigen::VectorXd &x)
 
     valueCallCount_++;
     wf_.evaluate(xi);
-    //stateValues(i) = wf_.getNegativeLogarithmizedProbabilityDensity();
-    stateValues(i) = -wf_.getProbabilityDensity();
+    stateValues(i) = wf_.getNegativeLogarithmizedProbabilityDensity();
+    //stateValues(i) = -wf_.getProbabilityDensity();
     //stateValues(i) = -wf_.getInverseNegativeLogarithmizedProbabilityDensity();
-
   }
   return stateValues;
 }
@@ -47,7 +46,6 @@ Eigen::VectorXd StringOptimizationProblem::stateValues(const Eigen::VectorXd &x)
 void StringOptimizationProblem::gradient(const Eigen::VectorXd &x, Eigen::VectorXd &grad) {
   Eigen::VectorXd stateGrad(numberOfCoords_);
   Eigen::VectorXd unitTangent(numberOfCoords_);
-
 
   stateTypes_.resize(0);
 
@@ -57,28 +55,35 @@ void StringOptimizationProblem::gradient(const Eigen::VectorXd &x, Eigen::Vector
   }
   stateTypes_.push_back(StateGradientType::SimpleGradient);
 
-  assert(stateTypes_.size() == numberOfStates_ );
+  // TODO increase efficiency by storing/updating the state values at an earlier stage
+ // Identify the climbing image
+  /*Eigen::VectorXd stateValuesVec = stateValues(x);
+  Eigen::Index maxIdx;
+  stateValuesVec.maxCoeff(&maxIdx);
+  stateTypes_[maxIdx] = StateGradientType::ClimbingImage;
+*/
 
+  assert(stateTypes_.size() == numberOfStates_ );
 
   for (int i = 0; i < numberOfStates_; ++i) {
 
     gradientCallCount_++;
     wf_.evaluate(x.segment(i * numberOfCoords_, numberOfCoords_));
-    //values_(i) = wf_.getNegativeLogarithmizedProbabilityDensity();
-    values_(i) = -wf_.getProbabilityDensity();
+    values_(i) = wf_.getNegativeLogarithmizedProbabilityDensity();
+    //values_(i) = -wf_.getProbabilityDensity();
     //values_(i) = -wf_.getInverseNegativeLogarithmizedProbabilityDensity();
 
     switch (stateTypes_[i]) {
       std::cout << " U = "<<  ElectronicWaveFunction::getInstance().getJastrowFactor() << std::endl;
       case StateGradientType::SimpleGradient : {
-        //stateGrad = wf_.getNegativeLogarithmizedProbabilityDensityGradientCollection();
-        stateGrad = -wf_.getProbabilityDensityGradientCollection();
+        stateGrad = wf_.getNegativeLogarithmizedProbabilityDensityGradientCollection();
+        //stateGrad = -wf_.getProbabilityDensityGradientCollection();
         //stateGrad = -wf_.getInverseNegativeLogarithmizedProbabilityDensityGradientCollection();
         break;
       }
       case StateGradientType::OrthogonalToString : {
-        //stateGrad = wf_.getNegativeLogarithmizedProbabilityDensityGradientCollection();
-        stateGrad = -wf_.getProbabilityDensityGradientCollection();
+        stateGrad = wf_.getNegativeLogarithmizedProbabilityDensityGradientCollection();
+        //stateGrad = -wf_.getProbabilityDensityGradientCollection();
         //stateGrad = -wf_.getInverseNegativeLogarithmizedProbabilityDensityGradientCollection();
         unitTangent = unitTangents_.row(i);
 
@@ -90,12 +95,24 @@ void StringOptimizationProblem::gradient(const Eigen::VectorXd &x, Eigen::Vector
         break;
       }
       case StateGradientType::ClimbingImage : {
-        //stateGrad = wf_.getNegativeLogarithmizedProbabilityDensityGradientCollection();
-        stateGrad = -wf_.getProbabilityDensityGradientCollection();
+        std::cout << "(CI step) ";
+        stateGrad = wf_.getNegativeLogarithmizedProbabilityDensityGradientCollection();
+        //stateGrad = -wf_.getProbabilityDensityGradientCollection();
         //stateGrad = -wf_.getInverseNegativeLogarithmizedProbabilityDensityGradientCollection();
-        unitTangent = unitTangents_.row(i);
 
-        stateGrad = -stateGrad + 2 * (stateGrad.dot(unitTangent)) * unitTangent;
+        // only if grad is small enough
+        if ( stateGrad.template lpNorm<Eigen::Infinity>() < 1e-3 ) {
+          // climbing
+          unitTangent = unitTangents_.row(i);
+          stateGrad = -stateGrad + 2 * (stateGrad.dot(unitTangent)) * unitTangent;
+        } else{
+          // orthogonal
+          stateGrad = wf_.getNegativeLogarithmizedProbabilityDensityGradientCollection();
+          //stateGrad = -wf_.getProbabilityDensityGradientCollection();
+          //stateGrad = -wf_.getInverseNegativeLogarithmizedProbabilityDensityGradientCollection();
+          unitTangent = unitTangents_.row(i);
+          stateGrad = stateGrad - (stateGrad.dot(unitTangent)) * unitTangent;
+        }
         break;
       }
     }

@@ -10,46 +10,37 @@ ElectronicWaveFunctionProblem::ElectronicWaveFunctionProblem(const std::string f
 double ElectronicWaveFunctionProblem::value(const Eigen::VectorXd &x) {
     valueCallCount_++;
     wf_.evaluate(x);
-  //return wf_.getNegativeLogarithmizedProbabilityDensity();
-  return wf_.getProbabilityDensity();
+  return wf_.getNegativeLogarithmizedProbabilityDensity();
+  //return wf_.getProbabilityDensity();
 
 }
 
 void ElectronicWaveFunctionProblem::gradient(const Eigen::VectorXd &x, Eigen::VectorXd &grad) {
   gradientCallCount_++;
   wf_.evaluate(x);
-  //grad = wf_.getNegativeLogarithmizedProbabilityDensityGradientCollection();
-  grad = wf_.getProbabilityDensityGradientCollection();
-
-
-  unsigned dims = x.size();
-  std::vector<unsigned> ignoredIdx({0,1,2,3,4,9,10,11,12,13});
-  assert(ignoredIdx.size() < dims);
-
-  for (std::vector<unsigned>::const_iterator it = ignoredIdx.begin(); it != ignoredIdx.end(); ++it){
-    assert( *it < dims);
-    grad.segment(*it*3,3) = Eigen::VectorXd::Zero(3);
-  }
+  grad = wf_.getNegativeLogarithmizedProbabilityDensityGradientCollection();
+  //grad = wf_.getProbabilityDensityGradientCollection();
 }
 
-void
-ElectronicWaveFunctionProblem::hessian(const Eigen::VectorXd &x, Eigen::MatrixXd &hessian) {
+void ElectronicWaveFunctionProblem::hessian(const Eigen::VectorXd &x, Eigen::MatrixXd &hessian) {
   unsigned dims = x.size();
 
-  std::vector<unsigned> ignoredIdx({0,1,2,3,4,9,10,11,12,13});
+
+  std::vector<int> ignoredIdx = wf_.getFrozenElectrons();
   assert(ignoredIdx.size() < dims);
 
   cppoptlib::Problem<double,Eigen::Dynamic>::hessian(x,hessian);
 
-  std::cout << "reduced hessian" << std::endl;
+  //std::cout << "orig hessian " << hessian << std::endl;
 
-  for (std::vector<unsigned>::const_iterator it = ignoredIdx.begin(); it != ignoredIdx.end(); ++it){
+  for (std::vector<int>::const_iterator it = ignoredIdx.begin(); it != ignoredIdx.end(); ++it){
     assert( *it < dims);
     //set three rows to zero
     hessian.block(*it*3,0,3,dims) = Eigen::MatrixXd::Zero(3,dims);
     //set three columns to zero
     hessian.block(0,*it*3,dims,3) = Eigen::MatrixXd::Zero(dims,3);
   }
+  //std::cout << "reduced hessian " << hessian << std::endl;
 }
 
 bool ElectronicWaveFunctionProblem::callback(const cppoptlib::Criteria<double> &state, const Eigen::VectorXd &x) {

@@ -49,6 +49,7 @@ int main(int argc, char *argv[]) {
   //QGuiApplication app(argc, argv);
   QApplication app(argc, argv);
 
+/*
   ElectronicWaveFunction::getInstance("Ethane-em-5.wf");
   ElectronicWaveFunction::getInstance().setFrozenElectrons({1,2,3,4,5, 10,11,12,13,14});
 
@@ -73,6 +74,7 @@ int main(int argc, char *argv[]) {
 -0.658423,-0.380140, 1.752435,\
  0.034847, 0.020120, 0.660096;
 
+
   Eigen::Vector3d el8= xA.segment((8-1)*3,3);
   Eigen::Vector3d el9= xA.segment((9-1)*3,3);
   Eigen::Vector3d el17= xA.segment((17-1)*3,3);
@@ -83,14 +85,24 @@ int main(int argc, char *argv[]) {
 
   Eigen::VectorXd xB(ElectronicWaveFunction::getInstance().getNumberOfElectrons()*3);
   xB = xA;
+
+  //C-CBond Electrons
   //xB.segment((9-1)*3,3) = el18;
   //xB.segment((18-1)*3,3) = el9;
-  xB.segment((9-1)*3,3) = el8;
-  xB.segment((8-1)*3,3) = el9;
+
+  //C-H Exchange (not possible)
+  //xB.segment((8-1)*3,3) = el16;
+  /7xB.segment((16-1)*3,3) = el8;
+
+  //same spin exchange
+  //xB.segment((9-1)*3,3) = el8;
+  //xB.segment((8-1)*3,3) = el9;
+
   //xB.segment((17-1)*3,3) = el18;
   //xB.segment((18-1)*3,3) = el17;
+*/
 
-/*
+
   ElectronicWaveFunction::getInstance("Ethylene-em-5.wf");
   ElectronicWaveFunction::getInstance().setFrozenElectrons({1,2,3,4, 9,10,11,12});
 
@@ -113,40 +125,25 @@ int main(int argc, char *argv[]) {
  0.56040160,-0.00175003,-0.79662456,\
 -0.56040160,-0.00175003, 0.79662456;
 
-
-  Eigen::VectorXd xB(ElectronicWaveFunction::getInstance().getNumberOfElectrons()*3);
-  xB <<\
- 0.00000000, 0.00000000, 1.25132000,\
- 0.00000000, 0.00000000,-1.25132000,\
- 0.00000000, 1.73896400,-2.32682000,\
- 0.00000000, 1.73896400, 2.32682000,\
- 0.00001705,-0.68411983,-1.75563538,\
- 0.00000116,-0.72989937, 1.71567587,\
--0.55865730, 0.01191069,-0.79672667,\
- 0.55863148, 0.01192229,-0.79668313,\
- 0.00000000, 0.00000000, 1.25132000,\
- 0.00000000, 0.00000000,-1.25132000,\
- 0.00000000,-1.73896400, 2.32682000,\
- 0.00000000,-1.73896400,-2.32682000,\
- 0.00000116, 0.72989937,-1.71567587,\
- 0.00001705, 0.68411983, 1.75563538,\
- 0.55863148,-0.01192229, 0.79668313,\
--0.55865730,-0.01191069, 0.79672667;*/
-
-
-/*
   // Direct rectangle exchange
+  Eigen::Vector3d el5= xA.segment((5-1)*3,3);
   Eigen::Vector3d el7= xA.segment((7-1)*3,3);
   Eigen::Vector3d el8= xA.segment((8-1)*3,3);
   Eigen::Vector3d el15= xA.segment((15-1)*3,3);
   Eigen::Vector3d el16= xA.segment((16-1)*3,3);
-  Eigen::VectorXd xB(ElectronicWaveFunction::getInstance().getNumberOfElectrons()*3);
 
+  //ethylene same spin exchange
+  //Eigen::VectorXd xB(ElectronicWaveFunction::getInstance().getNumberOfElectrons()*3);
+  //xB = xA;
+  //xB.segment((7-1)*3,3)  = el16;
+  //xB.segment((16-1)*3,3)  = el7;
+
+  //ethylene opp spin exchange
+  Eigen::VectorXd xB(ElectronicWaveFunction::getInstance().getNumberOfElectrons()*3);
   xB = xA;
-  xB.segment((7-1)*3,3)  = el8;
-  xB.segment((8-1)*3,3)  = el7;
-  xB.segment((15-1)*3,3) = el16;
-  xB.segment((16-1)*3,3) = el15;*/
+  xB.segment((7-1)*3,3)  = el16;
+  xB.segment((16-1)*3,3) = el7;
+
 
 
   ElectronicWaveFunction::getInstance().evaluate(xA);
@@ -160,7 +157,7 @@ int main(int argc, char *argv[]) {
   std::cout << ElectronicWaveFunction::getInstance().getDeterminantProbabilityAmplitude() << std::endl;
 
 
-  unsigned numberOfStates = 11;
+  unsigned numberOfStates = 9;
 
   Eigen::MatrixXd initialCoordinates(ElectronicWaveFunction::getInstance().getNumberOfElectrons()*3, numberOfStates);
   Eigen::VectorXd delta = xB - xA;
@@ -178,7 +175,7 @@ int main(int argc, char *argv[]) {
   initialCoordinates.row((8-1)*3+1) += 0.5*bend2; //+y bend*/
 
   // BEND FUNCTION
-  double shift = 0.4;
+  /*double shift = 0.4;
   Eigen::VectorXd bend(numberOfStates);
   for (int k = 0; k < numberOfStates/2+1; ++k) {
     bend(k) = std::sqrt(shift/(numberOfStates/2)*k);
@@ -188,15 +185,41 @@ int main(int argc, char *argv[]) {
   for (int k = numberOfStates-1; k >= numberOfStates/2; --k) {
     bend(k) = bend(numberOfStates-k-1);
   }
-  std::cout << bend.transpose() << std::endl;
+  std::cout << bend.transpose() << std::endl;*/
 
   //y-bend
-  initialCoordinates.row((8-1)*3+1) -= 0.5*bend;//-y bend
-  initialCoordinates.row((9-1)*3+1) += 0.5*bend; //+y bend
+  //initialCoordinates.row((8-1)*3+1) -= 0.5*bend;//-y bend
+  //initialCoordinates.row((9-1)*3+1) += 0.5*bend; //+y bend
   //initialCoordinates.row((17-1)*3+1) -= 0.5*bend;//-y bend
   //initialCoordinates.row((18-1)*3+1) += 0.5*bend; //+y bend
 
+  //initialCoordinates.row((8-1)*3+1) -= 0.5*bend;//-y bend
+  //initialCoordinates.row((15-1)*3+1) += 0.5*bend; //+y bend
 
+
+  /*// ETHYLENE same spin 5-7
+  initialCoordinates.row((7-1)*3+1) -= 0.25*bend;//-y bend
+  initialCoordinates.row((5-1)*3+1) -= 0.75*bend; //y bend
+  initialCoordinates.row((7-1)*3+0) -= 0.5*bend;//-x bend
+  initialCoordinates.row((5-1)*3+0) += 0.5*bend; //x bend
+  */
+
+  Eigen::VectorXd bend(numberOfStates);
+  bend  << 0,0.0,0.0,0.1,0.3,0.5,0.7,0.1,0;
+  //bend.reverse();
+  std::cout << bend << std::endl;
+
+  //Ethylene opp spin exchagne 7-16
+  //initialCoordinates.row((7-1)*3+1) += 0.5*bend;//y bend
+  initialCoordinates.row((16-1)*3+0)+= 0.05*bend; //-x bend
+
+  //Ethane Bend C-C bond exchange
+  //initialCoordinates.row((9-1)*3+0) += 0.5*bend;//x bend
+  //initialCoordinates.row((18-1)*3+0)-= 0.5*bend; //-x bend
+
+  //Ethane Bend C-H exchange
+  //initialCoordinates.row((8-1)*3+0) += 0.5*bend;//x bend
+  //initialCoordinates.row((18-1)*3+0)-= 0.5*bend; //-x bend
 
   StringMethod stringMethod(initialCoordinates);
   stringMethod.optimizeString();
@@ -216,39 +239,50 @@ int main(int argc, char *argv[]) {
     std::cout << bspline.evaluate(minima[l]).tail(ElectronicWaveFunction::getInstance().getNumberOfElectrons()*3).transpose() << std::endl;
   }
 
-  std::cout << bspline.evaluate(0).tail(ElectronicWaveFunction::getInstance().getNumberOfElectrons()*3).transpose() << std::endl;
-  std::cout << bspline.evaluate(1).tail(ElectronicWaveFunction::getInstance().getNumberOfElectrons()*3).transpose() << std::endl;
+  Eigen::VectorXd xAopt(bspline.evaluate(0).tail(ElectronicWaveFunction::getInstance().getNumberOfElectrons()*3).transpose());
+  Eigen::VectorXd xBopt(bspline.evaluate(1).tail(ElectronicWaveFunction::getInstance().getNumberOfElectrons()*3).transpose());
+
+  std::cout << "u=0\n" << xAopt.transpose() << std::endl;
+  std::cout << "u=1\n" << xBopt.transpose() << std::endl;
 
   Eigen::VectorXd tsGuessGeom = bspline.evaluate(maxima[0]).tail(ElectronicWaveFunction::getInstance().getNumberOfElectrons()*3);
   std::cout << "u=" << maxima[0] << "\n" << tsGuessGeom.transpose() << std::endl;
   std::cout << "0_to_ts: " << bspline.evaluate(maxima[0])(0)-bspline.evaluate(0)(0) << std::endl;
   std::cout << "ts_to_1: " << bspline.evaluate(maxima[0])(0)-bspline.evaluate(1)(0) << std::endl;
 
-  /*
+
   ElectronicWaveFunctionProblem f("");
-  Eigen::MatrixXd hess(18*3,18*3);
-  f.hessian(tsGuessGeom,hess);
-  //std::cout << hess << std::endl;
-  Eigen::EigenSolver<Eigen::MatrixXd> eigenSolver(hess,false);
-  auto eigenvalues = eigenSolver.eigenvalues();
-  std::cout << eigenvalues << std::endl;
+  /* Eigen::MatrixXd hess(ElectronicWaveFunction::getInstance().getNumberOfElectrons()*3,ElectronicWaveFunction::getInstance().getNumberOfElectrons()*3);
+   f.hessian(xA,hess);
+   //std::cout << hess << std::endl;
+   Eigen::EigenSolver<Eigen::MatrixXd> eigenSolver(hess,false);
+   auto eigenvalues = eigenSolver.eigenvalues();
+   std::cout << eigenvalues << std::endl;
 
 
-    //Eigen::VectorXd tsGuessGeom = arcLengthParametrizedBSpline.evaluate(*it).tail(18*3);
+     //Eigen::VectorXd tsGuessGeom = arcLengthParametrizedBSpline.evaluate(*it).tail(18*3);
 
-    cppoptlib::NewtonRaphsonSolver<ElectronicWaveFunctionProblem> solver;
-    solver.setDebug(cppoptlib::DebugLevel::High);
-    cppoptlib::Criteria<double> crit = cppoptlib::Criteria<double>::defaults();
-    crit.iterations = 15;
-    crit.gradNorm = 1e-5;
-    solver.setStopCriteria(crit);
-    solver.minimize(f,tsGuessGeom);
+     cppoptlib::NewtonRaphsonSolver<ElectronicWaveFunctionProblem> solver;
+     solver.setDebug(cppoptlib::DebugLevel::High);
+     cppoptlib::Criteria<double> crit = cppoptlib::Criteria<double>::defaults();
+     crit.iterations = 20;
+     crit.gradNorm = 1e-7;
+     solver.setStopCriteria(crit);
+     solver.minimize(f,xA);
 
-  f.hessian(tsGuessGeom,hess);
-  //std::cout << hess << std::endl;
-  eigenSolver = Eigen::EigenSolver<Eigen::MatrixXd>(hess,false);
-  eigenvalues = eigenSolver.eigenvalues();
-  std::cout << eigenvalues << std::endl;*/
+   f.hessian(xA,hess);
+   //std::cout << hess << std::endl;
+   eigenSolver = Eigen::EigenSolver<Eigen::MatrixXd>(hess,false);
+   eigenvalues = eigenSolver.eigenvalues();
+   std::cout << eigenvalues << std::endl;*/
+
+  Eigen::VectorXd grad(ElectronicWaveFunction::getInstance().getNumberOfElectrons()*3);
+  f.gradient(xAopt,grad);
+  std::cout << "u=0\n" << grad.transpose() << std::endl;
+  f.gradient(tsGuessGeom,grad);
+  std::cout << "u=" << maxima[0] << "\n"<< grad.transpose()  << std::endl;
+  f.gradient(xBopt,grad);
+  std::cout << "u=1\n"<< grad.transpose()  << std::endl;
 
 
   Qt3DCore::QEntity *root = new Qt3DCore::QEntity();
@@ -260,6 +294,7 @@ int main(int argc, char *argv[]) {
 
     Electron3D* e = new Electron3D(root, qVector3D, Spin::None);
     e->setRadius(0.025f);
+    e->setAlpha(1.0);
   }
 
   // draw molecular geometry
@@ -281,7 +316,7 @@ int main(int argc, char *argv[]) {
       e = new Electron3D(root, qVector3D, Spin::Beta);
     }
 
-    /*
+
     auto *textMaterial = new Qt3DExtras::QPhongMaterial(e);
     { // text
         auto *text = new Qt3DCore::QEntity(e);
@@ -307,7 +342,7 @@ int main(int argc, char *argv[]) {
         text->addComponent(textMesh);
         text->addComponent(textTransform);
     }
-     */
+
   }
 
   BSplines::ArcLengthParametrizedBSpline bs = stringMethod.getArcLengthParametrizedBSpline();
