@@ -65,6 +65,7 @@ public:
   int getNumberOfElectrons() const;
 
   void setFrozenElectrons(const std::vector<int>& frozenElectrons);
+  std::vector<int> getFrozenElectrons();
 
 private:
   ElectronicWaveFunction(const std::string& fileName);

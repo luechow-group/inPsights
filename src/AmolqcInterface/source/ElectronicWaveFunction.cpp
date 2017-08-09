@@ -92,8 +92,9 @@ double ElectronicWaveFunction::getJastrowFactor(){
 };
 
 double ElectronicWaveFunction::getProbabilityAmplitude(){
-  return determinantProbabilityAmplitude_ * std::exp(jastrowFactor_) /
-          std::exp(-339); // TODO - this diminishes the jastrow factor effect
+  return determinantProbabilityAmplitude_ * std::exp(jastrowFactor_); ///
+  //std::exp(-339); //ethane
+  //std::exp(-11); // ethylene
 };
 
 double ElectronicWaveFunction::getProbabilityDensity(){
@@ -147,4 +148,8 @@ Eigen::VectorXd ElectronicWaveFunction::getInverseNegativeLogarithmizedProbabili
 
 void ElectronicWaveFunction::setFrozenElectrons(const std::vector<int>& frozenElectrons) {
   frozenElectrons_= frozenElectrons;
+}
+
+std::vector<int> ElectronicWaveFunction::getFrozenElectrons() {
+  return frozenElectrons_;
 }
