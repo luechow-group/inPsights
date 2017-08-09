@@ -6,6 +6,7 @@
 #define AMOLQCGUI_ELECTRONICWAVEFUNCTION_H
 
 #include <Eigen/Core>
+#include <vector>
 
 namespace ElectronPositioningMode {
   typedef enum {

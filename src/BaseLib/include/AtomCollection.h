@@ -5,6 +5,7 @@
 #ifndef AMOLQCGUI_ATOMCOLLECTION_H
 #define AMOLQCGUI_ATOMCOLLECTION_H
 
+#include <vector>
 #include "Atom.h"
 
 class AtomCollection{

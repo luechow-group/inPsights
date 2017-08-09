@@ -74,7 +74,6 @@ void StringOptimizationProblem::gradient(const Eigen::VectorXd &x, Eigen::Vector
     //values_(i) = -wf_.getInverseNegativeLogarithmizedProbabilityDensity();
 
     switch (stateTypes_[i]) {
-      std::cout << " U = "<<  ElectronicWaveFunction::getInstance().getJastrowFactor() << std::endl;
       case StateGradientType::SimpleGradient : {
         stateGrad = wf_.getNegativeLogarithmizedProbabilityDensityGradientCollection();
         //stateGrad = -wf_.getProbabilityDensityGradientCollection();
@@ -95,7 +94,6 @@ void StringOptimizationProblem::gradient(const Eigen::VectorXd &x, Eigen::Vector
         break;
       }
       case StateGradientType::ClimbingImage : {
-        std::cout << "(CI step) ";
         stateGrad = wf_.getNegativeLogarithmizedProbabilityDensityGradientCollection();
         //stateGrad = -wf_.getProbabilityDensityGradientCollection();
         //stateGrad = -wf_.getInverseNegativeLogarithmizedProbabilityDensityGradientCollection();
