@@ -13,7 +13,7 @@ class Particle {
 public:
     explicit Particle(const Vector3d& position);
 
-    Vector3d position();
+    Vector3d position() const;
     void position(const Vector3d& position);
 
 protected:

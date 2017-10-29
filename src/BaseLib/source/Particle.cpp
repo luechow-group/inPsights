@@ -8,7 +8,7 @@ Particle::Particle(const Vector3d & position)
         : position_(position)
 {}
 
-Vector3d Particle::position() {
+Vector3d Particle::position() const {
     return position_;
 }
 
