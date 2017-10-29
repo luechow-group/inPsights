@@ -37,6 +37,10 @@ set(HEADER_FILES
         include/AtomCollection.h
         include/Particle.h
         include/ParticleCollection.h
+        include/Electron.h
+        include/ElectronCollection.h
+        include/SpinType.h
+        include/SpinTypeCollection.h
         )
 
 set(SOURCE_FILES
@@ -48,6 +52,9 @@ set(SOURCE_FILES
         source/AtomCollection.cpp
         source/Particle.cpp
         source/ParticleCollection.cpp
+        source/Electron.cpp
+        source/ElectronCollection.cpp
+        source/SpinTypeCollection.cpp
         )
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES} include/Atom.h)
