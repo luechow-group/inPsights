@@ -14,7 +14,7 @@ MolecularGeometry3D::MolecularGeometry3D(Qt3DCore::QEntity *root, AtomCollection
 
   // Draw atoms
   for(std::vector<Atom>::const_iterator atomIt = atoms.begin(); atomIt != atoms.end(); ++ atomIt){
-    Eigen::Vector3d vec= (*atomIt).coordinates();
+    Eigen::Vector3d vec= (*atomIt).position();
     atoms3D.emplace_back(Atom3D(root,QVector3D(float(vec[0]),float(vec[1]),float(vec[2])), (*atomIt).elementType()));
   }
 

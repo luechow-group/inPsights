@@ -6,7 +6,11 @@
 #define AMOLQCGUI_ATOMCOLLECTION_H
 
 #include <vector>
+#include "ParticleCollection.h"
+#include "ElementTypeCollection.h"
 #include "Atom.h"
+
+using namespace Eigen;
 
 class AtomCollection{
 public:
@@ -16,7 +20,7 @@ public:
                  const double x, const double y, const double z);
     
     void addAtom(const Elements::ElementType& elementType,
-                 const Eigen::Vector3d& coordinates );
+                 const Vector3d& coordinates );
     Atom atom(const unsigned index){
       return atoms_[index];
     };
@@ -28,7 +32,7 @@ public:
       atoms_.clear();
     }
 
-    Eigen::VectorXd asEigenVector();
+    VectorXd asEigenVector();
 
 private:
     std::vector<Atom> atoms_;

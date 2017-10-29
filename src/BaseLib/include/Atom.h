@@ -5,19 +5,19 @@
 #ifndef AMOLQCGUI_ATOM_H
 #define AMOLQCGUI_ATOM_H
 
-#include <Eigen/Core>
+#include "Particle.h"
 #include "ElementType.h"
 
-class Atom{
-public:
-    Atom(Elements::ElementType elementType, Eigen::Vector3d coordinates);
+using namespace Eigen;
 
-    Eigen::Vector3d coordinates() const { return coordinates_; };
+class Atom : public Particle{
+public:
+    Atom(Eigen::Vector3d position, Elements::ElementType elementType);
+    
     Elements::ElementType elementType() const { return elementType_; };
 
 private:
     Elements::ElementType elementType_;
-    Eigen::Vector3d coordinates_;
 };
 
 
