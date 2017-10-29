@@ -12,8 +12,8 @@ using namespace Eigen;
 
 class Atom : public Particle{
 public:
-    Atom(Eigen::Vector3d position, Elements::ElementType elementType);
-    
+    Atom(Eigen::Vector3d position, Elements::ElementType elementType = Elements::ElementType::none);
+
     Elements::ElementType elementType() const { return elementType_; };
 
 private:
