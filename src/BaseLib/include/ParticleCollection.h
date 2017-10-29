@@ -18,10 +18,11 @@ public:
     Particle operator[](long i);
     long size();
 
-    /* TODO
+
     void insert(const Particle& particle, long i);
     void append(const Particle& particle);
     void prepend(const Particle& particle);
+    /* TODO
     void replace(long i);
     void remove(long i);
     ParticleCollection part(std::vector<long> indices);
