@@ -35,6 +35,8 @@ set(HEADER_FILES
         include/WaveFunctionParser.h
         include/Atom.h
         include/AtomCollection.h
+        include/Particle.h
+        include/ParticleCollection.h
         )
 
 set(SOURCE_FILES
@@ -44,6 +46,8 @@ set(SOURCE_FILES
         source/WaveFunctionParser.cpp
         source/Atom.cpp
         source/AtomCollection.cpp
+        source/Particle.cpp
+        source/ParticleCollection.cpp
         )
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES} include/Atom.h)
