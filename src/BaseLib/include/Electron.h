@@ -14,8 +14,8 @@ public:
 
     Electron(const Particle& particle, Spin::SpinType spinType = Spin::SpinType::none);
 
-    Spin::SpinType spin();
-    void spin(Spin::SpinType spinType);
+    Spin::SpinType spinType();
+    void setSpinType(Spin::SpinType spinType);
 
 private:
     Spin::SpinType spinType_;

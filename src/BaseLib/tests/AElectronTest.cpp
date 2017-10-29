@@ -28,6 +28,6 @@ TEST_F(AElectronTest, MemberAccess) {
     Spin::SpinType spin = Spin::SpinType::alpha;
     Electron electron(position, spin);
 
-    ASSERT_EQ(electron.spin(), spin);
+    ASSERT_EQ(electron.spinType(), spin);
     ASSERT_EQ(electron.position(), position);
 }
