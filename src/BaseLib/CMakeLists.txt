@@ -28,8 +28,8 @@ find_package(Qt5 REQUIRED COMPONENTS
 set(HEADER_FILES
         include/ElementColor.h
         include/ElementInfo.h
-        include/ElementTypes.h
         include/pElementInfo.h
+        include/ElementType.h
         include/NaturalConstants.h
         #include/ChemicalSystem.h
         include/WaveFunctionParser.h

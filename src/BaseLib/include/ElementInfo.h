@@ -1,7 +1,7 @@
-#ifndef DELIB_ELEMENTINFO_H
-#define DELIB_ELEMENTINFO_H
+#ifndef AMOLQCGUI_ELEMENTINFO_H
+#define AMOLQCGUI_ELEMENTINFO_H
 
-#include "ElementTypes.h"
+#include "ElementType.h"
 #include "pElementInfo.h"
 #include "ElementColor.h"
 
@@ -42,4 +42,4 @@ namespace Elements {
 
 } // namespace Elements
 
-#endif // DELIB_ELEMENTINFO_H
+#endif // AMOLQCGUI_ELEMENTINFO_H

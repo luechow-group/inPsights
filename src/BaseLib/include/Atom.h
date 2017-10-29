@@ -5,8 +5,8 @@
 #ifndef AMOLQCGUI_ATOM_H
 #define AMOLQCGUI_ATOM_H
 
-#include "ElementTypes.h"
 #include <Eigen/Core>
+#include "ElementType.h"
 
 class Atom{
 public:

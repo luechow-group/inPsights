@@ -17,7 +17,7 @@
 #include "MolecularGeometry3D.h"
 
 #include "ElementInfo.h"
-#include "ElementTypes.h"
+#include "ElementType.h"
 #include "Sphere.h"
 #include "Cylinder.h"
 #include "DividedCylinder.h"
