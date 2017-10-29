@@ -10,7 +10,10 @@
 
 class Electron : Particle{
 public:
-    Electron(const Vector3d & position, Spin::SpinType spinType = Spin::SpinType::None);
+    Electron(const Vector3d & position, Spin::SpinType spinType = Spin::SpinType::none);
+
+    Spin::SpinType spin();
+    void spin(Spin::SpinType spinType);
 
 private:
     Spin::SpinType spinType_;

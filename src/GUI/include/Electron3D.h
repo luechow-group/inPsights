@@ -13,11 +13,11 @@
 namespace Spin {
     static QColor QColorFromSpinType(const SpinType& spinType){
       switch (spinType){
-          case SpinType::Alpha:
+          case SpinType::alpha:
           return Qt::red;
-        case SpinType::Beta:
+        case SpinType::beta:
           return Qt::blue;
-        case SpinType::None:
+        case SpinType::none:
           return Qt::black;
       }
     }
