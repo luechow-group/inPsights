@@ -6,7 +6,7 @@
 #define AMOLQCGUI_SPINTYPE_H
 
 namespace Spin {
-    enum SpinType { Alpha, Beta, None };
+    enum class SpinType { Alpha, Beta, None };
 }
 
 #endif //AMOLQCGUI_SPINTYPE_H

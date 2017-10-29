@@ -292,7 +292,7 @@ int main(int argc, char *argv[]) {
     Eigen::Vector3d vec3d = tsGuessGeom.segment(j * 3, 3);
     QVector3D qVector3D(vec3d(0), vec3d(1), vec3d(2));
 
-    Electron3D* e = new Electron3D(root, qVector3D, Spin::None);
+    Electron3D* e = new Electron3D(root, qVector3D, Spin::SpinType::None);
     e->setRadius(0.025f);
     e->setAlpha(1.0);
   }
@@ -310,10 +310,10 @@ int main(int argc, char *argv[]) {
 
     Electron3D *e;
     if ( j < (xA.rows()/3)/2 ){
-      e = new Electron3D(root,qVector3D,Spin::Alpha);
+      e = new Electron3D(root,qVector3D,Spin::SpinType::Alpha);
     }
     else {
-      e = new Electron3D(root, qVector3D, Spin::Beta);
+      e = new Electron3D(root, qVector3D, Spin::SpinType::Beta);
     }
 
 
@@ -327,7 +327,7 @@ int main(int argc, char *argv[]) {
                 , 0, false);
       QVector3D shift;
 
-      if(e->getSpinType() == Spin::Alpha) shift = QVector3D(0.0f,0.07f,0.07f);
+      if(e->getSpinType() == Spin::SpinType::Alpha) shift = QVector3D(0.0f,0.07f,0.07f);
       else shift = QVector3D(-0.0f,-0.07f,-0.07f);
 
         textTransform->setTranslation(qVector3D+shift);

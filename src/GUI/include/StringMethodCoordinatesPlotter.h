@@ -53,10 +53,10 @@ public:
       }*/
 
       for (int j = 0; j < pointsList.size()/2; ++j) {
-        new Polyline(root, Spin::QColorFromSpinType(Spin::Alpha), pointsList[j], radius, true);
+        new Polyline(root, Spin::QColorFromSpinType(Spin::SpinType::Alpha), pointsList[j], radius, true);
       }
       for (int j = pointsList.size()/2; j < pointsList.size(); ++j) {
-       new Polyline(root, Spin::QColorFromSpinType(Spin::Beta), pointsList[j], radius, true);
+       new Polyline(root, Spin::QColorFromSpinType(Spin::SpinType ::Beta), pointsList[j], radius, true);
       }
 
     }
