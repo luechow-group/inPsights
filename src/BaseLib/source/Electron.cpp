@@ -9,3 +9,15 @@ Electron::Electron(const Vector3d & position,Spin::SpinType spinType)
           spinType_(spinType)
 {}
 
+Electron::Electron(const Particle &particle, Spin::SpinType spinType)
+        : Particle(particle),
+          spinType_(spinType)
+{}
+
+Spin::SpinType Electron::spin() {
+    return spinType_;
+}
+
+void Electron::spin(Spin::SpinType spinType) {
+    spinType_ = spinType;
+}

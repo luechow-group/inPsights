@@ -8,9 +8,11 @@
 #include "Particle.h"
 #include "SpinType.h"
 
-class Electron : Particle{
+class Electron : public Particle{
 public:
     Electron(const Vector3d & position, Spin::SpinType spinType = Spin::SpinType::none);
+
+    Electron(const Particle& particle, Spin::SpinType spinType = Spin::SpinType::none);
 
     Spin::SpinType spin();
     void spin(Spin::SpinType spinType);

@@ -12,3 +12,6 @@ Vector3d Particle::position() {
     return position_;
 }
 
+void Particle::position(const Vector3d &position) {
+    position_ = position;
+}

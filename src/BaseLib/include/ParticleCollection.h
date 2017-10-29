@@ -6,6 +6,7 @@
 #define AMOLQCGUI_PARTICLECOLLECTION_H
 
 #include "Particle.h"
+#include <vector>
 
 using namespace Eigen;
 
@@ -16,6 +17,15 @@ public:
 
     Particle operator[](long i);
     long size();
+
+    /* TODO
+    void insert(const Particle& particle, long i);
+    void append(const Particle& particle);
+    void prepend(const Particle& particle);
+    void replace(long i);
+    void remove(long i);
+    ParticleCollection part(std::vector<long> indices);
+    */
 
 protected:
     long size_;

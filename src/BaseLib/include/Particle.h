@@ -12,10 +12,9 @@ using namespace Eigen;
 class Particle {
 public:
     explicit Particle(const Vector3d& position);
-    //explicit Particle(Vector3d position,
-    //                  const std::string& name );
 
     Vector3d position();
+    void position(const Vector3d& position);
 
 protected:
     Vector3d position_;
