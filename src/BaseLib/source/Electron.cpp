@@ -4,20 +4,23 @@
 
 #include "Electron.h"
 
-Electron::Electron(const Vector3d & position,Spin::SpinType spinType)
+using namespace Eigen;
+using namespace Spin;
+
+Electron::Electron(const Vector3d & position,SpinType spinType)
         : Particle(position),
           spinType_(spinType)
 {}
 
-Electron::Electron(const Particle &particle, Spin::SpinType spinType)
+Electron::Electron(const Particle &particle, SpinType spinType)
         : Particle(particle),
           spinType_(spinType)
 {}
 
-Spin::SpinType Electron::spinType() {
+SpinType Electron::spinType() {
     return spinType_;
 }
 
-void Electron::setSpinType(Spin::SpinType spinType) {
+void Electron::setSpinType(SpinType spinType) {
     spinType_ = spinType;
 }

@@ -4,6 +4,8 @@
 
 #include "Particle.h"
 
+using namespace Eigen;
+
 Particle::Particle(const Vector3d & position)
         : position_(position)
 {}

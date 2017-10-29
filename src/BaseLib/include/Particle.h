@@ -7,16 +7,14 @@
 
 #include <Eigen/Core>
 
-using namespace Eigen;
-
 class Particle {
 public:
-    explicit Particle(const Vector3d& position);
+    explicit Particle(const Eigen::Vector3d& position);
 
-    Vector3d position() const;
-    void position(const Vector3d& position);
+    Eigen::Vector3d position() const;
+    void position(const Eigen::Vector3d& position);
 
 protected:
-    Vector3d position_;
+    Eigen::Vector3d position_;
 };
 #endif //AMOLQCGUI_PARTICLE_H
