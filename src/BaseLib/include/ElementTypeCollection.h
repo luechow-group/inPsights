@@ -15,8 +15,6 @@ public:
 
     Elements::ElementType elementType(long i);
 
-
-
     void insert(Elements::ElementType elementType, long i);
     void append(Elements::ElementType elementType);
     void prepend(Elements::ElementType elementType);
