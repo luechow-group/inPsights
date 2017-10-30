@@ -8,23 +8,29 @@
 #include <Eigen/Core>
 #include "ElementType.h"
 
-using namespace Eigen;
-
 class ElementTypeCollection{
 public:
-    explicit ElementTypeCollection(long size);
-
-    explicit ElementTypeCollection(const VectorXi& spinTypes);
+    explicit ElementTypeCollection(long size = 0);
+    explicit ElementTypeCollection(const Eigen::VectorXi& elementTypes);
 
     Elements::ElementType elementType(long i);
 
+
+
+    void insert(Elements::ElementType elementType, long i);
+    void append(Elements::ElementType elementType);
+    void prepend(Elements::ElementType elementType);
+    
     void setElementType(long i, Elements::ElementType elementType);
 
-    VectorXi asVectorXi();
+    Eigen::VectorXi elementTypesAsEigenVector();
+
+protected:
+    long numberOfElementTypes();
 
 private:
-    long size_;
-    VectorXi elementTypes_;
+    long numberOfElementsTypes_;
+    Eigen::VectorXi elementTypes_;
 };
 
 #endif //AMOLQCGUI_ELEMENTTYPECOLLECTION_H

@@ -18,5 +18,5 @@ int main(int argc, char const *argv[]) {
 
   auto ac = waveFunctionParser.getAtomCollection();
 
-  std::cout << ac.asEigenVector() << std::endl;
+  std::cout << ac.positionsAsEigenVector() << std::endl;
 }

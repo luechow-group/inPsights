@@ -11,7 +11,6 @@
 class MolecularGeometry3D{
 public:
     MolecularGeometry3D(Qt3DCore::QEntity *root,AtomCollection atomCollection);
-
 };
 
 #endif //AMOLQCGUI_MOLECULARGEOMETRYIMPORTER_H

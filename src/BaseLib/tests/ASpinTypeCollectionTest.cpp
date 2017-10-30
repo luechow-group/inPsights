@@ -6,6 +6,7 @@
 #include "SpinTypeCollection.h"
 
 using namespace testing;
+using namespace Eigen;
 
 class ASpinTypeCollectionTest : public Test {
 public:
@@ -15,12 +16,12 @@ public:
 TEST_F(ASpinTypeCollectionTest, Constructors){
     SpinTypeCollection spinTypeCollection1(3);
     VectorXi spinTypesNone = VectorXi::Constant(3,2);
-    ASSERT_EQ(spinTypeCollection1.asVectorXi(),spinTypesNone);
+    ASSERT_EQ(spinTypeCollection1.spinTypesAsEigenVector(),spinTypesNone);
 
     VectorXi spinTypesAlpha(3);
     spinTypesAlpha << 0,0,0;
     SpinTypeCollection spinTypeCollection2(spinTypesAlpha);
-    ASSERT_EQ(spinTypeCollection2.asVectorXi(),spinTypesAlpha);
+    ASSERT_EQ(spinTypeCollection2.spinTypesAsEigenVector(),spinTypesAlpha);
 }
 
 TEST_F(ASpinTypeCollectionTest, CopyConstructor){

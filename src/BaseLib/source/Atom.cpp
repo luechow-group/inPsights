@@ -16,3 +16,7 @@ Atom::Atom(const Particle &particle, ElementType elementType)
         : Particle(particle),
           elementType_(elementType)
 {}
+
+Elements::ElementType Atom::elementType() const {
+    return elementType_;
+};

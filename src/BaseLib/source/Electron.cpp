@@ -17,10 +17,6 @@ Electron::Electron(const Particle &particle, SpinType spinType)
           spinType_(spinType)
 {}
 
-SpinType Electron::spinType() {
+Spin::SpinType Electron::spinType() const {
     return spinType_;
-}
-
-void Electron::setSpinType(SpinType spinType) {
-    spinType_ = spinType;
 }

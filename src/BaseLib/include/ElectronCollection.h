@@ -11,14 +11,15 @@
 
 class ElectronCollection : public ParticleCollection, public SpinTypeCollection{
 public:
+    ElectronCollection();
     explicit ElectronCollection(const VectorXd& positions);
     explicit ElectronCollection(const VectorXd& positions, const VectorXi& spinTypes);
 
     Electron electron(long i);
-    Spin::SpinType spinType(long i);
 
-private:
-    //SpinTypeCollection spinTypes_;
+    void insert (const Electron& electron, long i);
+    void append (const Electron& electron);
+    void prepend(const Electron& electron);
 };
 
 #endif //AMOLQCGUI_ELECTRONCOLLECTION_H

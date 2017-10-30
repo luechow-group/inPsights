@@ -12,12 +12,12 @@ using namespace Eigen;
 
 class ParticleCollection{
 public:
-
+    ParticleCollection();
     explicit ParticleCollection(const VectorXd& positions);
 
     Particle operator[](long i);
-    long size();
 
+    long numberOfParticles();
 
     void insert(const Particle& particle, long i);
     void append(const Particle& particle);
@@ -28,8 +28,10 @@ public:
     ParticleCollection part(std::vector<long> indices);
     */
 
+    Eigen::VectorXd positionsAsEigenVector();
+
 protected:
-    long size_;
+    long numberOfParticles_;
     VectorXd positions_;
 
 private:

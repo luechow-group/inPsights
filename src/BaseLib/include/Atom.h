@@ -11,10 +11,10 @@
 class Atom : public Particle{
 public:
     Atom(Eigen::Vector3d position, Elements::ElementType elementType = Elements::ElementType::none);
-
     Atom(const Particle& particle, Elements::ElementType elementType = Elements::ElementType::none);
 
-    Elements::ElementType elementType() const { return elementType_; };
+    Elements::ElementType elementType() const;
+    //void setElementType(Elements::ElementType elementType);
 
 private:
     Elements::ElementType elementType_;

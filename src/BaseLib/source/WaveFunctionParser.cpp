@@ -101,7 +101,6 @@ void WaveFunctionParser::readNuclei() {
   double y;
   double z;
 
-  atomCollection_.clear();
 
   for (unsigned i = 0; i < numberOfNuclei ; ++i) {
     std::getline(file_,line);

@@ -7,13 +7,13 @@
 using namespace Eigen;
 
 ElementTypeCollection::ElementTypeCollection(long size)
-        :size_(size),
+        :numberOfElementsTypes_(size),
          elementTypes_(VectorXi::Constant(size,int(Elements::ElementType::none)))
 {}
 
 ElementTypeCollection::ElementTypeCollection(const VectorXi& elementTypes)
-        : size_(elementTypes.size()),
-          elementTypes_(size_)
+        : numberOfElementsTypes_(elementTypes.size()),
+          elementTypes_(numberOfElementsTypes_)
 {
     assert(elementTypes.minCoeff() >= int(Elements::ElementType::none));
     assert(elementTypes.maxCoeff() <= int(Elements::ElementType::Cn));
@@ -25,10 +25,31 @@ Elements::ElementType ElementTypeCollection::elementType(long i) {
     return  Elements::ElementType(elementTypes_[i]);
 }
 
+long ElementTypeCollection::numberOfElementTypes() {
+    return numberOfElementsTypes_;
+}
+
+void ElementTypeCollection::insert(Elements::ElementType elementType, long i) {
+    VectorXi before = elementTypes_.head(i);
+    VectorXi after = elementTypes_.tail(numberOfElementsTypes_-i);
+
+    elementTypes_.resize(numberOfElementsTypes_+1);
+    elementTypes_ << before, int(elementType), after;
+    ++numberOfElementsTypes_;
+}
+
+void ElementTypeCollection::prepend(Elements::ElementType elementType) {
+    this->insert(elementType,0);
+}
+
+void ElementTypeCollection::append(Elements::ElementType elementType) {
+    this->insert(elementType,numberOfElementsTypes_);
+}
+
 void ElementTypeCollection::setElementType(long i, Elements::ElementType ElementType) {
     elementTypes_[i] = int(ElementType);
 }
 
-VectorXi ElementTypeCollection::asVectorXi() {
+VectorXi ElementTypeCollection::elementTypesAsEigenVector() {
     return elementTypes_;
 }

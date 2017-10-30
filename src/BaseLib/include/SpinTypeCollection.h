@@ -8,25 +8,26 @@
 #include <Eigen/Core>
 #include "SpinType.h"
 
-using namespace Eigen;
-
-
-
 class SpinTypeCollection{
 public:
-    explicit SpinTypeCollection(long size);
-
-    explicit SpinTypeCollection(const VectorXi& spinTypes);
+    explicit SpinTypeCollection(long size = 0);
+    explicit SpinTypeCollection(const Eigen::VectorXi& spinTypes);
 
     Spin::SpinType spinType(long i);
 
+    long numberOfSpinTypes();
+
+    void insert(Spin::SpinType spinType, long i);
+    void append(Spin::SpinType spinType);
+    void prepend(Spin::SpinType spinType);
+
     void setSpinType(long i, Spin::SpinType spinType);
 
-    VectorXi asVectorXi();
+    Eigen::VectorXi spinTypesAsEigenVector();
 
 private:
-    long size_;
-    VectorXi spinTypes_;
+    long numberOfSpinTypes_;
+    Eigen::VectorXi spinTypes_;
 };
 
 #endif //AMOLQCGUI_SPINTYPECOLLECTION_H
