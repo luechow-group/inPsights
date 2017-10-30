@@ -26,6 +26,10 @@ Spin::SpinType SpinTypeCollection::spinType(long i) {
     return  Spin::SpinType(spinTypes_[i]);
 }
 
+unsigned long SpinTypeCollection::numberOfSpinTypes() const {
+    return numberOfSpinTypes_;
+}
+
 void SpinTypeCollection::insert(Spin::SpinType spinType, long i) {
     VectorXi before = spinTypes_.head(i);
     VectorXi after = spinTypes_.tail(numberOfSpinTypes_-i);

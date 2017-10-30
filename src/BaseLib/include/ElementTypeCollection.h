@@ -24,10 +24,10 @@ public:
     Eigen::VectorXi elementTypesAsEigenVector();
 
 protected:
-    long numberOfElementTypes();
+    unsigned long numberOfElementTypes() const;
 
 private:
-    long numberOfElementsTypes_;
+    unsigned long numberOfElementsTypes_;
     Eigen::VectorXi elementTypes_;
 };
 

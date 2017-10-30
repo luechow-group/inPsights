@@ -25,7 +25,7 @@ Elements::ElementType ElementTypeCollection::elementType(long i) {
     return  Elements::ElementType(elementTypes_[i]);
 }
 
-long ElementTypeCollection::numberOfElementTypes() {
+unsigned long ElementTypeCollection::numberOfElementTypes() const {
     return numberOfElementsTypes_;
 }
 

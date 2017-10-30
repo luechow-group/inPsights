@@ -29,7 +29,7 @@ void AtomCollection::prepend(const Atom& atom) {
 }
 
 void AtomCollection::append(const Atom& atom) {
-    this->insert(atom, ParticleCollection::numberOfParticles_);
+    this->insert(atom, ParticleCollection::numberOfParticles());
 }
 
 

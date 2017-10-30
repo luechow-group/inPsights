@@ -15,7 +15,7 @@ public:
 
     Spin::SpinType spinType(long i);
 
-    long numberOfSpinTypes();
+    unsigned long numberOfSpinTypes() const;
 
     void insert(Spin::SpinType spinType, long i);
     void append(Spin::SpinType spinType);
@@ -26,7 +26,7 @@ public:
     Eigen::VectorXi spinTypesAsEigenVector();
 
 private:
-    long numberOfSpinTypes_;
+    unsigned long numberOfSpinTypes_;
     Eigen::VectorXi spinTypes_;
 };
 

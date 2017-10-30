@@ -18,19 +18,19 @@ ParticleCollection::ParticleCollection(const VectorXd &positions) {
     positions_ = positions;
 }
 
-long ParticleCollection::numberOfParticles() {
+unsigned long ParticleCollection::numberOfParticles() const {
     return numberOfParticles_;
 }
 
 long ParticleCollection::calculateStartIndex(long i) {
-    assert(i <= numberOfParticles_ && "index is out of bounds");
-    assert(i >= -numberOfParticles_ && "reverse index is out of bounds");
+    assert(i <= long(numberOfParticles_) && "index is out of bounds");
+    assert(i >= -long(numberOfParticles_) && "reverse index is out of bounds");
     if (i >= 0) return i*3;
-    return (numberOfParticles_ + i)*3;
+    return (long(numberOfParticles_) + i)*3;
 }
 
 Particle ParticleCollection::operator[](long i) {
-    assert(i < numberOfParticles_ && "index is out of bounds");
+    assert(i < long(numberOfParticles_) && "index is out of bounds");
     long start = calculateStartIndex(i);
     Vector3d position = positions_.segment(start,3);
     return Particle(position);

@@ -17,7 +17,7 @@ public:
 
     Particle operator[](long i);
 
-    long numberOfParticles();
+    unsigned long numberOfParticles() const;
 
     void insert(const Particle& particle, long i);
     void append(const Particle& particle);
@@ -31,12 +31,11 @@ public:
     Eigen::VectorXd positionsAsEigenVector();
 
 protected:
-    long numberOfParticles_;
+    unsigned long numberOfParticles_;
     VectorXd positions_;
 
 private:
     long calculateStartIndex(long i);
-
 };
 
 #endif //AMOLQCGUI_PARTICLECOLLECTION_H
