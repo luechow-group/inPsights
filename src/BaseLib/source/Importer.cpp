@@ -123,11 +123,8 @@ void RefFileImporter::countSubstructures() {
         if ( k > k_last){
             sumOfMaximaNumbersWithCurrent = std::stoul(currentLineElements[6]);
 
-            std::tuple<unsigned long, unsigned long, unsigned long>
-                    tuple(firstLineOfSuperstructure, m_last, sumOfMaximaNumbersTillCurrent);
-
-            substructuresData_.emplace_back(tuple);
-
+            substructuresData_.emplace_back(
+                    SubstructureDataEntry(firstLineOfSuperstructure, m_last, sumOfMaximaNumbersTillCurrent));
             firstLineOfSuperstructure = currentLineIdx;
             k_last = k;
             m_last = 1;
@@ -147,9 +144,8 @@ void RefFileImporter::countSubstructures() {
     // add last superstructure
     if (k > 0){
         m_last;
-        std::tuple<unsigned long, unsigned long, unsigned long>
-                tuple(firstLineOfSuperstructure, m_last, sumOfMaximaNumbersTillCurrent);
-        substructuresData_.emplace_back(tuple);
+        substructuresData_.emplace_back(
+                SubstructureDataEntry(firstLineOfSuperstructure, m_last, sumOfMaximaNumbersTillCurrent));
     }
 }
 
@@ -157,9 +153,9 @@ unsigned long RefFileImporter::calculateLine(unsigned long k, unsigned long m) c
     assert( k > 0 && "k value must be greater than zero");
     assert( m > 0 && "m value must be greater than zero");
     assert( k <= numberOfSuperstructures_ && "k value must be smaller than kmax");
-    assert( m <= std::get<1>(substructuresData_[k])  && "m value must be smaller than mmax");
+    assert( m <= substructuresData_[k].startingLine_  && "m value must be smaller than mmax");
 
-    unsigned long start = std::get<0>(substructuresData_[k-1]);
+    unsigned long start = substructuresData_[k-1].startingLine_;
     unsigned long linesToSkip = (m-1)*(numberOfElectrons_+2);
     return start + linesToSkip;
 }
@@ -192,9 +188,6 @@ ParticleCollection RefFileImporter::getParticleCollection(unsigned long k, unsig
     return particleCollection;
 }
 
-
-
-
 unsigned long RefFileImporter::getNumberOfMaxima(unsigned long k, unsigned long m) const {
     unsigned long startLine = calculateLine(k,m)+2;
     std::vector<std::string> lineElements = split(getLine(startLine));
@@ -212,7 +205,7 @@ ElectronCollection RefFileImporter::getElectronCollection(unsigned long k, unsig
 }
 
 ElectronCollections RefFileImporter::getElectronCollections(unsigned long k) const {
-    unsigned long numberOfSubstructures = std::get<1>(substructuresData_[k]);
+    unsigned long numberOfSubstructures = substructuresData_[k].numberOfSubstructures_;
 
     std::vector<ParticleCollection> particleCollectionVector;
     for (int m = 1; m <= numberOfSubstructures; ++m) {
