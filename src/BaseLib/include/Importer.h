@@ -47,7 +47,19 @@ public:
 };
 
 
-class RefFileImporter : public Importer{
+
+class AmolqcImporter : public Importer{
+public:
+    AmolqcImporter(const std::string& filename);
+
+private:
+    ParticleCollection importParticleCollectionBlock(unsigned long startLine);
+    SpinTypeCollection createSpinTypeCollection(unsigned long numberOfAlphaElectrons,
+                                                unsigned long numberOfBetaElectrons);
+};
+
+
+class RefFileImporter : public AmolqcImporter{
 public:
     RefFileImporter(const std::string& filename);
 
@@ -71,6 +83,10 @@ private:
 
     //std::vector<std::tuple<unsigned long,unsigned long,unsigned long>> substructuresData_;
     std::vector<SubstructureDataEntry> substructuresData_;
+};
+
+class PathFileImporter : public Importer{
+
 };
 
 class WfFileImporter : public Importer{

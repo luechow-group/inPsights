@@ -64,9 +64,12 @@ void Importer::read_lines(std::istream& is, OutIt dest)
     std::copy(InIt(is), InIt(), dest);
 }
 
+AmolqcImporter::AmolqcImporter(const std::string &filename)
+        : Importer(filename) {}
+
 
 RefFileImporter::RefFileImporter(const std::string &filename)
-        : Importer(filename) {
+        : AmolqcImporter(filename) {
 
     std::cout << getLine(0) << std::endl;
 
@@ -188,12 +191,14 @@ ParticleCollection RefFileImporter::getParticleCollection(unsigned long k, unsig
     return particleCollection;
 }
 
+//maxref
 unsigned long RefFileImporter::getNumberOfMaxima(unsigned long k, unsigned long m) const {
     unsigned long startLine = calculateLine(k,m)+2;
     std::vector<std::string> lineElements = split(getLine(startLine));
     return std::stoul(lineElements[6]);
 }
 
+//maxref
 double RefFileImporter::getNegativeLogarithmizedProbabilityDensity(unsigned long k, unsigned long m) const {
     unsigned long startLine = calculateLine(k,m)+2;
     std::vector<std::string> lineElements = split(getLine(startLine));
