@@ -76,7 +76,7 @@ RefFileImporter::RefFileImporter(const std::string &filename)
     numberOfNuclei_ = std::stoul(split(getLine(0))[0]);
     numberOfElectrons_ = std::stoul(split(getLine(numberOfNuclei_+2))[10]);
     numberOfAlphaElectrons_ = std::stoul(split(getLine(numberOfNuclei_+2))[8]);
-
+    numberOfBetaElectrons_ = numberOfElectrons_-numberOfAlphaElectrons_;
             std::vector<std::string> summaryLineElements = split(getLine(numberOfNuclei_+1));
 
     numberOfSuperstructures_ = std::stoul(summaryLineElements[0]);
@@ -163,32 +163,9 @@ unsigned long RefFileImporter::calculateLine(unsigned long k, unsigned long m) c
     return start + linesToSkip;
 }
 
-SpinTypeCollection RefFileImporter::getSpinTypeCollection() const {
-    SpinTypeCollection spinTypeCollection;
-    for (unsigned long i = 0; i < numberOfElectrons_; ++i) {
-        Spin::SpinType spinType;
-        if (i < numberOfAlphaElectrons_) spinType = Spin::SpinType::alpha;
-        else  spinType = Spin::SpinType::beta;
-
-        spinTypeCollection.append(spinType);
-    }
-    return spinTypeCollection;
-}
-
 ParticleCollection RefFileImporter::getParticleCollection(unsigned long k, unsigned long m) const {
-
     unsigned long startLine = calculateLine(k,m)+2;
-    ParticleCollection particleCollection;
-
-    for (unsigned long i = 0; i < numberOfElectrons_; ++i) {
-        std::vector<std::string> lineElements = split(getLine(startLine+i));
-        double x = std::stod(lineElements[0]);
-        double y = std::stod(lineElements[1]);
-        double z = std::stod(lineElements[2]);
-
-        particleCollection.append(Particle(x,y,z));
-    }
-    return particleCollection;
+    return importParticleCollectionBlock(startLine,0,numberOfElectrons_);
 }
 
 //maxref
@@ -203,6 +180,10 @@ double RefFileImporter::getNegativeLogarithmizedProbabilityDensity(unsigned long
     unsigned long startLine = calculateLine(k,m)+2;
     std::vector<std::string> lineElements = split(getLine(startLine));
     return std::stod(lineElements[4]);
+}
+
+SpinTypeCollection RefFileImporter::getSpinTypeCollection() const {
+    return AmolqcImporter::createSpinTypeCollection(numberOfAlphaElectrons_,numberOfBetaElectrons_);
 }
 
 ElectronCollection RefFileImporter::getElectronCollection(unsigned long k, unsigned long m) const {
@@ -220,3 +201,32 @@ ElectronCollections RefFileImporter::getElectronCollections(unsigned long k) con
 
 }
 
+
+ParticleCollection AmolqcImporter::importParticleCollectionBlock(unsigned long startLine,
+                                                                 unsigned long startLineElement,
+                                                                 unsigned long numberOfParticles) const {
+    ParticleCollection particleCollection;
+    for (unsigned long i = 0; i < numberOfParticles; ++i) {
+        std::vector<std::string> lineElements = split(getLine(startLine+i));
+        double x = std::stod(lineElements[startLineElement+0]);
+        double y = std::stod(lineElements[startLineElement+1]);
+        double z = std::stod(lineElements[startLineElement+2]);
+
+        particleCollection.append(Particle(x,y,z));
+    }
+    return particleCollection;
+}
+
+SpinTypeCollection
+AmolqcImporter::createSpinTypeCollection(unsigned long numberOfAlphaElectrons,
+                                         unsigned long numberOfBetaElectrons) const {
+    SpinTypeCollection spinTypeCollection;
+    for (unsigned long i = 0; i < numberOfAlphaElectrons+numberOfBetaElectrons; ++i) {
+        Spin::SpinType spinType;
+        if (i < numberOfAlphaElectrons) spinType = Spin::SpinType::alpha;
+        else  spinType = Spin::SpinType::beta;
+
+        spinTypeCollection.append(spinType);
+    }
+    return spinTypeCollection;
+}

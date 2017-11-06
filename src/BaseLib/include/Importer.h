@@ -52,10 +52,13 @@ class AmolqcImporter : public Importer{
 public:
     AmolqcImporter(const std::string& filename);
 
-private:
-    ParticleCollection importParticleCollectionBlock(unsigned long startLine);
+
+    ParticleCollection importParticleCollectionBlock(unsigned long startLine,
+                                                     unsigned long startLineElement,
+                                                     unsigned long numberOfParticles) const;
     SpinTypeCollection createSpinTypeCollection(unsigned long numberOfAlphaElectrons,
-                                                unsigned long numberOfBetaElectrons);
+                                                unsigned long numberOfBetaElectrons) const;
+private:
 };
 
 
@@ -77,7 +80,10 @@ private:
     void countSubstructures();
     unsigned long calculateLine(unsigned long k, unsigned long m) const;
 
-    unsigned long numberOfNuclei_,numberOfElectrons_, numberOfAlphaElectrons_,
+    unsigned long numberOfNuclei_,
+            numberOfElectrons_,
+            numberOfAlphaElectrons_,
+            numberOfBetaElectrons_,
             numberOfSuperstructures_, totalNumberOfMaxima_, maximalNumberOfSubstructures;
     // line idx, numerOfSubstructures, totalNumberOfMaxima
 
