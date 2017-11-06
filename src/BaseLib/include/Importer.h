@@ -48,48 +48,8 @@ public:
 
 
 
-class AmolqcImporter : public Importer{
-public:
-    AmolqcImporter(const std::string& filename);
 
 
-    ParticleCollection importParticleCollectionBlock(unsigned long startLine,
-                                                     unsigned long startLineElement,
-                                                     unsigned long numberOfParticles) const;
-    SpinTypeCollection createSpinTypeCollection(unsigned long numberOfAlphaElectrons,
-                                                unsigned long numberOfBetaElectrons) const;
-private:
-};
-
-
-class RefFileImporter : public AmolqcImporter{
-public:
-    RefFileImporter(const std::string& filename);
-
-    AtomCollection getAtomCollection();
-
-    SpinTypeCollection getSpinTypeCollection() const;
-    ParticleCollection getParticleCollection(unsigned long k, unsigned long m) const;
-    ElectronCollection getElectronCollection(unsigned long k, unsigned long m) const;
-    ElectronCollections getElectronCollections(unsigned long k) const;
-
-    unsigned long getNumberOfMaxima(unsigned long k, unsigned long m) const;
-    double getNegativeLogarithmizedProbabilityDensity(unsigned long k, unsigned long m) const;
-
-private:
-    void countSubstructures();
-    unsigned long calculateLine(unsigned long k, unsigned long m) const;
-
-    unsigned long numberOfNuclei_,
-            numberOfElectrons_,
-            numberOfAlphaElectrons_,
-            numberOfBetaElectrons_,
-            numberOfSuperstructures_, totalNumberOfMaxima_, maximalNumberOfSubstructures;
-    // line idx, numerOfSubstructures, totalNumberOfMaxima
-
-    //std::vector<std::tuple<unsigned long,unsigned long,unsigned long>> substructuresData_;
-    std::vector<SubstructureDataEntry> substructuresData_;
-};
 
 class PathFileImporter : public Importer{
 

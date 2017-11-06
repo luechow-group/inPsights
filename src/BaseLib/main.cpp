@@ -11,6 +11,8 @@
 #include "Importer.h"
 #include <ElementInfo.h>
 
+#include "RefFileImporter.h"
+
 int main(int argc, char const *argv[]) {
 
     //std::string filename = "Ethane-em-5.wf";

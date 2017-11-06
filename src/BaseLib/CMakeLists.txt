@@ -45,6 +45,8 @@ set(HEADER_FILES
         include/SpinType.h
         include/SpinTypeCollection.h
         include/Importer.h
+        include/RefFileImporter.h
+        include/AmolqcImporter.h
         )
 
 set(SOURCE_FILES
@@ -63,6 +65,8 @@ set(SOURCE_FILES
         source/ElectronCollections.cpp
         source/SpinTypeCollection.cpp
         source/Importer.cpp
+        source/RefFileImporter.cpp
+        source/AmolqcImporter.cpp
         )
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES} include/Atom.h)
