@@ -6,13 +6,21 @@
 
 ElectronCollection::ElectronCollection(const VectorXd &positions)
         : ParticleCollection(positions),
-          SpinTypeCollection(this->numberOfParticles())
-{}
+          SpinTypeCollection(this->numberOfParticles()) {}
 
 ElectronCollection::ElectronCollection(const VectorXd &positions, const VectorXi &spinTypes)
         : ParticleCollection(positions),
-          SpinTypeCollection(spinTypes)
-{}
+          SpinTypeCollection(spinTypes) {
+
+    assert(this->numberOfParticles() == spinTypes.size()
+           && "The number of particles in ParticleCollection and the number of spin type in SpinTypeCollection must match.");
+}
+
+ElectronCollection::ElectronCollection(const ParticleCollection &particleCollection,
+                                       const SpinTypeCollection &spinTypeCollection)
+        : ElectronCollection(particleCollection.positionsAsEigenVector(),
+                             spinTypeCollection.spinTypesAsEigenVector()){
+}
 
 Electron ElectronCollection::electron(long i) {
     Particle particle = (*this)[i];

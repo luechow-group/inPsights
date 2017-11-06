@@ -10,10 +10,10 @@
 
 class SpinTypeCollection{
 public:
-    explicit SpinTypeCollection(long size = 0);
+    explicit SpinTypeCollection(unsigned long size = 0);
     explicit SpinTypeCollection(const Eigen::VectorXi& spinTypes);
 
-    Spin::SpinType spinType(long i);
+    Spin::SpinType spinType(long i) const;
 
     unsigned long numberOfSpinTypes() const;
 

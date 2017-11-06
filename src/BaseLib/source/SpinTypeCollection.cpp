@@ -7,7 +7,7 @@
 
 using namespace Eigen;
 
-SpinTypeCollection::SpinTypeCollection(long size)
+SpinTypeCollection::SpinTypeCollection(unsigned long size)
         : numberOfSpinTypes_(size),
           spinTypes_(VectorXi::Constant(size,int(Spin::SpinType::none)))
 {}
@@ -22,7 +22,7 @@ SpinTypeCollection::SpinTypeCollection(const VectorXi& spinTypes)
     spinTypes_ = spinTypes;
 }
 
-Spin::SpinType SpinTypeCollection::spinType(long i) {
+Spin::SpinType SpinTypeCollection::spinType(long i) const {
     return  Spin::SpinType(spinTypes_[i]);
 }
 

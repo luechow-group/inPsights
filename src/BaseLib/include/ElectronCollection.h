@@ -15,9 +15,8 @@ public:
     explicit ElectronCollection(const VectorXd& positions);
     ElectronCollection(const VectorXd& positions, const VectorXi& spinTypes);
 
-    ElectronCollection(const ParticleCollection& ParticleCollection,
+    ElectronCollection(const ParticleCollection& particleCollection,
                        const SpinTypeCollection& spinTypeCollection);
-
 
     Electron electron(long i);
 

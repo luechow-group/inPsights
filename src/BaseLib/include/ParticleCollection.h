@@ -15,7 +15,7 @@ public:
     ParticleCollection();
     explicit ParticleCollection(const VectorXd& positions);
 
-    Particle operator[](long i);
+    Particle operator[](long i) const;
 
     unsigned long numberOfParticles() const;
 
@@ -28,14 +28,14 @@ public:
     ParticleCollection part(std::vector<long> indices);
     */
 
-    Eigen::VectorXd positionsAsEigenVector();
+    Eigen::VectorXd positionsAsEigenVector() const;
 
 protected:
     unsigned long numberOfParticles_;
     VectorXd positions_;
 
 private:
-    long calculateStartIndex(long i);
+    long calculateStartIndex(long i) const;
 };
 
 #endif //AMOLQCGUI_PARTICLECOLLECTION_H

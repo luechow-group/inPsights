@@ -13,17 +13,13 @@
 
 int main(int argc, char const *argv[]) {
 
-    std::string filename = "Ethane-em-5.wf";
+    //std::string filename = "Ethane-em-5.wf";
+    //WaveFunctionParser waveFunctionParser(filename);
+    //waveFunctionParser.readNuclei();
 
-    WaveFunctionParser waveFunctionParser(filename);
-    waveFunctionParser.readNuclei();
+    //auto ac = waveFunctionParser.getAtomCollection();
 
-    auto ac = waveFunctionParser.getAtomCollection();
-
-    filename = "Ethane-max.ref";
-
-    //Importer importer(filename);
-    //std::cout << importer.getLine(10) << std::endl;
+    std::string filename = "Ethane-max.ref";
     RefFileImporter importer(filename);
 
     auto ac2 = importer.getAtomCollection();
@@ -31,4 +27,12 @@ int main(int argc, char const *argv[]) {
         std::cout << Elements::ElementInfo::symbol(ac2.elementType(i)) << ac2[i].position().transpose() << std::endl;
     }
 
+    //std::vector<int> a = {};//{6,8,10};
+    //a.insert(a.begin()+1,2);
+    //std::cout << a[0] << " " << a[1]<< " " << a[2]<< " " << a[3] << std::endl;
+    auto ecs = importer.getElectronCollections(1);
+    for (int i = 0; i < ecs.getNumberOfParticleCollections(); ++i) {
+        std::cout << ecs.getSpinTypeCollection().spinTypesAsEigenVector().transpose() << std::endl;
+        std::cout << ecs[i].positionsAsEigenVector().transpose() << std::endl;
+    }
 }

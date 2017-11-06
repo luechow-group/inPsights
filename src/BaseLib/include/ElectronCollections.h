@@ -13,8 +13,16 @@ class ElectronCollections : public ParticleCollections{
 public:
     ElectronCollections();
     ElectronCollections(const std::vector<ElectronCollection>& electronCollections);
-    ElectronCollections(const std::vector<ParticleCollection>& particleCollections_,
+    ElectronCollections(const std::vector<ParticleCollection>& particleCollections);
+    ElectronCollections(const std::vector<ParticleCollection>& particleCollections,
                         const SpinTypeCollection& spinTypeCollection);
+
+    ElectronCollection getElectronCollection(long i) const;
+    SpinTypeCollection getSpinTypeCollection() const;
+
+    void insert (const ElectronCollection& electronCollection, long i);
+    virtual void append (const ElectronCollection& electronCollection);
+    void prepend(const ElectronCollection& electronCollection);
 
 private:
     SpinTypeCollection spinTypeCollection_;

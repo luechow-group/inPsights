@@ -22,11 +22,8 @@ public:
     template<typename Out>
     void split(const std::string &s, char delimiter, Out result) const;
 
-
     std::vector<std::string> split(const std::string &s) const;
     std::vector<std::string> split(const std::string &s, char delim) const;
-
-
 
 private:
     template<class OutIt>
@@ -39,30 +36,28 @@ private:
 
 
 
-class Format{
-
-public:
-
-};
-
 class RefFileImporter : public Importer{
 public:
     RefFileImporter(const std::string& filename);
 
     AtomCollection getAtomCollection();
 
-    ElectronCollection getElectronCollection(unsigned long k, unsigned long m);
-    unsigned long getNumberOfMaxima(unsigned long k, unsigned long m);
+    SpinTypeCollection getSpinTypeCollection() const;
+    ParticleCollection getParticleCollection(unsigned long k, unsigned long m) const;
+    ElectronCollection getElectronCollection(unsigned long k, unsigned long m) const;
+    ElectronCollections getElectronCollections(unsigned long k) const;
+
+    unsigned long getNumberOfMaxima(unsigned long k, unsigned long m) const;
+    double getNegativeLogarithmizedProbabilityDensity(unsigned long k, unsigned long m) const;
 
 
 private:
 
     void countSubstructures();
-    unsigned long calculateLine(unsigned long k, unsigned long m);
+    unsigned long calculateLine(unsigned long k, unsigned long m) const;
 
     unsigned long numberOfNuclei_,numberOfElectrons_, numberOfAlphaElectrons_,
             numberOfSuperstructures_, totalNumberOfMaxima_, maximalNumberOfSubstructures;
-
     // line idx, numerOfSubstructures, totalNumberOfMaxima
     std::vector<std::tuple<unsigned long,unsigned long,unsigned long>> substructuresData_;
 };
@@ -70,7 +65,6 @@ private:
 class WfFileImporter : public Importer{
 public:
     WfFileImporter(const std::string& filename);
-
 
 private:
 

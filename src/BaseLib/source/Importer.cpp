@@ -7,6 +7,8 @@
 #include "Importer.h"
 #include "ElementInfo.h"
 
+
+
 Importer::Importer(const std::string &filename)
         : filename_(filename) {
     file_.open(filename);
@@ -65,6 +67,8 @@ void Importer::read_lines(std::istream& is, OutIt dest)
 
 RefFileImporter::RefFileImporter(const std::string &filename)
         : Importer(filename) {
+
+    std::cout << getLine(0) << std::endl;
 
     numberOfNuclei_ = std::stoul(split(getLine(0))[0]);
     numberOfElectrons_ = std::stoul(split(getLine(numberOfNuclei_+2))[10]);
@@ -149,17 +153,33 @@ void RefFileImporter::countSubstructures() {
     }
 }
 
-unsigned long RefFileImporter::calculateLine(unsigned long k, unsigned long m) {
-    assert( k>0 && m>0 );
+unsigned long RefFileImporter::calculateLine(unsigned long k, unsigned long m) const {
+    assert( k > 0 && "k value must be greater than zero");
+    assert( m > 0 && "m value must be greater than zero");
+    assert( k <= numberOfSuperstructures_ && "k value must be smaller than kmax");
+    assert( m <= std::get<1>(substructuresData_[k])  && "m value must be smaller than mmax");
+
     unsigned long start = std::get<0>(substructuresData_[k-1]);
     unsigned long linesToSkip = (m-1)*(numberOfElectrons_+2);
     return start + linesToSkip;
 }
 
-ElectronCollection RefFileImporter::getElectronCollection(unsigned long k, unsigned long m) {
+SpinTypeCollection RefFileImporter::getSpinTypeCollection() const {
+    SpinTypeCollection spinTypeCollection;
+    for (unsigned long i = 0; i < numberOfElectrons_; ++i) {
+        Spin::SpinType spinType;
+        if (i < numberOfAlphaElectrons_) spinType = Spin::SpinType::alpha;
+        else  spinType = Spin::SpinType::beta;
+
+        spinTypeCollection.append(spinType);
+    }
+    return spinTypeCollection;
+}
+
+ParticleCollection RefFileImporter::getParticleCollection(unsigned long k, unsigned long m) const {
 
     unsigned long startLine = calculateLine(k,m)+2;
-    ElectronCollection electronCollection;
+    ParticleCollection particleCollection;
 
     for (unsigned long i = 0; i < numberOfElectrons_; ++i) {
         std::vector<std::string> lineElements = split(getLine(startLine+i));
@@ -167,12 +187,38 @@ ElectronCollection RefFileImporter::getElectronCollection(unsigned long k, unsig
         double y = std::stod(lineElements[1]);
         double z = std::stod(lineElements[2]);
 
-        Spin::SpinType spinType;
-        if (i < numberOfAlphaElectrons_) spinType = Spin::SpinType::alpha;
-        else  spinType = Spin::SpinType::beta;
-
-        electronCollection.append(Electron(Particle(x,y,z),spinType));
+        particleCollection.append(Particle(x,y,z));
     }
-    
-    return electronCollection;
+    return particleCollection;
 }
+
+
+
+
+unsigned long RefFileImporter::getNumberOfMaxima(unsigned long k, unsigned long m) const {
+    unsigned long startLine = calculateLine(k,m)+2;
+    std::vector<std::string> lineElements = split(getLine(startLine));
+    return std::stoul(lineElements[6]);
+}
+
+double RefFileImporter::getNegativeLogarithmizedProbabilityDensity(unsigned long k, unsigned long m) const {
+    unsigned long startLine = calculateLine(k,m)+2;
+    std::vector<std::string> lineElements = split(getLine(startLine));
+    return std::stod(lineElements[4]);
+}
+
+ElectronCollection RefFileImporter::getElectronCollection(unsigned long k, unsigned long m) const {
+    return ElectronCollection(this->getParticleCollection(k,m), this->getSpinTypeCollection());
+}
+
+ElectronCollections RefFileImporter::getElectronCollections(unsigned long k) const {
+    unsigned long numberOfSubstructures = std::get<1>(substructuresData_[k]);
+
+    std::vector<ParticleCollection> particleCollectionVector;
+    for (int m = 1; m <= numberOfSubstructures; ++m) {
+        particleCollectionVector.emplace_back(this->getParticleCollection(k,m));
+    }
+    return ElectronCollections(particleCollectionVector,this->getSpinTypeCollection());
+
+}
+

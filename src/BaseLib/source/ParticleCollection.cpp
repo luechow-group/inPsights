@@ -10,7 +10,7 @@ ParticleCollection::ParticleCollection()
 {}
 
 ParticleCollection::ParticleCollection(const VectorXd &positions) {
-    long size = positions.size();
+    unsigned long size = (unsigned long) positions.size();
     assert(size >= 0 && "Vector is empty");
     assert(size%3 == 0 && "Vector is not 3N-dimensional");
 
@@ -22,14 +22,14 @@ unsigned long ParticleCollection::numberOfParticles() const {
     return numberOfParticles_;
 }
 
-long ParticleCollection::calculateStartIndex(long i) {
+long ParticleCollection::calculateStartIndex(long i) const {
     assert(i <= long(numberOfParticles_) && "index is out of bounds");
     assert(i >= -long(numberOfParticles_) && "reverse index is out of bounds");
     if (i >= 0) return i*3;
     return (long(numberOfParticles_) + i)*3;
 }
 
-Particle ParticleCollection::operator[](long i) {
+Particle ParticleCollection::operator[](long i) const {
     assert(i < long(numberOfParticles_) && "index is out of bounds");
     long start = calculateStartIndex(i);
     Vector3d position = positions_.segment(start,3);
@@ -55,6 +55,6 @@ void ParticleCollection::append(const Particle &particle) {
     this->insert(particle,numberOfParticles_);
 }
 
-Eigen::VectorXd ParticleCollection::positionsAsEigenVector() {
+Eigen::VectorXd ParticleCollection::positionsAsEigenVector() const {
     return positions_;
 }
