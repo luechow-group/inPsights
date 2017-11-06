@@ -51,6 +51,6 @@ void SpinTypeCollection::setSpinType(long i, Spin::SpinType spinType) {
     spinTypes_[i] = int(spinType);
 }
 
-VectorXi SpinTypeCollection::spinTypesAsEigenVector() {
+VectorXi SpinTypeCollection::spinTypesAsEigenVector() const {
     return spinTypes_;
 }

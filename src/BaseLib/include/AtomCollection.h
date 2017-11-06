@@ -24,11 +24,10 @@ public:
     void prepend(const Atom& atom);
 
 
-    void addAtom(const Elements::ElementType& elementType,
-                 const double x, const double y, const double z);
+    void addAtom(double x, double y, double z,
+                 const Elements::ElementType &elementType = Elements::ElementType::none);
     
-    void addAtom(const Elements::ElementType& elementType,
-                 const Vector3d& position );
+    void addAtom(const Vector3d &position, const Elements::ElementType &elementType);
 };
 
 #endif //AMOLQCGUI_ATOMCOLLECTION_H

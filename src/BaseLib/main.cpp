@@ -8,15 +8,27 @@
 
 #include "ChemicalSystem.h"
 #include "WaveFunctionParser.h"
+#include "Importer.h"
+#include <ElementInfo.h>
 
 int main(int argc, char const *argv[]) {
 
-  std::string filename = "t.wf";
+    std::string filename = "Ethane-em-5.wf";
 
-  WaveFunctionParser waveFunctionParser(filename);
-  waveFunctionParser.readNuclei();
+    WaveFunctionParser waveFunctionParser(filename);
+    waveFunctionParser.readNuclei();
 
-  auto ac = waveFunctionParser.getAtomCollection();
+    auto ac = waveFunctionParser.getAtomCollection();
 
-  std::cout << ac.positionsAsEigenVector() << std::endl;
+    filename = "Ethane-max.ref";
+
+    //Importer importer(filename);
+    //std::cout << importer.getLine(10) << std::endl;
+    RefFileImporter importer(filename);
+
+    auto ac2 = importer.getAtomCollection();
+    for (int i = 0; i < ac2.numberOfParticles(); ++i) {
+        std::cout << Elements::ElementInfo::symbol(ac2.elementType(i)) << ac2[i].position().transpose() << std::endl;
+    }
+
 }

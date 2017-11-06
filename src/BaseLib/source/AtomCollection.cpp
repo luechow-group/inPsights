@@ -33,14 +33,11 @@ void AtomCollection::append(const Atom& atom) {
 }
 
 
-void AtomCollection::addAtom(const Elements::ElementType &elementType,
-                             const double x, const double y, const double z) {
+void AtomCollection::addAtom(double x, double y, double z, const Elements::ElementType &elementType) {
   append(Atom(Eigen::Vector3d(x,y,z), elementType));
 };
 
-void AtomCollection::addAtom(const Elements::ElementType &elementType,
-                             const Eigen::Vector3d &position) {
+void AtomCollection::addAtom(const Vector3d &position, const Elements::ElementType &elementType) {
   append(Atom(position, elementType));
 };
-
 

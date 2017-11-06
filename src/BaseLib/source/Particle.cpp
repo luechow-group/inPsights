@@ -7,8 +7,10 @@
 using namespace Eigen;
 
 Particle::Particle(const Vector3d & position)
-        : position_(position)
-{}
+        : position_(position) {}
+
+Particle::Particle(double x, double y, double z)
+        : position_(x,y,z) {}
 
 Vector3d Particle::position() const {
     return position_;

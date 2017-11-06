@@ -11,9 +11,13 @@
 
 class ElectronCollection : public ParticleCollection, public SpinTypeCollection{
 public:
-    ElectronCollection();
+    ElectronCollection() = default;
     explicit ElectronCollection(const VectorXd& positions);
-    explicit ElectronCollection(const VectorXd& positions, const VectorXi& spinTypes);
+    ElectronCollection(const VectorXd& positions, const VectorXi& spinTypes);
+
+    ElectronCollection(const ParticleCollection& ParticleCollection,
+                       const SpinTypeCollection& spinTypeCollection);
+
 
     Electron electron(long i);
 

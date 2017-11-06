@@ -5,8 +5,7 @@
 #ifndef MAXREFPARSER_H
 #define MAXREFPARSER_H
 
-#include <string>
-#include "fstream"
+#include <fstream>
 
 #include "AtomCollection.h"
 

@@ -10,6 +10,7 @@
 class Particle {
 public:
     explicit Particle(const Eigen::Vector3d& position);
+    Particle(double x, double y, double z);
 
     Eigen::Vector3d position() const;
     void position(const Eigen::Vector3d& position);

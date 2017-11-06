@@ -22,7 +22,6 @@ static std::string extractRegExMatchingSubstring(const std::string str, std::reg
   std::smatch match;
 
   if (std::regex_search(str.begin(), str.end(), match, rgx)) {
-    std::cout << match[1];
     return match[1];
   }
   else return  "not found";
@@ -121,7 +120,7 @@ void WaveFunctionParser::readNuclei() {
       z /= AU::length*1e10;
     }
 
-    atomCollection_.addAtom(elementType,x,y,z);
+      atomCollection_.addAtom(x, y, z, elementType);
   }
 }
 

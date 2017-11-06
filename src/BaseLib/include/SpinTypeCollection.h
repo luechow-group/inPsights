@@ -23,7 +23,7 @@ public:
 
     void setSpinType(long i, Spin::SpinType spinType);
 
-    Eigen::VectorXi spinTypesAsEigenVector();
+    Eigen::VectorXi spinTypesAsEigenVector() const;
 
 private:
     unsigned long numberOfSpinTypes_;
