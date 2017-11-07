@@ -38,7 +38,7 @@ class SubstructureDataEntry{
 public:
     SubstructureDataEntry(unsigned long startingLine,
                           unsigned long numberOfSubstructures,
-                          unsigned long totalNumberOfMaxima)
+                          unsigned long totalNumberOfMaxima = 1)
             : startingLine_(startingLine),
               numberOfSubstructures_(numberOfSubstructures),
               totalNumberOfMaxima_(totalNumberOfMaxima) {};
@@ -46,14 +46,6 @@ public:
     unsigned long startingLine_, numberOfSubstructures_, totalNumberOfMaxima_;
 };
 
-
-
-
-
-
-class PathFileImporter : public Importer{
-
-};
 
 class WfFileImporter : public Importer{
 public:

@@ -12,6 +12,7 @@ ParticleCollection AmolqcImporter::importParticleCollectionBlock(unsigned long s
                                                                  unsigned long numberOfParticles) const {
     ParticleCollection particleCollection;
     for (unsigned long i = 0; i < numberOfParticles; ++i) {
+        std::cout << getLine(startLineIdx+i);
         std::vector<std::string> lineElements = split(getLine(startLineIdx+i));
         double x = std::stod(lineElements[startLineElement+0]);
         double y = std::stod(lineElements[startLineElement+1]);
@@ -23,8 +24,8 @@ ParticleCollection AmolqcImporter::importParticleCollectionBlock(unsigned long s
 }
 
 SpinTypeCollection
-AmolqcImporter::createSpinTypeCollection(unsigned long numberOfAlphaElectrons,
-                                         unsigned long numberOfBetaElectrons) const {
+AmolqcImporter::getSpinTypeCollection(unsigned long numberOfAlphaElectrons,
+                                      unsigned long numberOfBetaElectrons) const {
     SpinTypeCollection spinTypeCollection;
     for (unsigned long i = 0; i < numberOfAlphaElectrons+numberOfBetaElectrons; ++i) {
         Spin::SpinType spinType;
@@ -35,7 +36,6 @@ AmolqcImporter::createSpinTypeCollection(unsigned long numberOfAlphaElectrons,
     }
     return spinTypeCollection;
 }
-
 
 std::vector<SubstructureDataEntry>
 AmolqcImporter::countSubstructures(unsigned long startLineIdx, unsigned long blockLength) const {
@@ -80,13 +80,11 @@ AmolqcImporter::countSubstructures(unsigned long startLineIdx, unsigned long blo
         currentLine = getLine(currentLineIdx);
         sumOfMaximaNumbersTillCurrent = sumOfMaximaNumbersWithCurrent;
     }
-
     // add last superstructure
     if (k > 0){
         m_last;
         substructuresData.emplace_back(
                 SubstructureDataEntry(firstLineOfSuperstructure, m_last, sumOfMaximaNumbersTillCurrent));
     }
-
     return substructuresData;
 }

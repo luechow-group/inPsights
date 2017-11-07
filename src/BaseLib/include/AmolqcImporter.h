@@ -7,6 +7,8 @@
 
 #include "Importer.h"
 
+
+
 class AmolqcImporter : public Importer{
 public:
     AmolqcImporter(const std::string& filename);
@@ -15,13 +17,14 @@ public:
     ParticleCollection importParticleCollectionBlock(unsigned long startLineIdx,
                                                      unsigned long startLineElement,
                                                      unsigned long numberOfParticles) const;
-    SpinTypeCollection createSpinTypeCollection(unsigned long numberOfAlphaElectrons,
-                                                unsigned long numberOfBetaElectrons) const;
+    SpinTypeCollection getSpinTypeCollection(unsigned long numberOfAlphaElectrons,
+                                             unsigned long numberOfBetaElectrons) const;
 
     std::vector<SubstructureDataEntry> countSubstructures(unsigned long startLineIdx,
                                                           unsigned long blockLength) const;
 
-private:
+
+
 };
 
 #endif //AMOLQCGUI_AMOLQCIMPORTER_H

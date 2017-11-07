@@ -37,7 +37,6 @@ AtomCollection RefFileImporter::getAtomCollection() {
         double z = std::stod(lineElements[4]);
         atomCollection.addAtom(x,y,z,elementType);
     }
-
     return atomCollection;
 }
 
@@ -45,7 +44,7 @@ unsigned long RefFileImporter::calculateLine(unsigned long k, unsigned long m) c
     assert( k > 0 && "k value must be greater than zero");
     assert( m > 0 && "m value must be greater than zero");
     assert( k <= numberOfSuperstructures_ && "k value must be smaller than kmax");
-    assert( m <= substructuresData_[k].startingLine_  && "m value must be smaller than mmax");
+    assert( m <= substructuresData_[k].numberOfSubstructures_  && "m value must be smaller than mmax");
 
     unsigned long start = substructuresData_[k-1].startingLine_;
     unsigned long linesToSkip = (m-1)*(numberOfElectrons_+2);
@@ -70,18 +69,17 @@ double RefFileImporter::getNegativeLogarithmizedProbabilityDensity(unsigned long
 }
 
 SpinTypeCollection RefFileImporter::getSpinTypeCollection() const {
-    return AmolqcImporter::createSpinTypeCollection(numberOfAlphaElectrons_,numberOfBetaElectrons_);
+    return AmolqcImporter::getSpinTypeCollection(numberOfAlphaElectrons_, numberOfBetaElectrons_);
 }
 
-ElectronCollection RefFileImporter::getElectronCollection(unsigned long k, unsigned long m) const {
+ElectronCollection RefFileImporter::getMaximaStructure(unsigned long k, unsigned long m) const {
     return ElectronCollection(this->getParticleCollection(k,m), this->getSpinTypeCollection());
 }
 
-ElectronCollections RefFileImporter::getElectronCollections(unsigned long k) const {
+ElectronCollections RefFileImporter::getAllSubstructures(unsigned long k) const {
     unsigned long numberOfSubstructures = substructuresData_[k].numberOfSubstructures_;
-
     std::vector<ParticleCollection> particleCollectionVector;
-    for (int m = 1; m <= numberOfSubstructures; ++m) {
+    for (unsigned long m = 1; m <= numberOfSubstructures; ++m) {
         particleCollectionVector.emplace_back(this->getParticleCollection(k,m));
     }
     return ElectronCollections(particleCollectionVector,this->getSpinTypeCollection());
