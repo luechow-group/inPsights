@@ -64,7 +64,7 @@ set(SOURCE_FILES
         source/MolecularGeometry3D.cpp
         )
 
-file(GLOB RESOURCE_FILES "resources/*.*")
+file(GLOB_RECURSE RESOURCE_FILES resources/*.*)
 file(COPY ${RESOURCE_FILES} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
 add_executable("${PROJECT_NAME}_mainStringMethod" ${SOURCE_FILES} ${HEADER_FILES} mainStringMethodGUI.cpp)

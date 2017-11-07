@@ -38,7 +38,7 @@ int main(int argc, char const *argv[]) {
         std::cout << ecs[i].positionsAsEigenVector().transpose() << std::endl;
     }
 
-    std::string filename2 = "DiboraneTestPath.300";
+    std::string filename2 = "Diborane-Paths.300";
     OptimizationPathFileImporter importer2(filename2,1);
 
     auto ecs2 = importer2.getPath(1);
