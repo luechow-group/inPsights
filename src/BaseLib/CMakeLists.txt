@@ -28,22 +28,47 @@ find_package(Qt5 REQUIRED COMPONENTS
 set(HEADER_FILES
         include/ElementColor.h
         include/ElementInfo.h
-        include/ElementTypes.h
         include/pElementInfo.h
+        include/ElementType.h
+        include/ElementTypeCollection.h
         include/NaturalConstants.h
         #include/ChemicalSystem.h
         include/WaveFunctionParser.h
         include/Atom.h
         include/AtomCollection.h
+        include/Particle.h
+        include/ParticleCollection.h
+        include/ParticleCollections.h
+        include/Electron.h
+        include/ElectronCollection.h
+        include/ElectronCollections.h
+        include/SpinType.h
+        include/SpinTypeCollection.h
+        include/Importer.h
+        include/RefFileImporter.h
+        include/AmolqcImporter.h
+        include/OptimizationPathFileImporter.h
         )
 
 set(SOURCE_FILES
         source/pElementInfo.cpp
         source/ElementInfo.cpp
+        source/ElementTypeCollection.cpp
         #source/ChemicalSystem.cpp
         source/WaveFunctionParser.cpp
         source/Atom.cpp
         source/AtomCollection.cpp
+        source/Particle.cpp
+        source/ParticleCollection.cpp
+        source/ParticleCollections.cpp
+        source/Electron.cpp
+        source/ElectronCollection.cpp
+        source/ElectronCollections.cpp
+        source/SpinTypeCollection.cpp
+        source/Importer.cpp
+        source/RefFileImporter.cpp
+        source/AmolqcImporter.cpp
+        source/OptimizationPathFileImporter.cpp
         )
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES} include/Atom.h)

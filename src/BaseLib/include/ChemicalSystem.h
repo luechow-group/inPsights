@@ -47,20 +47,6 @@ private:
   unsigned nucleusNumber;
 };
 
-class ElectronCollection: PositionCollection  {
-  ElectronCollection(const Eigen::VectorXd &ec)
-    : PositionCollection(ec) {};
-
-  ElectronCollection(const unsigned n)
-    : PositionCollection(n) {};
-
-  ElectronCollection()
-    : PositionCollection() {};
-
-private:
-  unsigned electronNumber;
-};
-
 // can include several molecular geometries or sequences of them
 class ChemicalSystem {
 

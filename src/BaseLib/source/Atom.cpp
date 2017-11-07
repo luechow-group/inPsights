@@ -4,7 +4,21 @@
 
 #include "Atom.h"
 
-Atom::Atom(Elements::ElementType elementType, Eigen::Vector3d coordinates)
-        : elementType_(elementType),
-          coordinates_(coordinates)
-{};
+using namespace Eigen;
+using namespace Elements;
+
+Atom::Atom(const Vector3d& position, const ElementType& elementType)
+        : Particle(position),
+          elementType_(elementType) {};
+
+Atom::Atom(double x, double y, double z, const ElementType& elementType)
+        : Particle(x, y, z),
+          elementType_(elementType) {};
+
+Atom::Atom(const Particle &particle, const ElementType& elementType)
+        : Particle(particle),
+          elementType_(elementType) {}
+
+Elements::ElementType Atom::elementType() const {
+    return elementType_;
+};

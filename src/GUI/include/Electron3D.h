@@ -7,17 +7,17 @@
 
 #include "Sphere.h"
 #include "ElementInfo.h"
+#include "SpinType.h"
 
+// add QColorFromSpinType method to the namespace Spin declared in BaseLib
 namespace Spin {
-    enum SpinType { Alpha, Beta, None };
-
     static QColor QColorFromSpinType(const SpinType& spinType){
       switch (spinType){
-        case Alpha:
+          case SpinType::alpha:
           return Qt::red;
-        case Beta:
+        case SpinType::beta:
           return Qt::blue;
-        case None:
+        case SpinType::none:
           return Qt::black;
       }
     }

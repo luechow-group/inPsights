@@ -1,23 +1,43 @@
 
 #include "AtomCollection.h"
 
-void AtomCollection::addAtom(const Elements::ElementType &elementType,
-                             const double x, const double y, const double z) {
-  atoms_.emplace_back(Atom(elementType, Eigen::Vector3d(x,y,z)));
-};
+using namespace Eigen;
 
-void AtomCollection::addAtom(const Elements::ElementType &elementType,
-                             const Eigen::Vector3d &coordinates) {
-  atoms_.emplace_back(Atom(elementType, coordinates));
-};
+AtomCollection::AtomCollection(const VectorXd &positions)
+        : ParticleCollection(positions),
+          ElementTypeCollection(ParticleCollection::numberOfParticles())
+{}
 
-Eigen::VectorXd AtomCollection::asEigenVector() {
+AtomCollection::AtomCollection(const VectorXd &positions, const VectorXi &spinTypes)
+        : ParticleCollection(positions),
+          ElementTypeCollection(spinTypes)
+{}
 
-  Eigen::VectorXd coordinates(atoms_.size() * 3);
-
-  for (std::vector<Atom>::const_iterator it = atoms_.begin(); it != atoms_.end(); ++it) {
-    coordinates.segment((it - atoms_.begin())*3, 3) = (*it).coordinates();
-  }
-
-  return coordinates;
+Atom AtomCollection::atom(long i) {
+    Particle particle = (*this)[i];
+    return Atom(particle, elementType(i));
 }
+
+void AtomCollection::insert(const Atom& atom, long i) {
+    ParticleCollection::insert(static_cast<Particle>(atom),i);
+    ElementTypeCollection::insert(atom.elementType(),i);
+    assert(numberOfParticles() == numberOfElementTypes());
+}
+
+void AtomCollection::prepend(const Atom& atom) {
+    this->insert(atom,0);
+}
+
+void AtomCollection::append(const Atom& atom) {
+    this->insert(atom, ParticleCollection::numberOfParticles());
+}
+
+
+void AtomCollection::addAtom(double x, double y, double z, const Elements::ElementType &elementType) {
+  append(Atom(Eigen::Vector3d(x,y,z), elementType));
+};
+
+void AtomCollection::addAtom(const Vector3d &position, const Elements::ElementType &elementType) {
+  append(Atom(position, elementType));
+};
+

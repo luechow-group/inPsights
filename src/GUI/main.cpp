@@ -17,7 +17,7 @@
 #include "MolecularGeometry3D.h"
 
 #include "ElementInfo.h"
-#include "ElementTypes.h"
+#include "ElementType.h"
 #include "Sphere.h"
 #include "Cylinder.h"
 #include "DividedCylinder.h"
@@ -292,7 +292,7 @@ int main(int argc, char *argv[]) {
     Eigen::Vector3d vec3d = tsGuessGeom.segment(j * 3, 3);
     QVector3D qVector3D(vec3d(0), vec3d(1), vec3d(2));
 
-    Electron3D* e = new Electron3D(root, qVector3D, Spin::None);
+    Electron3D* e = new Electron3D(root, qVector3D, Spin::SpinType::none);
     e->setRadius(0.025f);
     e->setAlpha(1.0);
   }
@@ -310,10 +310,10 @@ int main(int argc, char *argv[]) {
 
     Electron3D *e;
     if ( j < (xA.rows()/3)/2 ){
-      e = new Electron3D(root,qVector3D,Spin::Alpha);
+      e = new Electron3D(root,qVector3D,Spin::SpinType::alpha);
     }
     else {
-      e = new Electron3D(root, qVector3D, Spin::Beta);
+      e = new Electron3D(root, qVector3D, Spin::SpinType::beta);
     }
 
 
@@ -327,7 +327,7 @@ int main(int argc, char *argv[]) {
                 , 0, false);
       QVector3D shift;
 
-      if(e->getSpinType() == Spin::Alpha) shift = QVector3D(0.0f,0.07f,0.07f);
+      if(e->getSpinType() == Spin::SpinType::alpha) shift = QVector3D(0.0f,0.07f,0.07f);
       else shift = QVector3D(-0.0f,-0.07f,-0.07f);
 
         textTransform->setTranslation(qVector3D+shift);

@@ -1,8 +1,8 @@
-#ifndef DELIB_PELEMENTINFO_H
-#define DELIB_PELEMENTINFO_H
+#ifndef AMOLQCGUI_PELEMENTINFO_H
+#define AMOLQCGUI_PELEMENTINFO_H
 
 #include "NaturalConstants.h"
-#include "ElementTypes.h"
+#include "ElementType.h"
 #include "ElementColor.h"
 
 namespace Elements {
@@ -155,4 +155,4 @@ namespace Elements {
 
 } // namespace Elements
 
-#endif // DELIB_PELEMENTINFO_H
+#endif // AMOLQCGUI_PELEMENTINFO_H

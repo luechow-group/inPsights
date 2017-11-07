@@ -9,17 +9,19 @@
 
 MolecularGeometry3D::MolecularGeometry3D(Qt3DCore::QEntity *root, AtomCollection atomCollection) {
 
-  std::vector<Atom> atoms = atomCollection.atoms();
+  /*TODO Refactor*/
   std::vector<Atom3D> atoms3D;
 
   // Draw atoms
-  for(std::vector<Atom>::const_iterator atomIt = atoms.begin(); atomIt != atoms.end(); ++ atomIt){
-    Eigen::Vector3d vec= (*atomIt).coordinates();
-    atoms3D.emplace_back(Atom3D(root,QVector3D(float(vec[0]),float(vec[1]),float(vec[2])), (*atomIt).elementType()));
+  for (long i = 0; i < atomCollection.numberOfParticles(); ++i) {
+    Eigen::Vector3d vec= atomCollection[i].position();
+    atoms3D.emplace_back(Atom3D(root,
+                                QVector3D(float(vec[0]),float(vec[1]),float(vec[2])),
+                                atomCollection.elementType(i)));
   }
 
-  float bondDrawingLimit = 1.60*1e-10/AU::length;
   // Draw bonds
+  float bondDrawingLimit = 1.60*1e-10/AU::length;
   for(std::vector<Atom3D>::const_iterator it1 = atoms3D.begin(); it1 != atoms3D.end(); ++ it1){
     for(std::vector<Atom3D>::const_iterator it2 = it1+1; it2 != atoms3D.end(); ++ it2){
       if( ((*it1).getLocation()-(*it2).getLocation()).length() < bondDrawingLimit) {
