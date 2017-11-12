@@ -32,28 +32,31 @@
 #include "Electron3D.h"
 #include "Polyline.h"
 
-#include <numeric>
+#include "WfFileImporter.h"
 
 int main(int argc, char *argv[]) {
-    std::cout << "Hello" << std::endl;
+
+    std::string filename = "Ethane-em-5.wf";
+    WfFileImporter wfFileImporter(filename);
+    auto ac = wfFileImporter.getAtomCollection();
 
 
     OptimizationPathFileImporter importer("Diborane-Paths.300",1);
-
     auto ecs = importer.getPath(1);
+
+
+    /*
+    for (int i = 0; i < ac.numberOfParticles(); ++i) {
+        std::cout << Elements::ElementInfo::symbol(ac.elementType(i)) << ac[i].position().transpose() << std::endl;
+    }
 
     std::cout << ecs.getSpinTypeCollection().spinTypesAsEigenVector().transpose() << std::endl;
     for (int i = 0; i < ecs.getNumberOfParticleCollections(); ++i) {
         std::cout << ecs[i].positionsAsEigenVector().transpose() << std::endl;
     }
+    */
 
-    std::string str = "Hello World!";
-    std::vector<std::string> vec(10,str);
-    std::string a = std::accumulate(vec.begin(), vec.end(), std::string(""));
-    std::cout << a << std::endl;
-
-/*
-
+    /*
     //MolecularGeometry3D molecularGeometry3D (root, waveFunctionParser.getAtomCollection());
 
     Qt3DCore::QEntity *root = new Qt3DCore::QEntity();
@@ -81,6 +84,7 @@ int main(int argc, char *argv[]) {
     manipulator->setLookSpeed(180.f);
     manipulator->setCamera(camera);
 
-    view->setRootEntity(scene);*/
+    view->setRootEntity(scene);
+    */
 
 };

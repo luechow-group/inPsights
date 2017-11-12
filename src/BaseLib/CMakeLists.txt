@@ -33,7 +33,7 @@ set(HEADER_FILES
         include/ElementTypeCollection.h
         include/NaturalConstants.h
         #include/ChemicalSystem.h
-        include/WaveFunctionParser.h
+        include/WfFileImporter.h
         include/Atom.h
         include/AtomCollection.h
         include/Particle.h
@@ -55,7 +55,7 @@ set(SOURCE_FILES
         source/ElementInfo.cpp
         source/ElementTypeCollection.cpp
         #source/ChemicalSystem.cpp
-        source/WaveFunctionParser.cpp
+        source/WfFileImporter.cpp
         source/Atom.cpp
         source/AtomCollection.cpp
         source/Particle.cpp

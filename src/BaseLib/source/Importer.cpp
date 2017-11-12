@@ -4,6 +4,7 @@
 
 #include <iterator>
 #include <vector>
+#include <numeric>
 #include "Importer.h"
 #include "ElementInfo.h"
 
@@ -45,6 +46,20 @@ std::vector<std::string> Importer::split(const std::string &s, char delim) const
     std::vector<std::string> elems;
     split(s, delim, std::back_inserter(elems));
     return elems;
+}
+
+std::string Importer::strip(const std::string &s) const {
+    auto vec = split(s);
+    return std::accumulate(vec.begin(), vec.end(), std::string(""));
+}
+
+std::string Importer::strip(const std::string &s, char delim) const {
+
+    auto vec = split(s,delim);
+    for (std::vector<std::string>::iterator it = vec.begin(); it != vec.end(); it++){
+        if( *it == std::to_string(delim)) vec.erase(it);
+    }
+    return std::accumulate(vec.begin(), vec.end(), std::string(""));
 }
 
 class Line {

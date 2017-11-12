@@ -26,7 +26,7 @@
 #include "Electron3D.h"
 #include "Polyline.h"
 
-#include "WaveFunctionParser.h"
+#include "WfFileImporter.h"
 #include "Atom.h"
 
 #include "ArcLengthParametrizedBSpline.h"
@@ -299,7 +299,7 @@ int main(int argc, char *argv[]) {
 
   // draw molecular geometry
   std::cout << "wf:" << ElectronicWaveFunction::getInstance().getFileName() << std::endl;
-  WaveFunctionParser waveFunctionParser(ElectronicWaveFunction::getInstance().getFileName());
+  WfFileImporter waveFunctionParser(ElectronicWaveFunction::getInstance().getFileName());
   waveFunctionParser.readNuclei();
   MolecularGeometry3D molecularGeometry3D (root, waveFunctionParser.getAtomCollection());
 

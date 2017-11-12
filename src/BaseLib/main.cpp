@@ -7,21 +7,22 @@
 #include <string>
 
 #include "ChemicalSystem.h"
-#include "WaveFunctionParser.h"
+#include "WfFileImporter.h"
 #include "Importer.h"
 #include <ElementInfo.h>
 
 #include "RefFileImporter.h"
 #include "OptimizationPathFileImporter.h"
 
+
 int main(int argc, char const *argv[]) {
 
-    //std::string filename = "Ethane-em-5.wf";
-    //WaveFunctionParser waveFunctionParser(filename);
+    std::string filename = "Ethane-em-5.wf";
+    WfFileImporter waveFunctionParser(filename);
     //waveFunctionParser.readNuclei();
-    //auto ac = waveFunctionParser.getAtomCollection();
+    auto ac = waveFunctionParser.getAtomCollection();
 
-    std::string filename = "Ethane-max.ref";
+    filename = "Ethane-max.ref";
     RefFileImporter importer(filename);
 
     auto ac2 = importer.getAtomCollection();

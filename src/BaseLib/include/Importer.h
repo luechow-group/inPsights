@@ -25,12 +25,16 @@ public:
     std::vector<std::string> split(const std::string &s) const;
     std::vector<std::string> split(const std::string &s, char delim) const;
 
+    std::string strip(const std::string &s) const;
+    std::string strip(const std::string &s, char delim) const;
+
 private:
     template<class OutIt>
     void read_lines(std::istream& is, OutIt dest);
 
     std::string filename_;
     std::ifstream file_;
+protected:
     std::vector<std::string> lines_;
 };
 
@@ -44,15 +48,6 @@ public:
               totalNumberOfMaxima_(totalNumberOfMaxima) {};
 
     unsigned long startingLine_, numberOfSubstructures_, totalNumberOfMaxima_;
-};
-
-
-class WfFileImporter : public Importer{
-public:
-    WfFileImporter(const std::string& filename);
-
-private:
-
 };
 
 #endif //AMOLQCGUI_IMPORTER_H
