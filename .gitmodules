@@ -4,6 +4,6 @@
 [submodule "src/Externals/BSplines"]
     path = src/Externals/BSplines
     url = git@git.rwth-aachen.de:michael.heuer/BSplines.git
-[submodule "src/Externals/CppNumericalSolvers"]
+[submodule "src/Externals/cppoptlib"]
 	path = src/Externals/cppoptlib
 	url = https://github.com/MonteCarloMichael/CppNumericalSolvers.git
