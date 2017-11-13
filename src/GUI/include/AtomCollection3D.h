@@ -5,12 +5,12 @@
 #ifndef AMOLQCGUI_MOLECULARGEOMETRYIMPORTER_H
 #define AMOLQCGUI_MOLECULARGEOMETRYIMPORTER_H
 
-#include <AtomCollection.h>
 #include "Abstract3dObject.h"
+#include "AtomCollection.h"
 
-class MolecularGeometry3D{
+class AtomCollection3D{
 public:
-    MolecularGeometry3D(Qt3DCore::QEntity *root,AtomCollection atomCollection);
+    AtomCollection3D(Qt3DCore::QEntity *root, const AtomCollection &atomCollection);
 };
 
 #endif //AMOLQCGUI_MOLECULARGEOMETRYIMPORTER_H

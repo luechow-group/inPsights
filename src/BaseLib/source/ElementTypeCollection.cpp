@@ -21,7 +21,7 @@ ElementTypeCollection::ElementTypeCollection(const VectorXi& elementTypes)
     elementTypes_ = elementTypes;
 }
 
-Elements::ElementType ElementTypeCollection::elementType(long i) {
+Elements::ElementType ElementTypeCollection::elementType(long i) const {
     return  Elements::ElementType(elementTypes_[i]);
 }
 

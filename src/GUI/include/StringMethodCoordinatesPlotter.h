@@ -26,14 +26,14 @@ public:
       std::vector<std::vector<QVector3D>> pointsList(reducedDim/3);
 
       for (unsigned i = 0; i < resolution; ++i) {
-        double u = double(i) / double(resolution - 1);
-        Eigen::VectorXd evalResult = arcLengthParametrizedBSpline.reducedEvaluate(u, 0);
+            double u = double(i) / double(resolution - 1);
+            Eigen::VectorXd evalResult = arcLengthParametrizedBSpline.reducedEvaluate(u, 0);
 
-        for (int j = 0; j < pointsList.size(); ++j) {
-          auto tmp = evalResult.segment(j*3,3);
-          pointsList[j].push_back(QVector3D(float(tmp(0)),float(tmp(1)),float(tmp(2))));
+            for (int j = 0; j < pointsList.size(); ++j) {
+                auto tmp = evalResult.segment(j*3,3);
+                pointsList[j].push_back(QVector3D(float(tmp(0)),float(tmp(1)),float(tmp(2))));
+            }
         }
-      }
 
       /* //markers for knots
       Eigen::VectorXd U = arcLengthParametrizedBSpline.getKnotVector();

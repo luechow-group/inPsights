@@ -11,15 +11,13 @@
 class ParticleCollections{
 public:
     ParticleCollections();
-    ParticleCollections(const std::vector<ParticleCollection> &particleCollections);
+    explicit ParticleCollections(const std::vector<ParticleCollection> &particleCollections);
 
     ParticleCollection operator[](long i) const;
 
     void insert (const ParticleCollection& particleCollection, long i);
     void append (const ParticleCollection& particleCollection);
     void prepend(const ParticleCollection& particleCollection);
-
-    //TODO remove: std::vector<ParticleCollection>::const_iterator begin() const { return particleCollections_.begin(); };
 
     std::vector<ParticleCollection> getParticleCollections() const;
 

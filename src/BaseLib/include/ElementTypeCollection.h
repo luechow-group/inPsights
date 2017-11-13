@@ -13,7 +13,7 @@ public:
     explicit ElementTypeCollection(long size = 0);
     explicit ElementTypeCollection(const Eigen::VectorXi& elementTypes);
 
-    Elements::ElementType elementType(long i);
+    Elements::ElementType elementType(long i) const;
 
     void insert(Elements::ElementType elementType, long i);
     void append(Elements::ElementType elementType);

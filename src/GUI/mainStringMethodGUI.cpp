@@ -14,7 +14,7 @@
 #include <QtWidgets/QHBoxLayout>
 #include <Qt3DExtras>
 
-#include "MolecularGeometry3D.h"
+#include "AtomCollection3D.h"
 
 #include "ElementInfo.h"
 #include "ElementType.h"
@@ -301,7 +301,7 @@ int main(int argc, char *argv[]) {
   std::cout << "wf:" << ElectronicWaveFunction::getInstance().getFileName() << std::endl;
   WfFileImporter waveFunctionParser(ElectronicWaveFunction::getInstance().getFileName());
   waveFunctionParser.readNuclei();
-  MolecularGeometry3D molecularGeometry3D (root, waveFunctionParser.getAtomCollection());
+  AtomCollection3D molecularGeometry3D (root, waveFunctionParser.getAtomCollection());
 
   // draw electrons
   for (int j = 0; j < ElectronicWaveFunction::getInstance().getNumberOfElectrons() ; ++j) {

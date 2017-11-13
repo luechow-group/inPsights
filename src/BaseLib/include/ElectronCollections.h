@@ -12,8 +12,8 @@
 class ElectronCollections : public ParticleCollections{
 public:
     ElectronCollections();
-    ElectronCollections(const std::vector<ElectronCollection>& electronCollections);
-    ElectronCollections(const std::vector<ParticleCollection>& particleCollections);
+    explicit ElectronCollections(const std::vector<ElectronCollection>& electronCollections);
+    explicit ElectronCollections(const std::vector<ParticleCollection>& particleCollections);
     ElectronCollections(const std::vector<ParticleCollection>& particleCollections,
                         const SpinTypeCollection& spinTypeCollection);
 

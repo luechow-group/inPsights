@@ -48,7 +48,10 @@ set(HEADER_FILES
         include/Electron3D.h
         include/StringMethodCoordinatesPlotter.h
         include/StringMethodValuePlotter.h
-        include/MolecularGeometry3D.h
+        include/AtomCollection3D.h
+        include/ElectronCollection3D.h
+        include/MoleculeWidget.h
+        include/ParticleCollectionPath3D.h
         )
 
 set(SOURCE_FILES
@@ -61,7 +64,10 @@ set(SOURCE_FILES
         source/Atom3D.cpp
         source/Bond3D.cpp
         source/Electron3D.cpp
-        source/MolecularGeometry3D.cpp
+        source/AtomCollection3D.cpp
+        source/ElectronCollection3D.cpp
+        source/MoleculeWidget.cpp
+        source/ParticleCollectionPath3D.cpp
         )
 
 file(GLOB_RECURSE RESOURCE_FILES resources/*.*)

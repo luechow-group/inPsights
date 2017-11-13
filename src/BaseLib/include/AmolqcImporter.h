@@ -11,7 +11,7 @@
 
 class AmolqcImporter : public Importer{
 public:
-    AmolqcImporter(const std::string& filename);
+    explicit AmolqcImporter(const std::string& filename);
 
 
     ParticleCollection importParticleCollectionBlock(unsigned long startLineIdx,

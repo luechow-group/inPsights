@@ -12,7 +12,6 @@ ParticleCollection AmolqcImporter::importParticleCollectionBlock(unsigned long s
                                                                  unsigned long numberOfParticles) const {
     ParticleCollection particleCollection;
     for (unsigned long i = 0; i < numberOfParticles; ++i) {
-        std::cout << getLine(startLineIdx+i);
         std::vector<std::string> lineElements = split(getLine(startLineIdx+i));
         double x = std::stod(lineElements[startLineElement+0]);
         double y = std::stod(lineElements[startLineElement+1]);
