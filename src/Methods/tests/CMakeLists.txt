@@ -3,7 +3,6 @@ enable_testing()
 
 FILE(GLOB TEST_SOURCE_FILES
         unit_tests/*
-        #integration_tests/*
         functional_tests/*
         )
 

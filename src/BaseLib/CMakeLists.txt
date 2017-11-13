@@ -9,10 +9,6 @@ set ( PROJECT_PATH ${PROJECT_NAME})
 set ( OUTPUT_NAME "${PROJECT_FOLDER_NAME}" )
 message ( "-- ++ CREATING PROJECT OR MAKEFILE ---> ${OUTPUT_NAME}" )
 
-#set(CMAKE_AUTOMOC ON)
-
-
-
 include_directories(
         include
         source
