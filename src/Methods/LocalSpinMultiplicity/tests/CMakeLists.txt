@@ -1,25 +1,13 @@
 cmake_minimum_required(VERSION 3.5)
 enable_testing()
 
-
-#FILE(GLOB TEST_SOURCE_FILES
-#        *
-        #integration_tests/*
-        #functional_tests/*
-#        )
-
-set(TEST_SOURCE_FILES
-        testmain.cpp
-        AFindElementTest.cpp
-        AHungarianTest.cpp
-        AFileXyzInputTest.cpp
-    )
+FILE(GLOB TEST_SOURCE_FILES *)
 
 add_executable("${PROJECT_NAME}_RunAllTests" ${TEST_SOURCE_FILES})
 
 target_link_libraries("${PROJECT_NAME}_RunAllTests"
-        gtest gtest_main gmock
+        ${PROJECT_NAME}
+        gmock gmock_main
+        gtest gtest_main
         pthread
-        ${PROJECT_NAME}_lib
         )
-

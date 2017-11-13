@@ -2,10 +2,8 @@
 // Created by Morian Sonnet on 22.05.2017.
 //
 
-#include "gtest/gtest.h"
-#include "gmock/gmock.h"
+#include <gmock/gmock.h>
 #include "Hungarian.h"
-#include <iostream>
 
 TEST(HungarianTest, SimpleTests)
 {

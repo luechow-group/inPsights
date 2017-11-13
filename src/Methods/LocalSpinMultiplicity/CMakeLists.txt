@@ -1,94 +1,71 @@
 cmake_minimum_required(VERSION 3.5)
-project(LocalSpinMultiplicity)
+
+project(LocalSpinMultiplicity C CXX Fortran)
+
+
+set ( PROJECT_FOLDER_NAME ${PROJECT_NAME} )
+set ( PROJECT_PATH ${PROJECT_NAME})
+set ( OUTPUT_NAME "${PROJECT_FOLDER_NAME}" )
+message ( "-- ++ CREATING PROJECT OR MAKEFILE ---> ${OUTPUT_NAME}" )
 
 set(CMAKE_CXX_STANDARD 11)
 
-if ( CMAKE_COMPILER_IS_GNUCC )
-        set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -Wno-ignored-attributes -Wno-deprecated-declarations")
-endif ( CMAKE_COMPILER_IS_GNUCC )
-if ( MSVC )
-        set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS}")
-endif ( MSVC )
+find_package(Eigen3 REQUIRED)
+include_directories( ${EIGEN3_INCLUDE_DIR} )
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR})
-find_package(Eigen3 REQUIRED)  #Eigen3 is Linear Algebra header only library
-include_directories(${EIGEN3_INCLUDE_DIR})
-include_directories(include)
+include_directories(
+        include
+        source
+        resources
+)
 
-#MESSAGE( STATUS "CMAKE_BUILD_TYPE: " ${CMAKE_BUILD_TYPE} )
-STRING(TOUPPER ${CMAKE_BUILD_TYPE} CMAKE_BUILD_TYPE_UPPER)
-if(CMAKE_BUILD_TYPE_UPPER MATCHES "DEBUG")
-        #set(GOOGTEST_ALREADY 1) #activate this, if googletest is already available on your system. Change below folder then.
-        if(GOOGTEST_ALREADY)
-            add_subdirectory(../../../cmake-build-debug/googletest-src ../../../cmake-build-debug/googletest-build)
-        else()
-                configure_file(DownloadGoogleTest.in
-                        googletest-download/CMakeLists.txt)
-                execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
-                         WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/googletest-download )
-                execute_process(COMMAND ${CMAKE_COMMAND} --build .
-                         WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/googletest-download )
-
-                # Prevent GoogleTest from overriding our compiler/linker options
-                # when building with Visual Studio
-                set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-
-                # Add googletest directly to our build. This adds
-                # the following targets: gtest, gtest_main, gmock
-                # and gmock_main
-
-                add_subdirectory(${CMAKE_BINARY_DIR}/googletest-src
-                ${CMAKE_BINARY_DIR}/googletest-build)
-
-        endif(GOOGTEST_ALREADY)
-endif(CMAKE_BUILD_TYPE_UPPER MATCHES "DEBUG")
-
-
-#find_package(GTest REQUIRED)
-
-set(MAIN_FILE src/main.cpp)
-
-set(SOURCE_FILES
+set(HEADER_FILES
         include/pse.h
-        src/Particle.cpp
         include/Particle.h
-        src/Electron.cpp
         include/Electron.h
-        src/Core.cpp
         include/Core.h
-        src/InputOutput.cpp
         include/InputOutput.h
-        src/FileXyzInput.cpp
         include/FileXyzInput.h
-        src/Molecule.cpp
         include/Molecule.h
-        src/pse.cpp
         include/Assignment.h
-        src/ElectronAssigner.cpp
         include/ElectronAssigner.h
-        src/HungarianElectronAssigner.cpp
         include/HungarianElectronAssigner.h
-        src/TestElectronAssigner.cpp
         include/TestElectronAssigner.h
-        src/Hungarian.cpp
         include/Hungarian.h
-        src/SpinDeterminer.cpp
         include/SpinDeterminer.h
-        src/SpinProjectionQuantumNumberCounter.cpp
-        include/SpinProjectionQuantumNumberCounter.h)
-
-
-add_library(${PROJECT_NAME}_lib STATIC ${SOURCE_FILES} ${EIGEN3_INCLUDE_DIR})
-
-
-if(CMAKE_BUILD_TYPE_UPPER MATCHES "DEBUG")
-        add_subdirectory(src/tests)
-endif(CMAKE_BUILD_TYPE_UPPER MATCHES "DEBUG")
-
-add_executable(LocalSpinMultiplicity
-        ${MAIN_FILE}
+        include/SpinProjectionQuantumNumberCounter.h
         )
 
-target_link_libraries(LocalSpinMultiplicity ${PROJECT_NAME}_lib)
+set(SOURCE_FILES
+        src/Particle.cpp
+        src/Electron.cpp
+        src/Core.cpp
+        src/InputOutput.cpp
+        src/FileXyzInput.cpp
+        src/Molecule.cpp
+        src/pse.cpp
+        src/ElectronAssigner.cpp
+        src/HungarianElectronAssigner.cpp
+        src/TestElectronAssigner.cpp
+        src/Hungarian.cpp
+        src/SpinDeterminer.cpp
+        src/SpinProjectionQuantumNumberCounter.cpp
+        )
 
-#target_link_libraries(gtest gtest_main)
+file(GLOB_RECURSE RESOURCE_FILES resources/*.*)
+file(COPY ${RESOURCE_FILES} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+
+add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES})
+target_link_libraries(${PROJECT_NAME}
+        BaseLib
+        )
+
+target_include_directories(${PROJECT_NAME} PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        )
+
+#target_link_libraries(${PROJECT_NAME}_main
+#        ${PROJECT_NAME}
+#        )
+
+add_subdirectory(tests)
