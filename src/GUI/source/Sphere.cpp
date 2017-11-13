@@ -6,12 +6,12 @@
 
 Sphere::Sphere(Qt3DCore::QEntity *root, QColor color, const QVector3D location, const float radius)
   : Abstract3dObject(root, color, location),
-    radius(radius) {
+    radius_(radius) {
 
-  mesh = new Qt3DExtras::QSphereMesh;
-  mesh->setRadius(radius);
-  mesh->setRings(100);
-  mesh->setSlices(100);
+  mesh_ = new Qt3DExtras::QSphereMesh;
+  mesh_->setRadius(radius);
+  mesh_->setRings(100);
+  mesh_->setSlices(100);
 
-  entity->addComponent(mesh);
+  entity->addComponent(mesh_);
 }

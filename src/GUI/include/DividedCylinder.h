@@ -12,13 +12,14 @@ public:
   DividedCylinder(Qt3DCore::QEntity *root,
                   const std::pair<QColor,QColor>& colorPair,
                   const std::pair<QVector3D, QVector3D>& locationPair,
-                  const float& radius);
+                  const float radius,
+                  const float alpha = 1.0f);
 
   ~DividedCylinder(){}
 
 
 private:
-  Cylinder srcCylinder,destCylinder;
+  Cylinder srcCylinder_,destCylinder_;
 };
 
 #endif //AMOLQCGUI_DIVIDEDCYLINDER_H

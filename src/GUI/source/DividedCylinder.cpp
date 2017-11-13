@@ -8,8 +8,9 @@
 DividedCylinder::DividedCylinder(Qt3DCore::QEntity *root,
                                  const std::pair<QColor,QColor>& colorPair,
                                  const std::pair<QVector3D, QVector3D>& locationPair,
-                                 const float& radius)
-  : srcCylinder(root,colorPair.first,{locationPair.first, MidPointVector(locationPair)}, radius),
-    destCylinder(root,colorPair.second,{MidPointVector(locationPair), locationPair.second}, radius)
+                                 const float radius,
+                                 const float alpha)
+  : srcCylinder_(root,colorPair.first,{locationPair.first, MidPointVector(locationPair)}, radius, alpha),
+    destCylinder_(root,colorPair.second,{MidPointVector(locationPair), locationPair.second}, radius, alpha)
 {
 }

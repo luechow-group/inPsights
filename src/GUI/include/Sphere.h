@@ -14,11 +14,16 @@ public:
     Sphere(Qt3DCore::QEntity *root, QColor color, const QVector3D location, const float radius);
     ~Sphere(){};
 
-  float getRadius() const { return radius;};
+  float getRadius() const { return radius_;};
+
+  void setRadius(const float radius) {
+    radius_ = radius;
+    mesh_->setRadius(radius);
+  };
 
 private:
-    const float radius;
-    Qt3DExtras::QSphereMesh* mesh;
+    float radius_;
+    Qt3DExtras::QSphereMesh* mesh_;
 };
 
 #endif //TEST_SPHERE_H
