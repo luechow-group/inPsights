@@ -48,3 +48,5 @@ target_link_libraries(${PROJECT_NAME}_main
         )
 
 add_subdirectory(tests)
+
+#add_subdirectory(LocalSpinMultiplicity)
