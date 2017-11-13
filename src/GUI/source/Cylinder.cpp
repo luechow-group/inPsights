@@ -3,14 +3,14 @@
 //
 
 #include <cmath>
-
 #include "Cylinder.h"
 #include "Helper.h"
 
 Cylinder::Cylinder(Qt3DCore::QEntity *root,
                    QColor color,
-                   const std::pair<QVector3D, QVector3D> pair,
-                   const float radius)
+                   const std::pair<QVector3D, QVector3D>& pair,
+                   const float radius,
+                   const float alpha)
   : Abstract3dObject(root, QColor(), MidPointVector(pair)),
     radius_(radius),
     start_(pair.first),
@@ -24,6 +24,7 @@ Cylinder::Cylinder(Qt3DCore::QEntity *root,
   mesh_->setLength(length_);
   mesh_->setRings(100);
   mesh_->setSlices(10);
+  material->setAlpha(alpha);
 
   rotateToOrientation(difference_);
 
@@ -41,7 +42,7 @@ Cylinder::Cylinder(const Cylinder &cylinder)
 {
 }
 
-void Cylinder::rotateToOrientation(const QVector3D orientation) {
+void Cylinder::rotateToOrientation(const QVector3D &orientation) {
 
   auto origVec = QVector3D(0, 1, 0);
 

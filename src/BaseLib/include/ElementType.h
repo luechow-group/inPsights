@@ -1,5 +1,5 @@
-#ifndef DELIB_ELEMENTTYPES_H
-#define DELIB_ELEMENTTYPES_H
+#ifndef AMOLQCGUI_ELEMENTTYPES_H
+#define AMOLQCGUI_ELEMENTTYPES_H
 
 #include <iostream>
 #include <utility>
@@ -20,5 +20,4 @@ enum class ElementType {
 
 } // namespace Elements
 
-
-#endif // DELIB_ELEMENTTYPES_H
+#endif // AMOLQCGUI_ELEMENTTYPES_H

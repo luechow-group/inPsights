@@ -13,12 +13,6 @@ enum StateGradientType{ SimpleGradient, OrthogonalToString, Fixed, ClimbingImage
 class StringOptimizationProblem : public cppoptlib::Problem<double,Eigen::Dynamic>{
 public:
 
-    /*
-     StringMethod(long numberOfStates, long numberOfCoords,
-     ElectronicWaveFunction & wf,
-     Eigen::VectorXd unitTangent
-     )
-     */
 
     StringOptimizationProblem(long numberOfStates,
                               long numberOfCoords,

@@ -14,7 +14,7 @@
 
 
 StringMethod::StringMethod(ChainOfStates initialChain)
-        :
+        ://problem.addObserver(this),
         wf_(ElectronicWaveFunction::getInstance()),
         chain_(initialChain)
 {
@@ -28,7 +28,7 @@ void StringMethod::optimizeString() {
     discretizeStringToChain();
     calculateUnitTangents();
 
-  unsigned maxIterations = 100;
+  unsigned maxIterations = 5;
   unsigned iterations = 0;
     do {
         performStep();
@@ -48,9 +48,8 @@ void StringMethod::minimizeOrthogonalToString() {
     cppoptlib::TimeIntegrationSolver<StringOptimizationProblem> solver;
     //cppoptlib::BfgsnsSolver<StringOptimizationProblem> solver;
   auto crit = cppoptlib::Criteria<double>::nonsmoothDefaults();
-    crit.gradNorm = 1e-4;
-    crit.iterations = 30;
-    //crit.xDelta = 0.00000010;
+    crit.gradNorm = 1e-6;
+    crit.iterations = 50;
     solver.setStopCriteria(crit);
 
     Eigen::VectorXd vec = chain_.coordinatesAsVector();
@@ -59,11 +58,9 @@ void StringMethod::minimizeOrthogonalToString() {
     solver.minimize(problem, vec);
     status_ = solver.status();
     chain_.storeCoordinateVectorInChain(chain_.coordinatesNumber(), chain_.statesNumber(), vec);
-    // maybe another value call is necessary
+    // is this additional value call necessary?
     chain_.setValues(problem.stateValues(vec)); //TODO redesign?
 
-    //std::cout << chain_.coordinates() << std::endl;
-    //std::cout << chain_.values().transpose() << std::endl;
     std::cout << "--Solver status: " << status_ << std::endl;
 }
 
@@ -76,19 +73,17 @@ void StringMethod::reparametrizeString() {
     data.row(0) = chain_.values();
     data.block(1,0,chain_.coordinatesNumber(),chain_.statesNumber()) = chain_.coordinates();
 
-    //TODO also fit energies, employ energy weighting
     BSplines::PointInterpolationGenerator generator(data.transpose(),3,true);
     //BSplines::PenalizedLeastSquaresFitWithFixedEndsGenerator generator(data.transpose(),//Transpose to account for different data layout
     //                                                                   unsigned(chain_.statesNumber()-1),
-    //                                                                   4,true,0.0);
+    //                                                                   3,true,0.1);
     Eigen::VectorXi excludedDimensions(1);
     excludedDimensions << 0;
 
     BSplines::BSpline bs = generator.generateBSpline(1);
-
     arcLengthParametrizedBSpline_ = BSplines::ArcLengthParametrizedBSpline(bs,excludedDimensions);
 
-    distributeStates();
+  distributeStates();
     calculateUnitTangents();
 }
 
@@ -108,12 +103,19 @@ void StringMethod::discretizeStringToChain() {
     Eigen::VectorXd values(uValues_.size());
     Eigen::MatrixXd coordinates(chain_.coordinatesNumber(),uValues_.size());
 
+
+    // by arc length
     for (int i = 0; i < uValues_.size(); ++i) {
-
         Eigen::VectorXd result = arcLengthParametrizedBSpline_.evaluate(uValues_(i));
-
         values(i) = result(0);
         coordinates.col(i) = result.tail(chain_.coordinatesNumber());
+    }
+
+    // by value-weighted arc length
+    for (int i = 0; i < uValues_.size(); ++i) {
+      Eigen::VectorXd result = arcLengthParametrizedBSpline_.evaluate(uValues_(i));
+      values(i) = result(0);
+      coordinates.col(i) = result.tail(chain_.coordinatesNumber());
     }
 
     chain_ = ChainOfStates(coordinates,values);

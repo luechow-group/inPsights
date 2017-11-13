@@ -6,6 +6,7 @@
 #define AMOLQCGUI_ELECTRONICWAVEFUNCTION_H
 
 #include <Eigen/Core>
+#include <vector>
 
 namespace ElectronPositioningMode {
   typedef enum {
@@ -46,6 +47,8 @@ public:
 
   double getNegativeLogarithmizedProbabilityDensity();
 
+    double getInverseNegativeLogarithmizedProbabilityDensity();
+
   Eigen::VectorXd getElectronPositionCollection();
 
   Eigen::VectorXd getElectronDriftCollection();
@@ -56,13 +59,23 @@ public:
 
   Eigen::VectorXd getNegativeLogarithmizedProbabilityDensityGradientCollection();
 
+    Eigen::VectorXd getInverseNegativeLogarithmizedProbabilityDensityGradientCollection();
+
+  int getNumberOfNuclei() const;
+
+  int getNumberOfElectrons() const;
+
+  void setFrozenElectrons(const std::vector<int>& frozenElectrons);
+  std::vector<int> getFrozenElectrons();
+
 private:
   ElectronicWaveFunction(const std::string& fileName);
   const std::string fileName_;
-  unsigned atomNumber_,electronNumber_;
+  unsigned numberOfNuclei_, numberOfElectrons_;
   double determinantProbabilityAmplitude_, jastrowFactor_, localEnergy_;
   Eigen::VectorXd electronPositionCollection_, electronDriftCollection_;
 
+  std::vector<int> frozenElectrons_;
 };
 
 #endif //AMOLQCGUI_ELECTRONICWAVEFUNCTION_H

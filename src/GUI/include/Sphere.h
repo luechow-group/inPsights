@@ -16,8 +16,13 @@ public:
 
   float getRadius() const { return radius_;};
 
+  void setRadius(const float radius) {
+    radius_ = radius;
+    mesh_->setRadius(radius);
+  };
+
 private:
-    const float radius_;
+    float radius_;
     Qt3DExtras::QSphereMesh* mesh_;
 };
 

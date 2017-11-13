@@ -20,6 +20,7 @@ include_directories( ${EIGEN3_INCLUDE_DIR} )
 include_directories(
         include
         source
+        resources
         )
 
 
@@ -39,14 +40,18 @@ set(HEADER_FILES
         include/Sphere.h
         include/Cylinder.h
         include/DividedCylinder.h
+        include/Polyline.h
+        include/Cone.h
         include/Atom3D.h
         include/Bond3D.h
         include/Helper.h
         include/Electron3D.h
-        include/Polyline.h
         include/StringMethodCoordinatesPlotter.h
         include/StringMethodValuePlotter.h
-        include/MolecularGeometry3D.h
+        include/AtomCollection3D.h
+        include/ElectronCollection3D.h
+        include/MoleculeWidget.h
+        include/ParticleCollectionPath3D.h
         )
 
 set(SOURCE_FILES
@@ -54,18 +59,42 @@ set(SOURCE_FILES
         source/Sphere.cpp
         source/Cylinder.cpp
         source/DividedCylinder.cpp
+        source/Polyline.cpp
+        source/Cone.cpp
         source/Atom3D.cpp
         source/Bond3D.cpp
         source/Electron3D.cpp
-        source/Polyline.cpp
+        source/AtomCollection3D.cpp
+        source/ElectronCollection3D.cpp
+        source/MoleculeWidget.cpp
+        source/ParticleCollectionPath3D.cpp
+        )
 
-        source/MolecularGeometry3D.cpp)
+file(GLOB_RECURSE RESOURCE_FILES resources/*.*)
+file(COPY ${RESOURCE_FILES} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
-add_executable("${PROJECT_NAME}_main" ${SOURCE_FILES} ${HEADER_FILES} main.cpp)
-
+add_executable("${PROJECT_NAME}_mainStringMethod" ${SOURCE_FILES} ${HEADER_FILES} mainStringMethodGUI.cpp)
+add_executable("${PROJECT_NAME}_mainPathOptimization" ${SOURCE_FILES} ${HEADER_FILES} mainPathOptimization.cpp)
 
 # links the libraries to the executable
-target_link_libraries("${PROJECT_NAME}_main"
+target_link_libraries("${PROJECT_NAME}_mainStringMethod"
+        BaseLib
+        BSplines
+        Methods
+        #eigen
+        Qt5::Core
+        Qt5::Gui
+        Qt5::Widgets
+        Qt5::3DCore
+        Qt5::3DExtras
+        Qt5::3DRender
+        Qt5::Charts
+        #Qt5::3DInput
+        #pthread #TODO needed?
+        )
+
+# links the libraries to the executable
+target_link_libraries("${PROJECT_NAME}_mainPathOptimization"
         BaseLib
         BSplines
         Methods
