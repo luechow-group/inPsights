@@ -28,9 +28,7 @@ set(HEADER_FILES
         include/FileXyzInput.h
         include/Molecule.h
         include/Assignment.h
-        include/ElectronAssigner.h
         include/HungarianElectronAssigner.h
-        include/TestElectronAssigner.h
         include/Hungarian.h
         include/SpinDeterminer.h
         include/SpinProjectionQuantumNumberCounter.h
@@ -44,9 +42,7 @@ set(SOURCE_FILES
         src/FileXyzInput.cpp
         src/Molecule.cpp
         src/pse.cpp
-        src/ElectronAssigner.cpp
         src/HungarianElectronAssigner.cpp
-        src/TestElectronAssigner.cpp
         src/Hungarian.cpp
         src/SpinDeterminer.cpp
         src/SpinProjectionQuantumNumberCounter.cpp
