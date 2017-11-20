@@ -17,14 +17,14 @@ public:
     ParticleCollection importParticleCollectionBlock(unsigned long startLineIdx,
                                                      unsigned long startLineElement,
                                                      unsigned long numberOfParticles) const;
-    SpinTypeCollection getSpinTypeCollection(unsigned long numberOfAlphaElectrons,
-                                             unsigned long numberOfBetaElectrons) const;
-
+    
     std::vector<SubstructureDataEntry> countSubstructures(unsigned long startLineIdx,
                                                           unsigned long blockLength) const;
 
-
-
+protected:
+    SpinTypeCollection getSpinTypeCollection(unsigned long numberOfAlphaElectrons,
+                                             unsigned long numberOfBetaElectrons) const;
+    
 };
 
 #endif //AMOLQCGUI_AMOLQCIMPORTER_H

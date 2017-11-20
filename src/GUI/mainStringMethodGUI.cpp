@@ -300,7 +300,6 @@ int main(int argc, char *argv[]) {
   // draw molecular geometry
   std::cout << "wf:" << ElectronicWaveFunction::getInstance().getFileName() << std::endl;
   WfFileImporter waveFunctionParser(ElectronicWaveFunction::getInstance().getFileName());
-  waveFunctionParser.readNuclei();
   AtomCollection3D molecularGeometry3D (root, waveFunctionParser.getAtomCollection());
 
   // draw electrons

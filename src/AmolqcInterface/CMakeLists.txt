@@ -36,7 +36,7 @@ get_filename_component(PATH_TO_LIBUTILS amolqc/utils/libutils.a REALPATH)
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES} dummy.f90)
 target_link_libraries(${PROJECT_NAME}
-        #eigen
+        BaseLib #already includes eigen
         cppoptlib
         ${PATH_TO_LIBAMOLQC}
         ${PATH_TO_LIBUTILS}

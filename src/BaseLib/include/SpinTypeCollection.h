@@ -11,6 +11,8 @@
 class SpinTypeCollection{
 public:
     explicit SpinTypeCollection(unsigned long size = 0);
+    SpinTypeCollection(unsigned long numberOfAlphaElectrons, unsigned long numberOfBetaElectrons);
+
     explicit SpinTypeCollection(const Eigen::VectorXi& spinTypes);
 
     Spin::SpinType spinType(long i) const;

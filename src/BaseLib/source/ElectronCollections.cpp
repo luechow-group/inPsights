@@ -8,6 +8,12 @@ ElectronCollections::ElectronCollections()
         : spinTypeCollection_(SpinTypeCollection())
 {}
 
+ElectronCollections::ElectronCollections(const SpinTypeCollection &spinTypeCollection)
+        : spinTypeCollection_(spinTypeCollection)
+{}
+
+
+
 ElectronCollections::ElectronCollections(const std::vector<ElectronCollection> &electronCollections)
         : spinTypeCollection_(static_cast<SpinTypeCollection>(electronCollections[0])) {
 

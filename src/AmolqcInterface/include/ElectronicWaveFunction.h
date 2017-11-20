@@ -7,6 +7,8 @@
 
 #include <Eigen/Core>
 #include <vector>
+#include "AtomCollection.h"
+#include "ElectronCollections.h"
 
 namespace ElectronPositioningMode {
   typedef enum {
@@ -24,58 +26,65 @@ void amolqc_eloc(double x[], int n, double *phi, double *u, double grad[], doubl
 class ElectronicWaveFunction {
 
 public:
-  static ElectronicWaveFunction& getInstance(const std::string& fileName = "");
+    static ElectronicWaveFunction& getInstance(const std::string& fileName = "");
 
-  const std::string& getFileName();
+    const std::string& getFileName();
 
-  void initialize(const std::string& fileName);
+    void initialize(const std::string& fileName);
 
-  void setRandomElectronPositionCollection(unsigned electronNumber,
+    void setRandomElectronPositionCollection(unsigned electronNumber,
                                            ElectronPositioningMode::electronPositioningModeType);
 
-  void evaluate(const Eigen::VectorXd &electronPositionCollection);
+    void evaluate(const ElectronCollection& electronCollection);
+    void evaluate(const Eigen::VectorXd &electronPositionCollection);
 
-  double getLocalEnergy();
+    double getLocalEnergy();
 
-  double getDeterminantProbabilityAmplitude();
+    double getDeterminantProbabilityAmplitude();
 
-  double getJastrowFactor();
+    double getJastrowFactor();
 
-  double getProbabilityAmplitude();
+    double getProbabilityAmplitude();
 
-  double getProbabilityDensity();
+    double getProbabilityDensity();
 
-  double getNegativeLogarithmizedProbabilityDensity();
+    double getNegativeLogarithmizedProbabilityDensity();
 
     double getInverseNegativeLogarithmizedProbabilityDensity();
 
-  Eigen::VectorXd getElectronPositionCollection();
+    Eigen::VectorXd getElectronPositionCollection();
 
-  Eigen::VectorXd getElectronDriftCollection();
+    Eigen::VectorXd getElectronDriftCollection();
 
-  Eigen::VectorXd getProbabilityAmplitudeGradientCollection();
+    Eigen::VectorXd getProbabilityAmplitudeGradientCollection();
 
-  Eigen::VectorXd getProbabilityDensityGradientCollection();
+    Eigen::VectorXd getProbabilityDensityGradientCollection();
 
-  Eigen::VectorXd getNegativeLogarithmizedProbabilityDensityGradientCollection();
+    Eigen::VectorXd getNegativeLogarithmizedProbabilityDensityGradientCollection();
 
     Eigen::VectorXd getInverseNegativeLogarithmizedProbabilityDensityGradientCollection();
 
-  int getNumberOfNuclei() const;
+    unsigned long getNumberOfNuclei() const;
+    AtomCollection getAtomCollection();
 
-  int getNumberOfElectrons() const;
+    unsigned long getNumberOfElectrons() const;
 
-  void setFrozenElectrons(const std::vector<int>& frozenElectrons);
-  std::vector<int> getFrozenElectrons();
+    SpinTypeCollection getSpinTypeCollection() const;
+
+    void setFrozenElectrons(const std::vector<unsigned long>& frozenElectrons);
+    std::vector<unsigned long> getFrozenElectrons();
 
 private:
-  ElectronicWaveFunction(const std::string& fileName);
-  const std::string fileName_;
-  unsigned numberOfNuclei_, numberOfElectrons_;
-  double determinantProbabilityAmplitude_, jastrowFactor_, localEnergy_;
-  Eigen::VectorXd electronPositionCollection_, electronDriftCollection_;
+    ElectronicWaveFunction(const std::string& fileName);
+    const std::string fileName_;
+    unsigned long numberOfNuclei_, numberOfElectrons_, numberOfAlphaElectrons_, numberOfBetaElectrons_;
+    double determinantProbabilityAmplitude_, jastrowFactor_, localEnergy_;
+    Eigen::VectorXd electronPositionCollection_, electronDriftCollection_;
 
-  std::vector<int> frozenElectrons_;
+    std::vector<unsigned long> frozenElectrons_;
+    AtomCollection atomCollection_;
+    SpinTypeCollection spinTypeCollection_;
+
 };
 
 #endif //AMOLQCGUI_ELECTRONICWAVEFUNCTION_H

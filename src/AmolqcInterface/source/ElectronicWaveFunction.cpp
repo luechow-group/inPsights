@@ -2,8 +2,9 @@
 // Created by Michael Heuer on 13.01.17.
 //
 
-#include "ElectronicWaveFunction.h"
 #include <iostream>
+#include "ElectronicWaveFunction.h"
+#include "WfFileImporter.h"
 
 ElectronicWaveFunction &ElectronicWaveFunction::getInstance(const std::string& fileName) {
 
@@ -30,10 +31,9 @@ ElectronicWaveFunction::ElectronicWaveFunction(const std::string& fileName)
 void ElectronicWaveFunction::setRandomElectronPositionCollection(unsigned electronNumber,
                                                                  ElectronPositioningMode::electronPositioningModeType
                                                                  electronPositioningModeType) {
-
   //TODO use std::unique_ptr
   auto *electronPositionCollectionArray = new double[electronNumber*3];
-  amolqc_initial_positions(electronPositioningModeType, electronNumber,electronPositionCollectionArray);
+  amolqc_initial_positions(electronPositioningModeType, electronNumber, electronPositionCollectionArray);
 
   electronPositionCollection_ = Eigen::Map<Eigen::VectorXd>(electronPositionCollectionArray,
                                                             electronNumber*3, 1);
@@ -45,21 +45,34 @@ void ElectronicWaveFunction::initialize(const std::string& fileName) {
   numberOfNuclei_=0;
   numberOfElectrons_=0;
 
-  char* f = (char*) fileName.c_str();
+  auto f = (char*) fileName.c_str();
   std::cout << f << std::endl;
 
   amolqc_init();
   amolqc_set_wf((int*)&numberOfElectrons_, (int*)&numberOfNuclei_, f);
   std::cout << numberOfElectrons_ << ", " << numberOfNuclei_ << std::endl;
   setRandomElectronPositionCollection(numberOfElectrons_, ElectronPositioningMode::DENSITY);
+
+  // import atoms from .wf file
+  WfFileImporter wfFileImporter(fileName);
+  assert(numberOfElectrons_ == wfFileImporter.getNumberOfElectrons()
+         && "Number of electrons from amolqc must match the number by counting the nuclear charges minus the overall charge of the molecule");
+  numberOfBetaElectrons_ = wfFileImporter.getNumberOfBetaElectrons();
+  numberOfAlphaElectrons_ = wfFileImporter.getNumberOfAlphaElectrons();
+  atomCollection_ = wfFileImporter.getAtomCollection();
+  spinTypeCollection_  = SpinTypeCollection(numberOfAlphaElectrons_,numberOfBetaElectrons_);
 }
 
-int ElectronicWaveFunction::getNumberOfNuclei() const {
+unsigned long ElectronicWaveFunction::getNumberOfNuclei() const {
   return numberOfNuclei_;
 }
 
-int ElectronicWaveFunction::getNumberOfElectrons() const {
+unsigned long ElectronicWaveFunction::getNumberOfElectrons() const {
   return numberOfElectrons_;
+}
+
+void ElectronicWaveFunction::evaluate(const ElectronCollection &electronCollection) {
+    evaluate(electronCollection.positionsAsEigenVector());
 }
 
 void ElectronicWaveFunction::evaluate(const Eigen::VectorXd &electronPositionCollection) {
@@ -124,7 +137,7 @@ Eigen::VectorXd ElectronicWaveFunction::getProbabilityAmplitudeGradientCollectio
 };
 
 Eigen::VectorXd ElectronicWaveFunction::getProbabilityDensityGradientCollection(){
-  for (std::vector<int>::const_iterator it = frozenElectrons_.begin(); it != frozenElectrons_.end(); ++it ){
+  for (std::vector<unsigned long>::const_iterator it = frozenElectrons_.begin(); it != frozenElectrons_.end(); ++it ){
     // index of the elctrons start at 0
     electronDriftCollection_.segment(((*it)-1)*3,3) = Eigen::VectorXd::Zero(3);
   }
@@ -133,7 +146,7 @@ Eigen::VectorXd ElectronicWaveFunction::getProbabilityDensityGradientCollection(
 };
 
 Eigen::VectorXd ElectronicWaveFunction::getNegativeLogarithmizedProbabilityDensityGradientCollection() {
-  for (std::vector<int>::const_iterator it = frozenElectrons_.begin(); it != frozenElectrons_.end(); ++it ){
+  for (std::vector<unsigned long>::const_iterator it = frozenElectrons_.begin(); it != frozenElectrons_.end(); ++it ){
     // index of the elctrons start at 0
     electronDriftCollection_.segment(((*it)-1)*3,3) = Eigen::VectorXd::Zero(3);
   }
@@ -147,10 +160,20 @@ Eigen::VectorXd ElectronicWaveFunction::getInverseNegativeLogarithmizedProbabili
   //return 0.5*getProbabilityAmplitude()*getProbabilityAmplitudeGradientCollection().cwiseInverse();
 }
 
-void ElectronicWaveFunction::setFrozenElectrons(const std::vector<int>& frozenElectrons) {
+void ElectronicWaveFunction::setFrozenElectrons(const std::vector<unsigned long>& frozenElectrons) {
   frozenElectrons_= frozenElectrons;
 }
 
-std::vector<int> ElectronicWaveFunction::getFrozenElectrons() {
+std::vector<unsigned long> ElectronicWaveFunction::getFrozenElectrons() {
   return frozenElectrons_;
 }
+
+AtomCollection ElectronicWaveFunction::getAtomCollection() {
+    return atomCollection_;
+}
+
+SpinTypeCollection ElectronicWaveFunction::getSpinTypeCollection() const {
+  return spinTypeCollection_;
+}
+
+

@@ -67,3 +67,28 @@ AtomCollection WfFileImporter::getAtomCollection() {
     }
     return atomCollection;
 }
+
+unsigned long WfFileImporter::getNumberOfElectrons() {
+
+  auto etc = static_cast<ElementTypeCollection>(getAtomCollection());
+  unsigned long numberOfElectrons = 0;
+
+  for (unsigned long i = 0; i < etc.numberOfElementTypes(); ++i) {
+    numberOfElectrons += Elements::ElementInfo::Z(etc.elementType(i));
+  }
+  numberOfElectrons -= charge_;
+
+  return numberOfElectrons;
+}
+
+unsigned long WfFileImporter::getNumberOfAlphaElectrons() {
+  return (getNumberOfElectrons()+(getMultiplicity()-1))/2;
+}
+
+unsigned long WfFileImporter::getNumberOfBetaElectrons() {
+  return getNumberOfElectrons()-getNumberOfAlphaElectrons();
+}
+
+SpinTypeCollection WfFileImporter::getSpinTypeCollection() {
+  return SpinTypeCollection(getNumberOfAlphaElectrons(),getNumberOfBetaElectrons());
+}

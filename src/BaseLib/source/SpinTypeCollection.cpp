@@ -22,6 +22,18 @@ SpinTypeCollection::SpinTypeCollection(const VectorXi& spinTypes)
     spinTypes_ = spinTypes;
 }
 
+SpinTypeCollection::SpinTypeCollection(unsigned long numberOfAlphaElectrons, unsigned long numberOfBetaElectrons)
+        : SpinTypeCollection(0)
+{
+    for (unsigned long i = 0; i < numberOfAlphaElectrons+numberOfBetaElectrons; ++i) {
+        Spin::SpinType spinType;
+        if (i < numberOfAlphaElectrons) spinType = Spin::SpinType::alpha;
+        else  spinType = Spin::SpinType::beta;
+
+        this->append(spinType);
+    }
+}
+
 Spin::SpinType SpinTypeCollection::spinType(long i) const {
     return  Spin::SpinType(spinTypes_[i]);
 }

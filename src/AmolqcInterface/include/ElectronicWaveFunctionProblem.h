@@ -10,21 +10,22 @@
 #include "problem.h"
 #include "observableproblem.h"
 #include "problemobserver.h"
+#include "ElectronCollections.h"
 
-class ElectronicWaveFunctionProblem : public cppoptlib::Problem<double,Eigen::Dynamic>,
-                                      public cppoptlib::ObservableProblem
+class ElectronicWaveFunctionProblem : public cppoptlib::Problem<double,Eigen::Dynamic>
 {
 public:
+    explicit ElectronicWaveFunctionProblem(const std::string &fileName);
 
-    ElectronicWaveFunctionProblem(const std::string fileName);
+    double value(const Eigen::VectorXd &x) override;
 
-    double value(const Eigen::VectorXd &x);
+    void gradient(const Eigen::VectorXd &x, Eigen::VectorXd &grad) override;
 
-    void gradient(const Eigen::VectorXd &x, Eigen::VectorXd &grad);
+    void hessian(const Eigen::VectorXd&x, Eigen::MatrixXd &hessian) override;
 
-    void hessian(const Eigen::VectorXd&x, Eigen::MatrixXd &hessian);
+    bool callback(const cppoptlib::Criteria<double> &state, const Eigen::VectorXd &x) override;
 
-    bool callback(const cppoptlib::Criteria<double> &state, const Eigen::VectorXd &x);
+    Eigen::VectorXd getNucleiPositions();
 
     unsigned getValueCallCount(){
         return valueCallCount_;
@@ -43,9 +44,14 @@ public:
         gradientCallCount_ = 0;
     }
 
+    ElectronCollections getOptimizationPath(){
+        return optimizationPath_;
+    }
+
 private:
     unsigned valueCallCount_, gradientCallCount_;
     ElectronicWaveFunction& wf_;
+    ElectronCollections optimizationPath_;
 };
 
 #endif //AMOLQCGUI_ELECTRONICWAVEFUNCTIONPROBLEM_H

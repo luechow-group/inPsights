@@ -18,18 +18,17 @@ enum JastrowTypes{
 
 class WfFileImporter : public AmolqcImporter {
 public:
-    WfFileImporter(const std::string &filename);
-    void readNuclei();
-
+    explicit WfFileImporter(const std::string &filename);
 
     std::pair<bool, unsigned long> findTag(const std::string &tag,
                                            unsigned long startLine = 0);
-
-
-
-
+    
     AtomCollection getAtomCollection();
-    unsigned long getCharge(){ return charge_; };
+    SpinTypeCollection getSpinTypeCollection();
+    unsigned long getNumberOfElectrons();
+    unsigned long getNumberOfAlphaElectrons();
+    unsigned long getNumberOfBetaElectrons();
+    long getCharge(){ return charge_; };
     unsigned long getMultiplicity(){ return multiplicity_; };
     std::string getBasisSet(){ return basis_; };
 
@@ -37,8 +36,7 @@ private:
     void readGeneralBlock();
 
     bool bohrQ_;
-    int charge_;
-    unsigned long numberOfNuclei_,multiplicity_;
+    unsigned long charge_, numberOfNuclei_,multiplicity_;
     std::string basis_, title_, jastrow_;
 };
 

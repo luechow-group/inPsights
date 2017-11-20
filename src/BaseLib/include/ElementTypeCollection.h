@@ -23,7 +23,6 @@ public:
 
     Eigen::VectorXi elementTypesAsEigenVector();
 
-protected:
     unsigned long numberOfElementTypes() const;
 
 private:
