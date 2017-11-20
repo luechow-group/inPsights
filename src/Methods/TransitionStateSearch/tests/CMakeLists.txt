@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.5)
 enable_testing()
 
 FILE(GLOB TEST_SOURCE_FILES
-        unit_tests/*
+        #unit_tests/*
         functional_tests/*
         )
 

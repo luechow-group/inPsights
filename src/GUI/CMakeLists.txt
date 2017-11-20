@@ -80,7 +80,7 @@ add_executable("${PROJECT_NAME}_mainPathOptimization" ${SOURCE_FILES} ${HEADER_F
 target_link_libraries("${PROJECT_NAME}_mainStringMethod"
         BaseLib
         BSplines
-        Methods
+        TransitionStateSearch
         #eigen
         Qt5::Core
         Qt5::Gui
@@ -97,7 +97,7 @@ target_link_libraries("${PROJECT_NAME}_mainStringMethod"
 target_link_libraries("${PROJECT_NAME}_mainPathOptimization"
         BaseLib
         BSplines
-        Methods
+        TransitionStateSearch
         #eigen
         Qt5::Core
         Qt5::Gui

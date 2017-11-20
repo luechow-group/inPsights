@@ -28,12 +28,15 @@ public:
 
 
 
-        AtomCollection getAtomCollection(); //{ return atomCollection_; };
+    AtomCollection getAtomCollection();
+    unsigned long getCharge(){ return charge_; };
+    unsigned long getMultiplicity(){ return multiplicity_; };
+    std::string getBasisSet(){ return basis_; };
 
 private:
     void readGeneralBlock();
 
-    bool angstromQ_;
+    bool bohrQ_;
     int charge_;
     unsigned long numberOfNuclei_,multiplicity_;
     std::string basis_, title_, jastrow_;

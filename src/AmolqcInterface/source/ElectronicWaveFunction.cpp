@@ -31,7 +31,8 @@ void ElectronicWaveFunction::setRandomElectronPositionCollection(unsigned electr
                                                                  ElectronPositioningMode::electronPositioningModeType
                                                                  electronPositioningModeType) {
 
-  double *electronPositionCollectionArray = new double[electronNumber*3];
+  //TODO use std::unique_ptr
+  auto *electronPositionCollectionArray = new double[electronNumber*3];
   amolqc_initial_positions(electronPositioningModeType, electronNumber,electronPositionCollectionArray);
 
   electronPositionCollection_ = Eigen::Map<Eigen::VectorXd>(electronPositionCollectionArray,

@@ -6,9 +6,6 @@
 #include <vector>
 #include <numeric>
 #include "Importer.h"
-#include "ElementInfo.h"
-
-
 
 Importer::Importer(const std::string &filename)
         : filename_(filename) {

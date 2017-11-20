@@ -19,6 +19,7 @@ public:
 
     std::string getLine(unsigned long idx) const;
 
+    // TODO move to a string helper class?
     template<typename Out>
     void split(const std::string &s, char delimiter, Out result) const;
 
