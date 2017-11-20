@@ -36,6 +36,7 @@ public:
                                            ElectronPositioningMode::electronPositioningModeType);
 
     void evaluate(const ElectronCollection& electronCollection);
+
     void evaluate(const Eigen::VectorXd &electronPositionCollection);
 
     double getLocalEnergy();
@@ -65,6 +66,7 @@ public:
     Eigen::VectorXd getInverseNegativeLogarithmizedProbabilityDensityGradientCollection();
 
     unsigned long getNumberOfNuclei() const;
+
     AtomCollection getAtomCollection();
 
     unsigned long getNumberOfElectrons() const;
@@ -75,7 +77,7 @@ public:
     std::vector<unsigned long> getFrozenElectrons();
 
 private:
-    ElectronicWaveFunction(const std::string& fileName);
+    explicit ElectronicWaveFunction(const std::string& fileName);
     const std::string fileName_;
     unsigned long numberOfNuclei_, numberOfElectrons_, numberOfAlphaElectrons_, numberOfBetaElectrons_;
     double determinantProbabilityAmplitude_, jastrowFactor_, localEnergy_;

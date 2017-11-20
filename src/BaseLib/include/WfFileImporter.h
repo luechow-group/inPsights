@@ -6,7 +6,6 @@
 #define WFFILEIMPORTER_H
 
 #include <fstream>
-
 #include "AmolqcImporter.h"
 #include "AtomCollection.h"
 
@@ -22,7 +21,7 @@ public:
 
     std::pair<bool, unsigned long> findTag(const std::string &tag,
                                            unsigned long startLine = 0);
-    
+
     AtomCollection getAtomCollection();
     SpinTypeCollection getSpinTypeCollection();
     unsigned long getNumberOfElectrons();

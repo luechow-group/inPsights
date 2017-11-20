@@ -31,13 +31,11 @@ ElectronicWaveFunction::ElectronicWaveFunction(const std::string& fileName)
 void ElectronicWaveFunction::setRandomElectronPositionCollection(unsigned electronNumber,
                                                                  ElectronPositioningMode::electronPositioningModeType
                                                                  electronPositioningModeType) {
-  //TODO use std::unique_ptr
   auto *electronPositionCollectionArray = new double[electronNumber*3];
   amolqc_initial_positions(electronPositioningModeType, electronNumber, electronPositionCollectionArray);
 
   electronPositionCollection_ = Eigen::Map<Eigen::VectorXd>(electronPositionCollectionArray,
                                                             electronNumber*3, 1);
-
   delete electronPositionCollectionArray;
 }
 
@@ -80,12 +78,11 @@ void ElectronicWaveFunction::evaluate(const Eigen::VectorXd &electronPositionCol
   assert(electronPositionCollection.rows() % 3 == 0);
 
   electronPositionCollection_ = electronPositionCollection;
-
   double *electronDriftCollectionArray = new double[electronPositionCollection.rows()];
 
   Eigen::VectorXd copy = electronPositionCollection; // TODO ugly - redesign
 
-  amolqc_eloc(copy.data(), numberOfElectrons_, &determinantProbabilityAmplitude_, &jastrowFactor_,
+  amolqc_eloc(copy.data(), (int)numberOfElectrons_, &determinantProbabilityAmplitude_, &jastrowFactor_,
               electronDriftCollectionArray, &localEnergy_);
 
   electronDriftCollection_ = Eigen::Map<Eigen::VectorXd>( electronDriftCollectionArray,
@@ -141,7 +138,6 @@ Eigen::VectorXd ElectronicWaveFunction::getProbabilityDensityGradientCollection(
     // index of the elctrons start at 0
     electronDriftCollection_.segment(((*it)-1)*3,3) = Eigen::VectorXd::Zero(3);
   }
-
   return 2.0*getProbabilityAmplitude()* getProbabilityAmplitudeGradientCollection();
 };
 
@@ -151,7 +147,6 @@ Eigen::VectorXd ElectronicWaveFunction::getNegativeLogarithmizedProbabilityDensi
     electronDriftCollection_.segment(((*it)-1)*3,3) = Eigen::VectorXd::Zero(3);
   }
   return -2.0 * electronDriftCollection_;
-
 }
 
 Eigen::VectorXd ElectronicWaveFunction::getInverseNegativeLogarithmizedProbabilityDensityGradientCollection() {
