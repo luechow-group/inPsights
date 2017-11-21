@@ -9,7 +9,6 @@
 #include <iostream>
 
 #include "OptimizationPathFileImporter.h"
-#include "WfFileImporter.h"
 #include "RefFileImporter.h"
 #include "ElectronicWaveFunction.h"
 #include "ElectronicWaveFunctionProblem.h"
@@ -26,11 +25,7 @@ int main(int argc, char *argv[]) {
 
     QApplication app(argc, argv);
 
-    std::string wfFilename = "Ethane-em-5.wf";
-    WfFileImporter wfFileImporter(wfFilename);
-    auto ac = wfFileImporter.getAtomCollection();
-
-    ElectronicWaveFunctionProblem electronicWaveFunctionProblem(wfFilename);
+    ElectronicWaveFunctionProblem electronicWaveFunctionProblem("Ethane-em-5.wf");
     cppoptlib::Criteria<double> crit = cppoptlib::Criteria<double>::nonsmoothDefaults();
 
     cppoptlib::BfgsnsSolver<ElectronicWaveFunctionProblem> solver;
@@ -92,16 +87,18 @@ int main(int argc, char *argv[]) {
     solver.minimize(electronicWaveFunctionProblem, xA);
     auto optimizationPath = electronicWaveFunctionProblem.getOptimizationPath();
 
+    
+    
     //visualization
     MoleculeWidget moleculeWidget;
     Qt3DCore::QEntity *root = moleculeWidget.createMoleculeWidget();
 
-    AtomCollection3D(root, ac);
+    AtomCollection3D(root, ElectronicWaveFunction::getInstance().getAtomCollection());
 
     // Plot the starting point
     ElectronCollection3D(root,ElectronCollection(ParticleCollection(xA),
                                                  optimizationPath.getSpinTypeCollection()));
-
+    
     // Plot the optimization path
     ParticleCollectionPath3D(root, optimizationPath);
 
