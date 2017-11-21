@@ -43,7 +43,11 @@ void ParticleCollection::insert(const Particle &particle, long i) {
     VectorXd after = positions_.tail(numberOfParticles_*3-start);
 
     positions_.resize(numberOfParticles_*3+3);
-    positions_ << before, particle.position(), after;
+    //positions_ << before, particle.position(), after;
+    positions_.head(start) = before;
+    positions_.segment(start,3) = particle.position();
+    positions_.tail(numberOfParticles_*3-start) = after;
+
     ++numberOfParticles_;
 }
 
