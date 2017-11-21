@@ -47,15 +47,7 @@ void ElectronicWaveFunctionProblem::hessian(const Eigen::VectorXd &x, Eigen::Mat
 }
 
 bool ElectronicWaveFunctionProblem::callback(const cppoptlib::Criteria<double> &state, const Eigen::VectorXd &x) {
-    //unsigned skip = 10;
-    //unsigned i = 0;
-    //if (i < skip) {
-    //    i++;
-    //} else {
-    //    //TODO reduce number type conversions
-        optimizationPath_.append(ElectronCollection(x, wf_.getSpinTypeCollection().spinTypesAsEigenVector()));
-    //    i=0;
-    //}
+    optimizationPath_.append(ElectronCollection(x, wf_.getSpinTypeCollection().spinTypesAsEigenVector()));
     std::cout << "(" << std::setw(2) << state.iterations << ")"
               << " f(x) = "     << std::fixed << std::setw(8) << std::setprecision(8) << value(x)
               << " xDelta = "   << std::setw(8) << state.xDelta

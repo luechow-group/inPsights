@@ -5,7 +5,6 @@
 #include <QApplication>
 #include <Qt3DRender>
 #include <Qt3DExtras>
-#include <QtWidgets/QApplication>
 #include <QtWidgets>
 #include <iostream>
 
@@ -28,12 +27,8 @@ int main(int argc, char *argv[]) {
     QApplication app(argc, argv);
 
     std::string wfFilename = "Ethane-em-5.wf";
-
     WfFileImporter wfFileImporter(wfFilename);
     auto ac = wfFileImporter.getAtomCollection();
-
-    //OptimizationPathFileImporter optimizationPathFileImporter("Diborane-Paths.300",1);
-    //auto ecs = optimizationPathFileImporter.getPath(1);
 
     ElectronicWaveFunctionProblem electronicWaveFunctionProblem(wfFilename);
     cppoptlib::Criteria<double> crit = cppoptlib::Criteria<double>::nonsmoothDefaults();
@@ -41,7 +36,7 @@ int main(int argc, char *argv[]) {
     cppoptlib::BfgsnsSolver<ElectronicWaveFunctionProblem> solver;
     solver.setDebug(cppoptlib::DebugLevel::High);
     crit.gradNorm = 1e-6;
-    crit.iterations = 100;
+    crit.iterations = 265;
     solver.setStopCriteria(crit);
 
     //RefFileImporter refFileImporter("Ethane-max.ref");
