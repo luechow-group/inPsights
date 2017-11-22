@@ -16,7 +16,7 @@ include_directories( ${EIGEN3_INCLUDE_DIR} )
 include_directories(
         include
         source
-        resources
+        tests/resources
 )
 
 set(HEADER_FILES
@@ -47,9 +47,6 @@ set(SOURCE_FILES
         src/SpinDeterminer.cpp
         src/SpinProjectionQuantumNumberCounter.cpp
         )
-
-file(GLOB_RECURSE RESOURCE_FILES resources/*.*)
-file(COPY ${RESOURCE_FILES} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES})
 target_link_libraries(${PROJECT_NAME}
