@@ -8,7 +8,7 @@
 #include "Electron.h"
 #include <vector>
 #include "Assignment.h"
-#include "ElectronAssigner.h"
+#include "HungarianElectronAssigner.h"
 
 /*
  * This class represent a Molecule.
@@ -25,7 +25,7 @@ public:
     const std::vector<Core> &getCores() const;
     void cleanElectrons();
     void assign(const Assignment &assignment);
-    void assign(ElectronAssigner &electronAssigner);
+    void assign(HungarianElectronAssigner &electronAssigner);
     int getTotalSpinProjectionQuantumNumber();
     int getLocalSpinProjectionQuantumNumber(int coreToLookAt);
     int getLocalSpinProjectionQuantumNumber(std::vector<int> coresToLookAt);

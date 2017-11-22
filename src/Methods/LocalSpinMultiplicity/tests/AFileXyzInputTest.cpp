@@ -11,8 +11,7 @@
 TEST(TestFileXyzInput,MoleculeCores)
 {
     Molecule newMolecule;
-    //FileXyzInput input("../../../resources/EPA.ref","../../../resources/EPA.xyz");
-    FileXyzInput input("./../EPA.ref","./../EPA.xyz");
+    FileXyzInput input("EPA.ref","EPA.xyz");
     input.readMoleculeCores(newMolecule);
     std::vector<Eigen::Vector3d> expectedPositions;
     expectedPositions.emplace_back();
@@ -44,7 +43,7 @@ TEST(TestFileXyzInput, FileNameNotExistent)
 TEST(TestFileXyzInput, ReadAssignment)
 {
     Molecule newMolecule;
-    FileXyzInput input("./../EPA.ref","./../EPA.xyz");
+    FileXyzInput input("EPA.ref","EPA.xyz");
     input.readMoleculeCores(newMolecule);
     HungarianElectronAssigner hea;
     input.readElectronCoreAssignments(newMolecule.getCores(),hea);

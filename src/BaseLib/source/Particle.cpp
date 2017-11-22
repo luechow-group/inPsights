@@ -19,3 +19,7 @@ Vector3d Particle::position() const {
 void Particle::position(const Vector3d &position) {
     position_ = position;
 }
+
+double Particle::distance(const Particle &p1, const Particle &p2) {
+    return (p1.position()-p2.position()).norm();
+}

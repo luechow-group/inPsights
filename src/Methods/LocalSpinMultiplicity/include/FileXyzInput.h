@@ -9,7 +9,7 @@
 #include <vector>
 #include "Assignment.h"
 #include "Core.h"
-#include "ElectronAssigner.h"
+#include "HungarianElectronAssigner.h"
 #include "SpinDeterminer.h"
 
 /*
@@ -23,8 +23,8 @@ class FileXyzInput : public InputOutput{
 public:
     FileXyzInput(const std::string &refFilename, const std::string &xyzFilename);
     void readMoleculeCores(Molecule& molecule);
-    bool readElectronStructure(Molecule &molecule, const SpinDeterminer &spinDeterminer, ElectronAssigner *ea = nullptr);
-    void readElectronCoreAssignments(const std::vector<Core> &cores, ElectronAssigner &ea);
+    bool readElectronStructure(Molecule &molecule, const SpinDeterminer &spinDeterminer, HungarianElectronAssigner *ea = nullptr);
+    void readElectronCoreAssignments(const std::vector<Core> &cores, HungarianElectronAssigner &ea);
     const std::vector<Assignment> &getAssignments() const;
     void printAssignments();
     virtual ~FileXyzInput();

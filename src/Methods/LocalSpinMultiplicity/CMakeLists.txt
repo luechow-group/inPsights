@@ -16,7 +16,7 @@ include_directories( ${EIGEN3_INCLUDE_DIR} )
 include_directories(
         include
         source
-        resources
+        tests/resources
 )
 
 set(HEADER_FILES
@@ -28,9 +28,7 @@ set(HEADER_FILES
         include/FileXyzInput.h
         include/Molecule.h
         include/Assignment.h
-        include/ElectronAssigner.h
         include/HungarianElectronAssigner.h
-        include/TestElectronAssigner.h
         include/Hungarian.h
         include/SpinDeterminer.h
         include/SpinProjectionQuantumNumberCounter.h
@@ -44,16 +42,11 @@ set(SOURCE_FILES
         src/FileXyzInput.cpp
         src/Molecule.cpp
         src/pse.cpp
-        src/ElectronAssigner.cpp
         src/HungarianElectronAssigner.cpp
-        src/TestElectronAssigner.cpp
         src/Hungarian.cpp
         src/SpinDeterminer.cpp
         src/SpinProjectionQuantumNumberCounter.cpp
         )
-
-file(GLOB_RECURSE RESOURCE_FILES resources/*.*)
-file(COPY ${RESOURCE_FILES} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES})
 target_link_libraries(${PROJECT_NAME}

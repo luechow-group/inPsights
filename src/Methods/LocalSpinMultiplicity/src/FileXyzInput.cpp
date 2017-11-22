@@ -29,7 +29,7 @@ void FileXyzInput::readMoleculeCores(Molecule &molecule) {
 FileXyzInput::~FileXyzInput() {
 }
 
-bool FileXyzInput::readElectronStructure(Molecule &molecule, const SpinDeterminer &spinDeterminer, ElectronAssigner *ea) {
+bool FileXyzInput::readElectronStructure(Molecule &molecule, const SpinDeterminer &spinDeterminer, HungarianElectronAssigner *ea) {
     molecule.cleanElectrons();
     std::string helpString;
     streams[1]>>helpString;
@@ -54,7 +54,7 @@ bool FileXyzInput::readElectronStructure(Molecule &molecule, const SpinDetermine
     return true;
 }
 
-void FileXyzInput::readElectronCoreAssignments(const std::vector<Core> &cores, ElectronAssigner &ea) {
+void FileXyzInput::readElectronCoreAssignments(const std::vector<Core> &cores, HungarianElectronAssigner &ea) {
     int numRefs;
     streams[0]>>numRefs;
     streams[0].ignore(std::numeric_limits<std::streamsize>::max(),'\n');  // go to next line

@@ -15,6 +15,8 @@ public:
     Eigen::Vector3d position() const;
     void position(const Eigen::Vector3d& position);
 
+    static double distance(const Particle &p1, const Particle &p2);
+
 protected:
     Eigen::Vector3d position_;
 };

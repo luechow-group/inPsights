@@ -21,7 +21,7 @@ void Molecule::addElectron(spintype spin, double x, double y, double z) {
     this->electrons.emplace_back(spin,x,y,z);
 }
 
-void Molecule::assign(ElectronAssigner &electronAssigner) {
+void Molecule::assign(HungarianElectronAssigner &electronAssigner) {
     this->assign(electronAssigner.assign(cores,electrons));
 }
 
