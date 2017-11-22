@@ -417,10 +417,10 @@ int main(int argc, char *argv[]) {
   vLayout->addWidget(moleculeView,2);
   vLayout->addWidget(chartView,1);
 
-  widget->setWindowTitle(QStringLiteral("String Method Result"));
+  widget->setWindowTitle(QStringLiteral("Amolqc++"));
 
   widget->show();
-  widget->resize(1920, 1080);
+  widget->resize(800, 600);
 
   return app.exec();
 
