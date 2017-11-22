@@ -16,7 +16,7 @@ endif(UNIX)
 
 set(CMAKE_CXX_STANDARD 11)
 
-project(AmolqcGUI)
+project(Amolqcpp)
 
 message("C compiler: ${CMAKE_C_COMPILER}")
 message("CXX compiler: ${CMAKE_CXX_COMPILER}")
