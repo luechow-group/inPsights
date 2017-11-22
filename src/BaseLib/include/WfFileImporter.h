@@ -5,7 +5,6 @@
 #ifndef WFFILEIMPORTER_H
 #define WFFILEIMPORTER_H
 
-#include <fstream>
 #include "AmolqcImporter.h"
 #include "AtomCollection.h"
 
@@ -35,7 +34,8 @@ private:
     void readGeneralBlock();
 
     bool bohrQ_;
-    unsigned long charge_, numberOfNuclei_,multiplicity_;
+    long charge_;
+    unsigned long numberOfNuclei_,multiplicity_;
     std::string basis_, title_, jastrow_;
 };
 

@@ -7,8 +7,6 @@
 
 #include "Importer.h"
 
-
-
 class AmolqcImporter : public Importer{
 public:
     explicit AmolqcImporter(const std::string& filename);

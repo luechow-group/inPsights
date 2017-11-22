@@ -1,7 +1,7 @@
 #ifndef AMOLQCGUI_ELEMENTTYPES_H
 #define AMOLQCGUI_ELEMENTTYPES_H
 
-#include <iostream>
+//#include <iostream>
 #include <utility>
 #include <map>
 

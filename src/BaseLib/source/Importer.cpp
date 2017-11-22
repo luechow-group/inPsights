@@ -28,7 +28,6 @@ std::vector<std::string> Importer::split(const std::string &s) const {
                                      std::istream_iterator<std::string>{}});
 }
 
-
 // splits any delimiter type
 template<typename Out>
 void Importer::split(const std::string &s, char delimiter, Out result) const {

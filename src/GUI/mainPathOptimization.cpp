@@ -8,8 +8,8 @@
 #include <QtWidgets>
 #include <iostream>
 
+
 #include "OptimizationPathFileImporter.h"
-#include "RefFileImporter.h"
 #include "ElectronicWaveFunction.h"
 #include "ElectronicWaveFunctionProblem.h"
 #include "solver/bfgsnssolver.h"
@@ -21,9 +21,11 @@
 #include "ParticleCollectionPath3D.h"
 #include "MoleculeWidget.h"
 
+
 int main(int argc, char *argv[]) {
 
-    QApplication app(argc, argv);
+  QApplication app(argc, argv);
+  setlocale(LC_NUMERIC,"C");
 
     ElectronicWaveFunctionProblem electronicWaveFunctionProblem("Ethane-em-5.wf");
     cppoptlib::Criteria<double> crit = cppoptlib::Criteria<double>::nonsmoothDefaults();
@@ -92,18 +94,16 @@ int main(int argc, char *argv[]) {
     solver.minimize(electronicWaveFunctionProblem, xA);
     auto optimizationPath = electronicWaveFunctionProblem.getOptimizationPath();
 
-    
-    
-    //visualization
+   //visualization
     MoleculeWidget moleculeWidget;
     Qt3DCore::QEntity *root = moleculeWidget.createMoleculeWidget();
 
-    AtomCollection3D(root, ElectronicWaveFunction::getInstance().getAtomCollection());
+    AtomCollection3D(root,ElectronicWaveFunction::getInstance().getAtomCollection());
 
     // Plot the starting point
     ElectronCollection3D(root,ElectronCollection(ParticleCollection(xA),
                                                  optimizationPath.getSpinTypeCollection()));
-    
+
     // Plot the optimization path
     ParticleCollectionPath3D(root, optimizationPath);
 

@@ -5,11 +5,22 @@
 #ifndef AMOLQCGUI_IMPORTER_H
 #define AMOLQCGUI_IMPORTER_H
 
+#include <string>
 #include <fstream>
-#include <tuple>
+#include <vector>
+#include <iterator>
+
 #include "AtomCollection.h"
 #include "ElectronCollections.h"
 
+class StringManipulator{
+public:
+    std::vector<std::string> split(const std::string &s){
+        std::istringstream iss(s);
+        return std::vector<std::string>({std::istream_iterator<std::string>{iss},
+                                         std::istream_iterator<std::string>{}});
+    }
+};
 
 class Importer{
 

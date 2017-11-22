@@ -1,8 +1,3 @@
-#include <sstream>
-#include <iostream>
-#include <regex>
-#include <string>
-#include <algorithm>
 
 #include "WfFileImporter.h"
 #include "ElementInfo.h"
@@ -65,7 +60,7 @@ AtomCollection WfFileImporter::getAtomCollection() {
       }
       atomCollection.addAtom(x,y,z,elementType);
     }
-    return atomCollection;
+  return atomCollection;
 }
 
 unsigned long WfFileImporter::getNumberOfElectrons() {
