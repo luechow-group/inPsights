@@ -3,7 +3,7 @@
 //
 
 #include "ElectronicWaveFunctionProblem.h"
-
+#include <iomanip>
 
 ElectronicWaveFunctionProblem::ElectronicWaveFunctionProblem(const std::string &fileName)
         :

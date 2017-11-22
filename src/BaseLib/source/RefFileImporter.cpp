@@ -8,8 +8,6 @@
 RefFileImporter::RefFileImporter(const std::string &filename)
         : AmolqcImporter(filename) {
 
-    std::cout << getLine(0) << std::endl;
-
     numberOfNuclei_ = std::stoul(split(getLine(0))[0]);
     numberOfElectrons_ = std::stoul(split(getLine(numberOfNuclei_+2))[10]);
     numberOfAlphaElectrons_ = std::stoul(split(getLine(numberOfNuclei_+2))[8]);

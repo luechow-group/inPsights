@@ -28,13 +28,14 @@ int main(int argc, char *argv[]) {
   setlocale(LC_NUMERIC,"C");
 
     ElectronicWaveFunctionProblem electronicWaveFunctionProblem("Ethane-em-5.wf");
+
     cppoptlib::Criteria<double> crit = cppoptlib::Criteria<double>::nonsmoothDefaults();
 
     cppoptlib::GradientDescentUmrigarLimitedSteplength<ElectronicWaveFunctionProblem> solver;
     solver.setDebug(cppoptlib::DebugLevel::High);
     crit.gradNorm = 1e-6;
+    //TODO Wo soll der Fehler bei Iterationen sein? --> singularity in derminant (Normaler bfgsnssolver ab 267, umrigar und modbfgsns nicht)
     crit.iterations = 265;
-    solver.setStopCriteria(crit);
     solver.setStopCriteria(crit);
     solver.setMaxStepLength(1e-1);
     solver.setSteepestDescentRate(1.0);
@@ -93,6 +94,7 @@ int main(int argc, char *argv[]) {
 
     solver.minimize(electronicWaveFunctionProblem, xA);
     auto optimizationPath = electronicWaveFunctionProblem.getOptimizationPath();
+
 
    //visualization
     MoleculeWidget moleculeWidget;
