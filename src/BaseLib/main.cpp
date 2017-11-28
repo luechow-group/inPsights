@@ -34,7 +34,7 @@ int main(int argc, char const *argv[]) {
     //a.insert(a.begin()+1,2);
     //std::cout << a[0] << " " << a[1]<< " " << a[2]<< " " << a[3] << std::endl;
     auto ecs = importer.getAllSubstructures(1);
-    for (int i = 0; i < ecs.getNumberOfParticleCollections(); ++i) {
+    for (int i = 0; i < ecs.length(); ++i) {
         std::cout << ecs.getSpinTypeCollection().spinTypesAsEigenVector().transpose() << std::endl;
         std::cout << ecs[i].positionsAsEigenVector().transpose() << std::endl;
     }
@@ -43,7 +43,7 @@ int main(int argc, char const *argv[]) {
     OptimizationPathFileImporter importer2(filename2,1);
 
     auto ecs2 = importer2.getPath(1);
-    for (int i = 0; i < ecs2.getNumberOfParticleCollections(); ++i) {
+    for (int i = 0; i < ecs2.length(); ++i) {
         std::cout << ecs2.getSpinTypeCollection().spinTypesAsEigenVector().transpose() << std::endl;
         std::cout << ecs2[i].positionsAsEigenVector().transpose() << std::endl;
     }

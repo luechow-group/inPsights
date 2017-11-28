@@ -67,23 +67,18 @@ public:
 
     unsigned long getNumberOfNuclei() const;
 
-    AtomCollection getAtomCollection();
+    AtomCollection getAtomCollection() const;
 
     unsigned long getNumberOfElectrons() const;
 
     SpinTypeCollection getSpinTypeCollection() const;
-
-    void setFrozenElectrons(const std::vector<unsigned long>& frozenElectrons);
-    std::vector<unsigned long> getFrozenElectrons();
 
 private:
     explicit ElectronicWaveFunction(const std::string& fileName);
     const std::string fileName_;
     unsigned long numberOfNuclei_, numberOfElectrons_, numberOfAlphaElectrons_, numberOfBetaElectrons_;
     double determinantProbabilityAmplitude_, jastrowFactor_, localEnergy_;
-    Eigen::VectorXd electronPositionCollection_, electronDriftCollection_;
-
-    std::vector<unsigned long> frozenElectrons_;
+    Eigen::VectorXd electronPositionCollection_, electronDriftCollection_;//TODO REPLACE BY BASELIB ELECTRONCOLLECTION!
     AtomCollection atomCollection_;
     SpinTypeCollection spinTypeCollection_;
 

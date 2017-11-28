@@ -2,6 +2,7 @@
 // Created by Michael Heuer on 30.10.17.
 //
 
+#include <ElectronCollection.h>
 #include "ParticleCollections.h"
 
 ParticleCollections::ParticleCollections()
@@ -27,6 +28,14 @@ ParticleCollection ParticleCollections::operator[](long i) const {
     return particleCollections_[i];
 }
 
+ParticleCollection ParticleCollections::front() const {
+    return particleCollections_.front();
+}
+
+ParticleCollection ParticleCollections::back() const {
+    return particleCollections_.back();
+}
+
 void ParticleCollections::insert(const ParticleCollection &particleCollection, long i) {
     assert( numberOfParticles_ == particleCollection.numberOfParticles()
             && "All particle collections must contain the same number of particles.");
@@ -35,7 +44,7 @@ void ParticleCollections::insert(const ParticleCollection &particleCollection, l
 
 void ParticleCollections::append(const ParticleCollection &particleCollection) {
 
-    if(getNumberOfParticleCollections() == 0) {
+    if(length() == 0) {
         numberOfParticles_ = particleCollection.numberOfParticles();
     }
     else {
@@ -53,7 +62,7 @@ std::vector<ParticleCollection> ParticleCollections::getParticleCollections() co
     return particleCollections_;
 }
 
-unsigned long ParticleCollections::getNumberOfParticleCollections() const {
+unsigned long ParticleCollections::length() const {
     return particleCollections_.size();
 }
 

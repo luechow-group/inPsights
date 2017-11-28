@@ -16,7 +16,7 @@ ParticleCollectionPath3D::ParticleCollectionPath3D(Qt3DCore::QEntity *root,
     std::vector<std::vector<QVector3D>> pointsList(numberOfParticles);
     for (unsigned i = 0; i < numberOfParticles; ++i) { // iterate over particles
 
-        for (int j = 0; j < electronCollections.getNumberOfParticleCollections(); ++j) {
+        for (int j = 0; j < electronCollections.length(); ++j) {
             auto tmp = electronCollections[j][i].position();
             pointsList[i].emplace_back(QVector3D(float(tmp(0)),float(tmp(1)),float(tmp(2))));
         }

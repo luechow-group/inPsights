@@ -7,6 +7,7 @@
 
 #include <vector>
 #include "ParticleCollection.h"
+#include "ElectronCollection.h"
 
 class ParticleCollections{
 public:
@@ -14,6 +15,8 @@ public:
     explicit ParticleCollections(const std::vector<ParticleCollection> &particleCollections);
 
     ParticleCollection operator[](long i) const;
+    ParticleCollection front() const;
+    ParticleCollection back() const;
 
     void insert (const ParticleCollection& particleCollection, long i);
     void append (const ParticleCollection& particleCollection);
@@ -21,7 +24,7 @@ public:
 
     std::vector<ParticleCollection> getParticleCollections() const;
 
-    unsigned long getNumberOfParticleCollections() const;
+    unsigned long length() const;
     unsigned long getNumberOfParticles() const;
 
 private:

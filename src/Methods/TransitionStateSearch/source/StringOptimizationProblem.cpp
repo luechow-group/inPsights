@@ -118,7 +118,7 @@ void StringOptimizationProblem::gradient(const Eigen::VectorXd &x, Eigen::Vector
   }
 }
 
-bool StringOptimizationProblem::callback(cppoptlib::Criteria<double> &state, Eigen::VectorXd &x) {
+bool StringOptimizationProblem::callback(cppoptlib::Criteria<double> &state, Eigen::VectorXd &x, Eigen::VectorXd& grad) {
   stepCounter_++;
   std::cout << "(" << std::setw(2) << state.iterations << ")"
             << " f(x) = " << std::fixed << std::setw(10) << std::setprecision(10) << value(x)

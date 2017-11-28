@@ -13,6 +13,7 @@
 #include "ElectronicWaveFunction.h"
 #include "ElectronicWaveFunctionProblem.h"
 #include "solver/bfgsnssolver.h"
+#include <solver/bfgssolver.h>
 #include "solver/timeintegrationsolver.h"
 #include "solver/gradientdescentumrigarlimitedsteplength.h"
 #include "solver/gradientdescentsolver.h"
@@ -20,7 +21,7 @@
 #include "ElectronCollection3D.h"
 #include "ParticleCollectionPath3D.h"
 #include "MoleculeWidget.h"
-
+#include <Sphere.h>
 
 int main(int argc, char *argv[]) {
 
@@ -33,9 +34,8 @@ int main(int argc, char *argv[]) {
 
     cppoptlib::GradientDescentUmrigarLimitedSteplength<ElectronicWaveFunctionProblem> solver;
     solver.setDebug(cppoptlib::DebugLevel::High);
-    crit.gradNorm = 1e-6;
-    //TODO Wo soll der Fehler bei Iterationen sein? --> singularity in derminant (Normaler bfgsnssolver ab 267, umrigar und modbfgsns nicht)
-    crit.iterations = 265;
+    crit.gradNorm = 1e-5;
+    crit.iterations =  300;
     solver.setStopCriteria(crit);
     solver.setMaxStepLength(1e-1);
     solver.setSteepestDescentRate(1.0);
@@ -94,7 +94,19 @@ int main(int argc, char *argv[]) {
 
     solver.minimize(electronicWaveFunctionProblem, xA);
     auto optimizationPath = electronicWaveFunctionProblem.getOptimizationPath();
+    ElectronCollections shortenedPath(ElectronCollection(optimizationPath.front(),
+                                                         optimizationPath.getSpinTypeCollection()));
 
+    //TODO use RDP algorithm
+    unsigned long nwanted = 300;
+    auto skip = 1+(optimizationPath.length()/nwanted);
+    std::cout << "displaying structures with a spacing of " << skip << "." << std::endl;
+    for (unsigned long i = 0; i < optimizationPath.length(); i=i+skip) {
+        shortenedPath.append(ElectronCollection(optimizationPath.getElectronCollection(i),
+                                                optimizationPath.getSpinTypeCollection()));
+    }
+
+    shortenedPath.append(ElectronCollection(xA,optimizationPath.getSpinTypeCollection().spinTypesAsEigenVector()));
 
    //visualization
     MoleculeWidget moleculeWidget;
@@ -107,7 +119,14 @@ int main(int argc, char *argv[]) {
                                                  optimizationPath.getSpinTypeCollection()));
 
     // Plot the optimization path
-    ParticleCollectionPath3D(root, optimizationPath);
+    ParticleCollectionPath3D(root, shortenedPath);
+
+    //QVector3D qVector3D;
+    //auto bla = ElectronicWaveFunction::getInstance().getAtomCollection()[0];
+    //qVector3D.setX(bla.position()[0]);
+    //qVector3D.setY(bla.position()[1]);
+    //qVector3D.setZ(bla.position()[2]);
+    //new Sphere(root,QColor(0,255,0),qVector3D,0.1);
 
     return app.exec();
 };
