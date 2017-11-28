@@ -11,12 +11,12 @@ ElectronicWaveFunctionProblem::ElectronicWaveFunctionProblem(const std::string &
         gradientCallCount_(0),
         wf_(ElectronicWaveFunction::getInstance(fileName)),
         optimizationPath_(wf_.getSpinTypeCollection()),
-        nanElectronsCoordinateIndices_(Eigen::Matrix<bool,Eigen::Dynamic,1>(wf_.getNumberOfElectrons()*3).setConstant(false)),
-        indicesOfElectronsNotAtCoresYet_(0),
-        indicesOfElectronsAtCores_(0)
+        electronCoordinateIndicesThatWereNaN_(Eigen::Matrix<bool,Eigen::Dynamic,1>(wf_.getNumberOfElectrons()*3).setConstant(false)),
+        indicesOfElectronsNotAtNuclei_(0),
+        indicesOfElectronsAtNuclei_(0)
 {
     for (unsigned long i = 0; i < wf_.getNumberOfElectrons(); ++i) {
-        indicesOfElectronsNotAtCoresYet_.push_back(i);
+        indicesOfElectronsNotAtNuclei_.push_back(i);
     }
 }
 
@@ -42,14 +42,12 @@ void ElectronicWaveFunctionProblem::hessian(const Eigen::VectorXd &x, Eigen::Mat
 
     //TODO asserts?
     long dims = x.size();
-  //std::vector<unsigned long> ignoredIdx = wf_.getFrozenElectrons();
-  //assert(ignoredIdx.size() < dims);
 
     cppoptlib::Problem<double,Eigen::Dynamic>::hessian(x,hessian);
 
-    //TODO RETHINK!
+    //TODO is the following necessary or is fix gradient (which is executed internally) sufficient?
     for (int i = 0; i < wf_.getNumberOfElectrons()*3; ++i) {
-        if(nanElectronsCoordinateIndices_[i]){
+        if(electronCoordinateIndicesThatWereNaN_[i]){
             //set entire row to zero
             hessian.block(i,0,1,dims) = Eigen::MatrixXd::Zero(dims,1);
             //set entire column to zero
@@ -62,15 +60,19 @@ void ElectronicWaveFunctionProblem::hessian(const Eigen::VectorXd &x, Eigen::Mat
 void ElectronicWaveFunctionProblem::fixGradient(VectorXd &gradient) {
 
   //std::cout << "not at core: ";
-    for(auto i : indicesOfElectronsNotAtCoresYet_){
+    for(auto i : indicesOfElectronsNotAtNuclei_){
   //    std::cout << i << " ";
-        if(gradient[i*3+0] != gradient[i*3+0]) gradient[i*3+0] = 0;
-        if(gradient[i*3+1] != gradient[i*3+1]) gradient[i*3+1] = 0;
-        if(gradient[i*3+2] != gradient[i*3+2]) gradient[i*3+2] = 0;
+        for (unsigned j = 0; j < 3; ++j) {
+            if(gradient[i*3+j] != gradient[i*3+j]) {
+                gradient[i*3+j] = 0;
+                electronCoordinateIndicesThatWereNaN_[i*3+j] = true;
+            }
+            else electronCoordinateIndicesThatWereNaN_[i*3+j] = false;
+        }
     }
   //std::cout << std::endl;
   //std::cout << "    at core: ";
-    for(auto i : indicesOfElectronsAtCores_){
+    for(auto i : indicesOfElectronsAtNuclei_){
   //    std::cout << i << " ";
         gradient.segment(i*3,3) = Eigen::Vector3d::Zero(3);
     }
@@ -85,7 +87,7 @@ void ElectronicWaveFunctionProblem::putElectronsIntoNuclei(Eigen::VectorXd& x, E
     auto numberOfNuclei = atomCollection.numberOfParticles();
     auto numberOfElectrons = wf_.getNumberOfElectrons();
 
-    for(auto i : indicesOfElectronsNotAtCoresYet_){
+    for(auto i : indicesOfElectronsNotAtNuclei_){
         unsigned long closestNucleusIdx=0;
         double smallestDistance = std::numeric_limits<double>::infinity();
 
@@ -103,11 +105,11 @@ void ElectronicWaveFunctionProblem::putElectronsIntoNuclei(Eigen::VectorXd& x, E
             //Eigen::Block<Eigen::VectorXd, i*3, 0>(x.derived(), 0, 0) = atomCollection[closestNucleusIdx].position();
             x.segment(i*3,3) = atomCollection[closestNucleusIdx].position();
 
-            indicesOfElectronsNotAtCoresYet_.erase( std::remove( indicesOfElectronsNotAtCoresYet_.begin(),
-                                                                 indicesOfElectronsNotAtCoresYet_.end(), i),
-                                                    indicesOfElectronsNotAtCoresYet_.end() );
-            indicesOfElectronsAtCores_.push_back(i);
-            std::sort(indicesOfElectronsAtCores_.begin(),indicesOfElectronsAtCores_.end());
+            indicesOfElectronsNotAtNuclei_.erase( std::remove( indicesOfElectronsNotAtNuclei_.begin(),
+                                                               indicesOfElectronsNotAtNuclei_.end(), i),
+                                                  indicesOfElectronsNotAtNuclei_.end() );
+            indicesOfElectronsAtNuclei_.push_back(i);
+            std::sort(indicesOfElectronsAtNuclei_.begin(),indicesOfElectronsAtNuclei_.end());
 
             // recalulate gradient
             gradient(x,grad);
@@ -135,3 +137,10 @@ Eigen::VectorXd ElectronicWaveFunctionProblem::getNucleiPositions() const{
     return wf_.getAtomCollection().positionsAsEigenVector();
 }
 
+std::vector<unsigned long> ElectronicWaveFunctionProblem::getIndicesOfElectronsNotAtNuclei() {
+    return indicesOfElectronsNotAtNuclei_;
+}
+
+std::vector<unsigned long> ElectronicWaveFunctionProblem::getIndicesOfElectronsAtNuclei() {
+    return indicesOfElectronsAtNuclei_;
+}
