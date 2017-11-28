@@ -20,9 +20,9 @@ public:
 
     void hessian(const Eigen::VectorXd&x, Eigen::MatrixXd &hessian) override;
 
-    bool callback(const cppoptlib::Criteria<double> &state, const Eigen::VectorXd &x) override;
+    bool callback(const cppoptlib::Criteria<double> &state, Eigen::VectorXd &x, Eigen::VectorXd& grad) override;
 
-    Eigen::VectorXd getNucleiPositions();
+    Eigen::VectorXd getNucleiPositions() const;
 
     unsigned getValueCallCount(){
         return valueCallCount_;
@@ -45,10 +45,20 @@ public:
         return optimizationPath_;
     }
 
+    void putElectronsIntoNuclei(Eigen::VectorXd& x, Eigen::VectorXd& grad);
+
+
+
+
 private:
     unsigned valueCallCount_, gradientCallCount_;
     ElectronicWaveFunction& wf_;
     ElectronCollections optimizationPath_;
-};
+    Eigen::Matrix<bool,Eigen::Dynamic,1> nanElectronsCoordinateIndices_;
+    std::vector<unsigned long> indicesOfElectronsNotAtCoresYet_;
+    std::vector<unsigned long> indicesOfElectronsAtCores_;
 
+    void fixGradient(VectorXd &gradient);
+
+};
 #endif //AMOLQCGUI_ELECTRONICWAVEFUNCTIONPROBLEM_H

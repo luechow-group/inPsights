@@ -26,7 +26,7 @@ public:
 
     void gradient(const Eigen::VectorXd &x, Eigen::VectorXd &grad);
 
-    bool callback(cppoptlib::Criteria<double> &state, Eigen::VectorXd &x);
+    bool callback(cppoptlib::Criteria<double> &state, Eigen::VectorXd &x, Eigen::VectorXd& grad);
 
     Eigen::VectorXd stateValues(const Eigen::VectorXd &x);
 
