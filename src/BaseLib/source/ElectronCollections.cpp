@@ -12,7 +12,8 @@ ElectronCollections::ElectronCollections(const SpinTypeCollection &spinTypeColle
         : spinTypeCollection_(spinTypeCollection)
 {}
 
-
+ElectronCollections::ElectronCollections(const ElectronCollection &electronCollection)
+        : ElectronCollections(std::vector<ElectronCollection>({electronCollection})){}
 
 ElectronCollections::ElectronCollections(const std::vector<ElectronCollection> &electronCollections)
         : spinTypeCollection_(static_cast<SpinTypeCollection>(electronCollections[0])) {
@@ -64,7 +65,7 @@ ElectronCollections::ElectronCollections(const std::vector<ParticleCollection> &
 void ElectronCollections::insert(const ElectronCollection &electronCollection, long i) {
 
     // use the SpinTypeCollection if ElectronCollections is empty
-    if(getNumberOfParticleCollections() == 0){
+    if(length() == 0){
         assert( i != 0 && "The collection is empty but the index i is not equal to zero ");
         spinTypeCollection_ = static_cast<SpinTypeCollection>(electronCollection);
     } else {
