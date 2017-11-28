@@ -99,18 +99,18 @@ void ElectronicWaveFunctionProblem::putElectronsIntoNuclei(Eigen::VectorXd& x, E
 
         double threshold = 0.05;
         if (smallestDistance <= threshold){
-            //std::cout << "before " << x.transpose() << std::endl;
             //TODO PROPER?
             //Eigen::Block<Eigen::VectorXd, i*3, 0>(x.derived(), 0, 0) = atomCollection[closestNucleusIdx].position();
             x.segment(i*3,3) = atomCollection[closestNucleusIdx].position();
-            // recalulate gradient
+
             indicesOfElectronsNotAtCoresYet_.erase( std::remove( indicesOfElectronsNotAtCoresYet_.begin(),
                                                                  indicesOfElectronsNotAtCoresYet_.end(), i),
                                                     indicesOfElectronsNotAtCoresYet_.end() );
             indicesOfElectronsAtCores_.push_back(i);
             std::sort(indicesOfElectronsAtCores_.begin(),indicesOfElectronsAtCores_.end());
+
+            // recalulate gradient
             gradient(x,grad);
-            //std::cout << "to nuc " << x.transpose() << std::endl;
         }
 
     }
@@ -120,7 +120,6 @@ bool ElectronicWaveFunctionProblem::callback(const cppoptlib::Criteria<double> &
 
     putElectronsIntoNuclei(x, grad);
 
-    //if(state.iterations%20 == 0)
     optimizationPath_.append(ElectronCollection(x, wf_.getSpinTypeCollection().spinTypesAsEigenVector()));
 
     std::cout << "(" << std::setw(2) << state.iterations << ")"
