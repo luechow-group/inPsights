@@ -47,16 +47,16 @@ public:
 
     void putElectronsIntoNuclei(Eigen::VectorXd& x, Eigen::VectorXd& grad);
 
-
-
+    std::vector<unsigned long> getIndicesOfElectronsNotAtNuclei();
+    std::vector<unsigned long> getIndicesOfElectronsAtNuclei();
 
 private:
     unsigned valueCallCount_, gradientCallCount_;
     ElectronicWaveFunction& wf_;
     ElectronCollections optimizationPath_;
-    Eigen::Matrix<bool,Eigen::Dynamic,1> nanElectronsCoordinateIndices_;
-    std::vector<unsigned long> indicesOfElectronsNotAtCoresYet_;
-    std::vector<unsigned long> indicesOfElectronsAtCores_;
+    Eigen::Matrix<bool,Eigen::Dynamic,1> electronCoordinateIndicesThatWereNaN_;
+    std::vector<unsigned long> indicesOfElectronsNotAtNuclei_;
+    std::vector<unsigned long> indicesOfElectronsAtNuclei_;
 
     void fixGradient(VectorXd &gradient);
 
