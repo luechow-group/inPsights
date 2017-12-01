@@ -24,6 +24,8 @@ public:
 
     ParticleCollection getParticleCollection(unsigned long k, unsigned long m) const;
 
+    unsigned long getNumberOfPaths() const;
+
 private:
     unsigned long calculateLine(unsigned long k, unsigned long m) const;
 

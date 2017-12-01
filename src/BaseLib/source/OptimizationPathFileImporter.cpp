@@ -45,3 +45,7 @@ ElectronCollections OptimizationPathFileImporter::getPath(unsigned long k) const
     return ElectronCollections(particleCollectionVector,
                                this->getSpinTypeCollection(numberOfAlphaElectrons_, numberOfBetaElectrons_));
 }
+
+unsigned long OptimizationPathFileImporter::getNumberOfPaths() const {
+    return numberOfPaths_;
+}
