@@ -33,6 +33,9 @@ set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} ${OpenMP_Fortran_FLAGS}")
 # Prevent error from policy CMP0042. See >>> cmake  --help-policy CMP0042
 set(CMAKE_MACOSX_RPATH 1)
 
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
+
+
 #------------------------------------------------#
 # Download and unpack googletest at configure time
 configure_file(DownloadGoogleTest.in
