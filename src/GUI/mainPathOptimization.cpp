@@ -40,7 +40,6 @@ int main(int argc, char *argv[]) {
     solver.setMaxStepLength(1e-1);
     solver.setSteepestDescentRate(1.0);
     solver.setDistanceCriteriaUmrigar(0.5);
-    solver.setThreshholdUmrigar(1e-5);
 
     //RefFileImporter refFileImporter("Ethane-max.ref");
     //auto maximumOfInterest = refFileImporter.getMaximaStructure(1,1);
