@@ -27,11 +27,11 @@ set(SOURCE_FILES
 
 add_subdirectory(amolqc)
 
-add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES} dummy.f90)
+add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES})
 target_link_libraries(${PROJECT_NAME}
         BaseLib
         cppoptlib
-        amolqcppInterface
+        AmolqcppInterface
         )
 target_include_directories(${PROJECT_NAME} PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
