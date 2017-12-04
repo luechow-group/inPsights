@@ -130,6 +130,12 @@ bool ElectronicWaveFunctionProblem::callback(const cppoptlib::Criteria<double> &
               << " gradInfNorm = " << std::setw(8) << state.gradNorm
               << std::endl;
     std::cout << "value calls: " <<  valueCallCount_ << ", gradient calls:" << gradientCallCount_ << std::endl;
+    
+    for (auto & it : indicesOfElectronsNotAtNuclei_) std::cout << it << " ";
+    std::cout << std::endl;
+    for (auto & it : indicesOfElectronsAtNuclei_) std::cout << it << " ";
+    std::cout << std::endl;
+
     return true;
 }
 
