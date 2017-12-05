@@ -1,18 +1,26 @@
 cmake_minimum_required(VERSION 3.5)
 
-if (UNIX)
-    if(APPLE)
-        message("using apple compiler options")
-        set(CMAKE_C_COMPILER "/usr/local/bin/gcc-7")
-        set(CMAKE_CXX_COMPILER "/usr/local/bin/g++-7")
-        set(CMAKE_Fortran_COMPILER "/usr/local/bin/gfortran-7")
-    else()
-        message("using UNIX compiler options")
-        set(CMAKE_C_COMPILER gcc)
-        set(CMAKE_CXX_COMPILER g++)
-        set(CMAKE_Fortran_COMPILER gfortran)
-    endif(APPLE)
-endif(UNIX)
+if(EXISTS $ENV{CC})
+    message("Using specified C Compiler")
+    set(CMAKE_C_COMPILER $ENV{CC})
+else()
+    message("Using default C Compiler")
+endif()
+
+if(EXISTS $ENV{CXX})
+    message("Using specified C++ Compiler")
+    set(CMAKE_CXX_COMPILER $ENV{CXX})
+else()
+    message("Using default CXX Compiler")
+endif()
+
+if(EXISTS $ENV{FC})
+    message("Using specified Fortran Compiler")
+    set(CMAKE_Fortran_COMPILER $ENV{FC})
+else()
+    message("Using default Fortran Compiler")
+endif()
+
 
 set(CMAKE_CXX_STANDARD 11)
 
@@ -27,11 +35,12 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
 set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} ${OpenMP_Fortran_FLAGS}")
 
-#find_package (MKL)
-#option (USE_MKL_LIBRARY "Perform linear algebra operations with the MKL library" ${MKL_FOUND})
 
 # Prevent error from policy CMP0042. See >>> cmake  --help-policy CMP0042
 set(CMAKE_MACOSX_RPATH 1)
+
+#set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
+
 
 #------------------------------------------------#
 # Download and unpack googletest at configure time

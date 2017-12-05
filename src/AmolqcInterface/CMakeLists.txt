@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.5)
 
 project(AmolqcInterface C CXX Fortran)
 
+set(Amolqcpp_BUILD TRUE)
 
 set ( PROJECT_FOLDER_NAME ${PROJECT_NAME})
 set ( PROJECT_PATH ${PROJECT_NAME})

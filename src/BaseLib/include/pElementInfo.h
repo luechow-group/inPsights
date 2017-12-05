@@ -4,6 +4,7 @@
 #include "NaturalConstants.h"
 #include "ElementType.h"
 #include "ElementColor.h"
+#include <string>
 
 namespace Elements {
 
