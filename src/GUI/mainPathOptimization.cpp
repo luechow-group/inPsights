@@ -32,15 +32,14 @@ int main(int argc, char *argv[]) {
 
     cppoptlib::Criteria<double> crit = cppoptlib::Criteria<double>::nonsmoothDefaults();
 
-    cppoptlib::GradientDescentUmrigarLimitedSteplength<ElectronicWaveFunctionProblem> solver;
+    cppoptlib::GradientDescentSolver<ElectronicWaveFunctionProblem> solver;
     solver.setDebug(cppoptlib::DebugLevel::High);
     crit.gradNorm = 1e-5;
     crit.iterations =  300;
     solver.setStopCriteria(crit);
-    solver.setMaxStepLength(1e-1);
-    solver.setSteepestDescentRate(1.0);
-    solver.setDistanceCriteriaUmrigar(0.5);
-    solver.setThreshholdUmrigar(1e-5);
+    //solver.setMaxStepLength(1e-1);
+    //solver.setSteepestDescentRate(1.0);
+    //solver.setDistanceCriteriaUmrigar(0.5);
 
     //RefFileImporter refFileImporter("Ethane-max.ref");
     //auto maximumOfInterest = refFileImporter.getMaximaStructure(1,1);
