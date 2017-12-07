@@ -58,10 +58,7 @@ void ElectronicWaveFunctionProblem::hessian(const Eigen::VectorXd &x, Eigen::Mat
 
 
 void ElectronicWaveFunctionProblem::fixGradient(VectorXd &gradient) {
-
-  //std::cout << "not at core: ";
     for(auto i : indicesOfElectronsNotAtNuclei_){
-  //    std::cout << i << " ";
         for (unsigned j = 0; j < 3; ++j) {
             if(gradient[i*3+j] != gradient[i*3+j]) {
                 gradient[i*3+j] = 0;
@@ -70,13 +67,9 @@ void ElectronicWaveFunctionProblem::fixGradient(VectorXd &gradient) {
             else electronCoordinateIndicesThatWereNaN_[i*3+j] = false;
         }
     }
-  //std::cout << std::endl;
-  //std::cout << "    at core: ";
     for(auto i : indicesOfElectronsAtNuclei_){
-  //    std::cout << i << " ";
         gradient.segment(i*3,3) = Eigen::Vector3d::Zero(3);
     }
-  //std::cout << std::endl;
 }
 
 
@@ -87,10 +80,12 @@ void ElectronicWaveFunctionProblem::putElectronsIntoNuclei(Eigen::VectorXd& x, E
     auto numberOfNuclei = atomCollection.numberOfParticles();
     auto numberOfElectrons = wf_.getNumberOfElectrons();
 
+    // iterate over electrons that were not at nuclei in the last step
     for(auto i : indicesOfElectronsNotAtNuclei_){
         unsigned long closestNucleusIdx=0;
         double smallestDistance = std::numeric_limits<double>::infinity();
 
+        // iterate over all nuclei and find the index of the electron with the smallest distance
         for(unsigned long j = 0; j < numberOfNuclei; ++j){
             double distance = (atomCollection[j].position()-x.segment(i*3,3)).norm();
             if(distance < smallestDistance ) {
@@ -98,23 +93,26 @@ void ElectronicWaveFunctionProblem::putElectronsIntoNuclei(Eigen::VectorXd& x, E
                 closestNucleusIdx = j;
             }
         }
-
+        // check the electron with the smallest distance is close than the threshold
         double threshold = 0.05;
         if (smallestDistance <= threshold){
             //TODO PROPER?
             //Eigen::Block<Eigen::VectorXd, i*3, 0>(x.derived(), 0, 0) = atomCollection[closestNucleusIdx].position();
             x.segment(i*3,3) = atomCollection[closestNucleusIdx].position();
 
-            indicesOfElectronsNotAtNuclei_.erase( std::remove( indicesOfElectronsNotAtNuclei_.begin(),
-                                                               indicesOfElectronsNotAtNuclei_.end(), i),
-                                                  indicesOfElectronsNotAtNuclei_.end() );
+            //save the electron index in the indicesOfElectronsAtNuclei_ vector
             indicesOfElectronsAtNuclei_.push_back(i);
             std::sort(indicesOfElectronsAtNuclei_.begin(),indicesOfElectronsAtNuclei_.end());
 
             // recalulate gradient
             gradient(x,grad);
         }
-
+    }
+    // now, remove the electrons from the indicesOfElectronsNotAtNuclei_ vector
+    for(auto i : indicesOfElectronsAtNuclei_) {
+        indicesOfElectronsNotAtNuclei_.erase(std::remove(indicesOfElectronsNotAtNuclei_.begin(),
+                                                         indicesOfElectronsNotAtNuclei_.end(), i),
+                                             indicesOfElectronsNotAtNuclei_.end());
     }
 }
 
@@ -130,7 +128,7 @@ bool ElectronicWaveFunctionProblem::callback(const cppoptlib::Criteria<double> &
               << " gradInfNorm = " << std::setw(8) << state.gradNorm
               << std::endl;
     std::cout << "value calls: " <<  valueCallCount_ << ", gradient calls:" << gradientCallCount_ << std::endl;
-    
+
     for (auto & it : indicesOfElectronsNotAtNuclei_) std::cout << it << " ";
     std::cout << std::endl;
     for (auto & it : indicesOfElectronsAtNuclei_) std::cout << it << " ";
