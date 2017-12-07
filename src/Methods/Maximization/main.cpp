@@ -8,9 +8,138 @@
 #include "ElectronicWaveFunction.h"
 #include "ElectronicWaveFunctionProblem.h"
 #include "RefFileImporter.h"
+#include <OptimizationPathFileImporter.h>
+#include <solver/gradientdescentsimplesolver.h>
+#include "solver/gradientdescentumrigarlimitedsteplength.h"
+#include "solver/gradientdescentsolver.h"
 
 int main(int argc, char const *argv[]) {
-    
+
+/*
+    // GradientDescentSimpleSolver zur Endpunktbestimmung und Vergleich Umrigar, Diboran, sechster Pfad
+    cppoptlib::Criteria<double> crit = cppoptlib::Criteria<double>::nonsmoothDefaults();
+
+    OptimizationPathFileImporter optimizationPathFileImporter("Diborane-Paths.300",1); // Aufpassen ob richtige Multiplizität
+    std::string wfFilename = "Diborane.wf";
+    ElectronicWaveFunctionProblem electronicWaveFunctionProblem(wfFilename);
+
+    electronicWaveFunctionProblem.getIndicesOfElectronsNotAtNuclei();
+
+    auto numberOfPaths = optimizationPathFileImporter.getNumberOfPaths();
+
+    for (unsigned long k = 6; k < 7; ++k) {
+        auto psiSquareDistributedParticleCollection = optimizationPathFileImporter.getPath(k).front();
+        VectorXd x0 = psiSquareDistributedParticleCollection.positionsAsEigenVector();
+
+        cppoptlib::GradientDescentSimpleSolver<ElectronicWaveFunctionProblem> solver;
+        solver.setDebug(cppoptlib::DebugLevel::High);
+        crit.gradNorm = 1e-5;
+        crit.iterations = 10000;
+        solver.setStopCriteria(crit);
+        //solver.setMaxStepLength(1e-1);
+        //solver.setSteepestDescentRate(1.0);
+        //solver.setDistanceCriteriaUmrigar(0.1);
+
+        solver.minimize(electronicWaveFunctionProblem, x0);
+
+        std::cout << x0 << std::endl;
+    }
+*/
+
+/*
+    // GradientDescentSolver mit MoreThuente lineSearch, Diboran, sechster Pfad
+    cppoptlib::Criteria<double> crit = cppoptlib::Criteria<double>::nonsmoothDefaults();
+
+    OptimizationPathFileImporter optimizationPathFileImporter("Diborane-Paths.300",1); // Aufpassen ob richtige Multiplizität
+    std::string wfFilename = "Diborane.wf";
+    ElectronicWaveFunctionProblem electronicWaveFunctionProblem(wfFilename);
+
+    electronicWaveFunctionProblem.getIndicesOfElectronsNotAtNuclei();
+
+    auto numberOfPaths = optimizationPathFileImporter.getNumberOfPaths();
+
+    for (unsigned long k = 6; k < 7; ++k) {
+        auto psiSquareDistributedParticleCollection = optimizationPathFileImporter.getPath(k).front();
+        VectorXd x0 = psiSquareDistributedParticleCollection.positionsAsEigenVector();
+
+        cppoptlib::GradientDescentSolver<ElectronicWaveFunctionProblem> solver;
+        solver.setDebug(cppoptlib::DebugLevel::High);
+        crit.gradNorm = 1e-5;
+        crit.iterations = 10000;
+        solver.setStopCriteria(crit);
+        //solver.setMaxStepLength(1e-1);
+        //solver.setSteepestDescentRate(1.0);
+        //solver.setDistanceCriteriaUmrigar(0.1);
+
+        solver.minimize(electronicWaveFunctionProblem, x0);
+
+        std::cout << x0 << std::endl;
+    }
+*/
+
+/*    
+    // GradientDescentUmrigarLimitedSteplength, Diboran, sechster Pfad
+    cppoptlib::Criteria<double> crit = cppoptlib::Criteria<double>::nonsmoothDefaults();
+
+    OptimizationPathFileImporter optimizationPathFileImporter("Diborane-Paths.300",1); // Aufpassen ob richtige Multiplizität
+    std::string wfFilename = "Diborane.wf";
+    ElectronicWaveFunctionProblem electronicWaveFunctionProblem(wfFilename);
+
+    electronicWaveFunctionProblem.getIndicesOfElectronsNotAtNuclei();
+
+    auto numberOfPaths = optimizationPathFileImporter.getNumberOfPaths();
+
+    for (unsigned long k = 6; k < 7; ++k) {
+        auto psiSquareDistributedParticleCollection = optimizationPathFileImporter.getPath(k).front();
+        VectorXd x0 = psiSquareDistributedParticleCollection.positionsAsEigenVector();
+
+        cppoptlib::GradientDescentUmrigarLimitedSteplength<ElectronicWaveFunctionProblem> solver;
+        solver.setDebug(cppoptlib::DebugLevel::High);
+        crit.gradNorm = 1e-5;
+        crit.iterations = 10000;
+        solver.setStopCriteria(crit);
+        solver.setMaxStepLength(1e-1);
+        solver.setSteepestDescentRate(1.0);
+        solver.setDistanceCriteriaUmrigar(1.0);
+
+        solver.minimize(electronicWaveFunctionProblem, x0);
+
+        std::cout << x0 << std::endl;
+    }
+*/
+
+
+    // GradientDescentSolver mit MoreThuente lineSearch und Umrigar, Diboran, sechster Pfad
+    cppoptlib::Criteria<double> crit = cppoptlib::Criteria<double>::nonsmoothDefaults();
+
+    OptimizationPathFileImporter optimizationPathFileImporter("Diborane-Paths.300",1); // Aufpassen ob richtige Multiplizität
+    std::string wfFilename = "Diborane.wf";
+    ElectronicWaveFunctionProblem electronicWaveFunctionProblem(wfFilename);
+
+    electronicWaveFunctionProblem.getIndicesOfElectronsNotAtNuclei();
+
+    auto numberOfPaths = optimizationPathFileImporter.getNumberOfPaths();
+
+    for (unsigned long k = 6; k < 7; ++k) {
+        auto psiSquareDistributedParticleCollection = optimizationPathFileImporter.getPath(k).front();
+        VectorXd x0 = psiSquareDistributedParticleCollection.positionsAsEigenVector();
+
+        cppoptlib::GradientDescentUmrigarLimitedSteplength<ElectronicWaveFunctionProblem> solver;
+        solver.setDebug(cppoptlib::DebugLevel::High);
+        crit.gradNorm = 1e-5;
+        crit.iterations = 10000;
+        solver.setStopCriteria(crit);
+        solver.setMaxStepLength(1.0);
+        solver.setSteepestDescentRate(1.0);
+        solver.setDistanceCriteriaUmrigar(0.5);
+
+        solver.minimize(electronicWaveFunctionProblem, x0);
+
+        std::cout << x0 << std::endl;
+    }
+
+
+    /*
     ElectronicWaveFunctionProblem electronicWaveFunctionProblem("Ethane-em-5.wf");
     cppoptlib::Criteria<double> crit = cppoptlib::Criteria<double>::nonsmoothDefaults();
     crit.gradNorm = 1e-6;
@@ -19,11 +148,13 @@ int main(int argc, char const *argv[]) {
     solver.setDebug(cppoptlib::DebugLevel::High);
     solver.setStopCriteria(crit);
 
-    // 
+    //
     RefFileImporter refFileImporter("Ethane-max.ref");
     auto maximumOfInterest = refFileImporter.getMaximaStructure(1,1);
     auto xA = maximumOfInterest.positionsAsEigenVector();
     std::cout << xA << std::endl;
+
+    */
 
     //ElectronicWaveFunction::getInstance().setFrozenElectrons({1,2,3,4,5, 10,11,12,13,14});
 
@@ -50,6 +181,6 @@ int main(int argc, char const *argv[]) {
     0.005195,  0.207915, -1.906905;*/
 
 
-    solver.minimize(electronicWaveFunctionProblem, xA);
+    //solver.minimize(electronicWaveFunctionProblem, xA);
 
 }
