@@ -10,7 +10,8 @@
 
 class ElectronCollection3D{
 public:
-    ElectronCollection3D(Qt3DCore::QEntity *root, const ElectronCollection &electonCollection);
+    ElectronCollection3D(Qt3DCore::QEntity *root, const ElectronCollection &electonCollection,
+                             bool showIndicesQ = false);
 };
 
 #endif //AMOLQCGUI_ELECTRONCOLLECTION3D_H

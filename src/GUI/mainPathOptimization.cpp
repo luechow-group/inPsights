@@ -138,8 +138,8 @@ int main(int argc, char *argv[]) {
     AtomCollection3D(root,ElectronicWaveFunction::getInstance().getAtomCollection());
 
     // Plot the starting point
-    ElectronCollection3D(root,ElectronCollection(ParticleCollection(xA),
-                                                 optimizationPath.getSpinTypeCollection()));
+    ElectronCollection3D(root, ElectronCollection(ParticleCollection(xA),
+                                                  optimizationPath.getSpinTypeCollection()), true);
 
     // Plot the optimization path
     ParticleCollectionPath3D(root, shortenedPath);
