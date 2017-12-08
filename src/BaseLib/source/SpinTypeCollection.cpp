@@ -17,7 +17,7 @@ SpinTypeCollection::SpinTypeCollection(const VectorXi& spinTypes)
           spinTypes_(numberOfSpinTypes_)
 {
     assert(spinTypes.minCoeff() >= int(Spin::SpinType::alpha));
-    assert(spinTypes.maxCoeff() <= int(Spin::SpinType::none));
+    assert(spinTypes.maxCoeff() <= int(Spin::SpinType::beta));
 
     spinTypes_ = spinTypes;
 }

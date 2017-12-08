@@ -15,6 +15,7 @@ class CollectionParser{
 public:
 
     nlohmann::json atomCollectionToJson(const AtomCollection& atomCollection);
+    nlohmann::json electronCollectionToJson(const ElectronCollection& electronCollection);
 
     nlohmann::json particleCollectionToJson(const ParticleCollection& particleCollection);
     void writeJSON(const nlohmann::json& json, const std::string& filename);
