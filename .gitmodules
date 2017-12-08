@@ -7,3 +7,6 @@
 [submodule "src/Externals/cppoptlib"]
 	path = src/Externals/cppoptlib
 	url = git@git.rwth-aachen.de:luechow-group/CppNumericalSolvers.git
+[submodule "src/Externals/json"]
+	path = src/Externals/json
+	url = https://github.com/nlohmann/json.git
