@@ -44,6 +44,7 @@ set(HEADER_FILES
         include/RefFileImporter.h
         include/AmolqcImporter.h
         include/OptimizationPathFileImporter.h
+        include/CollectionParser.h
         )
 
 set(SOURCE_FILES
@@ -65,12 +66,16 @@ set(SOURCE_FILES
         source/RefFileImporter.cpp
         source/AmolqcImporter.cpp
         source/OptimizationPathFileImporter.cpp
+        source/CollectionParser.cpp
         )
+
+file(GLOB_RECURSE RESOURCE_FILES resources/*.*)
+file(COPY ${RESOURCE_FILES} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES} include/Atom.h)
 target_link_libraries(${PROJECT_NAME}
         Qt5::Core
-        #eigen
+        nlohmann_json
         )
 target_include_directories(${PROJECT_NAME} PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
