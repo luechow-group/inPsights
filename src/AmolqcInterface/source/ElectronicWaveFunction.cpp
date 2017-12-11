@@ -34,7 +34,7 @@ void ElectronicWaveFunction::setRandomElectronPositionCollection(unsigned electr
   auto *electronPositionCollectionArray = new double[electronNumber*3];
   amolqc_initial_positions(electronPositioningModeType, electronNumber, electronPositionCollectionArray);
 
-  electronPositionCollection_ = Eigen::Map<Eigen::VectorXd>(electronPositionCollectionArray,
+  electronPositionCollectionAsEigenVector_ = Eigen::Map<Eigen::VectorXd>(electronPositionCollectionArray,
                                                             electronNumber*3, 1);
   delete electronPositionCollectionArray;
 }
@@ -76,7 +76,7 @@ void ElectronicWaveFunction::evaluate(const Eigen::VectorXd &electronPositionCol
   assert(electronPositionCollection.rows() > 0);
   assert(electronPositionCollection.rows() % 3 == 0);
   //std::cout << "pos " << electronPositionCollection.transpose() << std::endl;
-  electronPositionCollection_ = electronPositionCollection;
+  electronPositionCollectionAsEigenVector_ = electronPositionCollection;
   double *electronDriftCollectionArray = new double[electronPositionCollection.rows()];
 
   Eigen::VectorXd copy = electronPositionCollection; // TODO ugly - redesign
@@ -121,8 +121,8 @@ double ElectronicWaveFunction::getInverseNegativeLogarithmizedProbabilityDensity
   return -1.0/std::log(pow(getProbabilityAmplitude(),2));
 }
 
-Eigen::VectorXd ElectronicWaveFunction::getElectronPositionCollection(){
-  return electronPositionCollection_;
+ElectronCollection ElectronicWaveFunction::getElectronPositionCollection(){
+  return ElectronCollection(electronPositionCollectionAsEigenVector_,getSpinTypeCollection().spinTypesAsEigenVector());
 };
 
 Eigen::VectorXd ElectronicWaveFunction::getElectronDriftCollection(){

@@ -53,7 +53,7 @@ public:
 
     double getInverseNegativeLogarithmizedProbabilityDensity();
 
-    Eigen::VectorXd getElectronPositionCollection();
+    ElectronCollection getElectronPositionCollection();
 
     Eigen::VectorXd getElectronDriftCollection();
 
@@ -78,7 +78,7 @@ private:
     const std::string fileName_;
     unsigned long numberOfNuclei_, numberOfElectrons_, numberOfAlphaElectrons_, numberOfBetaElectrons_;
     double determinantProbabilityAmplitude_, jastrowFactor_, localEnergy_;
-    Eigen::VectorXd electronPositionCollection_, electronDriftCollection_;//TODO REPLACE BY BASELIB ELECTRONCOLLECTION!
+    Eigen::VectorXd electronPositionCollectionAsEigenVector_, electronDriftCollection_;//TODO REPLACE BY BASELIB ELECTRONCOLLECTION!
     AtomCollection atomCollection_;
     SpinTypeCollection spinTypeCollection_;
 
