@@ -69,3 +69,15 @@ void SpinTypeCollection::setSpinType(long i, Spin::SpinType spinType) {
 VectorXi SpinTypeCollection::spinTypesAsEigenVector() const {
     return spinTypes_;
 }
+
+void SpinTypeCollection::permute(long i, long j) {
+    assert( i >= 0 && i < numberOfSpinTypes_
+            && "Index i must be greater than zero and smaller than the number of spins." );
+    assert( j >= 0 && j < numberOfSpinTypes_
+            && "Index j must be greater than zero and smaller than the number of spins." );
+    if(i != j) {
+        int temp = spinTypes_[i];
+        spinTypes_[i] = spinTypes_[j];
+        spinTypes_[j] = temp;
+    }
+}

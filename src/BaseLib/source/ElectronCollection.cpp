@@ -47,3 +47,8 @@ void ElectronCollection::prepend(const Electron& electron) {
 void ElectronCollection::append(const Electron& electron) {
     this->insert(electron, ParticleCollection::numberOfParticles_);
 }
+
+void ElectronCollection::permute(long i, long j) {
+    ParticleCollection::permute(i,j);
+    SpinTypeCollection::permute(i,j);
+}

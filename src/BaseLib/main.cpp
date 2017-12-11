@@ -60,7 +60,12 @@ int main(int argc, char const *argv[]) {
     std::cout << acp.positionsAsEigenVector().transpose() << std::endl;
     std::cout << static_cast<ElementTypeCollection>(acp).elementTypesAsEigenVector().transpose() << std::endl;
 
+
     std::cout << ecp.positionsAsEigenVector().transpose() << std::endl;
     std::cout << static_cast<SpinTypeCollection>(ecp).spinTypesAsEigenVector().transpose() << std::endl;
+    ecp.permute(0,2);
+    std::cout << ecp.positionsAsEigenVector().transpose() << std::endl;
+    std::cout << static_cast<SpinTypeCollection>(ecp).spinTypesAsEigenVector().transpose() << std::endl;
+
 
 }

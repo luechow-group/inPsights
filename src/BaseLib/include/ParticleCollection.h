@@ -20,6 +20,8 @@ public:
     void insert(const Particle& particle, long i);
     void append(const Particle& particle);
     void prepend(const Particle& particle);
+    void permute(long i, long j);
+
     /* TODO
     void replace(long i);
     void remove(long i);

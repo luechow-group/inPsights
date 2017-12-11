@@ -49,3 +49,7 @@ void AtomCollection::addAtom(const Vector3d &position, const Elements::ElementTy
   append(Atom(position, elementType));
 };
 
+void AtomCollection::permute(long i, long j) {
+    ParticleCollection::permute(i,j);
+    ElementTypeCollection::permute(i,j);
+}

@@ -22,6 +22,7 @@ public:
     void insert(Spin::SpinType spinType, long i);
     void append(Spin::SpinType spinType);
     void prepend(Spin::SpinType spinType);
+    void permute(long i, long j);
 
     void setSpinType(long i, Spin::SpinType spinType);
 

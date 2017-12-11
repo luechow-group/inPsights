@@ -64,3 +64,15 @@ void ParticleCollection::append(const Particle &particle) {
 Eigen::VectorXd ParticleCollection::positionsAsEigenVector() const {
     return positions_;
 }
+
+void ParticleCollection::permute(long i, long j) {
+    assert( i >= 0 && i < numberOfParticles_
+            && "Index i must be greater than zero and smaller than the number of particles." );
+    assert( j >= 0 && j < numberOfParticles_
+            && "Index j must be greater than zero and smaller than the number of particles." );
+    if(i != j) {
+        Eigen::Vector3d temp = positions_.segment(i*3,3);
+        positions_.segment(i*3,3) = positions_.segment(j*3,3);
+        positions_.segment(j*3,3) = temp;
+    }
+}

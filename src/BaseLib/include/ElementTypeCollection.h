@@ -18,6 +18,7 @@ public:
     void insert(Elements::ElementType elementType, long i);
     void append(Elements::ElementType elementType);
     void prepend(Elements::ElementType elementType);
+    void permute(long i, long j);
     
     void setElementType(long i, Elements::ElementType elementType);
 

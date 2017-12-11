@@ -56,3 +56,15 @@ void ElementTypeCollection::setElementType(long i, Elements::ElementType Element
 VectorXi ElementTypeCollection::elementTypesAsEigenVector() {
     return elementTypes_;
 }
+
+void ElementTypeCollection::permute(long i, long j) {
+    assert( i >= 0 && i < numberOfElementsTypes_
+            && "Index i must be greater than zero and smaller than the number of elements." );
+    assert( j >= 0 && j < numberOfElementsTypes_
+            && "Index j must be greater than zero and smaller than the number of elements." );
+    if(i != j) {
+        int temp = elementTypes_[i];
+        elementTypes_[i] = elementTypes_[j];
+        elementTypes_[j] = temp;
+    }
+}

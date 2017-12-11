@@ -24,6 +24,7 @@ public:
     void insert (const Atom& atom, long i);
     void append (const Atom& atom);
     void prepend(const Atom& atom);
+    void permute(long i, long j);
 
 
     void addAtom(double x, double y, double z,

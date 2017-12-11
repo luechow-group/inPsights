@@ -110,7 +110,6 @@ ElectronCollection CollectionParser::electronCollectionFromJson(const std::strin
     return ElectronCollection(particleCollection, spinTypeCollection);
 }
 
-
 void CollectionParser::writeJSON(const nlohmann::json& json, const std::string& filename) {
     std::ofstream ofstream(filename);
     ofstream << json.dump(4) << std::endl;
