@@ -9,24 +9,27 @@
 #include "ElectronicWaveFunctionProblem.h"
 #include "solver/gradientdescentumrigarlimitedsteplength.h"
 #include "solver/bfgsnssolver.h"
+#include <OptimizationPathFileImporter.h>
+#include "solver/gradientdescentsolver.h"
 
 using namespace testing;
 
 class AGradientDescentUmrigarLimitedStepLengthSolverTest : public Test {};
 
-TEST_F(AGradientDescentUmrigarLimitedStepLengthSolverTest, Ethane) {
-
+    /*
     std::string wfFilename = "H2.wf";
     ElectronicWaveFunctionProblem electronicWaveFunctionProblem(wfFilename);
 
     Eigen::VectorXd xA(ElectronicWaveFunction::getInstance().getNumberOfElectrons()*3);
     xA << \
     0.00000,  0.00000,  0.50000,\
-    0.00000,  0.00000, -0.50000;
+    0.00000,  0.00000, -0.50000;*/
 
 
-    cppoptlib::Criteria<double> crit = cppoptlib::Criteria<double>::defaults();
-    crit.iterations = 100000;
+    //cppoptlib::Criteria<double> crit = cppoptlib::Criteria<double>::defaults();
+
+    /*
+    crit.iterations = 100;
     crit.gradNorm = 1e-5;
     cppoptlib::GradientDescentUmrigarLimitedSteplength<ElectronicWaveFunctionProblem> solver;
     solver.setDebug(cppoptlib::DebugLevel::High);
@@ -34,16 +37,49 @@ TEST_F(AGradientDescentUmrigarLimitedStepLengthSolverTest, Ethane) {
     solver.setMaxStepLength(1e-2);
     solver.setSteepestDescentRate(1.0);
     solver.setDistanceCriteriaUmrigar(0.5);
-    solver.setThreshholdUmrigar(1e-5);
     solver.minimize(electronicWaveFunctionProblem, xA);
+    */
 
-    std::cout<<xA<<std::endl;
+    /*
+    OptimizationPathFileImporter optimizationPathFileImporter("Diborane-Paths.300",1); // Aufpassen ob richtige Multiplizität
+    std::string wfFilename = "Diborane.wf";
+    ElectronicWaveFunctionProblem electronicWaveFunctionProblem(wfFilename);
 
-    ASSERT_TRUE(false);
+    electronicWaveFunctionProblem.getIndicesOfElectronsNotAtNuclei();
 
-}
+    auto numberOfPaths = optimizationPathFileImporter.getNumberOfPaths();
+
+    for (unsigned long k = 1; k < numberOfPaths; ++k) {
+        auto psiSquareDistributedParticleCollection = optimizationPathFileImporter.getPath(k).front();
+        VectorXd x0 = psiSquareDistributedParticleCollection.positionsAsEigenVector();
+
+        cppoptlib::GradientDescentSolver<ElectronicWaveFunctionProblem> solver;
+        solver.setDebug(cppoptlib::DebugLevel::High);
+        crit.gradNorm = 1e-5;
+        crit.iterations = 100;
+        solver.setStopCriteria(crit);
+        //solver.setMaxStepLength(1e-1);
+        //solver.setSteepestDescentRate(1.0);
+        //solver.setDistanceCriteriaUmrigar(0.1);
+
+        solver.minimize(electronicWaveFunctionProblem, x0);
+        std::cout<<electronicWaveFunctionProblem.getIndicesOfElectronsNotAtNuclei().back()<<std::endl;
+    }*/
+
+
+    //std::cout<<x0<<std::endl;
+
+    //ASSERT_TRUE(false);
+
+//}
 
 /*
+
+
+    xA << \
+    0.00000,  0.00000,  0.50000,\
+    0.00000,  0.00000, -0.50000;
+
     xA << \
     0.714583,  2.171709,  2.377429,\
    -0.805267,  0.373607,  0.961730,\
