@@ -8,9 +8,17 @@ AtomCollection::AtomCollection(const VectorXd &positions)
           ElementTypeCollection(ParticleCollection::numberOfParticles())
 {}
 
-AtomCollection::AtomCollection(const VectorXd &positions, const VectorXi &spinTypes)
+
+
+AtomCollection::AtomCollection(const VectorXd &positions, const VectorXi &elementTypes)
         : ParticleCollection(positions),
-          ElementTypeCollection(spinTypes)
+          ElementTypeCollection(elementTypes)
+{}
+
+AtomCollection::AtomCollection(const ParticleCollection& particleCollection,
+                               const ElementTypeCollection& elementTypeCollection)
+        : ParticleCollection(particleCollection),
+          ElementTypeCollection(elementTypeCollection)
 {}
 
 Atom AtomCollection::atom(long i) {

@@ -16,10 +16,17 @@ public:
 
     nlohmann::json atomCollectionToJson(const AtomCollection& atomCollection);
     nlohmann::json electronCollectionToJson(const ElectronCollection& electronCollection);
-
     nlohmann::json particleCollectionToJson(const ParticleCollection& particleCollection);
+
+    AtomCollection atomCollectionFromJson (const std::string& filename);
+    ElectronCollection electronCollectionFromJson(const std::string& filename);
+    ParticleCollection particleCollectionFromJson(const std::string& filename);
+
+    nlohmann::json json, readJSON(const std::string& filename);
     void writeJSON(const nlohmann::json& json, const std::string& filename);
-    //static ParticleCollection readParticleCollection(std::string & filename);
+
+private:
+    ParticleCollection array2DToParticleCollection(nlohmann::json coordinates);
 };
 
 #endif //AMOLQCPP_COLLECTIONPARSER_H

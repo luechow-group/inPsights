@@ -15,7 +15,9 @@ class AtomCollection : public ParticleCollection,public ElementTypeCollection{
 public:
     AtomCollection() = default;
     explicit AtomCollection(const Eigen::VectorXd& positions);
-    explicit AtomCollection(const VectorXd& positions, const VectorXi& spinTypes);
+    AtomCollection(const Eigen::VectorXd& positions, const Eigen::VectorXi& elementTypes);
+    AtomCollection(const ParticleCollection& particleCollection,
+                   const ElementTypeCollection& elementTypeCollection);
 
     Atom atom(long i);
 
@@ -27,7 +29,7 @@ public:
     void addAtom(double x, double y, double z,
                  const Elements::ElementType &elementType = Elements::ElementType::none);
     
-    void addAtom(const Vector3d &position, const Elements::ElementType &elementType);
+    void addAtom(const Eigen::Vector3d &position, const Elements::ElementType &elementType);
 };
 
 #endif //AMOLQCGUI_ATOMCOLLECTION_H

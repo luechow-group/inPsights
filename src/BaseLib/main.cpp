@@ -4,22 +4,20 @@
 
 #include <iostream>
 #include <iomanip>
-#include <string>
 
 #include "ChemicalSystem.h"
 #include "WfFileImporter.h"
-#include "Importer.h"
 #include <ElementInfo.h>
 
 #include "RefFileImporter.h"
 #include "OptimizationPathFileImporter.h"
 
+#include "CollectionParser.h"
 
 int main(int argc, char const *argv[]) {
 
     std::string filename = "Ethane-em-5.wf";
     WfFileImporter waveFunctionParser(filename);
-    //waveFunctionParser.readNuclei();
     auto ac = waveFunctionParser.getAtomCollection();
 
     filename = "Ethane-max.ref";
@@ -30,9 +28,6 @@ int main(int argc, char const *argv[]) {
         std::cout << Elements::ElementInfo::symbol(ac2.elementType(i)) << ac2[i].position().transpose() << std::endl;
     }
 
-    //std::vector<int> a = {};//{6,8,10};
-    //a.insert(a.begin()+1,2);
-    //std::cout << a[0] << " " << a[1]<< " " << a[2]<< " " << a[3] << std::endl;
     auto ecs = importer.getAllSubstructures(1);
     for (int i = 0; i < ecs.length(); ++i) {
         std::cout << ecs.getSpinTypeCollection().spinTypesAsEigenVector().transpose() << std::endl;
@@ -47,5 +42,25 @@ int main(int argc, char const *argv[]) {
         std::cout << ecs2.getSpinTypeCollection().spinTypesAsEigenVector().transpose() << std::endl;
         std::cout << ecs2[i].positionsAsEigenVector().transpose() << std::endl;
     }
+
+
+    RefFileImporter refFileImporter("Ethane-max.ref");
+    auto ec = refFileImporter.getMaximaStructure(1,1);
+    CollectionParser collectionParser;
+
+    auto acJson = collectionParser.atomCollectionToJson(ac);
+    collectionParser.writeJSON(acJson,"ac.json");
+
+    auto ecJson = collectionParser.electronCollectionToJson(ec);
+    collectionParser.writeJSON(ecJson,"ec.json");
+
+    auto acp = collectionParser.atomCollectionFromJson("ac.json");
+    auto ecp = collectionParser.electronCollectionFromJson("ec.json");
+
+    std::cout << acp.positionsAsEigenVector().transpose() << std::endl;
+    std::cout << static_cast<ElementTypeCollection>(acp).elementTypesAsEigenVector().transpose() << std::endl;
+
+    std::cout << ecp.positionsAsEigenVector().transpose() << std::endl;
+    std::cout << static_cast<SpinTypeCollection>(ecp).spinTypesAsEigenVector().transpose() << std::endl;
 
 }

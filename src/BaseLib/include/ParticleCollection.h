@@ -8,12 +8,10 @@
 #include "Particle.h"
 #include <vector>
 
-using namespace Eigen;
-
 class ParticleCollection{
 public:
     ParticleCollection();
-    explicit ParticleCollection(const VectorXd& positions);
+    explicit ParticleCollection(const Eigen::VectorXd& positions);
 
     Particle operator[](long i) const;
 
@@ -32,7 +30,7 @@ public:
 
 protected:
     unsigned long numberOfParticles_;
-    VectorXd positions_;
+    Eigen::VectorXd positions_;
 
 private:
     long calculateStartIndex(long i) const;

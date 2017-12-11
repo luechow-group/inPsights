@@ -4,6 +4,8 @@
 
 #include "ParticleCollection.h"
 
+using namespace Eigen;
+
 ParticleCollection::ParticleCollection()
         : numberOfParticles_(0),
           positions_(0)

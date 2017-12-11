@@ -4,11 +4,11 @@
 
 #include "ElectronCollection.h"
 
-ElectronCollection::ElectronCollection(const VectorXd &positions)
+ElectronCollection::ElectronCollection(const Eigen::VectorXd &positions)
         : ParticleCollection(positions),
           SpinTypeCollection(this->numberOfParticles()) {}
 
-ElectronCollection::ElectronCollection(const VectorXd &positions, const VectorXi &spinTypes)
+ElectronCollection::ElectronCollection(const Eigen::VectorXd &positions, const Eigen::VectorXi &spinTypes)
         : ParticleCollection(positions),
           SpinTypeCollection(spinTypes) {
 
@@ -16,11 +16,18 @@ ElectronCollection::ElectronCollection(const VectorXd &positions, const VectorXi
            && "The number of particles in ParticleCollection and the number of spin type in SpinTypeCollection must match.");
 }
 
+/*
 ElectronCollection::ElectronCollection(const ParticleCollection &particleCollection,
                                        const SpinTypeCollection &spinTypeCollection)
         : ElectronCollection(particleCollection.positionsAsEigenVector(),
                              spinTypeCollection.spinTypesAsEigenVector()){
-}
+}*/
+
+ElectronCollection::ElectronCollection(const ParticleCollection &particleCollection,
+                                       const SpinTypeCollection &spinTypeCollection)
+        : ParticleCollection(particleCollection),
+          SpinTypeCollection(spinTypeCollection)
+{}
 
 Electron ElectronCollection::electron(long i) {
     Particle particle = (*this)[i];
