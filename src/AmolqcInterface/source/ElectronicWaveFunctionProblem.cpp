@@ -106,6 +106,7 @@ void ElectronicWaveFunctionProblem::putElectronsIntoNuclei(Eigen::VectorXd& x, E
 
             // recalulate gradient
             gradient(x,grad);
+            gradientReset_ = true; //-> resets the solver
         }
     }
     // now, remove the electrons from the indicesOfElectronsNotAtNuclei_ vector
@@ -117,8 +118,8 @@ void ElectronicWaveFunctionProblem::putElectronsIntoNuclei(Eigen::VectorXd& x, E
 }
 
 bool ElectronicWaveFunctionProblem::callback(const cppoptlib::Criteria<double> &state, Eigen::VectorXd &x, Eigen::VectorXd& grad) {
-
-    putElectronsIntoNuclei(x, grad);
+    gradientReset_ = false;
+    putElectronsIntoNuclei(x, grad); //gradientr reset could be true now
 
     optimizationPath_.append(ElectronCollection(x, wf_.getSpinTypeCollection().spinTypesAsEigenVector()));
 
