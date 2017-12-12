@@ -18,7 +18,6 @@ Qt3DCore::QEntity* MoleculeWidget::createMoleculeWidget() {
     view->defaultFrameGraph()->setClearColor(Qt::white);
 
     QWidget *moleculeView = QWidget::createWindowContainer(view);
-    Qt3DCore::QEntity *scene = root;
 
     // camera
     Qt3DRender::QCamera *camera = view->camera();
@@ -27,12 +26,12 @@ Qt3DCore::QEntity* MoleculeWidget::createMoleculeWidget() {
     camera->setViewCenter(QVector3D(0, 0, 0));
 
     // manipulator
-    auto *manipulator = new Qt3DExtras::QOrbitCameraController(scene);
+    auto *manipulator = new Qt3DExtras::QOrbitCameraController(root);
     manipulator->setLinearSpeed(50.f);
     manipulator->setLookSpeed(180.f);
     manipulator->setCamera(camera);
 
-    view->setRootEntity(scene);
+    view->setRootEntity(root);
 
 
     moleculeView->resize(400, 400);
