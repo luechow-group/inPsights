@@ -8,34 +8,31 @@
 #include <QtWidgets>
 #include <iostream>
 
-
+#include "CollectionParser.h"
 #include "OptimizationPathFileImporter.h"
-#include "ElectronicWaveFunction.h"
 #include "ElectronicWaveFunctionProblem.h"
 #include "solver/bfgsnssolver.h"
-#include <solver/bfgssolver.h>
+#include "solver/bfgssolver.h"
 #include "solver/timeintegrationsolver.h"
 #include "solver/gradientdescentumrigarlimitedsteplength.h"
 #include "solver/gradientdescentsolver.h"
+#include "solver/gradientdescentsimplesolver.h"
+
 #include "AtomCollection3D.h"
 #include "ElectronCollection3D.h"
 #include "ParticleCollectionPath3D.h"
 #include "MoleculeWidget.h"
-#include <Sphere.h>
-#include "solver/gradientdescentsimplesolver.h"
 
 int main(int argc, char *argv[]) {
 
-  QApplication app(argc, argv);
-  setlocale(LC_NUMERIC,"C");
+    QApplication app(argc, argv);
+    setlocale(LC_NUMERIC,"C");
 
     ElectronicWaveFunctionProblem electronicWaveFunctionProblem("Ethane-em-5.wf");
 
-    auto &inst = ElectronicWaveFunction::getInstance();
-
-    inst.setRandomElectronPositionCollection(18,ElectronPositioningMode::DENSITY);
-    auto xA = inst.getElectronPositionCollection().positionsAsEigenVector();
-
+    CollectionParser collectionParser;
+    auto ecA = collectionParser.electronCollectionFromJson("Ethane-glob-max.json");
+    auto xA = ecA.positionsAsEigenVector();
 
     cppoptlib::Criteria<double> crit = cppoptlib::Criteria<double>::nonsmoothDefaults();
 
@@ -57,6 +54,18 @@ int main(int argc, char *argv[]) {
 
     solver.minimize(electronicWaveFunctionProblem, xA);
 
+    // export result to json
+    auto ecAresult = ElectronCollection(xA,ecA.spinTypesAsEigenVector());
+    auto jsonObject = collectionParser.electronCollectionToJson(ecAresult);
+    jsonObject["comment"]= "optimized with FIRE";
+
+    nlohmann::json solverSettings;
+    solverSettings["iterations"] = crit.iterations;
+    solverSettings["gradNorm"] = crit.gradNorm;
+    jsonObject["settings"] = solverSettings;
+
+    // write to file
+    collectionParser.writeJSON(jsonObject,"FIRE-Ehane-opt.json");
 
     auto optimizationPath = electronicWaveFunctionProblem.getOptimizationPath();
     ElectronCollections shortenedPath(ElectronCollection(optimizationPath.front(),
@@ -72,7 +81,7 @@ int main(int argc, char *argv[]) {
 
     shortenedPath.append(ElectronCollection(xA,optimizationPath.getSpinTypeCollection().spinTypesAsEigenVector()));
 
-   //visualization
+    //visualization
     MoleculeWidget moleculeWidget;
     Qt3DCore::QEntity *root = moleculeWidget.createMoleculeWidget();
 
