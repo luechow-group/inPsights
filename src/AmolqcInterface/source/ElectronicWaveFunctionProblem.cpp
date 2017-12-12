@@ -57,7 +57,7 @@ void ElectronicWaveFunctionProblem::hessian(const Eigen::VectorXd &x, Eigen::Mat
 }
 
 
-void ElectronicWaveFunctionProblem::fixGradient(VectorXd &gradient) {
+void ElectronicWaveFunctionProblem::fixGradient(Eigen::VectorXd &gradient) {
     for(auto i : indicesOfElectronsNotAtNuclei_){
         for (unsigned j = 0; j < 3; ++j) {
             if(gradient[i*3+j] != gradient[i*3+j]) {

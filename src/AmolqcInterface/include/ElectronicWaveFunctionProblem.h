@@ -58,7 +58,7 @@ private:
     std::vector<unsigned long> indicesOfElectronsNotAtNuclei_;
     std::vector<unsigned long> indicesOfElectronsAtNuclei_;
 
-    void fixGradient(VectorXd &gradient);
+    void fixGradient(Eigen::VectorXd &gradient);
 
 };
 #endif //AMOLQCGUI_ELECTRONICWAVEFUNCTIONPROBLEM_H
