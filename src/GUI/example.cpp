@@ -17,8 +17,6 @@
 #include "solver/gradientdescentumrigarlimitedsteplength.h"
 #include "solver/gradientdescentsolver.h"
 #include "solver/gradientdescentsimplesolver.h"
-#include "solver/timeintegrationumrigarsolver.h"
-#include "solver/bfgsumrigarsolver.h"
 
 #include "AtomCollection3D.h"
 #include "ElectronCollection3D.h"
@@ -30,83 +28,44 @@ int main(int argc, char *argv[]) {
     QApplication app(argc, argv);
     setlocale(LC_NUMERIC,"C");
 
-    ElectronicWaveFunctionProblem electronicWaveFunctionProblem("Diborane.wf");
+    ElectronicWaveFunctionProblem electronicWaveFunctionProblem("Ethane-em-5.wf");
+
+    CollectionParser collectionParser;
+    auto ecA = collectionParser.electronCollectionFromJson("Ethane-glob-max.json");
+    auto xA = ecA.positionsAsEigenVector();
 
     cppoptlib::Criteria<double> crit = cppoptlib::Criteria<double>::nonsmoothDefaults();
 
-
-    OptimizationPathFileImporter optimizationPathFileImporter("Diborane-Paths.300",1); // Aufpassen ob richtige Multiplizität
+    //OptimizationPathFileImporter optimizationPathFileImporter("Diborane-Paths.300",1); // Aufpassen ob richtige Multiplizität
     //std::string wfFilename = "Diborane.wf";
     //ElectronicWaveFunctionProblem electronicWaveFunctionProblem(wfFilename);
     //auto numberOfPaths = optimizationPathFileImporter.getNumberOfPaths();
     //auto psiSquareDistributedParticleCollection = optimizationPathFileImporter.getPath(6).front();
     //VectorXd xA = psiSquareDistributedParticleCollection.positionsAsEigenVector();
 
-    auto numberOfPaths = optimizationPathFileImporter.getNumberOfPaths();
-
-    auto psiSquareDistributedParticleCollection = optimizationPathFileImporter.getPath(6).front();
-    VectorXd xA = psiSquareDistributedParticleCollection.positionsAsEigenVector();
-
-
-
-    //Eigen::VectorXd xA(ElectronicWaveFunction::getInstance().getNumberOfElectrons()*3);
-
-    /*
-    xA << \
-    0.000000, 0.000000, 1.443184,\
-    0.000000, 0.000000,-1.443184,\
-    -1.662146,-0.959641, 2.192989,\
-    -1.662146, 0.959641,-2.192989,\
-    0.000000,-1.919300,-2.192989,\
-    -0.024099, 0.773535, 1.718336+0.3,\
-    0.657845,-0.407636, 1.718335-0.3,\
-    0.658424, 0.380140,-1.752435+0.3,\
-    -0.034848,-0.020119,-0.660100-0.3,\
-    0.000000, 0.000000, 1.443184,\
-    0.000000, 0.000000,-1.443184,\
-    1.662146,-0.959641, 2.192989,\
-    1.662146, 0.959641,-2.192989,\
-    0.000000, 1.919300, 2.192989,\
-    -0.657846, 0.407635,-1.718336-0.3,\
-    0.024100,-0.773537,-1.718336+0.3,\
-    -0.658423,-0.380140, 1.752435-0.3,\
-    0.034847, 0.020120, 0.660096+0.3;
-    */
-
-    /*
-    xA << \
-    0.714583,  2.171709,  2.377429,\
-   -0.805267,  0.373607,  0.961730,\
-   -0.013201, -0.133104,  1.591434,\
-    0.305421,  0.141948, -1.348573,\
-    0.733193,  0.981820, -1.175646,\
-   -1.631408,  0.621465, -2.145863,\
-   -0.549092, -2.641827,  3.075085,\
-    1.668276,  1.311450, -0.564745,\
-    1.554871, -1.617958, -2.978076,\
-    0.204682, -0.074675,  1.290531,\
-   -0.880830, -0.567550,  0.091367,\
-    0.483278, -2.256104,  1.174406,\
-    1.888764, -0.491579, -1.046459,\
-   -0.154281,  1.014234, -2.217571,\
-   -0.924312,  0.945934, -0.019794,\
-   -1.987497,  0.072370,  1.736939,\
-   -0.544636, -2.204059, -3.499582,\
-    0.005195,  0.207915, -1.906905;
-    */
-
-    cppoptlib::TimeIntegrationUmrigarSolver<ElectronicWaveFunctionProblem> solver;
+    cppoptlib::TimeIntegrationSolver<ElectronicWaveFunctionProblem> solver;
     solver.setDebug(cppoptlib::DebugLevel::High);
     crit.gradNorm = 1e-5;
-    crit.iterations = 100000;
+    crit.iterations = 1000;
     solver.setStopCriteria(crit);
-    //solver.setMaxStepLength(1.0);
-    //solver.setSteepestDescentRate(0.1);
-    solver.setDistanceCriteriaUmrigar(0.1);
+    //solver.setMaxStepLength(0.2);
+    //solver.setSteepestDescentRate(0.2);
+    //solver.setDistanceCriteriaUmrigar(0.5);
 
     solver.minimize(electronicWaveFunctionProblem, xA);
 
-    std::cout<<xA<<std::endl;
+    // export result to json
+    auto ecAresult = ElectronCollection(xA,ecA.spinTypesAsEigenVector());
+    auto jsonObject = collectionParser.electronCollectionToJson(ecAresult);
+    jsonObject["comment"]= "optimized with FIRE";
+
+    nlohmann::json solverSettings;
+    solverSettings["iterations"] = crit.iterations;
+    solverSettings["gradNorm"] = crit.gradNorm;
+    jsonObject["settings"] = solverSettings;
+
+    // write to file
+    collectionParser.writeJSON(jsonObject,"FIRE-Ehane-opt.json");
 
     auto optimizationPath = electronicWaveFunctionProblem.getOptimizationPath();
     ElectronCollections shortenedPath(ElectronCollection(optimizationPath.front(),
@@ -130,11 +89,10 @@ int main(int argc, char *argv[]) {
 
     // Plot the starting point
     ElectronCollection3D(root, ElectronCollection(ParticleCollection(xA),
-                                                  optimizationPath.getSpinTypeCollection()), false);
+                                                  optimizationPath.getSpinTypeCollection()), true);
 
     // Plot the optimization path
     ParticleCollectionPath3D(root, shortenedPath);
 
     return app.exec();
 };
-
