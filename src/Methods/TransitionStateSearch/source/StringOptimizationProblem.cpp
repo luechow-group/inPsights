@@ -22,6 +22,10 @@ StringOptimizationProblem::StringOptimizationProblem(long numberOfStates,
 {
     assert(numberOfStates_ > 2);
     assert( (numberOfCoords_ > 0) && (numberOfCoords_%3 == 0) );
+    // at the beginning, no electron is at an nucleus
+  for (unsigned long i = 0; i < wf_.getNumberOfElectrons()*numberOfStates_; ++i) {
+    indicesOfElectronsNotAtNuclei_.push_back(i);
+  }
 }
 
 double StringOptimizationProblem::value(const Eigen::VectorXd &x) {
@@ -43,25 +47,33 @@ Eigen::VectorXd StringOptimizationProblem::stateValues(const Eigen::VectorXd &x)
   return stateValues;
 }
 
+void StringOptimizationProblem::fixGradient(Eigen::VectorXd &grad) {
+  //std::cout << grad.transpose() << std::endl;
+  for(unsigned i = 0; i < grad.size(); i++){
+    if(grad[i] != grad[i]) {
+      grad[i] = 0;
+    }
+  }
+  //std::cout << grad.transpose() << std::endl;
+}
+
 void StringOptimizationProblem::gradient(const Eigen::VectorXd &x, Eigen::VectorXd &grad) {
   Eigen::VectorXd stateGrad(numberOfCoords_);
   Eigen::VectorXd unitTangent(numberOfCoords_);
 
   stateTypes_.resize(0);
 
-  stateTypes_.push_back(StateGradientType::SimpleGradient);
-  for (int i = 1; i < numberOfStates_-1; ++i) {
-    stateTypes_.push_back(StateGradientType::OrthogonalToString);
-  }
-  stateTypes_.push_back(StateGradientType::SimpleGradient);
+  stateTypes_.push_back(StateGradientType::Fixed);
+  for (int i = 1; i < numberOfStates_-1; ++i) stateTypes_.push_back(StateGradientType::OrthogonalToString);
+  stateTypes_.push_back(StateGradientType::Fixed);
 
   // TODO increase efficiency by storing/updating the state values at an earlier stage
- // Identify the climbing image
+  // Identify the climbing image
   /*Eigen::VectorXd stateValuesVec = stateValues(x);
   Eigen::Index maxIdx;
   stateValuesVec.maxCoeff(&maxIdx);
   stateTypes_[maxIdx] = StateGradientType::ClimbingImage;
-*/
+  */
 
   assert(stateTypes_.size() == numberOfStates_ );
 
@@ -76,17 +88,22 @@ void StringOptimizationProblem::gradient(const Eigen::VectorXd &x, Eigen::Vector
     switch (stateTypes_[i]) {
       case StateGradientType::SimpleGradient : {
         stateGrad = wf_.getNegativeLogarithmizedProbabilityDensityGradientCollection();
+          //std::cout << i <<":"<< std::fixed << std::setw(5) << stateGrad.segment(3*8,3).transpose() << "|"<< stateGrad.segment(3*17,3).transpose() << std::endl;
+        fixGradient(stateGrad);
         //stateGrad = -wf_.getProbabilityDensityGradientCollection();
         //stateGrad = -wf_.getInverseNegativeLogarithmizedProbabilityDensityGradientCollection();
         break;
       }
       case StateGradientType::OrthogonalToString : {
         stateGrad = wf_.getNegativeLogarithmizedProbabilityDensityGradientCollection();
+          //std::cout << i <<":" << stateGrad.segment(3*0,3).transpose() << "|"<< stateGrad.segment(3*8,3).transpose() << "|"<< stateGrad.segment(3*17,3).transpose() << std::endl;
+        fixGradient(stateGrad);
         //stateGrad = -wf_.getProbabilityDensityGradientCollection();
         //stateGrad = -wf_.getInverseNegativeLogarithmizedProbabilityDensityGradientCollection();
         unitTangent = unitTangents_.row(i);
-
+          //std::cout << i <<":" << std::fixed << std::setw(5)<< unitTangent.segment(3*0,3).transpose() << "|"<< unitTangent.segment(3*8,3).transpose() << "|"<< unitTangent.segment(3*17,3).transpose() << std::endl;
         stateGrad = stateGrad - (stateGrad.dot(unitTangent)) * unitTangent;
+          //std::cout << i <<":" << std::fixed << std::setw(5) << stateGrad.segment(3*0,3).transpose() << "|"<< stateGrad.segment(3*8,3).transpose() << "|"<< stateGrad.segment(3*17,3).transpose() << std::endl;
         break;
       }
       case StateGradientType::Fixed : {
@@ -111,20 +128,112 @@ void StringOptimizationProblem::gradient(const Eigen::VectorXd &x, Eigen::Vector
           unitTangent = unitTangents_.row(i);
           stateGrad = stateGrad - (stateGrad.dot(unitTangent)) * unitTangent;
         }
+
         break;
       }
     }
     grad.segment(i * numberOfCoords_, numberOfCoords_) = stateGrad;
   }
+  //fixGradient(grad);
 }
 
-bool StringOptimizationProblem::callback(cppoptlib::Criteria<double> &state, Eigen::VectorXd &x, Eigen::VectorXd& grad) {
+
+void StringOptimizationProblem::putElectronsIntoNuclei(Eigen::VectorXd &x, Eigen::VectorXd &grad) {
+  assert( x.size() == wf_.getNumberOfElectrons()*3 * numberOfStates_ && "Number of dimensions must be identical and multiple of 3");
+
+  auto atomCollection = wf_.getAtomCollection();
+  auto numberOfNuclei = atomCollection.numberOfParticles();
+  auto numberOfElectrons = wf_.getNumberOfElectrons();
+
+  // iterate over electrons that were not at nuclei in the last step
+  for(auto i : indicesOfElectronsNotAtNuclei_){
+    unsigned long closestNucleusIdx=0;
+    double smallestDistance = std::numeric_limits<double>::infinity();
+
+    // iterate over all nuclei and find the index of the electron with the smallest distance
+    for(unsigned long j = 0; j < numberOfNuclei; ++j){
+      double distance = (atomCollection[j].position()-x.segment(i*3,3)).norm();
+      if(distance < smallestDistance ) {
+        smallestDistance = distance;
+        closestNucleusIdx = j;
+      }
+    }
+    // check the electron with the smallest distance is close than the threshold
+    double threshold = 0.05;
+    if (smallestDistance <= threshold){
+      //TODO PROPER?
+      //Eigen::Block<Eigen::VectorXd, i*3, 0>(x.derived(), 0, 0) = atomCollection[closestNucleusIdx].position();
+      x.segment(i*3,3) = atomCollection[closestNucleusIdx].position();
+
+      //save the electron index in the indicesOfElectronsAtNuclei_ vector
+      indicesOfElectronsAtNuclei_.push_back(i);
+      std::sort(indicesOfElectronsAtNuclei_.begin(),indicesOfElectronsAtNuclei_.end());
+
+      // recalulate gradient
+      gradient(x,grad);
+      gradientResetQ = true;
+    }
+  }
+  // now, remove the electrons from the indicesOfElectronsNotAtNuclei_ vector
+  for(auto i : indicesOfElectronsAtNuclei_) {
+    indicesOfElectronsNotAtNuclei_.erase(std::remove(indicesOfElectronsNotAtNuclei_.begin(),
+                                                     indicesOfElectronsNotAtNuclei_.end(), i),
+                                         indicesOfElectronsNotAtNuclei_.end());
+  }
+}
+
+bool StringOptimizationProblem::callback(const cppoptlib::Criteria<double> &state, Eigen::VectorXd &x, Eigen::VectorXd& grad) {
   stepCounter_++;
+  gradientResetQ = false;
+  //putElectronsIntoNuclei(x, grad); //gradientResetQ could be true now
+
   std::cout << "(" << std::setw(2) << state.iterations << ")"
-            << " f(x) = " << std::fixed << std::setw(10) << std::setprecision(10) << value(x)
-            << " xDelta = " << std::setw(10) << state.xDelta
-            << " gradNorm = " << std::setw(10) << state.gradNorm
+            << " f(x) = " << std::fixed << std::setw(8) << std::setprecision(8) << value(x)
+            << " xDelta = " << std::setw(8) << state.xDelta
+            << " gradInfNorm = " << std::setw(8) << state.gradNorm
             << std::endl;
+  //std::cout << "value calls: " <<  valueCallCount_ << ", gradient calls:" << gradientCallCount_ << std::endl;
+    /*
+  for (auto & it : indicesOfElectronsNotAtNuclei_) std::cout << it << " ";
+  std::cout << std::endl;
+  for (auto & it : indicesOfElectronsAtNuclei_) std::cout << it << " ";
+  std::cout << std::endl;*/
+
   return true;
 }
 
+std::vector<unsigned long> StringOptimizationProblem::getIndicesOfElectronsNotAtNuclei() {
+  return indicesOfElectronsNotAtNuclei_;
+}
+
+std::vector<unsigned long> StringOptimizationProblem::getIndicesOfElectronsAtNuclei() {
+  return indicesOfElectronsAtNuclei_;
+}
+
+
+Eigen::VectorXd StringOptimizationProblem::getNucleiPositions() const{
+  return wf_.getAtomCollection().positionsAsEigenVector();
+}
+
+/*
+bool StringOptimizationProblem::callback(const cppoptlib::Criteria<double> &state, Eigen::VectorXd &x, Eigen::VectorXd& grad) {
+  gradientResetQ = false;
+  putElectronsIntoNuclei(x, grad); //gradientQ could be true now
+
+  optimizationPath_.append(ElectronCollection(x, wf_.getSpinTypeCollection().spinTypesAsEigenVector()));
+
+  std::cout << "(" << std::setw(2) << state.iterations << ")"
+            << " f(x) = " << std::fixed << std::setw(8) << std::setprecision(8) << value(x)
+            << " xDelta = " << std::setw(8) << state.xDelta
+            << " gradInfNorm = " << std::setw(8) << state.gradNorm
+            << std::endl;
+  std::cout << "value calls: " <<  valueCallCount_ << ", gradient calls:" << gradientCallCount_ << std::endl;
+
+  for (auto & it : indicesOfElectronsNotAtNuclei_) std::cout << it << " ";
+  std::cout << std::endl;
+  for (auto & it : indicesOfElectronsAtNuclei_) std::cout << it << " ";
+  std::cout << std::endl;
+
+  return true;
+}
+*/

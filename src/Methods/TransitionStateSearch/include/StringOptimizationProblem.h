@@ -22,11 +22,11 @@ public:
                               );
     //StringMethodProblem(const Eigen::MatrixXd &initalChainGuess);
 
-    double value(const Eigen::VectorXd &x);
+    double value(const Eigen::VectorXd &x) override;
 
-    void gradient(const Eigen::VectorXd &x, Eigen::VectorXd &grad);
+    void gradient(const Eigen::VectorXd &x, Eigen::VectorXd &grad) override;
 
-    bool callback(cppoptlib::Criteria<double> &state, Eigen::VectorXd &x, Eigen::VectorXd& grad);
+    bool callback(const cppoptlib::Criteria<double> &state, Eigen::VectorXd &x, Eigen::VectorXd& grad) override;
 
     Eigen::VectorXd stateValues(const Eigen::VectorXd &x);
 
@@ -48,6 +48,15 @@ public:
         valueCallCount_ = 0;
         gradientCallCount_ = 0;
     }
+    
+    void fixGradient(Eigen::VectorXd& grad);
+
+    Eigen::VectorXd getNucleiPositions() const;
+
+    void putElectronsIntoNuclei(Eigen::VectorXd& x, Eigen::VectorXd& grad);
+
+    std::vector<unsigned long> getIndicesOfElectronsNotAtNuclei();
+    std::vector<unsigned long> getIndicesOfElectronsAtNuclei();
 
 private:
     unsigned stepCounter_;
@@ -58,6 +67,9 @@ private:
     unsigned valueCallCount_, gradientCallCount_;
 
     std::vector<StateGradientType> stateTypes_;
+
+    std::vector<unsigned long> indicesOfElectronsNotAtNuclei_;
+    std::vector<unsigned long> indicesOfElectronsAtNuclei_;
 
 };
 

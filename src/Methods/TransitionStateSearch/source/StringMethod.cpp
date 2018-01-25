@@ -3,6 +3,8 @@
 //
 
 //#include <solver/timeintegrationsolver.h>
+#include <solver/gradientdescentumrigarlimitedsteplength.h>
+#include <solver/gradientdescentsimplesolver.h>
 #include "StringMethod.h"
 #include "StringOptimizationProblem.h"
 #include "solver/bfgsnssolver.h"
@@ -28,11 +30,11 @@ void StringMethod::optimizeString() {
     discretizeStringToChain();
     calculateUnitTangents();
 
-  unsigned maxIterations = 5;
+  unsigned maxIterations = 100000;
   unsigned iterations = 0;
     do {
         performStep();
-      iterations++;
+        iterations++;
     } while (status_ == cppoptlib::Status::IterationLimit && iterations < maxIterations);
 }
 
@@ -47,9 +49,9 @@ void StringMethod::minimizeOrthogonalToString() {
     StringOptimizationProblem problem(chain_.statesNumber(), chain_.coordinatesNumber(), wf_, unitTangents_);
     cppoptlib::TimeIntegrationSolver<StringOptimizationProblem> solver;
     //cppoptlib::BfgsnsSolver<StringOptimizationProblem> solver;
-  auto crit = cppoptlib::Criteria<double>::nonsmoothDefaults();
-    crit.gradNorm = 1e-6;
-    crit.iterations = 50;
+    auto crit = cppoptlib::Criteria<double>::nonsmoothDefaults();
+    crit.gradNorm = 1e-5;
+    crit.iterations = 10;
     solver.setStopCriteria(crit);
 
     Eigen::VectorXd vec = chain_.coordinatesAsVector();
@@ -66,13 +68,10 @@ void StringMethod::minimizeOrthogonalToString() {
 
 void StringMethod::reparametrizeString() {
 
-    //TODO CHANGE BSPLINE IMPLEMENTATION SO THAT ControlPoints are stored in cols instead of rows
-
     //arrange data for bspline generation
     Eigen::MatrixXd data(1+chain_.coordinatesNumber(), chain_.statesNumber());
     data.row(0) = chain_.values();
     data.block(1,0,chain_.coordinatesNumber(),chain_.statesNumber()) = chain_.coordinates();
-
     BSplines::PointInterpolationGenerator generator(data.transpose(),3,true);
     //BSplines::PenalizedLeastSquaresFitWithFixedEndsGenerator generator(data.transpose(),//Transpose to account for different data layout
     //                                                                   unsigned(chain_.statesNumber()-1),
@@ -102,7 +101,6 @@ void StringMethod::discretizeStringToChain() {
 
     Eigen::VectorXd values(uValues_.size());
     Eigen::MatrixXd coordinates(chain_.coordinatesNumber(),uValues_.size());
-
 
     // by arc length
     for (int i = 0; i < uValues_.size(); ++i) {
