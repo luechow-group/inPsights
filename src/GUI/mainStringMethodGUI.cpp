@@ -46,7 +46,7 @@ int main(int argc, char *argv[]) {
     QApplication app(argc, argv);
 
     //ElectronicWaveFunction::getInstance("H2ic666.wf");//"Ethane-em-5.wf");
-    ElectronicWaveFunctionProblem f("H2ic666.wf");
+    ElectronicWaveFunctionProblem f("H2sm444.wf");
     std::cout << f.getNucleiPositions() << std::endl;
     Eigen::VectorXd x0(2*3);
     x0 <<
