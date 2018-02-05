@@ -45,6 +45,8 @@ set(HEADER_FILES
         include/AmolqcImporter.h
         include/OptimizationPathFileImporter.h
         include/CollectionParser.h
+        include/AbstractCollection.h
+        include/Entity.h
         )
 
 set(SOURCE_FILES
@@ -68,6 +70,7 @@ set(SOURCE_FILES
         source/OptimizationPathFileImporter.cpp
         source/CollectionParser.cpp
         source/SpinType.cpp
+        source/ElementType.cpp
         )
 
 file(GLOB_RECURSE RESOURCE_FILES resources/*.*)

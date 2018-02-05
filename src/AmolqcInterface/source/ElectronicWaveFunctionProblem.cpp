@@ -137,8 +137,8 @@ bool ElectronicWaveFunctionProblem::callback(const cppoptlib::Criteria<double> &
     return true;
 }
 
-Eigen::VectorXd ElectronicWaveFunctionProblem::getNucleiPositions() const{
-    return wf_.getAtomCollection().positionsAsEigenVector();
+AtomCollection ElectronicWaveFunctionProblem::getAtomCollection() const{
+    return wf_.getAtomCollection();
 }
 
 std::vector<unsigned long> ElectronicWaveFunctionProblem::getIndicesOfElectronsNotAtNuclei() {

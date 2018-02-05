@@ -47,7 +47,7 @@ int main(int argc, char *argv[]) {
 
     //ElectronicWaveFunction::getInstance("H2ic666.wf");//"Ethane-em-5.wf");
     ElectronicWaveFunctionProblem f("H2sm444.wf");
-    std::cout << f.getNucleiPositions() << std::endl;
+    std::cout << f.getAtomCollection() << std::endl;
     Eigen::VectorXd x0(2*3);
     x0 <<
        0,0,-0.700144,\
@@ -71,7 +71,7 @@ int main(int argc, char *argv[]) {
     //collectionParser.writeJSON(collectionParser.electronCollectionToJson(ec),"Ethylene-glob-max.json");
     CollectionParser collectionParser;
     //auto ecA = collectionParser.electronCollectionFromJson("Ethane-glob-max.json");
-    auto ecA = ElectronCollection(x0,Eigen::Vector2i(-1,1));
+    auto ecA = ElectronCollection(x0,Eigen::Vector2i(1,-1));
     auto ecB = ecA;
 
 

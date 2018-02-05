@@ -53,3 +53,10 @@ void AtomCollection::permute(long i, long j) {
     ParticleCollection::permute(i,j);
     ElementTypeCollection::permute(i,j);
 }
+
+std::ostream& operator<<(std::ostream& os, const AtomCollection& ac){
+    os << static_cast<ElementTypeCollection>(ac)
+       << static_cast<ParticleCollection>(ac)
+       << std::endl;
+    return os;
+}

@@ -8,7 +8,7 @@
 #include <Eigen/Core>
 #include "SpinType.h"
 
-class SpinTypeCollection{
+class SpinTypeCollection : public AbstractCollection{
 public:
     explicit SpinTypeCollection(unsigned long size = 0);
     SpinTypeCollection(unsigned long numberOfAlphaElectrons, unsigned long numberOfBetaElectrons);
@@ -31,7 +31,6 @@ public:
     friend std::ostream& operator<<(std::ostream& os, const SpinTypeCollection& pc);
 
 private:
-    unsigned long numberOfSpinTypes_;
     Eigen::VectorXi spinTypes_;
 };
 

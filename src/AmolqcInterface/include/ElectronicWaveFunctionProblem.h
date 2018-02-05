@@ -22,7 +22,7 @@ public:
 
     bool callback(const cppoptlib::Criteria<double> &state, Eigen::VectorXd &x, Eigen::VectorXd& grad) override;
 
-    Eigen::VectorXd getNucleiPositions() const;
+    AtomCollection getAtomCollection() const;
 
     unsigned getValueCallCount(){
         return valueCallCount_;

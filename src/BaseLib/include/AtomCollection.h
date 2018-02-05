@@ -31,6 +31,8 @@ public:
                  const Elements::ElementType &elementType = Elements::ElementType::none);
     
     void addAtom(const Eigen::Vector3d &position, const Elements::ElementType &elementType);
+
+    friend std::ostream& operator<<(std::ostream& os, const AtomCollection& ac);
 };
 
 #endif //AMOLQCGUI_ATOMCOLLECTION_H

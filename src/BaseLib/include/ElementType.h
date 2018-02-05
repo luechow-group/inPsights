@@ -20,4 +20,6 @@ enum class ElementType {
 
 } // namespace Elements
 
+std::ostream& operator<< (std::ostream& os, const Elements::ElementType& e);
+
 #endif // AMOLQCGUI_ELEMENTTYPES_H

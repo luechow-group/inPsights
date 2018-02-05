@@ -7,8 +7,9 @@
 
 #include <Eigen/Core>
 #include <iostream>
+#include "Entity.h"
 
-class Particle {
+class Particle : public Entity {
 public:
     explicit Particle(const Eigen::Vector3d& position);
     Particle(double x, double y, double z);
