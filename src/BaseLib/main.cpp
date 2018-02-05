@@ -15,7 +15,6 @@
 #include "CollectionParser.h"
 
 int main(int argc, char const *argv[]) {
-
     std::string filename = "Ethane-em-5.wf";
     WfFileImporter waveFunctionParser(filename);
     auto ac = waveFunctionParser.getAtomCollection();
@@ -42,8 +41,6 @@ int main(int argc, char const *argv[]) {
         std::cout << ecs2.getSpinTypeCollection().spinTypesAsEigenVector().transpose() << std::endl;
         std::cout << ecs2[i].positionsAsEigenVector().transpose() << std::endl;
     }
-
-
     RefFileImporter refFileImporter("Ethane-max.ref");
     auto ec = refFileImporter.getMaximaStructure(1,1);
     CollectionParser collectionParser;
@@ -66,6 +63,4 @@ int main(int argc, char const *argv[]) {
     ecp.permute(0,2);
     std::cout << ecp.positionsAsEigenVector().transpose() << std::endl;
     std::cout << static_cast<SpinTypeCollection>(ecp).spinTypesAsEigenVector().transpose() << std::endl;
-
-
 }

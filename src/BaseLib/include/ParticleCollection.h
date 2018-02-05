@@ -28,6 +28,8 @@ public:
     ParticleCollection part(std::vector<long> indices);
     */
 
+    friend std::ostream& operator<<(std::ostream& os, const ParticleCollection& pc);
+
     Eigen::VectorXd positionsAsEigenVector() const;
 
 protected:

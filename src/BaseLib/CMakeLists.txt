@@ -67,6 +67,7 @@ set(SOURCE_FILES
         source/AmolqcImporter.cpp
         source/OptimizationPathFileImporter.cpp
         source/CollectionParser.cpp
+        source/SpinType.cpp
         )
 
 file(GLOB_RECURSE RESOURCE_FILES resources/*.*)

@@ -71,9 +71,14 @@ int main(int argc, char *argv[]) {
     //collectionParser.writeJSON(collectionParser.electronCollectionToJson(ec),"Ethylene-glob-max.json");
     CollectionParser collectionParser;
     //auto ecA = collectionParser.electronCollectionFromJson("Ethane-glob-max.json");
-    auto ecA = ElectronCollection(x0);
+    auto ecA = ElectronCollection(x0,Eigen::Vector2i(-1,1));
     auto ecB = ecA;
+
+
+    std::cout << ecA << std::endl;
+
     ecB.permute(0, 1);
+    std::cout << ecB << std::endl;
     //ecB.permute(8, 17);//Ethane
 
     unsigned numberOfStates = 7;

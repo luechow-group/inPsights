@@ -4,6 +4,7 @@
 
 #include <Particle.h>
 #include "SpinTypeCollection.h"
+#include "SpinType.h"
 
 using namespace Eigen;
 
@@ -16,8 +17,8 @@ SpinTypeCollection::SpinTypeCollection(const VectorXi& spinTypes)
         : numberOfSpinTypes_(spinTypes.size()),
           spinTypes_(numberOfSpinTypes_)
 {
-    assert(spinTypes.minCoeff() >= int(Spin::SpinType::alpha));
-    assert(spinTypes.maxCoeff() <= int(Spin::SpinType::beta));
+    assert(spinTypes.maxCoeff() <= int(Spin::SpinType::alpha));
+    assert(spinTypes.minCoeff() >= int(Spin::SpinType::beta));
 
     spinTypes_ = spinTypes;
 }
@@ -80,4 +81,12 @@ void SpinTypeCollection::permute(long i, long j) {
         spinTypes_[i] = spinTypes_[j];
         spinTypes_[j] = temp;
     }
+}
+
+std::ostream& operator<<(std::ostream& os, const SpinTypeCollection& sc){
+    for (unsigned long i = 0; i < sc.numberOfSpinTypes(); i++) {
+        os << std::string(ParticleFormat::significantDigits+1, ' ')  << Spin::toString(sc.spinType(i)) << ParticleFormat::separator;
+    }
+    std::cout << std::endl;
+    return os;
 }

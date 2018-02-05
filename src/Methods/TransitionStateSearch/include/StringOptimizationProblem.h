@@ -7,6 +7,7 @@
 
 #include "problem.h"
 #include "ElectronicWaveFunction.h"
+#include <fstream>
 
 enum StateGradientType{ SimpleGradient, OrthogonalToString, Fixed, ClimbingImage};
 
@@ -70,7 +71,7 @@ private:
 
     std::vector<unsigned long> indicesOfElectronsNotAtNuclei_;
     std::vector<unsigned long> indicesOfElectronsAtNuclei_;
-
+    std::ofstream outfile;
 };
 
 #endif //AMOLQCGUI_STRINGMETHODPROBLEM_H

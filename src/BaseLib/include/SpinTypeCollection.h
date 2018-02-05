@@ -28,6 +28,8 @@ public:
 
     Eigen::VectorXi spinTypesAsEigenVector() const;
 
+    friend std::ostream& operator<<(std::ostream& os, const SpinTypeCollection& pc);
+
 private:
     unsigned long numberOfSpinTypes_;
     Eigen::VectorXi spinTypes_;

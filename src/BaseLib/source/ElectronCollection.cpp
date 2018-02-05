@@ -31,7 +31,7 @@ ElectronCollection::ElectronCollection(const ParticleCollection &particleCollect
 
 Electron ElectronCollection::electron(long i) {
     Particle particle = (*this)[i];
-    return Electron(particle, spinType(i));
+    return Electron{particle, spinType(i)};
 }
 
 void ElectronCollection::insert(const Electron& electron, long i) {
@@ -51,4 +51,10 @@ void ElectronCollection::append(const Electron& electron) {
 void ElectronCollection::permute(long i, long j) {
     ParticleCollection::permute(i,j);
     SpinTypeCollection::permute(i,j);
+}
+
+std::ostream& operator<<(std::ostream& os, const ElectronCollection& ec){
+    os << static_cast<SpinTypeCollection>(ec);
+    os << static_cast<ParticleCollection>(ec);
+    return os;
 }

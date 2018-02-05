@@ -53,6 +53,12 @@ void ParticleCollection::insert(const Particle &particle, long i) {
     ++numberOfParticles_;
 }
 
+std::ostream& operator<<(std::ostream& os, const ParticleCollection& pc){
+    Eigen::Map<Eigen::Matrix3Xd> mat(pc.positionsAsEigenVector().data(),3,pc.numberOfParticles());
+    os << mat.format(ParticleFormat::particleFormat) << std::endl;
+    return os;
+}
+
 void ParticleCollection::prepend(const Particle &particle) {
     this->insert(particle,0);
 }

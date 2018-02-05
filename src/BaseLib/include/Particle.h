@@ -6,6 +6,7 @@
 #define AMOLQCGUI_PARTICLE_H
 
 #include <Eigen/Core>
+#include <iostream>
 
 class Particle {
 public:
@@ -15,9 +16,18 @@ public:
     Eigen::Vector3d position() const;
     void position(const Eigen::Vector3d& position);
 
+    friend std::ostream& operator<< (std::ostream& os, const Particle& p);
+
     static double distance(const Particle &p1, const Particle &p2);
 
 protected:
     Eigen::Vector3d position_;
 };
+
+namespace ParticleFormat{
+    static const unsigned significantDigits = 6;
+    static const std::string separator = " ";
+    static const Eigen::IOFormat particleFormat = Eigen::IOFormat(significantDigits, 0, separator, "\n", "", "", "", "");
+};
+
 #endif //AMOLQCGUI_PARTICLE_H
