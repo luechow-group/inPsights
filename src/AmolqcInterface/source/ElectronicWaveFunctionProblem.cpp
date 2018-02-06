@@ -93,7 +93,7 @@ void ElectronicWaveFunctionProblem::putElectronsIntoNuclei(Eigen::VectorXd& x, E
             }
         }
         // check the electron with the smallest distance is close than the threshold
-        double threshold = 0.05;
+        double threshold = 0.0005;
         if (smallestDistance <= threshold){
             //TODO PROPER?
             //Eigen::Block<Eigen::VectorXd, i*3, 0>(x.derived(), 0, 0) = atomCollection[closestNucleusIdx].position();

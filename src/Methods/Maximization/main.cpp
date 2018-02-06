@@ -15,7 +15,7 @@
 
 int main(int argc, char const *argv[]) {
 
-/*
+
     // GradientDescentSimpleSolver zur Endpunktbestimmung und Vergleich Umrigar, Diboran, sechster Pfad
     cppoptlib::Criteria<double> crit = cppoptlib::Criteria<double>::nonsmoothDefaults();
 
@@ -36,15 +36,12 @@ int main(int argc, char const *argv[]) {
         crit.gradNorm = 1e-5;
         crit.iterations = 10000;
         solver.setStopCriteria(crit);
-        //solver.setMaxStepLength(1e-1);
-        //solver.setSteepestDescentRate(1.0);
-        //solver.setDistanceCriteriaUmrigar(0.1);
 
         solver.minimize(electronicWaveFunctionProblem, x0);
 
         std::cout << x0 << std::endl;
     }
-*/
+
 
 /*
     // GradientDescentSolver mit MoreThuente lineSearch, Diboran, sechster Pfad
@@ -67,9 +64,6 @@ int main(int argc, char const *argv[]) {
         crit.gradNorm = 1e-5;
         crit.iterations = 10000;
         solver.setStopCriteria(crit);
-        //solver.setMaxStepLength(1e-1);
-        //solver.setSteepestDescentRate(1.0);
-        //solver.setDistanceCriteriaUmrigar(0.1);
 
         solver.minimize(electronicWaveFunctionProblem, x0);
 
@@ -77,7 +71,7 @@ int main(int argc, char const *argv[]) {
     }
 */
 
-/*    
+/*
     // GradientDescentUmrigarLimitedSteplength, Diboran, sechster Pfad
     cppoptlib::Criteria<double> crit = cppoptlib::Criteria<double>::nonsmoothDefaults();
 
@@ -99,8 +93,8 @@ int main(int argc, char const *argv[]) {
         crit.iterations = 10000;
         solver.setStopCriteria(crit);
         solver.setMaxStepLength(1e-1);
-        solver.setSteepestDescentRate(1.0);
-        solver.setDistanceCriteriaUmrigar(1.0);
+        solver.setSteepestDescentRate(0.1);
+        solver.setDistanceCriteriaUmrigar(0.1);
 
         solver.minimize(electronicWaveFunctionProblem, x0);
 
@@ -108,7 +102,7 @@ int main(int argc, char const *argv[]) {
     }
 */
 
-
+/*
     // GradientDescentSolver mit MoreThuente lineSearch und Umrigar, Diboran, sechster Pfad
     cppoptlib::Criteria<double> crit = cppoptlib::Criteria<double>::nonsmoothDefaults();
 
@@ -131,13 +125,13 @@ int main(int argc, char const *argv[]) {
         solver.setStopCriteria(crit);
         solver.setMaxStepLength(1.0);
         solver.setSteepestDescentRate(1.0);
-        solver.setDistanceCriteriaUmrigar(0.5);
+        solver.setDistanceCriteriaUmrigar(1.0);
 
         solver.minimize(electronicWaveFunctionProblem, x0);
 
         std::cout << x0 << std::endl;
     }
-
+*/
 
     /*
     ElectronicWaveFunctionProblem electronicWaveFunctionProblem("Ethane-em-5.wf");
