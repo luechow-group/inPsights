@@ -54,7 +54,8 @@ void ParticleCollection::insert(const Particle &particle, long i) {
 }
 
 std::ostream& operator<<(std::ostream& os, const ParticleCollection& pc){
-    Eigen::Map<Eigen::Matrix3Xd> mat(pc.positionsAsEigenVector().data(),3,pc.numberOfParticles());
+    Eigen::VectorXd vec = (pc.positionsAsEigenVector());
+    Eigen::Map<Eigen::Matrix3Xd> mat(vec.data(),3,pc.numberOfParticles());
     os << static_cast<AbstractCollection>(pc)
        << mat.format(ParticleFormat::particleFormat) << std::endl;
     return os;
