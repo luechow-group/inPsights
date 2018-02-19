@@ -104,7 +104,6 @@ int main(int argc, char *argv[]) {
 
 
   ElectronicWaveFunction::getInstance("Ethylene-em-5.wf");
-  ElectronicWaveFunction::getInstance().setFrozenElectrons({1,2,3,4, 9,10,11,12});
 
   Eigen::VectorXd xA(ElectronicWaveFunction::getInstance().getNumberOfElectrons()*3);
   xA <<\

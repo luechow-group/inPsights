@@ -13,7 +13,7 @@
 #include <Qt3DRender/QObjectPicker>
 
 class Abstract3dObject : public Qt3DCore::QEntity {
-  Q_OBJECT
+  //Q_OBJECT
 public:
   Abstract3dObject(){};
   Abstract3dObject(Qt3DCore::QEntity *root, QColor color, const QVector3D location);
@@ -22,7 +22,7 @@ public:
   Qt3DCore::QEntity* entity;
   Qt3DExtras::QPhongAlphaMaterial* material;
   Qt3DCore::QTransform* transform;
-  Qt3DRender::QObjectPicker *picker;
+  //Qt3DRender::QObjectPicker *picker;
 
   //void setColor(const QColor& color){ this->color = color;};
   //void setLocation(const QVector3D& location){ this->location = location;};
@@ -32,8 +32,8 @@ public:
   QColor getColor() const { return color_; };
   QVector3D getLocation() const { return location_; };
 
-public slots:
-  void onPressed(bool pressed);
+//public slots:
+  //void onPressed(bool pressed);
 
 protected:
   QColor color_;
