@@ -23,19 +23,18 @@ ElectronicWaveFunctionProblem::ElectronicWaveFunctionProblem(const std::string &
 double ElectronicWaveFunctionProblem::value(const Eigen::VectorXd &x) {
     valueCallCount_++;
     wf_.evaluate(x);
-  return wf_.getNegativeLogarithmizedProbabilityDensity();
-  //return wf_.getProbabilityDensity();
+
+    return wf_.getNegativeLogarithmizedProbabilityDensity();
+    //return wf_.getProbabilityDensity();
 }
 
 void ElectronicWaveFunctionProblem::gradient(const Eigen::VectorXd &x, Eigen::VectorXd &grad) {
-  gradientCallCount_++;
-  wf_.evaluate(x);
+    gradientCallCount_++;
+    wf_.evaluate(x);
 
     grad = wf_.getNegativeLogarithmizedProbabilityDensityGradientCollection();
-    //std::cout << "unfixed " << grad.transpose() << std::endl;
     fixGradient(grad);
-    //std::cout << "  fixed " << grad.transpose() << std::endl;
-  //grad = wf_.getProbabilityDensityGradientCollection();
+    //grad = wf_.getProbabilityDensityGradientCollection();
 }
 
 void ElectronicWaveFunctionProblem::hessian(const Eigen::VectorXd &x, Eigen::MatrixXd &hessian) {
@@ -138,8 +137,8 @@ bool ElectronicWaveFunctionProblem::callback(const cppoptlib::Criteria<double> &
     return true;
 }
 
-Eigen::VectorXd ElectronicWaveFunctionProblem::getNucleiPositions() const{
-    return wf_.getAtomCollection().positionsAsEigenVector();
+AtomCollection ElectronicWaveFunctionProblem::getAtomCollection() const{
+    return wf_.getAtomCollection();
 }
 
 std::vector<unsigned long> ElectronicWaveFunctionProblem::getIndicesOfElectronsNotAtNuclei() {

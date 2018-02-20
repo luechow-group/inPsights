@@ -5,10 +5,11 @@
 #ifndef AMOLQCGUI_PARTICLECOLLECTION_H
 #define AMOLQCGUI_PARTICLECOLLECTION_H
 
+#include "AbstractCollection.h"
 #include "Particle.h"
 #include <vector>
 
-class ParticleCollection{
+class ParticleCollection : public AbstractCollection{
 public:
     ParticleCollection();
     explicit ParticleCollection(const Eigen::VectorXd& positions);
@@ -20,7 +21,7 @@ public:
     void insert(const Particle& particle, long i);
     void append(const Particle& particle);
     void prepend(const Particle& particle);
-    void permute(long i, long j);
+    virtual void permute(long i, long j);
 
     /* TODO
     void replace(long i);
@@ -28,10 +29,11 @@ public:
     ParticleCollection part(std::vector<long> indices);
     */
 
+    friend std::ostream& operator<<(std::ostream& os, const ParticleCollection& pc);
+
     Eigen::VectorXd positionsAsEigenVector() const;
 
 protected:
-    unsigned long numberOfParticles_;
     Eigen::VectorXd positions_;
 
 private:

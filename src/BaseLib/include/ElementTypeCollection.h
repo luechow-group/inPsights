@@ -7,8 +7,9 @@
 
 #include <Eigen/Core>
 #include "ElementType.h"
+#include "AbstractCollection.h"
 
-class ElementTypeCollection{
+class ElementTypeCollection : public AbstractCollection{
 public:
     explicit ElementTypeCollection(long size = 0);
     explicit ElementTypeCollection(const Eigen::VectorXi& elementTypes);
@@ -26,8 +27,9 @@ public:
 
     unsigned long numberOfElementTypes() const;
 
+    friend std::ostream& operator<<(std::ostream& os, const ElementTypeCollection& ec);
+
 private:
-    unsigned long numberOfElementsTypes_;
     Eigen::VectorXi elementTypes_;
 };
 

@@ -23,7 +23,9 @@ public:
     void insert (const Electron& electron, long i);
     void append (const Electron& electron);
     void prepend(const Electron& electron);
-    void permute(long i, long j);
+    void permute(long i, long j) override ;
+
+    friend std::ostream& operator<<(std::ostream& os, const ElectronCollection& ec);
 };
 
 #endif //AMOLQCGUI_ELECTRONCOLLECTION_H

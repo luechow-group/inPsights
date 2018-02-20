@@ -122,7 +122,8 @@ double ElectronicWaveFunction::getInverseNegativeLogarithmizedProbabilityDensity
 }
 
 ElectronCollection ElectronicWaveFunction::getElectronPositionCollection(){
-  return ElectronCollection(electronPositionCollectionAsEigenVector_,getSpinTypeCollection().spinTypesAsEigenVector());
+  return ElectronCollection(electronPositionCollectionAsEigenVector_,
+                            getSpinTypeCollection().spinTypesAsEigenVector());
 };
 
 Eigen::VectorXd ElectronicWaveFunction::getElectronDriftCollection(){
@@ -138,6 +139,12 @@ Eigen::VectorXd ElectronicWaveFunction::getProbabilityDensityGradientCollection(
 };
 
 Eigen::VectorXd ElectronicWaveFunction::getNegativeLogarithmizedProbabilityDensityGradientCollection() {
+
+  /*std::vector<int>frozenElectrons_={1,2,3,4,5, 10,11,12,13,14};
+  for (std::vector<int>::const_iterator it = frozenElectrons_.begin(); it != frozenElectrons_.end(); ++it ){
+    // index of the elctrons start at 0
+    electronDriftCollection_.segment(((*it)-1)*3,3) = Eigen::VectorXd::Zero(3);
+  }*/
   return -2.0 * electronDriftCollection_;
 }
 

@@ -4,6 +4,7 @@
 #include "ElementType.h"
 #include "pElementInfo.h"
 #include "ElementColor.h"
+#include <iostream>
 
 namespace Elements {
 

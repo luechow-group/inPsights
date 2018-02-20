@@ -23,3 +23,8 @@ void Particle::position(const Vector3d &position) {
 double Particle::distance(const Particle &p1, const Particle &p2) {
     return (p1.position()-p2.position()).norm();
 }
+
+std::ostream& operator<< (std::ostream& os, const Particle& p) {
+    os << p.position().format(ParticleFormat::particleFormat) << std::endl;
+    return os;
+}

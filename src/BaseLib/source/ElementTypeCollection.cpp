@@ -2,18 +2,20 @@
 // Created by Michael Heuer on 29.10.17.
 //
 
+#include <ElementInfo.h>
+#include "Particle.h"
 #include "ElementTypeCollection.h"
 
 using namespace Eigen;
 
 ElementTypeCollection::ElementTypeCollection(long size)
-        :numberOfElementsTypes_(size),
+        :AbstractCollection(size),
          elementTypes_(VectorXi::Constant(size,int(Elements::ElementType::none)))
 {}
 
 ElementTypeCollection::ElementTypeCollection(const VectorXi& elementTypes)
-        : numberOfElementsTypes_(elementTypes.size()),
-          elementTypes_(numberOfElementsTypes_)
+        : AbstractCollection(elementTypes.size()),
+          elementTypes_(numberOfEntities_)
 {
     assert(elementTypes.minCoeff() >= int(Elements::ElementType::none));
     assert(elementTypes.maxCoeff() <= int(Elements::ElementType::Cn));
@@ -26,19 +28,19 @@ Elements::ElementType ElementTypeCollection::elementType(long i) const {
 }
 
 unsigned long ElementTypeCollection::numberOfElementTypes() const {
-    return numberOfElementsTypes_;
+    return numberOfEntities_;
 }
 
 void ElementTypeCollection::insert(Elements::ElementType elementType, long i) {
     VectorXi before = elementTypes_.head(i);
-    VectorXi after = elementTypes_.tail(numberOfElementsTypes_-i);
+    VectorXi after = elementTypes_.tail(numberOfEntities_-i);
 
-    elementTypes_.resize(numberOfElementsTypes_+1);
+    elementTypes_.resize(numberOfEntities_+1);
     //elementTypes_ << before, int(elementType), after;
     elementTypes_.head(i) = before;
     elementTypes_.segment(i,1) = Eigen::Matrix<int,1,1>(int(elementType));
-    elementTypes_.tail(numberOfElementsTypes_-i) = after;
-    ++numberOfElementsTypes_;
+    elementTypes_.tail(numberOfEntities_-i) = after;
+    ++numberOfEntities_;
 }
 
 void ElementTypeCollection::prepend(Elements::ElementType elementType) {
@@ -46,7 +48,7 @@ void ElementTypeCollection::prepend(Elements::ElementType elementType) {
 }
 
 void ElementTypeCollection::append(Elements::ElementType elementType) {
-    this->insert(elementType,numberOfElementsTypes_);
+    this->insert(elementType,numberOfEntities_);
 }
 
 void ElementTypeCollection::setElementType(long i, Elements::ElementType ElementType) {
@@ -58,13 +60,25 @@ VectorXi ElementTypeCollection::elementTypesAsEigenVector() {
 }
 
 void ElementTypeCollection::permute(long i, long j) {
-    assert( i >= 0 && i < numberOfElementsTypes_
+    assert( i >= 0 && i < numberOfEntities_
             && "Index i must be greater than zero and smaller than the number of elements." );
-    assert( j >= 0 && j < numberOfElementsTypes_
+    assert( j >= 0 && j < numberOfEntities_
             && "Index j must be greater than zero and smaller than the number of elements." );
     if(i != j) {
         int temp = elementTypes_[i];
         elementTypes_[i] = elementTypes_[j];
         elementTypes_[j] = temp;
     }
+}
+
+std::ostream& operator<<(std::ostream& os, const ElementTypeCollection& ec){
+    for (unsigned long i = 0; i < ec.numberOfEntities_; i++) {
+        std::string elementSymbol = Elements::ElementInfo::symbol(ec.elementType(i));
+
+        os << elementSymbol
+           << std::string(ParticleFormat::significantDigits+3-elementSymbol.length(), ' ')
+           << ParticleFormat::separator;
+    }
+    std::cout << std::endl;
+    return os;
 }
