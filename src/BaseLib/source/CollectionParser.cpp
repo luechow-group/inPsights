@@ -49,7 +49,7 @@ nlohmann::json CollectionParser::electronCollectionToJson(const ElectronCollecti
     for (int i = 0; i < electronCollection.numberOfParticles(); ++i) {
 
         auto vec = electronCollection[i].position();
-        spinTypeArray.push_back(spinTypeCollection.spinType(i));
+        spinTypeArray.push_back((int)spinTypeCollection.spinType(i));
         particleCoordinatesArray.push_back(nlohmann::json::array({vec[0],vec[1],vec[2]}));
     }
 
