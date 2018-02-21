@@ -8,7 +8,7 @@
 #include "ElectronCollection.h"
 #include "AtomCollection.h"
 
-#include <json.hpp>
+#include <nlohmann/json.hpp>
 
 class CollectionParser{
 public:
