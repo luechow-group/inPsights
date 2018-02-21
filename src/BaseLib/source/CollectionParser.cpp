@@ -69,7 +69,7 @@ ParticleCollection CollectionParser::particleCollectionFromJson(const std::strin
 }
 
 ParticleCollection CollectionParser::array2DToParticleCollection(nlohmann::json coordinates) {
-    std::vector<std::vector<double>> particles = coordinates.get<std::vector<std::vector<double>>>();
+    auto particles = coordinates.get<std::vector<std::vector<double>>>();
     ParticleCollection particleCollection;
     for(auto it = particles.begin(); it != particles.end(); ++it) {
         assert((*it).size() == 3);
@@ -84,7 +84,7 @@ AtomCollection CollectionParser::atomCollectionFromJson(const std::string &filen
     assert(j["type"]== "AtomCollection" && "File must be a AtomCollection.");
     assert(j["elements"].is_array());
 
-    std::vector<std::string> elementSymbols = j["elements"].get<std::vector<std::string>>();
+    auto elementSymbols = j["elements"].get<std::vector<std::string>>();
     ElementTypeCollection elementTypeCollection;
     for(auto it = elementSymbols.begin(); it != elementSymbols.end(); ++it) {
         elementTypeCollection.append(Elements::ElementInfo::elementTypeForSymbol(*it));
@@ -99,7 +99,7 @@ ElectronCollection CollectionParser::electronCollectionFromJson(const std::strin
     assert(j["type"]== "ElectronCollection" && "File must be a ElectronCollection.");
     assert(j["spins"].is_array());
 
-    std::vector<int> spins = j["spins"].get<std::vector<int>>();
+    auto spins = j["spins"].get<std::vector<int>>();
     SpinTypeCollection spinTypeCollection;
     for(auto it = spins.begin(); it != spins.end(); ++it) {
         spinTypeCollection.append( (Spin::SpinType)(*it) );

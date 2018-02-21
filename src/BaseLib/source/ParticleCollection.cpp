@@ -33,8 +33,8 @@ long ParticleCollection::calculateStartIndex(long i) const {
 
 Particle ParticleCollection::operator[](long i) const {
     assert(i < long(numberOfEntities_) && "index is out of bounds");
-    long start = calculateStartIndex(i);
-    Vector3d position = positions_.segment(start,3);
+    auto start = calculateStartIndex(i);
+    auto position = positions_.segment(start,3);
     return Particle(position);
 }
 
@@ -54,7 +54,7 @@ void ParticleCollection::insert(const Particle &particle, long i) {
 }
 
 std::ostream& operator<<(std::ostream& os, const ParticleCollection& pc){
-    Eigen::VectorXd vec = (pc.positionsAsEigenVector());
+    auto vec = pc.positionsAsEigenVector();
     Eigen::Map<Eigen::Matrix3Xd> mat(vec.data(),3,pc.numberOfParticles());
     os << static_cast<AbstractCollection>(pc)
        << mat.format(ParticleFormat::particleFormat) << std::endl;
