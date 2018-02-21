@@ -76,7 +76,7 @@ set(SOURCE_FILES
 file(GLOB_RECURSE RESOURCE_FILES resources/*.*)
 file(COPY ${RESOURCE_FILES} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
-add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES} include/Atom.h)
+add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES})
 target_link_libraries(${PROJECT_NAME}
         Qt5::Core
         nlohmann_json
