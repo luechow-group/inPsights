@@ -15,7 +15,7 @@ public:
     Atom(const Particle& particle, const Elements::ElementType& elementType = Elements::ElementType::none);
 
     Elements::ElementType elementType() const;
-    //void setElementType(Elements::ElementType elementType);
+    void setElementType(const Elements::ElementType & elementType);
 
 private:
     Elements::ElementType elementType_;

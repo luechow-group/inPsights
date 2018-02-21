@@ -22,3 +22,7 @@ Atom::Atom(const Particle &particle, const ElementType& elementType)
 Elements::ElementType Atom::elementType() const {
     return elementType_;
 };
+
+void Atom::setElementType(const Elements::ElementType &elementType) {
+    elementType_ = elementType;
+}
