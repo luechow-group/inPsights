@@ -7,7 +7,6 @@
 
 #include "AbstractCollection.h"
 #include "Particle.h"
-#include <vector>
 
 class ParticleCollection : public AbstractCollection{
 public:

@@ -10,7 +10,6 @@
 
 #include <json.hpp>
 
-//namespace CollectionParser{
 class CollectionParser{
 public:
 

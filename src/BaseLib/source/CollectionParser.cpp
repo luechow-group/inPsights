@@ -4,7 +4,6 @@
 
 #include "CollectionParser.h"
 #include <fstream>
-#include <iostream>
 #include "ElementInfo.h"
 
 nlohmann::json CollectionParser::particleCollectionToJson(const ParticleCollection &particleCollection) {
