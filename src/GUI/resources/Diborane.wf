@@ -1,6 +1,6 @@
 $general
  title=Diborane
- basis=TZPAE, jastrow=ic
+ basis=TZPAE, jastrow=ic, geom=angstrom
  charge= 0, spin= 1
 $end
 $geom
