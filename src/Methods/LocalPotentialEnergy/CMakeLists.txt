@@ -10,4 +10,37 @@ message ( "-- ++ CREATING PROJECT OR MAKEFILE ---> ${OUTPUT_NAME}" )
 
 set(CMAKE_CXX_STANDARD 11)
 
+find_package(Eigen3 REQUIRED)
+include_directories( ${EIGEN3_INCLUDE_DIR} )
+
+include_directories(
+        include
+        source
+        #resources
+)
+
+set(HEADER_FILES
+        include/DummyClass.h
+        )
+
+set(SOURCE_FILES
+        source/DummyClass.cpp
+        )
+
+file(GLOB_RECURSE RESOURCE_FILES resources/*.*)
+file(COPY ${RESOURCE_FILES} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+
+add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES})
+target_include_directories(${PROJECT_NAME} PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        )
+target_link_libraries(${PROJECT_NAME}
+        BaseLib
+        )
+
 add_executable(${PROJECT_NAME}_main main.cpp)
+target_link_libraries(${PROJECT_NAME}_main
+        ${PROJECT_NAME}
+        ${LAPACK_LINKER_FLAGS}
+        ${BLAS_LINKER_FLAGS}
+        )
