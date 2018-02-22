@@ -118,7 +118,7 @@ void ElectronicWaveFunctionProblem::putElectronsIntoNuclei(Eigen::VectorXd& x, E
 
 bool ElectronicWaveFunctionProblem::callback(const cppoptlib::Criteria<double> &state, Eigen::VectorXd &x, Eigen::VectorXd& grad) {
     gradientResetQ = false;
-    //putElectronsIntoNuclei(x, grad); //gradientQ could be true now
+    putElectronsIntoNuclei(x, grad); //gradientQ could be true now
 
     optimizationPath_.append(ElectronCollection(x, wf_.getSpinTypeCollection().spinTypesAsEigenVector()));
 
