@@ -18,46 +18,50 @@ int main(int argc, char *argv[]) {
 
 
     CollectionParser collectionParser;
-    auto ec = collectionParser.electronCollectionFromJson("BH3_Max2.json");
+    auto ec = collectionParser.electronCollectionFromJson("BH3_Max1.json");
+    auto nsmooth = 2;
     auto x = ec.positionsAsEigenVector();
 
-    //ElectronCollection ec;
-    //ec.append(Electron(ac[0],Spin::SpinType::alpha));
-    //ec.append(Electron(ac[1],Spin::SpinType::alpha));
-    //ec.append(Electron(ac[2],Spin::SpinType::alpha));
-    //ec.append(Electron(ac[3],Spin::SpinType::alpha));
-    //ec.append(Electron(ac[0],Spin::SpinType::beta));
-    //ec.append(Electron(ac[1].position().array()/2.0, Spin::SpinType::beta));
-    //ec.append(Electron(ac[2].position().array()/2.0, Spin::SpinType::beta));
-    //ec.append(Electron(ac[3].position().array()/2.0, Spin::SpinType::beta));
-    //auto x = ec.positionsAsEigenVector();
-    //std::cout << ec << std::endl;
 
     auto n = ElectronicWaveFunction::getInstance().getNumberOfElectrons()*3;
     Eigen::VectorXd grad(n);
     electronicWaveFunctionProblem.putElectronsIntoNuclei(x,grad);
+
+    std::cout << ElectronCollection(grad,ec.spinTypesAsEigenVector()) << std::endl;
+
     for (auto & it : electronicWaveFunctionProblem.getIndicesOfElectronsAtNuclei()) std::cout << it << " ";
     std::cout << std::endl;
     for (auto & it : electronicWaveFunctionProblem.getIndicesOfElectronsNotAtNuclei()) std::cout << it << " ";
     std::cout << std::endl;
 
+    std::vector<double >epsilons({1E-2,1E-3,1E-4,1E-5,1E-6,1E-7,1E-8,1E-9,1E-10,1E-11});
 
-    Eigen::MatrixXd hess(n,n);
-    electronicWaveFunctionProblem.hessian(x,hess);
-    std::cout << hess << std::endl;
+    auto eps= std::numeric_limits<double >::epsilon();
 
-    Eigen::EigenSolver<Eigen::MatrixXd> eigenSolver(hess, false);
-    //Eigen::EigenSolver<Eigen::MatrixXd> eigenSolver(hess,true);
-    auto eigenvalues = eigenSolver.eigenvalues();
-    std::cout << eigenvalues << std::endl;
-    //auto eigenvectors = eigenSolver.eigenvectors();
-    //std::cout << eigenvectors << std::endl;
+    std::cout << eps << std::endl;
+    for (int j = 0; j < x.size(); ++j) {
+        std::cout << "x_i = " << x(j) << ", h_i = " << std::sqrt(eps) * (std::abs(x(j)) + std::sqrt(eps)) << std::endl;
+    }
 
-    //Eigen::VectorXd x(2*3);
-    //x <<
-    //   0,0,-0.700144,\
-    //   0,0,+0.700144;
+    std::cout << "default eps = " << electronicWaveFunctionProblem.gethDelta() << " " << x(1) << std::endl;
 
+    for (auto & i : epsilons) {
+        electronicWaveFunctionProblem.sethDelta(i);
+        std::cout << "eps = " << electronicWaveFunctionProblem.gethDelta() << std::endl;
+        Eigen::MatrixXd hess(n, n);
+        electronicWaveFunctionProblem.hessian(x, hess);
+        //std::cout << hess << std::endl;
+
+        auto relevantBlock = hess.block((8 - nsmooth) * 3, (8 - nsmooth) * 3, 3 * nsmooth, 3 * nsmooth);
+        Eigen::EigenSolver<Eigen::MatrixXd> eigenSolver(relevantBlock, true);
+        std::cout << relevantBlock << std::endl;
+        //Eigen::EigenSolver<Eigen::MatrixXd> eigenSolver(hess,true);
+        auto eigenvalues = eigenSolver.eigenvalues();
+        std::cout << eigenvalues << std::endl;
+        //auto eigenvectors = eigenSolver.eigenvectors();
+        //std::cout << eigenvectors << std::endl;
+        std::cout << std::endl;
+    }
     /*
     cppoptlib::Criteria<double> crit = cppoptlib::Criteria<double>::nonsmoothDefaults();
     crit.iterations = 1000;
