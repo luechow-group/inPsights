@@ -25,7 +25,6 @@ double ElectronicWaveFunctionProblem::value(const Eigen::VectorXd &x) {
     wf_.evaluate(x);
 
     return wf_.getNegativeLogarithmizedProbabilityDensity();
-    //return wf_.getProbabilityDensity();
 }
 
 void ElectronicWaveFunctionProblem::gradient(const Eigen::VectorXd &x, Eigen::VectorXd &grad) {
@@ -34,7 +33,6 @@ void ElectronicWaveFunctionProblem::gradient(const Eigen::VectorXd &x, Eigen::Ve
 
     grad = wf_.getNegativeLogarithmizedProbabilityDensityGradientCollection();
     fixGradient(grad);
-    //grad = wf_.getProbabilityDensityGradientCollection();
 }
 
 void ElectronicWaveFunctionProblem::hessian(const Eigen::VectorXd &x, Eigen::MatrixXd &hessian) {
@@ -42,16 +40,11 @@ void ElectronicWaveFunctionProblem::hessian(const Eigen::VectorXd &x, Eigen::Mat
     //TODO asserts?
     long dims = x.size();
 
-    cppoptlib::Problem<double,Eigen::Dynamic>::hessian(x,hessian);
+    cppoptlib::Problem<double,Eigen::Dynamic>::semifiniteHessian(x,hessian,2);
 
-    //TODO is the following necessary or is fix gradient (which is executed internally) sufficient?
-    for (int i = 0; i < wf_.getNumberOfElectrons()*3; ++i) {
-        if(electronCoordinateIndicesThatWereNaN_[i]){
-            //set entire row to zero
-            hessian.block(i,0,1,dims) = Eigen::MatrixXd::Zero(dims,1);
-            //set entire column to zero
-            hessian.block(0,i,dims,1) = Eigen::MatrixXd::Zero(1,dims);
-        }
+    for (auto i : indicesOfElectronsAtNuclei_){
+        hessian.block(i*3,0,3,dims) = Eigen::MatrixXd::Zero(3,dims);
+        hessian.block(0,i*3,dims,3) = Eigen::MatrixXd::Zero(dims,3);
     }
 }
 
