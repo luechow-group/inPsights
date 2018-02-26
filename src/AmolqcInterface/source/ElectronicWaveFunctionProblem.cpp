@@ -43,8 +43,8 @@ void ElectronicWaveFunctionProblem::hessian(const Eigen::VectorXd &x, Eigen::Mat
     cppoptlib::Problem<double,Eigen::Dynamic>::hessian(x,hessian);
 
     for (auto i : indicesOfElectronsAtNuclei_){
-        hessian.block(i*3,0,3,dims) = Eigen::MatrixXd::Zero(dims,3);
-        hessian.block(0,i*3,dims,3) = Eigen::MatrixXd::Zero(3,dims);
+        hessian.block(i*3,0,3,dims) = Eigen::MatrixXd::Zero(3,dims);
+        hessian.block(0,i*3,dims,3) = Eigen::MatrixXd::Zero(dims,3);
     }
 }
 
