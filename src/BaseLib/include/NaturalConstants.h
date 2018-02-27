@@ -17,7 +17,7 @@ namespace Constant {
     const double vacuumPermittivity   = 8.854187817E-12;  // epsilon_0 [A*s/(V*m)]
     const double vacuumPermeability   = 12.566370614E-7;  // mu_0 [N/A^2]
     const double elementaryCharge     = 1.602176565E-19;  // e [C]
-    const double electronMass         = 9.10938291E-31;   // m_e[kg]
+    const double electronMass         = 9.10938291E-31;   // m_e [kg]
 
 
     // derived
