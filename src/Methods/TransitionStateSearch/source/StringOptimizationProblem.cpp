@@ -185,19 +185,18 @@ void StringOptimizationProblem::putElectronsIntoNuclei(Eigen::VectorXd &x, Eigen
 bool StringOptimizationProblem::callback(const cppoptlib::Criteria<double> &state, Eigen::VectorXd &x, Eigen::VectorXd& grad) {
   stepCounter_++;
   gradientResetQ = false;
-  //putElectronsIntoNuclei(x, grad); //gradientResetQ could be true now
+  putElectronsIntoNuclei(x, grad); //gradientQ could be true now
 
   std::cout << "(" << std::setw(2) << state.iterations << ")"
             << " f(x) = " << std::fixed << std::setw(8) << std::setprecision(8) << value(x)
             << " xDelta = " << std::setw(8) << state.xDelta
             << " gradInfNorm = " << std::setw(8) << state.gradNorm
             << std::endl;
-  //std::cout << "value calls: " <<  valueCallCount_ << ", gradient calls:" << gradientCallCount_ << std::endl;
-    /*
+
   for (auto & it : indicesOfElectronsNotAtNuclei_) std::cout << it << " ";
   std::cout << std::endl;
   for (auto & it : indicesOfElectronsAtNuclei_) std::cout << it << " ";
-  std::cout << std::endl;*/
+  std::cout << std::endl;
 
   return true;
 }
