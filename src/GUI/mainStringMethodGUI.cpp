@@ -138,19 +138,24 @@ initialCoordinates.row((18 - 1) * 3 + 2) -= 0.05 * bend;//z bend
         std::cout << bspline.evaluate(minima[l]).tail(
                 ElectronicWaveFunction::getInstance().getNumberOfElectrons() * 3).transpose() << std::endl;
     }
-    Eigen::VectorXd xAopt(
-            bspline.evaluate(0).tail(ElectronicWaveFunction::getInstance().getNumberOfElectrons() * 3).transpose());
-    Eigen::VectorXd xBopt(
-            bspline.evaluate(1).tail(ElectronicWaveFunction::getInstance().getNumberOfElectrons() * 3).transpose());
 
-    std::cout << "u=0\n" << xAopt.transpose() << std::endl;
-    std::cout << "u=1\n" << xBopt.transpose() << std::endl;
+    ElectronCollection ecStart(
+            Eigen::VectorXd(bspline.evaluate(0).tail(ElectronicWaveFunction::getInstance().getNumberOfElectrons() * 3)),
+                            ecA.spinTypesAsEigenVector());
+    ElectronCollection ecEnd(
+            Eigen::VectorXd(bspline.evaluate(1).tail(ElectronicWaveFunction::getInstance().getNumberOfElectrons() * 3)),
+                            ecA.spinTypesAsEigenVector());
+    ElectronCollection ecTS(
+            Eigen::VectorXd(bspline.evaluate(maxima[0]).tail(ElectronicWaveFunction::getInstance().getNumberOfElectrons() * 3)),
+            ecA.spinTypesAsEigenVector());
+    auto json = collectionParser.electronCollectionToJson(ecTS);
+    json["comment"] = "not fully optimized";
 
-    Eigen::VectorXd tsGuessGeom = bspline.evaluate(maxima[0]).tail(
-            ElectronicWaveFunction::getInstance().getNumberOfElectrons() * 3);
-    std::cout << "u=" << maxima[0] << "\n" << tsGuessGeom.transpose() << std::endl;
-    std::cout << "0_to_ts: " << bspline.evaluate(maxima[0])(0) - bspline.evaluate(0)(0) << std::endl;
-    std::cout << "ts_to_1: " << bspline.evaluate(maxima[0])(0) - bspline.evaluate(1)(0) << std::endl;
+    collectionParser.writeJSON(json,"H2_TS.json");
+
+    std::cout << "u=" << maxima[0] << "\n" << ecTS << std::endl;
+    std::cout << "BarrierHeight 0_to_ts: " << bspline.evaluate(maxima[0])(0) - bspline.evaluate(0)(0) << std::endl;
+    std::cout << "BarrierHeight ts_to_1: " << bspline.evaluate(maxima[0])(0) - bspline.evaluate(1)(0) << std::endl;
 
 
     /* Eigen::MatrixXd hess(ElectronicWaveFunction::getInstance().getNumberOfElectrons()*3,ElectronicWaveFunction::getInstance().getNumberOfElectrons()*3);
@@ -176,12 +181,12 @@ initialCoordinates.row((18 - 1) * 3 + 2) -= 0.05 * bend;//z bend
       std::cout << eigenvalues << std::endl;*/
 
     Eigen::VectorXd grad(ElectronicWaveFunction::getInstance().getNumberOfElectrons() * 3);
-    f.gradient(xAopt, grad);
-    std::cout << "u=0\n" << grad.transpose() << std::endl;
-    f.gradient(tsGuessGeom, grad);
-    std::cout << "u=" << maxima[0] << "\n" << grad.transpose() << std::endl;
-    f.gradient(xBopt, grad);
-    std::cout << "u=1\n" << grad.transpose() << std::endl;
+    f.gradient(ecStart.positionsAsEigenVector(), grad);
+    std::cout << "Gradient at u=0\n" << grad.transpose() << std::endl;
+    f.gradient(ecTS.positionsAsEigenVector(), grad);
+    std::cout << "Gradient at u=" << maxima[0] << "\n" << grad.transpose() << std::endl;
+    f.gradient(ecEnd.positionsAsEigenVector(), grad);
+    std::cout << "Gradient at u=1\n" << grad.transpose() << std::endl;
 
 
     //visualization
@@ -197,14 +202,14 @@ initialCoordinates.row((18 - 1) * 3 + 2) -= 0.05 * bend;//z bend
 
 
     //Draw tsguess
-    /*for (int j = 0; j < ElectronicWaveFunction::getInstance().getNumberOfElectrons() ; ++j) {
-      Eigen::Vector3d vec3d = tsGuessGeom.segment(j * 3, 3);
+    for (int j = 0; j < ElectronicWaveFunction::getInstance().getNumberOfElectrons() ; ++j) {
+      Eigen::Vector3d vec3d = ecTS.positionsAsEigenVector().segment(j * 3, 3);
       QVector3D qVector3D(vec3d(0), vec3d(1), vec3d(2));
 
       Electron3D* e = new Electron3D(root, qVector3D, Spin::SpinType::none);
       e->setRadius(0.025f);
       e->setAlpha(1.0);
-    }*/
+    }
 
     BSplines::ArcLengthParametrizedBSpline bs = stringMethod.getArcLengthParametrizedBSpline();
     StringMethodCoordinatesPlotter bSplinePlotter(root, bs, 100, 0.01f);
