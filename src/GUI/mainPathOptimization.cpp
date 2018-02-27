@@ -22,16 +22,15 @@
 
 
 int main(int argc, char *argv[]) {
-
     // handle command line arguments
     std::string wavefunctionFilename = argv[1];
     std::string electronCollectionFilename = argv[2];
     bool showGui = false;
     if (argc > 3) showGui = (std::string(argv[3]) == "gui");
 
+
     ElectronicWaveFunctionProblem electronicWaveFunctionProblem(wavefunctionFilename);
     CollectionParser collectionParser;
-
     auto ac = electronicWaveFunctionProblem.getAtomCollection();
     auto ec = collectionParser.electronCollectionFromJson(electronCollectionFilename);
     std::cout << ac << std::endl;
@@ -39,13 +38,16 @@ int main(int argc, char *argv[]) {
 
     Eigen::VectorXd x(ec.positionsAsEigenVector());
     std::cout << x.transpose() << std::endl;
+    Eigen::VectorXd grad(ec.numberOfParticles());
+    electronicWaveFunctionProblem.putElectronsIntoNuclei(x,grad);
+
 
     cppoptlib::Criteria<double> crit = cppoptlib::Criteria<double>::nonsmoothDefaults();
 
     cppoptlib::BfgsUmrigarSolver<ElectronicWaveFunctionProblem> solver;
     solver.setDebug(cppoptlib::DebugLevel::High);
-    crit.gradNorm = 1e-5;
-    crit.iterations = 100000;
+    crit.gradNorm = 1e-6;
+    crit.iterations = 1000;
     solver.setStopCriteria(crit);
     //solver.setMaxStepLength(1.0);
     //solver.setSteepestDescentRate(0.1);
@@ -53,6 +55,7 @@ int main(int argc, char *argv[]) {
 
     solver.minimize(electronicWaveFunctionProblem, x);
     std::cout << ElectronCollection(ParticleCollection(x),SpinTypeCollection(ec.spinTypesAsEigenVector()))<<std::endl;
+
 
 
     if(showGui) {
@@ -105,4 +108,28 @@ auto numberOfPaths = optimizationPathFileImporter.getNumberOfPaths();
 
 auto psiSquareDistributedParticleCollection = optimizationPathFileImporter.getPath(6).front();
 VectorXd xA = psiSquareDistributedParticleCollection.positionsAsEigenVector();
+*/
+
+
+/* //Create starting guess
+    ElectronicWaveFunctionProblem electronicWaveFunctionProblem("BH3_Exp-em.wf");
+    auto ac = electronicWaveFunctionProblem.getAtomCollection();
+    std::cout << ac << "\n" << ElectronicWaveFunction::getInstance().getNumberOfElectrons() << std::endl;
+    ElectronCollection ec;
+    ec.append(Electron(ac[0],Spin::SpinType::alpha));
+    ec.append(Electron(ac[1],Spin::SpinType::alpha));
+    ec.append(Electron(ac[2],Spin::SpinType::alpha));
+    ec.append(Electron(ac[3],Spin::SpinType::alpha));
+    ec.append(Electron(ac[0],Spin::SpinType::beta));
+
+    ec.append(Electron(ac[1].position().array()*0.9+0*Eigen::Vector3d(0.2,-0.1,0.).array(), Spin::SpinType::beta));
+    ec.append(Electron(ac[2].position().array()*0.1+0*Eigen::Vector3d(0.1,-0.1,-0.1).array(), Spin::SpinType::beta));
+    ec.append(Electron(ac[3].position().array()*0.1+0*Eigen::Vector3d(-0.2,-0.1,0.5).array(), Spin::SpinType::beta));
+
+    // [...]
+
+    // Write vector x to json
+    CollectionParser collectionParser;
+    auto j = collectionParser.electronCollectionToJson(ElectronCollection(x,ec.spinTypesAsEigenVector()));
+    collectionParser.writeJSON(j,"BH3_Max1.json");
 */
