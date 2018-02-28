@@ -37,16 +37,17 @@ int main(int argc, char *argv[]) {
 
     Eigen::MatrixXd hess(n, n);
     electronicWaveFunctionProblem.hessian(x, hess);
-    //std::cout << hess << std::endl;
+    std::cout << hess << std::endl;
+    Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> selfAdjointEigenSolver(hess,true);
 
-    auto relevantBlock = hess.block((8 - nsmooth) * 3, (8 - nsmooth) * 3, 3 * nsmooth, 3 * nsmooth);
-    Eigen::EigenSolver<Eigen::MatrixXd> eigenSolver(relevantBlock, true);
-    std::cout << relevantBlock << std::endl;
-    //Eigen::EigenSolver<Eigen::MatrixXd> eigenSolver(hess,true);
-    auto eigenvalues = eigenSolver.eigenvalues();
+    //auto relevantBlock = hess.block((8 - nsmooth) * 3, (8 - nsmooth) * 3, 3 * nsmooth, 3 * nsmooth);
+    //Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> selfAdjointEigenSolver(relevantBlock, true);
+    //std::cout << relevantBlock << std::endl;
+
+    auto eigenvalues = selfAdjointEigenSolver.eigenvalues();
     std::cout << eigenvalues << std::endl;
-    //auto eigenvectors = eigenSolver.eigenvectors();
-    //std::cout << eigenvectors << std::endl;
+    auto eigenvectors = selfAdjointEigenSolver.eigenvectors();
+    std::cout << eigenvectors << std::endl;
     std::cout << std::endl;
 
     /*
