@@ -42,9 +42,9 @@ int main(int argc, char *argv[]) {
     Eigen::VectorXd secondOrderTS2(6);
     secondOrderTS2 << 0,-0.19589114963364730,0,0, 0.1958911496336473,0;
 
-    int mz = 10;
-    int my = 10;
-    double maxz = 0.42;//0.9*0.700144;
+    int mz = 3;
+    int my = 3;
+    double maxz = 0.4;//0.9*0.700144;
     double maxy = 0.3;
 
     Eigen::VectorXd vec(6);
@@ -57,60 +57,68 @@ int main(int argc, char *argv[]) {
     crit.iterations = 10000;
     solver.setStopCriteria(crit);
 
-    for (int j = 0; j < mz; ++j) {
-        double scalingz = double(j) / double(mz - 1);
-        double z = scalingz * maxz;
+    for (int iy1 = 1; iy1 < my; ++iy1) {
+    for (int iy2 = iy1; iy2 < my; ++iy2) {
+    for (int iz1 = 0; iz1 < mz; ++iz1) {
+    for (int iz2 = iz1; iz2 < mz; ++iz2) {
 
-        for (int k = 1; k < my; ++k) {
+        double scalingy1 = double(iy1) / double(my - 1);
+        double y1 = scalingy1 * maxy;
+        double scalingy2 = double(iy2) / double(my - 1);
+        double y2 = -scalingy2 * maxy;
 
-            double scalingy = double(k) / double(my - 1);
-            double y = scalingy * maxy;
+        double scalingz1 = double(iz1) / double(mz - 1);
+        double z1 = scalingz1 * maxz;
+        double scalingz2 = double(iz2) / double(mz - 1);
+        double z2 = -scalingz2 * maxz;
 
-            Eigen::VectorXd start(6);
-            start << x,y,z,x,-y,z;
-            vec = start;
 
-            electronicWaveFunctionProblem.reset();
-            electronicWaveFunctionProblem.putElectronsIntoNuclei(vec,grad);
-            solver.minimize(electronicWaveFunctionProblem, vec);
-            electronicWaveFunctionProblem.putElectronsIntoNuclei(vec,grad);
+        Eigen::VectorXd start(6);
+        start << 0, y1, z1, 0, y2, z2;
+        vec = start;
 
-            double prec = 0.01;
-            if(!vec.isApprox(secondOrderTS1,prec) &&
-               !vec.isApprox(secondOrderTS2,prec) &&
-               !vec.isApprox(bothRight,prec) &&
-               !vec.isApprox(bothLeft,prec)) {
-                std::cout << ParticleCollection(start)  << std::endl;
-                std::cout << ParticleCollection(vec)  << std::endl;
+        electronicWaveFunctionProblem.reset();
+        electronicWaveFunctionProblem.putElectronsIntoNuclei(vec, grad);
+        solver.minimize(electronicWaveFunctionProblem, vec);
+        electronicWaveFunctionProblem.putElectronsIntoNuclei(vec, grad);
 
-                /*Start Hessian analysis*/
-                auto n = ElectronicWaveFunction::getInstance().getNumberOfElectrons()*3;
+        double prec = 0.01;
+        if (!vec.isApprox(secondOrderTS1, prec) &&
+            !vec.isApprox(secondOrderTS2, prec) &&
+            !vec.isApprox(bothRight, prec) &&
+            !vec.isApprox(bothLeft, prec)) {
+            std::cout << ParticleCollection(start) << std::endl;
+            std::cout << ParticleCollection(vec) << std::endl;
 
-                std::cout << "Core ";
-                for (auto & it : electronicWaveFunctionProblem.getIndicesOfElectronsAtNuclei()) std::cout << it << " ";
-                std::cout << std::endl;
-                std::cout << "Free ";
-                for (auto & it : electronicWaveFunctionProblem.getIndicesOfElectronsNotAtNuclei()) std::cout << it << " ";
-                std::cout << std::endl;
+            /*Start Hessian analysis*/
+            auto n = ElectronicWaveFunction::getInstance().getNumberOfElectrons() * 3;
 
-                Eigen::MatrixXd hess(n, n);
-                electronicWaveFunctionProblem.hessian(vec, hess);
-                //std::cout << hess << std::endl << std::endl;
-                Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> selfAdjointEigenSolver(hess,false);
+            std::cout << "Core ";
+            for (auto &it : electronicWaveFunctionProblem.getIndicesOfElectronsAtNuclei()) std::cout << it << " ";
+            std::cout << std::endl;
+            std::cout << "Free ";
+            for (auto &it : electronicWaveFunctionProblem.getIndicesOfElectronsNotAtNuclei())
+                std::cout << it << " ";
+            std::cout << std::endl;
 
-                //auto relevantBlock = hess.block((8 - nsmooth) * 3, (8 - nsmooth) * 3, 3 * nsmooth, 3 * nsmooth);
-                //Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> selfAdjointEigenSolver(relevantBlock, true);
-                //std::cout << relevantBlock << std::endl;
+            Eigen::MatrixXd hess(n, n);
+            electronicWaveFunctionProblem.hessian(vec, hess);
+            std::cout << hess << std::endl << std::endl;
+            Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> selfAdjointEigenSolver(hess, false);
 
-                auto eigenvalues = selfAdjointEigenSolver.eigenvalues();
-                std::cout << eigenvalues.transpose() << std::endl;
-                //auto eigenvectors = selfAdjointEigenSolver.eigenvectors();
-                //std::cout << eigenvectors << std::endl;
-                std::cout << std::endl;
-                /* End Hessian analysis*/
-            }
+            //auto relevantBlock = hess.block((8 - nsmooth) * 3, (8 - nsmooth) * 3, 3 * nsmooth, 3 * nsmooth);
+            //Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> selfAdjointEigenSolver(relevantBlock, true);
+            //std::cout << relevantBlock << std::endl;
+
+            auto eigenvalues = selfAdjointEigenSolver.eigenvalues();
+            std::cout << eigenvalues.transpose() << std::endl;
+            //auto eigenvectors = selfAdjointEigenSolver.eigenvectors();
+            //std::cout << eigenvectors << std::endl;
+            std::cout << std::endl;
+            /* End Hessian analysis*/
         }
-    }
+    }}}}
+
 
     if(showGui) {
         QApplication app(argc, argv);
