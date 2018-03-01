@@ -114,6 +114,7 @@ bool ElectronicWaveFunctionProblem::callback(const cppoptlib::Criteria<double> &
 
     optimizationPath_.append(ElectronCollection(x, wf_.getSpinTypeCollection().spinTypesAsEigenVector()));
 
+    /*
     std::cout << "(" << std::setw(2) << state.iterations << ")"
               << " f(x) = " << std::fixed << std::setw(8) << std::setprecision(8) << value(x)
               << " xDelta = " << std::setw(8) << state.xDelta
@@ -124,7 +125,7 @@ bool ElectronicWaveFunctionProblem::callback(const cppoptlib::Criteria<double> &
     for (auto & it : indicesOfElectronsNotAtNuclei_) std::cout << it << " ";
     std::cout << std::endl;
     for (auto & it : indicesOfElectronsAtNuclei_) std::cout << it << " ";
-    std::cout << std::endl;
+    std::cout << std::endl;*/
 
     return true;
 }
