@@ -21,7 +21,7 @@ void WfFileImporter::readGeneralBlock() {
       if ( splittedElement[0] == "title") title_ = splittedElement[1];
       else if ( splittedElement[0] == "basis") basis_ = splittedElement[1];
       else if ( splittedElement[0] == "jastrow") jastrow_ = splittedElement[1];
-      else if ( splittedElement[0] == "geom") bohrQ_ = splittedElement[1] == "bohr"; // TODO check amolqc defaults
+      else if ( splittedElement[0] == "geom") bohrQ_ = splittedElement[1] == "bohr"; // TODO Implement better detection
       else if ( splittedElement[0] == "charge") charge_ = std::stoi(splittedElement[1]);
       else if ( splittedElement[0] == "spin") multiplicity_ = std::stoul(splittedElement[1]);
     }
@@ -51,8 +51,7 @@ AtomCollection WfFileImporter::getAtomCollection() {
       double y = std::stod(lineElements[2]);
       double z = std::stod(lineElements[3]);
 
-      // TODO check amolqc defaults
-      // if not bohr, convert to bohr
+      // The internal amolqc and Amolqcpp default is bohr, if not bohr, convert to bohr
       if(!bohrQ_){
         x *= ConversionFactors::angstrom2bohr;
         y *= ConversionFactors::angstrom2bohr;
