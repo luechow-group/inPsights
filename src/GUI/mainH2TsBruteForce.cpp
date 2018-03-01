@@ -42,9 +42,9 @@ int main(int argc, char *argv[]) {
     Eigen::VectorXd secondOrderTS2(6);
     secondOrderTS2 << 0,-0.19589114963364730,0,0, 0.1958911496336473,0;
 
-    int mz = 3;
-    int my = 3;
-    double maxz = 0.4;//0.9*0.700144;
+    int mz = 4;
+    int my = 4;
+    double maxz = 0.35;//0.9*0.700144;
     double maxy = 0.3;
 
     Eigen::VectorXd vec(6);
