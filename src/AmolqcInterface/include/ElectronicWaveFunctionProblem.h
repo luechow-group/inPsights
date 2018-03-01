@@ -36,9 +36,10 @@ public:
         return getValueCallCount()+getGradientCallCount();
     }
 
-    void resetCounters(){
+    void reset(){
         valueCallCount_ = 0;
         gradientCallCount_ = 0;
+        optimizationPath_ = ElectronCollections(wf_.getSpinTypeCollection());
     }
 
     ElectronCollections getOptimizationPath(){
