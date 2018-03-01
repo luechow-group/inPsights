@@ -86,7 +86,9 @@ int main(int argc, char *argv[]) {
         if (!vec.isApprox(secondOrderTS1, prec) &&
             !vec.isApprox(secondOrderTS2, prec) &&
             !vec.isApprox(bothRight, prec) &&
-            !vec.isApprox(bothLeft, prec)) {
+            !vec.isApprox(bothLeft, prec) &&
+                std::abs(vec[2])<0.7 &&
+                std::abs(vec[5])<0.7) {
             std::cout << ParticleCollection(start) << std::endl;
             std::cout << ParticleCollection(vec) << std::endl;
 
