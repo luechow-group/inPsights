@@ -54,9 +54,9 @@ AtomCollection WfFileImporter::getAtomCollection() {
       // TODO check amolqc defaults
       // if not bohr, convert to bohr
       if(!bohrQ_){
-        x /= AU::length*1e10;
-        y /= AU::length*1e10;
-        z /= AU::length*1e10;
+        x *= ConversionFactors::angstrom2bohr;
+        y *= ConversionFactors::angstrom2bohr;
+        z *= ConversionFactors::angstrom2bohr;
       }
       atomCollection.addAtom(x,y,z,elementType);
     }
