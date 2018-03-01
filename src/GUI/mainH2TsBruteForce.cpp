@@ -36,15 +36,15 @@ int main(int argc, char *argv[]) {
     Eigen::VectorXd bothRight(6);
     bothRight<< 0,0,0.700144,0,0,0.700144;
     Eigen::VectorXd bothLeft(6);
-    bothLeft << 0,0,-0.700144,0,0 -0.700144;
+    bothLeft << 0,0,-0.700144,0,0-0.700144;
     Eigen::VectorXd secondOrderTS1(6);
     secondOrderTS1 << 0, 0.19589114963364730,0,0, -0.1958911496336473,0;
     Eigen::VectorXd secondOrderTS2(6);
     secondOrderTS2 << 0,-0.19589114963364730,0,0, 0.1958911496336473,0;
 
-    int mz = 20;
-    int my = 20;
-    double maxz = 0.9*0.700144;
+    int mz = 10;
+    int my = 10;
+    double maxz = 0.42;//0.9*0.700144;
     double maxy = 0.3;
 
     Eigen::VectorXd vec(6);
@@ -61,7 +61,7 @@ int main(int argc, char *argv[]) {
         double scalingz = double(j) / double(mz - 1);
         double z = scalingz * maxz;
 
-        for (int k = 0; k < my; ++k) {
+        for (int k = 1; k < my; ++k) {
 
             double scalingy = double(k) / double(my - 1);
             double y = scalingy * maxy;
