@@ -20,14 +20,35 @@
 #include "ParticleCollectionPath3D.h"
 #include "MoleculeWidget.h"
 
+bool handleCommandlineArguments(int argc, char **argv,
+                                std::string &wavefunctionFilename,
+                                std::string &electronCollectionFilename,
+                                bool &showGui) {
+    if (argc < 3) {
+        std::cout << "Usage: \n"
+                  << "Argument 1: wavefunction filename (.wf)\n"
+                  << "Argument 2: electron collection filename (.json)\n"
+                  << "Argument 3 (Optional): display the gui (gui)" << std::endl;
+        std::cout << "Ethylene-em-5.wf LD_Ethlyen_Start.json gui" << std::endl;
+        return false;
+    } else if (argc >= 3) {
+        wavefunctionFilename = argv[1];
+        electronCollectionFilename = argv[2];
+        if (argc > 3) showGui = (std::string(argv[3]) == "gui");
+        return true;
+    }
+}
 
 int main(int argc, char *argv[]) {
-    // handle command line arguments
-    std::string wavefunctionFilename = argv[1];
-    std::string electronCollectionFilename = argv[2];
-    bool showGui = false;
-    if (argc > 3) showGui = (std::string(argv[3]) == "gui");
+    std::string wavefunctionFilename; //= "H2sm444.wf"; // overwrite command line
+    std::string electronCollectionFilename; //= "H2sm444_TS_ev.json"; // overwrite command line
+    bool showGui = true;
 
+    if( wavefunctionFilename.empty() && electronCollectionFilename.empty()) {
+        bool inputArgumentsFoundQ =
+                handleCommandlineArguments(argc, argv, wavefunctionFilename, electronCollectionFilename, showGui);
+        if(!inputArgumentsFoundQ) return 0;
+    }
 
     ElectronicWaveFunctionProblem electronicWaveFunctionProblem(wavefunctionFilename);
     CollectionParser collectionParser;
