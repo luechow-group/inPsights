@@ -19,13 +19,13 @@
 int main(int argc, char *argv[]) {
     bool showGui = true;
 
-    ElectronicWaveFunctionProblem electronicWaveFunctionProblem("BH3_Exp-em.wf");
+    ElectronicWaveFunctionProblem electronicWaveFunctionProblem("H2sm444.wf");
     auto ac = electronicWaveFunctionProblem.getAtomCollection();
     std::cout << ac << std::endl;
 
 
     CollectionParser collectionParser;
-    auto ec = collectionParser.electronCollectionFromJson("BH3_Max1.json");
+    auto ec = collectionParser.electronCollectionFromJson("H2sm444_TS_NRopt.json");
     auto nsmooth = 2;
     auto x = ec.positionsAsEigenVector();
 
@@ -47,10 +47,6 @@ int main(int argc, char *argv[]) {
     std::cout << hess << std::endl;
     Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> selfAdjointEigenSolver(hess,Eigen::ComputeEigenvectors);
 
-    //auto relevantBlock = hess.block((8 - nsmooth) * 3, (8 - nsmooth) * 3, 3 * nsmooth, 3 * nsmooth);
-    //Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> selfAdjointEigenSolver(relevantBlock, true);
-    //std::cout << relevantBlock << std::endl;
-
     auto eigenvalues = selfAdjointEigenSolver.eigenvalues();
     std::cout << eigenvalues << std::endl;
     auto eigenvectors = selfAdjointEigenSolver.eigenvectors();
@@ -67,24 +63,26 @@ int main(int argc, char *argv[]) {
 
         AtomCollection3D(root, ElectronicWaveFunction::getInstance().getAtomCollection());
 
-        // Plot the final point
-        ElectronCollection3D(root, ElectronCollection(x, ec.spinTypesAsEigenVector()), false);
 
         // Plot eigenvectors
 
+        int evIndex = 0;
+        //for (int evIndex  = 0; evIndex  < ec.numberOfParticles(); ++evIndex ) {
+            for (int i = 0; i <
+                            ec.numberOfParticles(); ++i) {//for (auto i : electronicWaveFunctionProblem.getIndicesOfElectronsNotAtNuclei()){
+                QVector3D v1(x(i * 3 + 0), x(i * 3 + 1), x(i * 3 + 2));
+                QVector3D v2 = v1;
+                QVector3D ev(eigenvectors.col(evIndex)(i * 3 + 0),
+                             eigenvectors.col(evIndex)(i * 3 + 1),
+                             eigenvectors.col(evIndex)(i * 3 + 2));
+                v2 += ev*0.1;
+                std::vector<QVector3D> points = {v1, v2};
+                Polyline pl(root, QColor(Qt::black), points, 0.01, true);
+            }
+        //}
 
-        int evIndex = 23;
-        //for (int j = 0; j < ec.numberOfParticles(); ++j) {
-        for (int i = 0; i < ec.numberOfParticles(); ++i) {//for (auto i : electronicWaveFunctionProblem.getIndicesOfElectronsNotAtNuclei()){
-            QVector3D v1(x(i*3+0), x(i*3+1), x(i*3+2));
-            QVector3D v2 = v1;
-            QVector3D ev(eigenvectors.col(evIndex)(i*3+0),
-                         eigenvectors.col(evIndex)(i*3+1),
-                         eigenvectors.col(evIndex)(i*3+2));
-            v2 += ev;
-            std::vector<QVector3D> points = {v1, v2};
-            Polyline pl(root, Qt::black, points, 0.01, true);
-        }
+        // Plot the final point
+        ElectronCollection3D(root, ElectronCollection(x, ec.spinTypesAsEigenVector()), false);
 
         return app.exec();
     }
