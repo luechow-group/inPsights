@@ -23,18 +23,16 @@ int main(int argc, char *argv[]) {
     auto ac = electronicWaveFunctionProblem.getAtomCollection();
     std::cout << ac << std::endl;
 
-
     CollectionParser collectionParser;
     auto ec = collectionParser.electronCollectionFromJson("H2sm444_TS_NRopt.json");
     auto nsmooth = 2;
     auto x = ec.positionsAsEigenVector();
-
-
     auto n = ElectronicWaveFunction::getInstance().getNumberOfElectrons()*3;
+
     Eigen::VectorXd grad(n);
     electronicWaveFunctionProblem.putElectronsIntoNuclei(x,grad);
 
-    std::cout << ElectronCollection(grad,ec.spinTypesAsEigenVector()) << std::endl;
+    std::cout << "Gradient: " << ElectronCollection(grad,ec.spinTypesAsEigenVector()) << std::endl;
 
     for (auto & it : electronicWaveFunctionProblem.getIndicesOfElectronsAtNuclei()) std::cout << it << " ";
     std::cout << std::endl;
@@ -65,7 +63,6 @@ int main(int argc, char *argv[]) {
 
 
         // Plot eigenvectors
-
         int evIndex = 0;
         //for (int evIndex  = 0; evIndex  < ec.numberOfParticles(); ++evIndex ) {
             for (int i = 0; i <
@@ -75,7 +72,7 @@ int main(int argc, char *argv[]) {
                 QVector3D ev(eigenvectors.col(evIndex)(i * 3 + 0),
                              eigenvectors.col(evIndex)(i * 3 + 1),
                              eigenvectors.col(evIndex)(i * 3 + 2));
-                v2 += ev*0.1;
+                v2 += ev;
                 std::vector<QVector3D> points = {v1, v2};
                 Polyline pl(root, QColor(Qt::black), points, 0.01, true);
             }
@@ -86,32 +83,4 @@ int main(int argc, char *argv[]) {
 
         return app.exec();
     }
-
-
-    /*
-    cppoptlib::Criteria<double> crit = cppoptlib::Criteria<double>::nonsmoothDefaults();
-    crit.iterations = 1000;
-    crit.gradNorm = 1e-8;
-    cppoptlib::BfgsnsSolver<ElectronicWaveFunctionProblem> solver;
-    solver.setDebug(cppoptlib::DebugLevel::High);
-    solver.setStopCriteria(crit);
-    Eigen::VectorXd x = x0;
-    solver.minimize(electronicWaveFunctionProblem, x);
-    std::cout << "max: " << x << std::endl;
-     */
-
-    //cppoptlib::NewtonRaphsonSolver<ElectronicWaveFunctionProblem> solver;
-    //solver.setDebug(cppoptlib::DebugLevel::High);
-    //cppoptlib::Criteria<double> crit = cppoptlib::Criteria<double>::defaults();
-    //crit.iterations = 20;
-    //crit.gradNorm = 1e-6;
-    //solver.setStopCriteria(crit);
-    //solver.minimize(f,x);
-
-
-    //CollectionParser collectionParser;
-    ////auto ecA = collectionParser.electronCollectionFromJson("Ethane-glob-max.json");
-    //auto ecA = ElectronCollection(x0,Eigen::Vector2i(1,-1));
-    //auto ecB = ecA;
-    //std::cout << ecA << std::endl;
 }
