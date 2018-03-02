@@ -40,8 +40,8 @@ bool handleCommandlineArguments(int argc, char **argv,
 }
 
 int main(int argc, char *argv[]) {
-    std::string wavefunctionFilename; //= "H2sm444.wf"; // overwrite command line
-    std::string electronCollectionFilename; //= "H2sm444_TS_ev.json"; // overwrite command line
+    std::string wavefunctionFilename = "H2sm444.wf"; // overwrite command line
+    std::string electronCollectionFilename = "H2sm444_TS_ev.json"; // overwrite command line
     bool showGui = true;
 
     if( wavefunctionFilename.empty() && electronCollectionFilename.empty()) {
@@ -65,14 +65,11 @@ int main(int argc, char *argv[]) {
 
     cppoptlib::Criteria<double> crit = cppoptlib::Criteria<double>::nonsmoothDefaults();
 
-    cppoptlib::BfgsUmrigarSolver<ElectronicWaveFunctionProblem> solver;
+    cppoptlib::TimeIntegrationSolver<ElectronicWaveFunctionProblem> solver;
     solver.setDebug(cppoptlib::DebugLevel::High);
     crit.gradNorm = 1e-6;
     crit.iterations = 1000;
     solver.setStopCriteria(crit);
-    //solver.setMaxStepLength(1.0);
-    //solver.setSteepestDescentRate(0.1);
-    //solver.setDistanceCriteriaUmrigar(0.1);
 
     solver.minimize(electronicWaveFunctionProblem, x);
     std::cout << ElectronCollection(ParticleCollection(x),SpinTypeCollection(ec.spinTypesAsEigenVector()))<<std::endl;
