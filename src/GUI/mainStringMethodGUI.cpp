@@ -1,43 +1,34 @@
 #include <iostream>
 #include <Eigen/Core>
-//#include <QGuiApplication>
+#include <Eigen/Eigenvalues>
 #include <Qt3DCore>
 #include <Qt3DRender>
 #include <Qt3DExtras>
-
-
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QMainWindow>
 #include <QtCharts/QChartView>
 #include <QtCharts/QLineSeries>
 #include <QtCharts/QValueAxis>
 #include <QtWidgets/QHBoxLayout>
-#include <Qt3DExtras>
+#include <QtCharts/QScatterSeries>
 
 #include "MoleculeWidget.h"
 #include "AtomCollection3D.h"
 #include "ElectronCollection3D.h"
-
 #include "ElementInfo.h"
 #include "ElementType.h"
 #include "Sphere.h"
 #include "Bond3D.h"
 #include "Electron3D.h"
 #include "Polyline.h"
-
 #include "WfFileImporter.h"
 #include "Atom.h"
-
 #include "ArcLengthParametrizedBSpline.h"
 #include "StringMethodCoordinatesPlotter.h"
 #include "StringMethodValuePlotter.h"
 #include "StringMethod.h"
 #include "StationaryPointFinder.h"
-
 #include "ElectronicWaveFunctionProblem.h"
-#include <Eigen/Eigenvalues>
-#include <QtCharts/QScatterSeries>
-
 #include "solver/bfgsnssolver.h"
 #include "CollectionParser.h"
 
