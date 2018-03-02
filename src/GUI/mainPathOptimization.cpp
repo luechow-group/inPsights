@@ -82,7 +82,7 @@ int main(int argc, char *argv[]) {
 
         AtomCollection3D(root, ElectronicWaveFunction::getInstance().getAtomCollection());
 
-        // Plot the starting point
+        // Plot the final point
         ElectronCollection3D(root, ElectronCollection(ParticleCollection(x),
                                                       optimizationPath.getSpinTypeCollection()), false);
 
