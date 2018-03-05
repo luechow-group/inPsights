@@ -1,5 +1,5 @@
 
-#include "WfFileImporter.h"
+#include "../include/WfFileImporter.h"
 #include "ElementInfo.h"
 
 WfFileImporter::WfFileImporter(const std::string &filename)
