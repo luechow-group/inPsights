@@ -37,20 +37,13 @@ ParticleCollection ParticleCollections::back() const {
 }
 
 void ParticleCollections::insert(const ParticleCollection &particleCollection, long i) {
-
-    if(length() == 0) {
-        assert( i == 0 && "If the collection is empty, the index i must be zero ");
-        particleCollections_ = {particleCollection};
-        numberOfParticles_ = particleCollection.numberOfEntities();
-    } else {
-        assert(numberOfParticles_ == particleCollection.numberOfParticles()
-               && "All particle collections must contain the same number of particles.");
-    }
+    assert( numberOfParticles_ == particleCollection.numberOfParticles()
+            && "All particle collections must contain the same number of particles.");
     particleCollections_.insert(particleCollections_.begin()+i,particleCollection);
-
 }
 
 void ParticleCollections::append(const ParticleCollection &particleCollection) {
+
     if(length() == 0) {
         numberOfParticles_ = particleCollection.numberOfParticles();
     }

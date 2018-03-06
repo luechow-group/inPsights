@@ -11,8 +11,6 @@ namespace Spin {
     enum class SpinType { alpha=1, none=0, beta=-1};
 
     std::string toString(const SpinType& s);
-
-    double magneticSpinQuantumNumber(SpinType spinType);
 }
 
 std::ostream& operator<<(std::ostream& os, const Spin::SpinType& s);

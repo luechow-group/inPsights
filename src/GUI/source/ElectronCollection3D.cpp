@@ -19,7 +19,7 @@ ElectronCollection3D::ElectronCollection3D(Qt3DCore::QEntity *root, const Electr
         Eigen::Vector3d vec= electronCollection[i].position();
         auto qvector3d = QVector3D(float(vec[0]),float(vec[1]),float(vec[2]));
         electrons3D.emplace_back(Electron3D(root, qvector3d,
-                                            electronCollection.electron(i).spinType()));
+                                            electronCollection.spinType(i)));
 
         // Draw Text
         if(showIndicesQ){

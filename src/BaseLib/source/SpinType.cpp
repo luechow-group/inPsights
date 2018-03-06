@@ -11,10 +11,6 @@ std::string Spin::toString(const Spin::SpinType& s){
     }
 }
 
-double Spin::magneticSpinQuantumNumber(Spin::SpinType spinType) {
-    return double(spinType)/2.0;
-}
-
 std::ostream& operator<<(std::ostream& os, const Spin::SpinType& s){
     os << Spin::toString(s);
     return os;

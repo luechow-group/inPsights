@@ -22,6 +22,7 @@ public:
                                            unsigned long startLine = 0);
 
     AtomCollection getAtomCollection();
+    SpinTypeCollection getSpinTypeCollection();
     unsigned long getNumberOfElectrons();
     unsigned long getNumberOfAlphaElectrons();
     unsigned long getNumberOfBetaElectrons();

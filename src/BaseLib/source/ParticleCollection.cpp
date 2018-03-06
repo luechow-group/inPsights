@@ -16,7 +16,7 @@ ParticleCollection::ParticleCollection(const VectorXd &positions) {
     assert(size >= 0 && "Vector is empty");
     assert(size%3 == 0 && "Vector is not 3N-dimensional");
 
-    setNumberOfEntities(size / 3);
+    setNumberOfEntietes(size/3);
     positions_ = positions;
 }
 
