@@ -4,81 +4,62 @@
 
 #include "ElectronCollections.h"
 
-ElectronCollections::ElectronCollections()
-        : spinTypeCollection_(SpinTypeCollection())
-{}
+ElectronCollections::ElectronCollections(const Eigen::VectorXi &spinTypes)
+        : spinTypes_(spinTypes) {
 
-ElectronCollections::ElectronCollections(const SpinTypeCollection &spinTypeCollection)
-        : spinTypeCollection_(spinTypeCollection)
-{}
+    assert(spinTypes_.maxCoeff() <= int(Spin::SpinType::alpha));
+    assert(spinTypes_.minCoeff() >= int(Spin::SpinType::beta));
+}
 
 ElectronCollections::ElectronCollections(const ElectronCollection &electronCollection)
         : ElectronCollections(std::vector<ElectronCollection>({electronCollection})){}
 
-ElectronCollections::ElectronCollections(const std::vector<ElectronCollection> &electronCollections)
-        : spinTypeCollection_(static_cast<SpinTypeCollection>(electronCollections[0])) {
+ElectronCollections::ElectronCollections(const std::vector<ElectronCollection> &electronCollections) {
 
-    if ( !electronCollections.empty() ){
-        for (const auto &electronCollection : electronCollections) {
-            this->append(electronCollection);
-
-            // cast the first electronCollection into a SpinTypeCollection
-            assert(static_cast<SpinTypeCollection>(electronCollection).spinTypesAsEigenVector() ==
-                            spinTypeCollection_.spinTypesAsEigenVector()
-                    && "All electron collections must have the same spin type.");
-        }
+    for (const auto &electronCollection : electronCollections) {
+        this->append(electronCollection);
+        assert(electronCollection.getSpinTypes().isApprox(this->spinTypes_)
+                && "All electron collections must have the same spin types.");
     }
 }
 
 ElectronCollections::ElectronCollections(const std::vector<ParticleCollection> &particleCollections,
-                                         const SpinTypeCollection &spinTypeCollection)
-        : spinTypeCollection_(spinTypeCollection) {
-
+                                         const Eigen::VectorXi &spinTypes)
+        : ParticleCollections(particleCollections),
+          spinTypes_(spinTypes) {
 
     for (const auto &particleCollection : particleCollections) {
-        this->append(ElectronCollection(particleCollection,spinTypeCollection));
+        this->append(ElectronCollection(particleCollection,spinTypes));
     }
-
-    //TODO remove and create ElectronCollections instead => the check is done therein
-    /*assert(particleCollections[0].numberOfParticles() == spinTypeCollection_.numberOfSpinTypes()
-           && "The number of positions in ParticleCollection and the number of spin type in SpinTypeCollection must match.");
-
-    if ( !particleCollections.empty() ){
-        for (const auto &particleCollection : particleCollections) {
-            static_cast<ParticleCollections*>(this)->append(particleCollection);
-
-            // cast the first electronCollection into a SpinTypeCollection
-            assert(particleCollection.numberOfParticles() == spinTypeCollection_.numberOfSpinTypes()
-                   && "The number of positions in ParticleCollection and the number of spin type in SpinTypeCollection must match.");
-        }
-    }*/
 }
 
 ElectronCollections::ElectronCollections(const std::vector<ParticleCollection> &particleCollections)
-        : ParticleCollections(particleCollections) {
+        : ParticleCollections(particleCollections),
+          spinTypes_(){
 
     if ( !particleCollections.empty() ){
-        spinTypeCollection_ = SpinTypeCollection(particleCollections[0].numberOfParticles());
+        auto numberOfParticles = particleCollections[0].numberOfParticles();
+        spinTypes_.resize(numberOfParticles);
+        spinTypes_ = Eigen::VectorXi::Zero(numberOfParticles);
     }
 }
 
 void ElectronCollections::insert(const ElectronCollection &electronCollection, long i) {
 
-    // use the SpinTypeCollection if ElectronCollections is empty
+    // if ElectronCollections is empty use the SpinTypeCollection,
+    // else compare the spinTypes if the ElectronCollections is not empty
     if(length() == 0){
-        assert( i != 0 && "The collection is empty but the index i is not equal to zero ");
-        spinTypeCollection_ = static_cast<SpinTypeCollection>(electronCollection);
+        assert( i == 0 && "If the collection is empty, the index i must be zero ");
+        spinTypes_ = electronCollection.getSpinTypes();
     } else {
-        assert(spinTypeCollection_.spinTypesAsEigenVector() == electronCollection.spinTypesAsEigenVector()
-               && "The spin types of the electron collection to be inserted must match with those already stored.");
+        assert(spinTypes_.isApprox(electronCollection.getSpinTypes())
+                       && "The spin types of the electron collection to be inserted must match with those already stored.");
     }
-    ParticleCollections::insert(electronCollection, i);
+    ParticleCollections::insert(static_cast<ParticleCollection>(electronCollection), i);
 }
 
 void ElectronCollections::append(const ElectronCollection &electronCollection) {
-    assert(spinTypeCollection_.spinTypesAsEigenVector() == electronCollection.spinTypesAsEigenVector()
-           && "The spin types of the electron collection to be inserted must match with those already stored.");
-    ParticleCollections::append(electronCollection);
+    this->insert(electronCollection, ParticleCollections::length());
 }
 
 void ElectronCollections::prepend(const ElectronCollection &electronCollection) {
@@ -86,9 +67,9 @@ void ElectronCollections::prepend(const ElectronCollection &electronCollection) 
 }
 
 ElectronCollection ElectronCollections::getElectronCollection(long i) const {
-    return ElectronCollection(this->operator[](i),spinTypeCollection_);
+    return ElectronCollection(this->operator[](i),spinTypes_);
 }
 
-SpinTypeCollection ElectronCollections::getSpinTypeCollection() const {
-    return spinTypeCollection_;
+Eigen::VectorXi ElectronCollections::getSpinTypes() const {
+    return spinTypes_;
 }

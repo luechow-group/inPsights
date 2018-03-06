@@ -21,14 +21,15 @@ ParticleCollectionPath3D::ParticleCollectionPath3D(Qt3DCore::QEntity *root,
             pointsList[i].emplace_back(QVector3D(float(tmp(0)),float(tmp(1)),float(tmp(2))));
         }
 
-        auto spinType = electronCollections.getSpinTypeCollection().spinType(i);
+        auto ec1 = electronCollections.getElectronCollection(0);
 
-        if (spinType == Spin::SpinType::alpha) {
+        new Polyline(root,Spin::QColorFromSpinType(ec1.electron(i).spinType()) , pointsList[i], radius);
+        /*if (ec1.electron(i).spinType() == Spin::SpinType::alpha) {
             new Polyline(root,Spin::QColorFromSpinType(Spin::SpinType::alpha) , pointsList[i], radius);
         }
-        else {
+        else if (ec1.electron(i).spinType() == Spin::SpinType::beta) {
             new Polyline(root,Spin::QColorFromSpinType(Spin::SpinType::beta) , pointsList[i], radius);
-        }
+        }*/
 
     }
 

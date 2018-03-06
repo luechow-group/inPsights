@@ -75,7 +75,7 @@ int main(int argc, char *argv[]) {
     //solver.setDistanceCriteriaUmrigar(0.1);
 
     solver.minimize(electronicWaveFunctionProblem, x);
-    std::cout << ElectronCollection(ParticleCollection(x),SpinTypeCollection(ec.spinTypesAsEigenVector()))<<std::endl;
+    std::cout << ElectronCollection(ParticleCollection(x),ec.getSpinTypes())<<std::endl;
 
 
 
@@ -86,16 +86,16 @@ int main(int argc, char *argv[]) {
         // Prepare the optimization path for visualization
         auto optimizationPath = electronicWaveFunctionProblem.getOptimizationPath();
         ElectronCollections shortenedPath(ElectronCollection(optimizationPath.front(),
-                                                             optimizationPath.getSpinTypeCollection()));
+                                                             optimizationPath.getSpinTypes()));
         unsigned long nwanted = 300;
         auto skip = 1 + (optimizationPath.length() / nwanted);
         std::cout << "displaying structures with a spacing of " << skip << "." << std::endl;
         for (unsigned long i = 0; i < optimizationPath.length(); i = i + skip) {
             shortenedPath.append(ElectronCollection(optimizationPath.getElectronCollection(i),
-                                                    optimizationPath.getSpinTypeCollection()));
+                                                    optimizationPath.getSpinTypes()));
         }
 
-        shortenedPath.append(ElectronCollection(x, optimizationPath.getSpinTypeCollection().spinTypesAsEigenVector()));
+        shortenedPath.append(ElectronCollection(x, optimizationPath.getSpinTypes()));
 
         // Visualization
         MoleculeWidget moleculeWidget;
@@ -105,7 +105,7 @@ int main(int argc, char *argv[]) {
 
         // Plot the starting point
         ElectronCollection3D(root, ElectronCollection(ParticleCollection(x),
-                                                      optimizationPath.getSpinTypeCollection()), false);
+                                                      optimizationPath.getSpinTypes()), false);
 
         // Plot the optimization path
         ParticleCollectionPath3D(root, shortenedPath);

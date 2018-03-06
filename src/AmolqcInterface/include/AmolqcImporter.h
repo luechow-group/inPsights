@@ -19,9 +19,8 @@ public:
     std::vector<SubstructureDataEntry> countSubstructures(unsigned long startLineIdx,
                                                           unsigned long blockLength) const;
 
-protected:
-    SpinTypeCollection getSpinTypeCollection(unsigned long numberOfAlphaElectrons,
-                                             unsigned long numberOfBetaElectrons) const;
+    Eigen::VectorXi createSpinTypes(unsigned long numberOfAlphaElectrons,
+                                    unsigned long numberOfBetaElectrons) const;
     
 };
 

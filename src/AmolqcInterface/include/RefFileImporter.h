@@ -13,7 +13,6 @@ public:
 
     AtomCollection getAtomCollection();
 
-    SpinTypeCollection getSpinTypeCollection() const;
     ParticleCollection getParticleCollection(unsigned long k, unsigned long m) const;
     ElectronCollection getMaximaStructure(unsigned long k, unsigned long m) const;
     ElectronCollections getAllSubstructures(unsigned long k) const;

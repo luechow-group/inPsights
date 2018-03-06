@@ -43,7 +43,7 @@ ElectronCollections OptimizationPathFileImporter::getPath(unsigned long k) const
         particleCollectionVector.emplace_back(this->getParticleCollection(k,m));
     }
     return ElectronCollections(particleCollectionVector,
-                               this->getSpinTypeCollection(numberOfAlphaElectrons_, numberOfBetaElectrons_));
+                               this->createSpinTypes(numberOfAlphaElectrons_, numberOfBetaElectrons_));
 }
 
 unsigned long OptimizationPathFileImporter::getNumberOfPaths() const {

@@ -10,7 +10,7 @@ ElectronicWaveFunctionProblem::ElectronicWaveFunctionProblem(const std::string &
         valueCallCount_(0),
         gradientCallCount_(0),
         wf_(ElectronicWaveFunction::getInstance(fileName)),
-        optimizationPath_(wf_.getSpinTypeCollection()),
+        optimizationPath_(wf_.getSpinTypes()),
         electronCoordinateIndicesThatWereNaN_(Eigen::Matrix<bool,Eigen::Dynamic,1>(wf_.getNumberOfElectrons()*3).setConstant(false)),
         indicesOfElectronsNotAtNuclei_(0),
         indicesOfElectronsAtNuclei_(0)
@@ -112,7 +112,7 @@ bool ElectronicWaveFunctionProblem::callback(const cppoptlib::Criteria<double> &
     gradientResetQ = false;
     putElectronsIntoNuclei(x, grad); //gradientQ could be true now
 
-    optimizationPath_.append(ElectronCollection(x, wf_.getSpinTypeCollection().spinTypesAsEigenVector()));
+    optimizationPath_.append(ElectronCollection(x, wf_.getSpinTypes()));
 
     /*
     std::cout << "(" << std::setw(2) << state.iterations << ")"

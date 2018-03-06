@@ -66,12 +66,10 @@ double RefFileImporter::getNegativeLogarithmizedProbabilityDensity(unsigned long
     return std::stod(lineElements[4]);
 }
 
-SpinTypeCollection RefFileImporter::getSpinTypeCollection() const {
-    return AmolqcImporter::getSpinTypeCollection(numberOfAlphaElectrons_, numberOfBetaElectrons_);
-}
-
 ElectronCollection RefFileImporter::getMaximaStructure(unsigned long k, unsigned long m) const {
-    return ElectronCollection(this->getParticleCollection(k,m), this->getSpinTypeCollection());
+
+    auto spinTypes = createSpinTypes(numberOfAlphaElectrons_,numberOfBetaElectrons_);
+    return ElectronCollection(this->getParticleCollection(k,m), spinTypes);
 }
 
 ElectronCollections RefFileImporter::getAllSubstructures(unsigned long k) const {
@@ -80,6 +78,7 @@ ElectronCollections RefFileImporter::getAllSubstructures(unsigned long k) const 
     for (unsigned long m = 1; m <= numberOfSubstructures; ++m) {
         particleCollectionVector.emplace_back(this->getParticleCollection(k,m));
     }
-    return ElectronCollections(particleCollectionVector,this->getSpinTypeCollection());
+    auto spinTypes = createSpinTypes(numberOfAlphaElectrons_,numberOfBetaElectrons_);
+    return ElectronCollections(particleCollectionVector,spinTypes);
 
 }

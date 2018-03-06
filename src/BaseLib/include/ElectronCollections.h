@@ -7,29 +7,26 @@
 
 #include "ParticleCollections.h"
 #include "ElectronCollection.h"
-#include "SpinTypeCollection.h"
 
 class ElectronCollections : public ParticleCollections{
 public:
-    ElectronCollections();
-    explicit ElectronCollections(const SpinTypeCollection& spinTypeCollection);
-    explicit ElectronCollections(const ElectronCollection& electronCollection);
-    explicit ElectronCollections(const std::vector<ElectronCollection>& electronCollections);
-    explicit ElectronCollections(const std::vector<ParticleCollection>& particleCollections);
-    ElectronCollections(const std::vector<ParticleCollection>& particleCollections,
-                        const SpinTypeCollection& spinTypeCollection);
+    explicit ElectronCollections(const Eigen::VectorXi &spinTypes);
+    explicit ElectronCollections(const ElectronCollection &electronCollection);
+    explicit ElectronCollections(const std::vector<ElectronCollection> &electronCollections);
+    explicit ElectronCollections(const std::vector<ParticleCollection> &particleCollections);
+    explicit ElectronCollections(const std::vector<ParticleCollection> &particleCollections,
+                                 const Eigen::VectorXi &spinTypes);
 
     ElectronCollection getElectronCollection(long i) const;
-
-    SpinTypeCollection getSpinTypeCollection() const;
 
     void insert (const ElectronCollection& electronCollection, long i);
     virtual void append (const ElectronCollection& electronCollection);
     void prepend(const ElectronCollection& electronCollection);
 
+    Eigen::VectorXi getSpinTypes() const;
 
 private:
-    SpinTypeCollection spinTypeCollection_;
+    Eigen::VectorXi spinTypes_;
 };
 
 #endif //AMOLQCGUI_ELECTRONCOLLECTIONPATH_H

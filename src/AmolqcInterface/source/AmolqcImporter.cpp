@@ -22,11 +22,17 @@ ParticleCollection AmolqcImporter::importParticleCollectionBlock(unsigned long s
     return particleCollection;
 }
 
-//TODO Necessary?
-SpinTypeCollection
-AmolqcImporter::getSpinTypeCollection(unsigned long numberOfAlphaElectrons,
-                                      unsigned long numberOfBetaElectrons) const {
-    return SpinTypeCollection(numberOfAlphaElectrons,numberOfBetaElectrons);
+
+Eigen::VectorXi AmolqcImporter::createSpinTypes(unsigned long numberOfAlphaElectrons,
+                                                unsigned long numberOfBetaElectrons) const {
+    Eigen::VectorXi spinTypes(numberOfAlphaElectrons+numberOfBetaElectrons);
+
+    spinTypes.head(numberOfAlphaElectrons) =
+            Eigen::VectorXi::Constant(numberOfAlphaElectrons,int(Spin::SpinType::alpha));
+    spinTypes.tail(numberOfBetaElectrons) =
+            Eigen::VectorXi::Constant(numberOfBetaElectrons,int(Spin::SpinType::beta));
+
+    return spinTypes;
 }
 
 std::vector<SubstructureDataEntry>

@@ -37,7 +37,7 @@ public:
 
     void evaluate(const ElectronCollection& electronCollection);
 
-    void evaluate(const Eigen::VectorXd &electronPositionCollection);
+    void evaluate(const Eigen::VectorXd &electronPositions_);
 
     double getLocalEnergy();
 
@@ -71,16 +71,16 @@ public:
 
     unsigned long getNumberOfElectrons() const;
 
-    SpinTypeCollection getSpinTypeCollection() const;
+    Eigen::VectorXi getSpinTypes() const;
 
 private:
     explicit ElectronicWaveFunction(const std::string& fileName);
     const std::string fileName_;
     unsigned long numberOfNuclei_, numberOfElectrons_, numberOfAlphaElectrons_, numberOfBetaElectrons_;
     double determinantProbabilityAmplitude_, jastrowFactor_, localEnergy_;
-    Eigen::VectorXd electronPositionCollectionAsEigenVector_, electronDriftCollection_;//TODO REPLACE BY BASELIB ELECTRONCOLLECTION!
+    Eigen::VectorXd positions_, electronDriftCollection_;
+    Eigen::VectorXi spinTypes_;
     AtomCollection atomCollection_;
-    SpinTypeCollection spinTypeCollection_;
 
 };
 
