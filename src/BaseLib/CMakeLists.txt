@@ -74,9 +74,4 @@ target_include_directories(${PROJECT_NAME} PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         )
 
-add_executable(${PROJECT_NAME}_main main.cpp)
-target_link_libraries(${PROJECT_NAME}_main
-        ${PROJECT_NAME}
-        )
-
 add_subdirectory(tests)
