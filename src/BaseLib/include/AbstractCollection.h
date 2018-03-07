@@ -31,7 +31,7 @@ public:
 
 protected:
     unsigned long numberOfEntities_;
-    void setNumberOfEntietes(unsigned long numberOfEntities){
+    void setNumberOfEntities(unsigned long numberOfEntities){
         numberOfEntities_ = numberOfEntities;
     }
 };
