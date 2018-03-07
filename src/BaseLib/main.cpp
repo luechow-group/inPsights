@@ -5,7 +5,6 @@
 #include <iostream>
 #include <iomanip>
 
-#include "ChemicalSystem.h"
 #include "../AmolqcInterface/include/WfFileImporter.h"
 #include <ElementInfo.h>
 

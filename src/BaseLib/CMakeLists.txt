@@ -28,7 +28,6 @@ set(HEADER_FILES
         include/ElementType.h
         include/ElementTypeCollection.h
         include/NaturalConstants.h
-        #include/ChemicalSystem.h
         include/Atom.h
         include/AtomCollection.h
         include/Particle.h
@@ -42,14 +41,12 @@ set(HEADER_FILES
         include/Importer.h
         include/CollectionParser.h
         include/AbstractCollection.h
-        include/Entity.h
         )
 
 set(SOURCE_FILES
         source/pElementInfo.cpp
         source/ElementInfo.cpp
         source/ElementTypeCollection.cpp
-        #source/ChemicalSystem.cpp
         source/Atom.cpp
         source/AtomCollection.cpp
         source/Particle.cpp

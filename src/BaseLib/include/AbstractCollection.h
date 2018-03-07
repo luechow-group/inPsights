@@ -6,7 +6,6 @@
 #define AMOLQCPP_ABSTRACTCOLLECTION_H
 
 #include <iostream>
-#include "Entity.h"
 #include "Particle.h"
 
 class AbstractCollection {
