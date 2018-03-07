@@ -2,7 +2,7 @@
 // Created by Michael Heuer on 06.11.17.
 //
 
-#include "RefFileImporter.h"
+#include "../../AmolqcInterface/include/RefFileImporter.h"
 #include "ElementInfo.h"
 
 RefFileImporter::RefFileImporter(const std::string &filename)

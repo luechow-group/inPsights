@@ -29,7 +29,6 @@ set(HEADER_FILES
         include/ElementTypeCollection.h
         include/NaturalConstants.h
         #include/ChemicalSystem.h
-        include/WfFileImporter.h
         include/Atom.h
         include/AtomCollection.h
         include/Particle.h
@@ -41,9 +40,6 @@ set(HEADER_FILES
         include/SpinType.h
         include/SpinTypeCollection.h
         include/Importer.h
-        include/RefFileImporter.h
-        include/AmolqcImporter.h
-        include/OptimizationPathFileImporter.h
         include/CollectionParser.h
         include/AbstractCollection.h
         include/Entity.h
@@ -54,7 +50,6 @@ set(SOURCE_FILES
         source/ElementInfo.cpp
         source/ElementTypeCollection.cpp
         #source/ChemicalSystem.cpp
-        source/WfFileImporter.cpp
         source/Atom.cpp
         source/AtomCollection.cpp
         source/Particle.cpp
@@ -65,9 +60,6 @@ set(SOURCE_FILES
         source/ElectronCollections.cpp
         source/SpinTypeCollection.cpp
         source/Importer.cpp
-        source/RefFileImporter.cpp
-        source/AmolqcImporter.cpp
-        source/OptimizationPathFileImporter.cpp
         source/CollectionParser.cpp
         source/SpinType.cpp
         source/ElementType.cpp

@@ -2,7 +2,7 @@
 // Created by Michael Heuer on 06.11.17.
 //
 
-#include "AmolqcImporter.h"
+#include "../include/AmolqcImporter.h"
 
 AmolqcImporter::AmolqcImporter(const std::string &filename)
         : Importer(filename) {}

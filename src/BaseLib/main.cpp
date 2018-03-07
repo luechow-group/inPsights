@@ -6,11 +6,11 @@
 #include <iomanip>
 
 #include "ChemicalSystem.h"
-#include "WfFileImporter.h"
+#include "../AmolqcInterface/include/WfFileImporter.h"
 #include <ElementInfo.h>
 
-#include "RefFileImporter.h"
-#include "OptimizationPathFileImporter.h"
+#include "../AmolqcInterface/include/RefFileImporter.h"
+#include "../AmolqcInterface/include/OptimizationPathFileImporter.h"
 
 #include "CollectionParser.h"
 
