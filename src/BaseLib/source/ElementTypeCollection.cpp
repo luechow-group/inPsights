@@ -76,8 +76,8 @@ std::ostream& operator<<(std::ostream& os, const ElementTypeCollection& ec){
         std::string elementSymbol = Elements::ElementInfo::symbol(ec.elementType(i));
 
         os << elementSymbol
-           << std::string(ParticleFormat::significantDigits+3-elementSymbol.length(), ' ')
-           << ParticleFormat::separator;
+           << std::string(PositionFormat::significantDigits+3-elementSymbol.length(), ' ')
+           << PositionFormat::separator;
     }
     std::cout << std::endl;
     return os;

@@ -87,8 +87,8 @@ void SpinTypeCollection::permute(long i, long j) {
 std::ostream& operator<<(std::ostream& os, const SpinTypeCollection& sc){
     for (unsigned long i = 0; i < sc.numberOfSpinTypes(); i++) {
         os << Spin::toString(sc.spinType(i))
-           << std::string(ParticleFormat::significantDigits+2, ' ')
-           << ParticleFormat::separator;
+           << std::string(PositionFormat::significantDigits+2, ' ')
+           << PositionFormat::separator;
     }
     std::cout << std::endl;
     return os;

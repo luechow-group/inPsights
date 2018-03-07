@@ -24,10 +24,4 @@ protected:
     Eigen::Vector3d position_;
 };
 
-namespace ParticleFormat{
-    static const unsigned significantDigits = 6;
-    static const std::string separator = " ";
-    static const Eigen::IOFormat particleFormat = Eigen::IOFormat(significantDigits, 0, separator, "\n", "", "", "", "");
-};
-
 #endif //AMOLQCGUI_PARTICLE_H

@@ -57,7 +57,7 @@ std::ostream& operator<<(std::ostream& os, const ParticleCollection& pc){
     auto vec = pc.positionsAsEigenVector();
     Eigen::Map<Eigen::Matrix3Xd> mat(vec.data(),3,pc.numberOfParticles());
     os << static_cast<AbstractCollection>(pc)
-       << mat.format(ParticleFormat::particleFormat) << std::endl;
+       << mat.format(PositionFormat::positionFormat) << std::endl;
     return os;
 }
 

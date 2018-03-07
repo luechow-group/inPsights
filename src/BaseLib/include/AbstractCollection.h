@@ -7,6 +7,7 @@
 
 #include <iostream>
 #include "Particle.h"
+#include "PositionFormat.h"
 
 class AbstractCollection {
 public:
@@ -23,7 +24,7 @@ public:
     friend std::ostream &operator<<(std::ostream &os, const AbstractCollection &ac){
         for (unsigned long i = 0; i < ac.numberOfEntities(); i++) {
             auto decimalPlaces = unsigned(std::log10(i+1)+1);
-            os << std::string(ParticleFormat::significantDigits+3-decimalPlaces, ' ')  << i+1 << ParticleFormat::separator;
+            os << std::string(PositionFormat::significantDigits+3-decimalPlaces, ' ')  << i+1 << PositionFormat::separator;
         }
         std::cout << std::endl;
         return os;

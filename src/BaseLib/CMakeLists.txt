@@ -41,6 +41,7 @@ set(HEADER_FILES
         include/Importer.h
         include/CollectionParser.h
         include/AbstractCollection.h
+        include/PositionFormat.h
         )
 
 set(SOURCE_FILES
