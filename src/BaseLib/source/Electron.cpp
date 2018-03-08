@@ -24,3 +24,7 @@ Spin::SpinType Electron::spinType() const {
 void Electron::setSpinType(const Spin::SpinType & spinType) {
     spinType_ = spinType;
 }
+
+int Electron::charge(){
+    return -1;
+}

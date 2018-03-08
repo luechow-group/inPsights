@@ -29,3 +29,7 @@ std::ostream& operator<< (std::ostream& os, const Particle& p) {
     os << p.position().format(PositionFormat::positionFormat) << std::endl;
     return os;
 }
+
+int Particle::charge(){
+    return 0;
+}
