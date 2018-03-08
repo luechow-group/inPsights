@@ -6,8 +6,8 @@
 #define AMOLQCGUI_ELEMENTCOLOR_H
 
 namespace Elements {
-    struct ElememtColor {
-        ElememtColor(unsigned int R, unsigned int G, unsigned int B) : R(R), G(G), B(B) {}
+    struct ElementColor {
+        ElementColor(unsigned int R, unsigned int G, unsigned int B) : R(R), G(G), B(B) {}
         unsigned int R, G, B;
     };
 }
