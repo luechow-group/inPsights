@@ -35,10 +35,7 @@ void PositionCollection::insert(const Eigen::Vector3d &position, long i) {
     VectorXd after = positions_.tail(numberOfEntities()*entityLength_-start);
 
     positions_.resize(numberOfEntities()*entityLength_+entityLength_);
-
-    positions_.head(start) = before;
-    positions_.segment(start,entityLength_) = position;
-    positions_.tail(numberOfEntities()*entityLength_-start) = after;
+    positions_ << before, position, after;
 
     incrementNumberOfEntities();
 }

@@ -44,10 +44,7 @@ void SpinTypeCollection::insert(Spin::SpinType spinType, long i) {
     VectorXi after = spinTypes_.tail(numberOfEntities()-i);
 
     spinTypes_.resize(numberOfEntities()+1);
-    //spinTypes_ << before, int(spinType), after;
-    spinTypes_.head(i) = before;
-    spinTypes_.segment(i,1) = Eigen::Matrix<int,1,1>(int(spinType));
-    spinTypes_.tail(numberOfEntities()-i) = after;
+    spinTypes_ << before, int(spinType), after;
 
     incrementNumberOfEntities();
 }

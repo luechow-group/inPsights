@@ -33,10 +33,8 @@ void ElementTypeCollection::insert(Elements::ElementType elementType, long i) {
     VectorXi after = elementTypes_.tail(numberOfEntities()-i);
 
     elementTypes_.resize(numberOfEntities()+1);
-    //elementTypes_ << before, int(elementType), after;
-    elementTypes_.head(i) = before;
-    elementTypes_.segment(i,1) = Eigen::Matrix<int,1,1>(int(elementType));
-    elementTypes_.tail(numberOfEntities()-i) = after;
+    elementTypes_ << before, int(elementType), after;
+
     incrementNumberOfEntities();
 }
 
