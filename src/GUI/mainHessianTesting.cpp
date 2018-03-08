@@ -20,14 +20,14 @@ int main(int argc, char *argv[]) {
     CollectionParser collectionParser;
     auto ec = collectionParser.electronCollectionFromJson("BH3_Max1.json");
     auto nsmooth = 2;
-    auto x = ec.positionsAsEigenVector();
+    auto x = ec.positionCollection().positionsAsEigenVector();
 
 
     auto n = ElectronicWaveFunction::getInstance().getNumberOfElectrons()*3;
     Eigen::VectorXd grad(n);
     electronicWaveFunctionProblem.putElectronsIntoNuclei(x,grad);
 
-    std::cout << ElectronCollection(grad,ec.spinTypesAsEigenVector()) << std::endl;
+    std::cout << ElectronCollection(grad,ec.spinTypeCollection().spinTypesAsEigenVector()) << std::endl;
 
     for (auto & it : electronicWaveFunctionProblem.getIndicesOfElectronsAtNuclei()) std::cout << it << " ";
     std::cout << std::endl;

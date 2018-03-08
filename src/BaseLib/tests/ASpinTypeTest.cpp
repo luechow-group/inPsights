@@ -15,9 +15,9 @@ public:
 };
 
 TEST_F(ASpinTypeTest , IntegerValues){
-    ASSERT_EQ(int(Spin::SpinType::alpha),0);
-    ASSERT_EQ(int(Spin::SpinType::beta),1);
-    ASSERT_EQ(int(Spin::SpinType::none),2);
+    ASSERT_EQ(int(Spin::SpinType::alpha),1);
+    ASSERT_EQ(int(Spin::SpinType::beta),-1);
+    ASSERT_EQ(int(Spin::SpinType::none),0);
 }
 
 

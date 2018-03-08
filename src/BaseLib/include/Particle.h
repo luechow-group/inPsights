@@ -7,9 +7,8 @@
 
 #include <Eigen/Core>
 #include <iostream>
-#include "Entity.h"
 
-class Particle : public Entity {
+class Particle {
 public:
     explicit Particle(const Eigen::Vector3d& position);
     Particle(double x, double y, double z);
@@ -23,12 +22,6 @@ public:
 
 protected:
     Eigen::Vector3d position_;
-};
-
-namespace ParticleFormat{
-    static const unsigned significantDigits = 6;
-    static const std::string separator = " ";
-    static const Eigen::IOFormat particleFormat = Eigen::IOFormat(significantDigits, 0, separator, "\n", "", "", "", "");
 };
 
 #endif //AMOLQCGUI_PARTICLE_H

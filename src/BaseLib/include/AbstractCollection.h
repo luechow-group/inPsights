@@ -6,35 +6,29 @@
 #define AMOLQCPP_ABSTRACTCOLLECTION_H
 
 #include <iostream>
-#include "Entity.h"
-#include "Particle.h"
 
+/* AbstractCollection
+ * keeps track of the number of countable entities
+ */
 class AbstractCollection {
 public:
-    explicit AbstractCollection(unsigned long numberOfEntities = 0)
-            :numberOfEntities_(numberOfEntities){};
+    explicit AbstractCollection(long numberOfEntities = 0);
 
+    long numberOfEntities() const;
 
-    void add(){ numberOfEntities_++; };
-
-    unsigned long numberOfEntities() const{
-        return numberOfEntities_;
-    }
-
-    friend std::ostream &operator<<(std::ostream &os, const AbstractCollection &ac){
-        for (unsigned long i = 0; i < ac.numberOfEntities(); i++) {
-            auto decimalPlaces = unsigned(std::log10(i+1)+1);
-            os << std::string(ParticleFormat::significantDigits+3-decimalPlaces, ' ')  << i+1 << ParticleFormat::separator;
-        }
-        std::cout << std::endl;
-        return os;
-    }
+    friend std::ostream &operator<<(std::ostream &os, const AbstractCollection &ac);
 
 protected:
-    unsigned long numberOfEntities_;
-    void setNumberOfEntietes(unsigned long numberOfEntities){
-        numberOfEntities_ = numberOfEntities;
-    }
+    void incrementNumberOfEntities();
+
+    void setNumberOfEntities(long numberOfEntities);
+
+    virtual void permute(long i, long j){}; //TODO MAKE IT ABSTRACT
+
+    virtual long calculateIndex(long i) const;
+
+private:
+    long numberOfEntities_;
 };
 
 #endif //AMOLQCPP_ABSTRACTCOLLECTION_H

@@ -57,18 +57,18 @@ AtomCollection WfFileImporter::getAtomCollection() {
         y *= ConversionFactors::angstrom2bohr;
         z *= ConversionFactors::angstrom2bohr;
       }
-      atomCollection.addAtom(x,y,z,elementType);
+      atomCollection.append(Atom(x,y,z,elementType));
     }
   return atomCollection;
 }
 
 unsigned long WfFileImporter::getNumberOfElectrons() {
 
-  auto etc = static_cast<ElementTypeCollection>(getAtomCollection());
+  auto etc = getAtomCollection().elementTypeCollection();
   unsigned long numberOfElectrons = 0;
 
-  for (unsigned long i = 0; i < etc.numberOfElementTypes(); ++i) {
-    numberOfElectrons += Elements::ElementInfo::Z(etc.elementType(i));
+  for (unsigned long i = 0; i < etc.numberOfEntities(); ++i) {
+    numberOfElectrons += Elements::ElementInfo::Z(etc[i]);
   }
   numberOfElectrons -= charge_;
 

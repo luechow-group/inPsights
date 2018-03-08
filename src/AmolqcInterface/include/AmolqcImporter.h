@@ -12,9 +12,9 @@ public:
     explicit AmolqcImporter(const std::string& filename);
 
 
-    ParticleCollection importParticleCollectionBlock(unsigned long startLineIdx,
+    PositionCollection importPositionCollectionBlock(unsigned long startLineIdx,
                                                      unsigned long startLineElement,
-                                                     unsigned long numberOfParticles) const;
+                                                     unsigned long numberOfPositions) const;
     
     std::vector<SubstructureDataEntry> countSubstructures(unsigned long startLineIdx,
                                                           unsigned long blockLength) const;

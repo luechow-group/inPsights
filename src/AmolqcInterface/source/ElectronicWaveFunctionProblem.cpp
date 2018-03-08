@@ -68,7 +68,7 @@ void ElectronicWaveFunctionProblem::putElectronsIntoNuclei(Eigen::VectorXd& x, E
     assert( x.size() == wf_.getNumberOfElectrons()*3 && "Number of dimensions must be identical and multiple of 3");
 
     auto atomCollection = wf_.getAtomCollection();
-    auto numberOfNuclei = atomCollection.numberOfParticles();
+    auto numberOfNuclei = atomCollection.numberOfEntities();
     auto numberOfElectrons = wf_.getNumberOfElectrons();
 
     // iterate over electrons that were not at nuclei in the last step

@@ -6,26 +6,24 @@
 #define AMOLQCGUI_ELEMENTTYPECOLLECTION_H
 
 #include <Eigen/Core>
-#include "ElementType.h"
 #include "AbstractCollection.h"
+#include "ElementType.h"
 
 class ElementTypeCollection : public AbstractCollection{
 public:
     explicit ElementTypeCollection(long size = 0);
     explicit ElementTypeCollection(const Eigen::VectorXi& elementTypes);
 
-    Elements::ElementType elementType(long i) const;
+    Elements::ElementType operator[](long i) const;
 
     void insert(Elements::ElementType elementType, long i);
     void append(Elements::ElementType elementType);
     void prepend(Elements::ElementType elementType);
-    void permute(long i, long j);
-    
-    void setElementType(long i, Elements::ElementType elementType);
+    void permute(long i, long j) override ;
 
-    Eigen::VectorXi elementTypesAsEigenVector();
+    const Eigen::VectorXi& elementTypesAsEigenVector()const;
+    Eigen::VectorXi& elementTypesAsEigenVector();
 
-    unsigned long numberOfElementTypes() const;
 
     friend std::ostream& operator<<(std::ostream& os, const ElementTypeCollection& ec);
 
