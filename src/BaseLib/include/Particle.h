@@ -21,6 +21,8 @@ public:
     static double distance(const Particle &p1, const Particle &p2);
 
 protected:
+    virtual int charge();
+
     Eigen::Vector3d position_;
 };
 

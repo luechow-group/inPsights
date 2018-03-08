@@ -18,6 +18,8 @@ public:
 
     void setSpinType(const Spin::SpinType & spinType);
 
+    int charge() override;
+
 private:
     Spin::SpinType spinType_;
 };

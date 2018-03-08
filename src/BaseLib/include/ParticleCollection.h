@@ -9,7 +9,6 @@
 #include "Particle.h"
 #include "PositionCollection.h"
 
-
 /*
  * ParticleCollection only exists as an abstract interface to more specialized collections.
  */
