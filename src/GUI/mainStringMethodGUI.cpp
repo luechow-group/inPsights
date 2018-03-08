@@ -77,14 +77,14 @@ int main(int argc, char *argv[]) {
 
     std::cout << ecA << std::endl;
 
-    ecB.permute(0, 1);
+    ecB.positionute(0, 1);
     std::cout << ecB << std::endl;
     //ecB.permute(8, 17);//Ethane
 
     unsigned numberOfStates = 7;
 
-    auto xA = ecA.positionsAsEigenVector();
-    auto xB = ecB.positionsAsEigenVector();
+    auto xA = ecA.positionCollection().positionsAsEigenVector();
+    auto xB = ecB.positionCollection().positionsAsEigenVector();
 
     Eigen::MatrixXd initialCoordinates(ElectronicWaveFunction::getInstance().getNumberOfElectrons() * 3,
                                        numberOfStates);

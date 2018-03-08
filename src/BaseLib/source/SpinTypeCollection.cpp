@@ -2,26 +2,22 @@
 // Created by Michael Heuer on 29.10.17.
 //
 
-#include <Particle.h>
-#include <AbstractCollection.h>
 #include "SpinTypeCollection.h"
-#include "SpinType.h"
+#include "PositionFormat.h"
 
 using namespace Eigen;
 
-SpinTypeCollection::SpinTypeCollection(unsigned long size)
+SpinTypeCollection::SpinTypeCollection(long size)
         : AbstractCollection(size),
           spinTypes_(VectorXi::Constant(size,int(Spin::SpinType::none)))
 {}
 
 SpinTypeCollection::SpinTypeCollection(const VectorXi& spinTypes)
         : AbstractCollection(spinTypes.size()),
-          spinTypes_(numberOfEntities_)
+          spinTypes_(spinTypes)
 {
-    assert(spinTypes.maxCoeff() <= int(Spin::SpinType::alpha));
-    assert(spinTypes.minCoeff() >= int(Spin::SpinType::beta));
-
-    spinTypes_ = spinTypes;
+    assert(spinTypes_.maxCoeff() <= int(Spin::SpinType::alpha));
+    assert(spinTypes_.minCoeff() >= int(Spin::SpinType::beta));
 }
 
 SpinTypeCollection::SpinTypeCollection(unsigned long numberOfAlphaElectrons, unsigned long numberOfBetaElectrons)
@@ -36,24 +32,24 @@ SpinTypeCollection::SpinTypeCollection(unsigned long numberOfAlphaElectrons, uns
     }
 }
 
-Spin::SpinType SpinTypeCollection::spinType(long i) const {
-    return  Spin::SpinType(spinTypes_[i]);
-}
-
-unsigned long SpinTypeCollection::numberOfSpinTypes() const {
-    return numberOfEntities_;
+Spin::SpinType SpinTypeCollection::operator[](long i) const {
+    return  Spin::SpinType(spinTypes_[calculateIndex(i)]);
 }
 
 void SpinTypeCollection::insert(Spin::SpinType spinType, long i) {
-    VectorXi before = spinTypes_.head(i);
-    VectorXi after = spinTypes_.tail(numberOfEntities_-i);
+    assert(i >= 0 && "The index must be positive.");
+    assert(i <= numberOfEntities() && "The index must be smaller than the number of entities.");
 
-    spinTypes_.resize(numberOfEntities_+1);
+    VectorXi before = spinTypes_.head(i);
+    VectorXi after = spinTypes_.tail(numberOfEntities()-i);
+
+    spinTypes_.resize(numberOfEntities()+1);
     //spinTypes_ << before, int(spinType), after;
     spinTypes_.head(i) = before;
     spinTypes_.segment(i,1) = Eigen::Matrix<int,1,1>(int(spinType));
-    spinTypes_.tail(numberOfEntities_-i) = after;
-    ++numberOfEntities_;
+    spinTypes_.tail(numberOfEntities()-i) = after;
+
+    incrementNumberOfEntities();
 }
 
 void SpinTypeCollection::prepend(Spin::SpinType spinType) {
@@ -61,32 +57,28 @@ void SpinTypeCollection::prepend(Spin::SpinType spinType) {
 }
 
 void SpinTypeCollection::append(Spin::SpinType spinType) {
-    this->insert(spinType,numberOfEntities_);
+    this->insert(spinType,numberOfEntities());
 }
 
-void SpinTypeCollection::setSpinType(long i, Spin::SpinType spinType) {
-    spinTypes_[i] = int(spinType);
+const VectorXi& SpinTypeCollection::spinTypesAsEigenVector() const {
+    return spinTypes_;
 }
 
-VectorXi SpinTypeCollection::spinTypesAsEigenVector() const {
+VectorXi& SpinTypeCollection::spinTypesAsEigenVector() {
     return spinTypes_;
 }
 
 void SpinTypeCollection::permute(long i, long j) {
-    assert( i >= 0 && i < numberOfEntities_
-            && "Index i must be greater than zero and smaller than the number of spins." );
-    assert( j >= 0 && j < numberOfEntities_
-            && "Index j must be greater than zero and smaller than the number of spins." );
     if(i != j) {
-        int temp = spinTypes_[i];
-        spinTypes_[i] = spinTypes_[j];
-        spinTypes_[j] = temp;
+        int temp = spinTypes_[calculateIndex(i)];
+        spinTypes_[calculateIndex(i)] = spinTypes_[calculateIndex(j)];
+        spinTypes_[calculateIndex(j)] = temp;
     }
 }
 
 std::ostream& operator<<(std::ostream& os, const SpinTypeCollection& sc){
-    for (unsigned long i = 0; i < sc.numberOfSpinTypes(); i++) {
-        os << Spin::toString(sc.spinType(i))
+    for (unsigned long i = 0; i < sc.numberOfEntities(); i++) {
+        os << Spin::toString(sc[i])
            << std::string(PositionFormat::significantDigits+2, ' ')
            << PositionFormat::separator;
     }

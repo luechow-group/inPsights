@@ -15,30 +15,30 @@ public:
 
 TEST_F(ASpinTypeCollectionTest, Constructors){
     SpinTypeCollection spinTypeCollection1(3);
-    VectorXi spinTypesNone = VectorXi::Constant(3,2);
+    VectorXi spinTypesNone = VectorXi::Constant(3,0);
     ASSERT_EQ(spinTypeCollection1.spinTypesAsEigenVector(),spinTypesNone);
 
     VectorXi spinTypesAlpha(3);
-    spinTypesAlpha << 0,0,0;
+    spinTypesAlpha << 1,1,1;
     SpinTypeCollection spinTypeCollection2(spinTypesAlpha);
     ASSERT_EQ(spinTypeCollection2.spinTypesAsEigenVector(),spinTypesAlpha);
 }
 
 TEST_F(ASpinTypeCollectionTest, CopyConstructor){
     VectorXi spinTypesAlpha(3);
-    spinTypesAlpha << 0,0,0;
+    spinTypesAlpha << 1,1,1;
     SpinTypeCollection spinTypeCollection(spinTypesAlpha);
     SpinTypeCollection copySpinTypeCollection(spinTypeCollection);
 }
 
 TEST_F(ASpinTypeCollectionTest, IndexOperator){
     VectorXi spinTypes(3);
-    spinTypes << 0,1,2;
+    spinTypes << 1,-1,0;
     SpinTypeCollection spinTypeCollection(spinTypes);
 
-    ASSERT_EQ(spinTypeCollection.spinType(0),Spin::SpinType::alpha);
-    ASSERT_EQ(spinTypeCollection.spinType(1),Spin::SpinType::beta);
-    ASSERT_EQ(spinTypeCollection.spinType(2),Spin::SpinType::none);
+    ASSERT_EQ(spinTypeCollection[0],Spin::SpinType::alpha);
+    ASSERT_EQ(spinTypeCollection[1],Spin::SpinType::beta);
+    ASSERT_EQ(spinTypeCollection[2],Spin::SpinType::none);
 }
 
 TEST_F(ASpinTypeCollectionTest, IndexOutOfBoundsDeaths){

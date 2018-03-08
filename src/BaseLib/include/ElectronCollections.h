@@ -14,19 +14,21 @@ public:
     ElectronCollections();
     explicit ElectronCollections(const SpinTypeCollection& spinTypeCollection);
     explicit ElectronCollections(const ElectronCollection& electronCollection);
-    explicit ElectronCollections(const std::vector<ElectronCollection>& electronCollections);
-    explicit ElectronCollections(const std::vector<ParticleCollection>& particleCollections);
-    ElectronCollections(const std::vector<ParticleCollection>& particleCollections,
-                        const SpinTypeCollection& spinTypeCollection);
+    explicit ElectronCollections(const std::vector<ElectronCollection>& electronCollectionVector);
+    explicit ElectronCollections(const PositionCollections& electronCollection);
 
-    ElectronCollection getElectronCollection(long i) const;
+    explicit ElectronCollections(const PositionCollections& electronCollection,
+                                 const SpinTypeCollection& spinTypeCollection);
 
-    SpinTypeCollection getSpinTypeCollection() const;
+    ElectronCollection operator[](long i) const;
+
+    const SpinTypeCollection& spinTypeCollection() const;
+    SpinTypeCollection& spinTypeCollection();
 
     void insert (const ElectronCollection& electronCollection, long i);
-    virtual void append (const ElectronCollection& electronCollection);
+    void append (const ElectronCollection& electronCollection);
     void prepend(const ElectronCollection& electronCollection);
-
+    void permute(long i, long j) override;
 
 private:
     SpinTypeCollection spinTypeCollection_;

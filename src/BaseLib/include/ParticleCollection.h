@@ -7,36 +7,25 @@
 
 #include "AbstractCollection.h"
 #include "Particle.h"
+#include "PositionCollection.h"
 
+
+/*
+ * ParticleCollection only exists as an abstract interface to more specialized collections.
+ */
 class ParticleCollection : public AbstractCollection{
 public:
-    ParticleCollection();
-    explicit ParticleCollection(const Eigen::VectorXd& positions);
+    Particle particle(long i) const;
 
-    Particle operator[](long i) const;
-
-    unsigned long numberOfParticles() const;
-
-    void insert(const Particle& particle, long i);
-    void append(const Particle& particle);
-    void prepend(const Particle& particle);
-    virtual void permute(long i, long j);
-
-    /* TODO
-    void replace(long i);
-    void remove(long i);
-    ParticleCollection part(std::vector<long> indices);
-    */
-
-    friend std::ostream& operator<<(std::ostream& os, const ParticleCollection& pc);
-
-    Eigen::VectorXd positionsAsEigenVector() const;
+    const PositionCollection & positionCollection() const;
+    PositionCollection & positionCollection();
 
 protected:
-    Eigen::VectorXd positions_;
+    PositionCollection positionCollection_;
 
-private:
-    long calculateStartIndex(long i) const;
+    void permute(long i, long j) override = 0;
+    ParticleCollection() = default;
+    explicit ParticleCollection(const PositionCollection& positionCollection);
 };
 
 #endif //AMOLQCGUI_PARTICLECOLLECTION_H

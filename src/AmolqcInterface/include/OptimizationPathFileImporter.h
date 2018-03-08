@@ -22,7 +22,7 @@ public:
 
     ElectronCollections getPath(unsigned long k) const;
 
-    ParticleCollection getParticleCollection(unsigned long k, unsigned long m) const;
+    PositionCollection getPositionCollection(unsigned long k, unsigned long m) const;
 
     unsigned long getNumberOfPaths() const;
 

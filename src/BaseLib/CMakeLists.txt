@@ -41,7 +41,10 @@ set(HEADER_FILES
         include/Importer.h
         include/CollectionParser.h
         include/AbstractCollection.h
+        include/PositionCollection.h
+        include/Position.h
         include/PositionFormat.h
+        include/PositionCollections.h
         )
 
 set(SOURCE_FILES
@@ -61,6 +64,10 @@ set(SOURCE_FILES
         source/CollectionParser.cpp
         source/SpinType.cpp
         source/ElementType.cpp
+        source/PositionCollection.cpp
+        source/Position.cpp
+        source/AbstractCollection.cpp
+        source/PositionCollections.cpp
         )
 
 file(GLOB_RECURSE RESOURCE_FILES resources/*.*)
