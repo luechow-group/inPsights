@@ -42,7 +42,7 @@ void PositionCollection::insert(const Eigen::Vector3d &position, long i) {
 
 std::ostream& operator<<(std::ostream& os, const PositionCollection& pc){
     for (unsigned long i = 0; i < pc.numberOfEntities(); i++){
-        os << ToString::vector3d2string(pc[i]) << std::endl;
+        os << ToString::int2string(i+1) << " " << ToString::vector3d2string(pc[i]) << std::endl;
     }
     return os;
 }
