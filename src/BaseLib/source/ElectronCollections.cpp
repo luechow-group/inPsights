@@ -58,8 +58,13 @@ SpinTypeCollection &ElectronCollections::spinTypeCollection() {
 }
 
 void ElectronCollections::insert(const ElectronCollection &electronCollection, long i) {
-    assert(spinTypeCollection_.spinTypesAsEigenVector()
-           == electronCollection.spinTypeCollection().spinTypesAsEigenVector());
+    if (spinTypeCollection_.numberOfEntities() != 0) {
+        assert(spinTypeCollection_.spinTypesAsEigenVector()
+               == electronCollection.spinTypeCollection().spinTypesAsEigenVector());
+    }
+    else{
+        spinTypeCollection_ = electronCollection.spinTypeCollection();
+    }
     positionCollections_.insert(electronCollection.positionCollection(), i);
     incrementNumberOfEntities();
 }
