@@ -33,7 +33,7 @@ set(HEADER_FILES
         include/AtomsVectorCollection.h
         include/Particle.h
         include/ParticleCollection.h
-        include/ParticleCollections.h
+        include/ParticlesVectorCollection.h
         include/Electron.h
         include/ElectronCollection.h
         include/ElectronsVectorCollection.h
@@ -57,7 +57,7 @@ set(SOURCE_FILES
         source/AtomsVectorCollection.cpp
         source/Particle.cpp
         source/ParticleCollection.cpp
-        source/ParticleCollections.cpp
+        source/ParticlesVectorCollection.cpp
         source/Electron.cpp
         source/ElectronCollection.cpp
         source/ElectronsVectorCollection.cpp

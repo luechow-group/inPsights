@@ -5,18 +5,18 @@
 #include "ElectronsVectorCollection.h"
 
 ElectronsVectorCollection::ElectronsVectorCollection()
-        : ParticleCollections(),
+        : ParticlesVectorCollection(),
           spinTypeCollection_(SpinTypeCollection()) {}
 
 ElectronsVectorCollection::ElectronsVectorCollection(const SpinTypeCollection &spinTypeCollection)
-        : ParticleCollections(),
+        : ParticlesVectorCollection(),
           spinTypeCollection_(spinTypeCollection) {}
 
 ElectronsVectorCollection::ElectronsVectorCollection(const ElectronCollection &electronCollection)
         : ElectronsVectorCollection(std::vector<ElectronCollection>({electronCollection})){}
 
 ElectronsVectorCollection::ElectronsVectorCollection(const std::vector<ElectronCollection> &electronCollectionVector)
-        : ParticleCollections(),
+        : ParticlesVectorCollection(),
           spinTypeCollection_(electronCollectionVector[0].spinTypeCollection()) {
 
     if ( !electronCollectionVector.empty() ){
@@ -37,12 +37,12 @@ ElectronsVectorCollection::ElectronsVectorCollection(const PositionsVectorCollec
 
 ElectronsVectorCollection::ElectronsVectorCollection(const PositionsVectorCollection &positionsVectorCollection,
                                          const SpinTypeCollection &spinTypeCollection)
-        : ParticleCollections(positionsVectorCollection),
+        : ParticlesVectorCollection(positionsVectorCollection),
           spinTypeCollection_(spinTypeCollection) {
 
     assert(numberOfEntities() == positionsVectorCollection_.numberOfEntities()
            && numberOfEntities() == spinTypeCollection_.numberOfEntities()
-           && "The number of entities in ParticleCollections, PositionsVectorCollection, and SpinTypeCollection must match.");
+           && "The number of entities in ParticlesVectorCollection, PositionsVectorCollection, and SpinTypeCollection must match.");
 }
 
 ElectronCollection ElectronsVectorCollection::operator[](long i) const {

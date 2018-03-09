@@ -5,18 +5,18 @@
 #include "AtomsVectorCollection.h"
 
 AtomsVectorCollection::AtomsVectorCollection()
-        : ParticleCollections(),
+        : ParticlesVectorCollection(),
           elementTypeCollection_(ElementTypeCollection()) {}
 
 AtomsVectorCollection::AtomsVectorCollection(const ElementTypeCollection &elementTypeCollection)
-        : ParticleCollections(),
+        : ParticlesVectorCollection(),
           elementTypeCollection_(elementTypeCollection) {}
 
 AtomsVectorCollection::AtomsVectorCollection(const AtomCollection &atomCollection)
         : AtomsVectorCollection(std::vector<AtomCollection>({atomCollection})){}
 
 AtomsVectorCollection::AtomsVectorCollection(const std::vector<AtomCollection> &atomCollectionVector)
-        : ParticleCollections(),
+        : ParticlesVectorCollection(),
           elementTypeCollection_(atomCollectionVector[0].elementTypeCollection()) {
 
     if ( !atomCollectionVector.empty() ){
@@ -37,12 +37,12 @@ AtomsVectorCollection::AtomsVectorCollection(const PositionsVectorCollection &po
 
 AtomsVectorCollection::AtomsVectorCollection(const PositionsVectorCollection &positionsVectorCollection,
                                          const ElementTypeCollection &elementTypeCollection)
-        : ParticleCollections(positionsVectorCollection),
+        : ParticlesVectorCollection(positionsVectorCollection),
           elementTypeCollection_(elementTypeCollection) {
 
     assert(numberOfEntities() == positionsVectorCollection_.numberOfEntities()
            && numberOfEntities() == elementTypeCollection_.numberOfEntities()
-           && "The number of entities in ParticleCollections, PositionsVectorCollection, and ElementTypeCollection must match.");
+           && "The number of entities in ParticlesVectorCollection, PositionsVectorCollection, and ElementTypeCollection must match.");
 }
 
 AtomCollection AtomsVectorCollection::operator[](long i) const {

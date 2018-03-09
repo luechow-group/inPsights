@@ -5,11 +5,11 @@
 #ifndef AMOLQCGUI_ATOMCOLLECTIONS_H
 #define AMOLQCGUI_ATOMCOLLECTIONS_H
 
-#include "ParticleCollections.h"
+#include "ParticlesVectorCollection.h"
 #include "AtomCollection.h"
 #include "ElementTypeCollection.h"
 
-class AtomsVectorCollection : public ParticleCollections{
+class AtomsVectorCollection : public ParticlesVectorCollection{
 public:
     AtomsVectorCollection();
     explicit AtomsVectorCollection(const ElementTypeCollection& elementTypeCollection);

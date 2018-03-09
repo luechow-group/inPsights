@@ -5,11 +5,11 @@
 #ifndef AMOLQCGUI_ELECTRONCOLLECTIONPATH_H
 #define AMOLQCGUI_ELECTRONCOLLECTIONPATH_H
 
-#include "ParticleCollections.h"
+#include "ParticlesVectorCollection.h"
 #include "ElectronCollection.h"
 #include "SpinTypeCollection.h"
 
-class ElectronsVectorCollection : public ParticleCollections{
+class ElectronsVectorCollection : public ParticlesVectorCollection{
 public:
     ElectronsVectorCollection();
     explicit ElectronsVectorCollection(const SpinTypeCollection& spinTypeCollection);
