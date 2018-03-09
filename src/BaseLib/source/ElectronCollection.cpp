@@ -4,33 +4,40 @@
 
 #include "ElectronCollection.h"
 
-ElectronCollection::ElectronCollection(const VectorXd &positions)
-        : ParticleCollection(positions),
-          SpinTypeCollection(this->numberOfParticles()) {}
-
-ElectronCollection::ElectronCollection(const VectorXd &positions, const VectorXi &spinTypes)
-        : ParticleCollection(positions),
-          SpinTypeCollection(spinTypes) {
-
-    assert(this->numberOfParticles() == spinTypes.size()
-           && "The number of particles in ParticleCollection and the number of spin type in SpinTypeCollection must match.");
+ElectronCollection::ElectronCollection(const Eigen::VectorXd &positions)
+        : ParticleCollection(PositionCollection(positions)),
+          spinTypeCollection_(numberOfEntities()) {
 }
 
-ElectronCollection::ElectronCollection(const ParticleCollection &particleCollection,
+ElectronCollection::ElectronCollection(const Eigen::VectorXd &positions, const Eigen::VectorXi &spinTypes)
+        : ParticleCollection(PositionCollection(positions)),
+          spinTypeCollection_(spinTypes) {
+
+    assert(numberOfEntities() == positionCollection_.numberOfEntities()
+           && numberOfEntities() == spinTypeCollection_.numberOfEntities()
+           && "The number of entities in ParticleCollection, PositionCollection, and SpinTypeCollection must match.");
+}
+
+ElectronCollection::ElectronCollection(const PositionCollection &positionCollection,
                                        const SpinTypeCollection &spinTypeCollection)
-        : ElectronCollection(particleCollection.positionsAsEigenVector(),
-                             spinTypeCollection.spinTypesAsEigenVector()){
-}
+        : ParticleCollection(PositionCollection(positionCollection)),
+          spinTypeCollection_(spinTypeCollection)
+{}
 
-Electron ElectronCollection::electron(long i) {
-    Particle particle = (*this)[i];
-    return Electron(particle, spinType(i));
+Electron ElectronCollection::operator[](long i) const {
+    return Electron{positionCollection_[i], spinTypeCollection_[i]};
 }
 
 void ElectronCollection::insert(const Electron& electron, long i) {
-    ParticleCollection::insert(static_cast<Particle>(electron),i);
-    SpinTypeCollection::insert(electron.spinType(),i);
-    assert(numberOfParticles() == numberOfSpinTypes());
+    assert(i >= 0 && "The index must be positive.");
+    assert(i <= numberOfEntities() && "The index must be smaller than the number of entities.");
+
+    positionCollection_.insert(electron.position(),i);
+    spinTypeCollection_.insert(electron.spinType(),i);
+    incrementNumberOfEntities();
+
+    assert(positionCollection_.numberOfEntities() == numberOfEntities());
+    assert(spinTypeCollection_.numberOfEntities() == numberOfEntities());
 }
 
 void ElectronCollection::prepend(const Electron& electron) {
@@ -38,5 +45,25 @@ void ElectronCollection::prepend(const Electron& electron) {
 }
 
 void ElectronCollection::append(const Electron& electron) {
-    this->insert(electron, ParticleCollection::numberOfParticles_);
+    this->insert(electron,numberOfEntities());
+}
+
+void ElectronCollection::permute(long i, long j) {
+    positionCollection_.permute(i,j);
+    spinTypeCollection_.permute(i,j);
+}
+
+const SpinTypeCollection &ElectronCollection::spinTypeCollection() const {
+    return spinTypeCollection_;
+}
+
+SpinTypeCollection &ElectronCollection::spinTypeCollection() {
+    return spinTypeCollection_;
+}
+
+std::ostream& operator<<(std::ostream& os, const ElectronCollection& ec){
+    os << ec.spinTypeCollection()
+       << ec.positionCollection()
+       << std::endl;
+    return os;
 }

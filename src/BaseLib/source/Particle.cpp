@@ -3,6 +3,7 @@
 //
 
 #include "Particle.h"
+#include "PositionFormat.h"
 
 using namespace Eigen;
 
@@ -18,4 +19,17 @@ Vector3d Particle::position() const {
 
 void Particle::position(const Vector3d &position) {
     position_ = position;
+}
+
+double Particle::distance(const Particle &p1, const Particle &p2) {
+    return (p1.position()-p2.position()).norm();
+}
+
+std::ostream& operator<< (std::ostream& os, const Particle& p) {
+    os << p.position().format(PositionFormat::positionFormat) << std::endl;
+    return os;
+}
+
+int Particle::charge(){
+    return 0;
 }

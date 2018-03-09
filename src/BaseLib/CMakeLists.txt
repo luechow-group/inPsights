@@ -9,10 +9,6 @@ set ( PROJECT_PATH ${PROJECT_NAME})
 set ( OUTPUT_NAME "${PROJECT_FOLDER_NAME}" )
 message ( "-- ++ CREATING PROJECT OR MAKEFILE ---> ${OUTPUT_NAME}" )
 
-#set(CMAKE_AUTOMOC ON)
-
-
-
 include_directories(
         include
         source
@@ -32,8 +28,6 @@ set(HEADER_FILES
         include/ElementType.h
         include/ElementTypeCollection.h
         include/NaturalConstants.h
-        #include/ChemicalSystem.h
-        include/WfFileImporter.h
         include/Atom.h
         include/AtomCollection.h
         include/Particle.h
@@ -45,17 +39,18 @@ set(HEADER_FILES
         include/SpinType.h
         include/SpinTypeCollection.h
         include/Importer.h
-        include/RefFileImporter.h
-        include/AmolqcImporter.h
-        include/OptimizationPathFileImporter.h
+        include/CollectionParser.h
+        include/AbstractCollection.h
+        include/PositionCollection.h
+        include/Position.h
+        include/PositionFormat.h
+        include/PositionCollections.h
         )
 
 set(SOURCE_FILES
         source/pElementInfo.cpp
         source/ElementInfo.cpp
         source/ElementTypeCollection.cpp
-        #source/ChemicalSystem.cpp
-        source/WfFileImporter.cpp
         source/Atom.cpp
         source/AtomCollection.cpp
         source/Particle.cpp
@@ -66,23 +61,24 @@ set(SOURCE_FILES
         source/ElectronCollections.cpp
         source/SpinTypeCollection.cpp
         source/Importer.cpp
-        source/RefFileImporter.cpp
-        source/AmolqcImporter.cpp
-        source/OptimizationPathFileImporter.cpp
+        source/CollectionParser.cpp
+        source/SpinType.cpp
+        source/ElementType.cpp
+        source/PositionCollection.cpp
+        source/Position.cpp
+        source/AbstractCollection.cpp
+        source/PositionCollections.cpp
         )
 
-add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES} include/Atom.h)
+file(GLOB_RECURSE RESOURCE_FILES resources/*.*)
+file(COPY ${RESOURCE_FILES} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+
+add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES})
 target_link_libraries(${PROJECT_NAME}
-        Qt5::Core
-        #eigen
+        nlohmann_json
         )
 target_include_directories(${PROJECT_NAME} PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-        )
-
-add_executable(${PROJECT_NAME}_main main.cpp)
-target_link_libraries(${PROJECT_NAME}_main
-        ${PROJECT_NAME}
         )
 
 add_subdirectory(tests)

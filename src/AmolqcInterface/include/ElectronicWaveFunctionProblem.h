@@ -5,26 +5,24 @@
 #ifndef AMOLQCGUI_ELECTRONICWAVEFUNCTIONPROBLEM_H
 #define AMOLQCGUI_ELECTRONICWAVEFUNCTIONPROBLEM_H
 
-#include <iomanip>
 #include "ElectronicWaveFunction.h"
 #include "problem.h"
-#include "observableproblem.h"
-#include "problemobserver.h"
+#include "ElectronCollections.h"
 
-class ElectronicWaveFunctionProblem : public cppoptlib::Problem<double,Eigen::Dynamic>,
-                                      public cppoptlib::ObservableProblem
+class ElectronicWaveFunctionProblem : public cppoptlib::Problem<double,Eigen::Dynamic>
 {
 public:
+    explicit ElectronicWaveFunctionProblem(const std::string &fileName);
 
-    ElectronicWaveFunctionProblem(const std::string fileName);
+    double value(const Eigen::VectorXd &x) override;
 
-    double value(const Eigen::VectorXd &x);
+    void gradient(const Eigen::VectorXd &x, Eigen::VectorXd &grad) override;
 
-    void gradient(const Eigen::VectorXd &x, Eigen::VectorXd &grad);
+    void hessian(const Eigen::VectorXd&x, Eigen::MatrixXd &hessian) override;
 
-    void hessian(const Eigen::VectorXd&x, Eigen::MatrixXd &hessian);
+    bool callback(const cppoptlib::Criteria<double> &state, Eigen::VectorXd &x, Eigen::VectorXd& grad) override;
 
-    bool callback(const cppoptlib::Criteria<double> &state, const Eigen::VectorXd &x);
+    AtomCollection getAtomCollection() const;
 
     unsigned getValueCallCount(){
         return valueCallCount_;
@@ -38,14 +36,30 @@ public:
         return getValueCallCount()+getGradientCallCount();
     }
 
-    void resetCounters(){
+    void reset(){
         valueCallCount_ = 0;
         gradientCallCount_ = 0;
+        optimizationPath_ = ElectronCollections(wf_.getSpinTypeCollection());
     }
+
+    ElectronCollections getOptimizationPath(){
+        return optimizationPath_;
+    }
+
+    void putElectronsIntoNuclei(Eigen::VectorXd& x, Eigen::VectorXd& grad);
+
+    std::vector<unsigned long> getIndicesOfElectronsNotAtNuclei();
+    std::vector<unsigned long> getIndicesOfElectronsAtNuclei();
 
 private:
     unsigned valueCallCount_, gradientCallCount_;
     ElectronicWaveFunction& wf_;
-};
+    ElectronCollections optimizationPath_;
+    Eigen::Matrix<bool,Eigen::Dynamic,1> electronCoordinateIndicesThatWereNaN_;
+    std::vector<unsigned long> indicesOfElectronsNotAtNuclei_;
+    std::vector<unsigned long> indicesOfElectronsAtNuclei_;
 
+    void fixGradient(Eigen::VectorXd &gradient);
+
+};
 #endif //AMOLQCGUI_ELECTRONICWAVEFUNCTIONPROBLEM_H

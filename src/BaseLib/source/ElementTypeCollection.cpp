@@ -3,39 +3,39 @@
 //
 
 #include "ElementTypeCollection.h"
+#include "ElementInfo.h"
+#include "PositionFormat.h"
 
 using namespace Eigen;
 
-ElementTypeCollection::ElementTypeCollection(long size)
-        :numberOfElementsTypes_(size),
-         elementTypes_(VectorXi::Constant(size,int(Elements::ElementType::none)))
+ElementTypeCollection::ElementTypeCollection(long numberOfEntities)
+        : AbstractCollection(numberOfEntities),
+          elementTypes_(VectorXi::Constant(numberOfEntities, int(Elements::ElementType::none)))
 {}
 
 ElementTypeCollection::ElementTypeCollection(const VectorXi& elementTypes)
-        : numberOfElementsTypes_(elementTypes.size()),
-          elementTypes_(numberOfElementsTypes_)
+        : AbstractCollection(elementTypes.size()),
+          elementTypes_(elementTypes)
 {
-    assert(elementTypes.minCoeff() >= int(Elements::ElementType::none));
-    assert(elementTypes.maxCoeff() <= int(Elements::ElementType::Cn));
-
-    elementTypes_ = elementTypes;
+    assert(elementTypes_.minCoeff() >= int(Elements::first()));
+    assert(elementTypes_.maxCoeff() <= int(Elements::last()));
 }
 
-Elements::ElementType ElementTypeCollection::elementType(long i) const {
-    return  Elements::ElementType(elementTypes_[i]);
-}
-
-unsigned long ElementTypeCollection::numberOfElementTypes() const {
-    return numberOfElementsTypes_;
+Elements::ElementType ElementTypeCollection::operator[](long i) const {
+    return  Elements::ElementType(elementTypes_[calculateIndex(i)]);
 }
 
 void ElementTypeCollection::insert(Elements::ElementType elementType, long i) {
-    VectorXi before = elementTypes_.head(i);
-    VectorXi after = elementTypes_.tail(numberOfElementsTypes_-i);
+    assert(i >= 0 && "The index must be positive.");
+    assert(i <= numberOfEntities() && "The index must be smaller than the number of entities.");
 
-    elementTypes_.resize(numberOfElementsTypes_+1);
+    VectorXi before = elementTypes_.head(i);
+    VectorXi after = elementTypes_.tail(numberOfEntities()-i);
+
+    elementTypes_.resize(numberOfEntities()+1);
     elementTypes_ << before, int(elementType), after;
-    ++numberOfElementsTypes_;
+
+    incrementNumberOfEntities();
 }
 
 void ElementTypeCollection::prepend(Elements::ElementType elementType) {
@@ -43,13 +43,33 @@ void ElementTypeCollection::prepend(Elements::ElementType elementType) {
 }
 
 void ElementTypeCollection::append(Elements::ElementType elementType) {
-    this->insert(elementType,numberOfElementsTypes_);
+    this->insert(elementType,numberOfEntities());
 }
 
-void ElementTypeCollection::setElementType(long i, Elements::ElementType ElementType) {
-    elementTypes_[i] = int(ElementType);
-}
-
-VectorXi ElementTypeCollection::elementTypesAsEigenVector() {
+const VectorXi& ElementTypeCollection::elementTypesAsEigenVector() const {
     return elementTypes_;
+}
+
+VectorXi& ElementTypeCollection::elementTypesAsEigenVector() {
+    return elementTypes_;
+}
+
+void ElementTypeCollection::permute(long i, long j) {
+    if(i != j) {
+        int temp = elementTypes_[calculateIndex(i)];
+        elementTypes_[calculateIndex(i)] = elementTypes_[calculateIndex(j)];
+        elementTypes_[calculateIndex(j)] = temp;
+    }
+}
+
+std::ostream& operator<<(std::ostream& os, const ElementTypeCollection& etc){
+    for (unsigned long i = 0; i < etc.numberOfEntities(); i++) {
+        std::string elementSymbol = Elements::ElementInfo::symbol(etc[i]);
+
+        os << elementSymbol
+           << std::string(PositionFormat::significantDigits+3-elementSymbol.length(), ' ')
+           << PositionFormat::separator;
+    }
+    std::cout << std::endl;
+    return os;
 }

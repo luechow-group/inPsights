@@ -7,26 +7,22 @@
 
 #include <vector>
 #include "ParticleCollection.h"
+#include "PositionCollections.h"
 
-class ParticleCollections{
+class ParticleCollections : public AbstractCollection{
 public:
-    ParticleCollections();
-    explicit ParticleCollections(const std::vector<ParticleCollection> &particleCollections);
+    const PositionCollections& positionCollections() const;
+    PositionCollections& positionCollections();
 
-    ParticleCollection operator[](long i) const;
+protected:
+    PositionCollections positionCollections_;
 
-    void insert (const ParticleCollection& particleCollection, long i);
-    void append (const ParticleCollection& particleCollection);
-    void prepend(const ParticleCollection& particleCollection);
+    void permute(long i, long j) override = 0;
+    ParticleCollections() = default;
+    explicit ParticleCollections(const PositionCollections& positionCollections);
 
-    std::vector<ParticleCollection> getParticleCollections() const;
-
-    unsigned long getNumberOfParticleCollections() const;
-    unsigned long getNumberOfParticles() const;
-
-private:
-    unsigned long numberOfParticles_;
-    std::vector<ParticleCollection> particleCollections_;
+//private:
+//    long calculateIndex(long i) const final = 0;
 };
 
 #endif //AMOLQCGUI_PARTICLECOLLECTIONS_H

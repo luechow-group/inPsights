@@ -3,6 +3,7 @@
 //
 
 #include "Atom.h"
+#include "ElementInfo.h"
 
 using namespace Eigen;
 using namespace Elements;
@@ -22,3 +23,11 @@ Atom::Atom(const Particle &particle, const ElementType& elementType)
 Elements::ElementType Atom::elementType() const {
     return elementType_;
 };
+
+void Atom::setElementType(const Elements::ElementType &elementType) {
+    elementType_ = elementType;
+}
+
+int Atom::charge(){
+    return int(Elements::ElementInfo::Z(elementType_));
+}

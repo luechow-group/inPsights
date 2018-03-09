@@ -7,26 +7,29 @@
 
 #include <Eigen/Core>
 #include "SpinType.h"
+#include "AbstractCollection.h"
 
-class SpinTypeCollection{
+class SpinTypeCollection : public AbstractCollection{
 public:
-    explicit SpinTypeCollection(unsigned long size = 0);
+    explicit SpinTypeCollection(long size = 0);
+    SpinTypeCollection(unsigned long numberOfAlphaElectrons, unsigned long numberOfBetaElectrons);
+
     explicit SpinTypeCollection(const Eigen::VectorXi& spinTypes);
 
-    Spin::SpinType spinType(long i) const;
-
-    unsigned long numberOfSpinTypes() const;
+    Spin::SpinType operator[](long i) const;
 
     void insert(Spin::SpinType spinType, long i);
     void append(Spin::SpinType spinType);
     void prepend(Spin::SpinType spinType);
+    void permute(long i, long j) override;
 
-    void setSpinType(long i, Spin::SpinType spinType);
+    const Eigen::VectorXi& spinTypesAsEigenVector() const;
 
-    Eigen::VectorXi spinTypesAsEigenVector() const;
+    Eigen::VectorXi& spinTypesAsEigenVector();
+
+    friend std::ostream& operator<<(std::ostream& os, const SpinTypeCollection& pc);
 
 private:
-    unsigned long numberOfSpinTypes_;
     Eigen::VectorXi spinTypes_;
 };
 

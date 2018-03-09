@@ -1,12 +1,12 @@
 [submodule "src/AmolqcInterface/amolqc"]
 	path = src/AmolqcInterface/amolqc
-	url = git@tcrocks.pc.rwth-aachen.de:amolqc.git
+	url = git@git.rwth-aachen.de:luechow-group/Amolqc.git
 [submodule "src/Externals/BSplines"]
     path = src/Externals/BSplines
     url = git@git.rwth-aachen.de:michael.heuer/BSplines.git
-[submodule "src/Externals/CppNumericalSolvers"]
+[submodule "src/Externals/cppoptlib"]
 	path = src/Externals/cppoptlib
-	url = https://github.com/MonteCarloMichael/CppNumericalSolvers.git
-[submodule "src/Externals/LocalSpinMultiplicity"]
-	path = src/Externals/LocalSpinMultiplicity
-	url = git@tcrocks.pc.rwth-aachen.de:LocalSpinMultiplicity.git
+	url = git@git.rwth-aachen.de:luechow-group/CppNumericalSolvers.git
+[submodule "src/Externals/json"]
+	path = src/Externals/json
+	url = https://github.com/nlohmann/json.git

@@ -6,9 +6,6 @@
 #include <vector>
 #include <numeric>
 #include "Importer.h"
-#include "ElementInfo.h"
-
-
 
 Importer::Importer(const std::string &filename)
         : filename_(filename) {
@@ -30,7 +27,6 @@ std::vector<std::string> Importer::split(const std::string &s) const {
     return std::vector<std::string>({std::istream_iterator<std::string>{iss},
                                      std::istream_iterator<std::string>{}});
 }
-
 
 // splits any delimiter type
 template<typename Out>

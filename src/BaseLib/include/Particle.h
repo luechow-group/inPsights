@@ -6,6 +6,7 @@
 #define AMOLQCGUI_PARTICLE_H
 
 #include <Eigen/Core>
+#include <iostream>
 
 class Particle {
 public:
@@ -15,7 +16,14 @@ public:
     Eigen::Vector3d position() const;
     void position(const Eigen::Vector3d& position);
 
+    friend std::ostream& operator<< (std::ostream& os, const Particle& p);
+
+    static double distance(const Particle &p1, const Particle &p2);
+
 protected:
+    virtual int charge();
+
     Eigen::Vector3d position_;
 };
+
 #endif //AMOLQCGUI_PARTICLE_H

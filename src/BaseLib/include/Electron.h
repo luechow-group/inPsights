@@ -10,12 +10,15 @@
 
 class Electron : public Particle{
 public:
-    Electron(const Eigen::Vector3d & position, Spin::SpinType spinType = Spin::SpinType::none);
+    Electron(const Eigen::Vector3d & position, const Spin::SpinType& spinType = Spin::SpinType::none);
 
-    Electron(const Particle& particle, Spin::SpinType spinType = Spin::SpinType::none);
+    Electron(const Particle& particle, const Spin::SpinType& spinType = Spin::SpinType::none);
 
     Spin::SpinType spinType()const;
-    //void setSpinType(Spin::SpinType spinType);
+
+    void setSpinType(const Spin::SpinType & spinType);
+
+    int charge() override;
 
 private:
     Spin::SpinType spinType_;

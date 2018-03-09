@@ -4,6 +4,7 @@
 #include "NaturalConstants.h"
 #include "ElementType.h"
 #include "ElementColor.h"
+#include <string>
 
 namespace Elements {
 
@@ -33,7 +34,7 @@ namespace Elements {
 
                 /* Constructor for adding a new element */
                 ElementData(std::string symbol, unsigned int Z, double mass,
-                            ElememtColor color = {0,0,0},
+                            ElementColor color = {0,0,0},
                             double vdWRadiusInPicometers = -1, int valElectrons = -1, int sElectrons = -1,
                             int pElectrons = -1, int dElectrons = -1, int fElectrons = -1) :
                         d_symbol(symbol), d_Z(Z), d_mass(mass),
@@ -94,7 +95,7 @@ namespace Elements {
                 }
 
                 /* Element ElememtColor for plotting */
-                ElememtColor color() const {
+                ElementColor color() const {
                     if (d_color.R != 0 && d_color.B != 0 && d_color.B != 0)
                         return d_color;
                     else throw DataNotAvailable();
@@ -113,7 +114,7 @@ namespace Elements {
                 int d_dElectrons;
                 int d_fElectrons;
 
-                ElememtColor d_color;
+                ElementColor d_color;
             };
 
         private:
