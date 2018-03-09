@@ -10,13 +10,13 @@
 
 class QuaternionFit {
 public:
-  explicit QuaternionFit(const Eigen::MatrixXd &referencePositionCollection);
+  explicit QuaternionFit(const Eigen::MatrixXd &referencePositionsVector);
 
   QuaternionFit(const Eigen::MatrixXd &refMat,
                 const Eigen::MatrixXd &fitMat);
 
-  QuaternionFit(const Eigen::MatrixXd &referencePositionCollection,
-                const Eigen::MatrixXd &targetPositionCollection,
+  QuaternionFit(const Eigen::MatrixXd &referencePositionsVector,
+                const Eigen::MatrixXd &targetPositionsVector,
                 const Eigen::VectorXd &weights);
 
   virtual ~QuaternionFit();
@@ -30,9 +30,9 @@ public:
 
   void align();
 
-  void align(const Eigen::MatrixXd &targetPositionCollection);
+  void align(const Eigen::MatrixXd &targetPositionsVector);
 
-  void align(const Eigen::MatrixXd &targetPositionCollection, const Eigen::VectorXd &weights);
+  void align(const Eigen::MatrixXd &targetPositionsVector, const Eigen::VectorXd &weights);
   
   //double getRotRMSD() const { return rotRMSD_; };
   //double getRMSD() const;
@@ -42,8 +42,8 @@ public:
 private:
   Eigen::VectorXd weights_;
 
-  Eigen::MatrixXd referencePositionCollection_;
-  Eigen::MatrixXd targetPositionCollection_;
+  Eigen::MatrixXd referencePositionsVector_;
+  Eigen::MatrixXd targetPositionsVector_;
 
   Eigen::Vector3d referenceCenter_;
   Eigen::Vector3d targetCenter_;
@@ -57,7 +57,7 @@ private:
   Eigen::Quaternion<double> quaternion_;
   Eigen::Matrix3d rotationMatrix_;
 
-  Eigen::MatrixXd fittedTargetPositionCollection_;
+  Eigen::MatrixXd fittedTargetPositionsVector_;
   double rotRMSD_;
   unsigned atomNumber_;
 

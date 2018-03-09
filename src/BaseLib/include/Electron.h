@@ -18,6 +18,13 @@ public:
 
     void setSpinType(const Spin::SpinType & spinType);
 
+    friend std::ostream& operator<< (std::ostream& os, const Electron& elec);
+
+    std::string toString() const override;
+
+
+    int charge() const override;
+
 private:
     Spin::SpinType spinType_;
 };

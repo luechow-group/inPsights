@@ -10,63 +10,63 @@
 using namespace std;
 using namespace Eigen;
 
-QuaternionFit::QuaternionFit(const MatrixXd& referencePositionCollection,
-                             const MatrixXd& targetPositionCollection,
+QuaternionFit::QuaternionFit(const MatrixXd& referencePositionsVector,
+                             const MatrixXd& targetPositionsVector,
                              const VectorXd& weights)
   : weights_(weights),
-    referencePositionCollection_(referencePositionCollection),
-    targetPositionCollection_(targetPositionCollection),
-    atomNumber_((unsigned)referencePositionCollection.rows())
+    referencePositionsVector_(referencePositionsVector),
+    targetPositionsVector_(targetPositionsVector),
+    atomNumber_((unsigned)referencePositionsVector.rows())
 {
   assert(atomNumber_ > 0);
-  assert(referencePositionCollection_.rows() == targetPositionCollection_.rows());
-  assert(referencePositionCollection_.rows() == weights_.rows());
+  assert(referencePositionsVector_.rows() == targetPositionsVector_.rows());
+  assert(referencePositionsVector_.rows() == weights_.rows());
   align();
 }
 
-QuaternionFit::QuaternionFit(const MatrixXd& referencePositionCollection,
-                             const MatrixXd& targetPositionCollection)
-  : referencePositionCollection_(referencePositionCollection),
-    targetPositionCollection_(targetPositionCollection),
-    atomNumber_((unsigned)referencePositionCollection.rows())
+QuaternionFit::QuaternionFit(const MatrixXd& referencePositionsVector,
+                             const MatrixXd& targetPositionsVector)
+  : referencePositionsVector_(referencePositionsVector),
+    targetPositionsVector_(targetPositionsVector),
+    atomNumber_((unsigned)referencePositionsVector.rows())
 {
   assert(atomNumber_ > 0);
-  assert(referencePositionCollection.rows() == targetPositionCollection.rows());
+  assert(referencePositionsVector.rows() == targetPositionsVector.rows());
 
-  weights_ = VectorXd::Ones(referencePositionCollection_.rows());
+  weights_ = VectorXd::Ones(referencePositionsVector_.rows());
 
   align();
 }
 
-QuaternionFit::QuaternionFit(const MatrixXd& referencePositionCollection)
-  : referencePositionCollection_(referencePositionCollection),
-    atomNumber_((unsigned)referencePositionCollection.rows())
+QuaternionFit::QuaternionFit(const MatrixXd& referencePositionsVector)
+  : referencePositionsVector_(referencePositionsVector),
+    atomNumber_((unsigned)referencePositionsVector.rows())
 {
   assert(atomNumber_ > 0);
-  weights_ = VectorXd::Ones(referencePositionCollection_.rows());
+  weights_ = VectorXd::Ones(referencePositionsVector_.rows());
 }
 
 QuaternionFit::~QuaternionFit() {}
 
-void QuaternionFit::align(const MatrixXd& targetPositionCollection, const VectorXd& weights) {
-  assert(referencePositionCollection_.rows() == weights.rows());
+void QuaternionFit::align(const MatrixXd& targetPositionsVector, const VectorXd& weights) {
+  assert(referencePositionsVector_.rows() == weights.rows());
   weights_ = weights;
 
-  align(targetPositionCollection);
+  align(targetPositionsVector);
 }
 
-void QuaternionFit::align(const MatrixXd& targetPositionCollection) {
-  assert(targetPositionCollection.cols() == 3);
-  assert(targetPositionCollection.rows() == referencePositionCollection_.rows());
-  targetPositionCollection_ = targetPositionCollection;
+void QuaternionFit::align(const MatrixXd& targetPositionsVector) {
+  assert(targetPositionsVector.cols() == 3);
+  assert(targetPositionsVector.rows() == referencePositionsVector_.rows());
+  targetPositionsVector_ = targetPositionsVector;
 
   align();
 }
 
 void QuaternionFit::align() {
 
-  referenceCenter_ = calculateCenter(referencePositionCollection_, weights_);
-  targetCenter_ = calculateCenter(targetPositionCollection_, weights_);
+  referenceCenter_ = calculateCenter(referencePositionsVector_, weights_);
+  targetCenter_ = calculateCenter(targetPositionsVector_, weights_);
 
   assert(atomNumber_ > 0);
 
@@ -113,8 +113,8 @@ void QuaternionFit::calculateCorrelationMatrix() {
   for (unsigned i = 0; i < atomNumber_; i++) {
 
     // translate target and reference to origin
-    auto targetPosition = (targetPositionCollection_.row(i) - targetCenter_.transpose()).eval();
-    auto referencePosition = (referencePositionCollection_.row(i) - referenceCenter_.transpose()).eval();
+    auto targetPosition = (targetPositionsVector_.row(i) - targetCenter_.transpose()).eval();
+    auto referencePosition = (referencePositionsVector_.row(i) - referenceCenter_.transpose()).eval();
     w = weights_(i);
 
     c11 += targetPosition(0) * referencePosition(0) * w;
@@ -206,14 +206,14 @@ Matrix3d QuaternionFit::rotationMatrixFromQuaternion(const Vector4d& q) {
 
 void QuaternionFit::alignTargetWithReference() {
 
-  fittedTargetPositionCollection_ = targetPositionCollection_;
-  for (unsigned i = 0; i < fittedTargetPositionCollection_.rows(); i++) {
+  fittedTargetPositionsVector_ = targetPositionsVector_;
+  for (unsigned i = 0; i < fittedTargetPositionsVector_.rows(); i++) {
     // move to origin
-    fittedTargetPositionCollection_.row(i) -= targetCenter_;
+    fittedTargetPositionsVector_.row(i) -= targetCenter_;
     // rotate
-    fittedTargetPositionCollection_.row(i) = rotationMatrix_ * fittedTargetPositionCollection_.row(i).transpose();
+    fittedTargetPositionsVector_.row(i) = rotationMatrix_ * fittedTargetPositionsVector_.row(i).transpose();
     // move to reference center
-    fittedTargetPositionCollection_.row(i) += referenceCenter_;
+    fittedTargetPositionsVector_.row(i) += referenceCenter_;
   }
 }
 
@@ -223,8 +223,8 @@ void QuaternionFit::calculateRMSD() {
   // TODO FIX THIS
 
   for (unsigned i = 0; i < atomNumber_; i++) {
-    auto targetPosition = targetPositionCollection_.row(i) - targetCenter_.transpose();
-    auto referencePosition = referencePositionCollection_.row(i) - referenceCenter_.transpose();
+    auto targetPosition = targetPositionsVector_.row(i) - targetCenter_.transpose();
+    auto referencePosition = referencePositionsVector_.row(i) - referenceCenter_.transpose();
     sum +=  targetPosition.squaredNorm() - referencePosition.squaredNorm(); // MACHT SO KEINEN SINN
   }
   sum -= 2.0 * abs(maxEigenvalue_);

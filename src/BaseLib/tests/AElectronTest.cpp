@@ -31,3 +31,8 @@ TEST_F(AElectronTest, MemberAccess) {
     ASSERT_EQ(electron.spinType(), spin);
     ASSERT_EQ(electron.position(), position);
 }
+
+TEST_F(AElectronTest, Charge) {
+    Electron electron(Vector3d(1, 2, 3));
+    ASSERT_EQ(electron.charge(), -1);
+}
