@@ -10,8 +10,8 @@
 #include <vector>
 #include <iterator>
 
-#include "AtomCollection.h"
-#include "ElectronCollections.h"
+#include "AtomsVector.h"
+#include "ElectronsVectorCollection.h"
 
 class StringManipulator{
 public:

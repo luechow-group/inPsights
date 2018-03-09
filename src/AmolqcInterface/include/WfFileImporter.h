@@ -6,7 +6,7 @@
 #define WFFILEIMPORTER_H
 
 #include "AmolqcImporter.h"
-#include "AtomCollection.h"
+#include "AtomsVector.h"
 
 enum JastrowTypes{
     none,
@@ -21,8 +21,8 @@ public:
     std::pair<bool, unsigned long> findTag(const std::string &tag,
                                            unsigned long startLine = 0);
 
-    AtomCollection getAtomCollection();
-    SpinTypeCollection getSpinTypeCollection();
+    AtomsVector getAtomsVector();
+    SpinTypesVector getSpinTypesVector();
     unsigned long getNumberOfElectrons();
     unsigned long getNumberOfAlphaElectrons();
     unsigned long getNumberOfBetaElectrons();

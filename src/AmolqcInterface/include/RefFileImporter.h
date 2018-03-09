@@ -11,12 +11,12 @@ class RefFileImporter : public AmolqcImporter{
 public:
     RefFileImporter(const std::string& filename);
 
-    AtomCollection getAtomCollection();
+    AtomsVector getAtomsVector();
 
-    SpinTypeCollection getSpinTypeCollection() const;
-    PositionCollection getPositionCollection(unsigned long k, unsigned long m) const;
-    ElectronCollection getMaximaStructure(unsigned long k, unsigned long m) const;
-    ElectronCollections getAllSubstructures(unsigned long k) const;
+    SpinTypesVector getSpinTypesVector() const;
+    PositionsVector getPositionsVector(unsigned long k, unsigned long m) const;
+    ElectronsVector getMaximaStructure(unsigned long k, unsigned long m) const;
+    ElectronsVectorCollection getAllSubstructures(unsigned long k) const;
 
     unsigned long getNumberOfMaxima(unsigned long k, unsigned long m) const;
     double getNegativeLogarithmizedProbabilityDensity(unsigned long k, unsigned long m) const;

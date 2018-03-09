@@ -18,9 +18,9 @@
 #include "solver/gradientdescentsolver.h"
 #include "solver/gradientdescentsimplesolver.h"
 
-#include "AtomCollection3D.h"
-#include "ElectronCollection3D.h"
-#include "ParticleCollectionPath3D.h"
+#include "AtomsVector3D.h"
+#include "ElectronsVector3D.h"
+#include "ParticlesVectorPath3D.h"
 #include "MoleculeWidget.h"
 
 int main(int argc, char *argv[]) {
@@ -31,7 +31,7 @@ int main(int argc, char *argv[]) {
     ElectronicWaveFunctionProblem electronicWaveFunctionProblem("Ethane-em-5.wf");
 
     CollectionParser collectionParser;
-    auto ecA = collectionParser.electronCollectionFromJson("Ethane-glob-max.json");
+    auto ecA = collectionParser.electronsVectorFromJson("Ethane-glob-max.json");
     auto xA = ecA.positionsAsEigenVector();
 
     cppoptlib::Criteria<double> crit = cppoptlib::Criteria<double>::nonsmoothDefaults();
@@ -40,8 +40,8 @@ int main(int argc, char *argv[]) {
     //std::string wfFilename = "Diborane.wf";
     //ElectronicWaveFunctionProblem electronicWaveFunctionProblem(wfFilename);
     //auto numberOfPaths = optimizationPathFileImporter.getNumberOfPaths();
-    //auto psiSquareDistributedParticleCollection = optimizationPathFileImporter.getPath(6).front();
-    //VectorXd xA = psiSquareDistributedParticleCollection.positionsAsEigenVector();
+    //auto psiSquareDistributedParticlesVector = optimizationPathFileImporter.getPath(6).front();
+    //VectorXd xA = psiSquareDistributedParticlesVector.positionsAsEigenVector();
 
     cppoptlib::TimeIntegrationSolver<ElectronicWaveFunctionProblem> solver;
     solver.setDebug(cppoptlib::DebugLevel::High);
@@ -55,8 +55,8 @@ int main(int argc, char *argv[]) {
     solver.minimize(electronicWaveFunctionProblem, xA);
 
     // export result to json
-    auto ecAresult = ElectronCollection(xA,ecA.spinTypesAsEigenVector());
-    auto jsonObject = collectionParser.electronCollectionToJson(ecAresult);
+    auto ecAresult = ElectronsVector(xA,ecA.spinTypesAsEigenVector());
+    auto jsonObject = collectionParser.electronsVectorToJson(ecAresult);
     jsonObject["comment"]= "optimized with FIRE";
 
     nlohmann::json solverSettings;
@@ -68,31 +68,31 @@ int main(int argc, char *argv[]) {
     collectionParser.writeJSON(jsonObject,"FIRE-Ehane-opt.json");
 
     auto optimizationPath = electronicWaveFunctionProblem.getOptimizationPath();
-    ElectronCollections shortenedPath(ElectronCollection(optimizationPath.front(),
-                                                         optimizationPath.getSpinTypeCollection()));
+    ElectronsVectorCollection shortenedPath(ElectronsVector(optimizationPath.front(),
+                                                         optimizationPath.getSpinTypesVector()));
 
     unsigned long nwanted = 300;
     auto skip = 1+(optimizationPath.length()/nwanted);
     std::cout << "displaying structures with a spacing of " << skip << "." << std::endl;
     for (unsigned long i = 0; i < optimizationPath.length(); i=i+skip) {
-        shortenedPath.append(ElectronCollection(optimizationPath.getElectronCollection(i),
-                                                optimizationPath.getSpinTypeCollection()));
+        shortenedPath.append(ElectronsVector(optimizationPath.getElectronsVector(i),
+                                                optimizationPath.getSpinTypesVector()));
     }
 
-    shortenedPath.append(ElectronCollection(xA,optimizationPath.getSpinTypeCollection().spinTypesAsEigenVector()));
+    shortenedPath.append(ElectronsVector(xA,optimizationPath.getSpinTypesVector().spinTypesAsEigenVector()));
 
     //visualization
     MoleculeWidget moleculeWidget;
     Qt3DCore::QEntity *root = moleculeWidget.createMoleculeWidget();
 
-    AtomCollection3D(root,ElectronicWaveFunction::getInstance().getAtomCollection());
+    AtomsVector3D(root,ElectronicWaveFunction::getInstance().getAtomsVector());
 
     // Plot the starting point
-    ElectronCollection3D(root, ElectronCollection(ParticleCollection(xA),
-                                                  optimizationPath.getSpinTypeCollection()), true);
+    ElectronsVector3D(root, ElectronsVector(ParticlesVector(xA),
+                                                  optimizationPath.getSpinTypesVector()), true);
 
     // Plot the optimization path
-    ParticleCollectionPath3D(root, shortenedPath);
+    ParticlesVectorPath3D(root, shortenedPath);
 
     return app.exec();
 };

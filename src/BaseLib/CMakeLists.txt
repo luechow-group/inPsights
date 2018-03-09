@@ -26,48 +26,51 @@ set(HEADER_FILES
         include/ElementInfo.h
         include/pElementInfo.h
         include/ElementType.h
-        include/ElementTypeCollection.h
+        include/ElementTypesVector.h
         include/NaturalConstants.h
         include/Atom.h
-        include/AtomCollection.h
+        include/AtomsVector.h
+        include/AtomsVectorCollection.h
         include/Particle.h
-        include/ParticleCollection.h
-        include/ParticleCollections.h
+        include/ParticlesVector.h
+        include/ParticlesVectorCollection.h
         include/Electron.h
-        include/ElectronCollection.h
-        include/ElectronCollections.h
+        include/ElectronsVector.h
+        include/ElectronsVectorCollection.h
         include/SpinType.h
-        include/SpinTypeCollection.h
+        include/SpinTypesVector.h
         include/Importer.h
         include/CollectionParser.h
-        include/AbstractCollection.h
-        include/PositionCollection.h
+        include/AbstractVector.h
+        include/PositionsVector.h
         include/Position.h
-        include/PositionFormat.h
-        include/PositionCollections.h
+        include/PositionsVectorCollection.h
+        include/ToString.h
         )
 
 set(SOURCE_FILES
         source/pElementInfo.cpp
         source/ElementInfo.cpp
-        source/ElementTypeCollection.cpp
+        source/ElementTypesVector.cpp
         source/Atom.cpp
-        source/AtomCollection.cpp
+        source/AtomsVector.cpp
+        source/AtomsVectorCollection.cpp
         source/Particle.cpp
-        source/ParticleCollection.cpp
-        source/ParticleCollections.cpp
+        source/ParticlesVector.cpp
+        source/ParticlesVectorCollection.cpp
         source/Electron.cpp
-        source/ElectronCollection.cpp
-        source/ElectronCollections.cpp
-        source/SpinTypeCollection.cpp
+        source/ElectronsVector.cpp
+        source/ElectronsVectorCollection.cpp
+        source/SpinTypesVector.cpp
         source/Importer.cpp
         source/CollectionParser.cpp
         source/SpinType.cpp
         source/ElementType.cpp
-        source/PositionCollection.cpp
+        source/PositionsVector.cpp
         source/Position.cpp
-        source/AbstractCollection.cpp
-        source/PositionCollections.cpp
+        source/AbstractVector.cpp
+        source/PositionsVectorCollection.cpp
+        source/ToString.cpp
         )
 
 file(GLOB_RECURSE RESOURCE_FILES resources/*.*)
