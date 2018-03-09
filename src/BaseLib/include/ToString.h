@@ -9,6 +9,9 @@
 #include <Eigen/Core>
 
 namespace ToString {
+    std::string int2string(int a,
+                           unsigned leadingSpaces = 1);
+
     std::string double2string(double a,
                               unsigned decimalPlaces = 5,
                               unsigned leadingSpaces = 1);

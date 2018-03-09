@@ -5,7 +5,12 @@
 #include <iomanip>
 #include "ToString.h"
 
-
+std::string ToString::int2string(const int a,
+                                 const unsigned leadingSpaces) {
+    std::string string = std::to_string(a);
+    string = std::string(leadingSpaces + 1 - string.length(),' ') + string;
+    return string;
+}
 
 std::string ToString::vector3d2string(const Eigen::Vector3d &vector,
                             const unsigned decimalPlaces, const unsigned leadingSpaces) {

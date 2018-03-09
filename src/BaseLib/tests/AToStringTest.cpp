@@ -13,6 +13,13 @@ public:
     }
 };
 
+TEST_F(AToStringTest, Integer){
+    int a = 19;
+    std::ostringstream os;
+    os << ToString::int2string(a,2);
+    ASSERT_EQ(os.str()," 19");
+}
+
 TEST_F(AToStringTest, Double){
     double a = 7.845;
     std::ostringstream os;
