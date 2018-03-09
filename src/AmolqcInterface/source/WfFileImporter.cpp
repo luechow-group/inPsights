@@ -64,7 +64,7 @@ AtomCollection WfFileImporter::getAtomCollection() {
 
 unsigned long WfFileImporter::getNumberOfElectrons() {
 
-  auto etc = getAtomCollection().elementTypeCollection();
+  auto etc = getAtomCollection().elementTypesVector();
   unsigned long numberOfElectrons = 0;
 
   for (unsigned long i = 0; i < etc.numberOfEntities(); ++i) {

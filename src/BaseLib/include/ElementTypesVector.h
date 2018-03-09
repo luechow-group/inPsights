@@ -9,10 +9,10 @@
 #include "AbstractVector.h"
 #include "ElementType.h"
 
-class ElementTypeCollection : public AbstractVector{
+class ElementTypesVector : public AbstractVector{
 public:
-    explicit ElementTypeCollection(long size = 0);
-    explicit ElementTypeCollection(const Eigen::VectorXi& elementTypes);
+    explicit ElementTypesVector(long size = 0);
+    explicit ElementTypesVector(const Eigen::VectorXi& elementTypes);
 
     Elements::ElementType operator[](long i) const;
 
@@ -25,7 +25,7 @@ public:
     Eigen::VectorXi& elementTypesAsEigenVector();
 
 
-    friend std::ostream& operator<<(std::ostream& os, const ElementTypeCollection& ec);
+    friend std::ostream& operator<<(std::ostream& os, const ElementTypesVector& ec);
 
 private:
     Eigen::VectorXi elementTypes_;

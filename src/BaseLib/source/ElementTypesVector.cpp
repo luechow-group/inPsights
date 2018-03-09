@@ -2,17 +2,17 @@
 // Created by Michael Heuer on 29.10.17.
 //
 
-#include "ElementTypeCollection.h"
+#include "ElementTypesVector.h"
 #include "ElementInfo.h"
 
 using namespace Eigen;
 
-ElementTypeCollection::ElementTypeCollection(long numberOfEntities)
+ElementTypesVector::ElementTypesVector(long numberOfEntities)
         : AbstractVector(numberOfEntities),
           elementTypes_(VectorXi::Constant(numberOfEntities, int(Elements::ElementType::none)))
 {}
 
-ElementTypeCollection::ElementTypeCollection(const VectorXi& elementTypes)
+ElementTypesVector::ElementTypesVector(const VectorXi& elementTypes)
         : AbstractVector(elementTypes.size()),
           elementTypes_(elementTypes)
 {
@@ -20,11 +20,11 @@ ElementTypeCollection::ElementTypeCollection(const VectorXi& elementTypes)
     assert(elementTypes_.maxCoeff() <= int(Elements::last()));
 }
 
-Elements::ElementType ElementTypeCollection::operator[](long i) const {
+Elements::ElementType ElementTypesVector::operator[](long i) const {
     return  Elements::ElementType(elementTypes_[calculateIndex(i)]);
 }
 
-void ElementTypeCollection::insert(Elements::ElementType elementType, long i) {
+void ElementTypesVector::insert(Elements::ElementType elementType, long i) {
     assert(i >= 0 && "The index must be positive.");
     assert(i <= numberOfEntities() && "The index must be smaller than the number of entities.");
 
@@ -37,23 +37,23 @@ void ElementTypeCollection::insert(Elements::ElementType elementType, long i) {
     incrementNumberOfEntities();
 }
 
-void ElementTypeCollection::prepend(Elements::ElementType elementType) {
+void ElementTypesVector::prepend(Elements::ElementType elementType) {
     this->insert(elementType,0);
 }
 
-void ElementTypeCollection::append(Elements::ElementType elementType) {
+void ElementTypesVector::append(Elements::ElementType elementType) {
     this->insert(elementType,numberOfEntities());
 }
 
-const VectorXi& ElementTypeCollection::elementTypesAsEigenVector() const {
+const VectorXi& ElementTypesVector::elementTypesAsEigenVector() const {
     return elementTypes_;
 }
 
-VectorXi& ElementTypeCollection::elementTypesAsEigenVector() {
+VectorXi& ElementTypesVector::elementTypesAsEigenVector() {
     return elementTypes_;
 }
 
-void ElementTypeCollection::permute(long i, long j) {
+void ElementTypesVector::permute(long i, long j) {
     if(i != j) {
         int temp = elementTypes_[calculateIndex(i)];
         elementTypes_[calculateIndex(i)] = elementTypes_[calculateIndex(j)];
@@ -61,7 +61,7 @@ void ElementTypeCollection::permute(long i, long j) {
     }
 }
 
-std::ostream& operator<<(std::ostream& os, const ElementTypeCollection& etc){
+std::ostream& operator<<(std::ostream& os, const ElementTypesVector& etc){
     std::string symbol;
     for (unsigned long i = 0; i < etc.numberOfEntities(); i++) {
         if (etc[i] != Elements::ElementType::none){

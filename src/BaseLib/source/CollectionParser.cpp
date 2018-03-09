@@ -20,14 +20,14 @@ nlohmann::json CollectionParser::positionsVectorToJson(const PositionsVector &po
 
 nlohmann::json CollectionParser::atomCollectionToJson(const AtomCollection &atomCollection) {
     nlohmann::json j;
-    const auto &elementTypeCollection = atomCollection.elementTypeCollection();
+    const auto &elementTypesVector = atomCollection.elementTypesVector();
 
     auto elementSymbolArray = nlohmann::json::array();
     auto particleCoordinatesArray = nlohmann::json::array();
     for (int i = 0; i < atomCollection.numberOfEntities(); ++i) {
 
         auto vec = atomCollection[i].position();
-        auto elemetSymbol = Elements::ElementInfo::symbol(elementTypeCollection[i]);
+        auto elemetSymbol = Elements::ElementInfo::symbol(elementTypesVector[i]);
 
         elementSymbolArray.push_back(elemetSymbol);
         particleCoordinatesArray.push_back(nlohmann::json::array({vec[0],vec[1],vec[2]}));
@@ -85,13 +85,13 @@ AtomCollection CollectionParser::atomCollectionFromJson(const std::string &filen
     assert(j["elements"].is_array());
 
     auto elementSymbols = j["elements"].get<std::vector<std::string>>();
-    ElementTypeCollection elementTypeCollection;
+    ElementTypesVector elementTypesVector;
     for(auto it = elementSymbols.begin(); it != elementSymbols.end(); ++it) {
-        elementTypeCollection.append(Elements::ElementInfo::elementTypeForSymbol(*it));
+        elementTypesVector.append(Elements::ElementInfo::elementTypeForSymbol(*it));
     }
     PositionsVector positionsVector = array2DToPositionsVector(j["coordinates"]);
 
-    return AtomCollection(positionsVector, elementTypeCollection);
+    return AtomCollection(positionsVector, elementTypesVector);
 }
 
 ElectronCollection CollectionParser::electronCollectionFromJson(const std::string &filename) {

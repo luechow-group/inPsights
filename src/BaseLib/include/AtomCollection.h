@@ -6,7 +6,7 @@
 #define AMOLQCGUI_ATOMCOLLECTION_H
 
 #include "ParticleCollection.h"
-#include "ElementTypeCollection.h"
+#include "ElementTypesVector.h"
 #include "Atom.h"
 
 class AtomCollection : public ParticleCollection{
@@ -15,7 +15,7 @@ public:
     explicit AtomCollection(const Eigen::VectorXd& positions);
     AtomCollection(const Eigen::VectorXd& positions, const Eigen::VectorXi& elementTypes);
     AtomCollection(const PositionsVector &positionsVector,
-                   const ElementTypeCollection &elementTypeCollection);
+                   const ElementTypesVector &elementTypesVector);
 
     Atom operator[](long i) const;
 
@@ -25,13 +25,13 @@ public:
     void permute(long i, long j);
 
 
-    const ElementTypeCollection& elementTypeCollection() const;
-    ElementTypeCollection& elementTypeCollection();
+    const ElementTypesVector& elementTypesVector() const;
+    ElementTypesVector& elementTypesVector();
 
     friend std::ostream& operator<<(std::ostream& os, const AtomCollection& ac);
 
 private:
-    ElementTypeCollection elementTypeCollection_;
+    ElementTypesVector elementTypesVector_;
 };
 
 #endif //AMOLQCGUI_ATOMCOLLECTION_H

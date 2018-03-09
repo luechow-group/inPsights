@@ -6,64 +6,64 @@
 
 AtomsVectorCollection::AtomsVectorCollection()
         : ParticlesVectorCollection(),
-          elementTypeCollection_(ElementTypeCollection()) {}
+          elementTypesVector_(ElementTypesVector()) {}
 
-AtomsVectorCollection::AtomsVectorCollection(const ElementTypeCollection &elementTypeCollection)
+AtomsVectorCollection::AtomsVectorCollection(const ElementTypesVector &elementTypesVector)
         : ParticlesVectorCollection(),
-          elementTypeCollection_(elementTypeCollection) {}
+          elementTypesVector_(elementTypesVector) {}
 
 AtomsVectorCollection::AtomsVectorCollection(const AtomCollection &atomCollection)
         : AtomsVectorCollection(std::vector<AtomCollection>({atomCollection})){}
 
 AtomsVectorCollection::AtomsVectorCollection(const std::vector<AtomCollection> &atomCollectionVector)
         : ParticlesVectorCollection(),
-          elementTypeCollection_(atomCollectionVector[0].elementTypeCollection()) {
+          elementTypesVector_(atomCollectionVector[0].elementTypesVector()) {
 
     if ( !atomCollectionVector.empty() ){
         for (const auto &atomCollection : atomCollectionVector) {
             positionsVectorCollection_.append(atomCollection.positionsVector());
 
-            assert(elementTypeCollection_.elementTypesAsEigenVector()
-                   == atomCollection.elementTypeCollection().elementTypesAsEigenVector()
-                   && "All AtomCollection s must have the same ElementTypeCollection.");
+            assert(elementTypesVector_.elementTypesAsEigenVector()
+                   == atomCollection.elementTypesVector().elementTypesAsEigenVector()
+                   && "All AtomCollection s must have the same ElementTypesVector.");
         }
     }
 }
 
 AtomsVectorCollection::AtomsVectorCollection(const PositionsVectorCollection &positionsVectorCollection)
         : AtomsVectorCollection(positionsVectorCollection,
-                              ElementTypeCollection(positionsVectorCollection.numberOfPositionsEntities())) {
+                              ElementTypesVector(positionsVectorCollection.numberOfPositionsEntities())) {
 }
 
 AtomsVectorCollection::AtomsVectorCollection(const PositionsVectorCollection &positionsVectorCollection,
-                                         const ElementTypeCollection &elementTypeCollection)
+                                         const ElementTypesVector &elementTypesVector)
         : ParticlesVectorCollection(positionsVectorCollection),
-          elementTypeCollection_(elementTypeCollection) {
+          elementTypesVector_(elementTypesVector) {
 
     assert(numberOfEntities() == positionsVectorCollection_.numberOfEntities()
-           && numberOfEntities() == elementTypeCollection_.numberOfEntities()
-           && "The number of entities in ParticlesVectorCollection, PositionsVectorCollection, and ElementTypeCollection must match.");
+           && numberOfEntities() == elementTypesVector_.numberOfEntities()
+           && "The number of entities in ParticlesVectorCollection, PositionsVectorCollection, and ElementTypesVector must match.");
 }
 
 AtomCollection AtomsVectorCollection::operator[](long i) const {
-    return AtomCollection(positionsVectorCollection_[i],elementTypeCollection_);
+    return AtomCollection(positionsVectorCollection_[i],elementTypesVector_);
 }
 
-const ElementTypeCollection& AtomsVectorCollection::elementTypeCollection() const{
-    return elementTypeCollection_;
+const ElementTypesVector& AtomsVectorCollection::elementTypesVector() const{
+    return elementTypesVector_;
 }
 
-ElementTypeCollection &AtomsVectorCollection::elementTypeCollection() {
-    return elementTypeCollection_;
+ElementTypesVector &AtomsVectorCollection::elementTypesVector() {
+    return elementTypesVector_;
 }
 
 void AtomsVectorCollection::insert(const AtomCollection &atomCollection, long i) {
-    if (elementTypeCollection_.numberOfEntities() != 0){
-        assert(elementTypeCollection_.elementTypesAsEigenVector()
-               == atomCollection.elementTypeCollection().elementTypesAsEigenVector());
+    if (elementTypesVector_.numberOfEntities() != 0){
+        assert(elementTypesVector_.elementTypesAsEigenVector()
+               == atomCollection.elementTypesVector().elementTypesAsEigenVector());
     }
     else{
-        elementTypeCollection_ = atomCollection.elementTypeCollection();
+        elementTypesVector_ = atomCollection.elementTypesVector();
     }
     positionsVectorCollection_.insert(atomCollection.positionsVector(), i);
     incrementNumberOfEntities();
@@ -80,6 +80,6 @@ void AtomsVectorCollection::prepend(const AtomCollection &atomCollection) {
 void AtomsVectorCollection::permute(long i, long j) {
     if(i != j) {
         positionsVectorCollection_.permute(i,j);
-        elementTypeCollection_.permute(i,j);
+        elementTypesVector_.permute(i,j);
     }
 }

@@ -26,7 +26,7 @@ set(HEADER_FILES
         include/ElementInfo.h
         include/pElementInfo.h
         include/ElementType.h
-        include/ElementTypeCollection.h
+        include/ElementTypesVector.h
         include/NaturalConstants.h
         include/Atom.h
         include/AtomCollection.h
@@ -51,7 +51,7 @@ set(HEADER_FILES
 set(SOURCE_FILES
         source/pElementInfo.cpp
         source/ElementInfo.cpp
-        source/ElementTypeCollection.cpp
+        source/ElementTypesVector.cpp
         source/Atom.cpp
         source/AtomCollection.cpp
         source/AtomsVectorCollection.cpp

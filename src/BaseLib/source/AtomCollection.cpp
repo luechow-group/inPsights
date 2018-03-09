@@ -6,28 +6,28 @@ using namespace Eigen;
 
 AtomCollection::AtomCollection(const VectorXd &positions)
         : ParticleCollection(PositionsVector(positions)),
-          elementTypeCollection_(numberOfEntities())
+          elementTypesVector_(numberOfEntities())
 {}
 
 
 
 AtomCollection::AtomCollection(const VectorXd &positions, const VectorXi &elementTypes)
         : ParticleCollection(PositionsVector(positions)),
-          elementTypeCollection_(elementTypes) {
+          elementTypesVector_(elementTypes) {
 
     assert(numberOfEntities() == positionsVector_.numberOfEntities()
-           && numberOfEntities() == elementTypeCollection_.numberOfEntities()
+           && numberOfEntities() == elementTypesVector_.numberOfEntities()
            && "The number of entities in ParticleCollection, PositionsVector, and SpinTypesVector must match.");
 }
 
 AtomCollection::AtomCollection(const PositionsVector &positionsVector,
-                               const ElementTypeCollection &elementTypeCollection)
+                               const ElementTypesVector &elementTypesVector)
         : ParticleCollection(positionsVector),
-          elementTypeCollection_(elementTypeCollection)
+          elementTypesVector_(elementTypesVector)
 {}
 
 Atom AtomCollection::operator[](long i) const {
-    return Atom{positionsVector_[i], elementTypeCollection_[i]};
+    return Atom{positionsVector_[i], elementTypesVector_[i]};
 }
 
 void AtomCollection::insert(const Atom& atom, long i) {
@@ -35,11 +35,11 @@ void AtomCollection::insert(const Atom& atom, long i) {
     assert(i <= numberOfEntities() && "The index must be smaller than the number of entities.");
 
     positionsVector_.insert(atom.position(),i);
-    elementTypeCollection_.insert(atom.elementType(),i);
+    elementTypesVector_.insert(atom.elementType(),i);
     incrementNumberOfEntities();
 
     assert(positionsVector_.numberOfEntities() == numberOfEntities());
-    assert(elementTypeCollection_.numberOfEntities() == numberOfEntities());
+    assert(elementTypesVector_.numberOfEntities() == numberOfEntities());
 }
 
 void AtomCollection::prepend(const Atom& atom) {
@@ -52,15 +52,15 @@ void AtomCollection::append(const Atom& atom) {
 
 void AtomCollection::permute(long i, long j) {
     positionsVector_.permute(i,j);
-    elementTypeCollection_.permute(i,j);
+    elementTypesVector_.permute(i,j);
 }
 
-const ElementTypeCollection &AtomCollection::elementTypeCollection() const {
-    return elementTypeCollection_;
+const ElementTypesVector &AtomCollection::elementTypesVector() const {
+    return elementTypesVector_;
 }
 
-ElementTypeCollection &AtomCollection::elementTypeCollection() {
-    return elementTypeCollection_;
+ElementTypesVector &AtomCollection::elementTypesVector() {
+    return elementTypesVector_;
 }
 
 std::ostream& operator<<(std::ostream& os, const AtomCollection& ac){

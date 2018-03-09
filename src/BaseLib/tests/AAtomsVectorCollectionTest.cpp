@@ -38,7 +38,7 @@ TEST_F(AAtomsVectorCollectionTest, InitialNumberEntities){
     AtomsVectorCollection atomsVectorCollection;
     ASSERT_EQ(atomsVectorCollection.numberOfEntities(),0);
     ASSERT_EQ(atomsVectorCollection.positionsVectorCollection().numberOfEntities(),0);
-    ASSERT_EQ(atomsVectorCollection.elementTypeCollection().numberOfEntities(),0);
+    ASSERT_EQ(atomsVectorCollection.elementTypesVector().numberOfEntities(),0);
 }
 
 TEST_F(AAtomsVectorCollectionTest, NumberEntities){
