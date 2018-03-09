@@ -15,7 +15,7 @@ public:
     explicit ElectronCollection(const Eigen::VectorXd& positions);
     ElectronCollection(const Eigen::VectorXd& positions, const Eigen::VectorXi& spinTypes);
 
-    ElectronCollection(const PositionCollection& positionCollection,
+    ElectronCollection(const PositionsVector& positionsVector,
                        const SpinTypeCollection& spinTypeCollection);
 
     Electron operator[](long i) const;

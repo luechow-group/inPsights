@@ -6,28 +6,28 @@
 #define AMOLQCGUI_POSITIONCOLLECTIONS_H
 
 #include <vector>
-#include "PositionCollection.h"
+#include "PositionsVector.h"
 
 class PositionsVectorCollection : public AbstractCollection{
 public:
     PositionsVectorCollection();
-    explicit PositionsVectorCollection(const std::vector<PositionCollection> &positionsVectorCollection);
+    explicit PositionsVectorCollection(const std::vector<PositionsVector> &positionsVectorCollection);
 
-    PositionCollection operator[](long i) const;
+    PositionsVector operator[](long i) const;
 
-    void insert (const PositionCollection& positionCollection, long i);
-    void append (const PositionCollection& positionCollection);
-    void prepend(const PositionCollection& positionCollection);
+    void insert (const PositionsVector& positionsVector, long i);
+    void append (const PositionsVector& positionsVector);
+    void prepend(const PositionsVector& positionsVector);
     void permute(long i, long j) override;
 
 
-    const std::vector<PositionCollection>& positionsVectorCollection() const;
-    std::vector<PositionCollection>& positionsVectorCollection();
+    const std::vector<PositionsVector>& positionsVectorCollection() const;
+    std::vector<PositionsVector>& positionsVectorCollection();
 
     long numberOfPositionsEntities() const;
 
 private:
-    std::vector<PositionCollection> positionsVectorCollection_;
+    std::vector<PositionsVector> positionsVectorCollection_;
     long numberOfPositionEntities_;
 };
 

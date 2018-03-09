@@ -8,10 +8,10 @@
 #include <Eigen/Core>
 #include "AbstractCollection.h"
 
-class PositionCollection : public AbstractCollection{
+class PositionsVector : public AbstractCollection{
 public:
-    PositionCollection();
-    explicit PositionCollection(const Eigen::VectorXd& positions);
+    PositionsVector();
+    explicit PositionsVector(const Eigen::VectorXd& positions);
 
     Eigen::Vector3d operator[](long i) const;
 
@@ -26,7 +26,7 @@ public:
     ParticleCollection part(std::vector<long> indices);
     */
 
-    friend std::ostream& operator<<(std::ostream& os, const PositionCollection& pc);
+    friend std::ostream& operator<<(std::ostream& os, const PositionsVector& pc);
 
     const Eigen::VectorXd & positionsAsEigenVector() const;
 

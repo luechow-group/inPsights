@@ -4,18 +4,18 @@
 
 #include "ParticleCollection.h"
 
-ParticleCollection::ParticleCollection(const PositionCollection &positionCollection)
-        : AbstractCollection(positionCollection.numberOfEntities()),
-          positionCollection_(positionCollection){}
+ParticleCollection::ParticleCollection(const PositionsVector &positionsVector)
+        : AbstractCollection(positionsVector.numberOfEntities()),
+          positionsVector_(positionsVector){}
 
 Particle ParticleCollection::particle(long i) const {
-    return Particle(positionCollection_[i]);
+    return Particle(positionsVector_[i]);
 }
 
-const PositionCollection & ParticleCollection::positionCollection() const {
-    return positionCollection_;
+const PositionsVector & ParticleCollection::positionsVector() const {
+    return positionsVector_;
 }
 
-PositionCollection & ParticleCollection::positionCollection(){
-    return positionCollection_;
+PositionsVector & ParticleCollection::positionsVector(){
+    return positionsVector_;
 }

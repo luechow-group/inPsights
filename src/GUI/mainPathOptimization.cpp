@@ -57,7 +57,7 @@ int main(int argc, char *argv[]) {
     std::cout << ac << std::endl;
     std::cout << ec << std::endl;
 
-    Eigen::VectorXd x(ec.positionCollection().positionsAsEigenVector());
+    Eigen::VectorXd x(ec.positionsVector().positionsAsEigenVector());
     std::cout << x.transpose() << std::endl;
     Eigen::VectorXd grad(ec.numberOfEntities());
     electronicWaveFunctionProblem.putElectronsIntoNuclei(x,grad);

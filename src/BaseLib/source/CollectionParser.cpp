@@ -6,11 +6,11 @@
 #include <fstream>
 #include "ElementInfo.h"
 
-nlohmann::json CollectionParser::positionCollectionToJson(const PositionCollection &positionCollection) {
+nlohmann::json CollectionParser::positionsVectorToJson(const PositionsVector &positionsVector) {
     nlohmann::json j;
     auto particleCoordinatesArray = nlohmann::json::array();
-    for (int i = 0; i < positionCollection.numberOfEntities(); ++i) {
-        auto vec = positionCollection[i];
+    for (int i = 0; i < positionsVector.numberOfEntities(); ++i) {
+        auto vec = positionsVector[i];
         particleCoordinatesArray.push_back(nlohmann::json::array({vec[0],vec[1],vec[2]}).dump());
     }
     j["type"] = "ParticleCollection";
@@ -61,21 +61,21 @@ nlohmann::json CollectionParser::electronCollectionToJson(const ElectronCollecti
 }
 
 
-PositionCollection CollectionParser::positionCollectionFromJson(const std::string &filename) {
+PositionsVector CollectionParser::positionsVectorFromJson(const std::string &filename) {
     auto j = readJSON(filename);
     assert(j["type"]== "ParticleCollection" && "File must be a ParticleCollection.");
 
-    return array2DToPositionCollection(j["coordinates"]);
+    return array2DToPositionsVector(j["coordinates"]);
 }
 
-PositionCollection CollectionParser::array2DToPositionCollection(const nlohmann::json &coordinates) {
+PositionsVector CollectionParser::array2DToPositionsVector(const nlohmann::json &coordinates) {
     auto particles = coordinates.get<std::vector<std::vector<double>>>();
-    PositionCollection positionCollection;
+    PositionsVector positionsVector;
     for(auto it = particles.begin(); it != particles.end(); ++it) {
         assert((*it).size() == 3);
-        positionCollection.append(Eigen::Vector3d((*it)[0],(*it)[1],(*it)[2]));
+        positionsVector.append(Eigen::Vector3d((*it)[0],(*it)[1],(*it)[2]));
     }
-    return positionCollection;
+    return positionsVector;
 }
 
 
@@ -89,9 +89,9 @@ AtomCollection CollectionParser::atomCollectionFromJson(const std::string &filen
     for(auto it = elementSymbols.begin(); it != elementSymbols.end(); ++it) {
         elementTypeCollection.append(Elements::ElementInfo::elementTypeForSymbol(*it));
     }
-    PositionCollection positionCollection = array2DToPositionCollection(j["coordinates"]);
+    PositionsVector positionsVector = array2DToPositionsVector(j["coordinates"]);
 
-    return AtomCollection(positionCollection, elementTypeCollection);
+    return AtomCollection(positionsVector, elementTypeCollection);
 }
 
 ElectronCollection CollectionParser::electronCollectionFromJson(const std::string &filename) {
@@ -104,9 +104,9 @@ ElectronCollection CollectionParser::electronCollectionFromJson(const std::strin
     for(auto it = spins.begin(); it != spins.end(); ++it) {
         spinTypeCollection.append( (Spin::SpinType)(*it) );
     }
-    PositionCollection positionCollection = array2DToPositionCollection(j["coordinates"]);
+    PositionsVector positionsVector = array2DToPositionsVector(j["coordinates"]);
 
-    return ElectronCollection(positionCollection, spinTypeCollection);
+    return ElectronCollection(positionsVector, spinTypeCollection);
 }
 
 void CollectionParser::writeJSON(const nlohmann::json& json, const std::string& filename) {

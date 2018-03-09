@@ -5,40 +5,40 @@
 using namespace Eigen;
 
 AtomCollection::AtomCollection(const VectorXd &positions)
-        : ParticleCollection(PositionCollection(positions)),
+        : ParticleCollection(PositionsVector(positions)),
           elementTypeCollection_(numberOfEntities())
 {}
 
 
 
 AtomCollection::AtomCollection(const VectorXd &positions, const VectorXi &elementTypes)
-        : ParticleCollection(PositionCollection(positions)),
+        : ParticleCollection(PositionsVector(positions)),
           elementTypeCollection_(elementTypes) {
 
-    assert(numberOfEntities() == positionCollection_.numberOfEntities()
+    assert(numberOfEntities() == positionsVector_.numberOfEntities()
            && numberOfEntities() == elementTypeCollection_.numberOfEntities()
-           && "The number of entities in ParticleCollection, PositionCollection, and SpinTypeCollection must match.");
+           && "The number of entities in ParticleCollection, PositionsVector, and SpinTypeCollection must match.");
 }
 
-AtomCollection::AtomCollection(const PositionCollection &positionCollection,
+AtomCollection::AtomCollection(const PositionsVector &positionsVector,
                                const ElementTypeCollection &elementTypeCollection)
-        : ParticleCollection(positionCollection),
+        : ParticleCollection(positionsVector),
           elementTypeCollection_(elementTypeCollection)
 {}
 
 Atom AtomCollection::operator[](long i) const {
-    return Atom{positionCollection_[i], elementTypeCollection_[i]};
+    return Atom{positionsVector_[i], elementTypeCollection_[i]};
 }
 
 void AtomCollection::insert(const Atom& atom, long i) {
     assert(i >= 0 && "The index must be positive.");
     assert(i <= numberOfEntities() && "The index must be smaller than the number of entities.");
 
-    positionCollection_.insert(atom.position(),i);
+    positionsVector_.insert(atom.position(),i);
     elementTypeCollection_.insert(atom.elementType(),i);
     incrementNumberOfEntities();
 
-    assert(positionCollection_.numberOfEntities() == numberOfEntities());
+    assert(positionsVector_.numberOfEntities() == numberOfEntities());
     assert(elementTypeCollection_.numberOfEntities() == numberOfEntities());
 }
 
@@ -51,7 +51,7 @@ void AtomCollection::append(const Atom& atom) {
 }
 
 void AtomCollection::permute(long i, long j) {
-    positionCollection_.permute(i,j);
+    positionsVector_.permute(i,j);
     elementTypeCollection_.permute(i,j);
 }
 

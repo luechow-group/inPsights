@@ -28,15 +28,15 @@ ElectronicWaveFunction::ElectronicWaveFunction(const std::string& fileName)
   initialize(fileName);
 }
 
-void ElectronicWaveFunction::setRandomElectronPositionCollection(unsigned electronNumber,
+void ElectronicWaveFunction::setRandomElectronPositionsVector(unsigned electronNumber,
                                                                  ElectronPositioningMode::electronPositioningModeType
                                                                  electronPositioningModeType) {
-  auto *electronPositionCollectionArray = new double[electronNumber*3];
-  amolqc_initial_positions(electronPositioningModeType, electronNumber, electronPositionCollectionArray);
+  auto *electronPositionsVectorArray = new double[electronNumber*3];
+  amolqc_initial_positions(electronPositioningModeType, electronNumber, electronPositionsVectorArray);
 
-  electronPositionCollectionAsEigenVector_ = Eigen::Map<Eigen::VectorXd>(electronPositionCollectionArray,
+  electronPositionsVectorAsEigenVector_ = Eigen::Map<Eigen::VectorXd>(electronPositionsVectorArray,
                                                             electronNumber*3, 1);
-  delete electronPositionCollectionArray;
+  delete electronPositionsVectorArray;
 }
 
 void ElectronicWaveFunction::initialize(const std::string& fileName) {
@@ -48,7 +48,7 @@ void ElectronicWaveFunction::initialize(const std::string& fileName) {
 
   amolqc_init();
   amolqc_set_wf((int*)&numberOfElectrons_, (int*)&numberOfNuclei_, f);
-  setRandomElectronPositionCollection((unsigned)numberOfElectrons_, ElectronPositioningMode::DENSITY);
+  setRandomElectronPositionsVector((unsigned)numberOfElectrons_, ElectronPositioningMode::DENSITY);
 
   // import atoms from .wf file
   WfFileImporter wfFileImporter(fileName);
@@ -69,23 +69,23 @@ unsigned long ElectronicWaveFunction::getNumberOfElectrons() const {
 }
 
 void ElectronicWaveFunction::evaluate(const ElectronCollection &electronCollection) {
-    evaluate(electronCollection.positionCollection().positionsAsEigenVector());
+    evaluate(electronCollection.positionsVector().positionsAsEigenVector());
 }
 
-void ElectronicWaveFunction::evaluate(const Eigen::VectorXd &electronPositionCollection) {
-  assert(electronPositionCollection.rows() > 0);
-  assert(electronPositionCollection.rows() % 3 == 0);
-  //std::cout << "pos " << electronPositionCollection.transpose() << std::endl;
-  electronPositionCollectionAsEigenVector_ = electronPositionCollection;
-  double *electronDriftCollectionArray = new double[electronPositionCollection.rows()];
+void ElectronicWaveFunction::evaluate(const Eigen::VectorXd &electronPositionsVector) {
+  assert(electronPositionsVector.rows() > 0);
+  assert(electronPositionsVector.rows() % 3 == 0);
+  //std::cout << "pos " << electronPositionsVector.transpose() << std::endl;
+  electronPositionsVectorAsEigenVector_ = electronPositionsVector;
+  double *electronDriftCollectionArray = new double[electronPositionsVector.rows()];
 
-  Eigen::VectorXd copy = electronPositionCollection; // TODO ugly - redesign
+  Eigen::VectorXd copy = electronPositionsVector; // TODO ugly - redesign
 
   amolqc_eloc(copy.data(), (int)numberOfElectrons_, &determinantProbabilityAmplitude_, &jastrowFactor_,
               electronDriftCollectionArray, &localEnergy_);
 
   electronDriftCollection_ = Eigen::Map<Eigen::VectorXd>( electronDriftCollectionArray,
-                                                          electronPositionCollection.rows(), 1);
+                                                          electronPositionsVector.rows(), 1);
   //std::cout << "drift " <<electronDriftCollection_.transpose() << std::endl;
   delete electronDriftCollectionArray;
 }
@@ -121,8 +121,8 @@ double ElectronicWaveFunction::getInverseNegativeLogarithmizedProbabilityDensity
   return -1.0/std::log(pow(getProbabilityAmplitude(),2));
 }
 
-ElectronCollection ElectronicWaveFunction::getElectronPositionCollection(){
-  return ElectronCollection(electronPositionCollectionAsEigenVector_,
+ElectronCollection ElectronicWaveFunction::getElectronPositionsVector(){
+  return ElectronCollection(electronPositionsVectorAsEigenVector_,
                             getSpinTypeCollection().spinTypesAsEigenVector());
 };
 

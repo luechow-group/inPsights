@@ -83,8 +83,8 @@ int main(int argc, char *argv[]) {
 
     unsigned numberOfStates = 7;
 
-    auto xA = ecA.positionCollection().positionsAsEigenVector();
-    auto xB = ecB.positionCollection().positionsAsEigenVector();
+    auto xA = ecA.positionsVector().positionsAsEigenVector();
+    auto xB = ecB.positionsVector().positionsAsEigenVector();
 
     Eigen::MatrixXd initialCoordinates(ElectronicWaveFunction::getInstance().getNumberOfElectrons() * 3,
                                        numberOfStates);
@@ -193,7 +193,7 @@ initialCoordinates.row((18 - 1) * 3 + 2) -= 0.05 * bend;//z bend
     WfFileImporter waveFunctionParser(ElectronicWaveFunction::getInstance().getFileName());
 
     AtomCollection3D molecularGeometry3D(root, waveFunctionParser.getAtomCollection());
-    ElectronCollection3D(root, ElectronicWaveFunction::getInstance().getElectronPositionCollection(), true);
+    ElectronCollection3D(root, ElectronicWaveFunction::getInstance().getElectronPositionsVector(), true);
 
 
     //Draw tsguess

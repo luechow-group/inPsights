@@ -7,7 +7,7 @@
 
 #include "AbstractCollection.h"
 #include "Particle.h"
-#include "PositionCollection.h"
+#include "PositionsVector.h"
 
 /*
  * ParticleCollection only exists as an abstract interface to more specialized collections.
@@ -16,15 +16,15 @@ class ParticleCollection : public AbstractCollection{
 public:
     Particle particle(long i) const;
 
-    const PositionCollection & positionCollection() const;
-    PositionCollection & positionCollection();
+    const PositionsVector & positionsVector() const;
+    PositionsVector & positionsVector();
 
 protected:
-    PositionCollection positionCollection_;
+    PositionsVector positionsVector_;
 
     void permute(long i, long j) override = 0;
     ParticleCollection() = default;
-    explicit ParticleCollection(const PositionCollection& positionCollection);
+    explicit ParticleCollection(const PositionsVector& positionsVector);
 };
 
 #endif //AMOLQCGUI_PARTICLECOLLECTION_H

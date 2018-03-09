@@ -12,7 +12,7 @@ public:
     explicit AmolqcImporter(const std::string& filename);
 
 
-    PositionCollection importPositionCollectionBlock(unsigned long startLineIdx,
+    PositionsVector importPositionsVectorBlock(unsigned long startLineIdx,
                                                      unsigned long startLineElement,
                                                      unsigned long numberOfPositions) const;
     

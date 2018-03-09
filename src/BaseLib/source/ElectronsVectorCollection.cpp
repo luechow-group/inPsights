@@ -21,7 +21,7 @@ ElectronsVectorCollection::ElectronsVectorCollection(const std::vector<ElectronC
 
     if ( !electronCollectionVector.empty() ){
         for (const auto &electronCollection : electronCollectionVector) {
-            positionsVectorCollection_.append(electronCollection.positionCollection());
+            positionsVectorCollection_.append(electronCollection.positionsVector());
 
             assert(spinTypeCollection_.spinTypesAsEigenVector()
                    == electronCollection.spinTypeCollection().spinTypesAsEigenVector()
@@ -65,7 +65,7 @@ void ElectronsVectorCollection::insert(const ElectronCollection &electronCollect
     else{
         spinTypeCollection_ = electronCollection.spinTypeCollection();
     }
-    positionsVectorCollection_.insert(electronCollection.positionCollection(), i);
+    positionsVectorCollection_.insert(electronCollection.positionsVector(), i);
     incrementNumberOfEntities();
 }
 

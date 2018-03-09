@@ -32,12 +32,12 @@ public:
 
     void initialize(const std::string& fileName);
 
-    void setRandomElectronPositionCollection(unsigned electronNumber,
+    void setRandomElectronPositionsVector(unsigned electronNumber,
                                            ElectronPositioningMode::electronPositioningModeType);
 
     void evaluate(const ElectronCollection& electronCollection);
 
-    void evaluate(const Eigen::VectorXd &electronPositionCollection);
+    void evaluate(const Eigen::VectorXd &electronPositionsVector);
 
     double getLocalEnergy();
 
@@ -53,7 +53,7 @@ public:
 
     double getInverseNegativeLogarithmizedProbabilityDensity();
 
-    ElectronCollection getElectronPositionCollection();
+    ElectronCollection getElectronPositionsVector();
 
     Eigen::VectorXd getElectronDriftCollection();
 
@@ -78,7 +78,7 @@ private:
     const std::string fileName_;
     unsigned long numberOfNuclei_, numberOfElectrons_, numberOfAlphaElectrons_, numberOfBetaElectrons_;
     double determinantProbabilityAmplitude_, jastrowFactor_, localEnergy_;
-    Eigen::VectorXd electronPositionCollectionAsEigenVector_, electronDriftCollection_;//TODO REPLACE BY BASELIB ELECTRONCOLLECTION!
+    Eigen::VectorXd electronPositionsVectorAsEigenVector_, electronDriftCollection_;//TODO REPLACE BY BASELIB ELECTRONCOLLECTION!
     AtomCollection atomCollection_;
     SpinTypeCollection spinTypeCollection_;
 

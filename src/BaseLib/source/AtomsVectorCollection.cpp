@@ -21,7 +21,7 @@ AtomsVectorCollection::AtomsVectorCollection(const std::vector<AtomCollection> &
 
     if ( !atomCollectionVector.empty() ){
         for (const auto &atomCollection : atomCollectionVector) {
-            positionsVectorCollection_.append(atomCollection.positionCollection());
+            positionsVectorCollection_.append(atomCollection.positionsVector());
 
             assert(elementTypeCollection_.elementTypesAsEigenVector()
                    == atomCollection.elementTypeCollection().elementTypesAsEigenVector()
@@ -65,7 +65,7 @@ void AtomsVectorCollection::insert(const AtomCollection &atomCollection, long i)
     else{
         elementTypeCollection_ = atomCollection.elementTypeCollection();
     }
-    positionsVectorCollection_.insert(atomCollection.positionCollection(), i);
+    positionsVectorCollection_.insert(atomCollection.positionsVector(), i);
     incrementNumberOfEntities();
 }
 

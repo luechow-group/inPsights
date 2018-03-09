@@ -20,7 +20,7 @@ int main(int argc, char *argv[]) {
     CollectionParser collectionParser;
     auto ec = collectionParser.electronCollectionFromJson("BH3_Max1.json");
     auto nsmooth = 2;
-    auto x = ec.positionCollection().positionsAsEigenVector();
+    auto x = ec.positionsVector().positionsAsEigenVector();
 
 
     auto n = ElectronicWaveFunction::getInstance().getNumberOfElectrons()*3;

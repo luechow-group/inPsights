@@ -7,19 +7,19 @@
 AmolqcImporter::AmolqcImporter(const std::string &filename)
         : Importer(filename) {}
 
-PositionCollection AmolqcImporter::importPositionCollectionBlock(unsigned long startLineIdx,
+PositionsVector AmolqcImporter::importPositionsVectorBlock(unsigned long startLineIdx,
                                                                  unsigned long startLineElement,
                                                                  unsigned long numberOfPositions) const {
-    PositionCollection positionCollection;
+    PositionsVector positionsVector;
     for (unsigned long i = 0; i < numberOfPositions; ++i) {
         std::vector<std::string> lineElements = split(getLine(startLineIdx+i));
         double x = std::stod(lineElements[startLineElement+0]);
         double y = std::stod(lineElements[startLineElement+1]);
         double z = std::stod(lineElements[startLineElement+2]);
 
-        positionCollection.append(Eigen::Vector3d(x,y,z));
+        positionsVector.append(Eigen::Vector3d(x,y,z));
     }
-    return positionCollection;
+    return positionsVector;
 }
 
 //TODO Necessary?

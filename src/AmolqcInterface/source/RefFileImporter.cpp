@@ -49,9 +49,9 @@ unsigned long RefFileImporter::calculateLine(unsigned long k, unsigned long m) c
     return start + linesToSkip;
 }
 
-PositionCollection RefFileImporter::getPositionCollection(unsigned long k, unsigned long m) const {
+PositionsVector RefFileImporter::getPositionsVector(unsigned long k, unsigned long m) const {
     unsigned long startLine = calculateLine(k,m)+2;
-    return importPositionCollectionBlock(startLine, 0, numberOfElectrons_);
+    return importPositionsVectorBlock(startLine, 0, numberOfElectrons_);
 }
 
 unsigned long RefFileImporter::getNumberOfMaxima(unsigned long k, unsigned long m) const {
@@ -71,14 +71,14 @@ SpinTypeCollection RefFileImporter::getSpinTypeCollection() const {
 }
 
 ElectronCollection RefFileImporter::getMaximaStructure(unsigned long k, unsigned long m) const {
-    return ElectronCollection(this->getPositionCollection(k,m), this->getSpinTypeCollection());
+    return ElectronCollection(this->getPositionsVector(k,m), this->getSpinTypeCollection());
 }
 
 ElectronsVectorCollection RefFileImporter::getAllSubstructures(unsigned long k) const {
     unsigned long numberOfSubstructures = substructuresData_[k].numberOfSubstructures_;
     PositionsVectorCollection positionsVectorCollection;
     for (unsigned long m = 1; m <= numberOfSubstructures; ++m) {
-        positionsVectorCollection.append(this->getPositionCollection(k,m));
+        positionsVectorCollection.append(this->getPositionsVector(k,m));
     }
     return ElectronsVectorCollection(positionsVectorCollection,this->getSpinTypeCollection());
 

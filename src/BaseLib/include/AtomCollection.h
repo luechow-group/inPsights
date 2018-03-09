@@ -14,7 +14,7 @@ public:
     AtomCollection() = default;
     explicit AtomCollection(const Eigen::VectorXd& positions);
     AtomCollection(const Eigen::VectorXd& positions, const Eigen::VectorXi& elementTypes);
-    AtomCollection(const PositionCollection &positionCollection,
+    AtomCollection(const PositionsVector &positionsVector,
                    const ElementTypeCollection &elementTypeCollection);
 
     Atom operator[](long i) const;

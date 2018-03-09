@@ -212,7 +212,7 @@ std::vector<unsigned long> StringOptimizationProblem::getIndicesOfElectronsAtNuc
 
 
 Eigen::VectorXd StringOptimizationProblem::getNucleiPositions() const{
-  return wf_.getAtomCollection().positionCollection().positionsAsEigenVector();
+  return wf_.getAtomCollection().positionsVector().positionsAsEigenVector();
 }
 
 /*
