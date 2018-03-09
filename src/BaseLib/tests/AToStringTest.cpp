@@ -15,16 +15,12 @@ public:
 
 TEST_F(AToStringTest, Integer){
     int a = 19;
-    std::ostringstream os;
-    os << ToString::intToString(a, 2);
-    ASSERT_EQ(os.str()," 19");
+    ASSERT_EQ(ToString::intToString(a, 2)," 19");
 }
 
 TEST_F(AToStringTest, Double){
     double a = 7.845;
-    std::ostringstream os;
-    os << ToString::doubleToString(a, 5, 0);
-    ASSERT_EQ(os.str()," 7.84500");
+    ASSERT_EQ(ToString::doubleToString(a, 5, 0)," 7.84500");
 }
 
 TEST_F(AToStringTest, Vector3d){
