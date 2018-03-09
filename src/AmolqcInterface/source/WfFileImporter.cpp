@@ -38,9 +38,9 @@ std::pair<bool, unsigned long> WfFileImporter::findTag(const std::string &tag, u
   return std::make_pair(lineIdx < lines_.size(), lineIdx);
 }
 
-AtomCollection WfFileImporter::getAtomCollection() {
+AtomsVector WfFileImporter::getAtomsVector() {
 
-  AtomCollection atomCollection;
+  AtomsVector atomsVector;
   auto startLine = findTag("$geom", 0).second+1;
   numberOfNuclei_ = std::stoul(strip(getLine(startLine)));
 
@@ -57,14 +57,14 @@ AtomCollection WfFileImporter::getAtomCollection() {
         y *= ConversionFactors::angstrom2bohr;
         z *= ConversionFactors::angstrom2bohr;
       }
-      atomCollection.append(Atom(x,y,z,elementType));
+      atomsVector.append(Atom(x,y,z,elementType));
     }
-  return atomCollection;
+  return atomsVector;
 }
 
 unsigned long WfFileImporter::getNumberOfElectrons() {
 
-  auto etc = getAtomCollection().elementTypeCollection();
+  auto etc = getAtomsVector().elementTypesVector();
   unsigned long numberOfElectrons = 0;
 
   for (unsigned long i = 0; i < etc.numberOfEntities(); ++i) {
@@ -83,6 +83,6 @@ unsigned long WfFileImporter::getNumberOfBetaElectrons() {
   return getNumberOfElectrons()-getNumberOfAlphaElectrons();
 }
 
-SpinTypeCollection WfFileImporter::getSpinTypeCollection() {
-  return SpinTypeCollection(getNumberOfAlphaElectrons(),getNumberOfBetaElectrons());
+SpinTypesVector WfFileImporter::getSpinTypesVector() {
+  return SpinTypesVector(getNumberOfAlphaElectrons(),getNumberOfBetaElectrons());
 }

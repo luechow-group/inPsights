@@ -1,5 +1,5 @@
 //
-// Created by Michael Heuer on 29.10.17.
+// Created by Leonard Reuter on 08.03.18.
 //
 
 #include <gtest/gtest.h>

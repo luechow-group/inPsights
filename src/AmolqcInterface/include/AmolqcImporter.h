@@ -12,7 +12,7 @@ public:
     explicit AmolqcImporter(const std::string& filename);
 
 
-    PositionCollection importPositionCollectionBlock(unsigned long startLineIdx,
+    PositionsVector importPositionsVectorBlock(unsigned long startLineIdx,
                                                      unsigned long startLineElement,
                                                      unsigned long numberOfPositions) const;
     
@@ -20,7 +20,7 @@ public:
                                                           unsigned long blockLength) const;
 
 protected:
-    SpinTypeCollection getSpinTypeCollection(unsigned long numberOfAlphaElectrons,
+    SpinTypesVector getSpinTypesVector(unsigned long numberOfAlphaElectrons,
                                              unsigned long numberOfBetaElectrons) const;
     
 };

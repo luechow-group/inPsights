@@ -31,19 +31,19 @@ unsigned long OptimizationPathFileImporter::calculateLine(unsigned long k, unsig
     return start + linesToSkip;
 }
 
-PositionCollection OptimizationPathFileImporter::getPositionCollection(unsigned long k, unsigned long m) const {
+PositionsVector OptimizationPathFileImporter::getPositionsVector(unsigned long k, unsigned long m) const {
     unsigned long startLine = calculateLine(k,m)+2;
-    return AmolqcImporter::importPositionCollectionBlock(startLine, 0, numberOfElectrons_);
+    return AmolqcImporter::importPositionsVectorBlock(startLine, 0, numberOfElectrons_);
 }
 
-ElectronCollections OptimizationPathFileImporter::getPath(unsigned long k) const {
+ElectronsVectorCollection OptimizationPathFileImporter::getPath(unsigned long k) const {
     unsigned long numberOfSubstructures = substructuresData_[k].numberOfSubstructures_;
-    PositionCollections positionCollections;
+    PositionsVectorCollection positionsVectorCollection;
     for (unsigned long m = 1; m <= numberOfSubstructures; ++m) {
-        positionCollections.append(this->getPositionCollection(k, m));
+        positionsVectorCollection.append(this->getPositionsVector(k, m));
     }
-    return ElectronCollections(positionCollections,
-                               this->getSpinTypeCollection(numberOfAlphaElectrons_, numberOfBetaElectrons_));
+    return ElectronsVectorCollection(positionsVectorCollection,
+                               this->getSpinTypesVector(numberOfAlphaElectrons_, numberOfBetaElectrons_));
 }
 
 unsigned long OptimizationPathFileImporter::getNumberOfPaths() const {
