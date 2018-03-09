@@ -132,13 +132,13 @@ initialCoordinates.row((18 - 1) * 3 + 2) -= 0.05 * bend;//z bend
 
     ElectronCollection ecStart(
             Eigen::VectorXd(bspline.evaluate(0).tail(ElectronicWaveFunction::getInstance().getNumberOfElectrons() * 3)),
-                            ecA.spinTypesAsEigenVector());
+                            ecA.spinTypeCollection().spinTypesAsEigenVector());
     ElectronCollection ecEnd(
             Eigen::VectorXd(bspline.evaluate(1).tail(ElectronicWaveFunction::getInstance().getNumberOfElectrons() * 3)),
-                            ecA.spinTypesAsEigenVector());
+                            ecA.spinTypeCollection().spinTypesAsEigenVector());
     ElectronCollection ecTS(
             Eigen::VectorXd(bspline.evaluate(maxima[0]).tail(ElectronicWaveFunction::getInstance().getNumberOfElectrons() * 3)),
-            ecA.spinTypesAsEigenVector());
+            ecA.spinTypeCollection().spinTypesAsEigenVector());
     auto json = collectionParser.electronCollectionToJson(ecTS);
     json["comment"] = "not fully optimized";
 
@@ -172,11 +172,11 @@ initialCoordinates.row((18 - 1) * 3 + 2) -= 0.05 * bend;//z bend
       std::cout << eigenvalues << std::endl;*/
 
     Eigen::VectorXd grad(ElectronicWaveFunction::getInstance().getNumberOfElectrons() * 3);
-    f.gradient(ecStart.positionsAsEigenVector(), grad);
+    f.gradient(ecStart.positionCollection().positionsAsEigenVector(), grad);
     std::cout << "Gradient at u=0\n" << grad.transpose() << std::endl;
-    f.gradient(ecTS.positionsAsEigenVector(), grad);
+    f.gradient(ecTS.positionCollection().positionsAsEigenVector(), grad);
     std::cout << "Gradient at u=" << maxima[0] << "\n" << grad.transpose() << std::endl;
-    f.gradient(ecEnd.positionsAsEigenVector(), grad);
+    f.gradient(ecEnd.positionCollection().positionsAsEigenVector(), grad);
     std::cout << "Gradient at u=1\n" << grad.transpose() << std::endl;
 
 
@@ -194,7 +194,7 @@ initialCoordinates.row((18 - 1) * 3 + 2) -= 0.05 * bend;//z bend
 
     //Draw tsguess
     for (int j = 0; j < ElectronicWaveFunction::getInstance().getNumberOfElectrons() ; ++j) {
-      Eigen::Vector3d vec3d = ecTS.positionsAsEigenVector().segment(j * 3, 3);
+      Eigen::Vector3d vec3d = ecTS.positionCollection().positionsAsEigenVector().segment(j * 3, 3);
       QVector3D qVector3D(vec3d(0), vec3d(1), vec3d(2));
 
       Electron3D* e = new Electron3D(root, qVector3D, Spin::SpinType::none);
