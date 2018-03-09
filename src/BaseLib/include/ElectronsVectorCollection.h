@@ -7,23 +7,23 @@
 
 #include "ParticlesVectorCollection.h"
 #include "ElectronCollection.h"
-#include "SpinTypeCollection.h"
+#include "SpinTypesVector.h"
 
 class ElectronsVectorCollection : public ParticlesVectorCollection{
 public:
     ElectronsVectorCollection();
-    explicit ElectronsVectorCollection(const SpinTypeCollection& spinTypeCollection);
+    explicit ElectronsVectorCollection(const SpinTypesVector& spinTypesVector);
     explicit ElectronsVectorCollection(const ElectronCollection& electronCollection);
     explicit ElectronsVectorCollection(const std::vector<ElectronCollection>& electronCollectionVector);
     explicit ElectronsVectorCollection(const PositionsVectorCollection& electronCollection);
 
     explicit ElectronsVectorCollection(const PositionsVectorCollection& electronCollection,
-                                 const SpinTypeCollection& spinTypeCollection);
+                                 const SpinTypesVector& spinTypesVector);
 
     ElectronCollection operator[](long i) const;
 
-    const SpinTypeCollection& spinTypeCollection() const;
-    SpinTypeCollection& spinTypeCollection();
+    const SpinTypesVector& spinTypesVector() const;
+    SpinTypesVector& spinTypesVector();
 
     void insert (const ElectronCollection& electronCollection, long i);
     void append (const ElectronCollection& electronCollection);
@@ -31,7 +31,7 @@ public:
     void permute(long i, long j) override;
 
 private:
-    SpinTypeCollection spinTypeCollection_;
+    SpinTypesVector spinTypesVector_;
 };
 
 #endif //AMOLQCGUI_ELECTRONCOLLECTIONPATH_H

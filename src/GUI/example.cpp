@@ -69,17 +69,17 @@ int main(int argc, char *argv[]) {
 
     auto optimizationPath = electronicWaveFunctionProblem.getOptimizationPath();
     ElectronsVectorCollection shortenedPath(ElectronCollection(optimizationPath.front(),
-                                                         optimizationPath.getSpinTypeCollection()));
+                                                         optimizationPath.getSpinTypesVector()));
 
     unsigned long nwanted = 300;
     auto skip = 1+(optimizationPath.length()/nwanted);
     std::cout << "displaying structures with a spacing of " << skip << "." << std::endl;
     for (unsigned long i = 0; i < optimizationPath.length(); i=i+skip) {
         shortenedPath.append(ElectronCollection(optimizationPath.getElectronCollection(i),
-                                                optimizationPath.getSpinTypeCollection()));
+                                                optimizationPath.getSpinTypesVector()));
     }
 
-    shortenedPath.append(ElectronCollection(xA,optimizationPath.getSpinTypeCollection().spinTypesAsEigenVector()));
+    shortenedPath.append(ElectronCollection(xA,optimizationPath.getSpinTypesVector().spinTypesAsEigenVector()));
 
     //visualization
     MoleculeWidget moleculeWidget;
@@ -89,7 +89,7 @@ int main(int argc, char *argv[]) {
 
     // Plot the starting point
     ElectronCollection3D(root, ElectronCollection(ParticleCollection(xA),
-                                                  optimizationPath.getSpinTypeCollection()), true);
+                                                  optimizationPath.getSpinTypesVector()), true);
 
     // Plot the optimization path
     ParticleCollectionPath3D(root, shortenedPath);

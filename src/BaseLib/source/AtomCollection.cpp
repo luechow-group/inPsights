@@ -17,7 +17,7 @@ AtomCollection::AtomCollection(const VectorXd &positions, const VectorXi &elemen
 
     assert(numberOfEntities() == positionsVector_.numberOfEntities()
            && numberOfEntities() == elementTypeCollection_.numberOfEntities()
-           && "The number of entities in ParticleCollection, PositionsVector, and SpinTypeCollection must match.");
+           && "The number of entities in ParticleCollection, PositionsVector, and SpinTypesVector must match.");
 }
 
 AtomCollection::AtomCollection(const PositionsVector &positionsVector,

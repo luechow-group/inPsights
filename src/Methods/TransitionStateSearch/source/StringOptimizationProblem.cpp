@@ -220,7 +220,7 @@ bool StringOptimizationProblem::callback(const cppoptlib::Criteria<double> &stat
   gradientResetQ = false;
   putElectronsIntoNuclei(x, grad); //gradientQ could be true now
 
-  optimizationPath_.append(ElectronCollection(x, wf_.getSpinTypeCollection().spinTypesAsEigenVector()));
+  optimizationPath_.append(ElectronCollection(x, wf_.getSpinTypesVector().spinTypesAsEigenVector()));
 
   std::cout << "(" << std::setw(2) << state.iterations << ")"
             << " f(x) = " << std::fixed << std::setw(8) << std::setprecision(8) << value(x)

@@ -27,7 +27,7 @@ int main(int argc, char *argv[]) {
     Eigen::VectorXd grad(n);
     electronicWaveFunctionProblem.putElectronsIntoNuclei(x,grad);
 
-    std::cout << ElectronCollection(grad,ec.spinTypeCollection().spinTypesAsEigenVector()) << std::endl;
+    std::cout << ElectronCollection(grad,ec.spinTypesVector().spinTypesAsEigenVector()) << std::endl;
 
     for (auto & it : electronicWaveFunctionProblem.getIndicesOfElectronsAtNuclei()) std::cout << it << " ";
     std::cout << std::endl;

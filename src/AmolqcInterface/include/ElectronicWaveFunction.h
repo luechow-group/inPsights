@@ -71,7 +71,7 @@ public:
 
     unsigned long getNumberOfElectrons() const;
 
-    SpinTypeCollection getSpinTypeCollection() const;
+    SpinTypesVector getSpinTypesVector() const;
 
 private:
     explicit ElectronicWaveFunction(const std::string& fileName);
@@ -80,7 +80,7 @@ private:
     double determinantProbabilityAmplitude_, jastrowFactor_, localEnergy_;
     Eigen::VectorXd electronPositionsVectorAsEigenVector_, electronDriftCollection_;//TODO REPLACE BY BASELIB ELECTRONCOLLECTION!
     AtomCollection atomCollection_;
-    SpinTypeCollection spinTypeCollection_;
+    SpinTypesVector spinTypesVector_;
 
 };
 

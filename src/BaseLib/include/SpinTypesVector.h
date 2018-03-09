@@ -9,12 +9,12 @@
 #include "SpinType.h"
 #include "AbstractVector.h"
 
-class SpinTypeCollection : public AbstractVector{
+class SpinTypesVector : public AbstractVector{
 public:
-    explicit SpinTypeCollection(long size = 0);
-    SpinTypeCollection(unsigned long numberOfAlphaElectrons, unsigned long numberOfBetaElectrons);
+    explicit SpinTypesVector(long size = 0);
+    SpinTypesVector(unsigned long numberOfAlphaElectrons, unsigned long numberOfBetaElectrons);
 
-    explicit SpinTypeCollection(const Eigen::VectorXi& spinTypes);
+    explicit SpinTypesVector(const Eigen::VectorXi& spinTypes);
 
     Spin::SpinType operator[](long i) const;
 
@@ -27,7 +27,7 @@ public:
 
     Eigen::VectorXi& spinTypesAsEigenVector();
 
-    friend std::ostream& operator<<(std::ostream& os, const SpinTypeCollection& pc);
+    friend std::ostream& operator<<(std::ostream& os, const SpinTypesVector& pc);
 
 private:
     Eigen::VectorXi spinTypes_;

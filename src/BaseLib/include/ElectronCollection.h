@@ -6,7 +6,7 @@
 #define AMOLQCGUI_ELECTRONCOLLECTION_H
 
 #include "ParticleCollection.h"
-#include "SpinTypeCollection.h"
+#include "SpinTypesVector.h"
 #include "Electron.h"
 
 class ElectronCollection : public ParticleCollection{
@@ -16,7 +16,7 @@ public:
     ElectronCollection(const Eigen::VectorXd& positions, const Eigen::VectorXi& spinTypes);
 
     ElectronCollection(const PositionsVector& positionsVector,
-                       const SpinTypeCollection& spinTypeCollection);
+                       const SpinTypesVector& spinTypesVector);
 
     Electron operator[](long i) const;
 
@@ -27,11 +27,11 @@ public:
 
     friend std::ostream& operator<<(std::ostream& os, const ElectronCollection& ec);
 
-    const SpinTypeCollection& spinTypeCollection() const;
-    SpinTypeCollection& spinTypeCollection();
+    const SpinTypesVector& spinTypesVector() const;
+    SpinTypesVector& spinTypesVector();
 
 private:
-    SpinTypeCollection spinTypeCollection_;
+    SpinTypesVector spinTypesVector_;
 };
 
 #endif //AMOLQCGUI_ELECTRONCOLLECTION_H

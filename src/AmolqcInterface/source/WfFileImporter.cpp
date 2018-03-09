@@ -83,6 +83,6 @@ unsigned long WfFileImporter::getNumberOfBetaElectrons() {
   return getNumberOfElectrons()-getNumberOfAlphaElectrons();
 }
 
-SpinTypeCollection WfFileImporter::getSpinTypeCollection() {
-  return SpinTypeCollection(getNumberOfAlphaElectrons(),getNumberOfBetaElectrons());
+SpinTypesVector WfFileImporter::getSpinTypesVector() {
+  return SpinTypesVector(getNumberOfAlphaElectrons(),getNumberOfBetaElectrons());
 }

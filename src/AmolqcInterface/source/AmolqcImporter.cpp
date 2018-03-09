@@ -23,10 +23,10 @@ PositionsVector AmolqcImporter::importPositionsVectorBlock(unsigned long startLi
 }
 
 //TODO Necessary?
-SpinTypeCollection
-AmolqcImporter::getSpinTypeCollection(unsigned long numberOfAlphaElectrons,
+SpinTypesVector
+AmolqcImporter::getSpinTypesVector(unsigned long numberOfAlphaElectrons,
                                       unsigned long numberOfBetaElectrons) const {
-    return SpinTypeCollection(numberOfAlphaElectrons,numberOfBetaElectrons);
+    return SpinTypesVector(numberOfAlphaElectrons,numberOfBetaElectrons);
 }
 
 std::vector<SubstructureDataEntry>

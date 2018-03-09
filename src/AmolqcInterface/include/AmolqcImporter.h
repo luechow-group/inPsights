@@ -20,7 +20,7 @@ public:
                                                           unsigned long blockLength) const;
 
 protected:
-    SpinTypeCollection getSpinTypeCollection(unsigned long numberOfAlphaElectrons,
+    SpinTypesVector getSpinTypesVector(unsigned long numberOfAlphaElectrons,
                                              unsigned long numberOfBetaElectrons) const;
     
 };

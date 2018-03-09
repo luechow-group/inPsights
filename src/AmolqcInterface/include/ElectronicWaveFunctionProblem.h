@@ -39,7 +39,7 @@ public:
     void reset(){
         valueCallCount_ = 0;
         gradientCallCount_ = 0;
-        optimizationPath_ = ElectronsVectorCollection(wf_.getSpinTypeCollection());
+        optimizationPath_ = ElectronsVectorCollection(wf_.getSpinTypesVector());
     }
 
     ElectronsVectorCollection getOptimizationPath(){

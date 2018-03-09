@@ -57,7 +57,7 @@ void ElectronicWaveFunction::initialize(const std::string& fileName) {
   numberOfBetaElectrons_ = wfFileImporter.getNumberOfBetaElectrons();
   numberOfAlphaElectrons_ = wfFileImporter.getNumberOfAlphaElectrons();
   atomCollection_ = wfFileImporter.getAtomCollection();
-  spinTypeCollection_  = SpinTypeCollection(numberOfAlphaElectrons_,numberOfBetaElectrons_);
+  spinTypesVector_  = SpinTypesVector(numberOfAlphaElectrons_,numberOfBetaElectrons_);
 }
 
 unsigned long ElectronicWaveFunction::getNumberOfNuclei() const {
@@ -123,7 +123,7 @@ double ElectronicWaveFunction::getInverseNegativeLogarithmizedProbabilityDensity
 
 ElectronCollection ElectronicWaveFunction::getElectronPositionsVector(){
   return ElectronCollection(electronPositionsVectorAsEigenVector_,
-                            getSpinTypeCollection().spinTypesAsEigenVector());
+                            getSpinTypesVector().spinTypesAsEigenVector());
 };
 
 Eigen::VectorXd ElectronicWaveFunction::getElectronDriftCollection(){
@@ -158,7 +158,7 @@ AtomCollection ElectronicWaveFunction::getAtomCollection() const {
     return atomCollection_;
 }
 
-SpinTypeCollection ElectronicWaveFunction::getSpinTypeCollection() const {
-  return spinTypeCollection_;
+SpinTypesVector ElectronicWaveFunction::getSpinTypesVector() const {
+  return spinTypesVector_;
 }
 

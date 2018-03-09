@@ -75,7 +75,7 @@ int main(int argc, char *argv[]) {
     //solver.setDistanceCriteriaUmrigar(0.1);
 
     solver.minimize(electronicWaveFunctionProblem, x);
-    std::cout << ElectronCollection(x,ec.spinTypeCollection().spinTypesAsEigenVector())<<std::endl;
+    std::cout << ElectronCollection(x,ec.spinTypesVector().spinTypesAsEigenVector())<<std::endl;
 
 
 
@@ -92,7 +92,7 @@ int main(int argc, char *argv[]) {
         for (unsigned long i = 0; i < optimizationPath.numberOfEntities(); i = i + skip) {
             shortenedPath.append(optimizationPath[i]);
         }
-        auto ecEnd = ElectronCollection(x, optimizationPath.spinTypeCollection().spinTypesAsEigenVector());
+        auto ecEnd = ElectronCollection(x, optimizationPath.spinTypesVector().spinTypesAsEigenVector());
         shortenedPath.append(ecEnd);
 
         // Visualization
@@ -102,7 +102,7 @@ int main(int argc, char *argv[]) {
         AtomCollection3D(root, ElectronicWaveFunction::getInstance().getAtomCollection());
 
         // Plot the starting point
-        ElectronCollection3D(root, ElectronCollection(x, optimizationPath.spinTypeCollection().spinTypesAsEigenVector()), false);
+        ElectronCollection3D(root, ElectronCollection(x, optimizationPath.spinTypesVector().spinTypesAsEigenVector()), false);
 
         // Plot the optimization path
         ParticleCollectionPath3D(root, shortenedPath);

@@ -38,7 +38,7 @@ set(HEADER_FILES
         include/ElectronCollection.h
         include/ElectronsVectorCollection.h
         include/SpinType.h
-        include/SpinTypeCollection.h
+        include/SpinTypesVector.h
         include/Importer.h
         include/CollectionParser.h
         include/AbstractVector.h
@@ -61,7 +61,7 @@ set(SOURCE_FILES
         source/Electron.cpp
         source/ElectronCollection.cpp
         source/ElectronsVectorCollection.cpp
-        source/SpinTypeCollection.cpp
+        source/SpinTypesVector.cpp
         source/Importer.cpp
         source/CollectionParser.cpp
         source/SpinType.cpp
