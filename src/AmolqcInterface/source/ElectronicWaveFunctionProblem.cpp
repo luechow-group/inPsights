@@ -40,12 +40,7 @@ void ElectronicWaveFunctionProblem::hessian(const Eigen::VectorXd &x, Eigen::Mat
     //TODO asserts?
     long dims = x.size();
 
-    cppoptlib::Problem<double,Eigen::Dynamic>::semifiniteHessian(x,hessian,2);
-
-    for (auto i : indicesOfElectronsAtNuclei_){
-        hessian.block(i*3,0,3,dims) = Eigen::MatrixXd::Zero(3,dims);
-        hessian.block(0,i*3,dims,3) = Eigen::MatrixXd::Zero(dims,3);
-    }
+    cppoptlib::Problem<double,Eigen::Dynamic>::semifiniteHessian(x,hessian,indicesOfElectronsNotAtNuclei_,3,0);
 }
 
 void ElectronicWaveFunctionProblem::fixGradient(Eigen::VectorXd &gradient) {
@@ -114,7 +109,7 @@ bool ElectronicWaveFunctionProblem::callback(const cppoptlib::Criteria<double> &
 
     optimizationPath_.append(ElectronCollection(x, wf_.getSpinTypeCollection().spinTypesAsEigenVector()));
 
-    /*
+
     std::cout << "(" << std::setw(2) << state.iterations << ")"
               << " f(x) = " << std::fixed << std::setw(8) << std::setprecision(8) << value(x)
               << " xDelta = " << std::setw(8) << state.xDelta
@@ -125,7 +120,7 @@ bool ElectronicWaveFunctionProblem::callback(const cppoptlib::Criteria<double> &
     for (auto & it : indicesOfElectronsNotAtNuclei_) std::cout << it << " ";
     std::cout << std::endl;
     for (auto & it : indicesOfElectronsAtNuclei_) std::cout << it << " ";
-    std::cout << std::endl;*/
+    std::cout << std::endl;
 
     return true;
 }
