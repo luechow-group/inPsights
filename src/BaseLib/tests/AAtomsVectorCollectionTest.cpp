@@ -3,12 +3,12 @@
 //
 
 #include <gtest/gtest.h>
-#include "AtomCollections.h"
+#include "AtomsVectorCollection.h"
 
 using namespace testing;
 using namespace Eigen;
 
-class AAtomCollectionsTest : public Test {
+class AAtomsVectorCollectionTest : public Test {
 public:
     void SetUp() override {
         Atom atom1(Vector3d(1,2,3),Elements::ElementType::Ag);
@@ -33,23 +33,23 @@ public:
     AtomCollection atomCollection1,atomCollection2,atomCollection3;
 };
 
-TEST_F(AAtomCollectionsTest, InitialNumberEntities){
+TEST_F(AAtomsVectorCollectionTest, InitialNumberEntities){
 
-    AtomCollections atomCollections;
-    ASSERT_EQ(atomCollections.numberOfEntities(),0);
-    ASSERT_EQ(atomCollections.positionCollections().numberOfEntities(),0);
-    ASSERT_EQ(atomCollections.elementTypeCollection().numberOfEntities(),0);
+    AtomsVectorCollection atomsVectorCollection;
+    ASSERT_EQ(atomsVectorCollection.numberOfEntities(),0);
+    ASSERT_EQ(atomsVectorCollection.positionCollections().numberOfEntities(),0);
+    ASSERT_EQ(atomsVectorCollection.elementTypeCollection().numberOfEntities(),0);
 }
 
-TEST_F(AAtomCollectionsTest, NumberEntities){
+TEST_F(AAtomsVectorCollectionTest, NumberEntities){
 
-    AtomCollections atomCollections;
+    AtomsVectorCollection atomsVectorCollection;
 
-    atomCollections.append(atomCollection1);
-    atomCollections.append(atomCollection1);
+    atomsVectorCollection.append(atomCollection1);
+    atomsVectorCollection.append(atomCollection1);
 
-    ASSERT_EQ(atomCollections.numberOfEntities(),2);
-    ASSERT_EQ(atomCollections[0].numberOfEntities(),3);
+    ASSERT_EQ(atomsVectorCollection.numberOfEntities(),2);
+    ASSERT_EQ(atomsVectorCollection[0].numberOfEntities(),3);
 }
 
 

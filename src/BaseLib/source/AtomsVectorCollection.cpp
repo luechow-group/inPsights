@@ -2,20 +2,20 @@
 // Created by Leonard Reuter on 09.03.18.
 //
 
-#include "AtomCollections.h"
+#include "AtomsVectorCollection.h"
 
-AtomCollections::AtomCollections()
+AtomsVectorCollection::AtomsVectorCollection()
         : ParticleCollections(),
           elementTypeCollection_(ElementTypeCollection()) {}
 
-AtomCollections::AtomCollections(const ElementTypeCollection &elementTypeCollection)
+AtomsVectorCollection::AtomsVectorCollection(const ElementTypeCollection &elementTypeCollection)
         : ParticleCollections(),
           elementTypeCollection_(elementTypeCollection) {}
 
-AtomCollections::AtomCollections(const AtomCollection &atomCollection)
-        : AtomCollections(std::vector<AtomCollection>({atomCollection})){}
+AtomsVectorCollection::AtomsVectorCollection(const AtomCollection &atomCollection)
+        : AtomsVectorCollection(std::vector<AtomCollection>({atomCollection})){}
 
-AtomCollections::AtomCollections(const std::vector<AtomCollection> &atomCollectionVector)
+AtomsVectorCollection::AtomsVectorCollection(const std::vector<AtomCollection> &atomCollectionVector)
         : ParticleCollections(),
           elementTypeCollection_(atomCollectionVector[0].elementTypeCollection()) {
 
@@ -30,12 +30,12 @@ AtomCollections::AtomCollections(const std::vector<AtomCollection> &atomCollecti
     }
 }
 
-AtomCollections::AtomCollections(const PositionCollections &positionCollections)
-        : AtomCollections(positionCollections,
+AtomsVectorCollection::AtomsVectorCollection(const PositionCollections &positionCollections)
+        : AtomsVectorCollection(positionCollections,
                               ElementTypeCollection(positionCollections.numberOfPositionsEntities())) {
 }
 
-AtomCollections::AtomCollections(const PositionCollections &positionCollections,
+AtomsVectorCollection::AtomsVectorCollection(const PositionCollections &positionCollections,
                                          const ElementTypeCollection &elementTypeCollection)
         : ParticleCollections(positionCollections),
           elementTypeCollection_(elementTypeCollection) {
@@ -45,19 +45,19 @@ AtomCollections::AtomCollections(const PositionCollections &positionCollections,
            && "The number of entities in ParticleCollections, PositionCollections, and ElementTypeCollection must match.");
 }
 
-AtomCollection AtomCollections::operator[](long i) const {
+AtomCollection AtomsVectorCollection::operator[](long i) const {
     return AtomCollection(positionCollections_[i],elementTypeCollection_);
 }
 
-const ElementTypeCollection& AtomCollections::elementTypeCollection() const{
+const ElementTypeCollection& AtomsVectorCollection::elementTypeCollection() const{
     return elementTypeCollection_;
 }
 
-ElementTypeCollection &AtomCollections::elementTypeCollection() {
+ElementTypeCollection &AtomsVectorCollection::elementTypeCollection() {
     return elementTypeCollection_;
 }
 
-void AtomCollections::insert(const AtomCollection &atomCollection, long i) {
+void AtomsVectorCollection::insert(const AtomCollection &atomCollection, long i) {
     if (elementTypeCollection_.numberOfEntities() != 0){
         assert(elementTypeCollection_.elementTypesAsEigenVector()
                == atomCollection.elementTypeCollection().elementTypesAsEigenVector());
@@ -69,15 +69,15 @@ void AtomCollections::insert(const AtomCollection &atomCollection, long i) {
     incrementNumberOfEntities();
 }
 
-void AtomCollections::append(const AtomCollection &atomCollection) {
+void AtomsVectorCollection::append(const AtomCollection &atomCollection) {
     insert(atomCollection,numberOfEntities());
 }
 
-void AtomCollections::prepend(const AtomCollection &atomCollection) {
+void AtomsVectorCollection::prepend(const AtomCollection &atomCollection) {
     insert(atomCollection,0);
 }
 
-void AtomCollections::permute(long i, long j) {
+void AtomsVectorCollection::permute(long i, long j) {
     if(i != j) {
         positionCollections_.permute(i,j);
         elementTypeCollection_.permute(i,j);

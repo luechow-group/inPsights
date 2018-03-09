@@ -9,15 +9,15 @@
 #include "AtomCollection.h"
 #include "ElementTypeCollection.h"
 
-class AtomCollections : public ParticleCollections{
+class AtomsVectorCollection : public ParticleCollections{
 public:
-    AtomCollections();
-    explicit AtomCollections(const ElementTypeCollection& elementTypeCollection);
-    explicit AtomCollections(const AtomCollection& atomCollection);
-    explicit AtomCollections(const std::vector<AtomCollection>& atomCollectionVector);
-    explicit AtomCollections(const PositionCollections& atomCollection);
+    AtomsVectorCollection();
+    explicit AtomsVectorCollection(const ElementTypeCollection& elementTypeCollection);
+    explicit AtomsVectorCollection(const AtomCollection& atomCollection);
+    explicit AtomsVectorCollection(const std::vector<AtomCollection>& atomCollectionVector);
+    explicit AtomsVectorCollection(const PositionCollections& atomCollection);
 
-    explicit AtomCollections(const PositionCollections& atomCollection,
+    explicit AtomsVectorCollection(const PositionCollections& atomCollection,
                                  const ElementTypeCollection& elementTypeCollection);
 
     AtomCollection operator[](long i) const;
