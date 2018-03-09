@@ -142,7 +142,7 @@ void StringOptimizationProblem::putElectronsIntoNuclei(Eigen::VectorXd &x, Eigen
   assert( x.size() == wf_.getNumberOfElectrons()*3 * numberOfStates_ && "Number of dimensions must be identical and multiple of 3");
 
   auto atomCollection = wf_.getAtomCollection();
-  auto numberOfNuclei = atomCollection.numberOfParticles();
+  auto numberOfNuclei = atomCollection.numberOfEntities();
   auto numberOfElectrons = wf_.getNumberOfElectrons();
 
   // iterate over electrons that were not at nuclei in the last step
@@ -211,7 +211,7 @@ std::vector<unsigned long> StringOptimizationProblem::getIndicesOfElectronsAtNuc
 
 
 Eigen::VectorXd StringOptimizationProblem::getNucleiPositions() const{
-  return wf_.getAtomCollection().positionsAsEigenVector();
+  return wf_.getAtomCollection().positionCollection().positionsAsEigenVector();
 }
 
 /*

@@ -2,24 +2,24 @@
 // Created by Michael Heuer on 06.11.17.
 //
 
-#include "AmolqcImporter.h"
+#include "../include/AmolqcImporter.h"
 
 AmolqcImporter::AmolqcImporter(const std::string &filename)
         : Importer(filename) {}
 
-ParticleCollection AmolqcImporter::importParticleCollectionBlock(unsigned long startLineIdx,
+PositionCollection AmolqcImporter::importPositionCollectionBlock(unsigned long startLineIdx,
                                                                  unsigned long startLineElement,
-                                                                 unsigned long numberOfParticles) const {
-    ParticleCollection particleCollection;
-    for (unsigned long i = 0; i < numberOfParticles; ++i) {
+                                                                 unsigned long numberOfPositions) const {
+    PositionCollection positionCollection;
+    for (unsigned long i = 0; i < numberOfPositions; ++i) {
         std::vector<std::string> lineElements = split(getLine(startLineIdx+i));
         double x = std::stod(lineElements[startLineElement+0]);
         double y = std::stod(lineElements[startLineElement+1]);
         double z = std::stod(lineElements[startLineElement+2]);
 
-        particleCollection.append(Particle(x,y,z));
+        positionCollection.append(Eigen::Vector3d(x,y,z));
     }
-    return particleCollection;
+    return positionCollection;
 }
 
 //TODO Necessary?

@@ -69,7 +69,7 @@ unsigned long ElectronicWaveFunction::getNumberOfElectrons() const {
 }
 
 void ElectronicWaveFunction::evaluate(const ElectronCollection &electronCollection) {
-    evaluate(electronCollection.positionsAsEigenVector());
+    evaluate(electronCollection.positionCollection().positionsAsEigenVector());
 }
 
 void ElectronicWaveFunction::evaluate(const Eigen::VectorXd &electronPositionCollection) {

@@ -62,7 +62,7 @@ int main(int argc, char *argv[]) {
     //collectionParser.writeJSON(collectionParser.electronCollectionToJson(ec),"Ethylene-glob-max.json");
     CollectionParser collectionParser;
     //auto ecA = collectionParser.electronCollectionFromJson("Ethane-glob-max.json");
-    auto ecA = ElectronCollection(x0,Eigen::Vector2i(1,-1));
+    auto ecA = ElectronCollection(x0, Eigen::Vector2i(1,-1));
     auto ecB = ecA;
 
 
@@ -74,8 +74,8 @@ int main(int argc, char *argv[]) {
 
     unsigned numberOfStates = 7;
 
-    auto xA = ecA.positionsAsEigenVector();
-    auto xB = ecB.positionsAsEigenVector();
+    auto xA = ecA.positionCollection().positionsAsEigenVector();
+    auto xB = ecB.positionCollection().positionsAsEigenVector();
 
     Eigen::MatrixXd initialCoordinates(ElectronicWaveFunction::getInstance().getNumberOfElectrons() * 3,
                                        numberOfStates);

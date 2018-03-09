@@ -57,9 +57,9 @@ int main(int argc, char *argv[]) {
     std::cout << ac << std::endl;
     std::cout << ec << std::endl;
 
-    Eigen::VectorXd x(ec.positionsAsEigenVector());
+    Eigen::VectorXd x(ec.positionCollection().positionsAsEigenVector());
     std::cout << x.transpose() << std::endl;
-    Eigen::VectorXd grad(ec.numberOfParticles());
+    Eigen::VectorXd grad(ec.numberOfEntities());
     electronicWaveFunctionProblem.putElectronsIntoNuclei(x,grad);
 
 
@@ -72,7 +72,7 @@ int main(int argc, char *argv[]) {
     solver.setStopCriteria(crit);
 
     solver.minimize(electronicWaveFunctionProblem, x);
-    std::cout << ElectronCollection(ParticleCollection(x),SpinTypeCollection(ec.spinTypesAsEigenVector()))<<std::endl;
+    std::cout << ElectronCollection(x,ec.spinTypeCollection().spinTypesAsEigenVector())<<std::endl;
 
 
 
@@ -82,17 +82,15 @@ int main(int argc, char *argv[]) {
 
         // Prepare the optimization path for visualization
         auto optimizationPath = electronicWaveFunctionProblem.getOptimizationPath();
-        ElectronCollections shortenedPath(ElectronCollection(optimizationPath.front(),
-                                                             optimizationPath.getSpinTypeCollection()));
+        ElectronCollections shortenedPath(optimizationPath[0]);
         unsigned long nwanted = 300;
-        auto skip = 1 + (optimizationPath.length() / nwanted);
+        auto skip = 1 + (optimizationPath.numberOfEntities() / nwanted);
         std::cout << "displaying structures with a spacing of " << skip << "." << std::endl;
-        for (unsigned long i = 0; i < optimizationPath.length(); i = i + skip) {
-            shortenedPath.append(ElectronCollection(optimizationPath.getElectronCollection(i),
-                                                    optimizationPath.getSpinTypeCollection()));
+        for (unsigned long i = 0; i < optimizationPath.numberOfEntities(); i = i + skip) {
+            shortenedPath.append(optimizationPath[i]);
         }
-
-        shortenedPath.append(ElectronCollection(x, optimizationPath.getSpinTypeCollection().spinTypesAsEigenVector()));
+        auto ecEnd = ElectronCollection(x, optimizationPath.spinTypeCollection().spinTypesAsEigenVector());
+        shortenedPath.append(ecEnd);
 
         // Visualization
         MoleculeWidget moleculeWidget;
@@ -100,9 +98,8 @@ int main(int argc, char *argv[]) {
 
         AtomCollection3D(root, ElectronicWaveFunction::getInstance().getAtomCollection());
 
-        // Plot the final point
-        ElectronCollection3D(root, ElectronCollection(ParticleCollection(x),
-                                                      optimizationPath.getSpinTypeCollection()), false);
+        // Plot the starting point
+        ElectronCollection3D(root, ElectronCollection(x, optimizationPath.spinTypeCollection().spinTypesAsEigenVector()), false);
 
         // Plot the optimization path
         ParticleCollectionPath3D(root, shortenedPath);
@@ -111,43 +108,3 @@ int main(int argc, char *argv[]) {
     }
     return 0;
 };
-
-/* Old code from Lennard Dahl
-#include "OptimizationPathFileImporter.h"
-// For diborane: Diborane.wf; Pfad 6 & 7
-OptimizationPathFileImporter optimizationPathFileImporter("Diborane-Paths.300",1); // Aufpassen ob richtige Multiplizität
-//std::string wfFilename = "Diborane.wf";
-//ElectronicWaveFunctionProblem electronicWaveFunctionProblem(wfFilename);
-//auto numberOfPaths = optimizationPathFileImporter.getNumberOfPaths();
-//auto psiSquareDistributedParticleCollection = optimizationPathFileImporter.getPath(6).front();
-//VectorXd xA = psiSquareDistributedParticleCollection.positionsAsEigenVector();
-
-auto numberOfPaths = optimizationPathFileImporter.getNumberOfPaths();
-
-auto psiSquareDistributedParticleCollection = optimizationPathFileImporter.getPath(6).front();
-VectorXd xA = psiSquareDistributedParticleCollection.positionsAsEigenVector();
-*/
-
-
-/* //Create starting guess
-    ElectronicWaveFunctionProblem electronicWaveFunctionProblem("BH3_Exp-em.wf");
-    auto ac = electronicWaveFunctionProblem.getAtomCollection();
-    std::cout << ac << "\n" << ElectronicWaveFunction::getInstance().getNumberOfElectrons() << std::endl;
-    ElectronCollection ec;
-    ec.append(Electron(ac[0],Spin::SpinType::alpha));
-    ec.append(Electron(ac[1],Spin::SpinType::alpha));
-    ec.append(Electron(ac[2],Spin::SpinType::alpha));
-    ec.append(Electron(ac[3],Spin::SpinType::alpha));
-    ec.append(Electron(ac[0],Spin::SpinType::beta));
-
-    ec.append(Electron(ac[1].position().array()*0.9+0*Eigen::Vector3d(0.2,-0.1,0.).array(), Spin::SpinType::beta));
-    ec.append(Electron(ac[2].position().array()*0.1+0*Eigen::Vector3d(0.1,-0.1,-0.1).array(), Spin::SpinType::beta));
-    ec.append(Electron(ac[3].position().array()*0.1+0*Eigen::Vector3d(-0.2,-0.1,0.5).array(), Spin::SpinType::beta));
-
-    // [...]
-
-    // Write vector x to json
-    CollectionParser collectionParser;
-    auto j = collectionParser.electronCollectionToJson(ElectronCollection(x,ec.spinTypesAsEigenVector()));
-    collectionParser.writeJSON(j,"BH3_Max1.json");
-*/

@@ -17,6 +17,8 @@ public:
     Elements::ElementType elementType() const;
     void setElementType(const Elements::ElementType & elementType);
 
+    int charge() override;
+
 private:
     Elements::ElementType elementType_;
 };

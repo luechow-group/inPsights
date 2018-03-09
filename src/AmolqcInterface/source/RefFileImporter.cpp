@@ -2,7 +2,7 @@
 // Created by Michael Heuer on 06.11.17.
 //
 
-#include "RefFileImporter.h"
+#include "../../AmolqcInterface/include/RefFileImporter.h"
 #include "ElementInfo.h"
 
 RefFileImporter::RefFileImporter(const std::string &filename)
@@ -33,7 +33,7 @@ AtomCollection RefFileImporter::getAtomCollection() {
         double x = std::stod(lineElements[2]);
         double y = std::stod(lineElements[3]);
         double z = std::stod(lineElements[4]);
-        atomCollection.addAtom(x,y,z,elementType);
+        atomCollection.append(Atom(x,y,z,elementType));
     }
     return atomCollection;
 }
@@ -49,9 +49,9 @@ unsigned long RefFileImporter::calculateLine(unsigned long k, unsigned long m) c
     return start + linesToSkip;
 }
 
-ParticleCollection RefFileImporter::getParticleCollection(unsigned long k, unsigned long m) const {
+PositionCollection RefFileImporter::getPositionCollection(unsigned long k, unsigned long m) const {
     unsigned long startLine = calculateLine(k,m)+2;
-    return importParticleCollectionBlock(startLine,0,numberOfElectrons_);
+    return importPositionCollectionBlock(startLine, 0, numberOfElectrons_);
 }
 
 unsigned long RefFileImporter::getNumberOfMaxima(unsigned long k, unsigned long m) const {
@@ -71,15 +71,15 @@ SpinTypeCollection RefFileImporter::getSpinTypeCollection() const {
 }
 
 ElectronCollection RefFileImporter::getMaximaStructure(unsigned long k, unsigned long m) const {
-    return ElectronCollection(this->getParticleCollection(k,m), this->getSpinTypeCollection());
+    return ElectronCollection(this->getPositionCollection(k,m), this->getSpinTypeCollection());
 }
 
 ElectronCollections RefFileImporter::getAllSubstructures(unsigned long k) const {
     unsigned long numberOfSubstructures = substructuresData_[k].numberOfSubstructures_;
-    std::vector<ParticleCollection> particleCollectionVector;
+    PositionCollections positionCollections;
     for (unsigned long m = 1; m <= numberOfSubstructures; ++m) {
-        particleCollectionVector.emplace_back(this->getParticleCollection(k,m));
+        positionCollections.append(this->getPositionCollection(k,m));
     }
-    return ElectronCollections(particleCollectionVector,this->getSpinTypeCollection());
+    return ElectronCollections(positionCollections,this->getSpinTypeCollection());
 
 }

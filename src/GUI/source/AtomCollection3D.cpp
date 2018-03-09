@@ -13,11 +13,11 @@ AtomCollection3D::AtomCollection3D(Qt3DCore::QEntity *root, const AtomCollection
   std::vector<Atom3D> atoms3D;
 
   // Draw atoms
-  for (long i = 0; i < atomCollection.numberOfParticles(); ++i) {
+  for (long i = 0; i < atomCollection.numberOfEntities(); ++i) {
     Eigen::Vector3d vec= atomCollection[i].position();
     atoms3D.emplace_back(Atom3D(root,
                                 QVector3D(float(vec[0]),float(vec[1]),float(vec[2])),
-                                atomCollection.elementType(i)));
+                                atomCollection.elementTypeCollection()[i]));
   }
 
   // Draw bonds

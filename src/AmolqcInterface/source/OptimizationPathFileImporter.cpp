@@ -2,7 +2,7 @@
 // Created by Michael Heuer on 07.11.17.
 //
 
-#include "OptimizationPathFileImporter.h"
+#include "../include/OptimizationPathFileImporter.h"
 
 OptimizationPathFileImporter::OptimizationPathFileImporter(const std::string &filename,
                                                            unsigned long multiplicity)
@@ -31,18 +31,18 @@ unsigned long OptimizationPathFileImporter::calculateLine(unsigned long k, unsig
     return start + linesToSkip;
 }
 
-ParticleCollection OptimizationPathFileImporter::getParticleCollection(unsigned long k, unsigned long m) const {
+PositionCollection OptimizationPathFileImporter::getPositionCollection(unsigned long k, unsigned long m) const {
     unsigned long startLine = calculateLine(k,m)+2;
-    return AmolqcImporter::importParticleCollectionBlock(startLine, 0, numberOfElectrons_);
+    return AmolqcImporter::importPositionCollectionBlock(startLine, 0, numberOfElectrons_);
 }
 
 ElectronCollections OptimizationPathFileImporter::getPath(unsigned long k) const {
     unsigned long numberOfSubstructures = substructuresData_[k].numberOfSubstructures_;
-    std::vector<ParticleCollection> particleCollectionVector;
+    PositionCollections positionCollections;
     for (unsigned long m = 1; m <= numberOfSubstructures; ++m) {
-        particleCollectionVector.emplace_back(this->getParticleCollection(k,m));
+        positionCollections.append(this->getPositionCollection(k, m));
     }
-    return ElectronCollections(particleCollectionVector,
+    return ElectronCollections(positionCollections,
                                this->getSpinTypeCollection(numberOfAlphaElectrons_, numberOfBetaElectrons_));
 }
 

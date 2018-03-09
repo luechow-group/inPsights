@@ -147,6 +147,12 @@ namespace Elements {
             d_container.insert(std::pair<ElementType,ElementData>(ElementType::Ds, ElementData("Ds", 110, 281   , {178, 27, 80},    -1, 24,14,30,38,28)));
             d_container.insert(std::pair<ElementType,ElementData>(ElementType::Rg, ElementData("Rg", 111, 280   , {177, 24, 75},    -1, 25,14,30,39,28)));
             d_container.insert(std::pair<ElementType,ElementData>(ElementType::Cn, ElementData("Cn", 112, 285   , {175, 21, 71},    -1, 26,14,30,40,28)));
+            d_container.insert(std::pair<ElementType,ElementData>(ElementType::Nh, ElementData("Nh", 113, 287   , {175,175,175},    -1, 27,14,31,40,28)));
+            d_container.insert(std::pair<ElementType,ElementData>(ElementType::Fl, ElementData("Fl", 114, 289   , {175,175,175},    -1, 28,14,32,40,28)));
+            d_container.insert(std::pair<ElementType,ElementData>(ElementType::Mc, ElementData("Mc", 115, 288   , {175,175,175},    -1, 29,14,33,40,28)));
+            d_container.insert(std::pair<ElementType,ElementData>(ElementType::Lv, ElementData("Lv", 116, 289   , {175,175,175},    -1, 30,14,34,40,28)));
+            d_container.insert(std::pair<ElementType,ElementData>(ElementType::Ts, ElementData("Ts", 117, 293   , {175,175,175},    -1, 31,14,35,40,28)));
+            d_container.insert(std::pair<ElementType,ElementData>(ElementType::Og, ElementData("Og", 118, 294   , {175,175,175},    -1, 32,14,36,40,28)));
         }
     }// namespace internal
 } // namespace Elements

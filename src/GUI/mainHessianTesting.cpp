@@ -26,13 +26,13 @@ int main(int argc, char *argv[]) {
     CollectionParser collectionParser;
     auto ec = collectionParser.electronCollectionFromJson("H2sm444_TS_NRopt.json");
     auto nsmooth = 2;
-    auto x = ec.positionsAsEigenVector();
+    auto x = ec.positionCollection().positionsAsEigenVector();
     auto n = ElectronicWaveFunction::getInstance().getNumberOfElectrons()*3;
 
     Eigen::VectorXd grad(n);
     electronicWaveFunctionProblem.putElectronsIntoNuclei(x,grad);
 
-    std::cout << "Gradient: " << ElectronCollection(grad,ec.spinTypesAsEigenVector()) << std::endl;
+    std::cout << "Gradient: " << ElectronCollection(grad,ec.spinTypeCollection().spinTypesAsEigenVector()) << std::endl;
 
     for (auto & it : electronicWaveFunctionProblem.getIndicesOfElectronsAtNuclei()) std::cout << it << " ";
     std::cout << std::endl;
@@ -66,7 +66,7 @@ int main(int argc, char *argv[]) {
         int evIndex = 0;
         //for (int evIndex  = 0; evIndex  < ec.numberOfParticles(); ++evIndex ) {
             for (int i = 0; i <
-                            ec.numberOfParticles(); ++i) {//for (auto i : electronicWaveFunctionProblem.getIndicesOfElectronsNotAtNuclei()){
+                            ec.numberOfEntities(); ++i) {//for (auto i : electronicWaveFunctionProblem.getIndicesOfElectronsNotAtNuclei()){
                 QVector3D v1(x(i * 3 + 0), x(i * 3 + 1), x(i * 3 + 2));
                 QVector3D v2 = v1;
                 QVector3D ev(eigenvectors.col(evIndex)(i * 3 + 0),
@@ -79,7 +79,7 @@ int main(int argc, char *argv[]) {
         //}
 
         // Plot the final point
-        ElectronCollection3D(root, ElectronCollection(x, ec.spinTypesAsEigenVector()), false);
+        ElectronCollection3D(root, ElectronCollection(x, ec.spinTypeCollection().spinTypesAsEigenVector()), false);
 
         return app.exec();
     }
