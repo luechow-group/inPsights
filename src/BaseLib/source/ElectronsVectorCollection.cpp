@@ -12,20 +12,20 @@ ElectronsVectorCollection::ElectronsVectorCollection(const SpinTypesVector &spin
         : ParticlesVectorCollection(),
           spinTypesVector_(spinTypesVector) {}
 
-ElectronsVectorCollection::ElectronsVectorCollection(const ElectronCollection &electronCollection)
-        : ElectronsVectorCollection(std::vector<ElectronCollection>({electronCollection})){}
+ElectronsVectorCollection::ElectronsVectorCollection(const ElectronsVector &electronsVector)
+        : ElectronsVectorCollection(std::vector<ElectronsVector>({electronsVector})){}
 
-ElectronsVectorCollection::ElectronsVectorCollection(const std::vector<ElectronCollection> &electronCollectionVector)
+ElectronsVectorCollection::ElectronsVectorCollection(const std::vector<ElectronsVector> &electronsVectorVector)
         : ParticlesVectorCollection(),
-          spinTypesVector_(electronCollectionVector[0].spinTypesVector()) {
+          spinTypesVector_(electronsVectorVector[0].spinTypesVector()) {
 
-    if ( !electronCollectionVector.empty() ){
-        for (const auto &electronCollection : electronCollectionVector) {
-            positionsVectorCollection_.append(electronCollection.positionsVector());
+    if ( !electronsVectorVector.empty() ){
+        for (const auto &electronsVector : electronsVectorVector) {
+            positionsVectorCollection_.append(electronsVector.positionsVector());
 
             assert(spinTypesVector_.spinTypesAsEigenVector()
-                   == electronCollection.spinTypesVector().spinTypesAsEigenVector()
-                   && "All ElectronCollection s must have the same SpinTypesVector.");
+                   == electronsVector.spinTypesVector().spinTypesAsEigenVector()
+                   && "All ElectronsVector s must have the same SpinTypesVector.");
         }
     }
 }
@@ -45,8 +45,8 @@ ElectronsVectorCollection::ElectronsVectorCollection(const PositionsVectorCollec
            && "The number of entities in ParticlesVectorCollection, PositionsVectorCollection, and SpinTypesVector must match.");
 }
 
-ElectronCollection ElectronsVectorCollection::operator[](long i) const {
-    return ElectronCollection(positionsVectorCollection_[i],spinTypesVector_);
+ElectronsVector ElectronsVectorCollection::operator[](long i) const {
+    return ElectronsVector(positionsVectorCollection_[i],spinTypesVector_);
 }
 
 const SpinTypesVector& ElectronsVectorCollection::spinTypesVector() const{
@@ -57,24 +57,24 @@ SpinTypesVector &ElectronsVectorCollection::spinTypesVector() {
     return spinTypesVector_;
 }
 
-void ElectronsVectorCollection::insert(const ElectronCollection &electronCollection, long i) {
+void ElectronsVectorCollection::insert(const ElectronsVector &electronsVector, long i) {
     if (spinTypesVector_.numberOfEntities() != 0) {
         assert(spinTypesVector_.spinTypesAsEigenVector()
-               == electronCollection.spinTypesVector().spinTypesAsEigenVector());
+               == electronsVector.spinTypesVector().spinTypesAsEigenVector());
     }
     else{
-        spinTypesVector_ = electronCollection.spinTypesVector();
+        spinTypesVector_ = electronsVector.spinTypesVector();
     }
-    positionsVectorCollection_.insert(electronCollection.positionsVector(), i);
+    positionsVectorCollection_.insert(electronsVector.positionsVector(), i);
     incrementNumberOfEntities();
 }
 
-void ElectronsVectorCollection::append(const ElectronCollection &electronCollection) {
-    insert(electronCollection,numberOfEntities());
+void ElectronsVectorCollection::append(const ElectronsVector &electronsVector) {
+    insert(electronsVector,numberOfEntities());
 }
 
-void ElectronsVectorCollection::prepend(const ElectronCollection &electronCollection) {
-    insert(electronCollection,0);
+void ElectronsVectorCollection::prepend(const ElectronsVector &electronsVector) {
+    insert(electronsVector,0);
 }
 
 void ElectronsVectorCollection::permute(long i, long j) {

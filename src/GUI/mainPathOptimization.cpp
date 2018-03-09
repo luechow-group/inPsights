@@ -16,13 +16,13 @@
 #include "solver/bfgsumrigarsolver.h"
 
 #include "AtomCollection3D.h"
-#include "ElectronCollection3D.h"
+#include "ElectronsVector3D.h"
 #include "ParticlesVectorPath3D.h"
 #include "MoleculeWidget.h"
 
 bool handleCommandlineArguments(int argc, char **argv,
                                 std::string &wavefunctionFilename,
-                                std::string &electronCollectionFilename,
+                                std::string &electronsVectorFilename,
                                 bool &showGui) {
     if (argc < 3) {
         std::cout << "Usage: \n"
@@ -33,7 +33,7 @@ bool handleCommandlineArguments(int argc, char **argv,
         return false;
     } else if (argc >= 3) {
         wavefunctionFilename = argv[1];
-        electronCollectionFilename = argv[2];
+        electronsVectorFilename = argv[2];
         if (argc > 3) showGui = (std::string(argv[3]) == "gui");
         return true;
     }
@@ -41,19 +41,19 @@ bool handleCommandlineArguments(int argc, char **argv,
 
 int main(int argc, char *argv[]) {
     std::string wavefunctionFilename; //= "H2sm444.wf"; // overwrite command line
-    std::string electronCollectionFilename; //= "H2sm444_TS_ev.json"; // overwrite command line
+    std::string electronsVectorFilename; //= "H2sm444_TS_ev.json"; // overwrite command line
     bool showGui = true;
 
-    if( wavefunctionFilename.empty() && electronCollectionFilename.empty()) {
+    if( wavefunctionFilename.empty() && electronsVectorFilename.empty()) {
         bool inputArgumentsFoundQ =
-                handleCommandlineArguments(argc, argv, wavefunctionFilename, electronCollectionFilename, showGui);
+                handleCommandlineArguments(argc, argv, wavefunctionFilename, electronsVectorFilename, showGui);
         if(!inputArgumentsFoundQ) return 0;
     }
 
     ElectronicWaveFunctionProblem electronicWaveFunctionProblem(wavefunctionFilename);
     CollectionParser collectionParser;
     auto ac = electronicWaveFunctionProblem.getAtomCollection();
-    auto ec = collectionParser.electronCollectionFromJson(electronCollectionFilename);
+    auto ec = collectionParser.electronsVectorFromJson(electronsVectorFilename);
     std::cout << ac << std::endl;
     std::cout << ec << std::endl;
 
@@ -75,7 +75,7 @@ int main(int argc, char *argv[]) {
     //solver.setDistanceCriteriaUmrigar(0.1);
 
     solver.minimize(electronicWaveFunctionProblem, x);
-    std::cout << ElectronCollection(x,ec.spinTypesVector().spinTypesAsEigenVector())<<std::endl;
+    std::cout << ElectronsVector(x,ec.spinTypesVector().spinTypesAsEigenVector())<<std::endl;
 
 
 
@@ -92,7 +92,7 @@ int main(int argc, char *argv[]) {
         for (unsigned long i = 0; i < optimizationPath.numberOfEntities(); i = i + skip) {
             shortenedPath.append(optimizationPath[i]);
         }
-        auto ecEnd = ElectronCollection(x, optimizationPath.spinTypesVector().spinTypesAsEigenVector());
+        auto ecEnd = ElectronsVector(x, optimizationPath.spinTypesVector().spinTypesAsEigenVector());
         shortenedPath.append(ecEnd);
 
         // Visualization
@@ -102,7 +102,7 @@ int main(int argc, char *argv[]) {
         AtomCollection3D(root, ElectronicWaveFunction::getInstance().getAtomCollection());
 
         // Plot the starting point
-        ElectronCollection3D(root, ElectronCollection(x, optimizationPath.spinTypesVector().spinTypesAsEigenVector()), false);
+        ElectronsVector3D(root, ElectronsVector(x, optimizationPath.spinTypesVector().spinTypesAsEigenVector()), false);
 
         // Plot the optimization path
         ParticlesVectorPath3D(root, shortenedPath);

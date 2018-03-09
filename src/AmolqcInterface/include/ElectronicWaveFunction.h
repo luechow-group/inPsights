@@ -35,7 +35,7 @@ public:
     void setRandomElectronPositionsVector(unsigned electronNumber,
                                            ElectronPositioningMode::electronPositioningModeType);
 
-    void evaluate(const ElectronCollection& electronCollection);
+    void evaluate(const ElectronsVector& electronsVector);
 
     void evaluate(const Eigen::VectorXd &electronPositionsVector);
 
@@ -53,7 +53,7 @@ public:
 
     double getInverseNegativeLogarithmizedProbabilityDensity();
 
-    ElectronCollection getElectronPositionsVector();
+    ElectronsVector getElectronPositionsVector();
 
     Eigen::VectorXd getElectronDriftCollection();
 

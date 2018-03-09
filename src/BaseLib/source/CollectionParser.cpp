@@ -40,20 +40,20 @@ nlohmann::json CollectionParser::atomCollectionToJson(const AtomCollection &atom
     return j;
 }
 
-nlohmann::json CollectionParser::electronCollectionToJson(const ElectronCollection &electronCollection) {
+nlohmann::json CollectionParser::electronsVectorToJson(const ElectronsVector &electronsVector) {
     nlohmann::json j;
-    const auto &spinTypesVector = electronCollection.spinTypesVector();
+    const auto &spinTypesVector = electronsVector.spinTypesVector();
 
     auto spinTypeArray = nlohmann::json::array();
     auto particleCoordinatesArray = nlohmann::json::array();
-    for (int i = 0; i < electronCollection.numberOfEntities(); ++i) {
+    for (int i = 0; i < electronsVector.numberOfEntities(); ++i) {
 
-        auto vec = electronCollection[i].position();
+        auto vec = electronsVector[i].position();
         spinTypeArray.emplace_back((int)spinTypesVector[i]);
         particleCoordinatesArray.emplace_back(nlohmann::json::array({vec[0],vec[1],vec[2]}));
     }
 
-    j["type"] = "ElectronCollection";
+    j["type"] = "ElectronsVector";
     j["spins"] = spinTypeArray;
     j["coordinates"] = particleCoordinatesArray;
 
@@ -94,9 +94,9 @@ AtomCollection CollectionParser::atomCollectionFromJson(const std::string &filen
     return AtomCollection(positionsVector, elementTypesVector);
 }
 
-ElectronCollection CollectionParser::electronCollectionFromJson(const std::string &filename) {
+ElectronsVector CollectionParser::electronsVectorFromJson(const std::string &filename) {
     auto j = readJSON(filename);
-    assert(j["type"]== "ElectronCollection" && "File must be a ElectronCollection.");
+    assert(j["type"]== "ElectronsVector" && "File must be a ElectronsVector.");
     assert(j["spins"].is_array());
 
     auto spins = j["spins"].get<std::vector<int>>();
@@ -106,7 +106,7 @@ ElectronCollection CollectionParser::electronCollectionFromJson(const std::strin
     }
     PositionsVector positionsVector = array2DToPositionsVector(j["coordinates"]);
 
-    return ElectronCollection(positionsVector, spinTypesVector);
+    return ElectronsVector(positionsVector, spinTypesVector);
 }
 
 void CollectionParser::writeJSON(const nlohmann::json& json, const std::string& filename) {

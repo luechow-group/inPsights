@@ -15,7 +15,7 @@ public:
 
     SpinTypesVector getSpinTypesVector() const;
     PositionsVector getPositionsVector(unsigned long k, unsigned long m) const;
-    ElectronCollection getMaximaStructure(unsigned long k, unsigned long m) const;
+    ElectronsVector getMaximaStructure(unsigned long k, unsigned long m) const;
     ElectronsVectorCollection getAllSubstructures(unsigned long k) const;
 
     unsigned long getNumberOfMaxima(unsigned long k, unsigned long m) const;

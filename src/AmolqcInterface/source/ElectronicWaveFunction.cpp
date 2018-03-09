@@ -68,8 +68,8 @@ unsigned long ElectronicWaveFunction::getNumberOfElectrons() const {
   return numberOfElectrons_;
 }
 
-void ElectronicWaveFunction::evaluate(const ElectronCollection &electronCollection) {
-    evaluate(electronCollection.positionsVector().positionsAsEigenVector());
+void ElectronicWaveFunction::evaluate(const ElectronsVector &electronsVector) {
+    evaluate(electronsVector.positionsVector().positionsAsEigenVector());
 }
 
 void ElectronicWaveFunction::evaluate(const Eigen::VectorXd &electronPositionsVector) {
@@ -121,8 +121,8 @@ double ElectronicWaveFunction::getInverseNegativeLogarithmizedProbabilityDensity
   return -1.0/std::log(pow(getProbabilityAmplitude(),2));
 }
 
-ElectronCollection ElectronicWaveFunction::getElectronPositionsVector(){
-  return ElectronCollection(electronPositionsVectorAsEigenVector_,
+ElectronsVector ElectronicWaveFunction::getElectronPositionsVector(){
+  return ElectronsVector(electronPositionsVectorAsEigenVector_,
                             getSpinTypesVector().spinTypesAsEigenVector());
 };
 

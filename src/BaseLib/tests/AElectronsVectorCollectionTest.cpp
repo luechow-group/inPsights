@@ -15,22 +15,22 @@ public:
         Electron electron2(Vector3d(-1,0,3.5),Spin::SpinType::beta);
         Electron electron3(Vector3d(-7.3,0.5,9),Spin::SpinType::none);
 
-        electronCollection1;
-        electronCollection1.append(electron1);
-        electronCollection1.append(electron2);
-        electronCollection1.append(electron3);
+        electronsVector1;
+        electronsVector1.append(electron1);
+        electronsVector1.append(electron2);
+        electronsVector1.append(electron3);
 
-        electronCollection2;
-        electronCollection2.append(electron2);
-        electronCollection2.append(electron1);
-        electronCollection2.append(electron3);
+        electronsVector2;
+        electronsVector2.append(electron2);
+        electronsVector2.append(electron1);
+        electronsVector2.append(electron3);
 
-        electronCollection3;
-        electronCollection3.append(electron1);
-        electronCollection3.append(electron3);
-        electronCollection3.append(electron2);
+        electronsVector3;
+        electronsVector3.append(electron1);
+        electronsVector3.append(electron3);
+        electronsVector3.append(electron2);
     }
-    ElectronCollection electronCollection1,electronCollection2,electronCollection3;
+    ElectronsVector electronsVector1,electronsVector2,electronsVector3;
 };
 
 TEST_F(AElectronsVectorCollectionTest, InitialNumberEntities){
@@ -45,8 +45,8 @@ TEST_F(AElectronsVectorCollectionTest, NumberEntities){
 
     ElectronsVectorCollection electronsVectorCollection;
 
-    electronsVectorCollection.append(electronCollection1);
-    electronsVectorCollection.append(electronCollection1);
+    electronsVectorCollection.append(electronsVector1);
+    electronsVectorCollection.append(electronsVector1);
 
     ASSERT_EQ(electronsVectorCollection.numberOfEntities(),2);
     ASSERT_EQ(electronsVectorCollection[0].numberOfEntities(),3);

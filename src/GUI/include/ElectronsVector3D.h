@@ -6,11 +6,11 @@
 #define AMOLQCGUI_ELECTRONCOLLECTION3D_H
 
 #include "Abstract3dObject.h"
-#include "ElectronCollection.h"
+#include "ElectronsVector.h"
 
-class ElectronCollection3D{
+class ElectronsVector3D{
 public:
-    ElectronCollection3D(Qt3DCore::QEntity *root, const ElectronCollection &electonCollection,
+    ElectronsVector3D(Qt3DCore::QEntity *root, const ElectronsVector &electonCollection,
                              bool showIndicesQ = false);
 };
 

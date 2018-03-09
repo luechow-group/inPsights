@@ -6,28 +6,28 @@
 #define AMOLQCGUI_ELECTRONCOLLECTIONPATH_H
 
 #include "ParticlesVectorCollection.h"
-#include "ElectronCollection.h"
+#include "ElectronsVector.h"
 #include "SpinTypesVector.h"
 
 class ElectronsVectorCollection : public ParticlesVectorCollection{
 public:
     ElectronsVectorCollection();
     explicit ElectronsVectorCollection(const SpinTypesVector& spinTypesVector);
-    explicit ElectronsVectorCollection(const ElectronCollection& electronCollection);
-    explicit ElectronsVectorCollection(const std::vector<ElectronCollection>& electronCollectionVector);
-    explicit ElectronsVectorCollection(const PositionsVectorCollection& electronCollection);
+    explicit ElectronsVectorCollection(const ElectronsVector& electronsVector);
+    explicit ElectronsVectorCollection(const std::vector<ElectronsVector>& electronsVectorVector);
+    explicit ElectronsVectorCollection(const PositionsVectorCollection& electronsVector);
 
-    explicit ElectronsVectorCollection(const PositionsVectorCollection& electronCollection,
+    explicit ElectronsVectorCollection(const PositionsVectorCollection& electronsVector,
                                  const SpinTypesVector& spinTypesVector);
 
-    ElectronCollection operator[](long i) const;
+    ElectronsVector operator[](long i) const;
 
     const SpinTypesVector& spinTypesVector() const;
     SpinTypesVector& spinTypesVector();
 
-    void insert (const ElectronCollection& electronCollection, long i);
-    void append (const ElectronCollection& electronCollection);
-    void prepend(const ElectronCollection& electronCollection);
+    void insert (const ElectronsVector& electronsVector, long i);
+    void append (const ElectronsVector& electronsVector);
+    void prepend(const ElectronsVector& electronsVector);
     void permute(long i, long j) override;
 
 private:

@@ -112,7 +112,7 @@ bool ElectronicWaveFunctionProblem::callback(const cppoptlib::Criteria<double> &
     gradientResetQ = false;
     putElectronsIntoNuclei(x, grad); //gradientQ could be true now
 
-    optimizationPath_.append(ElectronCollection(x, wf_.getSpinTypesVector().spinTypesAsEigenVector()));
+    optimizationPath_.append(ElectronsVector(x, wf_.getSpinTypesVector().spinTypesAsEigenVector()));
 
     /*
     std::cout << "(" << std::setw(2) << state.iterations << ")"

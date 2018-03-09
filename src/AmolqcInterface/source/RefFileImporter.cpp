@@ -70,8 +70,8 @@ SpinTypesVector RefFileImporter::getSpinTypesVector() const {
     return AmolqcImporter::getSpinTypesVector(numberOfAlphaElectrons_, numberOfBetaElectrons_);
 }
 
-ElectronCollection RefFileImporter::getMaximaStructure(unsigned long k, unsigned long m) const {
-    return ElectronCollection(this->getPositionsVector(k,m), this->getSpinTypesVector());
+ElectronsVector RefFileImporter::getMaximaStructure(unsigned long k, unsigned long m) const {
+    return ElectronsVector(this->getPositionsVector(k,m), this->getSpinTypesVector());
 }
 
 ElectronsVectorCollection RefFileImporter::getAllSubstructures(unsigned long k) const {

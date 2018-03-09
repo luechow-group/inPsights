@@ -16,7 +16,7 @@
 
 #include "MoleculeWidget.h"
 #include "AtomCollection3D.h"
-#include "ElectronCollection3D.h"
+#include "ElectronsVector3D.h"
 
 #include "ElementInfo.h"
 #include "ElementType.h"
@@ -68,10 +68,10 @@ int main(int argc, char *argv[]) {
 
 
 
-    //collectionParser.writeJSON(collectionParser.electronCollectionToJson(ec),"Ethylene-glob-max.json");
+    //collectionParser.writeJSON(collectionParser.electronsVectorToJson(ec),"Ethylene-glob-max.json");
     CollectionParser collectionParser;
-    //auto ecA = collectionParser.electronCollectionFromJson("Ethane-glob-max.json");
-    auto ecA = ElectronCollection(x0, Eigen::Vector2i(1,-1));
+    //auto ecA = collectionParser.electronsVectorFromJson("Ethane-glob-max.json");
+    auto ecA = ElectronsVector(x0, Eigen::Vector2i(1,-1));
     auto ecB = ecA;
 
 
@@ -193,7 +193,7 @@ initialCoordinates.row((18 - 1) * 3 + 2) -= 0.05 * bend;//z bend
     WfFileImporter waveFunctionParser(ElectronicWaveFunction::getInstance().getFileName());
 
     AtomCollection3D molecularGeometry3D(root, waveFunctionParser.getAtomCollection());
-    ElectronCollection3D(root, ElectronicWaveFunction::getInstance().getElectronPositionsVector(), true);
+    ElectronsVector3D(root, ElectronicWaveFunction::getInstance().getElectronPositionsVector(), true);
 
 
     //Draw tsguess
