@@ -3,6 +3,7 @@
 //
 
 #include "ElectronCollection.h"
+#include "ToString.h"
 
 ElectronCollection::ElectronCollection(const Eigen::VectorXd &positions)
         : ParticleCollection(PositionCollection(positions)),
@@ -62,8 +63,8 @@ SpinTypeCollection &ElectronCollection::spinTypeCollection() {
 }
 
 std::ostream& operator<<(std::ostream& os, const ElectronCollection& ec){
-    os << ec.spinTypeCollection()
-       << ec.positionCollection()
-       << std::endl;
+    for (unsigned long i = 0; i < ec.numberOfEntities(); i++) {
+        os << ToString::int2string(i+1) << " " << ec[i] << std::endl;
+    }
     return os;
 }

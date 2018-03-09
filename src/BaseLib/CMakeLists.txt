@@ -43,7 +43,6 @@ set(HEADER_FILES
         include/AbstractCollection.h
         include/PositionCollection.h
         include/Position.h
-        include/PositionFormat.h
         include/PositionCollections.h
         include/ToString.h
         )

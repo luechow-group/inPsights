@@ -4,7 +4,6 @@
 
 #include "ElementTypeCollection.h"
 #include "ElementInfo.h"
-#include "PositionFormat.h"
 
 using namespace Eigen;
 
@@ -63,13 +62,12 @@ void ElementTypeCollection::permute(long i, long j) {
 }
 
 std::ostream& operator<<(std::ostream& os, const ElementTypeCollection& etc){
+    std::string symbol;
     for (unsigned long i = 0; i < etc.numberOfEntities(); i++) {
-        std::string elementSymbol = Elements::ElementInfo::symbol(etc[i]);
-
-        os << elementSymbol
-           << std::string(PositionFormat::significantDigits+3-elementSymbol.length(), ' ')
-           << PositionFormat::separator;
+        if (etc[i] != Elements::ElementType::none){
+            symbol = Elements::ElementInfo::symbol(etc[i]);
+        }
+        os << symbol << std::endl;
     }
-    std::cout << std::endl;
     return os;
 }

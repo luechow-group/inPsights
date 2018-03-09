@@ -16,8 +16,6 @@ public:
 
     long numberOfEntities() const;
 
-    friend std::ostream &operator<<(std::ostream &os, const AbstractCollection &ac);
-
 protected:
     void incrementNumberOfEntities();
 

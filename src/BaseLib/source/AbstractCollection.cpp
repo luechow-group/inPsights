@@ -3,7 +3,7 @@
 //
 
 #include "AbstractCollection.h"
-#include "PositionFormat.h"
+#include <assert.h>
 
 AbstractCollection::AbstractCollection(long numberOfEntities)
         : numberOfEntities_(numberOfEntities){
@@ -16,17 +16,6 @@ void AbstractCollection::incrementNumberOfEntities(){
 
 long AbstractCollection::numberOfEntities() const{
     return numberOfEntities_;
-}
-
-std::ostream &operator<<(std::ostream &os, const AbstractCollection &ac){
-    for (unsigned long i = 0; i < ac.numberOfEntities(); i++) {
-        auto decimalPlaces = unsigned(std::log10(i+1)+1);
-        os << std::string(PositionFormat::significantDigits+3-decimalPlaces, ' ')
-           << i+1
-           << PositionFormat::separator;
-    }
-    std::cout << std::endl;
-    return os;
 }
 
 void AbstractCollection::setNumberOfEntities(long numberOfEntities){

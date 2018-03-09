@@ -3,7 +3,6 @@
 //
 
 #include "SpinTypeCollection.h"
-#include "PositionFormat.h"
 
 using namespace Eigen;
 
@@ -75,10 +74,7 @@ void SpinTypeCollection::permute(long i, long j) {
 
 std::ostream& operator<<(std::ostream& os, const SpinTypeCollection& sc){
     for (unsigned long i = 0; i < sc.numberOfEntities(); i++) {
-        os << Spin::toString(sc[i])
-           << std::string(PositionFormat::significantDigits+2, ' ')
-           << PositionFormat::separator;
+        os << Spin::toString(sc[i]) << std::endl;
     }
-    std::cout << std::endl;
     return os;
 }

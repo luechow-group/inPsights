@@ -3,6 +3,7 @@
 //
 
 #include "Electron.h"
+#include "ToString.h"
 
 using namespace Eigen;
 using namespace Spin;
@@ -25,6 +26,16 @@ void Electron::setSpinType(const Spin::SpinType & spinType) {
     spinType_ = spinType;
 }
 
-int Electron::charge(){
+int Electron::charge() const {
     return -1;
+}
+
+std::ostream& operator<< (std::ostream& os, const Electron& elec) {
+    os << elec.toString();
+    return os;
+}
+
+std::string Electron::toString() const {
+
+    return "e" + Spin::toString(spinType_) + ToString::vector3d2string(position_);
 }

@@ -3,7 +3,7 @@
 //
 
 #include "PositionCollection.h"
-#include "PositionFormat.h"
+#include "ToString.h"
 
 using namespace Eigen;
 
@@ -41,11 +41,9 @@ void PositionCollection::insert(const Eigen::Vector3d &position, long i) {
 }
 
 std::ostream& operator<<(std::ostream& os, const PositionCollection& pc){
-    auto vec = pc.positionsAsEigenVector();
-    Eigen::Map<Eigen::Matrix3Xd> mat(vec.data(),pc.entityLength_,pc.numberOfEntities());
-    os << static_cast<AbstractCollection>(pc)
-       << mat.format(PositionFormat::positionFormat)
-       << std::endl;
+    for (unsigned long i = 0; i < pc.numberOfEntities(); i++){
+        os << ToString::vector3d2string(pc[i]) << std::endl;
+    }
     return os;
 }
 
