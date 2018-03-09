@@ -6,9 +6,9 @@
 #define AMOLQCPP_POSITIONCOLLECTION_H
 
 #include <Eigen/Core>
-#include "AbstractCollection.h"
+#include "AbstractVector.h"
 
-class PositionsVector : public AbstractCollection{
+class PositionsVector : public AbstractVector{
 public:
     PositionsVector();
     explicit PositionsVector(const Eigen::VectorXd& positions);

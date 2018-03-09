@@ -9,7 +9,7 @@
 #include "ParticleCollection.h"
 #include "PositionsVectorCollection.h"
 
-class ParticlesVectorCollection : public AbstractCollection{
+class ParticlesVectorCollection : public AbstractVector{
 public:
     const PositionsVectorCollection& positionsVectorCollection() const;
     PositionsVectorCollection& positionsVectorCollection();

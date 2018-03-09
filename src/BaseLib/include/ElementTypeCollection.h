@@ -6,10 +6,10 @@
 #define AMOLQCGUI_ELEMENTTYPECOLLECTION_H
 
 #include <Eigen/Core>
-#include "AbstractCollection.h"
+#include "AbstractVector.h"
 #include "ElementType.h"
 
-class ElementTypeCollection : public AbstractCollection{
+class ElementTypeCollection : public AbstractVector{
 public:
     explicit ElementTypeCollection(long size = 0);
     explicit ElementTypeCollection(const Eigen::VectorXi& elementTypes);

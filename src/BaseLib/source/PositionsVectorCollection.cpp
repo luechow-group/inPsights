@@ -6,13 +6,13 @@
 #include "PositionsVectorCollection.h"
 
 PositionsVectorCollection::PositionsVectorCollection()
-        : AbstractCollection(0),
+        : AbstractVector(0),
           positionsVectorCollection_(0),
           numberOfPositionEntities_(0)
 {}
 
 PositionsVectorCollection::PositionsVectorCollection(const std::vector<PositionsVector> &positionsVectorCollection)
-        : AbstractCollection(positionsVectorCollection.size()),
+        : AbstractVector(positionsVectorCollection.size()),
           numberOfPositionEntities_(0)
 {
     if( !positionsVectorCollection.empty()) {

@@ -7,12 +7,12 @@
 
 #include <iostream>
 
-/* AbstractCollection
+/* AbstractVector
  * keeps track of the number of countable entities
  */
-class AbstractCollection {
+class AbstractVector {
 public:
-    explicit AbstractCollection(long numberOfEntities = 0);
+    explicit AbstractVector(long numberOfEntities = 0);
 
     long numberOfEntities() const;
 

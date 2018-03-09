@@ -5,14 +5,14 @@
 #ifndef AMOLQCGUI_PARTICLECOLLECTION_H
 #define AMOLQCGUI_PARTICLECOLLECTION_H
 
-#include "AbstractCollection.h"
+#include "AbstractVector.h"
 #include "Particle.h"
 #include "PositionsVector.h"
 
 /*
  * ParticleCollection only exists as an abstract interface to more specialized collections.
  */
-class ParticleCollection : public AbstractCollection{
+class ParticleCollection : public AbstractVector{
 public:
     Particle particle(long i) const;
 

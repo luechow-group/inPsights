@@ -7,9 +7,9 @@
 
 #include <Eigen/Core>
 #include "SpinType.h"
-#include "AbstractCollection.h"
+#include "AbstractVector.h"
 
-class SpinTypeCollection : public AbstractCollection{
+class SpinTypeCollection : public AbstractVector{
 public:
     explicit SpinTypeCollection(long size = 0);
     SpinTypeCollection(unsigned long numberOfAlphaElectrons, unsigned long numberOfBetaElectrons);

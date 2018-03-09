@@ -8,12 +8,12 @@
 using namespace Eigen;
 
 ElementTypeCollection::ElementTypeCollection(long numberOfEntities)
-        : AbstractCollection(numberOfEntities),
+        : AbstractVector(numberOfEntities),
           elementTypes_(VectorXi::Constant(numberOfEntities, int(Elements::ElementType::none)))
 {}
 
 ElementTypeCollection::ElementTypeCollection(const VectorXi& elementTypes)
-        : AbstractCollection(elementTypes.size()),
+        : AbstractVector(elementTypes.size()),
           elementTypes_(elementTypes)
 {
     assert(elementTypes_.minCoeff() >= int(Elements::first()));

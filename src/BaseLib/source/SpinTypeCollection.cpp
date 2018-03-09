@@ -7,12 +7,12 @@
 using namespace Eigen;
 
 SpinTypeCollection::SpinTypeCollection(long size)
-        : AbstractCollection(size),
+        : AbstractVector(size),
           spinTypes_(VectorXi::Constant(size,int(Spin::SpinType::none)))
 {}
 
 SpinTypeCollection::SpinTypeCollection(const VectorXi& spinTypes)
-        : AbstractCollection(spinTypes.size()),
+        : AbstractVector(spinTypes.size()),
           spinTypes_(spinTypes)
 {
     assert(spinTypes_.maxCoeff() <= int(Spin::SpinType::alpha));

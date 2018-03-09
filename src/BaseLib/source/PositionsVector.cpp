@@ -8,7 +8,7 @@
 using namespace Eigen;
 
 PositionsVector::PositionsVector()
-        : AbstractCollection(),
+        : AbstractVector(),
           positions_(0)
 {}
 
@@ -17,7 +17,7 @@ PositionsVector::PositionsVector(const VectorXd &positions) {
     assert(size >= 0 && "Vector cannot be empty");
     assert(size%3 == 0 && "Vector must be 3N-dimensional");
 
-    AbstractCollection::setNumberOfEntities(size/3);
+    AbstractVector::setNumberOfEntities(size/3);
     positions_ = positions;
 }
 
@@ -72,5 +72,5 @@ void PositionsVector::permute(long i, long j) {
 }
 
 long PositionsVector::calculateIndex(long i) const {
-    return AbstractCollection::calculateIndex(i)*entityLength_;
+    return AbstractVector::calculateIndex(i)*entityLength_;
 }

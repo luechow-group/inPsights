@@ -5,7 +5,7 @@
 #include "ParticlesVectorCollection.h"
 
 ParticlesVectorCollection::ParticlesVectorCollection(const PositionsVectorCollection& positionsVectorCollection)
-        : AbstractCollection(positionsVectorCollection.numberOfEntities()),
+        : AbstractVector(positionsVectorCollection.numberOfEntities()),
           positionsVectorCollection_(positionsVectorCollection) {}
 
 const PositionsVectorCollection &ParticlesVectorCollection::positionsVectorCollection() const {

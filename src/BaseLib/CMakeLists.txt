@@ -41,7 +41,7 @@ set(HEADER_FILES
         include/SpinTypeCollection.h
         include/Importer.h
         include/CollectionParser.h
-        include/AbstractCollection.h
+        include/AbstractVector.h
         include/PositionsVector.h
         include/Position.h
         include/PositionsVectorCollection.h
@@ -68,7 +68,7 @@ set(SOURCE_FILES
         source/ElementType.cpp
         source/PositionsVector.cpp
         source/Position.cpp
-        source/AbstractCollection.cpp
+        source/AbstractVector.cpp
         source/PositionsVectorCollection.cpp
         source/ToString.cpp
         )

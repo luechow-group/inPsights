@@ -8,7 +8,7 @@
 #include <vector>
 #include "PositionsVector.h"
 
-class PositionsVectorCollection : public AbstractCollection{
+class PositionsVectorCollection : public AbstractVector{
 public:
     PositionsVectorCollection();
     explicit PositionsVectorCollection(const std::vector<PositionsVector> &positionsVectorCollection);
