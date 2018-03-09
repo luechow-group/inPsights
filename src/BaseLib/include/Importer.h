@@ -11,7 +11,7 @@
 #include <iterator>
 
 #include "AtomCollection.h"
-#include "ElectronCollections.h"
+#include "ElectronsVectorCollection.h"
 
 class StringManipulator{
 public:

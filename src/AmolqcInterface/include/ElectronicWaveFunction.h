@@ -8,7 +8,7 @@
 #include <Eigen/Core>
 #include <vector>
 #include "AtomCollection.h"
-#include "ElectronCollections.h"
+#include "ElectronsVectorCollection.h"
 
 namespace ElectronPositioningMode {
   typedef enum {

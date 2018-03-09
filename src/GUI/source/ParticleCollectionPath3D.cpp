@@ -8,20 +8,20 @@
 
 
 ParticleCollectionPath3D::ParticleCollectionPath3D(Qt3DCore::QEntity *root,
-                                                   const ElectronCollections &electronCollections,
+                                                   const ElectronsVectorCollection &electronsVectorCollection,
                                                    float radius) {
 
 
-    auto numberOfParticles = electronCollections[0].numberOfEntities();
+    auto numberOfParticles = electronsVectorCollection[0].numberOfEntities();
     std::vector<std::vector<QVector3D>> pointsList(numberOfParticles);
     for (unsigned i = 0; i < numberOfParticles; ++i) { // iterate over particles
 
-        for (int j = 0; j < electronCollections.numberOfEntities(); ++j) {
-            auto tmp = electronCollections[j][i].position();
+        for (int j = 0; j < electronsVectorCollection.numberOfEntities(); ++j) {
+            auto tmp = electronsVectorCollection[j][i].position();
             pointsList[i].emplace_back(QVector3D(float(tmp(0)),float(tmp(1)),float(tmp(2))));
         }
 
-        auto spinType = electronCollections.spinTypeCollection()[i];
+        auto spinType = electronsVectorCollection.spinTypeCollection()[i];
 
         if (spinType == Spin::SpinType::alpha) {
             new Polyline(root,Spin::QColorFromSpinType(Spin::SpinType::alpha) , pointsList[i], radius);

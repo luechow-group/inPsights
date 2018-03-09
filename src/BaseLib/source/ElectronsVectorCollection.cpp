@@ -2,20 +2,20 @@
 // Created by Michael Heuer on 30.10.17.
 //
 
-#include "ElectronCollections.h"
+#include "ElectronsVectorCollection.h"
 
-ElectronCollections::ElectronCollections()
+ElectronsVectorCollection::ElectronsVectorCollection()
         : ParticleCollections(),
           spinTypeCollection_(SpinTypeCollection()) {}
 
-ElectronCollections::ElectronCollections(const SpinTypeCollection &spinTypeCollection)
+ElectronsVectorCollection::ElectronsVectorCollection(const SpinTypeCollection &spinTypeCollection)
         : ParticleCollections(),
           spinTypeCollection_(spinTypeCollection) {}
 
-ElectronCollections::ElectronCollections(const ElectronCollection &electronCollection)
-        : ElectronCollections(std::vector<ElectronCollection>({electronCollection})){}
+ElectronsVectorCollection::ElectronsVectorCollection(const ElectronCollection &electronCollection)
+        : ElectronsVectorCollection(std::vector<ElectronCollection>({electronCollection})){}
 
-ElectronCollections::ElectronCollections(const std::vector<ElectronCollection> &electronCollectionVector)
+ElectronsVectorCollection::ElectronsVectorCollection(const std::vector<ElectronCollection> &electronCollectionVector)
         : ParticleCollections(),
           spinTypeCollection_(electronCollectionVector[0].spinTypeCollection()) {
 
@@ -30,12 +30,12 @@ ElectronCollections::ElectronCollections(const std::vector<ElectronCollection> &
     }
 }
 
-ElectronCollections::ElectronCollections(const PositionCollections &positionCollections)
-        : ElectronCollections(positionCollections,
+ElectronsVectorCollection::ElectronsVectorCollection(const PositionCollections &positionCollections)
+        : ElectronsVectorCollection(positionCollections,
                               SpinTypeCollection(positionCollections.numberOfPositionsEntities())) {
 }
 
-ElectronCollections::ElectronCollections(const PositionCollections &positionCollections,
+ElectronsVectorCollection::ElectronsVectorCollection(const PositionCollections &positionCollections,
                                          const SpinTypeCollection &spinTypeCollection)
         : ParticleCollections(positionCollections),
           spinTypeCollection_(spinTypeCollection) {
@@ -45,19 +45,19 @@ ElectronCollections::ElectronCollections(const PositionCollections &positionColl
            && "The number of entities in ParticleCollections, PositionCollections, and SpinTypeCollection must match.");
 }
 
-ElectronCollection ElectronCollections::operator[](long i) const {
+ElectronCollection ElectronsVectorCollection::operator[](long i) const {
     return ElectronCollection(positionCollections_[i],spinTypeCollection_);
 }
 
-const SpinTypeCollection& ElectronCollections::spinTypeCollection() const{
+const SpinTypeCollection& ElectronsVectorCollection::spinTypeCollection() const{
     return spinTypeCollection_;
 }
 
-SpinTypeCollection &ElectronCollections::spinTypeCollection() {
+SpinTypeCollection &ElectronsVectorCollection::spinTypeCollection() {
     return spinTypeCollection_;
 }
 
-void ElectronCollections::insert(const ElectronCollection &electronCollection, long i) {
+void ElectronsVectorCollection::insert(const ElectronCollection &electronCollection, long i) {
     if (spinTypeCollection_.numberOfEntities() != 0) {
         assert(spinTypeCollection_.spinTypesAsEigenVector()
                == electronCollection.spinTypeCollection().spinTypesAsEigenVector());
@@ -69,15 +69,15 @@ void ElectronCollections::insert(const ElectronCollection &electronCollection, l
     incrementNumberOfEntities();
 }
 
-void ElectronCollections::append(const ElectronCollection &electronCollection) {
+void ElectronsVectorCollection::append(const ElectronCollection &electronCollection) {
     insert(electronCollection,numberOfEntities());
 }
 
-void ElectronCollections::prepend(const ElectronCollection &electronCollection) {
+void ElectronsVectorCollection::prepend(const ElectronCollection &electronCollection) {
     insert(electronCollection,0);
 }
 
-void ElectronCollections::permute(long i, long j) {
+void ElectronsVectorCollection::permute(long i, long j) {
     if(i != j) {
         positionCollections_.permute(i,j);
         spinTypeCollection_.permute(i,j);

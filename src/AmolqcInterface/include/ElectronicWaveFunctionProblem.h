@@ -7,7 +7,7 @@
 
 #include "ElectronicWaveFunction.h"
 #include "problem.h"
-#include "ElectronCollections.h"
+#include "ElectronsVectorCollection.h"
 
 class ElectronicWaveFunctionProblem : public cppoptlib::Problem<double,Eigen::Dynamic>
 {
@@ -39,10 +39,10 @@ public:
     void reset(){
         valueCallCount_ = 0;
         gradientCallCount_ = 0;
-        optimizationPath_ = ElectronCollections(wf_.getSpinTypeCollection());
+        optimizationPath_ = ElectronsVectorCollection(wf_.getSpinTypeCollection());
     }
 
-    ElectronCollections getOptimizationPath(){
+    ElectronsVectorCollection getOptimizationPath(){
         return optimizationPath_;
     }
 
@@ -54,7 +54,7 @@ public:
 private:
     unsigned valueCallCount_, gradientCallCount_;
     ElectronicWaveFunction& wf_;
-    ElectronCollections optimizationPath_;
+    ElectronsVectorCollection optimizationPath_;
     Eigen::Matrix<bool,Eigen::Dynamic,1> electronCoordinateIndicesThatWereNaN_;
     std::vector<unsigned long> indicesOfElectronsNotAtNuclei_;
     std::vector<unsigned long> indicesOfElectronsAtNuclei_;

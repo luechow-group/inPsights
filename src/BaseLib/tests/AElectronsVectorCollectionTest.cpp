@@ -3,12 +3,12 @@
 //
 
 #include <gtest/gtest.h>
-#include "ElectronCollections.h"
+#include "ElectronsVectorCollection.h"
 
 using namespace testing;
 using namespace Eigen;
 
-class AElectronCollectionsTest : public Test {
+class AElectronsVectorCollectionTest : public Test {
 public:
     void SetUp() override {
         Electron electron1(Vector3d(1,2,3),Spin::SpinType::alpha);
@@ -33,23 +33,23 @@ public:
     ElectronCollection electronCollection1,electronCollection2,electronCollection3;
 };
 
-TEST_F(AElectronCollectionsTest, InitialNumberEntities){
+TEST_F(AElectronsVectorCollectionTest, InitialNumberEntities){
 
-    ElectronCollections electronCollections;
-    ASSERT_EQ(electronCollections.numberOfEntities(),0);
-    ASSERT_EQ(electronCollections.positionCollections().numberOfEntities(),0);
-    ASSERT_EQ(electronCollections.spinTypeCollection().numberOfEntities(),0);
+    ElectronsVectorCollection electronsVectorCollection;
+    ASSERT_EQ(electronsVectorCollection.numberOfEntities(),0);
+    ASSERT_EQ(electronsVectorCollection.positionCollections().numberOfEntities(),0);
+    ASSERT_EQ(electronsVectorCollection.spinTypeCollection().numberOfEntities(),0);
 }
 
-TEST_F(AElectronCollectionsTest, NumberEntities){
+TEST_F(AElectronsVectorCollectionTest, NumberEntities){
 
-    ElectronCollections electronCollections;
+    ElectronsVectorCollection electronsVectorCollection;
 
-    electronCollections.append(electronCollection1);
-    electronCollections.append(electronCollection1);
+    electronsVectorCollection.append(electronCollection1);
+    electronsVectorCollection.append(electronCollection1);
 
-    ASSERT_EQ(electronCollections.numberOfEntities(),2);
-    ASSERT_EQ(electronCollections[0].numberOfEntities(),3);
+    ASSERT_EQ(electronsVectorCollection.numberOfEntities(),2);
+    ASSERT_EQ(electronsVectorCollection[0].numberOfEntities(),3);
 }
 
 

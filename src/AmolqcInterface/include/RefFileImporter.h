@@ -16,7 +16,7 @@ public:
     SpinTypeCollection getSpinTypeCollection() const;
     PositionCollection getPositionCollection(unsigned long k, unsigned long m) const;
     ElectronCollection getMaximaStructure(unsigned long k, unsigned long m) const;
-    ElectronCollections getAllSubstructures(unsigned long k) const;
+    ElectronsVectorCollection getAllSubstructures(unsigned long k) const;
 
     unsigned long getNumberOfMaxima(unsigned long k, unsigned long m) const;
     double getNegativeLogarithmizedProbabilityDensity(unsigned long k, unsigned long m) const;

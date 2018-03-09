@@ -85,7 +85,7 @@ int main(int argc, char *argv[]) {
 
         // Prepare the optimization path for visualization
         auto optimizationPath = electronicWaveFunctionProblem.getOptimizationPath();
-        ElectronCollections shortenedPath(optimizationPath[0]);
+        ElectronsVectorCollection shortenedPath(optimizationPath[0]);
         unsigned long nwanted = 300;
         auto skip = 1 + (optimizationPath.numberOfEntities() / nwanted);
         std::cout << "displaying structures with a spacing of " << skip << "." << std::endl;

@@ -6,13 +6,13 @@
 #define AMOLQCGUI_PARTICLECOLLECTIONPATH3D_H
 
 #include "AtomCollection.h"
-#include "ElectronCollections.h"
+#include "ElectronsVectorCollection.h"
 
 class ParticleCollectionPath3D{
 public:
 
     ParticleCollectionPath3D(Qt3DCore::QEntity *root,
-                             const ElectronCollections &electronCollections,
+                             const ElectronsVectorCollection &electronsVectorCollection,
                              float radius = 0.01f);
 };
 

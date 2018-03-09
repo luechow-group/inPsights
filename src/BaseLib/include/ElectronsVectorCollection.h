@@ -9,15 +9,15 @@
 #include "ElectronCollection.h"
 #include "SpinTypeCollection.h"
 
-class ElectronCollections : public ParticleCollections{
+class ElectronsVectorCollection : public ParticleCollections{
 public:
-    ElectronCollections();
-    explicit ElectronCollections(const SpinTypeCollection& spinTypeCollection);
-    explicit ElectronCollections(const ElectronCollection& electronCollection);
-    explicit ElectronCollections(const std::vector<ElectronCollection>& electronCollectionVector);
-    explicit ElectronCollections(const PositionCollections& electronCollection);
+    ElectronsVectorCollection();
+    explicit ElectronsVectorCollection(const SpinTypeCollection& spinTypeCollection);
+    explicit ElectronsVectorCollection(const ElectronCollection& electronCollection);
+    explicit ElectronsVectorCollection(const std::vector<ElectronCollection>& electronCollectionVector);
+    explicit ElectronsVectorCollection(const PositionCollections& electronCollection);
 
-    explicit ElectronCollections(const PositionCollections& electronCollection,
+    explicit ElectronsVectorCollection(const PositionCollections& electronCollection,
                                  const SpinTypeCollection& spinTypeCollection);
 
     ElectronCollection operator[](long i) const;

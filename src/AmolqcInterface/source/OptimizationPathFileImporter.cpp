@@ -36,13 +36,13 @@ PositionCollection OptimizationPathFileImporter::getPositionCollection(unsigned 
     return AmolqcImporter::importPositionCollectionBlock(startLine, 0, numberOfElectrons_);
 }
 
-ElectronCollections OptimizationPathFileImporter::getPath(unsigned long k) const {
+ElectronsVectorCollection OptimizationPathFileImporter::getPath(unsigned long k) const {
     unsigned long numberOfSubstructures = substructuresData_[k].numberOfSubstructures_;
     PositionCollections positionCollections;
     for (unsigned long m = 1; m <= numberOfSubstructures; ++m) {
         positionCollections.append(this->getPositionCollection(k, m));
     }
-    return ElectronCollections(positionCollections,
+    return ElectronsVectorCollection(positionCollections,
                                this->getSpinTypeCollection(numberOfAlphaElectrons_, numberOfBetaElectrons_));
 }
 

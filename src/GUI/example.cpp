@@ -68,7 +68,7 @@ int main(int argc, char *argv[]) {
     collectionParser.writeJSON(jsonObject,"FIRE-Ehane-opt.json");
 
     auto optimizationPath = electronicWaveFunctionProblem.getOptimizationPath();
-    ElectronCollections shortenedPath(ElectronCollection(optimizationPath.front(),
+    ElectronsVectorCollection shortenedPath(ElectronCollection(optimizationPath.front(),
                                                          optimizationPath.getSpinTypeCollection()));
 
     unsigned long nwanted = 300;
