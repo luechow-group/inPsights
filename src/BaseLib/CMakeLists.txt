@@ -45,6 +45,7 @@ set(HEADER_FILES
         include/Position.h
         include/PositionFormat.h
         include/PositionCollections.h
+        include/ToString.h
         )
 
 set(SOURCE_FILES
@@ -68,6 +69,7 @@ set(SOURCE_FILES
         source/Position.cpp
         source/AbstractCollection.cpp
         source/PositionCollections.cpp
+        source/ToString.cpp
         )
 
 file(GLOB_RECURSE RESOURCE_FILES resources/*.*)
