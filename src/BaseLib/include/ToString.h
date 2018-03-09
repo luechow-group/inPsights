@@ -9,16 +9,16 @@
 #include <Eigen/Core>
 
 namespace ToString {
-    std::string int2string(int a,
-                           unsigned leadingSpaces = 1);
+    std::string intToString(int a,
+                            unsigned leadingSpaces = 1);
 
-    std::string double2string(double a,
-                              unsigned decimalPlaces = 5,
-                              unsigned leadingSpaces = 1);
+    std::string doubleToString(double a,
+                               unsigned decimalPlaces = 5,
+                               unsigned leadingSpaces = 1);
 
-    std::string vector3d2string(const Eigen::Vector3d &vector,
-                                unsigned decimalPlaces = 5,
-                                unsigned leadingSpaces = 1);
+    std::string vector3dToString(const Eigen::Vector3d &vector,
+                                 unsigned decimalPlaces = 5,
+                                 unsigned leadingSpaces = 1);
 }
 
 #endif //AMOLQCGUI_TOSTRING_H

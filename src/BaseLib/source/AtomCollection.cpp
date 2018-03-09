@@ -65,7 +65,7 @@ ElementTypeCollection &AtomCollection::elementTypeCollection() {
 
 std::ostream& operator<<(std::ostream& os, const AtomCollection& ac){
     for (unsigned long i = 0; i < ac.numberOfEntities(); i++) {
-        os << ToString::int2string(i+1) << " " << ac[i] << std::endl;
+        os << ToString::intToString(i + 1) << " " << ac[i] << std::endl;
     }
     return os;
 }

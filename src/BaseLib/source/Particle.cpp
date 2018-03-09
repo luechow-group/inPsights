@@ -35,5 +35,5 @@ int Particle::charge() const{
 }
 
 std::string Particle::toString() const{
-    return "  " + ToString::vector3d2string(position_);
+    return "  " + ToString::vector3dToString(position_);
 }

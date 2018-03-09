@@ -64,7 +64,7 @@ SpinTypeCollection &ElectronCollection::spinTypeCollection() {
 
 std::ostream& operator<<(std::ostream& os, const ElectronCollection& ec){
     for (unsigned long i = 0; i < ec.numberOfEntities(); i++) {
-        os << ToString::int2string(i+1) << " " << ec[i] << std::endl;
+        os << ToString::intToString(i + 1) << " " << ec[i] << std::endl;
     }
     return os;
 }

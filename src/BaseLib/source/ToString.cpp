@@ -5,23 +5,23 @@
 #include <iomanip>
 #include "ToString.h"
 
-std::string ToString::int2string(const int a,
-                                 const unsigned leadingSpaces) {
+std::string ToString::intToString(int a,
+                                  unsigned leadingSpaces) {
     std::string string = std::to_string(a);
     string = std::string(leadingSpaces + 1 - string.length(),' ') + string;
     return string;
 }
 
-std::string ToString::vector3d2string(const Eigen::Vector3d &vector,
-                            const unsigned decimalPlaces, const unsigned leadingSpaces) {
+std::string ToString::vector3dToString(const Eigen::Vector3d &vector,
+                                       unsigned decimalPlaces, unsigned leadingSpaces) {
     std::ostringstream sstream;
     for (int i = 0; i < vector.size(); i++){
-        sstream << " " << double2string(vector(i),decimalPlaces,leadingSpaces);
+        sstream << " " << doubleToString(vector(i), decimalPlaces, leadingSpaces);
     }
     return sstream.str();
 }
 
-std::string ToString::double2string(double a, const unsigned decimalPlaces, const unsigned leadingSpaces) {
+std::string ToString::doubleToString(double a, unsigned decimalPlaces, unsigned leadingSpaces) {
     std::ostringstream sstream;
     if (a >= 0){
         sstream << " ";

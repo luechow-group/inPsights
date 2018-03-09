@@ -50,5 +50,5 @@ std::string Atom::toString() const {
         string = "  ";
     }
 
-    return string + ToString::vector3d2string(position_);
+    return string + ToString::vector3dToString(position_);
 }

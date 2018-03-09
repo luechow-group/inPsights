@@ -37,5 +37,5 @@ std::ostream& operator<< (std::ostream& os, const Electron& elec) {
 
 std::string Electron::toString() const {
 
-    return "e" + Spin::toString(spinType_) + ToString::vector3d2string(position_);
+    return "e" + Spin::toString(spinType_) + ToString::vector3dToString(position_);
 }
