@@ -3,6 +3,7 @@
 //
 
 #include <QApplication>
+#include <solver/newtonraphsonsolver.h>
 
 #include "CollectionParser.h"
 #include "ElectronicWaveFunctionProblem.h"
@@ -14,6 +15,7 @@
 #include "solver/gradientdescentsimplesolver.h"
 #include "solver/timeintegrationumrigarsolver.h"
 #include "solver/bfgsumrigarsolver.h"
+#include "solver/newtonraphsonsolver.h"
 
 #include "AtomCollection3D.h"
 #include "ElectronCollection3D.h"
@@ -40,8 +42,8 @@ bool handleCommandlineArguments(int argc, char **argv,
 }
 
 int main(int argc, char *argv[]) {
-    std::string wavefunctionFilename = "H2sm444.wf"; // overwrite command line
-    std::string electronCollectionFilename = "H2sm444_TS_ev.json"; // overwrite command line
+    std::string wavefunctionFilename = "Ethane-em-5.wf"; // overwrite command line
+    std::string electronCollectionFilename = "Ethane-TS-2ndOrder.json"; // overwrite command line
     bool showGui = true;
 
     if( wavefunctionFilename.empty() && electronCollectionFilename.empty()) {
@@ -58,23 +60,24 @@ int main(int argc, char *argv[]) {
     std::cout << ec << std::endl;
 
     Eigen::VectorXd x(ec.positionCollection().positionsAsEigenVector());
-    std::cout << x.transpose() << std::endl;
     Eigen::VectorXd grad(ec.numberOfEntities());
     electronicWaveFunctionProblem.putElectronsIntoNuclei(x,grad);
 
 
     cppoptlib::Criteria<double> crit = cppoptlib::Criteria<double>::nonsmoothDefaults();
 
-    cppoptlib::TimeIntegrationSolver<ElectronicWaveFunctionProblem> solver;
+    cppoptlib::NewtonRaphsonSolver<ElectronicWaveFunctionProblem> solver;
     solver.setDebug(cppoptlib::DebugLevel::High);
-    crit.gradNorm = 1e-6;
-    crit.iterations = 1000;
+    crit.gradNorm = 1e-8;
+    crit.iterations = 0;
     solver.setStopCriteria(crit);
 
     solver.minimize(electronicWaveFunctionProblem, x);
-    std::cout << ElectronCollection(x,ec.spinTypeCollection().spinTypesAsEigenVector())<<std::endl;
+    auto ecFinal = ElectronCollection(x,ec.spinTypeCollection().spinTypesAsEigenVector());
+    std::cout << ecFinal <<std::endl;
 
-
+    auto json = collectionParser.electronCollectionToJson(ecFinal);
+    collectionParser.writeJSON(json,"Ethane-TS-2ndOrder_reopt.json");
 
     if(showGui) {
         QApplication app(argc, argv);
@@ -99,7 +102,7 @@ int main(int argc, char *argv[]) {
         AtomCollection3D(root, ElectronicWaveFunction::getInstance().getAtomCollection());
 
         // Plot the starting point
-        ElectronCollection3D(root, ElectronCollection(x, optimizationPath.spinTypeCollection().spinTypesAsEigenVector()), false);
+        ElectronCollection3D(root, ElectronCollection(x, optimizationPath.spinTypeCollection().spinTypesAsEigenVector()), true);
 
         // Plot the optimization path
         ParticleCollectionPath3D(root, shortenedPath);

@@ -19,12 +19,12 @@
 int main(int argc, char *argv[]) {
     bool showGui = true;
 
-    ElectronicWaveFunctionProblem electronicWaveFunctionProblem("H2sm444.wf");
+    ElectronicWaveFunctionProblem electronicWaveFunctionProblem("Ethane-em-5.wf");
     auto ac = electronicWaveFunctionProblem.getAtomCollection();
     std::cout << ac << std::endl;
 
     CollectionParser collectionParser;
-    auto ec = collectionParser.electronCollectionFromJson("H2sm444_TS_NRopt.json");
+    auto ec = collectionParser.electronCollectionFromJson("Ethane-TS-2ndOrder.json");
     auto nsmooth = 2;
     auto x = ec.positionCollection().positionsAsEigenVector();
     auto n = ElectronicWaveFunction::getInstance().getNumberOfElectrons()*3;
@@ -48,8 +48,8 @@ int main(int argc, char *argv[]) {
     auto eigenvalues = selfAdjointEigenSolver.eigenvalues();
     std::cout << eigenvalues << std::endl;
     auto eigenvectors = selfAdjointEigenSolver.eigenvectors();
-    std::cout << eigenvectors << std::endl;
-    std::cout << std::endl;
+    //std::cout << eigenvectors << std::endl;
+    //std::cout << std::endl;
 
     if (showGui) {
         QApplication app(argc, argv);
