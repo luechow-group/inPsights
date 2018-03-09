@@ -48,7 +48,7 @@ set(HEADER_FILES
         include/Electron3D.h
         include/StringMethodCoordinatesPlotter.h
         include/StringMethodValuePlotter.h
-        include/AtomCollection3D.h
+        include/AtomsVector3D.h
         include/ElectronsVector3D.h
         include/MoleculeWidget.h
         include/ParticlesVectorPath3D.h
@@ -64,7 +64,7 @@ set(SOURCE_FILES
         source/Atom3D.cpp
         source/Bond3D.cpp
         source/Electron3D.cpp
-        source/AtomCollection3D.cpp
+        source/AtomsVector3D.cpp
         source/ElectronsVector3D.cpp
         source/MoleculeWidget.cpp
         source/ParticlesVectorPath3D.cpp

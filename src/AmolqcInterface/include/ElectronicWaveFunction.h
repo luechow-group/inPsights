@@ -7,7 +7,7 @@
 
 #include <Eigen/Core>
 #include <vector>
-#include "AtomCollection.h"
+#include "AtomsVector.h"
 #include "ElectronsVectorCollection.h"
 
 namespace ElectronPositioningMode {
@@ -67,7 +67,7 @@ public:
 
     unsigned long getNumberOfNuclei() const;
 
-    AtomCollection getAtomCollection() const;
+    AtomsVector getAtomsVector() const;
 
     unsigned long getNumberOfElectrons() const;
 
@@ -79,7 +79,7 @@ private:
     unsigned long numberOfNuclei_, numberOfElectrons_, numberOfAlphaElectrons_, numberOfBetaElectrons_;
     double determinantProbabilityAmplitude_, jastrowFactor_, localEnergy_;
     Eigen::VectorXd electronPositionsVectorAsEigenVector_, electronDriftCollection_;//TODO REPLACE BY BASELIB ELECTRONCOLLECTION!
-    AtomCollection atomCollection_;
+    AtomsVector atomsVector_;
     SpinTypesVector spinTypesVector_;
 
 };

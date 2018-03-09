@@ -24,8 +24,8 @@ RefFileImporter::RefFileImporter(const std::string &filename)
     substructuresData_ = AmolqcImporter::countSubstructures(startLineIdx,blockLength);
 }
 
-AtomCollection RefFileImporter::getAtomCollection() {
-    AtomCollection atomCollection;
+AtomsVector RefFileImporter::getAtomsVector() {
+    AtomsVector atomsVector;
 
     for (unsigned i = 1; i <= numberOfNuclei_; ++i) {
         std::vector<std::string> lineElements = split(getLine(i));
@@ -33,9 +33,9 @@ AtomCollection RefFileImporter::getAtomCollection() {
         double x = std::stod(lineElements[2]);
         double y = std::stod(lineElements[3]);
         double z = std::stod(lineElements[4]);
-        atomCollection.append(Atom(x,y,z,elementType));
+        atomsVector.append(Atom(x,y,z,elementType));
     }
-    return atomCollection;
+    return atomsVector;
 }
 
 unsigned long RefFileImporter::calculateLine(unsigned long k, unsigned long m) const {

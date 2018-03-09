@@ -15,22 +15,22 @@ public:
         Atom atom2(Vector3d(-1,0,3.5),Elements::ElementType::Au);
         Atom atom3(Vector3d(-7.3,0.5,9),Elements::ElementType::C);
 
-        atomCollection1;
-        atomCollection1.append(atom1);
-        atomCollection1.append(atom2);
-        atomCollection1.append(atom3);
+        atomsVector1;
+        atomsVector1.append(atom1);
+        atomsVector1.append(atom2);
+        atomsVector1.append(atom3);
 
-        atomCollection2;
-        atomCollection2.append(atom2);
-        atomCollection2.append(atom1);
-        atomCollection2.append(atom3);
+        atomsVector2;
+        atomsVector2.append(atom2);
+        atomsVector2.append(atom1);
+        atomsVector2.append(atom3);
 
-        atomCollection3;
-        atomCollection3.append(atom1);
-        atomCollection3.append(atom3);
-        atomCollection3.append(atom2);
+        atomsVector3;
+        atomsVector3.append(atom1);
+        atomsVector3.append(atom3);
+        atomsVector3.append(atom2);
     }
-    AtomCollection atomCollection1,atomCollection2,atomCollection3;
+    AtomsVector atomsVector1,atomsVector2,atomsVector3;
 };
 
 TEST_F(AAtomsVectorCollectionTest, InitialNumberEntities){
@@ -45,8 +45,8 @@ TEST_F(AAtomsVectorCollectionTest, NumberEntities){
 
     AtomsVectorCollection atomsVectorCollection;
 
-    atomsVectorCollection.append(atomCollection1);
-    atomsVectorCollection.append(atomCollection1);
+    atomsVectorCollection.append(atomsVector1);
+    atomsVectorCollection.append(atomsVector1);
 
     ASSERT_EQ(atomsVectorCollection.numberOfEntities(),2);
     ASSERT_EQ(atomsVectorCollection[0].numberOfEntities(),3);

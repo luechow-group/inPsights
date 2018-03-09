@@ -3,21 +3,21 @@
 //
 
 
-#include "AtomCollection3D.h"
+#include "AtomsVector3D.h"
 #include "Atom3D.h"
 #include "Bond3D.h"
 
-AtomCollection3D::AtomCollection3D(Qt3DCore::QEntity *root, const AtomCollection &atomCollection) {
+AtomsVector3D::AtomsVector3D(Qt3DCore::QEntity *root, const AtomsVector &atomsVector) {
 
   /*TODO Refactor*/
   std::vector<Atom3D> atoms3D;
 
   // Draw atoms
-  for (long i = 0; i < atomCollection.numberOfEntities(); ++i) {
-    Eigen::Vector3d vec= atomCollection[i].position();
+  for (long i = 0; i < atomsVector.numberOfEntities(); ++i) {
+    Eigen::Vector3d vec= atomsVector[i].position();
     atoms3D.emplace_back(Atom3D(root,
                                 QVector3D(float(vec[0]),float(vec[1]),float(vec[2])),
-                                atomCollection.elementTypesVector()[i]));
+                                atomsVector.elementTypesVector()[i]));
   }
 
   // Draw bonds

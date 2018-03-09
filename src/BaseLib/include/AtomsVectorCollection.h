@@ -6,28 +6,28 @@
 #define AMOLQCGUI_ATOMCOLLECTIONS_H
 
 #include "ParticlesVectorCollection.h"
-#include "AtomCollection.h"
+#include "AtomsVector.h"
 #include "ElementTypesVector.h"
 
 class AtomsVectorCollection : public ParticlesVectorCollection{
 public:
     AtomsVectorCollection();
     explicit AtomsVectorCollection(const ElementTypesVector& elementTypesVector);
-    explicit AtomsVectorCollection(const AtomCollection& atomCollection);
-    explicit AtomsVectorCollection(const std::vector<AtomCollection>& atomCollectionVector);
-    explicit AtomsVectorCollection(const PositionsVectorCollection& atomCollection);
+    explicit AtomsVectorCollection(const AtomsVector& atomsVector);
+    explicit AtomsVectorCollection(const std::vector<AtomsVector>& atomsVectorVector);
+    explicit AtomsVectorCollection(const PositionsVectorCollection& atomsVector);
 
-    explicit AtomsVectorCollection(const PositionsVectorCollection& atomCollection,
+    explicit AtomsVectorCollection(const PositionsVectorCollection& atomsVector,
                                  const ElementTypesVector& elementTypesVector);
 
-    AtomCollection operator[](long i) const;
+    AtomsVector operator[](long i) const;
 
     const ElementTypesVector& elementTypesVector() const;
     ElementTypesVector& elementTypesVector();
 
-    void insert (const AtomCollection& atomCollection, long i);
-    void append (const AtomCollection& atomCollection);
-    void prepend(const AtomCollection& atomCollection);
+    void insert (const AtomsVector& atomsVector, long i);
+    void append (const AtomsVector& atomsVector);
+    void prepend(const AtomsVector& atomsVector);
     void permute(long i, long j) override;
 
 private:

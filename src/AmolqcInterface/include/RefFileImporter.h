@@ -11,7 +11,7 @@ class RefFileImporter : public AmolqcImporter{
 public:
     RefFileImporter(const std::string& filename);
 
-    AtomCollection getAtomCollection();
+    AtomsVector getAtomsVector();
 
     SpinTypesVector getSpinTypesVector() const;
     PositionsVector getPositionsVector(unsigned long k, unsigned long m) const;

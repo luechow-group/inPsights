@@ -15,7 +15,7 @@
 #include "solver/timeintegrationumrigarsolver.h"
 #include "solver/bfgsumrigarsolver.h"
 
-#include "AtomCollection3D.h"
+#include "AtomsVector3D.h"
 #include "ElectronsVector3D.h"
 #include "ParticlesVectorPath3D.h"
 #include "MoleculeWidget.h"
@@ -52,7 +52,7 @@ int main(int argc, char *argv[]) {
 
     ElectronicWaveFunctionProblem electronicWaveFunctionProblem(wavefunctionFilename);
     CollectionParser collectionParser;
-    auto ac = electronicWaveFunctionProblem.getAtomCollection();
+    auto ac = electronicWaveFunctionProblem.getAtomsVector();
     auto ec = collectionParser.electronsVectorFromJson(electronsVectorFilename);
     std::cout << ac << std::endl;
     std::cout << ec << std::endl;
@@ -99,7 +99,7 @@ int main(int argc, char *argv[]) {
         MoleculeWidget moleculeWidget;
         Qt3DCore::QEntity *root = moleculeWidget.createMoleculeWidget();
 
-        AtomCollection3D(root, ElectronicWaveFunction::getInstance().getAtomCollection());
+        AtomsVector3D(root, ElectronicWaveFunction::getInstance().getAtomsVector());
 
         // Plot the starting point
         ElectronsVector3D(root, ElectronsVector(x, optimizationPath.spinTypesVector().spinTypesAsEigenVector()), false);

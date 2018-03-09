@@ -67,8 +67,8 @@ void ElectronicWaveFunctionProblem::fixGradient(Eigen::VectorXd &gradient) {
 void ElectronicWaveFunctionProblem::putElectronsIntoNuclei(Eigen::VectorXd& x, Eigen::VectorXd& grad) {
     assert( x.size() == wf_.getNumberOfElectrons()*3 && "Number of dimensions must be identical and multiple of 3");
 
-    auto atomCollection = wf_.getAtomCollection();
-    auto numberOfNuclei = atomCollection.numberOfEntities();
+    auto atomsVector = wf_.getAtomsVector();
+    auto numberOfNuclei = atomsVector.numberOfEntities();
     auto numberOfElectrons = wf_.getNumberOfElectrons();
 
     // iterate over electrons that were not at nuclei in the last step
@@ -78,7 +78,7 @@ void ElectronicWaveFunctionProblem::putElectronsIntoNuclei(Eigen::VectorXd& x, E
 
         // iterate over all nuclei and find the index of the electron with the smallest distance
         for(unsigned long j = 0; j < numberOfNuclei; ++j){
-            double distance = (atomCollection[j].position()-x.segment(i*3,3)).norm();
+            double distance = (atomsVector[j].position()-x.segment(i*3,3)).norm();
             if(distance < smallestDistance ) {
                 smallestDistance = distance;
                 closestNucleusIdx = j;
@@ -88,8 +88,8 @@ void ElectronicWaveFunctionProblem::putElectronsIntoNuclei(Eigen::VectorXd& x, E
         double threshold = 0.0005;
         if (smallestDistance <= threshold){
             //TODO PROPER?
-            //Eigen::Block<Eigen::VectorXd, i*3, 0>(x.derived(), 0, 0) = atomCollection[closestNucleusIdx].position();
-            x.segment(i*3,3) = atomCollection[closestNucleusIdx].position();
+            //Eigen::Block<Eigen::VectorXd, i*3, 0>(x.derived(), 0, 0) = atomsVector[closestNucleusIdx].position();
+            x.segment(i*3,3) = atomsVector[closestNucleusIdx].position();
 
             //save the electron index in the indicesOfElectronsAtNuclei_ vector
             indicesOfElectronsAtNuclei_.push_back(i);
@@ -130,8 +130,8 @@ bool ElectronicWaveFunctionProblem::callback(const cppoptlib::Criteria<double> &
     return true;
 }
 
-AtomCollection ElectronicWaveFunctionProblem::getAtomCollection() const{
-    return wf_.getAtomCollection();
+AtomsVector ElectronicWaveFunctionProblem::getAtomsVector() const{
+    return wf_.getAtomsVector();
 }
 
 std::vector<unsigned long> ElectronicWaveFunctionProblem::getIndicesOfElectronsNotAtNuclei() {

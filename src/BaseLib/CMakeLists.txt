@@ -29,7 +29,7 @@ set(HEADER_FILES
         include/ElementTypesVector.h
         include/NaturalConstants.h
         include/Atom.h
-        include/AtomCollection.h
+        include/AtomsVector.h
         include/AtomsVectorCollection.h
         include/Particle.h
         include/ParticlesVector.h
@@ -53,7 +53,7 @@ set(SOURCE_FILES
         source/ElementInfo.cpp
         source/ElementTypesVector.cpp
         source/Atom.cpp
-        source/AtomCollection.cpp
+        source/AtomsVector.cpp
         source/AtomsVectorCollection.cpp
         source/Particle.cpp
         source/ParticlesVector.cpp

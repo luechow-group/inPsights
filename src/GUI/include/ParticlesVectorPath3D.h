@@ -5,7 +5,7 @@
 #ifndef AMOLQCGUI_PARTICLECOLLECTIONPATH3D_H
 #define AMOLQCGUI_PARTICLECOLLECTIONPATH3D_H
 
-#include "AtomCollection.h"
+#include "AtomsVector.h"
 #include "ElectronsVectorCollection.h"
 
 class ParticlesVectorPath3D{

@@ -13,7 +13,7 @@
 int main(int argc, char *argv[]) {
 
     ElectronicWaveFunctionProblem electronicWaveFunctionProblem("BH3_Exp-em.wf");
-    auto ac = electronicWaveFunctionProblem.getAtomCollection();
+    auto ac = electronicWaveFunctionProblem.getAtomsVector();
     std::cout << ac << std::endl;
 
 

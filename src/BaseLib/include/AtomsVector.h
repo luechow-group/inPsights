@@ -9,12 +9,12 @@
 #include "ElementTypesVector.h"
 #include "Atom.h"
 
-class AtomCollection : public ParticlesVector{
+class AtomsVector : public ParticlesVector{
 public:
-    AtomCollection() = default;
-    explicit AtomCollection(const Eigen::VectorXd& positions);
-    AtomCollection(const Eigen::VectorXd& positions, const Eigen::VectorXi& elementTypes);
-    AtomCollection(const PositionsVector &positionsVector,
+    AtomsVector() = default;
+    explicit AtomsVector(const Eigen::VectorXd& positions);
+    AtomsVector(const Eigen::VectorXd& positions, const Eigen::VectorXi& elementTypes);
+    AtomsVector(const PositionsVector &positionsVector,
                    const ElementTypesVector &elementTypesVector);
 
     Atom operator[](long i) const;
@@ -28,7 +28,7 @@ public:
     const ElementTypesVector& elementTypesVector() const;
     ElementTypesVector& elementTypesVector();
 
-    friend std::ostream& operator<<(std::ostream& os, const AtomCollection& ac);
+    friend std::ostream& operator<<(std::ostream& os, const AtomsVector& ac);
 
 private:
     ElementTypesVector elementTypesVector_;

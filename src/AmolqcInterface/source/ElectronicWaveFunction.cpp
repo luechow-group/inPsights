@@ -56,7 +56,7 @@ void ElectronicWaveFunction::initialize(const std::string& fileName) {
          && "Number of electrons from amolqc must match the number by counting the nuclear charges minus the overall charge of the molecule");
   numberOfBetaElectrons_ = wfFileImporter.getNumberOfBetaElectrons();
   numberOfAlphaElectrons_ = wfFileImporter.getNumberOfAlphaElectrons();
-  atomCollection_ = wfFileImporter.getAtomCollection();
+  atomsVector_ = wfFileImporter.getAtomsVector();
   spinTypesVector_  = SpinTypesVector(numberOfAlphaElectrons_,numberOfBetaElectrons_);
 }
 
@@ -154,8 +154,8 @@ Eigen::VectorXd ElectronicWaveFunction::getInverseNegativeLogarithmizedProbabili
   //return 0.5*getProbabilityAmplitude()*getProbabilityAmplitudeGradientCollection().cwiseInverse();
 }
 
-AtomCollection ElectronicWaveFunction::getAtomCollection() const {
-    return atomCollection_;
+AtomsVector ElectronicWaveFunction::getAtomsVector() const {
+    return atomsVector_;
 }
 
 SpinTypesVector ElectronicWaveFunction::getSpinTypesVector() const {

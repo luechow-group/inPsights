@@ -18,22 +18,22 @@ nlohmann::json CollectionParser::positionsVectorToJson(const PositionsVector &po
     return j;
 }
 
-nlohmann::json CollectionParser::atomCollectionToJson(const AtomCollection &atomCollection) {
+nlohmann::json CollectionParser::atomsVectorToJson(const AtomsVector &atomsVector) {
     nlohmann::json j;
-    const auto &elementTypesVector = atomCollection.elementTypesVector();
+    const auto &elementTypesVector = atomsVector.elementTypesVector();
 
     auto elementSymbolArray = nlohmann::json::array();
     auto particleCoordinatesArray = nlohmann::json::array();
-    for (int i = 0; i < atomCollection.numberOfEntities(); ++i) {
+    for (int i = 0; i < atomsVector.numberOfEntities(); ++i) {
 
-        auto vec = atomCollection[i].position();
+        auto vec = atomsVector[i].position();
         auto elemetSymbol = Elements::ElementInfo::symbol(elementTypesVector[i]);
 
         elementSymbolArray.push_back(elemetSymbol);
         particleCoordinatesArray.push_back(nlohmann::json::array({vec[0],vec[1],vec[2]}));
     }
 
-    j["type"] = "AtomCollection";
+    j["type"] = "AtomsVector";
     j["elements"] = elementSymbolArray;
     j["coordinates"] = particleCoordinatesArray;
 
@@ -79,9 +79,9 @@ PositionsVector CollectionParser::array2DToPositionsVector(const nlohmann::json 
 }
 
 
-AtomCollection CollectionParser::atomCollectionFromJson(const std::string &filename) {
+AtomsVector CollectionParser::atomsVectorFromJson(const std::string &filename) {
     auto j = readJSON(filename);
-    assert(j["type"]== "AtomCollection" && "File must be a AtomCollection.");
+    assert(j["type"]== "AtomsVector" && "File must be a AtomsVector.");
     assert(j["elements"].is_array());
 
     auto elementSymbols = j["elements"].get<std::vector<std::string>>();
@@ -91,7 +91,7 @@ AtomCollection CollectionParser::atomCollectionFromJson(const std::string &filen
     }
     PositionsVector positionsVector = array2DToPositionsVector(j["coordinates"]);
 
-    return AtomCollection(positionsVector, elementTypesVector);
+    return AtomsVector(positionsVector, elementTypesVector);
 }
 
 ElectronsVector CollectionParser::electronsVectorFromJson(const std::string &filename) {

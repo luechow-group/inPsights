@@ -6,18 +6,18 @@
 #define AMOLQCPP_COLLECTIONPARSER_H
 
 #include "ElectronsVector.h"
-#include "AtomCollection.h"
+#include "AtomsVector.h"
 
 #include <nlohmann/json.hpp>
 
 class CollectionParser{
 public:
 
-    nlohmann::json atomCollectionToJson(const AtomCollection& atomCollection);
+    nlohmann::json atomsVectorToJson(const AtomsVector& atomsVector);
     nlohmann::json electronsVectorToJson(const ElectronsVector& electronsVector);
     nlohmann::json positionsVectorToJson(const PositionsVector &positionsVector);
 
-    AtomCollection atomCollectionFromJson (const std::string& filename);
+    AtomsVector atomsVectorFromJson (const std::string& filename);
     ElectronsVector electronsVectorFromJson(const std::string& filename);
     PositionsVector positionsVectorFromJson(const std::string &filename);
 
