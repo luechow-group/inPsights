@@ -44,7 +44,7 @@ set(HEADER_FILES
         include/AbstractCollection.h
         include/PositionCollection.h
         include/Position.h
-        include/PositionCollections.h
+        include/PositionsVectorCollection.h
         include/ToString.h
         )
 
@@ -69,7 +69,7 @@ set(SOURCE_FILES
         source/PositionCollection.cpp
         source/Position.cpp
         source/AbstractCollection.cpp
-        source/PositionCollections.cpp
+        source/PositionsVectorCollection.cpp
         source/ToString.cpp
         )
 

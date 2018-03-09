@@ -37,7 +37,7 @@ TEST_F(AElectronsVectorCollectionTest, InitialNumberEntities){
 
     ElectronsVectorCollection electronsVectorCollection;
     ASSERT_EQ(electronsVectorCollection.numberOfEntities(),0);
-    ASSERT_EQ(electronsVectorCollection.positionCollections().numberOfEntities(),0);
+    ASSERT_EQ(electronsVectorCollection.positionsVectorCollection().numberOfEntities(),0);
     ASSERT_EQ(electronsVectorCollection.spinTypeCollection().numberOfEntities(),0);
 }
 

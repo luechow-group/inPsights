@@ -21,7 +21,7 @@ ElectronsVectorCollection::ElectronsVectorCollection(const std::vector<ElectronC
 
     if ( !electronCollectionVector.empty() ){
         for (const auto &electronCollection : electronCollectionVector) {
-            positionCollections_.append(electronCollection.positionCollection());
+            positionsVectorCollection_.append(electronCollection.positionCollection());
 
             assert(spinTypeCollection_.spinTypesAsEigenVector()
                    == electronCollection.spinTypeCollection().spinTypesAsEigenVector()
@@ -30,23 +30,23 @@ ElectronsVectorCollection::ElectronsVectorCollection(const std::vector<ElectronC
     }
 }
 
-ElectronsVectorCollection::ElectronsVectorCollection(const PositionCollections &positionCollections)
-        : ElectronsVectorCollection(positionCollections,
-                              SpinTypeCollection(positionCollections.numberOfPositionsEntities())) {
+ElectronsVectorCollection::ElectronsVectorCollection(const PositionsVectorCollection &positionsVectorCollection)
+        : ElectronsVectorCollection(positionsVectorCollection,
+                              SpinTypeCollection(positionsVectorCollection.numberOfPositionsEntities())) {
 }
 
-ElectronsVectorCollection::ElectronsVectorCollection(const PositionCollections &positionCollections,
+ElectronsVectorCollection::ElectronsVectorCollection(const PositionsVectorCollection &positionsVectorCollection,
                                          const SpinTypeCollection &spinTypeCollection)
-        : ParticleCollections(positionCollections),
+        : ParticleCollections(positionsVectorCollection),
           spinTypeCollection_(spinTypeCollection) {
 
-    assert(numberOfEntities() == positionCollections_.numberOfEntities()
+    assert(numberOfEntities() == positionsVectorCollection_.numberOfEntities()
            && numberOfEntities() == spinTypeCollection_.numberOfEntities()
-           && "The number of entities in ParticleCollections, PositionCollections, and SpinTypeCollection must match.");
+           && "The number of entities in ParticleCollections, PositionsVectorCollection, and SpinTypeCollection must match.");
 }
 
 ElectronCollection ElectronsVectorCollection::operator[](long i) const {
-    return ElectronCollection(positionCollections_[i],spinTypeCollection_);
+    return ElectronCollection(positionsVectorCollection_[i],spinTypeCollection_);
 }
 
 const SpinTypeCollection& ElectronsVectorCollection::spinTypeCollection() const{
@@ -65,7 +65,7 @@ void ElectronsVectorCollection::insert(const ElectronCollection &electronCollect
     else{
         spinTypeCollection_ = electronCollection.spinTypeCollection();
     }
-    positionCollections_.insert(electronCollection.positionCollection(), i);
+    positionsVectorCollection_.insert(electronCollection.positionCollection(), i);
     incrementNumberOfEntities();
 }
 
@@ -79,7 +79,7 @@ void ElectronsVectorCollection::prepend(const ElectronCollection &electronCollec
 
 void ElectronsVectorCollection::permute(long i, long j) {
     if(i != j) {
-        positionCollections_.permute(i,j);
+        positionsVectorCollection_.permute(i,j);
         spinTypeCollection_.permute(i,j);
     }
 }

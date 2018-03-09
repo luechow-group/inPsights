@@ -8,10 +8,10 @@
 #include <vector>
 #include "PositionCollection.h"
 
-class PositionCollections : public AbstractCollection{
+class PositionsVectorCollection : public AbstractCollection{
 public:
-    PositionCollections();
-    explicit PositionCollections(const std::vector<PositionCollection> &positionCollections);
+    PositionsVectorCollection();
+    explicit PositionsVectorCollection(const std::vector<PositionCollection> &positionsVectorCollection);
 
     PositionCollection operator[](long i) const;
 
@@ -21,13 +21,13 @@ public:
     void permute(long i, long j) override;
 
 
-    const std::vector<PositionCollection>& positionCollections() const;
-    std::vector<PositionCollection>& positionCollections();
+    const std::vector<PositionCollection>& positionsVectorCollection() const;
+    std::vector<PositionCollection>& positionsVectorCollection();
 
     long numberOfPositionsEntities() const;
 
 private:
-    std::vector<PositionCollection> positionCollections_;
+    std::vector<PositionCollection> positionsVectorCollection_;
     long numberOfPositionEntities_;
 };
 

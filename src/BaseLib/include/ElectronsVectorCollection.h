@@ -15,9 +15,9 @@ public:
     explicit ElectronsVectorCollection(const SpinTypeCollection& spinTypeCollection);
     explicit ElectronsVectorCollection(const ElectronCollection& electronCollection);
     explicit ElectronsVectorCollection(const std::vector<ElectronCollection>& electronCollectionVector);
-    explicit ElectronsVectorCollection(const PositionCollections& electronCollection);
+    explicit ElectronsVectorCollection(const PositionsVectorCollection& electronCollection);
 
-    explicit ElectronsVectorCollection(const PositionCollections& electronCollection,
+    explicit ElectronsVectorCollection(const PositionsVectorCollection& electronCollection,
                                  const SpinTypeCollection& spinTypeCollection);
 
     ElectronCollection operator[](long i) const;

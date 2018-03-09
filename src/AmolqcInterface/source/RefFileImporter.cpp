@@ -76,10 +76,10 @@ ElectronCollection RefFileImporter::getMaximaStructure(unsigned long k, unsigned
 
 ElectronsVectorCollection RefFileImporter::getAllSubstructures(unsigned long k) const {
     unsigned long numberOfSubstructures = substructuresData_[k].numberOfSubstructures_;
-    PositionCollections positionCollections;
+    PositionsVectorCollection positionsVectorCollection;
     for (unsigned long m = 1; m <= numberOfSubstructures; ++m) {
-        positionCollections.append(this->getPositionCollection(k,m));
+        positionsVectorCollection.append(this->getPositionCollection(k,m));
     }
-    return ElectronsVectorCollection(positionCollections,this->getSpinTypeCollection());
+    return ElectronsVectorCollection(positionsVectorCollection,this->getSpinTypeCollection());
 
 }

@@ -7,19 +7,19 @@
 
 #include <vector>
 #include "ParticleCollection.h"
-#include "PositionCollections.h"
+#include "PositionsVectorCollection.h"
 
 class ParticleCollections : public AbstractCollection{
 public:
-    const PositionCollections& positionCollections() const;
-    PositionCollections& positionCollections();
+    const PositionsVectorCollection& positionsVectorCollection() const;
+    PositionsVectorCollection& positionsVectorCollection();
 
 protected:
-    PositionCollections positionCollections_;
+    PositionsVectorCollection positionsVectorCollection_;
 
     void permute(long i, long j) override = 0;
     ParticleCollections() = default;
-    explicit ParticleCollections(const PositionCollections& positionCollections);
+    explicit ParticleCollections(const PositionsVectorCollection& positionsVectorCollection);
 
 //private:
 //    long calculateIndex(long i) const final = 0;

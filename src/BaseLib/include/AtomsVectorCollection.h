@@ -15,9 +15,9 @@ public:
     explicit AtomsVectorCollection(const ElementTypeCollection& elementTypeCollection);
     explicit AtomsVectorCollection(const AtomCollection& atomCollection);
     explicit AtomsVectorCollection(const std::vector<AtomCollection>& atomCollectionVector);
-    explicit AtomsVectorCollection(const PositionCollections& atomCollection);
+    explicit AtomsVectorCollection(const PositionsVectorCollection& atomCollection);
 
-    explicit AtomsVectorCollection(const PositionCollections& atomCollection,
+    explicit AtomsVectorCollection(const PositionsVectorCollection& atomCollection,
                                  const ElementTypeCollection& elementTypeCollection);
 
     AtomCollection operator[](long i) const;
