@@ -30,6 +30,7 @@ set(HEADER_FILES
         include/NaturalConstants.h
         include/Atom.h
         include/AtomCollection.h
+        include/AtomCollections.h
         include/Particle.h
         include/ParticleCollection.h
         include/ParticleCollections.h
@@ -53,6 +54,7 @@ set(SOURCE_FILES
         source/ElementTypeCollection.cpp
         source/Atom.cpp
         source/AtomCollection.cpp
+        source/AtomCollections.cpp
         source/Particle.cpp
         source/ParticleCollection.cpp
         source/ParticleCollections.cpp
