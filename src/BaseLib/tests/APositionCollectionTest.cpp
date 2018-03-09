@@ -18,6 +18,15 @@ public:
     Vector3d position0,position1,position2;
 };
 
+TEST_F(APositionCollectionTest, NumberOfEntities){
+
+    VectorXd positions(9);
+    positions<< position0, position1, position2;
+    PositionCollection positionCollection(positions);
+
+    ASSERT_EQ(positionCollection.numberOfEntities(),3);
+}
+
 TEST_F(APositionCollectionTest, IndexOperator){
 
     VectorXd positions(9);
@@ -73,4 +82,16 @@ TEST_F(APositionCollectionTest, append) {
     ASSERT_EQ(positionCollection[0],position0);
     ASSERT_EQ(positionCollection[1],position1);
     ASSERT_EQ(positionCollection[2],position2);
+}
+
+TEST_F(APositionCollectionTest, print) {
+    VectorXd positions(9);
+    Eigen::Vector3d a(0,-2.01238,7.13);
+    Eigen::Vector3d b(1e-10,-9.8987,-12.238);
+    Eigen::Vector3d c(-99.9,99.9,9.99);
+    positions<< a, b, c;
+    PositionCollection positionCollection(positions);
+    std::ostringstream os;
+    os << positionCollection;
+    ASSERT_EQ(os.str()," 1    0.00000  -2.01238   7.13000\n 2    0.00000  -9.89870 -12.23800\n 3  -99.90000  99.90000   9.99000\n");
 }
