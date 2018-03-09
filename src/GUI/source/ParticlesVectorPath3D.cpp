@@ -3,11 +3,11 @@
 //
 
 #include <Polyline.h>
-#include "ParticleCollectionPath3D.h"
+#include "ParticlesVectorPath3D.h"
 #include "Electron3D.h"
 
 
-ParticleCollectionPath3D::ParticleCollectionPath3D(Qt3DCore::QEntity *root,
+ParticlesVectorPath3D::ParticlesVectorPath3D(Qt3DCore::QEntity *root,
                                                    const ElectronsVectorCollection &electronsVectorCollection,
                                                    float radius) {
 

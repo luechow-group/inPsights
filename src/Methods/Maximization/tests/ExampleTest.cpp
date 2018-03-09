@@ -50,8 +50,8 @@ class AGradientDescentUmrigarLimitedStepLengthSolverTest : public Test {};
     auto numberOfPaths = optimizationPathFileImporter.getNumberOfPaths();
 
     for (unsigned long k = 1; k < numberOfPaths; ++k) {
-        auto psiSquareDistributedParticleCollection = optimizationPathFileImporter.getPath(k).front();
-        VectorXd x0 = psiSquareDistributedParticleCollection.positionsAsEigenVector();
+        auto psiSquareDistributedParticlesVector = optimizationPathFileImporter.getPath(k).front();
+        VectorXd x0 = psiSquareDistributedParticlesVector.positionsAsEigenVector();
 
         cppoptlib::GradientDescentSolver<ElectronicWaveFunctionProblem> solver;
         solver.setDebug(cppoptlib::DebugLevel::High);

@@ -28,8 +28,8 @@ int main(int argc, char const *argv[]) {
     auto numberOfPaths = optimizationPathFileImporter.getNumberOfPaths();
 
     for (unsigned long k = 6; k < 7; ++k) {
-        auto psiSquareDistributedParticleCollection = optimizationPathFileImporter.getPath(k).front();
-        VectorXd x0 = psiSquareDistributedParticleCollection.positionsAsEigenVector();
+        auto psiSquareDistributedParticlesVector = optimizationPathFileImporter.getPath(k).front();
+        VectorXd x0 = psiSquareDistributedParticlesVector.positionsAsEigenVector();
 
         cppoptlib::GradientDescentSimpleSolver<ElectronicWaveFunctionProblem> solver;
         solver.setDebug(cppoptlib::DebugLevel::High);
@@ -56,8 +56,8 @@ int main(int argc, char const *argv[]) {
     auto numberOfPaths = optimizationPathFileImporter.getNumberOfPaths();
 
     for (unsigned long k = 6; k < 7; ++k) {
-        auto psiSquareDistributedParticleCollection = optimizationPathFileImporter.getPath(k).front();
-        VectorXd x0 = psiSquareDistributedParticleCollection.positionsAsEigenVector();
+        auto psiSquareDistributedParticlesVector = optimizationPathFileImporter.getPath(k).front();
+        VectorXd x0 = psiSquareDistributedParticlesVector.positionsAsEigenVector();
 
         cppoptlib::GradientDescentSolver<ElectronicWaveFunctionProblem> solver;
         solver.setDebug(cppoptlib::DebugLevel::High);
@@ -84,8 +84,8 @@ int main(int argc, char const *argv[]) {
     auto numberOfPaths = optimizationPathFileImporter.getNumberOfPaths();
 
     for (unsigned long k = 6; k < 7; ++k) {
-        auto psiSquareDistributedParticleCollection = optimizationPathFileImporter.getPath(k).front();
-        VectorXd x0 = psiSquareDistributedParticleCollection.positionsAsEigenVector();
+        auto psiSquareDistributedParticlesVector = optimizationPathFileImporter.getPath(k).front();
+        VectorXd x0 = psiSquareDistributedParticlesVector.positionsAsEigenVector();
 
         cppoptlib::GradientDescentUmrigarLimitedSteplength<ElectronicWaveFunctionProblem> solver;
         solver.setDebug(cppoptlib::DebugLevel::High);
@@ -115,8 +115,8 @@ int main(int argc, char const *argv[]) {
     auto numberOfPaths = optimizationPathFileImporter.getNumberOfPaths();
 
     for (unsigned long k = 6; k < 7; ++k) {
-        auto psiSquareDistributedParticleCollection = optimizationPathFileImporter.getPath(k).front();
-        VectorXd x0 = psiSquareDistributedParticleCollection.positionsAsEigenVector();
+        auto psiSquareDistributedParticlesVector = optimizationPathFileImporter.getPath(k).front();
+        VectorXd x0 = psiSquareDistributedParticlesVector.positionsAsEigenVector();
 
         cppoptlib::GradientDescentUmrigarLimitedSteplength<ElectronicWaveFunctionProblem> solver;
         solver.setDebug(cppoptlib::DebugLevel::High);

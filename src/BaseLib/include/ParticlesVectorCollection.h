@@ -6,7 +6,7 @@
 #define AMOLQCGUI_PARTICLECOLLECTIONS_H
 
 #include <vector>
-#include "ParticleCollection.h"
+#include "ParticlesVector.h"
 #include "PositionsVectorCollection.h"
 
 class ParticlesVectorCollection : public AbstractVector{

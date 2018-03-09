@@ -5,11 +5,11 @@
 #ifndef AMOLQCGUI_ATOMCOLLECTION_H
 #define AMOLQCGUI_ATOMCOLLECTION_H
 
-#include "ParticleCollection.h"
+#include "ParticlesVector.h"
 #include "ElementTypesVector.h"
 #include "Atom.h"
 
-class AtomCollection : public ParticleCollection{
+class AtomCollection : public ParticlesVector{
 public:
     AtomCollection() = default;
     explicit AtomCollection(const Eigen::VectorXd& positions);

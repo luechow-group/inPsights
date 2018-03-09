@@ -13,7 +13,7 @@ nlohmann::json CollectionParser::positionsVectorToJson(const PositionsVector &po
         auto vec = positionsVector[i];
         particleCoordinatesArray.push_back(nlohmann::json::array({vec[0],vec[1],vec[2]}).dump());
     }
-    j["type"] = "ParticleCollection";
+    j["type"] = "ParticlesVector";
     j["coordinates"] = particleCoordinatesArray;
     return j;
 }
@@ -63,7 +63,7 @@ nlohmann::json CollectionParser::electronCollectionToJson(const ElectronCollecti
 
 PositionsVector CollectionParser::positionsVectorFromJson(const std::string &filename) {
     auto j = readJSON(filename);
-    assert(j["type"]== "ParticleCollection" && "File must be a ParticleCollection.");
+    assert(j["type"]== "ParticlesVector" && "File must be a ParticlesVector.");
 
     return array2DToPositionsVector(j["coordinates"]);
 }

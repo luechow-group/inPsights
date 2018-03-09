@@ -51,7 +51,7 @@ set(HEADER_FILES
         include/AtomCollection3D.h
         include/ElectronCollection3D.h
         include/MoleculeWidget.h
-        include/ParticleCollectionPath3D.h
+        include/ParticlesVectorPath3D.h
         )
 
 set(SOURCE_FILES
@@ -67,7 +67,7 @@ set(SOURCE_FILES
         source/AtomCollection3D.cpp
         source/ElectronCollection3D.cpp
         source/MoleculeWidget.cpp
-        source/ParticleCollectionPath3D.cpp
+        source/ParticlesVectorPath3D.cpp
         )
 
 file(GLOB_RECURSE RESOURCE_FILES resources/*.*)

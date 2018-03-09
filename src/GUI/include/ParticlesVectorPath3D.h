@@ -8,10 +8,10 @@
 #include "AtomCollection.h"
 #include "ElectronsVectorCollection.h"
 
-class ParticleCollectionPath3D{
+class ParticlesVectorPath3D{
 public:
 
-    ParticleCollectionPath3D(Qt3DCore::QEntity *root,
+    ParticlesVectorPath3D(Qt3DCore::QEntity *root,
                              const ElectronsVectorCollection &electronsVectorCollection,
                              float radius = 0.01f);
 };

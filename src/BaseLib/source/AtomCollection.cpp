@@ -5,24 +5,24 @@
 using namespace Eigen;
 
 AtomCollection::AtomCollection(const VectorXd &positions)
-        : ParticleCollection(PositionsVector(positions)),
+        : ParticlesVector(PositionsVector(positions)),
           elementTypesVector_(numberOfEntities())
 {}
 
 
 
 AtomCollection::AtomCollection(const VectorXd &positions, const VectorXi &elementTypes)
-        : ParticleCollection(PositionsVector(positions)),
+        : ParticlesVector(PositionsVector(positions)),
           elementTypesVector_(elementTypes) {
 
     assert(numberOfEntities() == positionsVector_.numberOfEntities()
            && numberOfEntities() == elementTypesVector_.numberOfEntities()
-           && "The number of entities in ParticleCollection, PositionsVector, and SpinTypesVector must match.");
+           && "The number of entities in ParticlesVector, PositionsVector, and SpinTypesVector must match.");
 }
 
 AtomCollection::AtomCollection(const PositionsVector &positionsVector,
                                const ElementTypesVector &elementTypesVector)
-        : ParticleCollection(positionsVector),
+        : ParticlesVector(positionsVector),
           elementTypesVector_(elementTypesVector)
 {}
 

@@ -23,7 +23,7 @@ public:
     /* TODO
     void replace(long i);
     void remove(long i);
-    ParticleCollection part(std::vector<long> indices);
+    ParticlesVector part(std::vector<long> indices);
     */
 
     friend std::ostream& operator<<(std::ostream& os, const PositionsVector& pc);

@@ -20,7 +20,7 @@
 
 #include "AtomCollection3D.h"
 #include "ElectronCollection3D.h"
-#include "ParticleCollectionPath3D.h"
+#include "ParticlesVectorPath3D.h"
 #include "MoleculeWidget.h"
 
 int main(int argc, char *argv[]) {
@@ -40,8 +40,8 @@ int main(int argc, char *argv[]) {
     //std::string wfFilename = "Diborane.wf";
     //ElectronicWaveFunctionProblem electronicWaveFunctionProblem(wfFilename);
     //auto numberOfPaths = optimizationPathFileImporter.getNumberOfPaths();
-    //auto psiSquareDistributedParticleCollection = optimizationPathFileImporter.getPath(6).front();
-    //VectorXd xA = psiSquareDistributedParticleCollection.positionsAsEigenVector();
+    //auto psiSquareDistributedParticlesVector = optimizationPathFileImporter.getPath(6).front();
+    //VectorXd xA = psiSquareDistributedParticlesVector.positionsAsEigenVector();
 
     cppoptlib::TimeIntegrationSolver<ElectronicWaveFunctionProblem> solver;
     solver.setDebug(cppoptlib::DebugLevel::High);
@@ -88,11 +88,11 @@ int main(int argc, char *argv[]) {
     AtomCollection3D(root,ElectronicWaveFunction::getInstance().getAtomCollection());
 
     // Plot the starting point
-    ElectronCollection3D(root, ElectronCollection(ParticleCollection(xA),
+    ElectronCollection3D(root, ElectronCollection(ParticlesVector(xA),
                                                   optimizationPath.getSpinTypesVector()), true);
 
     // Plot the optimization path
-    ParticleCollectionPath3D(root, shortenedPath);
+    ParticlesVectorPath3D(root, shortenedPath);
 
     return app.exec();
 };

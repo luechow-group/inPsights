@@ -6,22 +6,22 @@
 #include "ToString.h"
 
 ElectronCollection::ElectronCollection(const Eigen::VectorXd &positions)
-        : ParticleCollection(PositionsVector(positions)),
+        : ParticlesVector(PositionsVector(positions)),
           spinTypesVector_(numberOfEntities()) {
 }
 
 ElectronCollection::ElectronCollection(const Eigen::VectorXd &positions, const Eigen::VectorXi &spinTypes)
-        : ParticleCollection(PositionsVector(positions)),
+        : ParticlesVector(PositionsVector(positions)),
           spinTypesVector_(spinTypes) {
 
     assert(numberOfEntities() == positionsVector_.numberOfEntities()
            && numberOfEntities() == spinTypesVector_.numberOfEntities()
-           && "The number of entities in ParticleCollection, PositionsVector, and SpinTypesVector must match.");
+           && "The number of entities in ParticlesVector, PositionsVector, and SpinTypesVector must match.");
 }
 
 ElectronCollection::ElectronCollection(const PositionsVector &positionsVector,
                                        const SpinTypesVector &spinTypesVector)
-        : ParticleCollection(PositionsVector(positionsVector)),
+        : ParticlesVector(PositionsVector(positionsVector)),
           spinTypesVector_(spinTypesVector)
 {}
 

@@ -17,7 +17,7 @@
 
 #include "AtomCollection3D.h"
 #include "ElectronCollection3D.h"
-#include "ParticleCollectionPath3D.h"
+#include "ParticlesVectorPath3D.h"
 #include "MoleculeWidget.h"
 
 bool handleCommandlineArguments(int argc, char **argv,
@@ -105,7 +105,7 @@ int main(int argc, char *argv[]) {
         ElectronCollection3D(root, ElectronCollection(x, optimizationPath.spinTypesVector().spinTypesAsEigenVector()), false);
 
         // Plot the optimization path
-        ParticleCollectionPath3D(root, shortenedPath);
+        ParticlesVectorPath3D(root, shortenedPath);
 
         return app.exec();
     }

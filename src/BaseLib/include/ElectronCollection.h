@@ -5,11 +5,11 @@
 #ifndef AMOLQCGUI_ELECTRONCOLLECTION_H
 #define AMOLQCGUI_ELECTRONCOLLECTION_H
 
-#include "ParticleCollection.h"
+#include "ParticlesVector.h"
 #include "SpinTypesVector.h"
 #include "Electron.h"
 
-class ElectronCollection : public ParticleCollection{
+class ElectronCollection : public ParticlesVector{
 public:
     ElectronCollection() = default; //TODO check!!
     explicit ElectronCollection(const Eigen::VectorXd& positions);
