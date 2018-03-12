@@ -20,11 +20,9 @@ include_directories(
 )
 
 set(HEADER_FILES
-        include/DummyClass.h
         )
 
 set(SOURCE_FILES
-        source/DummyClass.cpp
         )
 
 file(GLOB_RECURSE RESOURCE_FILES resources/*.*)
