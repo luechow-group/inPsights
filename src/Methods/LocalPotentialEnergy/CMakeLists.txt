@@ -20,9 +20,11 @@ include_directories(
 )
 
 set(HEADER_FILES
+        include/PotentialProblem.h
         )
 
 set(SOURCE_FILES
+        source/PotentialProblem.cpp
         )
 
 file(GLOB_RECURSE RESOURCE_FILES resources/*.*)
