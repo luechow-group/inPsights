@@ -3,6 +3,7 @@
 //
 
 #include "Particle.h"
+#include "ToString.h"
 
 using namespace Eigen;
 
@@ -25,6 +26,14 @@ double Particle::distance(const Particle &p1, const Particle &p2) {
 }
 
 std::ostream& operator<< (std::ostream& os, const Particle& p) {
-    os << p.position().format(ParticleFormat::particleFormat) << std::endl;
+    os << p.toString();
     return os;
+}
+
+int Particle::charge() const{
+    return 0;
+}
+
+std::string Particle::toString() const{
+    return "  " + ToString::vector3dToString(position_);
 }

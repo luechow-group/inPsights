@@ -15,8 +15,8 @@
 #include <Qt3DExtras>
 
 #include "MoleculeWidget.h"
-#include "AtomCollection3D.h"
-#include "ElectronCollection3D.h"
+#include "AtomsVector3D.h"
+#include "ElectronsVector3D.h"
 
 #include "ElementInfo.h"
 #include "ElementType.h"
@@ -47,7 +47,7 @@ int main(int argc, char *argv[]) {
 
     //ElectronicWaveFunction::getInstance("H2ic666.wf");//"Ethane-em-5.wf");
     ElectronicWaveFunctionProblem f("H2sm444.wf");
-    std::cout << f.getAtomCollection() << std::endl;
+    std::cout << f.getAtomsVector() << std::endl;
     Eigen::VectorXd x0(2*3);
     x0 <<
        0,0,-0.700144,\
@@ -68,10 +68,10 @@ int main(int argc, char *argv[]) {
 
 
 
-    //collectionParser.writeJSON(collectionParser.electronCollectionToJson(ec),"Ethylene-glob-max.json");
+    //collectionParser.writeJSON(collectionParser.electronsVectorToJson(ec),"Ethylene-glob-max.json");
     CollectionParser collectionParser;
-    //auto ecA = collectionParser.electronCollectionFromJson("Ethane-glob-max.json");
-    auto ecA = ElectronCollection(x0,Eigen::Vector2i(1,-1));
+    //auto ecA = collectionParser.electronsVectorFromJson("Ethane-glob-max.json");
+    auto ecA = ElectronsVector(x0, Eigen::Vector2i(1,-1));
     auto ecB = ecA;
 
 
@@ -83,8 +83,8 @@ int main(int argc, char *argv[]) {
 
     unsigned numberOfStates = 7;
 
-    auto xA = ecA.positionsAsEigenVector();
-    auto xB = ecB.positionsAsEigenVector();
+    auto xA = ecA.positionsVector().positionsAsEigenVector();
+    auto xB = ecB.positionsVector().positionsAsEigenVector();
 
     Eigen::MatrixXd initialCoordinates(ElectronicWaveFunction::getInstance().getNumberOfElectrons() * 3,
                                        numberOfStates);
@@ -192,8 +192,8 @@ initialCoordinates.row((18 - 1) * 3 + 2) -= 0.05 * bend;//z bend
     std::cout << "wf:" << ElectronicWaveFunction::getInstance().getFileName() << std::endl;
     WfFileImporter waveFunctionParser(ElectronicWaveFunction::getInstance().getFileName());
 
-    AtomCollection3D molecularGeometry3D(root, waveFunctionParser.getAtomCollection());
-    ElectronCollection3D(root, ElectronicWaveFunction::getInstance().getElectronPositionCollection(), true);
+    AtomsVector3D molecularGeometry3D(root, waveFunctionParser.getAtomsVector());
+    ElectronsVector3D(root, ElectronicWaveFunction::getInstance().getElectronPositionsVector(), true);
 
 
     //Draw tsguess

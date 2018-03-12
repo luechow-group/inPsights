@@ -13,21 +13,21 @@
 int main(int argc, char *argv[]) {
 
     ElectronicWaveFunctionProblem electronicWaveFunctionProblem("BH3_Exp-em.wf");
-    auto ac = electronicWaveFunctionProblem.getAtomCollection();
+    auto ac = electronicWaveFunctionProblem.getAtomsVector();
     std::cout << ac << std::endl;
 
 
     CollectionParser collectionParser;
-    auto ec = collectionParser.electronCollectionFromJson("BH3_Max1.json");
+    auto ec = collectionParser.electronsVectorFromJson("BH3_Max1.json");
     auto nsmooth = 2;
-    auto x = ec.positionsAsEigenVector();
+    auto x = ec.positionsVector().positionsAsEigenVector();
 
 
     auto n = ElectronicWaveFunction::getInstance().getNumberOfElectrons()*3;
     Eigen::VectorXd grad(n);
     electronicWaveFunctionProblem.putElectronsIntoNuclei(x,grad);
 
-    std::cout << ElectronCollection(grad,ec.spinTypesAsEigenVector()) << std::endl;
+    std::cout << ElectronsVector(grad,ec.spinTypesVector().spinTypesAsEigenVector()) << std::endl;
 
     for (auto & it : electronicWaveFunctionProblem.getIndicesOfElectronsAtNuclei()) std::cout << it << " ";
     std::cout << std::endl;
@@ -71,8 +71,8 @@ int main(int argc, char *argv[]) {
 
 
     //CollectionParser collectionParser;
-    ////auto ecA = collectionParser.electronCollectionFromJson("Ethane-glob-max.json");
-    //auto ecA = ElectronCollection(x0,Eigen::Vector2i(1,-1));
+    ////auto ecA = collectionParser.electronsVectorFromJson("Ethane-glob-max.json");
+    //auto ecA = ElectronsVector(x0,Eigen::Vector2i(1,-1));
     //auto ecB = ecA;
     //std::cout << ecA << std::endl;
 }

@@ -15,30 +15,51 @@
 #include "solver/timeintegrationumrigarsolver.h"
 #include "solver/bfgsumrigarsolver.h"
 
-#include "AtomCollection3D.h"
-#include "ElectronCollection3D.h"
-#include "ParticleCollectionPath3D.h"
+#include "AtomsVector3D.h"
+#include "ElectronsVector3D.h"
+#include "ParticlesVectorPath3D.h"
 #include "MoleculeWidget.h"
 
+bool handleCommandlineArguments(int argc, char **argv,
+                                std::string &wavefunctionFilename,
+                                std::string &electronsVectorFilename,
+                                bool &showGui) {
+    if (argc < 3) {
+        std::cout << "Usage: \n"
+                  << "Argument 1: wavefunction filename (.wf)\n"
+                  << "Argument 2: electron collection filename (.json)\n"
+                  << "Argument 3 (Optional): display the gui (gui)" << std::endl;
+        std::cout << "Ethylene-em-5.wf LD_Ethlyen_Start.json gui" << std::endl;
+        return false;
+    } else if (argc >= 3) {
+        wavefunctionFilename = argv[1];
+        electronsVectorFilename = argv[2];
+        if (argc > 3) showGui = (std::string(argv[3]) == "gui");
+        return true;
+    }
+}
 
 int main(int argc, char *argv[]) {
-    // handle command line arguments
-    std::string wavefunctionFilename = argv[1];
-    std::string electronCollectionFilename = argv[2];
-    bool showGui = false;
-    if (argc > 3) showGui = (std::string(argv[3]) == "gui");
+    std::string wavefunctionFilename; //= "H2sm444.wf"; // overwrite command line
+    std::string electronsVectorFilename; //= "H2sm444_TS_ev.json"; // overwrite command line
+    bool showGui = true;
 
+    if( wavefunctionFilename.empty() && electronsVectorFilename.empty()) {
+        bool inputArgumentsFoundQ =
+                handleCommandlineArguments(argc, argv, wavefunctionFilename, electronsVectorFilename, showGui);
+        if(!inputArgumentsFoundQ) return 0;
+    }
 
     ElectronicWaveFunctionProblem electronicWaveFunctionProblem(wavefunctionFilename);
     CollectionParser collectionParser;
-    auto ac = electronicWaveFunctionProblem.getAtomCollection();
-    auto ec = collectionParser.electronCollectionFromJson(electronCollectionFilename);
+    auto ac = electronicWaveFunctionProblem.getAtomsVector();
+    auto ec = collectionParser.electronsVectorFromJson(electronsVectorFilename);
     std::cout << ac << std::endl;
     std::cout << ec << std::endl;
 
-    Eigen::VectorXd x(ec.positionsAsEigenVector());
+    Eigen::VectorXd x(ec.positionsVector().positionsAsEigenVector());
     std::cout << x.transpose() << std::endl;
-    Eigen::VectorXd grad(ec.numberOfParticles());
+    Eigen::VectorXd grad(ec.numberOfEntities());
     electronicWaveFunctionProblem.putElectronsIntoNuclei(x,grad);
 
 
@@ -54,7 +75,7 @@ int main(int argc, char *argv[]) {
     //solver.setDistanceCriteriaUmrigar(0.1);
 
     solver.minimize(electronicWaveFunctionProblem, x);
-    std::cout << ElectronCollection(ParticleCollection(x),SpinTypeCollection(ec.spinTypesAsEigenVector()))<<std::endl;
+    std::cout << ElectronsVector(x,ec.spinTypesVector().spinTypesAsEigenVector())<<std::endl;
 
 
 
@@ -64,72 +85,29 @@ int main(int argc, char *argv[]) {
 
         // Prepare the optimization path for visualization
         auto optimizationPath = electronicWaveFunctionProblem.getOptimizationPath();
-        ElectronCollections shortenedPath(ElectronCollection(optimizationPath.front(),
-                                                             optimizationPath.getSpinTypeCollection()));
+        ElectronsVectorCollection shortenedPath(optimizationPath[0]);
         unsigned long nwanted = 300;
-        auto skip = 1 + (optimizationPath.length() / nwanted);
+        auto skip = 1 + (optimizationPath.numberOfEntities() / nwanted);
         std::cout << "displaying structures with a spacing of " << skip << "." << std::endl;
-        for (unsigned long i = 0; i < optimizationPath.length(); i = i + skip) {
-            shortenedPath.append(ElectronCollection(optimizationPath.getElectronCollection(i),
-                                                    optimizationPath.getSpinTypeCollection()));
+        for (unsigned long i = 0; i < optimizationPath.numberOfEntities(); i = i + skip) {
+            shortenedPath.append(optimizationPath[i]);
         }
-
-        shortenedPath.append(ElectronCollection(x, optimizationPath.getSpinTypeCollection().spinTypesAsEigenVector()));
+        auto ecEnd = ElectronsVector(x, optimizationPath.spinTypesVector().spinTypesAsEigenVector());
+        shortenedPath.append(ecEnd);
 
         // Visualization
         MoleculeWidget moleculeWidget;
         Qt3DCore::QEntity *root = moleculeWidget.createMoleculeWidget();
 
-        AtomCollection3D(root, ElectronicWaveFunction::getInstance().getAtomCollection());
+        AtomsVector3D(root, ElectronicWaveFunction::getInstance().getAtomsVector());
 
         // Plot the starting point
-        ElectronCollection3D(root, ElectronCollection(ParticleCollection(x),
-                                                      optimizationPath.getSpinTypeCollection()), false);
+        ElectronsVector3D(root, ElectronsVector(x, optimizationPath.spinTypesVector().spinTypesAsEigenVector()), false);
 
         // Plot the optimization path
-        ParticleCollectionPath3D(root, shortenedPath);
+        ParticlesVectorPath3D(root, shortenedPath);
 
         return app.exec();
     }
     return 0;
 };
-
-/* Old code from Lennard Dahl
-#include "OptimizationPathFileImporter.h"
-// For diborane: Diborane.wf; Pfad 6 & 7
-OptimizationPathFileImporter optimizationPathFileImporter("Diborane-Paths.300",1); // Aufpassen ob richtige Multiplizität
-//std::string wfFilename = "Diborane.wf";
-//ElectronicWaveFunctionProblem electronicWaveFunctionProblem(wfFilename);
-//auto numberOfPaths = optimizationPathFileImporter.getNumberOfPaths();
-//auto psiSquareDistributedParticleCollection = optimizationPathFileImporter.getPath(6).front();
-//VectorXd xA = psiSquareDistributedParticleCollection.positionsAsEigenVector();
-
-auto numberOfPaths = optimizationPathFileImporter.getNumberOfPaths();
-
-auto psiSquareDistributedParticleCollection = optimizationPathFileImporter.getPath(6).front();
-VectorXd xA = psiSquareDistributedParticleCollection.positionsAsEigenVector();
-*/
-
-
-/* //Create starting guess
-    ElectronicWaveFunctionProblem electronicWaveFunctionProblem("BH3_Exp-em.wf");
-    auto ac = electronicWaveFunctionProblem.getAtomCollection();
-    std::cout << ac << "\n" << ElectronicWaveFunction::getInstance().getNumberOfElectrons() << std::endl;
-    ElectronCollection ec;
-    ec.append(Electron(ac[0],Spin::SpinType::alpha));
-    ec.append(Electron(ac[1],Spin::SpinType::alpha));
-    ec.append(Electron(ac[2],Spin::SpinType::alpha));
-    ec.append(Electron(ac[3],Spin::SpinType::alpha));
-    ec.append(Electron(ac[0],Spin::SpinType::beta));
-
-    ec.append(Electron(ac[1].position().array()*0.9+0*Eigen::Vector3d(0.2,-0.1,0.).array(), Spin::SpinType::beta));
-    ec.append(Electron(ac[2].position().array()*0.1+0*Eigen::Vector3d(0.1,-0.1,-0.1).array(), Spin::SpinType::beta));
-    ec.append(Electron(ac[3].position().array()*0.1+0*Eigen::Vector3d(-0.2,-0.1,0.5).array(), Spin::SpinType::beta));
-
-    // [...]
-
-    // Write vector x to json
-    CollectionParser collectionParser;
-    auto j = collectionParser.electronCollectionToJson(ElectronCollection(x,ec.spinTypesAsEigenVector()));
-    collectionParser.writeJSON(j,"BH3_Max1.json");
-*/

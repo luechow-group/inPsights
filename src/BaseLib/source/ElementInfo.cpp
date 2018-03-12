@@ -44,7 +44,7 @@ namespace Elements {
         return internal::pElementInfo::instance()[e].fElectrons();
     }
 
-    ElememtColor ElementInfo::color(ElementType e) {
+    ElementColor ElementInfo::color(ElementType e) {
         return internal::pElementInfo::instance()[e].color();
     }
 

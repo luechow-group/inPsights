@@ -17,6 +17,11 @@ public:
     Elements::ElementType elementType() const;
     void setElementType(const Elements::ElementType & elementType);
 
+    friend std::ostream& operator<< (std::ostream& os, const Atom& atom);
+
+    std::string toString() const override;
+    int charge() const override;
+
 private:
     Elements::ElementType elementType_;
 };

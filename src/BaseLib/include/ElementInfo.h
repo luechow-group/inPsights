@@ -38,7 +38,7 @@ namespace Elements {
         static int fElectrons(ElementType e);
 
         /* Element ElememtColor for plotting */
-        static ElememtColor color(ElementType e);
+        static ElementColor color(ElementType e);
     };
 
 } // namespace Elements
