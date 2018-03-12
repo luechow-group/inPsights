@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
 
-project(LocalPotentialEnergy C CXX)
+project(LocalPotentialEnergy C CXX Fortran)
 
 
 set ( PROJECT_FOLDER_NAME ${PROJECT_NAME} )
@@ -34,6 +34,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC
         )
 target_link_libraries(${PROJECT_NAME}
         BaseLib
+        AmolqcInterface
         )
 
 add_executable(${PROJECT_NAME}_main main.cpp)
