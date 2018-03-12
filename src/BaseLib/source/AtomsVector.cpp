@@ -63,7 +63,7 @@ ElementTypesVector &AtomsVector::elementTypesVector() {
 
 std::ostream& operator<<(std::ostream& os, const AtomsVector& ac){
     for (unsigned long i = 0; i < ac.numberOfEntities(); i++) {
-        os << ToString::intToString(i + 1) << " " << ac[i] << std::endl;
+        os << ToString::unsignedLongToString(i + 1) << " " << ac[i] << std::endl;
     }
     return os;
 }

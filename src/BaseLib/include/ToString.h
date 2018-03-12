@@ -9,8 +9,8 @@
 #include <Eigen/Core>
 
 namespace ToString {
-    std::string intToString(int a,
-                            unsigned leadingSpaces = 1);
+    std::string unsignedLongToString(unsigned long a,
+                                     unsigned leadingSpaces = 1);
 
     std::string doubleToString(double a,
                                unsigned decimalPlaces = 5,

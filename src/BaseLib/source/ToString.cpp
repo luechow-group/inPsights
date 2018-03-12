@@ -5,8 +5,8 @@
 #include <iomanip>
 #include "ToString.h"
 
-std::string ToString::intToString(int a,
-                                  unsigned leadingSpaces) {
+std::string ToString::unsignedLongToString(unsigned long a,
+                                           unsigned leadingSpaces) {
     std::string string = std::to_string(a);
     string = std::string(leadingSpaces + 1 - string.length(),' ') + string;
     return string;
