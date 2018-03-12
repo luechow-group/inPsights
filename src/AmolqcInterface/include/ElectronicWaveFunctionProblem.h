@@ -12,6 +12,8 @@
 class ElectronicWaveFunctionProblem : public cppoptlib::Problem<double,Eigen::Dynamic>
 {
 public:
+    explicit ElectronicWaveFunctionProblem();
+
     explicit ElectronicWaveFunctionProblem(const std::string &fileName);
 
     double value(const Eigen::VectorXd &x) override;

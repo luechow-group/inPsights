@@ -5,6 +5,17 @@
 #include "ElectronicWaveFunctionProblem.h"
 #include <iomanip>
 
+ElectronicWaveFunctionProblem::ElectronicWaveFunctionProblem()
+        :
+        valueCallCount_(0),
+        gradientCallCount_(0),
+        wf_(ElectronicWaveFunction::getEmpty()),
+        optimizationPath_(wf_.getSpinTypesVector()),
+        electronCoordinateIndicesThatWereNaN_(Eigen::Matrix<bool,Eigen::Dynamic,1>(wf_.getNumberOfElectrons()*3).setConstant(false)),
+        indicesOfElectronsNotAtNuclei_(0),
+        indicesOfElectronsAtNuclei_(0)
+{}
+
 ElectronicWaveFunctionProblem::ElectronicWaveFunctionProblem(const std::string &fileName)
         :
         valueCallCount_(0),
