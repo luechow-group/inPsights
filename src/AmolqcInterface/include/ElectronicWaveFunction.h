@@ -26,6 +26,8 @@ void amolqc_eloc(double x[], int n, double *phi, double *u, double grad[], doubl
 class ElectronicWaveFunction {
 
 public:
+    static ElectronicWaveFunction& getEmpty();
+
     static ElectronicWaveFunction& getInstance(const std::string& fileName = "");
 
     const std::string& getFileName();
@@ -74,6 +76,7 @@ public:
     SpinTypesVector getSpinTypesVector() const;
 
 private:
+    explicit ElectronicWaveFunction();
     explicit ElectronicWaveFunction(const std::string& fileName);
     const std::string fileName_;
     unsigned long numberOfNuclei_, numberOfElectrons_, numberOfAlphaElectrons_, numberOfBetaElectrons_;

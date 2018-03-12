@@ -19,8 +19,32 @@ ElectronicWaveFunction &ElectronicWaveFunction::getInstance(const std::string& f
   return electronicWaveFunction;
 }
 
+ElectronicWaveFunction &ElectronicWaveFunction::getEmpty() {
+
+    static ElectronicWaveFunction electronicWaveFunction;
+
+    return electronicWaveFunction;
+}
+
 const std::string &ElectronicWaveFunction::getFileName() {
   return fileName_;
+}
+
+ElectronicWaveFunction::ElectronicWaveFunction()
+        :fileName_(""),
+         numberOfNuclei_(0),
+         numberOfElectrons_(0),
+         numberOfAlphaElectrons_(0),
+         numberOfBetaElectrons_(0),
+         determinantProbabilityAmplitude_(0),
+         jastrowFactor_(0),
+         localEnergy_(0),
+         electronPositionsVectorAsEigenVector_(0),
+         electronDriftCollection_(0),
+         atomsVector_(AtomsVector()),
+         spinTypesVector_(0)
+{
+    amolqc_init();
 }
 
 ElectronicWaveFunction::ElectronicWaveFunction(const std::string& fileName)
