@@ -16,7 +16,7 @@ include_directories( ${EIGEN3_INCLUDE_DIR} )
 include_directories(
         include
         source
-        #resources
+        resources
 )
 
 set(HEADER_FILES
@@ -43,3 +43,5 @@ target_link_libraries(${PROJECT_NAME}_main
         ${LAPACK_LINKER_FLAGS}
         ${BLAS_LINKER_FLAGS}
         )
+
+add_subdirectory(tests)
