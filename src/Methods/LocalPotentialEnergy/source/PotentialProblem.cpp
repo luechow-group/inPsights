@@ -27,7 +27,7 @@ double PotentialProblem::value(const Eigen::VectorXd &x) {
     // calculating en potentials
     for ( int i = 0; i < ec.numberOfEntities(); i++) {
         for (int j = 0; j < nuclei_.numberOfEntities(); j++) {
-            value += ec[i].charge() * nuclei_[j].charge() \
+            value += -1.0 * nuclei_[j].charge() \
                 / Particle::distance(ec[i], nuclei_[j]);
         }
     }
@@ -35,7 +35,7 @@ double PotentialProblem::value(const Eigen::VectorXd &x) {
     // calculating ee potentials
     for ( int i = 0; i < ec.numberOfEntities(); i++) {
         for (int j = i + 1; j < ec.numberOfEntities(); j++) {
-            value += ec[i].charge() * ec[j].charge() \
+            value += 1.0 \
                 / Particle::distance(ec[i], ec[j]);
         }
     }
@@ -66,14 +66,14 @@ void PotentialProblem::gradient(const Eigen::VectorXd &x, Eigen::VectorXd &grad)
         // calculating ee contributions
         for (int j = 0; j < ec.numberOfEntities(); j++){
             if (j != ei){
-                sum += ec[j].charge() \
+                sum += -1.0 \
                 * (ec[j].position()[ci] \
                     - ec[ei].position()[ci]) \
                 / pow(Particle::distance(ec[ei], ec[j]), 3.0);
             }
         }
 
-        grad(i) = sum * ec[ei].charge();
+        grad(i) = -1.0 * sum;
     }
 }
 
