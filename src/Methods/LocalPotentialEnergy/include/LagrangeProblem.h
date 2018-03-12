@@ -57,6 +57,22 @@ public:
                   << std::endl;
     };
 
+    ProblemTypeProblem const &getProblem() const{
+        return problem_;
+    };
+
+    ProblemTypeProblem getProblem(){
+        return problem_;
+    };
+
+    ProblemTypeConstraint const &getConstraint() const{
+        return constraint_;
+    };
+
+    ProblemTypeConstraint getConstraint(){
+        return constraint_;
+    };
+
 private:
     ProblemTypeConstraint constraint_;
     ProblemTypeProblem problem_;

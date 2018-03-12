@@ -104,3 +104,31 @@ TEST(ALagrangeProblemTest, Optimization) {
 
     ASSERT_GT(1e-8,(y-reference).norm());
 }
+
+TEST(ALagrangeProblemTest, getProblem) {
+    testProblem problem;
+    testConstraint constraint;
+    LagrangeProblem<testProblem,testConstraint> lagrangeProblem(problem,constraint,1);
+
+    Eigen::VectorXd y(3);
+    y << Vector3d(-2,-2,2);
+
+    Eigen::VectorXd z(2);
+    z << Vector2d(-2,-2);
+
+    ASSERT_EQ(lagrangeProblem.getProblem().value(z), problem.value(z));
+}
+
+TEST(ALagrangeProblemTest, getConstraint) {
+    testProblem problem;
+    testConstraint constraint;
+    LagrangeProblem<testProblem,testConstraint> lagrangeProblem(problem,constraint,1);
+
+    Eigen::VectorXd y(3);
+    y << Vector3d(-2,-2,2);
+
+    Eigen::VectorXd z(2);
+    z << Vector2d(-2,-2);
+
+    ASSERT_EQ(lagrangeProblem.getConstraint().value(z), constraint.value(z));
+}
