@@ -22,6 +22,7 @@ include_directories(
 set(HEADER_FILES
         include/PotentialProblem.h
         include/LagrangeProblem.h
+        include/TestProblems.h
         )
 
 set(SOURCE_FILES

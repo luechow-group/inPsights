@@ -6,54 +6,22 @@
 #include <Eigen/Core>
 #include "LagrangeProblem.h"
 #include "solver/gradientdescentsolver.h"
+#include "TestProblems.h"
 
 using namespace testing;
 using namespace Eigen;
+using namespace TestProblems;
 
-class ALagrangeProblemTest : public Test {public:
-    void SetUp() override {};
-};
+class ALagrangeProblemTest : public Test {};
 
-class testProblem: public cppoptlib::Problem<double,Eigen::Dynamic>{
-public:
-    double value(const Eigen::VectorXd & x) override {
-        double value = 0.0;
-        for (int i = 0; i < x.size(); i++){
-            value += x[i];
-        }
-    };
-
-    void gradient(const Eigen::VectorXd & x, Eigen::VectorXd &grad) override {
-        for (int i = 0; i < x.size(); i++){
-            grad[i] = 1;
-        }
-    };
-};
-
-class testConstraint : public cppoptlib::Problem<double,Eigen::Dynamic>{
-public:
-    double value(const Eigen::VectorXd & x) override {
-        double value = 0.0;
-        for (int i = 0; i < x.size(); i++){
-            value += x[i]*x[i];
-        }
-    };
-
-    void gradient(const Eigen::VectorXd & x, Eigen::VectorXd &grad) override {
-        for (int i = 0; i < x.size(); i++){
-            grad[i] = 2*x[i];
-        }
-    };
-};
-
-TEST(ALagrangeProblemTest, Construction) {
+TEST_F(ALagrangeProblemTest, Construction) {
     testProblem problem;
     testConstraint constraint;
     LagrangeProblem<testProblem,testConstraint> lagrangeProblem(problem,constraint,1);
 }
 
 //took test functions from wikipedia
-TEST(ALagrangeProblemTest, Value) {
+TEST_F(ALagrangeProblemTest, Value) {
     testProblem problem;
     testConstraint constraint;
     LagrangeProblem<testProblem,testConstraint> lagrangeProblem(problem,constraint,1);
@@ -69,7 +37,7 @@ TEST(ALagrangeProblemTest, Value) {
     ASSERT_DOUBLE_EQ(lagrangeProblem.value(y),10);
 }
 
-TEST(ALagrangeProblemTest, Gradient) {
+TEST_F(ALagrangeProblemTest, Gradient) {
     testProblem problem;
     testConstraint constraint;
     LagrangeProblem<testProblem,testConstraint> lagrangeProblem(problem,constraint,1);
@@ -85,7 +53,7 @@ TEST(ALagrangeProblemTest, Gradient) {
     ASSERT_EQ(gradient, reference);
 }
 
-TEST(ALagrangeProblemTest, Optimization) {
+TEST_F(ALagrangeProblemTest, Optimization) {
     testProblem problem;
     testConstraint constraint;
     LagrangeProblem<testProblem,testConstraint> lagrangeProblem(problem,constraint,1);
@@ -110,7 +78,7 @@ TEST(ALagrangeProblemTest, Optimization) {
     ASSERT_GT(1e-8,(y-reference).norm());
 }
 
-TEST(ALagrangeProblemTest, getProblem) {
+TEST_F(ALagrangeProblemTest, getProblem) {
     testProblem problem;
     testConstraint constraint;
     LagrangeProblem<testProblem,testConstraint> lagrangeProblem(problem,constraint,1);
@@ -124,7 +92,7 @@ TEST(ALagrangeProblemTest, getProblem) {
     ASSERT_EQ(lagrangeProblem.getProblem().value(z), problem.value(z));
 }
 
-TEST(ALagrangeProblemTest, getConstraint) {
+TEST_F(ALagrangeProblemTest, getConstraint) {
     testProblem problem;
     testConstraint constraint;
     LagrangeProblem<testProblem,testConstraint> lagrangeProblem(problem,constraint,1);
