@@ -5,6 +5,8 @@
 #include <gtest/gtest.h>
 #include <Eigen/Core>
 #include "solver/gradientdescentsolver.h"
+#include "solver/gradientdescentsimplesolver.h"
+#include "solver/bfgssolver.h"
 #include "TestProblems.h"
 
 using namespace testing;
@@ -72,6 +74,47 @@ TEST_F(ATestProblemsTest, GradientDescent) {
     cppoptlib::Criteria<double> crit = cppoptlib::Criteria<double>::defaults();
 
     cppoptlib::GradientDescentSolver<testConstraint> solver;
+    solver.setDebug(cppoptlib::DebugLevel::High);
+    solver.setStopCriteria(crit);
+
+    solver.minimize(constraint, z);
+
+    Eigen::VectorXd ref(2);
+    ref << 0,0;
+
+    ASSERT_GT(1e-4,(z-ref).norm());
+}
+
+TEST_F(ATestProblemsTest, GradientDescentSimple) {
+    testConstraint constraint;
+
+    Eigen::VectorXd z(2);
+    z << -2,3;
+
+    cppoptlib::Criteria<double> crit = cppoptlib::Criteria<double>::defaults();
+    crit.gradNorm = 1e-3;
+
+    cppoptlib::GradientDescentSimpleSolver<testConstraint> solver;
+    solver.setDebug(cppoptlib::DebugLevel::High);
+    solver.setStopCriteria(crit);
+
+    solver.minimize(constraint, z);
+
+    Eigen::VectorXd ref(2);
+    ref << 0,0;
+
+    ASSERT_GT(1e-3,(z-ref).norm());
+}
+
+TEST_F(ATestProblemsTest, Bfgs) {
+    testConstraint constraint;
+
+    Eigen::VectorXd z(2);
+    z << -2,3;
+
+    cppoptlib::Criteria<double> crit = cppoptlib::Criteria<double>::defaults();
+
+    cppoptlib::BfgsSolver<testConstraint> solver;
     solver.setDebug(cppoptlib::DebugLevel::High);
     solver.setStopCriteria(crit);
 
