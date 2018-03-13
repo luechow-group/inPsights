@@ -6,6 +6,7 @@
 #include <Eigen/Core>
 #include "LagrangeProblem.h"
 #include "solver/gradientdescentsolver.h"
+#include "solver/gradientdescentsimplesolver.h"
 #include "solver/bfgssolver.h"
 #include "TestProblems.h"
 
@@ -78,6 +79,33 @@ TEST_F(ALagrangeProblemTest, GradientDescentSolver) {
 
     ASSERT_GT(1e-8,(y-reference).norm());
 }
+
+TEST_F(ALagrangeProblemTest, GradientDescentSimpleSolver) {
+    testProblem problem;
+    testConstraint constraint;
+    LagrangeProblem<testProblem,testConstraint> lagrangeProblem(problem,constraint,1);
+
+    Eigen::VectorXd y(3);
+    y << -2,-2,2;
+
+    Eigen::VectorXd gradient = y;
+    lagrangeProblem.gradient(y,gradient);
+
+    cppoptlib::Criteria<double> crit = cppoptlib::Criteria<double>::defaults();
+    crit.gradNorm = 1e-3;
+
+    cppoptlib::GradientDescentSimpleSolver<LagrangeProblem<testProblem,testConstraint>> solver;
+    solver.setDebug(cppoptlib::DebugLevel::High);
+    solver.setStopCriteria(crit);
+
+    solver.minimize(lagrangeProblem, y);
+
+    Eigen::VectorXd reference(3);
+    reference << -0.70713277,-0.70713277,0.70713277;
+
+    ASSERT_GT(1e-3,(y-reference).norm());
+}
+
 
 TEST_F(ALagrangeProblemTest, BfgsSolver) {
     testProblem problem;
