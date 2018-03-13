@@ -23,6 +23,15 @@ namespace TestProblems{
                 grad[i] = 1;
             }
         };
+        bool callback(const cppoptlib::Criteria<double> &state, Eigen::VectorXd &x, Eigen::VectorXd& grad) override{
+            std::cout << "(" << std::setw(2) << state.iterations << ")"
+                      << " f(x) = " << std::fixed << std::setw(8) << std::setprecision(8) << value(x)
+                      << " xDelta = " << std::setw(8) << state.xDelta
+                      << " gradInfNorm = " << std::setw(8) << state.gradNorm
+                      << "   " << x.transpose()
+                      << std::endl;
+            return true;
+        };
     };
 
     class testConstraint : public cppoptlib::Problem<double,Eigen::Dynamic>{
@@ -39,6 +48,16 @@ namespace TestProblems{
             for (int i = 0; i < x.size(); i++){
                 grad[i] = 2*x[i];
             }
+        };
+
+        bool callback(const cppoptlib::Criteria<double> &state, Eigen::VectorXd &x, Eigen::VectorXd& grad) override{
+            std::cout << "(" << std::setw(2) << state.iterations << ")"
+                      << " f(x) = " << std::fixed << std::setw(8) << std::setprecision(8) << value(x)
+                      << " xDelta = " << std::setw(8) << state.xDelta
+                      << " gradInfNorm = " << std::setw(8) << state.gradNorm
+                      << "   " << x.transpose()
+                      << std::endl;
+            return true;
         };
     };
 }
