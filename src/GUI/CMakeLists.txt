@@ -77,12 +77,11 @@ add_executable("${PROJECT_NAME}_mainStringMethod" ${SOURCE_FILES} ${HEADER_FILES
 add_executable("${PROJECT_NAME}_mainPathOptimization" ${SOURCE_FILES} ${HEADER_FILES} mainPathOptimization.cpp)
 add_executable("${PROJECT_NAME}_mainHessianTesting" ${SOURCE_FILES} ${HEADER_FILES} mainHessianTesting.cpp)
 
-# links the libraries to the executable
-target_link_libraries("${PROJECT_NAME}_mainStringMethod"
+add_library(GUILib INTERFACE
+        )
+
+target_link_libraries(GUILib INTERFACE
         BaseLib
-        BSplines
-        TransitionStateSearch
-        #eigen
         Qt5::Core
         Qt5::Gui
         Qt5::Widgets
@@ -90,34 +89,23 @@ target_link_libraries("${PROJECT_NAME}_mainStringMethod"
         Qt5::3DExtras
         Qt5::3DRender
         Qt5::Charts
-        #Qt5::3DInput
-        #pthread #TODO needed?
+        )
+
+# links the libraries to the executable
+target_link_libraries("${PROJECT_NAME}_mainStringMethod"
+        GUILib
+        BSplines
+        TransitionStateSearch
         )
 
 target_link_libraries("${PROJECT_NAME}_mainPathOptimization"
-        BaseLib
+        GUILib
         BSplines
         TransitionStateSearch
-        #eigen
-        Qt5::Core
-        Qt5::Gui
-        Qt5::Widgets
-        Qt5::3DCore
-        Qt5::3DExtras
-        Qt5::3DRender
-        Qt5::Charts
         )
 
 target_link_libraries("${PROJECT_NAME}_mainHessianTesting"
-        BaseLib
+        GUILib
         BSplines
         TransitionStateSearch
-        #eigen
-        Qt5::Core
-        Qt5::Gui
-        Qt5::Widgets
-        Qt5::3DCore
-        Qt5::3DExtras
-        Qt5::3DRender
-        Qt5::Charts
         )
