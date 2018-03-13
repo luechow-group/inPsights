@@ -41,11 +41,4 @@ target_link_libraries(${PROJECT_NAME}
         AmolqcInterface
         )
 
-add_executable(${PROJECT_NAME}_main main.cpp)
-target_link_libraries(${PROJECT_NAME}_main
-        ${PROJECT_NAME}
-        ${LAPACK_LINKER_FLAGS}
-        ${BLAS_LINKER_FLAGS}
-        )
-
 add_subdirectory(tests)
