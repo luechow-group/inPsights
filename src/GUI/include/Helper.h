@@ -2,8 +2,8 @@
 // Created by Michael Heuer on 25.12.16.
 //
 
-#ifndef AMOLQCGUI_HELPER_H
-#define AMOLQCGUI_HELPER_H
+#ifndef AMOLQCPP_HELPER_H
+#define AMOLQCPP_HELPER_H
 
 #include <QColor>
 #include <QVector3D>
@@ -24,4 +24,4 @@ static QVector3D MidPointVector(std::pair<QVector3D,QVector3D> qVector3Dpair){
 
 
 
-#endif //AMOLQCGUI_HELPER_H
+#endif //AMOLQCPP_HELPER_H

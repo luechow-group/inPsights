@@ -2,8 +2,8 @@
 // Created by Michael Heuer on 20.11.17.
 //
 
-#ifndef AMOLQCGUI_DUMMYCLASS_H
-#define AMOLQCGUI_DUMMYCLASS_H
+#ifndef AMOLQCPP_DUMMYCLASS_H
+#define AMOLQCPP_DUMMYCLASS_H
 
 
 class DummyClass{
@@ -12,4 +12,4 @@ public:
 
 };
 
-#endif //AMOLQCGUI_DUMMYCLASS_H
+#endif //AMOLQCPP_DUMMYCLASS_H

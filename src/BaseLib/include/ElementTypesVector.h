@@ -2,8 +2,8 @@
 // Created by Michael Heuer on 29.10.17.
 //
 
-#ifndef AMOLQCGUI_ELEMENTTYPECOLLECTION_H
-#define AMOLQCGUI_ELEMENTTYPECOLLECTION_H
+#ifndef AMOLQCPP_ELEMENTTYPECOLLECTION_H
+#define AMOLQCPP_ELEMENTTYPECOLLECTION_H
 
 #include <Eigen/Core>
 #include "AbstractVector.h"
@@ -31,4 +31,4 @@ private:
     Eigen::VectorXi elementTypes_;
 };
 
-#endif //AMOLQCGUI_ELEMENTTYPECOLLECTION_H
+#endif //AMOLQCPP_ELEMENTTYPECOLLECTION_H
