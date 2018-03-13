@@ -62,3 +62,23 @@ TEST_F(ATestProblemsTest, testConstraintGradient) {
     ASSERT_DOUBLE_EQ(grad[0],reference[0]);
     ASSERT_DOUBLE_EQ(grad[1],reference[1]);
 }
+
+TEST_F(ATestProblemsTest, GradientDescent) {
+    testConstraint constraint;
+
+    Eigen::VectorXd z(2);
+    z << -2,3;
+
+    cppoptlib::Criteria<double> crit = cppoptlib::Criteria<double>::defaults();
+
+    cppoptlib::GradientDescentSolver<testConstraint> solver;
+    solver.setDebug(cppoptlib::DebugLevel::High);
+    solver.setStopCriteria(crit);
+
+    solver.minimize(constraint, z);
+
+    Eigen::VectorXd ref(2);
+    ref << 0,0;
+
+    ASSERT_GT(1e-4,(z-ref).norm());
+}
