@@ -55,6 +55,7 @@ public:
                   << " gradInfNorm = " << std::setw(8) << state.gradNorm
                   << "   " << x.transpose()
                   << std::endl;
+        return true;
     };
 
     ProblemTypeProblem const &getProblem() const{
