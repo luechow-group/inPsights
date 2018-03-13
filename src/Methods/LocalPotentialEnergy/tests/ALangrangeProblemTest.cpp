@@ -59,8 +59,13 @@ TEST(ALagrangeProblemTest, Value) {
     LagrangeProblem<testProblem,testConstraint> lagrangeProblem(problem,constraint,1);
 
     Eigen::VectorXd y(3);
-    y << Vector3d(-2,-2,2);
+    y << -2,-2,2;
 
+    Eigen::VectorXd z(2);
+    z << -2,-2;
+
+    ASSERT_DOUBLE_EQ(lagrangeProblem.getProblem().value(z),-4);
+    ASSERT_DOUBLE_EQ(lagrangeProblem.getConstraint().value(z),8);
     ASSERT_DOUBLE_EQ(lagrangeProblem.value(y),10);
 }
 
@@ -70,13 +75,13 @@ TEST(ALagrangeProblemTest, Gradient) {
     LagrangeProblem<testProblem,testConstraint> lagrangeProblem(problem,constraint,1);
 
     Eigen::VectorXd y(3);
-    y << Vector3d(-2,-2,2);
+    y << -2,-2,2;
 
     Eigen::VectorXd gradient = y;
     lagrangeProblem.gradient(y,gradient);
 
     Eigen::VectorXd reference(3);
-    reference << Vector3d(-7,-7,7);
+    reference << -7,-7,7;
     ASSERT_EQ(gradient, reference);
 }
 
@@ -86,7 +91,7 @@ TEST(ALagrangeProblemTest, Optimization) {
     LagrangeProblem<testProblem,testConstraint> lagrangeProblem(problem,constraint,1);
 
     Eigen::VectorXd y(3);
-    y << Vector3d(-2,-2,2);
+    y << -2,-2,2;
 
     Eigen::VectorXd gradient = y;
     lagrangeProblem.gradient(y,gradient);
@@ -100,7 +105,7 @@ TEST(ALagrangeProblemTest, Optimization) {
     solver.minimize(lagrangeProblem, y);
 
     Eigen::VectorXd reference(3);
-    reference << Vector3d(-0.70713277,-0.70713277,0.70713277);
+    reference << -0.70713277,-0.70713277,0.70713277;
 
     ASSERT_GT(1e-8,(y-reference).norm());
 }
@@ -111,10 +116,10 @@ TEST(ALagrangeProblemTest, getProblem) {
     LagrangeProblem<testProblem,testConstraint> lagrangeProblem(problem,constraint,1);
 
     Eigen::VectorXd y(3);
-    y << Vector3d(-2,-2,2);
+    y << -2,-2,2;
 
     Eigen::VectorXd z(2);
-    z << Vector2d(-2,-2);
+    z << -2,-2;
 
     ASSERT_EQ(lagrangeProblem.getProblem().value(z), problem.value(z));
 }
@@ -125,10 +130,10 @@ TEST(ALagrangeProblemTest, getConstraint) {
     LagrangeProblem<testProblem,testConstraint> lagrangeProblem(problem,constraint,1);
 
     Eigen::VectorXd y(3);
-    y << Vector3d(-2,-2,2);
+    y << -2,-2,2;
 
     Eigen::VectorXd z(2);
-    z << Vector2d(-2,-2);
+    z << -2,-2;
 
     ASSERT_EQ(lagrangeProblem.getConstraint().value(z), constraint.value(z));
 }
