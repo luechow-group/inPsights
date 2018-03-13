@@ -76,6 +76,7 @@ file(COPY ${RESOURCE_FILES} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 add_executable("${PROJECT_NAME}_mainStringMethod" ${SOURCE_FILES} ${HEADER_FILES} mainStringMethodGUI.cpp)
 add_executable("${PROJECT_NAME}_mainPathOptimization" ${SOURCE_FILES} ${HEADER_FILES} mainPathOptimization.cpp)
 add_executable("${PROJECT_NAME}_mainHessianTesting" ${SOURCE_FILES} ${HEADER_FILES} mainHessianTesting.cpp)
+add_executable("${PROJECT_NAME}_mainLocalPotentialEnergy" ${SOURCE_FILES} ${HEADER_FILES} mainLocalPotentialEnergy.cpp)
 
 add_library(GUILib INTERFACE
         )
@@ -108,4 +109,9 @@ target_link_libraries("${PROJECT_NAME}_mainHessianTesting"
         GUILib
         BSplines
         TransitionStateSearch
+        )
+
+target_link_libraries("${PROJECT_NAME}_mainLocalPotentialEnergy"
+        GUILib
+        LocalPotentialEnergy
         )
