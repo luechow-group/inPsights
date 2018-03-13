@@ -18,19 +18,19 @@ public:
             {};
 
     double value(const Eigen::VectorXd &x) override{
-        auto x0 = x.block(0,0,x.size()-1,1); // vector for problem and condition
+        Eigen::VectorXd x0 = x.head(x.size()-1); // vector for problem and condition
         double lambda = x[x.size()-1];
 
         return problem_.value(x0) + lambda*(constraint_.value(x0) - equality_);
     };
 
     void gradient(const Eigen::VectorXd &x, Eigen::VectorXd &grad) override{
-        Eigen::VectorXd x0 = x.block(0,0,x.size()-1,1);
+        Eigen::VectorXd x0 = x.head(x.size()-1);
 
         double lambda = x[x.size()-1];
 
         // calculating gradients of x0 elements
-        Eigen::VectorXd gradP = grad.block(0,0,x.size()-1,1); // gradient of problem
+        Eigen::VectorXd gradP = grad.head(grad.size()-1); // gradient of problem
         Eigen::VectorXd gradC = gradP; // gradient of condition
 
         constraint_.gradient(x0, gradC);
