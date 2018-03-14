@@ -7,6 +7,9 @@
 
 #include <problem.h>
 #include <iomanip>
+#include "ToString.h"
+
+using namespace ToString;
 
 template<class ProblemTypeProblem, class ProblemTypeConstraint>
 class LagrangeProblem : public cppoptlib::Problem<double,Eigen::Dynamic>{
@@ -49,11 +52,15 @@ public:
     };
 
     bool callback(const cppoptlib::Criteria<double> &state, Eigen::VectorXd &x, Eigen::VectorXd& grad) override{
-        std::cout << "(" << std::setw(2) << state.iterations << ")"
-                  << " f(x) = " << std::fixed << std::setw(8) << std::setprecision(8) << value(x)
-                  << " xDelta = " << std::setw(8) << state.xDelta
-                  << " gradInfNorm = " << std::setw(8) << state.gradNorm
-                  << "   " << x.transpose()
+        Eigen::VectorXd x0 = x.head(x.size()-1);
+        std::cout << unsignedLongToString(state.iterations,4)
+                  << " | Lx= " << doubleToString(value(x),2,6)
+                  << " | px= " << doubleToString(problem_.value(x0),5,0)
+                  << " | cx= " << doubleToString(constraint_.value(x0) - equality_,2,6)
+                  << " | ld= " << doubleToString(x(x.size()-1),5,0)
+                  << " | xD= " << doubleToString(state.xDelta,5,0)
+                  << " | gN= " << doubleToString(state.gradNorm,0,12)
+                  << " | " << vectorXdToString(x0)
                   << std::endl;
         return true;
     };
