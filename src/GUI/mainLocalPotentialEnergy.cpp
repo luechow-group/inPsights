@@ -22,12 +22,7 @@ int main(int argc, char *argv[]) {
     PotentialProblem potentialProblem(nuclei);
 
     CollectionParser collectionParser;
-
-    //ElectronsVector electrons = collectionParser.electronsVectorFromJson("LD_Diboran_Start.json");
-
-    ElectronsVector electrons;
-    electrons.append(Electron(Vector3d(0,0,0.1),Spin::SpinType::alpha));
-    electrons.append(Electron(Vector3d(0,0,-0.1),Spin::SpinType::beta));
+    ElectronsVector electrons = collectionParser.electronsVectorFromJson("LR_H2_artificial_start.json");
 
     double energy = -1.7;
 
