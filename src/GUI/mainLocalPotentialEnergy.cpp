@@ -1,5 +1,8 @@
+//
+// Created by Leonard Reuter on 07.03.18.
+//
+
 #include "CollectionParser.h"
-#include "WfFileImporter.h"
 
 #include "solver/gradientdescentsolver.h"
 
@@ -24,14 +27,14 @@ int main(int argc, char *argv[]) {
     CollectionParser collectionParser;
     ElectronsVector electrons = collectionParser.electronsVectorFromJson("LR_H2_artificial_start.json");
 
-    double energy = -1.7;
+    double energy = -1.1745;
 
     LagrangeProblem<ElectronicWaveFunctionProblem,PotentialProblem>
             lagrangeProblem(electronicWaveFunctionProblem,potentialProblem,energy);
 
     GradientSqMagnitudeProblem<LagrangeProblem<ElectronicWaveFunctionProblem,PotentialProblem>> mainprob(lagrangeProblem);
 
-    double lambdaInit = -1;
+    double lambdaInit = 0;
 
     Eigen::VectorXd x(electrons.positionsVector().positionsAsEigenVector());
 
@@ -60,7 +63,6 @@ int main(int argc, char *argv[]) {
                                                 optimizationPath.spinTypesVector()));
 
         return Visualization::visualizeOptPath(argc, argv, optimizationPath);
-
     }
 
     return 0;
