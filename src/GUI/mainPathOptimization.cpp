@@ -82,7 +82,7 @@ int main(int argc, char *argv[]) {
         //append end point
         optimizationPath.append(ElectronsVector(PositionsVector(x), optimizationPath.spinTypesVector()));
 
-        return Visualization::visualizeOptPath(argc, argv, optimizationPath);
+        return Visualization::visualizeOptPath(argc, argv, ac, optimizationPath);
     }
     return 0;
 };

@@ -21,6 +21,7 @@
 
 namespace Visualization{
     int visualizeOptPath(int &argc, char **argv,
+                         const AtomsVector &atoms,
                          const ElectronsVectorCollection &optimizationPath,
                          const unsigned long &nwanted = 300) {
         QApplication app(argc, argv);
@@ -56,7 +57,7 @@ namespace Visualization{
         MoleculeWidget moleculeWidget;
         Qt3DCore::QEntity *root = moleculeWidget.createMoleculeWidget();
 
-        AtomsVector3D(root, ElectronicWaveFunction::getInstance().getAtomsVector());
+        AtomsVector3D(root, atoms);
 
         // Plot the starting point
         ElectronsVector3D(root, optimizationPath[-1], false);
