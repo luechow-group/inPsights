@@ -19,26 +19,42 @@
 #include <Eigen/Eigenvalues>
 
 #include "solver/bfgssolver.h"
+#include "solver/gradientdescentsolver.h"
+#include "solver/gradientdescentsimplesolver.h"
 #include "CollectionParser.h"
 
 #include "PotentialProblem.h"
 #include "LagrangeProblem.h"
+#include "GradientSqMagnitudeProblem.h"
+
+int visualizeOptPath(const QApplication &app,
+                     const ElectronsVectorCollection &optimizationPath,
+                     const unsigned long &nwanted);
+
+using namespace Eigen;
 
 int main(int argc, char *argv[]) {
-    ElectronicWaveFunctionProblem electronicWaveFunctionProblem("Ethylene-em-5.wf");
+    ElectronicWaveFunctionProblem electronicWaveFunctionProblem("H2.wf");
     AtomsVector nuclei = electronicWaveFunctionProblem.getAtomsVector();
 
     PotentialProblem potentialProblem(nuclei);
 
     CollectionParser collectionParser;
-    ElectronsVector electrons = collectionParser.electronsVectorFromJson("LD_Ethlyen_Start.json");
 
-    double energy = -75;
+    //ElectronsVector electrons = collectionParser.electronsVectorFromJson("LD_Diboran_Start.json");
 
-    LagrangeProblem<PotentialProblem,ElectronicWaveFunctionProblem>
-            lagrangeProblem(potentialProblem,electronicWaveFunctionProblem,energy);
+    ElectronsVector electrons;
+    electrons.append(Electron(Vector3d(0,0,0.1),Spin::SpinType::alpha));
+    electrons.append(Electron(Vector3d(0,0,-0.1),Spin::SpinType::beta));
 
-    double lambdaInit = 1;
+    double energy = -1.7;
+
+    LagrangeProblem<ElectronicWaveFunctionProblem,PotentialProblem>
+            lagrangeProblem(electronicWaveFunctionProblem,potentialProblem,energy);
+
+    GradientSqMagnitudeProblem<LagrangeProblem<ElectronicWaveFunctionProblem,PotentialProblem>> mainprob(lagrangeProblem);
+
+    double lambdaInit = -1;
 
     Eigen::VectorXd x(electrons.positionsVector().positionsAsEigenVector());
 
@@ -47,19 +63,12 @@ int main(int argc, char *argv[]) {
     y[y.size() - 1] = lambdaInit;
 
     cppoptlib::Criteria<double> crit = cppoptlib::Criteria<double>::defaults();
-
-    cppoptlib::BfgsSolver<LagrangeProblem<PotentialProblem,ElectronicWaveFunctionProblem>> solver;
+ 
+    cppoptlib::GradientDescentSolver<GradientSqMagnitudeProblem<LagrangeProblem<ElectronicWaveFunctionProblem,PotentialProblem>>> solver;
     solver.setDebug(cppoptlib::DebugLevel::High);
     solver.setStopCriteria(crit);
 
-    //solver.minimize(lagrangeProblem, y);
-
-    cppoptlib::BfgsSolver<ElectronicWaveFunctionProblem> solver2;
-    solver2.setDebug(cppoptlib::DebugLevel::High);
-    solver2.setStopCriteria(crit);
-
-    solver2.minimize(electronicWaveFunctionProblem,x);
-    std::cout << ElectronsVector(x,electrons.spinTypesVector().spinTypesAsEigenVector())<<std::endl;
+    solver.minimize(mainprob, y);
 
     bool showGui = true;
 
