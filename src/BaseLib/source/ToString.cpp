@@ -26,7 +26,7 @@ std::string ToString::doubleToString(double a, unsigned decimalPlaces, unsigned 
         sstream << " ";
     }
     for (int i = 1; i <= leadingSpaces; i++){
-        if (abs(a) < pow(10.0,i)){
+        if (fabs(a) < pow(10.0,i)){
             sstream << " ";
         }
     }
