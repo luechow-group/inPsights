@@ -15,3 +15,8 @@ const PositionsVectorCollection &ParticlesVectorCollection::positionsVectorColle
 PositionsVectorCollection &ParticlesVectorCollection::positionsVectorCollection() {
     return positionsVectorCollection_;
 }
+
+double ParticlesVectorCollection::norm(long i, long j) const{
+    return positionsVectorCollection_.norm(i, j);
+}
+

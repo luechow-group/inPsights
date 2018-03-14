@@ -13,6 +13,7 @@ class ParticlesVectorCollection : public AbstractVector{
 public:
     const PositionsVectorCollection& positionsVectorCollection() const;
     PositionsVectorCollection& positionsVectorCollection();
+    double norm(long i, long j) const;
 
 protected:
     PositionsVectorCollection positionsVectorCollection_;
