@@ -20,6 +20,8 @@ public:
     void prepend(const PositionsVector& positionsVector);
     void permute(long i, long j) override;
 
+    double norm(long i, long j) const;
+
 
     const std::vector<PositionsVector>& positionsVectorCollection() const;
     std::vector<PositionsVector>& positionsVectorCollection();
