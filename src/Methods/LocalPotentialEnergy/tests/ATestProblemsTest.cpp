@@ -65,6 +65,44 @@ TEST_F(ATestProblemsTest, testConstraintGradient) {
     ASSERT_DOUBLE_EQ(grad[1],reference[1]);
 }
 
+TEST_F(ATestProblemsTest, testProblemHessian) {
+    testProblem problem;
+
+    Eigen::VectorXd z(2);
+    z << -2,3;
+
+    Eigen::MatrixXd hessian(2,2);
+
+    problem.hessian(z,hessian);
+
+    Eigen::MatrixXd reference(2,2);
+    reference(0,0) = 0;
+    reference(0,1) = 0;
+    reference(1,0) = 0;
+    reference(1,1) = 0;
+
+    ASSERT_EQ(hessian,reference);
+}
+
+TEST_F(ATestProblemsTest, testConstraintHessian) {
+    testConstraint constraint;
+
+    Eigen::VectorXd z(2);
+    z << -2,3;
+
+    Eigen::MatrixXd hessian(2,2);
+
+    constraint.hessian(z,hessian);
+
+    Eigen::MatrixXd reference(2,2);
+    reference(0,0) = 2;
+    reference(0,1) = 0;
+    reference(1,0) = 0;
+    reference(1,1) = 2;
+
+    ASSERT_EQ(hessian,reference);
+}
+
 TEST_F(ATestProblemsTest, GradientDescent) {
     testConstraint constraint;
 
