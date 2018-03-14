@@ -53,6 +53,7 @@ public:
 
     bool callback(const cppoptlib::Criteria<double> &state, Eigen::VectorXd &x, Eigen::VectorXd& grad) override{
         Eigen::VectorXd x0 = x.head(x.size()-1);
+        if (problem_.callback(state, x0, grad)){}
         std::cout << unsignedLongToString(state.iterations,4)
                   << " | Lx= " << doubleToString(value(x),2,6)
                   << " | px= " << doubleToString(problem_.value(x0),5,0)
