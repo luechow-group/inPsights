@@ -52,6 +52,7 @@ set(HEADER_FILES
         include/ElectronsVector3D.h
         include/MoleculeWidget.h
         include/ParticlesVectorPath3D.h
+        include/Visualization.h
         )
 
 set(SOURCE_FILES
