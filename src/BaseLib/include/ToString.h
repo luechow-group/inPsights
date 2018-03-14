@@ -19,6 +19,10 @@ namespace ToString {
     std::string vector3dToString(const Eigen::Vector3d &vector,
                                  unsigned decimalPlaces = 5,
                                  unsigned leadingSpaces = 1);
+
+    std::string vectorXdToString(const Eigen::VectorXd &vector,
+                                 unsigned decimalPlaces = 5,
+                                 unsigned leadingSpaces = 1);
 }
 
 #endif //AMOLQCGUI_TOSTRING_H
