@@ -55,12 +55,12 @@ public:
         Eigen::VectorXd x0 = x.head(x.size()-1);
         if (problem_.callback(state, x0, grad)){}
         std::cout << unsignedLongToString(state.iterations,4)
-                  << " | Lx= " << doubleToString(value(x),2,6)
-                  << " | px= " << doubleToString(problem_.value(x0),5,0)
-                  << " | cx= " << doubleToString(constraint_.value(x0) - equality_,2,6)
-                  << " | ld= " << doubleToString(x(x.size()-1),5,0)
-                  << " | xD= " << doubleToString(state.xDelta,5,0)
-                  << " | gN= " << doubleToString(state.gradNorm,0,12)
+                  << " | Lx= " << doubleToString(value(x))
+                  << " | px= " << doubleToString(problem_.value(x0))
+                  << " | cx= " << doubleToString(constraint_.value(x0) - equality_)
+                  << " | ld= " << doubleToString(x(x.size()-1))
+                  << " | xD= " << doubleToString(state.xDelta)
+                  << " | gN= " << doubleToString(state.gradNorm)
                   << " | " << vectorXdToString(x0)
                   << std::endl;
         return true;
