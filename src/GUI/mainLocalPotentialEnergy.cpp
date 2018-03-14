@@ -77,31 +77,59 @@ int main(int argc, char *argv[]) {
         setlocale(LC_NUMERIC,"C");
 
         // Prepare the optimization path for visualization
-        auto optimizationPath = electronicWaveFunctionProblem.getOptimizationPath();
-        ElectronsVectorCollection shortenedPath(optimizationPath[0]);
-        unsigned long nwanted = 300;
-        auto skip = 1 + (optimizationPath.numberOfEntities() / nwanted);
-        std::cout << "displaying structures with a spacing of " << skip << "." << std::endl;
-        for (unsigned long i = 0; i < optimizationPath.numberOfEntities(); i = i + skip) {
-            shortenedPath.append(optimizationPath[i]);
-        }
-        auto ecEnd = ElectronsVector(x, optimizationPath.spinTypesVector().spinTypesAsEigenVector());
-        shortenedPath.append(ecEnd);
+        auto optimizationPath = mainprob.getProblem().getProblem().getOptimizationPath();
 
-        // Visualization
-        MoleculeWidget moleculeWidget;
-        Qt3DCore::QEntity *root = moleculeWidget.createMoleculeWidget();
+        //prepend starting position
+        optimizationPath.prepend(electrons);
 
-        AtomsVector3D(root, ElectronicWaveFunction::getInstance().getAtomsVector());
+        //append end position
+        optimizationPath.append(ElectronsVector(PositionsVector(y.head(y.size() - 1)),
+                                                optimizationPath.spinTypesVector()));
 
-        // Plot the starting point
-        ElectronsVector3D(root, ElectronsVector(x, optimizationPath.spinTypesVector().spinTypesAsEigenVector()), false);
+        return visualizeOptPath(app, optimizationPath, 300);
 
-        // Plot the optimization path
-        ParticlesVectorPath3D(root, shortenedPath);
-
-        return app.exec();
     }
 
     return 0;
+}
+
+int visualizeOptPath(const QApplication &app, const ElectronsVectorCollection &optimizationPath, const unsigned long &nwanted) {
+    ElectronsVectorCollection shortenedPath(optimizationPath[0]);
+
+    double optPathLength = 0.0;
+    Eigen::VectorXd pathLengthVector =
+            Eigen::VectorXd::Zero(optimizationPath.numberOfEntities());
+
+    for (unsigned long i = 1; i < optimizationPath.numberOfEntities(); i++){
+        optPathLength += optimizationPath.norm(i,i - 1);
+        pathLengthVector[i] = optPathLength;
+    }
+
+    double stepLength = optPathLength / nwanted;
+    ElectronsVector elecVector;
+    unsigned long index = 0;
+    for (unsigned long i = 0; i <= nwanted; i++) {
+        index = 0;
+        for (unsigned long j = 1; j < optimizationPath.numberOfEntities(); j++){
+            if (fabs(pathLengthVector[j] - i * stepLength) <
+                    fabs(pathLengthVector[index] - i * stepLength)){
+                index = j;
+            }
+        }
+        shortenedPath.append(optimizationPath[index]);
+    }
+
+    // Visualization
+    MoleculeWidget moleculeWidget;
+    Qt3DCore::QEntity *root = moleculeWidget.createMoleculeWidget();
+
+    AtomsVector3D(root, ElectronicWaveFunction::getInstance().getAtomsVector());
+
+    // Plot the starting point
+    ElectronsVector3D(root, optimizationPath[-1], false);
+
+    // Plot the optimization path
+    ParticlesVectorPath3D(root, shortenedPath);
+
+    return app.exec();
 }
