@@ -2,8 +2,6 @@
 // Created by Michael Heuer on 07.11.17.
 //
 
-#include <QApplication>
-
 #include "CollectionParser.h"
 #include "ElectronicWaveFunctionProblem.h"
 #include "solver/bfgsnssolver.h"
@@ -15,10 +13,7 @@
 #include "solver/timeintegrationumrigarsolver.h"
 #include "solver/bfgsumrigarsolver.h"
 
-#include "AtomsVector3D.h"
-#include "ElectronsVector3D.h"
-#include "ParticlesVectorPath3D.h"
-#include "MoleculeWidget.h"
+#include "Visualization.h"
 
 bool handleCommandlineArguments(int argc, char **argv,
                                 std::string &wavefunctionFilename,
@@ -78,36 +73,16 @@ int main(int argc, char *argv[]) {
     std::cout << ElectronsVector(x,ec.spinTypesVector().spinTypesAsEigenVector())<<std::endl;
 
 
-
     if(showGui) {
-        QApplication app(argc, argv);
-        setlocale(LC_NUMERIC,"C");
-
-        // Prepare the optimization path for visualization
         auto optimizationPath = electronicWaveFunctionProblem.getOptimizationPath();
-        ElectronsVectorCollection shortenedPath(optimizationPath[0]);
-        unsigned long nwanted = 300;
-        auto skip = 1 + (optimizationPath.numberOfEntities() / nwanted);
-        std::cout << "displaying structures with a spacing of " << skip << "." << std::endl;
-        for (unsigned long i = 0; i < optimizationPath.numberOfEntities(); i = i + skip) {
-            shortenedPath.append(optimizationPath[i]);
-        }
-        auto ecEnd = ElectronsVector(x, optimizationPath.spinTypesVector().spinTypesAsEigenVector());
-        shortenedPath.append(ecEnd);
 
-        // Visualization
-        MoleculeWidget moleculeWidget;
-        Qt3DCore::QEntity *root = moleculeWidget.createMoleculeWidget();
+        //prepend starting point
+        optimizationPath.prepend(ec);
 
-        AtomsVector3D(root, ElectronicWaveFunction::getInstance().getAtomsVector());
+        //append end point
+        optimizationPath.append(ElectronsVector(PositionsVector(x), optimizationPath.spinTypesVector()));
 
-        // Plot the starting point
-        ElectronsVector3D(root, ElectronsVector(x, optimizationPath.spinTypesVector().spinTypesAsEigenVector()), false);
-
-        // Plot the optimization path
-        ParticlesVectorPath3D(root, shortenedPath);
-
-        return app.exec();
+        return Visualization::visualizeOptPath(argc, argv, optimizationPath);
     }
     return 0;
 };
