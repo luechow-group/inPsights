@@ -24,6 +24,9 @@ namespace Visualization{
                          const AtomsVector &atoms,
                          const ElectronsVectorCollection &optimizationPath,
                          const unsigned long &nwanted = 300);
+
+    ElectronsVectorCollection shortenPath(const ElectronsVectorCollection &optimizationPath,
+                                const unsigned long &nwanted);
 }
 
 #endif //AMOLQCPP_VISUALIZATION_H
