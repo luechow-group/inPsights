@@ -2,8 +2,8 @@
 // Created by leonard on 22.02.18.
 //
 
-#ifndef AMOLQCGUI_TESTPROBLEMS_H
-#define AMOLQCGUI_TESTPROBLEMS_H
+#ifndef AMOLQCPP_TESTPROBLEMS_H
+#define AMOLQCPP_TESTPROBLEMS_H
 
 #include <problem.h>
 
@@ -84,4 +84,4 @@ namespace TestProblems{
     };
 }
 
-#endif //AMOLQCGUI_TESTPROBLEMS_H
+#endif //AMOLQCPP_TESTPROBLEMS_H

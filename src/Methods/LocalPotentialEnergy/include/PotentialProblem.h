@@ -2,8 +2,8 @@
 // Created by leonard on 22.02.18.
 //
 
-#ifndef AMOLQCGUI_POTENTIALPROBLEM_H
-#define AMOLQCGUI_POTENTIALPROBLEM_H
+#ifndef AMOLQCPP_POTENTIALPROBLEM_H
+#define AMOLQCPP_POTENTIALPROBLEM_H
 
 #include <problem.h>
 #include "AtomsVector.h"
@@ -30,4 +30,4 @@ private:
     void calculateVPotNuclei();
 };
 
-#endif //AMOLQCGUI_POTENTIALPROBLEM_H
+#endif //AMOLQCPP_POTENTIALPROBLEM_H
