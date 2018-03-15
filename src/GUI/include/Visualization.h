@@ -2,8 +2,8 @@
 // Created by Leonard Reuter on 14.03.18.
 //
 
-#ifndef AMOLQCGUI_VISUALIZATION_H
-#define AMOLQCGUI_VISUALIZATION_H
+#ifndef AMOLQCPP_VISUALIZATION_H
+#define AMOLQCPP_VISUALIZATION_H
 
 
 #include <Qt3DCore>
@@ -69,4 +69,4 @@ namespace Visualization{
     }
 }
 
-#endif //AMOLQCGUI_VISUALIZATION_H
+#endif //AMOLQCPP_VISUALIZATION_H
