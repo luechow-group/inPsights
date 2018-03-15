@@ -19,7 +19,7 @@ int main(int argc, char *argv[]) {
 
     bool showGui = true;
 
-    ElectronicWaveFunctionProblem electronicWaveFunctionProblem("H2.wf");
+    ElectronicWaveFunctionProblem electronicWaveFunctionProblem("H2.wf",false);
     AtomsVector nuclei = electronicWaveFunctionProblem.getAtomsVector();
 
     PotentialProblem potentialProblem(nuclei);
