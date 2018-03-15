@@ -12,7 +12,7 @@
 	url = https://github.com/nlohmann/json.git
 [submodule "src/Externals/spherical-harmonics"]
 	path = src/Externals/SphericalHarmonics/spherical-harmonics
-	url = git@github.com:google/spherical-harmonics.git
+	url = git@github.com:MonteCarloMichael/spherical-harmonics.git
 [submodule "src/Externals/LebedevSphericalIntegration"]
 	path = src/Externals/LebedevSphericalIntegration
 	url = git@github.com:MonteCarloMichael/LebedevSphericalIntegration.git
