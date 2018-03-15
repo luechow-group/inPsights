@@ -17,15 +17,12 @@ AtomsVectorCollection::AtomsVectorCollection(const AtomsVector &atomsVector)
 
 AtomsVectorCollection::AtomsVectorCollection(const std::vector<AtomsVector> &atomsVectorVector)
         : ParticlesVectorCollection(),
-          elementTypesVector_(atomsVectorVector[0].elementTypesVector()) {
+          elementTypesVector_(0) {
 
     if ( !atomsVectorVector.empty() ){
-        for (const auto &atomsVector : atomsVectorVector) {
-            positionsVectorCollection_.append(atomsVector.positionsVector());
-
-            assert(elementTypesVector_.elementTypesAsEigenVector()
-                   == atomsVector.elementTypesVector().elementTypesAsEigenVector()
-                   && "All AtomsVector s must have the same ElementTypesVector.");
+        elementTypesVector_ = atomsVectorVector[0].elementTypesVector();
+        for (const auto &electronsVector : atomsVectorVector) {
+            append(electronsVector);
         }
     }
 }
