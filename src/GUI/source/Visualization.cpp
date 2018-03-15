@@ -4,35 +4,34 @@
 
 #include "Visualization.h"
 namespace Visualization {
-    
-    namespace { // anonymous namespace for private functions
-        ElectronsVectorCollection shortenPath(const ElectronsVectorCollection &optimizationPath, const unsigned long &nwanted) {
-            ElectronsVectorCollection visualizationPath(optimizationPath[0]);
 
-            double optPathLength = 0.0;
-            Eigen::VectorXd pathLengthVector =
-                    Eigen::VectorXd::Zero(optimizationPath.numberOfEntities());
+    ElectronsVectorCollection shortenPath(const ElectronsVectorCollection &optimizationPath, const unsigned long &nwanted) {
+        ElectronsVectorCollection visualizationPath(optimizationPath[0]);
 
-            for (unsigned long i = 1; i < optimizationPath.numberOfEntities(); i++){
-                optPathLength += optimizationPath.norm(i,i - 1);
-                pathLengthVector[i] = optPathLength;
-            }
+        double optPathLength = 0.0;
+        Eigen::VectorXd pathLengthVector =
+                Eigen::VectorXd::Zero(optimizationPath.numberOfEntities());
 
-            double stepLength = optPathLength / nwanted;
-
-            unsigned long index = 0;
-            for (unsigned long i = 0; i <= nwanted; i++) {
-                index = 0;
-                for (unsigned long j = 1; j < optimizationPath.numberOfEntities(); j++){
-                    if (fabs(pathLengthVector[j] - i * stepLength) <
-                            fabs(pathLengthVector[index] - i * stepLength)){
-                        index = j;
-                    }
-                }
-                visualizationPath.append(optimizationPath[index]);
-            }
-            return visualizationPath;
+        for (unsigned long i = 1; i < optimizationPath.numberOfEntities(); i++){
+            optPathLength += optimizationPath.norm(i,i - 1);
+            pathLengthVector[i] = optPathLength;
         }
+
+        double stepLength = optPathLength / (nwanted - 1);
+
+        unsigned long index = 0;
+        // start at 1 because visualization Path already contains optpath[0]
+        for (unsigned long i = 1; i < nwanted; i++) {
+            index = 0;
+            for (unsigned long j = 1; j < optimizationPath.numberOfEntities(); j++){
+                if (fabs(pathLengthVector[j] - i * stepLength) <
+                        fabs(pathLengthVector[index] - i * stepLength)){
+                    index = j;
+                }
+            }
+            visualizationPath.append(optimizationPath[index]);
+        }
+        return visualizationPath;
     }
 
     int visualizeOptPath(int &argc, char **argv,
