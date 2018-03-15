@@ -63,8 +63,8 @@ target_link_libraries("HessianTesting.exe"
 target_link_libraries("LocalPotentialEnergy.exe"
         Resources
         GUI
-        BaseLib
         LocalPotentialEnergy
+        AmolqcInterface
         )
 
 
