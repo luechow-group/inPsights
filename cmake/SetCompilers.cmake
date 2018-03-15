@@ -1,0 +1,21 @@
+
+if(EXISTS $ENV{CC})
+    message("Using specified C Compiler")
+    set(CMAKE_C_COMPILER $ENV{CC})
+else()
+    message("Using default C Compiler")
+endif()
+
+if(EXISTS $ENV{CXX})
+    message("Using specified C++ Compiler")
+    set(CMAKE_CXX_COMPILER $ENV{CXX})
+else()
+    message("Using default CXX Compiler")
+endif()
+
+if(EXISTS $ENV{FC})
+    message("Using specified Fortran Compiler")
+    set(CMAKE_Fortran_COMPILER $ENV{FC})
+else()
+    message("Using default Fortran Compiler")
+endif()
