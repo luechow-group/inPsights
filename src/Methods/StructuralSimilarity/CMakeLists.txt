@@ -24,6 +24,7 @@ set(HEADER_FILES
 
 set(SOURCE_FILES
         source/RadialBasis.cpp
+        source/AtomicNeighborhoodDensityFunction.cpp
         )
 
 file(GLOB_RECURSE RESOURCE_FILES resources/*.*)
