@@ -69,6 +69,7 @@ set(SOURCE_FILES
         source/ElectronsVector3D.cpp
         source/MoleculeWidget.cpp
         source/ParticlesVectorPath3D.cpp
+        source/Visualization.cpp
         )
 
 file(GLOB_RECURSE RESOURCE_FILES resources/*.*)
