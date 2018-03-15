@@ -23,41 +23,48 @@ include_directories(
 file(GLOB_RECURSE RESOURCE_FILES resources/*.*)
 file(COPY ${RESOURCE_FILES} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
-add_executable("${PROJECT_NAME}_mainStringMethod" ${SOURCE_FILES} ${HEADER_FILES} mainStringMethodGUI.cpp)
-add_executable("${PROJECT_NAME}_mainPathOptimization" ${SOURCE_FILES} ${HEADER_FILES} mainPathOptimization.cpp)
-add_executable("${PROJECT_NAME}_mainHessianTesting" ${SOURCE_FILES} ${HEADER_FILES} mainHessianTesting.cpp)
-add_executable("${PROJECT_NAME}_mainLocalPotentialEnergy" ${SOURCE_FILES} ${HEADER_FILES} mainLocalPotentialEnergy.cpp)
+add_executable("StringMethodGUI.exe" ${SOURCE_FILES} ${HEADER_FILES} StringMethodGUI.cpp)
+add_executable("PathOptimization.exe" ${SOURCE_FILES} ${HEADER_FILES} PathOptimization.cpp)
+add_executable("HessianTesting.exe" ${SOURCE_FILES} ${HEADER_FILES} HessianTesting.cpp)
+add_executable("LocalPotentialEnergy.exe" ${SOURCE_FILES} ${HEADER_FILES} LocalPotentialEnergy.cpp)
 
-add_library(${PROJECT_NAME} INTERFACE
+add_library(Resources INTERFACE
         )
 
-target_link_libraries(${PROJECT_NAME} INTERFACE
-        GUI
-        BaseLib
-        AmolqcInterface
-        LocalPotentialEnergy
-        TransitionStateSearch
-        )
-
-target_include_directories(${PROJECT_NAME} INTERFACE
+target_include_directories(Resources INTERFACE
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/resources>
         )
 
 # links the libraries to the executable
-target_link_libraries("${PROJECT_NAME}_mainStringMethod"
-        ${PROJECT_NAME}
+target_link_libraries("StringMethodGUI.exe"
+        Resources
+        GUI
+        BaseLib
+        BSplines
+        TransitionStateSearch
         )
 
-target_link_libraries("${PROJECT_NAME}_mainPathOptimization"
-        ${PROJECT_NAME}
+target_link_libraries("PathOptimization.exe"
+        Resources
+        GUI
+        BaseLib
+        BSplines
+        TransitionStateSearch
         )
 
-target_link_libraries("${PROJECT_NAME}_mainHessianTesting"
-        ${PROJECT_NAME}
+target_link_libraries("HessianTesting.exe"
+        Resources
+        GUI
+        BaseLib
+        BSplines
+        TransitionStateSearch
         )
 
-target_link_libraries("${PROJECT_NAME}_mainLocalPotentialEnergy"
-        ${PROJECT_NAME}
+target_link_libraries("LocalPotentialEnergy.exe"
+        Resources
+        GUI
+        BaseLib
+        LocalPotentialEnergy
         )
 
 
