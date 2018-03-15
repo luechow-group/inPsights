@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
 
-project(GUI C CXX Fortran)
+project(GUI CXX)
 
 
 set ( PROJECT_FOLDER_NAME ${PROJECT_NAME} )
@@ -23,7 +23,6 @@ include_directories(
         resources
         )
 
-
 find_package(Qt5 REQUIRED COMPONENTS
         Core
         Gui
@@ -32,7 +31,6 @@ find_package(Qt5 REQUIRED COMPONENTS
         3DExtras
         3DRender
         Charts
-        #3DInput
         )
 
 set(HEADER_FILES
@@ -72,18 +70,13 @@ set(SOURCE_FILES
         source/Visualization.cpp
         )
 
-file(GLOB_RECURSE RESOURCE_FILES resources/*.*)
-file(COPY ${RESOURCE_FILES} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-
-add_executable("${PROJECT_NAME}_mainStringMethod" ${SOURCE_FILES} ${HEADER_FILES} mainStringMethodGUI.cpp)
-add_executable("${PROJECT_NAME}_mainPathOptimization" ${SOURCE_FILES} ${HEADER_FILES} mainPathOptimization.cpp)
-add_executable("${PROJECT_NAME}_mainHessianTesting" ${SOURCE_FILES} ${HEADER_FILES} mainHessianTesting.cpp)
-add_executable("${PROJECT_NAME}_mainLocalPotentialEnergy" ${SOURCE_FILES} ${HEADER_FILES} mainLocalPotentialEnergy.cpp)
-
-add_library(GUILib INTERFACE
+add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES}
+        )
+target_include_directories(${PROJECT_NAME} PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         )
 
-target_link_libraries(GUILib INTERFACE
+target_link_libraries(${PROJECT_NAME}
         BaseLib
         Qt5::Core
         Qt5::Gui
@@ -92,28 +85,4 @@ target_link_libraries(GUILib INTERFACE
         Qt5::3DExtras
         Qt5::3DRender
         Qt5::Charts
-        )
-
-# links the libraries to the executable
-target_link_libraries("${PROJECT_NAME}_mainStringMethod"
-        GUILib
-        BSplines
-        TransitionStateSearch
-        )
-
-target_link_libraries("${PROJECT_NAME}_mainPathOptimization"
-        GUILib
-        BSplines
-        TransitionStateSearch
-        )
-
-target_link_libraries("${PROJECT_NAME}_mainHessianTesting"
-        GUILib
-        BSplines
-        TransitionStateSearch
-        )
-
-target_link_libraries("${PROJECT_NAME}_mainLocalPotentialEnergy"
-        GUILib
-        LocalPotentialEnergy
         )
