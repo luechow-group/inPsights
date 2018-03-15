@@ -14,7 +14,7 @@ class ElectronicWaveFunctionProblem : public cppoptlib::Problem<double,Eigen::Dy
 public:
     explicit ElectronicWaveFunctionProblem();
 
-    explicit ElectronicWaveFunctionProblem(const std::string &fileName);
+    explicit ElectronicWaveFunctionProblem(const std::string &fileName, const bool &putElectronsIntoNuclei = true, const bool &printStatus = false);
 
     double value(const Eigen::VectorXd &x) override;
 
@@ -54,6 +54,8 @@ public:
     std::vector<unsigned long> getIndicesOfElectronsAtNuclei();
 
 private:
+    bool putElectronsIntoNuclei_;
+    bool printStatus_;
     unsigned valueCallCount_, gradientCallCount_;
     ElectronicWaveFunction& wf_;
     ElectronsVectorCollection optimizationPath_;
