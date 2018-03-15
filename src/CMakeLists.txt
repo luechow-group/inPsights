@@ -1,6 +1,3 @@
-
-project(Amolqcpp)
-
 add_subdirectory(AmolqcInterface)
 add_subdirectory(BaseLib)
 add_subdirectory(Externals)
