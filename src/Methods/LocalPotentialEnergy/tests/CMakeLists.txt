@@ -10,4 +10,3 @@ target_link_libraries("${PROJECT_NAME}_RunAllTests"
         gtest
         pthread
         )
-

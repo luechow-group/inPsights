@@ -64,7 +64,7 @@ SpinTypesVector &ElectronsVector::spinTypesVector() {
 
 std::ostream& operator<<(std::ostream& os, const ElectronsVector& ec){
     for (unsigned long i = 0; i < ec.numberOfEntities(); i++) {
-        os << ToString::intToString(i + 1) << " " << ec[i] << std::endl;
+        os << ToString::unsignedLongToString(i + 1) << " " << ec[i] << std::endl;
     }
     return os;
 }

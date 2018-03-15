@@ -5,7 +5,18 @@
 #include "ElectronicWaveFunctionProblem.h"
 #include <iomanip>
 
-ElectronicWaveFunctionProblem::ElectronicWaveFunctionProblem(const std::string &fileName)
+ElectronicWaveFunctionProblem::ElectronicWaveFunctionProblem()
+        :
+        valueCallCount_(0),
+        gradientCallCount_(0),
+        wf_(ElectronicWaveFunction::getEmpty()),
+        optimizationPath_(wf_.getSpinTypesVector()),
+        electronCoordinateIndicesThatWereNaN_(Eigen::Matrix<bool,Eigen::Dynamic,1>(wf_.getNumberOfElectrons()*3).setConstant(false)),
+        indicesOfElectronsNotAtNuclei_(0),
+        indicesOfElectronsAtNuclei_(0)
+{}
+
+ElectronicWaveFunctionProblem::ElectronicWaveFunctionProblem(const std::string &fileName, const bool &putElectronsIntoNuclei, const bool &printStatus)
         :
         valueCallCount_(0),
         gradientCallCount_(0),
@@ -13,7 +24,9 @@ ElectronicWaveFunctionProblem::ElectronicWaveFunctionProblem(const std::string &
         optimizationPath_(wf_.getSpinTypesVector()),
         electronCoordinateIndicesThatWereNaN_(Eigen::Matrix<bool,Eigen::Dynamic,1>(wf_.getNumberOfElectrons()*3).setConstant(false)),
         indicesOfElectronsNotAtNuclei_(0),
-        indicesOfElectronsAtNuclei_(0)
+        indicesOfElectronsAtNuclei_(0),
+        putElectronsIntoNuclei_(putElectronsIntoNuclei),
+        printStatus_(printStatus)
 {
     for (unsigned long i = 0; i < wf_.getNumberOfElectrons(); ++i) {
         indicesOfElectronsNotAtNuclei_.push_back(i);
@@ -109,23 +122,26 @@ void ElectronicWaveFunctionProblem::putElectronsIntoNuclei(Eigen::VectorXd& x, E
 }
 
 bool ElectronicWaveFunctionProblem::callback(const cppoptlib::Criteria<double> &state, Eigen::VectorXd &x, Eigen::VectorXd& grad) {
-    gradientResetQ = false;
-    putElectronsIntoNuclei(x, grad); //gradientQ could be true now
+    if (putElectronsIntoNuclei_){
+        gradientResetQ = false;
+        putElectronsIntoNuclei(x, grad); //gradientQ could be true now
+    }
 
     optimizationPath_.append(ElectronsVector(x, wf_.getSpinTypesVector().spinTypesAsEigenVector()));
 
-    /*
-    std::cout << "(" << std::setw(2) << state.iterations << ")"
-              << " f(x) = " << std::fixed << std::setw(8) << std::setprecision(8) << value(x)
-              << " xDelta = " << std::setw(8) << state.xDelta
-              << " gradInfNorm = " << std::setw(8) << state.gradNorm
-              << std::endl;
-    std::cout << "value calls: " <<  valueCallCount_ << ", gradient calls:" << gradientCallCount_ << std::endl;
+    if (printStatus_){
+        std::cout << "(" << std::setw(2) << state.iterations << ")"
+                  << " f(x) = " << std::fixed << std::setw(8) << std::setprecision(8) << value(x)
+                  << " xDelta = " << std::setw(8) << state.xDelta
+                  << " gradInfNorm = " << std::setw(8) << state.gradNorm
+                  << std::endl;
+        std::cout << "value calls: " <<  valueCallCount_ << ", gradient calls:" << gradientCallCount_ << std::endl;
 
-    for (auto & it : indicesOfElectronsNotAtNuclei_) std::cout << it << " ";
-    std::cout << std::endl;
-    for (auto & it : indicesOfElectronsAtNuclei_) std::cout << it << " ";
-    std::cout << std::endl;*/
+        for (auto & it : indicesOfElectronsNotAtNuclei_) std::cout << it << " ";
+        std::cout << std::endl;
+        for (auto & it : indicesOfElectronsAtNuclei_) std::cout << it << " ";
+        std::cout << std::endl;
+    }
 
     return true;
 }
