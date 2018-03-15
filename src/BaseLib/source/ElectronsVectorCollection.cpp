@@ -17,15 +17,12 @@ ElectronsVectorCollection::ElectronsVectorCollection(const ElectronsVector &elec
 
 ElectronsVectorCollection::ElectronsVectorCollection(const std::vector<ElectronsVector> &electronsVectorVector)
         : ParticlesVectorCollection(),
-          spinTypesVector_(electronsVectorVector[0].spinTypesVector()) {
+          spinTypesVector_(0) {
 
     if ( !electronsVectorVector.empty() ){
+        spinTypesVector_ = electronsVectorVector[0].spinTypesVector();
         for (const auto &electronsVector : electronsVectorVector) {
-            positionsVectorCollection_.append(electronsVector.positionsVector());
-
-            assert(spinTypesVector_.spinTypesAsEigenVector()
-                   == electronsVector.spinTypesVector().spinTypesAsEigenVector()
-                   && "All ElectronsVector s must have the same SpinTypesVector.");
+            append(electronsVector);
         }
     }
 }

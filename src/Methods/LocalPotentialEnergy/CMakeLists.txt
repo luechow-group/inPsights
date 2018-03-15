@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
 
-project(LocalPotentialEnergy C CXX Fortran)
+project(LocalPotentialEnergy CXX)
 
 
 set ( PROJECT_FOLDER_NAME ${PROJECT_NAME} )
@@ -34,8 +34,8 @@ target_include_directories(${PROJECT_NAME} PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         )
 target_link_libraries(${PROJECT_NAME}
+        cppoptlib
         BaseLib
-        AmolqcInterface
         )
 
 add_subdirectory(tests)
