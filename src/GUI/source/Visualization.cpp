@@ -31,6 +31,7 @@ namespace Visualization {
                 }
                 visualizationPath.append(optimizationPath[index]);
             }
+            return visualizationPath;
         }
     }
 
