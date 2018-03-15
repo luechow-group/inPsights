@@ -2,8 +2,8 @@
 // Created by Michael Heuer on 13.01.17.
 //
 
-#ifndef AMOLQCGUI_ELECTRONICWAVEFUNCTION_H
-#define AMOLQCGUI_ELECTRONICWAVEFUNCTION_H
+#ifndef AMOLQCPP_ELECTRONICWAVEFUNCTION_H
+#define AMOLQCPP_ELECTRONICWAVEFUNCTION_H
 
 #include <Eigen/Core>
 #include <vector>
@@ -26,6 +26,8 @@ void amolqc_eloc(double x[], int n, double *phi, double *u, double grad[], doubl
 class ElectronicWaveFunction {
 
 public:
+    static ElectronicWaveFunction& getEmpty();
+
     static ElectronicWaveFunction& getInstance(const std::string& fileName = "");
 
     const std::string& getFileName();
@@ -74,6 +76,7 @@ public:
     SpinTypesVector getSpinTypesVector() const;
 
 private:
+    explicit ElectronicWaveFunction();
     explicit ElectronicWaveFunction(const std::string& fileName);
     const std::string fileName_;
     unsigned long numberOfNuclei_, numberOfElectrons_, numberOfAlphaElectrons_, numberOfBetaElectrons_;
@@ -84,4 +87,4 @@ private:
 
 };
 
-#endif //AMOLQCGUI_ELECTRONICWAVEFUNCTION_H
+#endif //AMOLQCPP_ELECTRONICWAVEFUNCTION_H

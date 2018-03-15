@@ -2,8 +2,8 @@
 // Created by Michael Heuer on 29.10.17.
 //
 
-#ifndef AMOLQCGUI_ELECTRON_H
-#define AMOLQCGUI_ELECTRON_H
+#ifndef AMOLQCPP_ELECTRON_H
+#define AMOLQCPP_ELECTRON_H
 
 #include "Particle.h"
 #include "SpinType.h"
@@ -29,4 +29,4 @@ private:
     Spin::SpinType spinType_;
 };
 
-#endif //AMOLQCGUI_ELECTRON_H
+#endif //AMOLQCPP_ELECTRON_H

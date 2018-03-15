@@ -70,6 +70,11 @@ void PositionsVectorCollection::permute(long i, long j) {
     }
 }
 
+double PositionsVectorCollection::norm(long i, long j) const{
+    return (positionsVectorCollection_[i].positionsAsEigenVector()
+            - positionsVectorCollection_[j].positionsAsEigenVector()).norm();
+};
+
 const std::vector<PositionsVector>& PositionsVectorCollection::positionsVectorCollection() const {
     return positionsVectorCollection_;
 }

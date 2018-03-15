@@ -2,8 +2,8 @@
 // Created by heuer on 23.05.17.
 //
 
-#ifndef AMOLQCGUI_ATOM_H
-#define AMOLQCGUI_ATOM_H
+#ifndef AMOLQCPP_ATOM_H
+#define AMOLQCPP_ATOM_H
 
 #include "Particle.h"
 #include "ElementType.h"
@@ -27,4 +27,4 @@ private:
 };
 
 
-#endif //AMOLQCGUI_ATOM_H
+#endif //AMOLQCPP_ATOM_H

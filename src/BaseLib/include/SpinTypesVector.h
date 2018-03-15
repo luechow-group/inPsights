@@ -2,8 +2,8 @@
 // Created by Michael Heuer on 29.10.17.
 //
 
-#ifndef AMOLQCGUI_SPINTYPECOLLECTION_H
-#define AMOLQCGUI_SPINTYPECOLLECTION_H
+#ifndef AMOLQCPP_SPINTYPECOLLECTION_H
+#define AMOLQCPP_SPINTYPECOLLECTION_H
 
 #include <Eigen/Core>
 #include "SpinType.h"
@@ -33,4 +33,4 @@ private:
     Eigen::VectorXi spinTypes_;
 };
 
-#endif //AMOLQCGUI_SPINTYPECOLLECTION_H
+#endif //AMOLQCPP_SPINTYPECOLLECTION_H

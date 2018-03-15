@@ -2,8 +2,8 @@
 // Created by heuer on 06.04.17.
 //
 
-#ifndef AMOLQCGUI_ELECTRONICWAVEFUNCTIONPROBLEM_H
-#define AMOLQCGUI_ELECTRONICWAVEFUNCTIONPROBLEM_H
+#ifndef AMOLQCPP_ELECTRONICWAVEFUNCTIONPROBLEM_H
+#define AMOLQCPP_ELECTRONICWAVEFUNCTIONPROBLEM_H
 
 #include "ElectronicWaveFunction.h"
 #include "problem.h"
@@ -12,7 +12,9 @@
 class ElectronicWaveFunctionProblem : public cppoptlib::Problem<double,Eigen::Dynamic>
 {
 public:
-    explicit ElectronicWaveFunctionProblem(const std::string &fileName);
+    explicit ElectronicWaveFunctionProblem();
+
+    explicit ElectronicWaveFunctionProblem(const std::string &fileName, const bool &putElectronsIntoNuclei = true, const bool &printStatus = false);
 
     double value(const Eigen::VectorXd &x) override;
 
@@ -52,6 +54,8 @@ public:
     std::vector<unsigned long> getIndicesOfElectronsAtNuclei();
 
 private:
+    bool putElectronsIntoNuclei_;
+    bool printStatus_;
     unsigned valueCallCount_, gradientCallCount_;
     ElectronicWaveFunction& wf_;
     ElectronsVectorCollection optimizationPath_;
@@ -62,4 +66,4 @@ private:
     void fixGradient(Eigen::VectorXd &gradient);
 
 };
-#endif //AMOLQCGUI_ELECTRONICWAVEFUNCTIONPROBLEM_H
+#endif //AMOLQCPP_ELECTRONICWAVEFUNCTIONPROBLEM_H

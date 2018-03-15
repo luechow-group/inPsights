@@ -2,8 +2,8 @@
 // Created by Michael Heuer on 06.11.17.
 //
 
-#ifndef AMOLQCGUI_AMOLQCIMPORTER_H
-#define AMOLQCGUI_AMOLQCIMPORTER_H
+#ifndef AMOLQCPP_AMOLQCIMPORTER_H
+#define AMOLQCPP_AMOLQCIMPORTER_H
 
 #include "Importer.h"
 
@@ -25,4 +25,4 @@ protected:
     
 };
 
-#endif //AMOLQCGUI_AMOLQCIMPORTER_H
+#endif //AMOLQCPP_AMOLQCIMPORTER_H

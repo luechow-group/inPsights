@@ -1,5 +1,5 @@
-#ifndef AMOLQCGUI_PELEMENTINFO_H
-#define AMOLQCGUI_PELEMENTINFO_H
+#ifndef AMOLQCPP_PELEMENTINFO_H
+#define AMOLQCPP_PELEMENTINFO_H
 
 #include "NaturalConstants.h"
 #include "ElementType.h"
@@ -156,4 +156,4 @@ namespace Elements {
 
 } // namespace Elements
 
-#endif // AMOLQCGUI_PELEMENTINFO_H
+#endif // AMOLQCPP_PELEMENTINFO_H
