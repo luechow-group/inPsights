@@ -5,8 +5,8 @@
 #include <Eigen/Core>
 #include <Eigen/Geometry>
 
-#ifndef AMOLQCGUI_QUATERNIONFITNEW_H
-#define AMOLQCGUI_QUATERNIONFITNEW_H
+#ifndef AMOLQCPP_QUATERNIONFITNEW_H
+#define AMOLQCPP_QUATERNIONFITNEW_H
 
 class QuaternionFit {
 public:
@@ -66,4 +66,4 @@ private:
   void calculateRMSD();//TODO fix this
 };
 
-#endif //AMOLQCGUI_QUATERNIONFITNEW_H
+#endif //AMOLQCPP_QUATERNIONFITNEW_H

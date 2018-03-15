@@ -2,8 +2,8 @@
 // Created by heuer on 12.05.17.
 //
 
-#ifndef AMOLQCGUI_CHAINOFSTATES_H
-#define AMOLQCGUI_CHAINOFSTATES_H
+#ifndef AMOLQCPP_CHAINOFSTATES_H
+#define AMOLQCPP_CHAINOFSTATES_H
 
 #include <Eigen/Core>
 
@@ -45,4 +45,4 @@ private:
 };
 
 
-#endif //AMOLQCGUI_CHAINOFSTATES_H
+#endif //AMOLQCPP_CHAINOFSTATES_H

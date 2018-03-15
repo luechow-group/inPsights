@@ -1,5 +1,5 @@
-#ifndef AMOLQCGUI_ELEMENTINFO_H
-#define AMOLQCGUI_ELEMENTINFO_H
+#ifndef AMOLQCPP_ELEMENTINFO_H
+#define AMOLQCPP_ELEMENTINFO_H
 
 #include "ElementType.h"
 #include "pElementInfo.h"
@@ -43,4 +43,4 @@ namespace Elements {
 
 } // namespace Elements
 
-#endif // AMOLQCGUI_ELEMENTINFO_H
+#endif // AMOLQCPP_ELEMENTINFO_H
