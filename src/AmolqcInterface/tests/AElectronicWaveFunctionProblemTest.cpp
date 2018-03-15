@@ -2,12 +2,9 @@
 // Created by Leonard Reuter on 12.03.18.
 //
 
-#include <gmock/gmock.h>
+#include <gtest/gtest.h>
 #include <Eigen/Core>
-#include <iostream>
 #include "ElectronicWaveFunctionProblem.h"
-#include "ElectronsVector.h"
-
 
 using namespace testing;
 using namespace Eigen;
