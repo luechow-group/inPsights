@@ -18,7 +18,7 @@ public:
 
     static SphericalIntegratorSettings defaults();
 
-    static SphericalIntegratorSettings expansion(unsigned lmax, unsigned nmax,  double rCutoff);
+    static SphericalIntegratorSettings expansion(unsigned nmax, unsigned lmax, double rCutoff);
 };
 
 #endif //AMOLQCPP_SPHERICALINTEGRATORSETTINGS_H

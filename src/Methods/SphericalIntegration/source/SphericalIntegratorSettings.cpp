@@ -19,7 +19,7 @@ SphericalIntegratorSettings SphericalIntegratorSettings::defaults() {
  * Automatic settings for expansion in spherical harmonics (with maximal polynomial degree lmax)
  * and radial basis (with maximal polynomial degree nmax) for a given cutoff radius rCutoff.
  */
-SphericalIntegratorSettings SphericalIntegratorSettings::expansion(unsigned lmax, unsigned nmax,  double rCutoff) {
+SphericalIntegratorSettings SphericalIntegratorSettings::expansion(unsigned nmax, unsigned lmax, double rCutoff) {
     SphericalIntegratorSettings s{};
     s.lebedevRule = Lebedev::findAdequateRule(lmax);
     assert(s.lebedevRule != Lebedev::OrderType::NotAvailable && "Lmax can not be too large.");

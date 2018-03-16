@@ -38,7 +38,7 @@ class SphericalHarmonicsRadialBasisExpander : public SpatialFunction{
 public:
     SphericalHarmonicsRadialBasisExpander(unsigned nmax, unsigned lmax , double rCutoff)
             : radialBasis_(nmax, rCutoff),
-              sphericalIntegrator_(SphericalIntegratorSettings::expansion(lmax,nmax,rCutoff)),
+              sphericalIntegrator_(SphericalIntegratorSettings::expansion(nmax, lmax, rCutoff)),
               lmax_(lmax),nmax_(nmax),l_(0),n_(0),m_(0),rCutoff_(rCutoff),
               fPtr_(nullptr) {};
 
