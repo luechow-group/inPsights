@@ -10,7 +10,7 @@
 
 class RadialBasis{
 public:
-    RadialBasis(unsigned int nmax, double rCutoff)
+    RadialBasis(unsigned int nmax = 4, double rCutoff = 2.0)
             : rCutoff_(rCutoff),
               W_(W(nmax)){
     };
