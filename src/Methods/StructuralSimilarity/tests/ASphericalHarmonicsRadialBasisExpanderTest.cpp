@@ -23,14 +23,16 @@ TEST_F(ASphericalHarmonicsRadialBasisExpanderTest, CoefficientsVector) {
 
     auto coeffs = expander.coefficients(f);
 
-    for (unsigned n = 1; n <= nmax; ++n) {
-        for (unsigned l = 0; l < lmax; ++l) {
-            std::cout << "\n";
-            for (int m = -lmax; m < +lmax; ++m) {
-                std::cout << coeffs[n-1][l][m+lmax] << "";
+    for (int n = 1; n <= nmax; ++n) {
+        std::cout << n << " ";
+        for (int l = 0; l <= lmax; ++l) {
+            std::cout << l << "\n";
+            for (int m = -l; m <= +l; ++m) {
+                std::cout << m << " ";
+                //std::cout << coeffs[n-1][l][m+lmax] << "";
             }
-            std::cout << std::endl;
         }
+        std::cout << std::endl;
     }
 
 

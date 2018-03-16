@@ -10,19 +10,19 @@
 
 class RadialBasis{
 public:
-    RadialBasis(unsigned nmax = 4, double rCutoff = 2.0);
+    RadialBasis(int nmax = 4, double rCutoff = 2.0);
 
     double NormalizationConstant(double rCutoff, double alpha) const;
 
     double phi(double r,double rCutoff, double alpha) const;
 
-    Eigen::MatrixXd Sab(unsigned nmax) const;
+    Eigen::MatrixXd Sab(int nmax) const;
 
-    Eigen::MatrixXd W(unsigned nmax) const;
+    Eigen::MatrixXd W(int nmax) const;
 
-    double operator()(double r, unsigned n) const;
+    double operator()(double r, int idx) const;
 
-    unsigned long nmax() const;
+    int nmax() const;
 
 private:
     double rCutoff_;
