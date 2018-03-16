@@ -19,14 +19,6 @@ public:
     double rCutoff;
 };
 
-/*std::vector<std::vector<std::vector<double >>> coeffs = {
-        {{0}, {-1,0,1}, {-2,-1,0,1,2}}, // n = 1
-        {{0}, {-1,0,1}, {-2,-1,0,1,2}} // n = 2
-        //...
-
-};*/
-
-
 class SphericalHarmonicsRadialBasisExpander : public SpatialFunction{
 public:
     SphericalHarmonicsRadialBasisExpander(unsigned lmax, unsigned nmax, double rCutoff)
