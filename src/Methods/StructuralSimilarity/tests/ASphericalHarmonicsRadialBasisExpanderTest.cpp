@@ -11,9 +11,7 @@ using namespace testing;
 
 class ASphericalHarmonicsRadialBasisExpanderTest : public ::testing::Test {};
 
-
-
-TEST_F(ASphericalExpanderTest, CoefficientsVector) {
+TEST_F(ASphericalHarmonicsRadialBasisExpanderTest, CoefficientsVector) {
 
     UnitSphere f;
 
