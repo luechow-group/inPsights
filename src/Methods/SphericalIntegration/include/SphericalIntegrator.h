@@ -27,7 +27,7 @@ private:
 
     double operator()(double r) const;
 
-    SpatialFunction * function_;
+    SpatialFunction * fPtr_;
     SphericalIntegratorSettings settings_;
     Lebedev::SphericalSurfaceIntegrator sphericalSurfaceIntegrator_;
     Eigen::Integrator<double> cartesianIntegrator_;

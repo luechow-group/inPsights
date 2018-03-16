@@ -5,7 +5,7 @@
 #include "SphericalIntegrator.h"
 
 SphericalIntegrator::SphericalIntegrator(const SphericalIntegratorSettings& settings)
-        : function_(nullptr),
+        : fPtr_(nullptr),
           settings_(settings),
           sphericalSurfaceIntegrator_(settings.lebedevRule),
           cartesianIntegrator_(settings.radialGridPoints),
@@ -14,12 +14,12 @@ SphericalIntegrator::SphericalIntegrator(const SphericalIntegratorSettings& sett
           desiredRelativeRadialIntegrationError_(settings.desiredRelativeRadialIntegrationError){};
 
 void SphericalIntegrator::setFunction(const SpatialFunction& f){ // const SpatialFunction&
-    function_ = const_cast<SpatialFunction*>(&f);
+    fPtr_ = const_cast<SpatialFunction*>(&f);
 };
 
 double SphericalIntegrator::integrate(const SpatialFunction& f, double a, double b){
     setFunction(f);
-    assert(function_ && "The pointer to the function cannot be the nullptr.");
+    assert(fPtr_ && "The pointer to the function cannot be the nullptr.");
     return cartesianIntegrator_.quadratureAdaptive(*this,a,b,
                                                    desiredAbsoluteRadialIntegrationError_,
                                                    desiredRelativeRadialIntegrationError_,
@@ -31,5 +31,5 @@ double SphericalIntegrator::integrate(const SpatialFunction& f, double b){
 };
 
 double SphericalIntegrator::operator()(double r) const {
-    return sphericalSurfaceIntegrator_.integrate(function_,r) * std::pow(r,2);// spherical volume element
+    return sphericalSurfaceIntegrator_.integrate(fPtr_,r) * std::pow(r,2);// spherical volume element
 };
