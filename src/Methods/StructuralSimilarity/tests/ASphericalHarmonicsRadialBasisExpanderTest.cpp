@@ -29,7 +29,7 @@ TEST_F(ASphericalHarmonicsRadialBasisExpanderTest, CoefficientsVector) {
             for (int m = -lmax; m < +lmax; ++m) {
                 std::cout << coeffs[n-1][l][m+lmax] << "";
             }
-            std::endl;
+            std::cout << std::endl;
         }
     }
 

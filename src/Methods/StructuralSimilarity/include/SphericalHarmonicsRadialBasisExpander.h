@@ -12,14 +12,9 @@
 
 #include <vector>
 
-class ExpansionSettings{
-public:
-    unsigned lmax;
-    unsigned nmax;
-    double rCutoff;
-};
-
 class SphericalHarmonicsRadialBasisExpander : public SpatialFunction{
+    friend class SphericalIntegrator;
+
 public:
     SphericalHarmonicsRadialBasisExpander(unsigned lmax, unsigned nmax, double rCutoff)
             : fPtr_(nullptr),
@@ -53,7 +48,7 @@ public:
 
 private:
 
-    // This method is handed to the spherical integrator via *this
+    // This method is handed to the spherical integrator via *this, it overrides spatial function
     double value(const Eigen::Vector3d & rvec) const override {
         return radialBasis_(rvec.norm(),n_)*sh::EvalSH(l_,m_,rvec)* fPtr_->value(rvec);
     };
