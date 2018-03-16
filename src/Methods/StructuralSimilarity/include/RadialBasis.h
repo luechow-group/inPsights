@@ -10,7 +10,7 @@
 
 class RadialBasis{
 public:
-    RadialBasis(double rCutoff = 2, unsigned nmax = 4)
+    RadialBasis(unsigned int nmax, double rCutoff)
             : rCutoff_(rCutoff),
               W_(W(nmax)){
     };
@@ -40,14 +40,14 @@ public:
         return Sab(nmax).inverse().sqrt();
     }
 
-    double operator()(double r, unsigned i) {
+    double operator()(double r, unsigned n) {
         auto nMax = nmax();
-        assert(i >= 0 && "The radial basis function index must be smaller than nmax");
-        assert(i < nmax() && "The radial basis function index must be smaller than nmax");
+        assert(n >= 0 && "The radial basis function index must be smaller than nmax");
+        assert(n < nmax() && "The radial basis function index must be smaller than nmax");
 
         double sum = 0;
         for (int a = 0; a < nMax; ++a) {
-            sum += W_(i,a) * phi(r, rCutoff_,a);
+            sum += W_(n,a) * phi(r, rCutoff_,a);
         }
         return sum;
     };
