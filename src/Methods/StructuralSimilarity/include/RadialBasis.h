@@ -15,15 +15,15 @@ public:
               W_(W(nmax)){
     };
 
-    double NormalizationConstant(double rCutoff, double alpha){
+    double NormalizationConstant(double rCutoff, double alpha) const {
         return std::sqrt( std::pow(rCutoff, 2*alpha+5) / (2*alpha+5) );
     }
 
-    double phi(double r,double rCutoff, double alpha){
+    double phi(double r,double rCutoff, double alpha) const {
         return  std::pow( rCutoff-r, alpha+2) / NormalizationConstant(rCutoff,alpha);
     }
 
-    Eigen::MatrixXd Sab(unsigned nmax){
+    Eigen::MatrixXd Sab(unsigned nmax) const {
         assert(nmax > 0 && "The number of radial basis functions must be greater than zero.");
         Eigen::MatrixXd Sab (nmax,nmax);
 
@@ -35,12 +35,12 @@ public:
         return Sab;
     }
 
-    Eigen::MatrixXd W(unsigned nmax){
+    Eigen::MatrixXd W(unsigned nmax) const {
         assert(nmax > 0 && "The number of radial basis functions must be positive.");
         return Sab(nmax).inverse().sqrt();
     }
 
-    double operator()(double r, unsigned n) {
+    double operator()(double r, unsigned n) const {
         auto nMax = nmax();
         assert(n >= 0 && "The radial basis function index must be smaller than nmax");
         assert(n < nmax() && "The radial basis function index must be smaller than nmax");
@@ -52,7 +52,7 @@ public:
         return sum;
     };
 
-    unsigned long nmax(){
+    unsigned long nmax() const {
         assert(W_.rows() == W_.cols() && "The Matrix W must be square.");
         assert(W_.rows() > 0 && "Nmax must be positive.");
         return static_cast<unsigned long>(W_.rows());
