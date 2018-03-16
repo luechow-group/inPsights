@@ -13,10 +13,10 @@ class ASphericalHarmonicsRadialBasisExpanderTest : public ::testing::Test {};
 
 TEST_F(ASphericalHarmonicsRadialBasisExpanderTest, CoefficientsVector) {
 
-    UnitSphere f;
+    Gauss3d f;
 
-    int nmax = 4;
-    int lmax = 2;
+    int nmax = 10;
+    int lmax = 0;
     double rCutoff = 1.0;
 
     SphericalHarmonicsRadialBasisExpander expander(nmax,lmax,rCutoff);
@@ -29,11 +29,9 @@ TEST_F(ASphericalHarmonicsRadialBasisExpanderTest, CoefficientsVector) {
             std::cout << "  " << l << "\n";
             for (int m = -l; m <= +l; ++m) {
                 std::cout << "   " << m << " m+l=" << m+l;
-                std::cout << coeffs[n-1][l][m+l] << std::endl;
+                std::cout << coeffs.get(n,l,m) << std::endl;
             }
         }
         std::cout << std::endl;
     }
-
-
 }

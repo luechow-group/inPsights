@@ -10,7 +10,19 @@
 #include <SphericalIntegrator.h>
 #include "RadialBasis.h"
 
+#include <utility>
 #include <vector>
+
+class Coefficients{
+public:
+    Coefficients(std::vector<std::vector<std::vector<double >>> coefficients)
+            : coefficients_(std::move(coefficients)){}
+    double get(int n, int l, int m) const{
+        return coefficients_[n-1][l][m+l];
+    }
+private:
+    std::vector<std::vector<std::vector<double >>> coefficients_;
+};
 
 class SphericalHarmonicsRadialBasisExpander : public SpatialFunction{
     friend class SphericalIntegrator;
@@ -23,7 +35,7 @@ public:
               fPtr_(nullptr) {};
 
 
-    std::vector<std::vector<std::vector<double >>> coefficients(SpatialFunction & f){
+    Coefficients coefficients(SpatialFunction & f){
         std::vector<std::vector<std::vector<double >>> coefficients;
         for (int n = 1; n <= nmax_; ++n) {
             coefficients.emplace_back(std::initializer_list<std::vector<double >>{});
@@ -32,12 +44,12 @@ public:
                 coefficients[n-1].emplace_back(std::initializer_list<double>{});
 
                 for (int m = -l; m <= +l; ++m) {
-                    std::cout << (n-1) << l << m << " " << coefficient(f,n,l,m)<< std::endl;
+                    //std::cout << (n-1) << l << m << " " << coefficient(f,n,l,m)<< std::endl;
                     coefficients[n-1][l].emplace_back(coefficient(f,n,l,m));
                 }
             }
         }
-        std::cout << std::endl;
+        //std::cout << std::endl;
         return coefficients;
     };
 
