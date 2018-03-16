@@ -19,7 +19,7 @@ TEST_F(ARadialBasisTest, CheckWMatrix) {
               -29.0783, 65.2568,-36.0001,\
                13.3085,-36.0001, 23.4921; //
 
-    RadialBasis radialBasis(nmax);
+    RadialBasis radialBasis(nmax, 0);
     auto calculated = radialBasis.W(nmax);
 
 
