@@ -16,7 +16,7 @@ class SphericalHarmonicsRadialBasisExpander : public SpatialFunction{
     friend class SphericalIntegrator;
 
 public:
-    SphericalHarmonicsRadialBasisExpander(unsigned lmax, unsigned nmax, double rCutoff)
+    SphericalHarmonicsRadialBasisExpander(unsigned nmax, unsigned lmax , double rCutoff)
             : radialBasis_(nmax, rCutoff),
               sphericalIntegrator_(SphericalIntegratorSettings::expansion(lmax,nmax,rCutoff)),
               lmax_(lmax),nmax_(nmax),l_(0),n_(0),m_(0),rCutoff_(rCutoff),
@@ -32,10 +32,12 @@ public:
                 coefficients[n-1].emplace_back(std::initializer_list<double>{});
 
                 for (int m = -l; m <= +l; ++m) {
+                    std::cout << (n-1) << l << m << " " << coefficient(f,n,l,m)<< std::endl;
                     coefficients[n-1][l].emplace_back(coefficient(f,n,l,m));
                 }
             }
         }
+        std::cout << std::endl;
         return coefficients;
     };
 
