@@ -20,7 +20,7 @@ include_directories(
 
 set(HEADER_FILES
         include/RadialBasis.h
-        include/AtomicNeighborhoodDensityFunction.h)
+        include/AtomicNeighborhoodDensityFunction.h include/SphericalHarmonicsRadialBasisExpander.h)
 
 set(SOURCE_FILES
         source/RadialBasis.cpp
