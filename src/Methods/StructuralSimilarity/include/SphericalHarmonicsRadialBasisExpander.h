@@ -54,7 +54,7 @@ public:
 private:
 
     // This method is handed to the spherical integrator via *this
-    double value(const Eigen::Vector3d & rvec){
+    double value(const Eigen::Vector3d & rvec) const override {
         return radialBasis_(rvec.norm(),n_)*sh::EvalSH(l_,m_,rvec)* fPtr_->value(rvec);
     };
 
