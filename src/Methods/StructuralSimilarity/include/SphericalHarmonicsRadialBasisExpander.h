@@ -13,15 +13,23 @@
 #include <utility>
 #include <vector>
 
-class Coefficients{
+class ExpansionCoefficients{
 public:
-    Coefficients(std::vector<std::vector<std::vector<double >>> coefficients)
-            : coefficients_(std::move(coefficients)){}
+    explicit ExpansionCoefficients(std::vector<std::vector<std::vector<double >>> coefficients, double rCutoff)
+            : coefficients_(std::move(coefficients)),
+              nmax_(static_cast<int>(coefficients_.size())),
+              lmax_(static_cast<int>(coefficients_[0].size()-1)),
+              rCutoff_(rCutoff) {
+        assert( !coefficients_.empty() && "The coefficients vector cannot be empty.");
+    };
+
     double get(int n, int l, int m) const{
         return coefficients_[n-1][l][m+l];
-    }
-private:
-    std::vector<std::vector<std::vector<double >>> coefficients_;
+    };
+
+    const std::vector<std::vector<std::vector<double >>> coefficients_;
+    const int nmax_,lmax_;
+    const double rCutoff_;
 };
 
 class SphericalHarmonicsRadialBasisExpander : public SpatialFunction{
@@ -35,7 +43,7 @@ public:
               fPtr_(nullptr) {};
 
 
-    Coefficients coefficients(SpatialFunction & f){
+    ExpansionCoefficients coefficients(SpatialFunction & f){
         std::vector<std::vector<std::vector<double >>> coefficients;
         for (int n = 1; n <= nmax_; ++n) {
             coefficients.emplace_back(std::initializer_list<std::vector<double >>{});
@@ -49,8 +57,7 @@ public:
                 }
             }
         }
-        //std::cout << std::endl;
-        return coefficients;
+        return ExpansionCoefficients(coefficients,rCutoff_);
     };
 
     // f might be an AtomicNeighborhoodDensityFunction
@@ -67,10 +74,7 @@ private:
     // This method is handed to the spherical integrator via *this, it overrides spatial function
     double value(const Eigen::Vector3d & rvec) const override {
         int idx = n_-1;
-        auto l1 = l_;
-        auto m2 = m_;
-        auto rvecunit= rvec.normalized();
-        return radialBasis_(rvec.norm(),idx)*sh::EvalSH(l_,m_,rvecunit)* fPtr_->value(rvec);
+        return radialBasis_(rvec.norm(),idx)*sh::EvalSH(l_,m_,rvec.normalized())* fPtr_->value(rvec);
     };
 
     void setFunctionPtr(const SpatialFunction &f){
@@ -93,15 +97,46 @@ private:
         m_ = m;
     };
 
-
-
     RadialBasis radialBasis_;
     SphericalIntegrator sphericalIntegrator_;
 
     int lmax_, nmax_, l_, n_, m_;
     double rCutoff_;
     SpatialFunction* fPtr_; // needed to access specialized f_->value
+};
 
+class ExpandedFunction : public SpatialFunction{
+public:
+
+    explicit ExpandedFunction(SpatialFunction &f, unsigned nmax, unsigned lmax , double rCutoff)
+            : sphericalHarmonicsRadialBasisExpander_(nmax, lmax , rCutoff),
+              coefficients_(sphericalHarmonicsRadialBasisExpander_.coefficients(f)),
+              radialBasis_(coefficients_.nmax_,coefficients_.rCutoff_) {};
+
+    explicit ExpandedFunction(const ExpansionCoefficients& coefficients)
+            : sphericalHarmonicsRadialBasisExpander_(1,0,0),
+              coefficients_(coefficients),
+              radialBasis_(coefficients_.nmax_,coefficients_.rCutoff_) {};
+
+    double value(const Eigen::Vector3d &rvec) const override{
+
+        double sum = 0.0;
+
+        for (int n = 1; n <= coefficients_.nmax_; ++n) {
+            for (int l = 0; l <= coefficients_.lmax_; ++l) {
+                for (int m = -l; m <= +l; ++m) {
+                    sum += coefficients_.get(n,l,m)
+                           * radialBasis_(rvec.norm(),n-1)
+                           * sh::EvalSH(l,m,rvec.normalized());
+                }
+            }
+        }
+        return sum;
+    };
+private:
+    SphericalHarmonicsRadialBasisExpander sphericalHarmonicsRadialBasisExpander_;
+    ExpansionCoefficients coefficients_;
+    RadialBasis radialBasis_;
 };
 
 #endif //AMOLQCPP_SPHERICALHARMONICSRADIALBASISEXPANDER_H
