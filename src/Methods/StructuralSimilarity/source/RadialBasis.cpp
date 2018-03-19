@@ -3,35 +3,45 @@
 //
 
 #include "RadialBasis.h"
+#include <Eigen/Eigenvalues>
 
 RadialBasis::RadialBasis(int nmax, double rCutoff)
         : rCutoff_(rCutoff),
-          W_(W(nmax)){
+          radialTransform_(calculateRadialTransform(nmax)){
 };
 
 double RadialBasis::NormalizationConstant(double rCutoff, double alpha) const {
-    return std::sqrt( std::pow(rCutoff, 2*alpha+5) / (2*alpha+5) );
+    return std::sqrt( std::pow(rCutoff, 2.0*alpha+5.0) / (2.0*alpha+5.0) );
 }
 
 double RadialBasis::phi(double r,double rCutoff, double alpha) const {
-    return  std::pow( rCutoff-r, alpha+2) / NormalizationConstant(rCutoff,alpha);
+    assert(alpha > 0 && alpha <= nmax() && "The basis function number ranges from 1 to nmax.");
+    return  std::pow( rCutoff-r, alpha+2.0) / NormalizationConstant(rCutoff,alpha);
 }
 
 Eigen::MatrixXd RadialBasis::Sab(int nmax) const {
     assert(nmax > 0 && "The number of radial basis functions must be greater than zero.");
     Eigen::MatrixXd Sab (nmax,nmax);
-
     for (int i = 1; i <= Sab.rows(); ++i) {
         for (int j = 1; j <= nmax; ++j) {
-            Sab(i-1,j-1) = std::sqrt((5+2*i)*(5+2*j))/double(5+i+j);
+            Sab(i-1,j-1) = std::sqrt((5.0+2.0*i)*(5.0+2.0*j))/(5.0+i+j);
         }
     }
     return Sab;
 }
 
-Eigen::MatrixXd RadialBasis::W(int nmax) const {
+Eigen::MatrixXd RadialBasis::calculateRadialTransform(int nmax) const {
     assert(nmax > 0 && "The number of radial basis functions must be positive.");
-    return Sab(nmax).inverse().sqrt();
+
+    Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> eigenSolver(Sab(nmax), Eigen::ComputeEigenvectors);
+    //if (eigenSolver.info() != Eigen::Success) abort();
+
+    // With cwiseAbs(), negative eigenvalues are eliminated
+    Eigen::VectorXd inverseSqrtEigenvalues= eigenSolver.eigenvalues().cwiseAbs().cwiseInverse().cwiseSqrt();
+
+    return (eigenSolver.eigenvectors()
+           * inverseSqrtEigenvalues.asDiagonal())
+           * eigenSolver.eigenvectors().transpose();
 }
 
 double RadialBasis::operator()(double r, int idx) const {
@@ -39,16 +49,17 @@ double RadialBasis::operator()(double r, int idx) const {
     assert(idx >= 0 && "The radial basis function index must be smaller than nmax");
     assert(idx < nMax && "The radial basis function index must be smaller than nmax");
 
-    double sum = 0;
-    for (int a = 0; a < nMax; ++a) {
-        sum += W_(idx,a) * phi(r, rCutoff_,a);
+    Eigen::VectorXd hvec(nMax);
+
+    for (int n = 1; n <= nMax; ++n) {
+        hvec(n-1) = phi(r, rCutoff_, n);
     }
-    return sum;
+    return radialTransform_.col(idx).dot(hvec);
 };
 
 int RadialBasis::nmax() const {
-    assert(W_.rows() == W_.cols() && "The Matrix W must be square.");
-    assert(W_.rows() > 0 && "Nmax must be positive.");
-    assert(W_.rows() < std::numeric_limits<int>::max() && "The dimensions of the matrix should fit into an integer.");
-    return static_cast<int>(W_.rows());
+    assert(radialTransform_.rows() == radialTransform_.cols() && "The Matrix W must be square.");
+    assert(radialTransform_.rows() > 0 && "Nmax must be positive.");
+    assert(radialTransform_.rows() < std::numeric_limits<int>::max() && "The dimensions of the matrix should fit into an integer.");
+    return static_cast<int>(radialTransform_.rows());
 };

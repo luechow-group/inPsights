@@ -18,7 +18,7 @@ public:
 
     Eigen::MatrixXd Sab(int nmax) const;
 
-    Eigen::MatrixXd W(int nmax) const;
+    Eigen::MatrixXd calculateRadialTransform(int nmax) const;
 
     double operator()(double r, int idx) const;
 
@@ -26,7 +26,7 @@ public:
 
 private:
     double rCutoff_;
-    Eigen::MatrixXd W_;
+    Eigen::MatrixXd radialTransform_;
 };
 
 #endif //AMOLQCPP_RADIALBASIS_H
