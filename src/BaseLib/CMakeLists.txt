@@ -43,7 +43,6 @@ set(HEADER_FILES
         include/CollectionParser.h
         include/AbstractVector.h
         include/PositionsVector.h
-        include/Position.h
         include/PositionsVectorCollection.h
         include/ToString.h
         )
