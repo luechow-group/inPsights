@@ -2,8 +2,8 @@
 // Created by Michael Heuer on 12.11.17.
 //
 
-#ifndef AMOLQCGUI_ELECTRONCOLLECTION3D_H
-#define AMOLQCGUI_ELECTRONCOLLECTION3D_H
+#ifndef AMOLQCPP_ELECTRONCOLLECTION3D_H
+#define AMOLQCPP_ELECTRONCOLLECTION3D_H
 
 #include "Abstract3dObject.h"
 #include "ElectronsVector.h"
@@ -14,4 +14,4 @@ public:
                              bool showIndicesQ = false);
 };
 
-#endif //AMOLQCGUI_ELECTRONCOLLECTION3D_H
+#endif //AMOLQCPP_ELECTRONCOLLECTION3D_H

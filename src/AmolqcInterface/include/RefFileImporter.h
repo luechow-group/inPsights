@@ -2,8 +2,8 @@
 // Created by Michael Heuer on 06.11.17.
 //
 
-#ifndef AMOLQCGUI_REFFILEIMPORTER_H
-#define AMOLQCGUI_REFFILEIMPORTER_H
+#ifndef AMOLQCPP_REFFILEIMPORTER_H
+#define AMOLQCPP_REFFILEIMPORTER_H
 
 #include "AmolqcImporter.h"
 
@@ -35,4 +35,4 @@ private:
     std::vector<SubstructureDataEntry> substructuresData_;
 };
 
-#endif //AMOLQCGUI_REFFILEIMPORTER_H
+#endif //AMOLQCPP_REFFILEIMPORTER_H

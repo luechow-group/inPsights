@@ -2,8 +2,8 @@
 // Created by Michael Heuer on 08.03.17.
 //
 
-#ifndef AMOLQCGUI_POSITIONCOLLECTIONS_H
-#define AMOLQCGUI_POSITIONCOLLECTIONS_H
+#ifndef AMOLQCPP_POSITIONCOLLECTIONS_H
+#define AMOLQCPP_POSITIONCOLLECTIONS_H
 
 #include <vector>
 #include "PositionsVector.h"
@@ -20,6 +20,8 @@ public:
     void prepend(const PositionsVector& positionsVector);
     void permute(long i, long j) override;
 
+    double norm(long i, long j) const;
+
 
     const std::vector<PositionsVector>& positionsVectorCollection() const;
     std::vector<PositionsVector>& positionsVectorCollection();
@@ -31,4 +33,4 @@ private:
     long numberOfPositionEntities_;
 };
 
-#endif //AMOLQCGUI_POSITIONCOLLECTIONS_H
+#endif //AMOLQCPP_POSITIONCOLLECTIONS_H

@@ -2,8 +2,8 @@
 // Created by Michael Heuer on 12.11.17.
 //
 
-#ifndef AMOLQCGUI_MOLECULEWIDGET_H
-#define AMOLQCGUI_MOLECULEWIDGET_H
+#ifndef AMOLQCPP_MOLECULEWIDGET_H
+#define AMOLQCPP_MOLECULEWIDGET_H
 
 #include <Qt3DCore>
 
@@ -16,4 +16,4 @@ public:
 
 };
 
-#endif //AMOLQCGUI_MOLECULEWIDGET_H
+#endif //AMOLQCPP_MOLECULEWIDGET_H

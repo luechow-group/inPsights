@@ -2,8 +2,8 @@
 // Created by Michael Heuer on 29.10.17.
 //
 
-#ifndef AMOLQCGUI_PARTICLE_H
-#define AMOLQCGUI_PARTICLE_H
+#ifndef AMOLQCPP_PARTICLE_H
+#define AMOLQCPP_PARTICLE_H
 
 #include <Eigen/Core>
 #include <iostream>
@@ -27,4 +27,4 @@ protected:
     Eigen::Vector3d position_;
 };
 
-#endif //AMOLQCGUI_PARTICLE_H
+#endif //AMOLQCPP_PARTICLE_H

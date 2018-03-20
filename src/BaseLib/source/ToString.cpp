@@ -4,6 +4,7 @@
 
 #include <iomanip>
 #include "ToString.h"
+#include "math.h"
 
 std::string ToString::unsignedLongToString(unsigned long a,
                                            unsigned leadingSpaces) {
@@ -14,11 +15,9 @@ std::string ToString::unsignedLongToString(unsigned long a,
 
 std::string ToString::vector3dToString(const Eigen::Vector3d &vector,
                                        unsigned decimalPlaces, unsigned leadingSpaces) {
-    std::ostringstream sstream;
-    for (int i = 0; i < vector.size(); i++){
-        sstream << " " << doubleToString(vector(i), decimalPlaces, leadingSpaces);
-    }
-    return sstream.str();
+    Eigen::VectorXd vectorXd(3);
+    vectorXd << vector;
+    return vectorXdToString(vectorXd,decimalPlaces,leadingSpaces);
 }
 
 std::string ToString::doubleToString(double a, unsigned decimalPlaces, unsigned leadingSpaces) {
@@ -27,10 +26,19 @@ std::string ToString::doubleToString(double a, unsigned decimalPlaces, unsigned 
         sstream << " ";
     }
     for (int i = 1; i <= leadingSpaces; i++){
-        if (abs(a) < pow(10.0,i)){
+        if (fabs(a) < pow(10.0,i)){
             sstream << " ";
         }
     }
     sstream << std::fixed << std::setprecision(decimalPlaces) << a;
+    return sstream.str();
+}
+
+std::string ToString::vectorXdToString(const Eigen::VectorXd &vector,
+                                       unsigned decimalPlaces, unsigned leadingSpaces) {
+    std::ostringstream sstream;
+    for (int i = 0; i < vector.size(); i++){
+        sstream << " " << doubleToString(vector(i), decimalPlaces, leadingSpaces);
+    }
     return sstream.str();
 }

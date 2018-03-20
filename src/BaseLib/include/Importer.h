@@ -2,8 +2,8 @@
 // Created by Michael Heuer on 02.11.17.
 //
 
-#ifndef AMOLQCGUI_IMPORTER_H
-#define AMOLQCGUI_IMPORTER_H
+#ifndef AMOLQCPP_IMPORTER_H
+#define AMOLQCPP_IMPORTER_H
 
 #include <string>
 #include <fstream>
@@ -62,4 +62,4 @@ public:
     unsigned long startingLine_, numberOfSubstructures_, totalNumberOfMaxima_;
 };
 
-#endif //AMOLQCGUI_IMPORTER_H
+#endif //AMOLQCPP_IMPORTER_H

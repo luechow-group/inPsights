@@ -2,8 +2,8 @@
 // Created by Michael Heuer on 29.10.17.
 //
 
-#ifndef AMOLQCGUI_SPINTYPE_H
-#define AMOLQCGUI_SPINTYPE_H
+#ifndef AMOLQCPP_SPINTYPE_H
+#define AMOLQCPP_SPINTYPE_H
 
 #include <string>
 #include <cassert>
@@ -25,4 +25,4 @@ namespace Spin {
 
 std::ostream& operator<<(std::ostream& os, const Spin::SpinType& s);
 
-#endif //AMOLQCGUI_SPINTYPE_H
+#endif //AMOLQCPP_SPINTYPE_H

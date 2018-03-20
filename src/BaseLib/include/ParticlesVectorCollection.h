@@ -2,8 +2,8 @@
 // Created by Michael Heuer on 30.10.17.
 //
 
-#ifndef AMOLQCGUI_PARTICLECOLLECTIONS_H
-#define AMOLQCGUI_PARTICLECOLLECTIONS_H
+#ifndef AMOLQCPP_PARTICLECOLLECTIONS_H
+#define AMOLQCPP_PARTICLECOLLECTIONS_H
 
 #include <vector>
 #include "ParticlesVector.h"
@@ -13,6 +13,7 @@ class ParticlesVectorCollection : public AbstractVector{
 public:
     const PositionsVectorCollection& positionsVectorCollection() const;
     PositionsVectorCollection& positionsVectorCollection();
+    double norm(long i, long j) const;
 
 protected:
     PositionsVectorCollection positionsVectorCollection_;
@@ -25,4 +26,4 @@ protected:
 //    long calculateIndex(long i) const final = 0;
 };
 
-#endif //AMOLQCGUI_PARTICLECOLLECTIONS_H
+#endif //AMOLQCPP_PARTICLECOLLECTIONS_H
