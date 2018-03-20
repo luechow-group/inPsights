@@ -5,7 +5,7 @@
 #ifndef AMOLQCPP_SPHERICALHARMONICSRADIALBASISEXPANDER_H
 #define AMOLQCPP_SPHERICALHARMONICSRADIALBASISEXPANDER_H
 
-#include <sh/spherical_harmonics.h>
+#include <BoostSphericalHarmonics.h>
 #include <LebedevSphericalIntegration/SpatialFunction.h>
 #include <SphericalIntegrator.h>
 #include "RadialBasis.h"
@@ -74,7 +74,7 @@ private:
     // This method is handed to the spherical integrator via *this, it overrides spatial function
     double value(const Eigen::Vector3d & rvec) const override {
         int idx = n_-1;
-        return radialBasis_(rvec.norm(),idx)*sh::EvalSH(l_,m_,rvec.normalized())* fPtr_->value(rvec);
+        return radialBasis_(rvec.norm(),idx)*BoostSphericalHarmonics::realSphericalHarmonicY(l_,m_,rvec.normalized())* fPtr_->value(rvec);
     };
 
     void setFunctionPtr(const SpatialFunction &f){
@@ -127,7 +127,7 @@ public:
                 for (int m = -l; m <= +l; ++m) {
                     sum += coefficients_.get(n,l,m)
                            * radialBasis_(rvec.norm(),n-1)
-                           * sh::EvalSH(l,m,rvec.normalized());
+                           * BoostSphericalHarmonics::realSphericalHarmonicY(l,m,rvec.normalized());
                 }
             }
         }

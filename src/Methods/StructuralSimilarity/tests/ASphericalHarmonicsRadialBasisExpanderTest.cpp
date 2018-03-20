@@ -29,7 +29,7 @@ TEST_F(ASphericalHarmonicsRadialBasisExpanderTest, CoefficientsVector) {
     gridCreator.changeGrid(Lebedev::OrderType::LD0014);
     Eigen::MatrixX3d grid = gridCreator.grid().leftCols(3);
 
-    int nDistances = 5;//Test outside
+    int nDistances = 1;//Test outside
 
     // don't start at zero distance
     for (int j = 1; j <= nDistances; ++j) {

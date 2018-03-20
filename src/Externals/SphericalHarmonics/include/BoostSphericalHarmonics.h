@@ -6,21 +6,25 @@
 #define AMOLQCPP_BOOSTSPHERICALHARMONICS_H
 
 #include <boost/math/special_functions/spherical_harmonic.hpp>
+#include <Eigen/Core>
 
-class BoostSphericalHarmonics{
-public:
+namespace BoostSphericalHarmonics{
 
-    static double realSphericalHarmonicY(unsigned l, int m, double theta, double phi){
-        using namespace std;
-        using namespace boost::math;
-        if ( m < 0) {
-            return sqrt(2)*pow(-1,m)* spherical_harmonic_i<double>(l,abs(m), theta, phi);
-        } else if (m > 0){
-            return sqrt(2)*pow(-1,m)* spherical_harmonic_r<double>(l, m, theta, phi);
-        } else {
-            return spherical_harmonic_r<double>(l, 0, theta, phi);
-        }
-    }
-};
+    Eigen::Vector3d ToVector(double phi, double theta);
+
+    void ToSphericalCoords(const Eigen::Vector3d& dir, double & theta, double & phi);
+
+    double realSphericalHarmonicY(unsigned l, int m, double theta, double phi);
+
+    double realSphericalHarmonicY(unsigned l, int m, const Eigen::Vector3d& dir);
+
+    // Clamp the first argument to be greater than or equal to the second
+    // and less than or equal to the third.
+    double Clamp(double val, double min, double max);
+
+    // Return true if the first value is within epsilon of the second value.
+    bool NearByMargin(double actual, double expected);
+
+} // namespace BoostSphericalHarmonics
 
 #endif //AMOLQCPP_BOOSTSPHERICALHARMONICS_H

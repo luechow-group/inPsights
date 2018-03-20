@@ -4,7 +4,6 @@
 
 #include <gtest/gtest.h>
 #include <BoostSphericalHarmonics.h>
-#include <sh/spherical_harmonics.h>
 
 using namespace testing;
 
@@ -17,8 +16,6 @@ TEST_F(ABoostSphericalHarmonicsTest, RealSphericalHarmonicY) {
     double theta = M_PI/3.0;
     double phi = theta;
     double boostCalculated = BoostSphericalHarmonics::realSphericalHarmonicY(1,-1,theta,phi);
-    double googleCalculated = sh::EvalSH(1,-1,theta,phi);
 
     ASSERT_NEAR(boostCalculated,reference,std::numeric_limits<double>::epsilon());
-    ASSERT_NEAR(-googleCalculated,reference,1e-7); // the google library is imprecise and has a sign change?!
 }

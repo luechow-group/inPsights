@@ -10,9 +10,6 @@
 [submodule "src/Externals/json"]
 	path = src/Externals/json
 	url = https://github.com/nlohmann/json.git
-[submodule "src/Externals/spherical-harmonics"]
-	path = src/Externals/SphericalHarmonics/spherical-harmonics
-	url = https://github.com/MonteCarloMichael/spherical-harmonics.git
 [submodule "src/Externals/LebedevSphericalIntegration"]
 	path = src/Externals/LebedevSphericalIntegration
 	url = https://github.com/MonteCarloMichael/LebedevSphericalIntegration.git
