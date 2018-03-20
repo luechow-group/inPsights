@@ -2,8 +2,8 @@
 // Created by Michael Heuer on 30.10.17.
 //
 
-#ifndef AMOLQCPP_ELECTRONCOLLECTIONPATH_H
-#define AMOLQCPP_ELECTRONCOLLECTIONPATH_H
+#ifndef AMOLQCPP_ELECTRONSVECTORCOLLECTION_H
+#define AMOLQCPP_ELECTRONSVECTORCOLLECTION_H
 
 #include "ParticlesVectorCollection.h"
 #include "ElectronsVector.h"
@@ -34,4 +34,4 @@ private:
     SpinTypesVector spinTypesVector_;
 };
 
-#endif //AMOLQCPP_ELECTRONCOLLECTIONPATH_H
+#endif //AMOLQCPP_ELECTRONSVECTORCOLLECTION_H

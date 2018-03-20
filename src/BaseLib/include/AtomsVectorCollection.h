@@ -2,8 +2,8 @@
 // Created by Leonard Reuter on 09.03.17.
 //
 
-#ifndef AMOLQCPP_ATOMCOLLECTIONS_H
-#define AMOLQCPP_ATOMCOLLECTIONS_H
+#ifndef AMOLQCPP_ATOMSVECTORCOLLECTION_H
+#define AMOLQCPP_ATOMSVECTORCOLLECTION_H
 
 #include "ParticlesVectorCollection.h"
 #include "AtomsVector.h"
@@ -34,4 +34,4 @@ private:
     ElementTypesVector elementTypesVector_;
 };
 
-#endif //AMOLQCPP_ATOMCOLLECTIONS_H
+#endif //AMOLQCPP_ATOMSVECTORCOLLECTION_H

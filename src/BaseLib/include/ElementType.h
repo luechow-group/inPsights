@@ -1,5 +1,5 @@
-#ifndef AMOLQCPP_ELEMENTTYPES_H
-#define AMOLQCPP_ELEMENTTYPES_H
+#ifndef AMOLQCPP_ELEMENTTYPE_H
+#define AMOLQCPP_ELEMENTTYPE_H
 
 #include <utility>
 #include <map>
@@ -29,4 +29,4 @@ enum class ElementType {
 
 std::ostream& operator<< (std::ostream& os, const Elements::ElementType& e);
 
-#endif // AMOLQCPP_ELEMENTTYPES_H
+#endif // AMOLQCPP_ELEMENTTYPE_H

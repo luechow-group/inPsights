@@ -2,8 +2,8 @@
 // Created by Michael Heuer on 05.02.18.
 //
 
-#ifndef AMOLQCPP_ABSTRACTCOLLECTION_H
-#define AMOLQCPP_ABSTRACTCOLLECTION_H
+#ifndef AMOLQCPP_ABSTRACTVECTOR_H
+#define AMOLQCPP_ABSTRACTVECTOR_H
 
 #include <iostream>
 
@@ -29,4 +29,4 @@ private:
     long numberOfEntities_;
 };
 
-#endif //AMOLQCPP_ABSTRACTCOLLECTION_H
+#endif //AMOLQCPP_ABSTRACTVECTOR_H
