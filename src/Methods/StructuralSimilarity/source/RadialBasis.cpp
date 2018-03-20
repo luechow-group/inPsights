@@ -4,10 +4,14 @@
 
 #include "RadialBasis.h"
 #include <Eigen/Eigenvalues>
+#include <iostream>
+#include <iomanip>
+//#include <unsupported>
+
 
 RadialBasis::RadialBasis(int nmax, double rCutoff)
         : rCutoff_(rCutoff),
-          radialTransform_(calculateRadialTransform(nmax)){
+          radialTransform_(inverseMatrixSqrt(Sab(nmax))){
 };
 
 double RadialBasis::NormalizationConstant(double rCutoff, double alpha) const {
@@ -30,14 +34,22 @@ Eigen::MatrixXd RadialBasis::Sab(int nmax) const {
     return Sab;
 }
 
-Eigen::MatrixXd RadialBasis::calculateRadialTransform(int nmax) const {
-    assert(nmax > 0 && "The number of radial basis functions must be positive.");
+Eigen::MatrixXd RadialBasis::inverseMatrixSqrt(const Eigen::MatrixXd& mat) const {
+    //assert(nmax > 0 && "The number of radial basis functions must be positive.");
 
-    Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> eigenSolver(Sab(nmax), Eigen::ComputeEigenvectors);
+    Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> eigenSolver(mat, Eigen::ComputeEigenvectors);
     //if (eigenSolver.info() != Eigen::Success) abort();
 
     // With cwiseAbs(), negative eigenvalues are eliminated
-    Eigen::VectorXd inverseSqrtEigenvalues= eigenSolver.eigenvalues().cwiseAbs().cwiseInverse().cwiseSqrt();
+    //Eigen::VectorXd inverseSqrtEigenvalues= eigenSolver.eigenvalues().cwiseAbs().cwiseInverse().cwiseSqrt();
+    //TODO ACHTUNG!
+    Eigen::VectorXd inverseSqrtEigenvalues= eigenSolver.eigenvalues().cwiseInverse().cwiseSqrt();
+
+
+    std::cout << mat << std::endl << std::endl;
+    std::cout << (eigenSolver.eigenvectors()
+                  * inverseSqrtEigenvalues.asDiagonal())
+                 * eigenSolver.eigenvectors().transpose().inverse() << std::endl;
 
     return (eigenSolver.eigenvectors()
            * inverseSqrtEigenvalues.asDiagonal())

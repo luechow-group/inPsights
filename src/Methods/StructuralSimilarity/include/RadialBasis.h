@@ -18,7 +18,7 @@ public:
 
     Eigen::MatrixXd Sab(int nmax) const;
 
-    Eigen::MatrixXd calculateRadialTransform(int nmax) const;
+    Eigen::MatrixXd inverseMatrixSqrt(const Eigen::MatrixXd& mat) const;
 
     double operator()(double r, int idx) const;
 

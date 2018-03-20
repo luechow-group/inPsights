@@ -12,8 +12,10 @@ using namespace testing;
 
 class ASphericalHarmonicsRadialBasisExpanderTest : public ::testing::Test {};
 
+
+
 TEST_F(ASphericalHarmonicsRadialBasisExpanderTest, CoefficientsVector) {
-    unsigned nmax = 20;
+    unsigned nmax = 4;
     unsigned lmax = 0;
     double rCutoff = 5.0;
 
@@ -27,7 +29,7 @@ TEST_F(ASphericalHarmonicsRadialBasisExpanderTest, CoefficientsVector) {
     gridCreator.changeGrid(Lebedev::OrderType::LD0014);
     Eigen::MatrixX3d grid = gridCreator.grid().leftCols(3);
 
-    int nDistances = 5;
+    int nDistances = 5;//Test outside
 
     // don't start at zero distance
     for (int j = 1; j <= nDistances; ++j) {
@@ -36,7 +38,7 @@ TEST_F(ASphericalHarmonicsRadialBasisExpanderTest, CoefficientsVector) {
         for (int i = 0; i < grid.rows(); ++i) {
             Eigen::Vector3d r = rCutoff*double(j)/double(nDistances)*grid.row(i);
             std::cout << r.transpose() << " " << f(r) << " " << fExp(r) << std::endl;
-            //ASSERT_NEAR(f(r), fExp(r),1e-4);
+            ASSERT_NEAR(f(r), fExp(r),1e-4);
         }
     }
 

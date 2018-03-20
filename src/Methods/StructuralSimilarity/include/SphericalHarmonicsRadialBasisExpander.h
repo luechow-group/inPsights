@@ -114,7 +114,7 @@ public:
               radialBasis_(coefficients_.nmax_,coefficients_.rCutoff_) {};
 
     explicit ExpandedFunction(const ExpansionCoefficients& coefficients)
-            : sphericalHarmonicsRadialBasisExpander_(1,0,0),
+            : sphericalHarmonicsRadialBasisExpander_(1,0,0),// it will do nothing
               coefficients_(coefficients),
               radialBasis_(coefficients_.nmax_,coefficients_.rCutoff_) {};
 
