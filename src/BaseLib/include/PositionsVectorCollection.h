@@ -2,8 +2,8 @@
 // Created by Michael Heuer on 08.03.17.
 //
 
-#ifndef AMOLQCPP_POSITIONCOLLECTIONS_H
-#define AMOLQCPP_POSITIONCOLLECTIONS_H
+#ifndef AMOLQCPP_POSITIONSVECTORCOLLECTION_H
+#define AMOLQCPP_POSITIONSVECTORCOLLECTION_H
 
 #include <vector>
 #include "PositionsVector.h"
@@ -33,4 +33,4 @@ private:
     long numberOfPositionEntities_;
 };
 
-#endif //AMOLQCPP_POSITIONCOLLECTIONS_H
+#endif //AMOLQCPP_POSITIONSVECTORCOLLECTION_H
