@@ -66,7 +66,6 @@ set(SOURCE_FILES
         source/SpinType.cpp
         source/ElementType.cpp
         source/PositionsVector.cpp
-        source/Position.cpp
         source/AbstractVector.cpp
         source/PositionsVectorCollection.cpp
         source/ToString.cpp
