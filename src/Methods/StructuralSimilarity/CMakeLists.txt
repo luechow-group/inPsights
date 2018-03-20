@@ -12,6 +12,15 @@ set(CMAKE_CXX_STANDARD 11)
 find_package(Eigen3 REQUIRED)
 include_directories( ${EIGEN3_INCLUDE_DIR} )
 
+if(DEFINED ENV{BOOST_ROOT})
+        set(BOOST_ROOT "$ENV{BOOST_ROOT}")
+        message("-- BOOST_ROOT is set: ${BOOST_ROOT}")
+else(DEFINED ENV{BOOST_ROOT})
+        message("-- Note: BOOST_ROOT not set. Let's see whether we can find BOOST anyway.")
+endif(DEFINED ENV{BOOST_ROOT})
+find_package(Boost)
+include_directories(${Boost_INCLUDE_DIRS})
+
 include_directories(
         include
         source
