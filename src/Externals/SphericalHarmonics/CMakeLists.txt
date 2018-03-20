@@ -20,6 +20,7 @@ add_definitions(
 find_package(Eigen3 REQUIRED)
 include_directories(
         ${EIGEN3_INCLUDE_DIR}
+        include
         spherical-harmonics/sh
         )
 
@@ -27,14 +28,19 @@ set(HEADER_FILES
         spherical-harmonics/sh/spherical_harmonics.h
         spherical-harmonics/sh/default_image.h
         spherical-harmonics/sh/image.h
+        include/BoostSphericalHarmonics.h
         )
 set(SOURCE_FILES
         spherical-harmonics/sh/spherical_harmonics.cc
         spherical-harmonics/sh/default_image.cc
+        source/BoostSphericalHarmonics.cpp
         )
 
 add_library(${PROJECT_NAME} STATIC ${HEADER_FILES} ${SOURCE_FILES})
 
 target_include_directories(${PROJECT_NAME} PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/spherical-harmonics>
         )
+
+add_subdirectory(tests)
