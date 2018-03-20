@@ -2,10 +2,9 @@
 // Created by Michael Heuer on 09.01.17.
 //
 
-#include <gmock/gmock.h>
+#include <gtest/gtest.h>
 #include <Eigen/Core>
-
-#include "QuaternionFit.h"
+#include <QuaternionFit.h>
 
 using namespace testing;
 using namespace Eigen;

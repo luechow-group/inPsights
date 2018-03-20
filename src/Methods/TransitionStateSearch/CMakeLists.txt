@@ -17,16 +17,16 @@ include_directories(
         )
 
 set(HEADER_FILES
-        include/QuaternionFit.h
         include/StringOptimizationProblem.h
         include/StringMethod.h
-        include/ChainOfStates.h)
+        include/ChainOfStates.h
+        )
 
 set(SOURCE_FILES
-        source/QuaternionFit.cpp
         source/StringOptimizationProblem.cpp
         source/StringMethod.cpp
-        source/ChainOfStates.cpp)
+        source/ChainOfStates.cpp
+        )
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES})
 target_include_directories(${PROJECT_NAME} PUBLIC
@@ -44,6 +44,6 @@ target_link_libraries(${PROJECT_NAME}_main
         ${BLAS_LINKER_FLAGS}
         )
 
-add_subdirectory(tests)
+#add_subdirectory(tests)
 
 

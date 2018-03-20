@@ -29,11 +29,15 @@ set(HEADER_FILES
         include/RadialBasis.h
         include/AtomicNeighborhoodDensityFunction.h
         include/SphericalHarmonicsRadialBasisExpander.h
+        include/QuaternionFit.h
+        include/Hungarian.h
         )
 
 set(SOURCE_FILES
         source/RadialBasis.cpp
         source/AtomicNeighborhoodDensityFunction.cpp
+        source/QuaternionFit.cpp
+        source/Hungarian.cpp
         )
 
 file(GLOB_RECURSE RESOURCE_FILES resources/*.*)

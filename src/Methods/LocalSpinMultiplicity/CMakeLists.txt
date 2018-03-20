@@ -27,7 +27,6 @@ set(HEADER_FILES
         include/Molecule.h
         include/Assignment.h
         include/HungarianElectronAssigner.h
-        include/Hungarian.h
         include/SpinDeterminer.h
         include/SpinProjectionQuantumNumberCounter.h
         )
@@ -41,7 +40,6 @@ set(SOURCE_FILES
         src/Molecule.cpp
         src/pse.cpp
         src/HungarianElectronAssigner.cpp
-        src/Hungarian.cpp
         src/SpinDeterminer.cpp
         src/SpinProjectionQuantumNumberCounter.cpp
         )
