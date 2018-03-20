@@ -2,8 +2,8 @@
 // Created by Michael Heuer on 29.10.17.
 //
 
-#ifndef AMOLQCPP_POSITIONCOLLECTION_H
-#define AMOLQCPP_POSITIONCOLLECTION_H
+#ifndef AMOLQCPP_POSITIONSVECTOR_H
+#define AMOLQCPP_POSITIONSVECTOR_H
 
 #include <Eigen/Core>
 #include "AbstractVector.h"
@@ -39,4 +39,4 @@ private:
     long calculateIndex(long i) const override ;
 };
 
-#endif //AMOLQCPP_POSITIONCOLLECTION_H
+#endif //AMOLQCPP_POSITIONSVECTOR_H

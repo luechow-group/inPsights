@@ -2,8 +2,8 @@
 // Created by Michael Heuer on 30.10.17.
 //
 
-#ifndef AMOLQCPP_PARTICLECOLLECTIONS_H
-#define AMOLQCPP_PARTICLECOLLECTIONS_H
+#ifndef AMOLQCPP_PARTICLESVECTORCOLLECTION_H
+#define AMOLQCPP_PARTICLESVECTORCOLLECTION_H
 
 #include <vector>
 #include "ParticlesVector.h"
@@ -26,4 +26,4 @@ protected:
 //    long calculateIndex(long i) const final = 0;
 };
 
-#endif //AMOLQCPP_PARTICLECOLLECTIONS_H
+#endif //AMOLQCPP_PARTICLESVECTORCOLLECTION_H
