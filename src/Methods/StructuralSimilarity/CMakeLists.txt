@@ -31,6 +31,7 @@ set(HEADER_FILES
         include/SphericalHarmonicsRadialBasisExpander.h
         include/QuaternionFit.h
         include/Hungarian.h
+        include/RadialGaussianBasis.h
         include/RadialGaussian.h
         )
 
