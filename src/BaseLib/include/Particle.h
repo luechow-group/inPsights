@@ -2,8 +2,8 @@
 // Created by Michael Heuer on 29.10.17.
 //
 
-#ifndef AMOLQCGUI_PARTICLE_H
-#define AMOLQCGUI_PARTICLE_H
+#ifndef AMOLQCPP_PARTICLE_H
+#define AMOLQCPP_PARTICLE_H
 
 #include <Eigen/Core>
 #include <iostream>
@@ -16,14 +16,15 @@ public:
     Eigen::Vector3d position() const;
     void position(const Eigen::Vector3d& position);
 
+    virtual std::string toString() const;
     friend std::ostream& operator<< (std::ostream& os, const Particle& p);
 
     static double distance(const Particle &p1, const Particle &p2);
 
 protected:
-    virtual int charge();
+    virtual int charge() const;
 
     Eigen::Vector3d position_;
 };
 
-#endif //AMOLQCGUI_PARTICLE_H
+#endif //AMOLQCPP_PARTICLE_H

@@ -2,8 +2,8 @@
 // Created by heuer on 23.05.17.
 //
 
-#ifndef AMOLQCGUI_ATOM_H
-#define AMOLQCGUI_ATOM_H
+#ifndef AMOLQCPP_ATOM_H
+#define AMOLQCPP_ATOM_H
 
 #include "Particle.h"
 #include "ElementType.h"
@@ -17,11 +17,14 @@ public:
     Elements::ElementType elementType() const;
     void setElementType(const Elements::ElementType & elementType);
 
-    int charge() override;
+    friend std::ostream& operator<< (std::ostream& os, const Atom& atom);
+
+    std::string toString() const override;
+    int charge() const override;
 
 private:
     Elements::ElementType elementType_;
 };
 
 
-#endif //AMOLQCGUI_ATOM_H
+#endif //AMOLQCPP_ATOM_H

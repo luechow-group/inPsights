@@ -2,8 +2,8 @@
 // Created by heuer on 09.12.16.
 //
 
-#ifndef AMOLQCGUI_ELEMENTCOLOR_H
-#define AMOLQCGUI_ELEMENTCOLOR_H
+#ifndef AMOLQCPP_ELEMENTCOLOR_H
+#define AMOLQCPP_ELEMENTCOLOR_H
 
 namespace Elements {
     struct ElementColor {
@@ -12,4 +12,4 @@ namespace Elements {
     };
 }
 
-#endif //AMOLQCGUI_ELEMENTCOLOR_H
+#endif //AMOLQCPP_ELEMENTCOLOR_H

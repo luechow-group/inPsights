@@ -2,8 +2,8 @@
 // Created by heuer on 10.05.17.
 //
 
-#ifndef AMOLQCGUI_ELECTRON3D_H
-#define AMOLQCGUI_ELECTRON3D_H
+#ifndef AMOLQCPP_ELECTRON3D_H
+#define AMOLQCPP_ELECTRON3D_H
 
 #include "Sphere.h"
 #include "ElementInfo.h"
@@ -42,4 +42,4 @@ private:
     const Spin::SpinType spinType_;
 };
 
-#endif //AMOLQCGUI_ELECTRON3D_H
+#endif //AMOLQCPP_ELECTRON3D_H

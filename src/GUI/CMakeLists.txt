@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
 
-project(GUI C CXX Fortran)
+project(GUI CXX)
 
 
 set ( PROJECT_FOLDER_NAME ${PROJECT_NAME} )
@@ -23,7 +23,6 @@ include_directories(
         resources
         )
 
-
 find_package(Qt5 REQUIRED COMPONENTS
         Core
         Gui
@@ -32,7 +31,6 @@ find_package(Qt5 REQUIRED COMPONENTS
         3DExtras
         3DRender
         Charts
-        #3DInput
         )
 
 set(HEADER_FILES
@@ -48,10 +46,11 @@ set(HEADER_FILES
         include/Electron3D.h
         include/StringMethodCoordinatesPlotter.h
         include/StringMethodValuePlotter.h
-        include/AtomCollection3D.h
-        include/ElectronCollection3D.h
+        include/AtomsVector3D.h
+        include/ElectronsVector3D.h
         include/MoleculeWidget.h
-        include/ParticleCollectionPath3D.h
+        include/ParticlesVectorPath3D.h
+        include/Visualization.h
         )
 
 set(SOURCE_FILES
@@ -64,43 +63,21 @@ set(SOURCE_FILES
         source/Atom3D.cpp
         source/Bond3D.cpp
         source/Electron3D.cpp
-        source/AtomCollection3D.cpp
-        source/ElectronCollection3D.cpp
+        source/AtomsVector3D.cpp
+        source/ElectronsVector3D.cpp
         source/MoleculeWidget.cpp
-        source/ParticleCollectionPath3D.cpp
+        source/ParticlesVectorPath3D.cpp
+        source/Visualization.cpp
         )
 
-file(GLOB_RECURSE RESOURCE_FILES resources/*.*)
-file(COPY ${RESOURCE_FILES} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-
-add_executable("${PROJECT_NAME}_mainStringMethod" ${SOURCE_FILES} ${HEADER_FILES} mainStringMethodGUI.cpp)
-add_executable("${PROJECT_NAME}_mainPathOptimization" ${SOURCE_FILES} ${HEADER_FILES} mainPathOptimization.cpp)
-add_executable("${PROJECT_NAME}_mainHessianTesting" ${SOURCE_FILES} ${HEADER_FILES} mainHessianTesting.cpp)
-add_executable("${PROJECT_NAME}_mainH2TsBruteForce" ${SOURCE_FILES} ${HEADER_FILES} mainH2TsBruteForce.cpp)
-
-
-# links the libraries to the executable
-target_link_libraries("${PROJECT_NAME}_mainStringMethod"
-        BaseLib
-        BSplines
-        TransitionStateSearch
-        #eigen
-        Qt5::Core
-        Qt5::Gui
-        Qt5::Widgets
-        Qt5::3DCore
-        Qt5::3DExtras
-        Qt5::3DRender
-        Qt5::Charts
-        #Qt5::3DInput
-        #pthread #TODO needed?
+add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES}
+        )
+target_include_directories(${PROJECT_NAME} PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         )
 
-target_link_libraries("${PROJECT_NAME}_mainPathOptimization"
+target_link_libraries(${PROJECT_NAME}
         BaseLib
-        BSplines
-        TransitionStateSearch
-        #eigen
         Qt5::Core
         Qt5::Gui
         Qt5::Widgets
@@ -110,30 +87,4 @@ target_link_libraries("${PROJECT_NAME}_mainPathOptimization"
         Qt5::Charts
         )
 
-target_link_libraries("${PROJECT_NAME}_mainHessianTesting"
-        BaseLib
-        BSplines
-        TransitionStateSearch
-        #eigen
-        Qt5::Core
-        Qt5::Gui
-        Qt5::Widgets
-        Qt5::3DCore
-        Qt5::3DExtras
-        Qt5::3DRender
-        Qt5::Charts
-        )
-
-target_link_libraries("${PROJECT_NAME}_mainH2TsBruteForce"
-        BaseLib
-        BSplines
-        TransitionStateSearch
-        #eigen
-        Qt5::Core
-        Qt5::Gui
-        Qt5::Widgets
-        Qt5::3DCore
-        Qt5::3DExtras
-        Qt5::3DRender
-        Qt5::Charts
-        )
+add_subdirectory(tests)

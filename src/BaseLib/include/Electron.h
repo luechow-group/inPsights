@@ -2,8 +2,8 @@
 // Created by Michael Heuer on 29.10.17.
 //
 
-#ifndef AMOLQCGUI_ELECTRON_H
-#define AMOLQCGUI_ELECTRON_H
+#ifndef AMOLQCPP_ELECTRON_H
+#define AMOLQCPP_ELECTRON_H
 
 #include "Particle.h"
 #include "SpinType.h"
@@ -18,10 +18,15 @@ public:
 
     void setSpinType(const Spin::SpinType & spinType);
 
-    int charge() override;
+    friend std::ostream& operator<< (std::ostream& os, const Electron& elec);
+
+    std::string toString() const override;
+
+
+    int charge() const override;
 
 private:
     Spin::SpinType spinType_;
 };
 
-#endif //AMOLQCGUI_ELECTRON_H
+#endif //AMOLQCPP_ELECTRON_H

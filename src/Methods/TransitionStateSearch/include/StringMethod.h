@@ -2,8 +2,8 @@
 // Created by heuer on 06.04.17.
 //
 
-#ifndef AMOLQCGUI_STRINGMETHOD_H
-#define AMOLQCGUI_STRINGMETHOD_H
+#ifndef AMOLQCPP_STRINGMETHOD_H
+#define AMOLQCPP_STRINGMETHOD_H
 
 #include "ElectronicWaveFunction.h"
 #include "BSpline.h"
@@ -39,4 +39,4 @@ private:
 };
 
 
-#endif //AMOLQCGUI_STRINGMETHOD_H
+#endif //AMOLQCPP_STRINGMETHOD_H

@@ -5,15 +5,28 @@
 #include "ElectronicWaveFunctionProblem.h"
 #include <iomanip>
 
-ElectronicWaveFunctionProblem::ElectronicWaveFunctionProblem(const std::string &fileName)
+ElectronicWaveFunctionProblem::ElectronicWaveFunctionProblem()
+        :
+        valueCallCount_(0),
+        gradientCallCount_(0),
+        wf_(ElectronicWaveFunction::getEmpty()),
+        optimizationPath_(wf_.getSpinTypesVector()),
+        electronCoordinateIndicesThatWereNaN_(Eigen::Matrix<bool,Eigen::Dynamic,1>(wf_.getNumberOfElectrons()*3).setConstant(false)),
+        indicesOfElectronsNotAtNuclei_(0),
+        indicesOfElectronsAtNuclei_(0)
+{}
+
+ElectronicWaveFunctionProblem::ElectronicWaveFunctionProblem(const std::string &fileName, const bool &putElectronsIntoNuclei, const bool &printStatus)
         :
         valueCallCount_(0),
         gradientCallCount_(0),
         wf_(ElectronicWaveFunction::getInstance(fileName)),
-        optimizationPath_(wf_.getSpinTypeCollection()),
+        optimizationPath_(wf_.getSpinTypesVector()),
         electronCoordinateIndicesThatWereNaN_(Eigen::Matrix<bool,Eigen::Dynamic,1>(wf_.getNumberOfElectrons()*3).setConstant(false)),
         indicesOfElectronsNotAtNuclei_(0),
-        indicesOfElectronsAtNuclei_(0)
+        indicesOfElectronsAtNuclei_(0),
+        putElectronsIntoNuclei_(putElectronsIntoNuclei),
+        printStatus_(printStatus)
 {
     for (unsigned long i = 0; i < wf_.getNumberOfElectrons(); ++i) {
         indicesOfElectronsNotAtNuclei_.push_back(i);
@@ -62,8 +75,8 @@ void ElectronicWaveFunctionProblem::fixGradient(Eigen::VectorXd &gradient) {
 void ElectronicWaveFunctionProblem::putElectronsIntoNuclei(Eigen::VectorXd& x, Eigen::VectorXd& grad) {
     assert( x.size() == wf_.getNumberOfElectrons()*3 && "Number of dimensions must be identical and multiple of 3");
 
-    auto atomCollection = wf_.getAtomCollection();
-    auto numberOfNuclei = atomCollection.numberOfEntities();
+    auto atomsVector = wf_.getAtomsVector();
+    auto numberOfNuclei = atomsVector.numberOfEntities();
     auto numberOfElectrons = wf_.getNumberOfElectrons();
 
     // iterate over electrons that were not at nuclei in the last step
@@ -73,7 +86,7 @@ void ElectronicWaveFunctionProblem::putElectronsIntoNuclei(Eigen::VectorXd& x, E
 
         // iterate over all nuclei and find the index of the electron with the smallest distance
         for(unsigned long j = 0; j < numberOfNuclei; ++j){
-            double distance = (atomCollection[j].position()-x.segment(i*3,3)).norm();
+            double distance = (atomsVector[j].position()-x.segment(i*3,3)).norm();
             if(distance < smallestDistance ) {
                 smallestDistance = distance;
                 closestNucleusIdx = j;
@@ -83,8 +96,8 @@ void ElectronicWaveFunctionProblem::putElectronsIntoNuclei(Eigen::VectorXd& x, E
         double threshold = 0.0005;
         if (smallestDistance <= threshold){
             //TODO PROPER?
-            //Eigen::Block<Eigen::VectorXd, i*3, 0>(x.derived(), 0, 0) = atomCollection[closestNucleusIdx].position();
-            x.segment(i*3,3) = atomCollection[closestNucleusIdx].position();
+            //Eigen::Block<Eigen::VectorXd, i*3, 0>(x.derived(), 0, 0) = atomsVector[closestNucleusIdx].position();
+            x.segment(i*3,3) = atomsVector[closestNucleusIdx].position();
 
             //save the electron index in the indicesOfElectronsAtNuclei_ vector
             indicesOfElectronsAtNuclei_.push_back(i);
@@ -104,29 +117,32 @@ void ElectronicWaveFunctionProblem::putElectronsIntoNuclei(Eigen::VectorXd& x, E
 }
 
 bool ElectronicWaveFunctionProblem::callback(const cppoptlib::Criteria<double> &state, Eigen::VectorXd &x, Eigen::VectorXd& grad) {
-    gradientResetQ = false;
-    putElectronsIntoNuclei(x, grad); //gradientQ could be true now
+    if (putElectronsIntoNuclei_){
+        gradientResetQ = false;
+        putElectronsIntoNuclei(x, grad); //gradientQ could be true now
+    }
 
-    optimizationPath_.append(ElectronCollection(x, wf_.getSpinTypeCollection().spinTypesAsEigenVector()));
+    optimizationPath_.append(ElectronsVector(x, wf_.getSpinTypesVector().spinTypesAsEigenVector()));
 
+    if (printStatus_){
+        std::cout << "(" << std::setw(2) << state.iterations << ")"
+                  << " f(x) = " << std::fixed << std::setw(8) << std::setprecision(8) << value(x)
+                  << " xDelta = " << std::setw(8) << state.xDelta
+                  << " gradInfNorm = " << std::setw(8) << state.gradNorm
+                  << std::endl;
+        std::cout << "value calls: " <<  valueCallCount_ << ", gradient calls:" << gradientCallCount_ << std::endl;
 
-    std::cout << "(" << std::setw(2) << state.iterations << ")"
-              << " f(x) = " << std::fixed << std::setw(8) << std::setprecision(8) << value(x)
-              << " xDelta = " << std::setw(8) << state.xDelta
-              << " gradInfNorm = " << std::setw(8) << state.gradNorm
-              << std::endl;
-    std::cout << "value calls: " <<  valueCallCount_ << ", gradient calls:" << gradientCallCount_ << std::endl;
-
-    for (auto & it : indicesOfElectronsNotAtNuclei_) std::cout << it << " ";
-    std::cout << std::endl;
-    for (auto & it : indicesOfElectronsAtNuclei_) std::cout << it << " ";
-    std::cout << std::endl;
+        for (auto & it : indicesOfElectronsNotAtNuclei_) std::cout << it << " ";
+        std::cout << std::endl;
+        for (auto & it : indicesOfElectronsAtNuclei_) std::cout << it << " ";
+        std::cout << std::endl;
+    }
 
     return true;
 }
 
-AtomCollection ElectronicWaveFunctionProblem::getAtomCollection() const{
-    return wf_.getAtomCollection();
+AtomsVector ElectronicWaveFunctionProblem::getAtomsVector() const{
+    return wf_.getAtomsVector();
 }
 
 std::vector<unsigned long> ElectronicWaveFunctionProblem::getIndicesOfElectronsNotAtNuclei() {

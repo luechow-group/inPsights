@@ -2,13 +2,13 @@
 // Created by Michael Heuer on 13.01.17.
 //
 
-#ifndef AMOLQCGUI_ELECTRONICWAVEFUNCTION_H
-#define AMOLQCGUI_ELECTRONICWAVEFUNCTION_H
+#ifndef AMOLQCPP_ELECTRONICWAVEFUNCTION_H
+#define AMOLQCPP_ELECTRONICWAVEFUNCTION_H
 
 #include <Eigen/Core>
 #include <vector>
-#include "AtomCollection.h"
-#include "ElectronCollections.h"
+#include "AtomsVector.h"
+#include "ElectronsVectorCollection.h"
 
 namespace ElectronPositioningMode {
   typedef enum {
@@ -26,18 +26,20 @@ void amolqc_eloc(double x[], int n, double *phi, double *u, double grad[], doubl
 class ElectronicWaveFunction {
 
 public:
+    static ElectronicWaveFunction& getEmpty();
+
     static ElectronicWaveFunction& getInstance(const std::string& fileName = "");
 
     const std::string& getFileName();
 
     void initialize(const std::string& fileName);
 
-    void setRandomElectronPositionCollection(unsigned electronNumber,
+    void setRandomElectronPositionsVector(unsigned electronNumber,
                                            ElectronPositioningMode::electronPositioningModeType);
 
-    void evaluate(const ElectronCollection& electronCollection);
+    void evaluate(const ElectronsVector& electronsVector);
 
-    void evaluate(const Eigen::VectorXd &electronPositionCollection);
+    void evaluate(const Eigen::VectorXd &electronPositionsVector);
 
     double getLocalEnergy();
 
@@ -53,7 +55,7 @@ public:
 
     double getInverseNegativeLogarithmizedProbabilityDensity();
 
-    ElectronCollection getElectronPositionCollection();
+    ElectronsVector getElectronPositionsVector();
 
     Eigen::VectorXd getElectronDriftCollection();
 
@@ -67,21 +69,22 @@ public:
 
     unsigned long getNumberOfNuclei() const;
 
-    AtomCollection getAtomCollection() const;
+    AtomsVector getAtomsVector() const;
 
     unsigned long getNumberOfElectrons() const;
 
-    SpinTypeCollection getSpinTypeCollection() const;
+    SpinTypesVector getSpinTypesVector() const;
 
 private:
+    explicit ElectronicWaveFunction();
     explicit ElectronicWaveFunction(const std::string& fileName);
     const std::string fileName_;
     unsigned long numberOfNuclei_, numberOfElectrons_, numberOfAlphaElectrons_, numberOfBetaElectrons_;
     double determinantProbabilityAmplitude_, jastrowFactor_, localEnergy_;
-    Eigen::VectorXd electronPositionCollectionAsEigenVector_, electronDriftCollection_;//TODO REPLACE BY BASELIB ELECTRONCOLLECTION!
-    AtomCollection atomCollection_;
-    SpinTypeCollection spinTypeCollection_;
+    Eigen::VectorXd electronPositionsVectorAsEigenVector_, electronDriftCollection_;//TODO REPLACE BY BASELIB ELECTRONCOLLECTION!
+    AtomsVector atomsVector_;
+    SpinTypesVector spinTypesVector_;
 
 };
 
-#endif //AMOLQCGUI_ELECTRONICWAVEFUNCTION_H
+#endif //AMOLQCPP_ELECTRONICWAVEFUNCTION_H

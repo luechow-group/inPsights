@@ -2,8 +2,8 @@
 // Created by Michael Heuer on 06.11.17.
 //
 
-#ifndef AMOLQCGUI_REFFILEIMPORTER_H
-#define AMOLQCGUI_REFFILEIMPORTER_H
+#ifndef AMOLQCPP_REFFILEIMPORTER_H
+#define AMOLQCPP_REFFILEIMPORTER_H
 
 #include "AmolqcImporter.h"
 
@@ -11,12 +11,12 @@ class RefFileImporter : public AmolqcImporter{
 public:
     RefFileImporter(const std::string& filename);
 
-    AtomCollection getAtomCollection();
+    AtomsVector getAtomsVector();
 
-    SpinTypeCollection getSpinTypeCollection() const;
-    PositionCollection getPositionCollection(unsigned long k, unsigned long m) const;
-    ElectronCollection getMaximaStructure(unsigned long k, unsigned long m) const;
-    ElectronCollections getAllSubstructures(unsigned long k) const;
+    SpinTypesVector getSpinTypesVector() const;
+    PositionsVector getPositionsVector(unsigned long k, unsigned long m) const;
+    ElectronsVector getMaximaStructure(unsigned long k, unsigned long m) const;
+    ElectronsVectorCollection getAllSubstructures(unsigned long k) const;
 
     unsigned long getNumberOfMaxima(unsigned long k, unsigned long m) const;
     double getNegativeLogarithmizedProbabilityDensity(unsigned long k, unsigned long m) const;
@@ -35,4 +35,4 @@ private:
     std::vector<SubstructureDataEntry> substructuresData_;
 };
 
-#endif //AMOLQCGUI_REFFILEIMPORTER_H
+#endif //AMOLQCPP_REFFILEIMPORTER_H

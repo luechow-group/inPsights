@@ -2,17 +2,19 @@
 // Created by heuer on 06.04.17.
 //
 
-#ifndef AMOLQCGUI_ELECTRONICWAVEFUNCTIONPROBLEM_H
-#define AMOLQCGUI_ELECTRONICWAVEFUNCTIONPROBLEM_H
+#ifndef AMOLQCPP_ELECTRONICWAVEFUNCTIONPROBLEM_H
+#define AMOLQCPP_ELECTRONICWAVEFUNCTIONPROBLEM_H
 
 #include "ElectronicWaveFunction.h"
 #include "problem.h"
-#include "ElectronCollections.h"
+#include "ElectronsVectorCollection.h"
 
 class ElectronicWaveFunctionProblem : public cppoptlib::Problem<double,Eigen::Dynamic>
 {
 public:
-    explicit ElectronicWaveFunctionProblem(const std::string &fileName);
+    explicit ElectronicWaveFunctionProblem();
+
+    explicit ElectronicWaveFunctionProblem(const std::string &fileName, const bool &putElectronsIntoNuclei = true, const bool &printStatus = false);
 
     double value(const Eigen::VectorXd &x) override;
 
@@ -22,7 +24,7 @@ public:
 
     bool callback(const cppoptlib::Criteria<double> &state, Eigen::VectorXd &x, Eigen::VectorXd& grad) override;
 
-    AtomCollection getAtomCollection() const;
+    AtomsVector getAtomsVector() const;
 
     unsigned getValueCallCount(){
         return valueCallCount_;
@@ -39,10 +41,10 @@ public:
     void reset(){
         valueCallCount_ = 0;
         gradientCallCount_ = 0;
-        optimizationPath_ = ElectronCollections(wf_.getSpinTypeCollection());
+        optimizationPath_ = ElectronsVectorCollection(wf_.getSpinTypesVector());
     }
 
-    ElectronCollections getOptimizationPath(){
+    ElectronsVectorCollection getOptimizationPath(){
         return optimizationPath_;
     }
 
@@ -52,9 +54,11 @@ public:
     std::vector<unsigned long> getIndicesOfElectronsAtNuclei();
 
 private:
+    bool putElectronsIntoNuclei_;
+    bool printStatus_;
     unsigned valueCallCount_, gradientCallCount_;
     ElectronicWaveFunction& wf_;
-    ElectronCollections optimizationPath_;
+    ElectronsVectorCollection optimizationPath_;
     Eigen::Matrix<bool,Eigen::Dynamic,1> electronCoordinateIndicesThatWereNaN_;
     std::vector<unsigned long> indicesOfElectronsNotAtNuclei_;
     std::vector<unsigned long> indicesOfElectronsAtNuclei_;
@@ -62,4 +66,4 @@ private:
     void fixGradient(Eigen::VectorXd &gradient);
 
 };
-#endif //AMOLQCGUI_ELECTRONICWAVEFUNCTIONPROBLEM_H
+#endif //AMOLQCPP_ELECTRONICWAVEFUNCTIONPROBLEM_H

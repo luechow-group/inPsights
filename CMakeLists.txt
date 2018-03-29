@@ -22,7 +22,7 @@ else()
 endif()
 
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 14)
 
 project(Amolqcpp)
 
@@ -44,7 +44,7 @@ set(CMAKE_MACOSX_RPATH 1)
 
 #------------------------------------------------#
 # Download and unpack googletest at configure time
-configure_file(DownloadGoogleTest.in
+configure_file(cmake/DownloadGoogleTest.in
         googletest-download/CMakeLists.txt)
 execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
         WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/googletest-download )

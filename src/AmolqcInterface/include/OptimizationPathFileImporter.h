@@ -2,8 +2,8 @@
 // Created by Michael Heuer on 07.11.17.
 //
 
-#ifndef AMOLQCGUI_OPTIMIZATIONPATHFILEIMPORTER_H
-#define AMOLQCGUI_OPTIMIZATIONPATHFILEIMPORTER_H
+#ifndef AMOLQCPP_OPTIMIZATIONPATHFILEIMPORTER_H
+#define AMOLQCPP_OPTIMIZATIONPATHFILEIMPORTER_H
 
 #include "AmolqcImporter.h"
 
@@ -20,9 +20,9 @@ class OptimizationPathFileImporter : public AmolqcImporter{
 public:
     OptimizationPathFileImporter(const std::string& filename, unsigned long  multiplicity);
 
-    ElectronCollections getPath(unsigned long k) const;
+    ElectronsVectorCollection getPath(unsigned long k) const;
 
-    PositionCollection getPositionCollection(unsigned long k, unsigned long m) const;
+    PositionsVector getPositionsVector(unsigned long k, unsigned long m) const;
 
     unsigned long getNumberOfPaths() const;
 
@@ -36,4 +36,4 @@ private:
     std::vector<SubstructureDataEntry> substructuresData_;
 };
 
-#endif //AMOLQCGUI_OPTIMIZATIONPATHFILEIMPORTER_H
+#endif //AMOLQCPP_OPTIMIZATIONPATHFILEIMPORTER_H

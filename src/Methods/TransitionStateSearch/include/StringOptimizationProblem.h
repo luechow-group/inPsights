@@ -2,8 +2,8 @@
 // Created by heuer on 13.04.17.
 //
 
-#ifndef AMOLQCGUI_STRINGMETHODPROBLEM_H
-#define AMOLQCGUI_STRINGMETHODPROBLEM_H
+#ifndef AMOLQCPP_STRINGMETHODPROBLEM_H
+#define AMOLQCPP_STRINGMETHODPROBLEM_H
 
 #include "problem.h"
 #include "ElectronicWaveFunction.h"
@@ -74,4 +74,4 @@ private:
     std::ofstream outfile;
 };
 
-#endif //AMOLQCGUI_STRINGMETHODPROBLEM_H
+#endif //AMOLQCPP_STRINGMETHODPROBLEM_H
