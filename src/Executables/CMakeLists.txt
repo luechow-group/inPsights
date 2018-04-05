@@ -15,6 +15,7 @@ add_executable(StringMethodGUI.exe StringMethodGUI.cpp)
 add_executable(PathOptimization.exe PathOptimization.cpp)
 add_executable(HessianTesting.exe HessianTesting.cpp)
 add_executable(LocalPotentialEnergy.exe LocalPotentialEnergy.cpp)
+add_executable(ShowMaxima.exe ShowMaxima.cpp)
 
 target_link_libraries(StringMethodGUI.exe
         GUI
@@ -40,5 +41,10 @@ target_link_libraries(HessianTesting.exe
 target_link_libraries(LocalPotentialEnergy.exe
         GUI
         LocalPotentialEnergy
+        AmolqcInterface
+        )
+
+target_link_libraries(ShowMaxima.exe
+        GUI
         AmolqcInterface
         )
