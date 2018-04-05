@@ -11,33 +11,33 @@ message ( "-- ++ CREATING PROJECT OR MAKEFILE ---> ${OUTPUT_NAME}" )
 file(GLOB_RECURSE RESOURCE_FILES resources/*.*)
 file(COPY ${RESOURCE_FILES} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
-add_executable("StringMethodGUI.exe" StringMethodGUI.cpp)
-add_executable("PathOptimization.exe" PathOptimization.cpp)
-add_executable("HessianTesting.exe" HessianTesting.cpp)
-add_executable("LocalPotentialEnergy.exe" LocalPotentialEnergy.cpp)
+add_executable(StringMethodGUI.exe StringMethodGUI.cpp)
+add_executable(PathOptimization.exe PathOptimization.cpp)
+add_executable(HessianTesting.exe HessianTesting.cpp)
+add_executable(LocalPotentialEnergy.exe LocalPotentialEnergy.cpp)
 
-target_link_libraries("StringMethodGUI.exe"
+target_link_libraries(StringMethodGUI.exe
         GUI
         BaseLib
         BSplines
         TransitionStateSearch
         )
 
-target_link_libraries("PathOptimization.exe"
+target_link_libraries(PathOptimization.exe
         GUI
         BaseLib
         BSplines
         TransitionStateSearch
         )
 
-target_link_libraries("HessianTesting.exe"
+target_link_libraries(HessianTesting.exe
         GUI
         BaseLib
         BSplines
         TransitionStateSearch
         )
 
-target_link_libraries("LocalPotentialEnergy.exe"
+target_link_libraries(LocalPotentialEnergy.exe
         GUI
         LocalPotentialEnergy
         AmolqcInterface
