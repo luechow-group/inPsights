@@ -25,7 +25,7 @@
 #include "Electron3D.h"
 #include "Polyline.h"
 
-#include "WfFileImporter.h"
+#include "AmolqcFileImport/WfFileImporter.h"
 #include "Atom.h"
 
 #include "ArcLengthParametrizedBSpline.h"

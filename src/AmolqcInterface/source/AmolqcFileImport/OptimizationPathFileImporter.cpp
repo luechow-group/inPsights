@@ -2,7 +2,7 @@
 // Created by Michael Heuer on 07.11.17.
 //
 
-#include "../include/OptimizationPathFileImporter.h"
+#include "AmolqcFileImport/OptimizationPathFileImporter.h"
 
 OptimizationPathFileImporter::OptimizationPathFileImporter(const std::string &filename,
                                                            unsigned long multiplicity)

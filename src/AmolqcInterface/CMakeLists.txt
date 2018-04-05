@@ -17,19 +17,19 @@ include_directories(
 set(HEADER_FILES
         include/ElectronicWaveFunction.h
         include/ElectronicWaveFunctionProblem.h
-        include/WfFileImporter.h
-        include/RefFileImporter.h
-        include/OptimizationPathFileImporter.h
-        include/AmolqcImporter.h
+        include/AmolqcFileImport/WfFileImporter.h
+        include/AmolqcFileImport/RefFileImporter.h
+        include/AmolqcFileImport/OptimizationPathFileImporter.h
+        include/AmolqcFileImport/AmolqcImporter.h
         )
 
 set(SOURCE_FILES
         source/ElectronicWaveFunction.cpp
         source/ElectronicWaveFunctionProblem.cpp
-        source/RefFileImporter.cpp
-        source/WfFileImporter.cpp
-        source/OptimizationPathFileImporter.cpp
-        source/AmolqcImporter.cpp
+        source/AmolqcFileImport/RefFileImporter.cpp
+        source/AmolqcFileImport/WfFileImporter.cpp
+        source/AmolqcFileImport/OptimizationPathFileImporter.cpp
+        source/AmolqcFileImport/AmolqcImporter.cpp
         )
 
 add_subdirectory(amolqc)
