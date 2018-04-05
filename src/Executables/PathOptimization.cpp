@@ -35,8 +35,8 @@ bool handleCommandlineArguments(int argc, char **argv,
 }
 
 int main(int argc, char *argv[]) {
-    std::string wavefunctionFilename; //= "H2sm444.wf"; // overwrite command line
-    std::string electronsVectorFilename; //= "H2sm444_TS_ev.json"; // overwrite command line
+    std::string wavefunctionFilename; //= "BH3_Exp-em.wf"; // overwrite command line
+    std::string electronsVectorFilename; //= "BH3_Max0.json"; // overwrite command line
     bool showGui = true;
 
     if( wavefunctionFilename.empty() && electronsVectorFilename.empty()) {
