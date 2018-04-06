@@ -13,7 +13,7 @@ file(COPY ${RESOURCE_FILES} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
 add_executable(StringMethodGUI.exe StringMethodGUI.cpp)
 add_executable(PathOptimization.exe PathOptimization.cpp)
-add_executable(HessianTesting.exe HessianTesting.cpp)
+add_executable(WavefunctionTransitionStates.exe WavefunctionTransitionStates.cpp)
 add_executable(LocalPotentialEnergy.exe LocalPotentialEnergy.cpp)
 add_executable(ShowMaxima.exe ShowMaxima.cpp)
 
@@ -31,7 +31,7 @@ target_link_libraries(PathOptimization.exe
         TransitionStateSearch
         )
 
-target_link_libraries(HessianTesting.exe
+target_link_libraries(WavefunctionTransitionStates.exe
         GUI
         BaseLib
         BSplines
