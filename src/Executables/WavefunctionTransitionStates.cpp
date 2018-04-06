@@ -16,15 +16,16 @@
 #include "ElectronsVector3D.h"
 #include "AtomsVector3D.h"
 #include "Polyline.h"
+
 int main(int argc, char *argv[]) {
 
-    ElectronicWaveFunctionProblem electronicWaveFunctionProblem("BH3_Exp-em.wf");
+    ElectronicWaveFunctionProblem electronicWaveFunctionProblem("H2sm444.wf");
     auto ac = electronicWaveFunctionProblem.getAtomsVector();
     std::cout << ac << std::endl;
 
 
     CollectionParser collectionParser;
-    auto ec = collectionParser.electronsVectorFromJson("BH3_Max1.json");
+    auto ec = collectionParser.electronsVectorFromJson("H2sm444_TS_NRopt.json");
     auto x = ec.positionsVector().positionsAsEigenVector();
 
     std::cout << ec << std::endl;
