@@ -12,7 +12,6 @@
 #include "MoleculeWidget.h"
 #include "ElectronsVector3D.h"
 #include "AtomsVector3D.h"
-#include "Polyline.h"
 #include "LocalNewtonSearch.h"
 #include "Visualization.h"
 
@@ -64,14 +63,15 @@ int main(int argc, char *argv[]) {
         MoleculeWidget moleculeWidget;
         Qt3DCore::QEntity *root = moleculeWidget.createMoleculeWidget();
 
-        AtomsVector3D(root, ElectronicWaveFunction::getInstance().getAtomsVector());
+        // Plot atoms
+        AtomsVector3D(root, ac);
 
         // Plot eigenvectors
         int evIndex = 0;
         Visualization::drawEigenVector(root,eigenvectors,x,evIndex);
 
-        // Plot the final point
-        ElectronsVector3D(root, ec, false);
+        // Plot electrons with connections
+        ElectronsVector3D(root, ac, ec, false);
 
         return app.exec();
     }
