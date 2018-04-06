@@ -20,7 +20,9 @@ set(HEADER_FILES
         include/QuaternionFit.h
         include/StringOptimizationProblem.h
         include/StringMethod.h
-        include/ChainOfStates.h)
+        include/ChainOfStates.h
+        include/LocalNewtonSearch.h
+        )
 
 set(SOURCE_FILES
         source/QuaternionFit.cpp
