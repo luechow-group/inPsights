@@ -22,11 +22,13 @@ int main(int argc, char *argv[]) {
     auto nsmooth = 2;
     auto x = ec.positionsVector().positionsAsEigenVector();
 
+    std::cout << ec << std::endl;
 
     auto n = ElectronicWaveFunction::getInstance().getNumberOfElectrons()*3;
     Eigen::VectorXd grad(n);
     electronicWaveFunctionProblem.putElectronsIntoNuclei(x,grad);
 
+    std::cout << "gradient:" << std::endl;
     std::cout << ElectronsVector(grad,ec.spinTypesVector().spinTypesAsEigenVector()) << std::endl;
 
     for (auto & it : electronicWaveFunctionProblem.getIndicesOfElectronsAtNuclei()) std::cout << it << " ";
@@ -38,10 +40,8 @@ int main(int argc, char *argv[]) {
     Eigen::MatrixXd hess(n, n);
     electronicWaveFunctionProblem.hessian(x, hess);
 
-    auto relevantBlock = hess.block((8 - nsmooth) * 3, (8 - nsmooth) * 3, 3 * nsmooth, 3 * nsmooth);
-    Eigen::EigenSolver<Eigen::MatrixXd> eigenSolver(relevantBlock, true);
-    std::cout << relevantBlock << std::endl;
-    auto eigenvalues = eigenSolver.eigenvalues();
-    std::cout << eigenvalues << std::endl;
+    Eigen::EigenSolver<Eigen::MatrixXd> eigenSolver(hess, true);
+    std::cout << hess << std::endl;
+    std::cout << eigenSolver.eigenvalues() << std::endl;
     std::cout << std::endl;
 }
