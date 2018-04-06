@@ -10,6 +10,12 @@
 #include "CollectionParser.h"
 #include "solver/newtonraphsonsolver.h"
 
+#include <QApplication>
+
+#include "MoleculeWidget.h"
+#include "ElectronsVector3D.h"
+#include "AtomsVector3D.h"
+#include "Polyline.h"
 int main(int argc, char *argv[]) {
 
     ElectronicWaveFunctionProblem electronicWaveFunctionProblem("BH3_Exp-em.wf");
@@ -45,4 +51,35 @@ int main(int argc, char *argv[]) {
     std::cout << hess << std::endl;
     std::cout << eigenSolver.eigenvalues() << std::endl;
     std::cout << std::endl;
+
+
+    if (true) {
+        QApplication app(argc, argv);
+        setlocale(LC_NUMERIC, "C");
+
+        // Visualization
+        MoleculeWidget moleculeWidget;
+        Qt3DCore::QEntity *root = moleculeWidget.createMoleculeWidget();
+
+        AtomsVector3D(root, ElectronicWaveFunction::getInstance().getAtomsVector());
+
+
+        // Plot eigenvectors
+        int evIndex = 0;
+        for (int i = 0; i < ec.numberOfEntities(); ++i) {
+            QVector3D v1(x(i * 3 + 0), x(i * 3 + 1), x(i * 3 + 2));
+            QVector3D v2 = v1;
+            QVector3D ev(eigenvectors.col(evIndex)(i * 3 + 0),
+                         eigenvectors.col(evIndex)(i * 3 + 1),
+                         eigenvectors.col(evIndex)(i * 3 + 2));
+            v2 += ev;
+            std::vector<QVector3D> points = {v1, v2};
+            Polyline pl(root, QColor(Qt::black), points, 0.01, true);
+        }
+
+        // Plot the final point
+        ElectronsVector3D(root, ec, false);
+
+        return app.exec();
+    }
 }
