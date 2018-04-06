@@ -38,8 +38,10 @@ ElectronsVectorCollection::ElectronsVectorCollection(const PositionsVectorCollec
           spinTypesVector_(spinTypesVector) {
 
     assert(numberOfEntities() == positionsVectorCollection_.numberOfEntities()
-           && numberOfEntities() == spinTypesVector_.numberOfEntities()
-           && "The number of entities in ParticlesVectorCollection, PositionsVectorCollection, and SpinTypesVector must match.");
+           && "The number of entities in ParticlesVectorCollection and PositionsVectorCollection must be equal.");
+
+    assert(positionsVectorCollection.numberOfPositionsEntities() == spinTypesVector_.numberOfEntities()
+           && "The number of entities in PositionsVector and SpinTypesVector must be equal.");
 }
 
 ElectronsVector ElectronsVectorCollection::operator[](long i) const {

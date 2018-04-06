@@ -37,9 +37,12 @@ AtomsVectorCollection::AtomsVectorCollection(const PositionsVectorCollection &po
         : ParticlesVectorCollection(positionsVectorCollection),
           elementTypesVector_(elementTypesVector) {
 
+
     assert(numberOfEntities() == positionsVectorCollection_.numberOfEntities()
-           && numberOfEntities() == elementTypesVector_.numberOfEntities()
-           && "The number of entities in ParticlesVectorCollection, PositionsVectorCollection, and ElementTypesVector must match.");
+           && "The number of entities in ParticlesVectorCollection and PositionsVectorCollection must be equal.");
+
+    assert(positionsVectorCollection.numberOfPositionsEntities() == elementTypesVector_.numberOfEntities()
+           && "The number of entities in PositionsVector and ElementTypesVector must be equal.");
 }
 
 AtomsVector AtomsVectorCollection::operator[](long i) const {
