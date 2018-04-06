@@ -5,30 +5,32 @@
 #include <iostream>
 #include <Eigen/Core>
 #include <Eigen/Eigenvalues>
+#include <QApplication>
 
 #include "ElectronicWaveFunctionProblem.h"
 #include "CollectionParser.h"
-#include "solver/newtonraphsonsolver.h"
-
-#include <QApplication>
-
 #include "MoleculeWidget.h"
 #include "ElectronsVector3D.h"
 #include "AtomsVector3D.h"
 #include "Polyline.h"
+#include "LocalNewtonSearch.h"
 
 int main(int argc, char *argv[]) {
 
     ElectronicWaveFunctionProblem electronicWaveFunctionProblem("H2sm444.wf");
     auto ac = electronicWaveFunctionProblem.getAtomsVector();
     std::cout << ac << std::endl;
-
-
+    
     CollectionParser collectionParser;
-    auto ec = collectionParser.electronsVectorFromJson("H2sm444_TS_NRopt.json");
+    auto ec = collectionParser.electronsVectorFromJson("H2sm444_TSguess.json");
     auto x = ec.positionsVector().positionsAsEigenVector();
-
     std::cout << ec << std::endl;
+
+    // optimize the guess
+    LocalNewtonSearch localNewton;
+    localNewton.search(electronicWaveFunctionProblem,x);
+    ec.positionsVector() = PositionsVector(x);
+
 
     auto n = ElectronicWaveFunction::getInstance().getNumberOfElectrons()*3;
     Eigen::VectorXd grad(n);
