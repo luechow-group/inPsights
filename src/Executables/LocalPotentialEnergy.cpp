@@ -25,7 +25,8 @@ int main(int argc, char *argv[]) {
     PotentialProblem potentialProblem(nuclei);
 
     CollectionParser collectionParser;
-    ElectronsVector electrons = collectionParser.electronsVectorFromJson("LR_H2_artificial_start.json");
+    ElectronsVector electrons = collectionParser.electronsVectorFromJson(
+            collectionParser.readJSON("LR_H2_artificial_start.json"));
 
     double energy = -1.1745;
 

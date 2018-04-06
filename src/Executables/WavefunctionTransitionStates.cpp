@@ -14,15 +14,34 @@
 #include "AtomsVector3D.h"
 #include "LocalNewtonSearch.h"
 #include "Visualization.h"
+#include "AmolqcFileImport/RefFileImporter.h"
 
 int main(int argc, char *argv[]) {
 
-    ElectronicWaveFunctionProblem electronicWaveFunctionProblem("H2sm444.wf");
-    auto ac = electronicWaveFunctionProblem.getAtomsVector();
-    std::cout << ac << std::endl;
+    ElectronicWaveFunctionProblem electronicWaveFunctionProblem("H6TS_CAS23_Ic444.wf");
+    auto av = electronicWaveFunctionProblem.getAtomsVector();
+    std::cout << av << std::endl;
+
+    RefFileImporter refFileImporter("H6TS_CAS23_Ic444.ref");
+    auto ev = refFileImporter.getMaximaStructure(1,1);
 
     CollectionParser collectionParser;
-    auto ec = collectionParser.electronsVectorFromJson("H2sm444_TSguess.json");
+
+    nlohmann::json json = collectionParser.atomsAndElectronsVectorToJson(av,ev);
+
+    collectionParser.writeJSON(json,"H6TS_CAS23_Ic444_Guess.json");
+
+    auto stv = ev.spinTypesVector();
+    auto pv = ev.positionsVector();
+    PositionsVectorCollection pvc;
+    pvc.append(pv);
+    pvc.append(pv);
+    ElectronsVectorCollection evc(pvc,stv);
+
+    nlohmann::json json2 = collectionParser.electronsVectorCollectionToJson(evc);
+    collectionParser.writeJSON(json2,"evctest.json");
+
+    auto ec = collectionParser.electronsVectorFromJson(collectionParser.readJSON("H6TS_CAS23_Ic444_Guess.json"));
     auto x = ec.positionsVector().positionsAsEigenVector();
     std::cout << ec << std::endl;
 
@@ -64,14 +83,14 @@ int main(int argc, char *argv[]) {
         Qt3DCore::QEntity *root = moleculeWidget.createMoleculeWidget();
 
         // Plot atoms
-        AtomsVector3D(root, ac);
+        AtomsVector3D(root, av);
 
         // Plot eigenvectors
         int evIndex = 0;
         Visualization::drawEigenVector(root,eigenvectors,x,evIndex);
 
         // Plot electrons with connections
-        ElectronsVector3D(root, ac, ec, false);
+        ElectronsVector3D(root, av, ec, false);
 
         return app.exec();
     }
