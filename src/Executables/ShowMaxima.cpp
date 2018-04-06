@@ -63,7 +63,7 @@ int main(int argc, char *argv[]) {
     Qt3DCore::QEntity *root = moleculeWidget.createMoleculeWidget();
 
     AtomsVector3D(root, atoms);
-    ElectronsVector3D(root, electrons, false);
+    ElectronsVector3D(root, atoms, electrons, false);
 
     return app.exec();
 };
