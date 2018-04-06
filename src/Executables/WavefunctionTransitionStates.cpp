@@ -40,7 +40,8 @@ int main(int argc, char *argv[]) {
     Eigen::MatrixXd hess(n, n);
     electronicWaveFunctionProblem.hessian(x, hess);
 
-    Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> eigenSolver(hess, true);
+    Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> eigenSolver(hess, Eigen::ComputeEigenvectors);
+    auto eigenvectors = eigenSolver.eigenvectors();
     std::cout << hess << std::endl;
     std::cout << eigenSolver.eigenvalues() << std::endl;
     std::cout << std::endl;
