@@ -25,7 +25,6 @@ int main(int argc, char *argv[]) {
 
     CollectionParser collectionParser;
     auto ec = collectionParser.electronsVectorFromJson("BH3_Max1.json");
-    auto nsmooth = 2;
     auto x = ec.positionsVector().positionsAsEigenVector();
 
     std::cout << ec << std::endl;
