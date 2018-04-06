@@ -28,18 +28,8 @@ int main(int argc, char *argv[]) {
     CollectionParser collectionParser;
 
     nlohmann::json json = collectionParser.atomsAndElectronsVectorToJson(av,ev);
-
     collectionParser.writeJSON(json,"H6TS_CAS23_Ic444_Guess.json");
 
-    auto stv = ev.spinTypesVector();
-    auto pv = ev.positionsVector();
-    PositionsVectorCollection pvc;
-    pvc.append(pv);
-    pvc.append(pv);
-    ElectronsVectorCollection evc(pvc,stv);
-
-    nlohmann::json json2 = collectionParser.electronsVectorCollectionToJson(evc);
-    collectionParser.writeJSON(json2,"evctest.json");
 
     auto ec = collectionParser.electronsVectorFromJson(collectionParser.readJSON("H6TS_CAS23_Ic444_Guess.json"));
     auto x = ec.positionsVector().positionsAsEigenVector();
