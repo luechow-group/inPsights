@@ -1,20 +1,17 @@
 {
-    "comment": "guess",
-    "coordinates": [
-        [
-            0.03,
-            0.40,
-            0
-        ],
-        [
-            -0.02,
-            -0.5,
-            0
-        ]
+  "comment": "guess",
+  "ElectronsVector": {
+    "PositionsVector": [
+      0.03,
+      0.40,
+      0,
+      -0.02,
+      -0.5,
+      0
     ],
-    "spins": [
-        1,
-        -1
-    ],
-    "type": "ElectronsVector"
+    "SpinTypesVector": [
+      1,
+      -1
+    ]
+  }
 }

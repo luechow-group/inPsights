@@ -13,21 +13,34 @@
 class CollectionParser{
 public:
 
+    nlohmann::json positionsVectorToJson(const PositionsVector &positionsVector);
+    nlohmann::json elementTypesVectorToJson(const ElementTypesVector& elementTypesVector);
+    nlohmann::json spinTypesVectorToJson(const SpinTypesVector& spinTypesVector);
+
     nlohmann::json atomsVectorToJson(const AtomsVector& atomsVector);
     nlohmann::json electronsVectorToJson(const ElectronsVector& electronsVector);
-    nlohmann::json electronsVectorCollectionToJson(const ElectronsVectorCollection& electronsVectorCollection);
-    nlohmann::json positionsVectorToJson(const PositionsVector &positionsVector);
 
-    AtomsVector atomsVectorFromJson (const std::string& filename);
-    ElectronsVector electronsVectorFromJson(const std::string& filename);
-    ElectronsVectorCollection electronsVectorCollectionFromJson(const std::string& filename);
-    PositionsVector positionsVectorFromJson(const std::string &filename);
+    nlohmann::json positionsVectorCollectionToJson(const PositionsVectorCollection& positionsVectorCollection);
+    nlohmann::json electronsVectorCollectionToJson(const ElectronsVectorCollection& electronsVectorCollection);
+
+    nlohmann::json atomsAndElectronsVectorToJson(const AtomsVector& atomsVector,const ElectronsVector& electronsVector);
+
+
+    PositionsVector positionsVectorFromJson(const nlohmann::json& json) const;
+    ElementTypesVector elementTypesVectorFromJson(const nlohmann::json& json) const;
+    SpinTypesVector spinTypesVectorFromJson(const nlohmann::json& json) const;
+
+    AtomsVector atomsVectorFromJson(const nlohmann::json& json) const;
+    ElectronsVector electronsVectorFromJson(const nlohmann::json& json) const;
+
+    PositionsVectorCollection positionsVectorCollectionFromJson(const nlohmann::json& json) const;
+    ElectronsVectorCollection electronsVectorCollectionFromJson(const nlohmann::json& json) const;
 
     nlohmann::json json, readJSON(const std::string& filename);
     void writeJSON(const nlohmann::json& json, const std::string& filename);
 
 private:
-    PositionsVector array2DToPositionsVector(const nlohmann::json &coordinates);
+    PositionsVector arrayToPositionsVector(const nlohmann::json &json) const;
 };
 
 #endif //AMOLQCPP_COLLECTIONPARSER_H

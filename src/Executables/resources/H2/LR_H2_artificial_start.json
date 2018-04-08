@@ -1,12 +1,17 @@
 {
     "comment": "H2 artifizielle Startstruktur.",
-    "coordinates": [
-        [0.0, 0.0,  0.1],
-        [0.0, 0.0, -0.1]
-    ],
-    "spins": [
-        1,
-       -1
-    ],
-    "type": "ElectronsVector"
+    "ElectronsVector": {
+        "PositionsVector": [
+            0.0,
+            0.0,
+            0.1,
+            0.0,
+            0.0,
+            -0.1
+        ],
+        "SpinTypesVector": [
+            1,
+            -1
+        ]
+    }
 }
