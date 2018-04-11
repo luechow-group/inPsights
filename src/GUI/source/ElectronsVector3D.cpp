@@ -47,12 +47,12 @@ void ElectronsVector3D::drawElectrons(Qt3DCore::QEntity *root,
             QFont font(QString("Arial"), 12, 0, false);
             QVector3D shift;
 
-            if(electrons3D[i].getSpinType() == Spin::SpinType::alpha) shift = QVector3D(0.0f,0.07f,0.07f);
-            else shift = QVector3D(-0.0f,-0.07f,-0.07f);
+            if(electrons3D[i].getSpinType() == Spin::SpinType::alpha) shift = QVector3D(0.0f,0.15f,0.15f);
+            else shift = QVector3D(-0.0f,-0.15f,-0.15f);
 
             textTransform->setTranslation(qvector3d+shift);
             textTransform->setRotationY(90);
-            textTransform->setScale(0.1f);
+            textTransform->setScale(0.2f);
             textMesh->setDepth(0.1f);
             textMesh->setFont(font);
             textMesh->setText(QString::fromStdString(std::to_string(i+1)));
