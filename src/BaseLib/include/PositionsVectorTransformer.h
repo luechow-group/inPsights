@@ -18,7 +18,7 @@ public:
 
 class PositionsVectorTransformer{
 public:
-    Eigen::Matrix3d rotationMatrixFromQuaternion(const Eigen::Vector4d &q);
+
 
     void translateCenterOfMassToOrigin(PositionsVector& positionsVector);
 
@@ -27,6 +27,8 @@ public:
                                                            const Eigen::Vector3d& axisEnd);
 
 private:
+    Eigen::Matrix3d rotationMatrixFromQuaternion(const Eigen::Vector4d &q);
+
     Eigen::Vector3d calculateCenterOfMass(const PositionsVector& positionsVector,
                                           const Eigen::VectorXd& weights);
 
