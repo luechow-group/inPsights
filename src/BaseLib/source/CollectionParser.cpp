@@ -4,6 +4,8 @@
 
 #include "CollectionParser.h"
 #include "ElementInfo.h"
+#include "ElectronsVectorCollection.h"
+#include "AtomsVector.h"
 #include <fstream>
 
 nlohmann::json CollectionParser::positionsVectorToJson(const PositionsVector &positionsVector) {

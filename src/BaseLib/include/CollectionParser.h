@@ -5,10 +5,17 @@
 #ifndef AMOLQCPP_COLLECTIONPARSER_H
 #define AMOLQCPP_COLLECTIONPARSER_H
 
-#include "ElectronsVectorCollection.h"
-#include "AtomsVector.h"
 #include <Eigen/Eigenvalues>
 #include <nlohmann/json.hpp>
+
+class ElementTypesVector;
+class SpinTypesVector;
+class PositionsVector;
+class AtomsVector;
+class ElectronsVector;
+class PositionsVectorCollection;
+class ElectronsVectorCollection;
+class AtomsVectorCollection;
 
 namespace CollectionParser{
     nlohmann::json positionsVectorToJson(const PositionsVector &positionsVector);
