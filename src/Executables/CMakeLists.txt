@@ -16,25 +16,29 @@ add_executable(PathOptimization.exe PathOptimization.cpp)
 add_executable(WavefunctionTransitionStates.exe WavefunctionTransitionStates.cpp)
 add_executable(LocalPotentialEnergy.exe LocalPotentialEnergy.cpp)
 add_executable(ShowMaxima.exe ShowMaxima.cpp)
+add_executable(H6TSsearch.exe H6TSsearch.cpp)
 
 target_link_libraries(StringMethodGUI.exe
         GUI
         BaseLib
-        BSplines
         TransitionStateSearch
         )
 
 target_link_libraries(PathOptimization.exe
         GUI
         BaseLib
-        BSplines
         TransitionStateSearch
         )
 
 target_link_libraries(WavefunctionTransitionStates.exe
         GUI
         BaseLib
-        BSplines
+        TransitionStateSearch
+        )
+
+target_link_libraries(WavefunctionTransitionStates.exe
+        GUI
+        BaseLib
         TransitionStateSearch
         )
 
@@ -47,4 +51,10 @@ target_link_libraries(LocalPotentialEnergy.exe
 target_link_libraries(ShowMaxima.exe
         GUI
         AmolqcInterface
+        )
+
+target_link_libraries(H6TSsearch.exe
+        GUI
+        BaseLib
+        TransitionStateSearch
         )
