@@ -18,8 +18,6 @@ public:
 
 class PositionsVectorTransformer{
 public:
-
-
     void translateCenterOfMassToOrigin(PositionsVector& positionsVector);
 
     void rotateAroundFixedAxis(PositionsVector& positionsVector, double angle,
