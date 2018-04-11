@@ -5,7 +5,7 @@
 #include <gtest/gtest.h>
 #include <ElectronsVector.h>
 #include <PositionsVectorTransformer.h>
-#include <limits>
+#include <NaturalConstants.h>
 
 using namespace testing;
 using namespace Eigen;
@@ -30,7 +30,7 @@ public:
 TEST_F(APositionsVectorTransformerTest, counterclockwiseRotation){
     ElectronsVector electronsVector = ev;
 
-    double angle = 2.*M_PI/3.; // 120° counterclockwise rotiation
+    double angle = 120.*ConversionFactors::deg2rad; // 120° counterclockwise rotiation
     Eigen::Vector3d axis = {1,1,1};
 
     auto rotmat =PositionsVectorTransformer::rotationMatrixFromQuaternion(
@@ -52,7 +52,7 @@ TEST_F(APositionsVectorTransformerTest, counterclockwiseRotation){
 TEST_F(APositionsVectorTransformerTest, clockwiseRotation){
     ElectronsVector electronsVector = ev;
 
-    double angle = -2.*M_PI/3.; // 120° clockwise rotiation
+    double angle = -120.*ConversionFactors::deg2rad; // 120° clockwise rotiation
     Eigen::Vector3d axis = {1,1,1};
 
     auto rotmat =PositionsVectorTransformer::rotationMatrixFromQuaternion(
