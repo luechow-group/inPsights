@@ -16,7 +16,7 @@
 #include "Visualization.h"
 #include "AmolqcFileImport/RefFileImporter.h"
 #include "PositionsVectorTransformer.h"
-
+#include <NaturalConstants.h>
 
 int main(int argc, char *argv[]) {
 
@@ -37,26 +37,30 @@ int main(int argc, char *argv[]) {
     pcsel1.append(pc[8]);
     pcsel1.append(pc[17]);
     pcsel1.append(pc[18]);
+    pcsel1.append(pc[13]);
 
     PositionsVector pcsel2;
     pcsel2.append(pc[4]);
     pcsel2.append(pc[15]);
     pcsel2.append(pc[16]);
-    
+    pcsel2.append(pc[14]);
+
     //std::cout << pcsel2 << std::endl;
-    PositionsVectorTransformer::rotateAroundAxis(pcsel1, 0 * -120. * M_PI / 180., pc[13], pc[0]);
-    PositionsVectorTransformer::rotateAroundAxis(pcsel2, 0 * -120. * M_PI / 180., pc[14], pc[1]);
-    std::cout << pcsel1 << std::endl;
+    PositionsVectorTransformer::rotateAroundAxis(pcsel1, 60.*ConversionFactors::deg2rad,
+                                                 av[0].position(), av[3].position());
+    PositionsVectorTransformer::rotateAroundAxis(pcsel2, 60.*ConversionFactors::deg2rad,
+                                                 av[1].position(), av[4].position());
     //auto x2 = x1;
 
     pc( 8) = pcsel1[0];
     pc(17) = pcsel1[1];
     pc(18) = pcsel1[2];
+    pc(13) = pcsel1[3];
 
     pc( 4) = pcsel2[0];
     pc(15) = pcsel2[1];
     pc(16) = pcsel2[2];
-
+    pc(14) = pcsel2[3];
 
     Eigen::VectorXd guess = pc.positionsAsEigenVector();
 
