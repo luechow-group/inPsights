@@ -10,20 +10,7 @@
 #include <vector>
 
 
-//TODO refactor
-Eigen::VectorXd permutePositionsCyclic(const Eigen::VectorXd &x, std::vector<unsigned> order) {
-    assert(order.size() > 0);
-    assert(x.size()%3 == 0);
-    assert(order.size() <= x.size()/3);
 
-    auto xnew = x;
-
-    for (int i = 0; i < order.size()-1; ++i)
-        xnew.segment(order[i]*3,3) = xnew.segment(order[i+1]*3,3);
-    xnew.segment( order[order.size()-1]*3,3) = x.segment(order[0]*3,3);
-
-    return xnew;
-}
 
 
 namespace PositionsVectorTransformer{
@@ -59,6 +46,10 @@ namespace PositionsVectorTransformer{
     Eigen::Vector4d quaternionFromAngleAndAxis(double angle, const Eigen::Vector3d &axis);
 
     AngleAxis quaternionToAngleAndAxis(const Eigen::Vector4d &quaternion);
+
+    //TODO refactor
+    Eigen::VectorXd permutePositionsCyclic(const Eigen::VectorXd &x, std::vector<unsigned> order);
+
 };
 
 

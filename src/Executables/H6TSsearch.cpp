@@ -36,7 +36,7 @@ int main(int argc, char *argv[]) {
     auto x1 = ec.positionsVector().positionsAsEigenVector();
 
     // cyclic permutation
-    //auto x2 = permutePositionsCyclic(x1, {0, 3, 1, 4, 2, 5});
+    //auto x2 = PositionsVectorTransfomer::permutePositionsCyclic(x1, {0, 3, 1, 4, 2, 5});
 
     // pairwise swap
     auto x2 = ec.positionsVector().positionsAsEigenVector();
