@@ -1,6 +1,7 @@
 //
 // Created by Michael Heuer on 10.04.18.
 //
+
 #include <iostream>
 #include <Eigen/Core>
 #include <Eigen/Eigenvalues>
@@ -8,63 +9,17 @@
 #include <QtWidgets>
 
 #include "ElectronicWaveFunctionProblem.h"
+#include "AmolqcFileImport/RefFileImporter.h"
 #include "CollectionParser.h"
+#include "PositionsVectorTransformer.h"
 #include "MoleculeWidget.h"
 #include "ElectronsVector3D.h"
 #include "AtomsVector3D.h"
-#include "LocalNewtonSearch.h"
 #include "Visualization.h"
-#include "AmolqcFileImport/RefFileImporter.h"
-#include "PositionsVectorTransformer.h"
+#include "LocalNewtonSearch.h"
 
 
 
-Eigen::VectorXd permutePositionsCyclic(const Eigen::VectorXd &x, std::vector<unsigned> order) {
-    assert(order.size() > 0);
-    assert(x.size()%3 == 0);
-    assert(order.size() <= x.size()/3);
-
-    auto xnew = x;
-
-    for (int i = 0; i < order.size()-1; ++i)
-        xnew.segment(order[i]*3,3) = xnew.segment(order[i+1]*3,3);
-    xnew.segment( order[order.size()-1]*3,3) = x.segment(order[0]*3,3);
-
-    return xnew;
-}
-
-
-nlohmann::json eigenvectorsToJsonArray(Eigen::MatrixXd eigenvectors){
-
-    auto jarr = nlohmann::json::array();
-
-    for (int k = 0; k < eigenvectors.cols(); ++k) {
-        auto eigenvector = nlohmann::json::array();
-        auto eigenvectorFromMatrixColumn = eigenvectors.col(k);
-        for (int i = 0; i < eigenvectors.rows()/3; ++i) {
-            eigenvector.emplace_back(eigenvectorFromMatrixColumn[i*3+0]);
-            eigenvector.emplace_back(eigenvectorFromMatrixColumn[i*3+1]);
-            eigenvector.emplace_back(eigenvectorFromMatrixColumn[i*3+2]);
-        }
-        jarr.emplace_back(eigenvector);
-    }
-
-    return jarr;
-}
-
-nlohmann::json eigenvaluesToJsonArray(Eigen::VectorXd eigenvalues){
-
-    auto eigarr = nlohmann::json::array();
-
-    for (int k = 0; k < eigenvalues.size(); ++k) {
-        eigarr.emplace_back(eigenvalues[k]);
-    }
-    return eigarr;
-}
-
-
-nlohmann::json resultToJSON(Eigen::MatrixXd eigenVectors) {
-}
 
 int main(int argc, char *argv[]) {
 
@@ -72,13 +27,12 @@ int main(int argc, char *argv[]) {
     auto av = electronicWaveFunctionProblem.getAtomsVector();
     std::cout << av << std::endl;
 
-    CollectionParser collectionParser;
     //RefFileImporter refFileImporter("H6TS_CAS23_Ic444.ref");
     //auto ev = refFileImporter.getMaximaStructure(1,1);
-    //nlohmann::json json = collectionParser.atomsAndElectronsVectorToJson(av,ev);
-    //collectionParser.writeJSON(json,"H6TS_CAS23_Ic444_GlobMax.json");
+    //nlohmann::json json = CollectionParser::atomsAndElectronsVectorToJson(av,ev);
+    //CollectionParser::writeJSON(json,"H6TS_CAS23_Ic444_GlobMax.json");
 
-    auto ec = collectionParser.electronsVectorFromJson(collectionParser.readJSON("H6TS_CAS23_Ic444_GlobMax.json"));
+    auto ec = CollectionParser::electronsVectorFromJson(CollectionParser::readJSON("H6TS_CAS23_Ic444_GlobMax.json"));
     auto x1 = ec.positionsVector().positionsAsEigenVector();
 
     // cyclic permutation
@@ -127,14 +81,13 @@ int main(int argc, char *argv[]) {
 
     // save results
     ElectronsVector ev(guess,ec.spinTypesVector().spinTypesAsEigenVector());
-    nlohmann::json json = collectionParser.atomsAndElectronsVectorToJson(av,ev);
+    nlohmann::json json = CollectionParser::atomsAndElectronsVectorToJson(av,ev);
     json["Value"] = electronicWaveFunctionProblem.value(guess);
-    json["Gradient"] = collectionParser.electronsVectorToJson(gradev)["ElectronsVector"];
+    json["Gradient"] = CollectionParser::electronsVectorToJson(gradev)["ElectronsVector"];
     json["ElectronsVector"]["AtNuclei"]= electronicWaveFunctionProblem.getIndicesOfElectronsAtNuclei();
     json["ElectronsVector"]["NotAtNuclei"]= electronicWaveFunctionProblem.getIndicesOfElectronsNotAtNuclei();
-    json["Eigenvectors"] = eigenvectorsToJsonArray(eigenSolver.eigenvectors());
-    json["Eigenvalues"] = eigenvaluesToJsonArray(eigenSolver.eigenvalues());
-    collectionParser.writeJSON(json,"H6TS_2pairs_swap.json");
+    //json["HessianDiagonalization"] = CollectionParser::selfAdjointEigenSolverResultsToJsonArray(eigenSolver);
+    CollectionParser::writeJSON(json,"H6TS_2pairs_swap.json");
 
 
     for (int i = 0; i < 17; ++i) {

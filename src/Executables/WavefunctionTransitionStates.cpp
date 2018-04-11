@@ -24,13 +24,13 @@ int main(int argc, char *argv[]) {
     auto av = electronicWaveFunctionProblem.getAtomsVector();
     std::cout << av << std::endl;
 
-    CollectionParser collectionParser;
+
     RefFileImporter refFileImporter("CP+.ref");
     auto ev = refFileImporter.getMaximaStructure(1,1);
-    nlohmann::json json = collectionParser.atomsAndElectronsVectorToJson(av,ev);
-    collectionParser.writeJSON(json,"CP+_Guess.json");
+    nlohmann::json json = CollectionParser::atomsAndElectronsVectorToJson(av,ev);
+    CollectionParser::writeJSON(json,"CP+_Guess.json");
 
-    auto ec = collectionParser.electronsVectorFromJson(collectionParser.readJSON("CP+_Guess.json"));
+    auto ec = CollectionParser::electronsVectorFromJson(CollectionParser::readJSON("CP+_Guess.json"));
     PositionsVector pc = ec.positionsVector();
 
     PositionsVector pcsel1;
@@ -46,9 +46,9 @@ int main(int argc, char *argv[]) {
     pcsel2.append(pc[14]);
 
     //std::cout << pcsel2 << std::endl;
-    PositionsVectorTransformer::rotateAroundAxis(pcsel1, 60.*ConversionFactors::deg2rad,
+    PositionsVectorTransformer::rotateAroundAxis(pcsel1, 120.*ConversionFactors::deg2rad,
                                                  av[0].position(), av[3].position());
-    PositionsVectorTransformer::rotateAroundAxis(pcsel2, 60.*ConversionFactors::deg2rad,
+    PositionsVectorTransformer::rotateAroundAxis(pcsel2, 120.*ConversionFactors::deg2rad,
                                                  av[1].position(), av[4].position());
     //auto x2 = x1;
 
@@ -56,7 +56,6 @@ int main(int argc, char *argv[]) {
     pc(17) = pcsel1[1];
     pc(18) = pcsel1[2];
     pc(13) = pcsel1[3];
-
     pc( 4) = pcsel2[0];
     pc(15) = pcsel2[1];
     pc(16) = pcsel2[2];
@@ -64,10 +63,9 @@ int main(int argc, char *argv[]) {
 
     Eigen::VectorXd guess = pc.positionsAsEigenVector();
 
-
     // optimize the guess
     LocalNewtonSearch localNewton;
-    //localNewton.search(electronicWaveFunctionProblem,guess);
+    localNewton.search(electronicWaveFunctionProblem,guess);
 
     auto n = ElectronicWaveFunction::getInstance().getNumberOfElectrons()*3;
     Eigen::VectorXd grad(n);
@@ -92,6 +90,18 @@ int main(int argc, char *argv[]) {
     std::cout << hess << std::endl;
     std::cout << eigenSolver.eigenvalues() << std::endl;
     std::cout << std::endl;
+
+
+    //// save results
+    //ElectronsVector ev(guess,ec.spinTypesVector().spinTypesAsEigenVector());
+    //nlohmann::json json = CollectionParser::atomsAndElectronsVectorToJson(av,ev);
+    //json["Value"] = electronicWaveFunctionProblem.value(guess);
+    //json["Gradient"] = CollectionParser::electronsVectorToJson(gradev)["ElectronsVector"];
+    //json["ElectronsVector"]["AtNuclei"]= electronicWaveFunctionProblem.getIndicesOfElectronsAtNuclei();
+    //json["ElectronsVector"]["NotAtNuclei"]= electronicWaveFunctionProblem.getIndicesOfElectronsNotAtNuclei();
+    //json["HessianDiagonalization"] = CollectionParser::selfAdjointEigenSolverResultsToJsonArray(eigenSolver);
+    //CollectionParser::writeJSON(json,"H6TS_2pairs_swap.json");
+
 
 
     if (true) {

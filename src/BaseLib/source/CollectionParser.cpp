@@ -3,8 +3,8 @@
 //
 
 #include "CollectionParser.h"
-#include <fstream>
 #include "ElementInfo.h"
+#include <fstream>
 
 nlohmann::json CollectionParser::positionsVectorToJson(const PositionsVector &positionsVector) {
 
@@ -19,7 +19,6 @@ nlohmann::json CollectionParser::positionsVectorToJson(const PositionsVector &po
     j["PositionsVector"] = positions;
     return j;
 }
-
 
 nlohmann::json CollectionParser::elementTypesVectorToJson(const ElementTypesVector& elementTypesVector) {
 
@@ -90,20 +89,20 @@ nlohmann::json CollectionParser::atomsAndElectronsVectorToJson(const AtomsVector
     return j;
 }
 
-PositionsVector CollectionParser::positionsVectorFromJson(const nlohmann::json &json) const {
+PositionsVector CollectionParser::positionsVectorFromJson(const nlohmann::json &json){
 
     assert(json["PositionsVector"].is_array() && "File must have a PositionsVector array.");
 
     return arrayToPositionsVector(json["PositionsVector"]);
 }
 
-PositionsVector CollectionParser::arrayToPositionsVector(const nlohmann::json &json) const {
+PositionsVector CollectionParser::arrayToPositionsVector(const nlohmann::json &json){
     std::vector<double> v = json.get<std::vector<double>>();
     assert(v.size()%3 == 0);
     return PositionsVector{Eigen::Map<Eigen::VectorXd, Eigen::Unaligned>(v.data(), v.size())};
 }
 
-ElementTypesVector CollectionParser::elementTypesVectorFromJson(const nlohmann::json &json) const {
+ElementTypesVector CollectionParser::elementTypesVectorFromJson(const nlohmann::json &json){
     assert(json["ElementTypesVector"].is_array());
 
     auto elementSymbols = json["AtomsVector"]["ElementTypesVector"].get<std::vector<std::string>>();
@@ -114,7 +113,7 @@ ElementTypesVector CollectionParser::elementTypesVectorFromJson(const nlohmann::
     return elementTypesVector;
 }
 
-SpinTypesVector CollectionParser::spinTypesVectorFromJson(const nlohmann::json &json) const {
+SpinTypesVector CollectionParser::spinTypesVectorFromJson(const nlohmann::json &json){
     assert(json["SpinTypesVector"].is_array());
 
     auto spins = json["SpinTypesVector"].get<std::vector<int>>();
@@ -125,21 +124,21 @@ SpinTypesVector CollectionParser::spinTypesVectorFromJson(const nlohmann::json &
     return spinTypesVector;
 }
 
-AtomsVector CollectionParser::atomsVectorFromJson(const nlohmann::json &json) const {
+AtomsVector CollectionParser::atomsVectorFromJson(const nlohmann::json &json){
     assert(json["AtomsVector"].is_object() && "File must have a AtomsVector object.");
 
     return AtomsVector(positionsVectorFromJson(json["AtomsVector"]),
                        elementTypesVectorFromJson(json["AtomsVector"]));
 }
 
-ElectronsVector CollectionParser::electronsVectorFromJson(const nlohmann::json &json) const {
+ElectronsVector CollectionParser::electronsVectorFromJson(const nlohmann::json &json){
     assert(json["ElectronsVector"].is_object() && "File must have a ElectronsVector object.");
 
     return ElectronsVector(positionsVectorFromJson(json["ElectronsVector"]),
                            spinTypesVectorFromJson(json["ElectronsVector"]));
 }
 
-PositionsVectorCollection CollectionParser::positionsVectorCollectionFromJson(const nlohmann::json &json) const {
+PositionsVectorCollection CollectionParser::positionsVectorCollectionFromJson(const nlohmann::json &json){
     assert(json["PositionsVectorCollection"].is_array());
 
     auto arrayOfArrays = json["PositionsVectorCollection"].get<std::vector<std::vector<double>>>();
@@ -153,7 +152,7 @@ PositionsVectorCollection CollectionParser::positionsVectorCollectionFromJson(co
     return positionsVectorCollection;
 }
 
-ElectronsVectorCollection CollectionParser::electronsVectorCollectionFromJson(const nlohmann::json &json) const {
+ElectronsVectorCollection CollectionParser::electronsVectorCollectionFromJson(const nlohmann::json &json){
     assert(json["ElectronsVectorCollection"].is_array() && "File must have a ElectronsVectorCollection array.");
 
     return ElectronsVectorCollection(
@@ -174,4 +173,33 @@ nlohmann::json CollectionParser::readJSON(const std::string &filename) {
     ifstream >> j;
 
     return j;
+}
+
+nlohmann::json CollectionParser::selfAdjointEigenSolverResultsToJsonArray(
+        const Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> &eigenSolver){
+
+    nlohmann::json json;
+
+    auto eigenvectorsArray = nlohmann::json::array();
+
+    for (int k = 0; k < eigenSolver.eigenvectors().cols(); ++k) {
+        auto eigenvector = nlohmann::json::array();
+        auto eigenvectorFromMatrixColumn = eigenSolver.eigenvectors().col(k);
+        for (int i = 0; i < eigenSolver.eigenvectors().rows()/3; ++i) {
+            eigenvector.emplace_back(eigenvectorFromMatrixColumn[i*3+0]);
+            eigenvector.emplace_back(eigenvectorFromMatrixColumn[i*3+1]);
+            eigenvector.emplace_back(eigenvectorFromMatrixColumn[i*3+2]);
+        }
+        eigenvectorsArray.emplace_back(eigenvector);
+    }
+
+    auto eigenvaluesArray = nlohmann::json::array();
+
+    for (int k = 0; k <eigenSolver.eigenvalues().size(); ++k) {
+        eigenvaluesArray.emplace_back(eigenSolver.eigenvalues()[k]);
+    }
+
+    json["Eigenvectors"] =eigenvectorsArray;
+    json["Eigenvalues"] = eigenvaluesArray;
+    return json;
 }
