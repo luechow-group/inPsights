@@ -31,7 +31,7 @@ Eigen::Matrix3d PositionsVectorTransformer::rotationMatrixFromQuaternion(const E
 
     rotMat(0, 2) = 2*(q13 + q02);
     rotMat(1, 2) = 2*(q23 - q01);
-    rotMat(2, 2) = 1 - 2*(q11 - q22);
+    rotMat(2, 2) = 1 - 2*(q11 + q22);
     return rotMat;
 };
 

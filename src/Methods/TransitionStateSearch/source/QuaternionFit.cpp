@@ -198,7 +198,6 @@ Matrix3d QuaternionFit::rotationMatrixFromQuaternion(const Vector4d& q) {
 
   rotMat(0, 2) = 2*(q13 + q02);
   rotMat(1, 2) = 2*(q23 - q01);
-  rotMat(2, 2) = 1 - 2*(q11 - q22);
   // PAPER IS WRONG! HERE IT IS CORRECT
   //http://www.euclideanspace.com/maths/geometry/rotations/conversions/quaternionToMatrix/
   return rotMat;
