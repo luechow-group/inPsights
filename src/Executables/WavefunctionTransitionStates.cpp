@@ -15,35 +15,61 @@
 #include "LocalNewtonSearch.h"
 #include "Visualization.h"
 #include "AmolqcFileImport/RefFileImporter.h"
+#include "PositionsVectorTransformer.h"
+
 
 int main(int argc, char *argv[]) {
 
-    ElectronicWaveFunctionProblem electronicWaveFunctionProblem("H6TS_CAS23_Ic444.wf");
+    ElectronicWaveFunctionProblem electronicWaveFunctionProblem("CP+.wf", true, true);
     auto av = electronicWaveFunctionProblem.getAtomsVector();
     std::cout << av << std::endl;
 
-    RefFileImporter refFileImporter("H6TS_CAS23_Ic444.ref");
-    auto ev = refFileImporter.getMaximaStructure(1,1);
-
     CollectionParser collectionParser;
-
+    RefFileImporter refFileImporter("CP+.ref");
+    auto ev = refFileImporter.getMaximaStructure(1,1);
     nlohmann::json json = collectionParser.atomsAndElectronsVectorToJson(av,ev);
-    collectionParser.writeJSON(json,"H6TS_CAS23_Ic444_Guess.json");
+    collectionParser.writeJSON(json,"CP+_Guess.json");
+
+    auto ec = collectionParser.electronsVectorFromJson(collectionParser.readJSON("CP+_Guess.json"));
+    PositionsVector pc = ec.positionsVector();
+
+    PositionsVector pcsel1;
+    pcsel1.append(pc[8]);
+    pcsel1.append(pc[17]);
+    pcsel1.append(pc[18]);
+
+    PositionsVector pcsel2;
+    pcsel2.append(pc[4]);
+    pcsel2.append(pc[15]);
+    pcsel2.append(pc[16]);
+    
+    //std::cout << pcsel2 << std::endl;
+    PositionsVectorTransformer::rotateAroundAxis(pcsel1, 0 * -120. * M_PI / 180., pc[13], pc[0]);
+    PositionsVectorTransformer::rotateAroundAxis(pcsel2, 0 * -120. * M_PI / 180., pc[14], pc[1]);
+    std::cout << pcsel1 << std::endl;
+    //auto x2 = x1;
+
+    pc( 8) = pcsel1[0];
+    pc(17) = pcsel1[1];
+    pc(18) = pcsel1[2];
+
+    pc( 4) = pcsel2[0];
+    pc(15) = pcsel2[1];
+    pc(16) = pcsel2[2];
 
 
-    auto ec = collectionParser.electronsVectorFromJson(collectionParser.readJSON("H6TS_CAS23_Ic444_Guess.json"));
-    auto x = ec.positionsVector().positionsAsEigenVector();
-    std::cout << ec << std::endl;
+    Eigen::VectorXd guess = pc.positionsAsEigenVector();
+
 
     // optimize the guess
     LocalNewtonSearch localNewton;
-    localNewton.search(electronicWaveFunctionProblem,x);
-    ec.positionsVector() = PositionsVector(x);
-
+    //localNewton.search(electronicWaveFunctionProblem,guess);
 
     auto n = ElectronicWaveFunction::getInstance().getNumberOfElectrons()*3;
     Eigen::VectorXd grad(n);
-    electronicWaveFunctionProblem.putElectronsIntoNuclei(x,grad);
+    electronicWaveFunctionProblem.putElectronsIntoNuclei(guess,grad);
+    electronicWaveFunctionProblem.gradient(guess,grad);
+
 
     std::cout << "gradient:" << std::endl;
     std::cout << ElectronsVector(grad,ec.spinTypesVector().spinTypesAsEigenVector()) << std::endl;
@@ -55,7 +81,7 @@ int main(int argc, char *argv[]) {
 
 
     Eigen::MatrixXd hess(n, n);
-    electronicWaveFunctionProblem.hessian(x, hess);
+    electronicWaveFunctionProblem.hessian(guess, hess);
 
     Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> eigenSolver(hess, Eigen::ComputeEigenvectors);
     auto eigenvectors = eigenSolver.eigenvectors();
@@ -77,10 +103,11 @@ int main(int argc, char *argv[]) {
 
         // Plot eigenvectors
         int evIndex = 0;
-        Visualization::drawEigenVector(root,eigenvectors,x,evIndex);
+        Visualization::drawEigenVector(root,eigenvectors,guess,evIndex);
 
         // Plot electrons with connections
-        ElectronsVector3D(root, av, ec, false);
+        ElectronsVector ecnew(guess,ec.spinTypesVector().spinTypesAsEigenVector());
+        ElectronsVector3D(root, av, ecnew, true);
 
         return app.exec();
     }

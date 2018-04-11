@@ -171,7 +171,10 @@ void QuaternionFit::findMaximalEigenvalue() {
   //TODO select maximal, degenerate eigenvector with most zeros
 }
 
-Matrix3d QuaternionFit::rotationMatrixFromQuaternion(const Vector4d& q) {
+/* The equation can be found at
+ * http://www.euclideanspace.com/maths/geometry/rotations/conversions/quaternionToMatrix/
+ */
+ Matrix3d QuaternionFit::rotationMatrixFromQuaternion(const Vector4d& q) {
   Matrix3d rotMat = Matrix3d::Zero();
 
   double q11, q22, q33;
@@ -198,9 +201,7 @@ Matrix3d QuaternionFit::rotationMatrixFromQuaternion(const Vector4d& q) {
 
   rotMat(0, 2) = 2*(q13 + q02);
   rotMat(1, 2) = 2*(q23 - q01);
-  rotMat(2, 2) = 1 - 2*(q11 - q22);
-  // PAPER IS WRONG! HERE IT IS CORRECT
-  //http://www.euclideanspace.com/maths/geometry/rotations/conversions/quaternionToMatrix/
+  rotMat(2, 2) = 1 - 2*(q11 + q22);
   return rotMat;
 }
 

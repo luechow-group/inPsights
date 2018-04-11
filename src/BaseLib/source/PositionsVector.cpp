@@ -74,3 +74,11 @@ void PositionsVector::permute(long i, long j) {
 long PositionsVector::calculateIndex(long i) const {
     return AbstractVector::calculateIndex(i)*entityLength_;
 }
+
+Eigen::Ref<Eigen::Vector3d> PositionsVector::operator()(long i){
+    return Eigen::Ref<Eigen::Vector3d>(positions_.segment(i*3,3));
+}
+
+const Eigen::Ref<const Eigen::Vector3d>& PositionsVector::operator()(long i) const{
+    return Eigen::Ref<const Eigen::Vector3d>(positions_.segment(i*3,3));
+}

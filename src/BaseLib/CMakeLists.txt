@@ -45,6 +45,7 @@ set(HEADER_FILES
         include/PositionsVector.h
         include/PositionsVectorCollection.h
         include/ToString.h
+        include/PositionsVectorTransformer.h
         )
 
 set(SOURCE_FILES
@@ -69,6 +70,7 @@ set(SOURCE_FILES
         source/AbstractVector.cpp
         source/PositionsVectorCollection.cpp
         source/ToString.cpp
+        source/PositionsVectorTransformer.cpp
         )
 
 file(GLOB_RECURSE RESOURCE_FILES resources/*.*)

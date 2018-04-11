@@ -10,8 +10,6 @@
 
 class Atom : public Particle{
 public:
-    Atom(const Eigen::Vector3d& position, const Elements::ElementType& elementType = Elements::ElementType::none);
-    Atom(double x, double y, double z, const Elements::ElementType& elementType = Elements::ElementType::none);
     Atom(const Particle& particle, const Elements::ElementType& elementType = Elements::ElementType::none);
 
     Elements::ElementType elementType() const;

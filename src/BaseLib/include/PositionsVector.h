@@ -32,6 +32,10 @@ public:
 
     Eigen::VectorXd & positionsAsEigenVector();
 
+    Eigen::Ref<Eigen::Vector3d> operator()(long i);
+
+    const Eigen::Ref<const Eigen::Vector3d>& operator()(long i) const;
+
 private:
     Eigen::VectorXd positions_;
     unsigned entityLength_ = 3;

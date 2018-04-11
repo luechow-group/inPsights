@@ -72,6 +72,9 @@ namespace ConversionFactors {
     const double ev2joule = 1. / joule2ev;
     const double hartree2ev = AU::electricPotential;
     const double ev2hartree = 1. / hartree2ev;
+
+    const double deg2rad = 2.*M_PI/360.;
+    const double rad2deg = 1./rad2deg;
 }
 
 #endif // NATURALCONSTANTS_H
