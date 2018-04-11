@@ -8,27 +8,33 @@
 #include "PositionsVector.h"
 #include <Eigen/Eigenvalues>
 
-struct AngleAxis{
-public:
-    AngleAxis(double angle,Eigen::Vector3d axis)
-            : angle_(angle), axis_(axis){};
-    double angle_;
-    Eigen::Vector3d axis_;
-};
+namespace PositionsVectorTransformer{
 
-class PositionsVectorTransformer{
-public:
+    struct AngleAxis{
+    public:
+        AngleAxis(double angle,Eigen::Vector3d axis)
+                : angle_(angle), axis_(axis){};
+        double angle_;
+        Eigen::Vector3d axis_;
+    };
+
+    enum class RotationDirection {
+        clockwise = 1,
+        counterclockwise = -1
+    };
+
     void translateCenterOfMassToOrigin(PositionsVector& positionsVector);
 
-    void rotateAroundFixedAxis(PositionsVector& positionsVector, double angle,
-                                                           const Eigen::Vector3d& axisStart,
-                                                           const Eigen::Vector3d& axisEnd);
+    void rotateAroundAxis(PositionsVector &positionsVector, double angle,
+                          const Eigen::Vector3d &axisStart,
+                          const Eigen::Vector3d &axisEnd);
+    void rotateAroundAxis(PositionsVector &positionsVector, double angle,
+                          const Eigen::Vector3d &axis);
 
-private:
     Eigen::Matrix3d rotationMatrixFromQuaternion(const Eigen::Vector4d &q);
 
     Eigen::Vector3d calculateCenterOfMass(const PositionsVector& positionsVector,
-                                          const Eigen::VectorXd& weights);
+                                   const Eigen::VectorXd& weights);
 
     Eigen::Vector3d calculateCenterOfMass(const PositionsVector& positionsVector);
 

@@ -37,20 +37,26 @@ Eigen::Matrix3d PositionsVectorTransformer::rotationMatrixFromQuaternion(const E
 
 
 void PositionsVectorTransformer::translateCenterOfMassToOrigin(PositionsVector& positionsVector){
-    auto center = calculateCenterOfMass(positionsVector);
+    auto center = PositionsVectorTransformer::calculateCenterOfMass(positionsVector);
     for (unsigned i = 0; i < positionsVector.numberOfEntities(); i++)
         positionsVector(i) -= center;
 };
 
-void PositionsVectorTransformer::rotateAroundFixedAxis(PositionsVector& positionsVector, double angle,
-                           const Eigen::Vector3d& axisStart,
-                           const Eigen::Vector3d& axisEnd){
-    auto rotMat = rotationMatrixFromQuaternion(quaternionFromAngleAndAxis(angle, axisEnd - axisStart));
+void PositionsVectorTransformer::rotateAroundAxis(PositionsVector &positionsVector, double angle,
+                                                  const Eigen::Vector3d &axisStart,
+                                                  const Eigen::Vector3d &axisEnd){
+    auto rotMat = rotationMatrixFromQuaternion(
+            quaternionFromAngleAndAxis(angle, axisEnd - axisStart));
     for (unsigned i = 0; i < positionsVector.numberOfEntities(); i++){
         positionsVector(i) -= axisStart;
         positionsVector(i) = positionsVector(i).transpose()*rotMat;
         positionsVector(i) += axisStart;
     }
+}
+
+void PositionsVectorTransformer::rotateAroundAxis(PositionsVector &positionsVector, double angle,
+                                                  const Eigen::Vector3d &axis){
+    return rotateAroundAxis(positionsVector, angle, Eigen::Vector3d::Zero(), axis);
 }
 
 Eigen::Vector3d PositionsVectorTransformer::calculateCenterOfMass(const PositionsVector& positionsVector,
@@ -71,11 +77,13 @@ Eigen::Vector3d PositionsVectorTransformer::calculateCenterOfMass(const Position
 
 Eigen::Vector4d PositionsVectorTransformer::quaternionFromAngleAndAxis(double angle, const Eigen::Vector3d &axis){
     Eigen::Vector4d quaternion;
-    quaternion << cos(angle/2.), axis.normalized()*sin(angle/2.);
+    quaternion <<
+               cos(angle/2.),
+            axis.normalized()*sin(angle/2.);
     return quaternion;
 };
 
-AngleAxis PositionsVectorTransformer::quaternionToAngleAndAxis(const Eigen::Vector4d &quaternion){
+PositionsVectorTransformer::AngleAxis PositionsVectorTransformer::quaternionToAngleAndAxis(const Eigen::Vector4d &quaternion){
     double angle = acos(quaternion(0))*2.;
     Eigen::Vector3d axis = quaternion.tail(3);
 

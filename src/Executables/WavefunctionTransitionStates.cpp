@@ -42,11 +42,10 @@ int main(int argc, char *argv[]) {
     pcsel2.append(pc[4]);
     pcsel2.append(pc[15]);
     pcsel2.append(pc[16]);
-
-    PositionsVectorTransformer transformer;
+    
     //std::cout << pcsel2 << std::endl;
-    transformer.rotateAroundFixedAxis(pcsel1,0*-120.*M_PI/180.,pc[13],pc[0]);
-    transformer.rotateAroundFixedAxis(pcsel2,0*-120.*M_PI/180.,pc[14],pc[1]);
+    PositionsVectorTransformer::rotateAroundAxis(pcsel1, 0 * -120. * M_PI / 180., pc[13], pc[0]);
+    PositionsVectorTransformer::rotateAroundAxis(pcsel2, 0 * -120. * M_PI / 180., pc[14], pc[1]);
     std::cout << pcsel1 << std::endl;
     //auto x2 = x1;
 
