@@ -7,6 +7,11 @@
 
 #include "PositionsVector.h"
 #include <Eigen/Eigenvalues>
+#include <vector>
+
+
+
+
 
 namespace PositionsVectorTransformer{
 
@@ -41,6 +46,10 @@ namespace PositionsVectorTransformer{
     Eigen::Vector4d quaternionFromAngleAndAxis(double angle, const Eigen::Vector3d &axis);
 
     AngleAxis quaternionToAngleAndAxis(const Eigen::Vector4d &quaternion);
+
+    //TODO refactor
+    Eigen::VectorXd permutePositionsCyclic(const Eigen::VectorXd &x, std::vector<unsigned> order);
+
 };
 
 

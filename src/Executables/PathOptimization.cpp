@@ -46,9 +46,9 @@ int main(int argc, char *argv[]) {
     }
 
     ElectronicWaveFunctionProblem electronicWaveFunctionProblem(wavefunctionFilename);
-    CollectionParser collectionParser;
+
     auto ac = electronicWaveFunctionProblem.getAtomsVector();
-    auto ec = collectionParser.electronsVectorFromJson(collectionParser.readJSON(electronsVectorFilename));
+    auto ec = CollectionParser::electronsVectorFromJson(CollectionParser::readJSON(electronsVectorFilename));
     std::cout << ac << std::endl;
     std::cout << ec << std::endl;
 

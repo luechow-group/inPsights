@@ -90,3 +90,19 @@ PositionsVectorTransformer::AngleAxis PositionsVectorTransformer::quaternionToAn
     if(sin(angle/2.) != 0) axis /= sin(angle/2.);
     return {angle,axis};
 };
+
+//TODO refactor
+Eigen::VectorXd
+PositionsVectorTransformer::permutePositionsCyclic(const Eigen::VectorXd &x, std::vector<unsigned> order){
+    assert(order.size() > 0);
+    assert(x.size()%3 == 0);
+    assert(order.size() <= x.size()/3);
+
+    auto xnew = x;
+
+    for (int i = 0; i < order.size()-1; ++i)
+        xnew.segment(order[i]*3,3) = xnew.segment(order[i+1]*3,3);
+    xnew.segment( order[order.size()-1]*3,3) = x.segment(order[0]*3,3);
+
+    return xnew;
+}
