@@ -25,7 +25,7 @@
 #include "Electron3D.h"
 #include "Polyline.h"
 
-#include "WfFileImporter.h"
+#include "AmolqcFileImport/WfFileImporter.h"
 #include "Atom.h"
 
 #include "ArcLengthParametrizedBSpline.h"
@@ -68,9 +68,9 @@ int main(int argc, char *argv[]) {
 
 
 
-    //collectionParser.writeJSON(collectionParser.electronsVectorToJson(ec),"Ethylene-glob-max.json");
-    CollectionParser collectionParser;
-    //auto ecA = collectionParser.electronsVectorFromJson("Ethane-glob-max.json");
+    //CollectionParser::writeJSON(CollectionParser::electronsVectorToJson(ec),"Ethylene-glob-max.json");
+
+    //auto ecA = CollectionParser::electronsVectorFromJson(CollectionParser::readJSON("Ethane-glob-max.json"));
     auto ecA = ElectronsVector(x0, Eigen::Vector2i(1,-1));
     auto ecB = ecA;
 

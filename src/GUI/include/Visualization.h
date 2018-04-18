@@ -17,6 +17,7 @@
 #include "ElectronsVector3D.h"
 
 #include "ParticlesVectorPath3D.h"
+#include "Polyline.h"
 
 
 namespace Visualization{
@@ -27,6 +28,13 @@ namespace Visualization{
 
     ElectronsVectorCollection shortenPath(const ElectronsVectorCollection &optimizationPath,
                                 const unsigned long &nwanted);
+
+    void drawEigenVector(Qt3DCore::QEntity *root,
+                         const Eigen::MatrixXd eigenvectors,
+                         const Eigen::VectorXd& origin, int eigenvectorIndex);
+
+
+
 }
 
 #endif //AMOLQCPP_VISUALIZATION_H

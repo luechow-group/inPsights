@@ -7,7 +7,7 @@
 
 AbstractVector::AbstractVector(long numberOfEntities)
         : numberOfEntities_(numberOfEntities){
-    assert(numberOfEntities >= 0 && "The number of Entities must be positive.");
+    assert(numberOfEntities >= 0 && "The number of Entities must be non-negative.");
 };
 
 void AbstractVector::incrementNumberOfEntities(){
@@ -19,7 +19,7 @@ long AbstractVector::numberOfEntities() const{
 }
 
 void AbstractVector::setNumberOfEntities(long numberOfEntities){
-    assert(numberOfEntities >= 0  && "The number of Entities must be positive.");
+    assert(numberOfEntities >= 0  && "The number of Entities must be non-negative.");
     numberOfEntities_ = numberOfEntities;
 }
 

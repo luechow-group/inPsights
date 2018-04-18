@@ -34,7 +34,7 @@ Qt3DCore::QEntity* MoleculeWidget::createMoleculeWidget() {
     view->setRootEntity(root);
 
 
-    moleculeView->resize(400, 400);
+    moleculeView->resize(800, 800);
     moleculeView->show();
 
     return root;

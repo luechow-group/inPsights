@@ -4,6 +4,16 @@ include(cmake/SetCompilers.cmake)
 
 set(CMAKE_CXX_STANDARD 14)
 
+if(EXISTS $ENV{FC})
+    message("Using specified Fortran Compiler")
+    set(CMAKE_Fortran_COMPILER $ENV{FC})
+else()
+    message("Using default Fortran Compiler")
+endif()
+
+
+set(CMAKE_CXX_STANDARD 14)
+
 project(Amolqcpp)
 
 message("C compiler: ${CMAKE_C_COMPILER}")

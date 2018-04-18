@@ -43,9 +43,9 @@ set(HEADER_FILES
         include/CollectionParser.h
         include/AbstractVector.h
         include/PositionsVector.h
-        include/Position.h
         include/PositionsVectorCollection.h
         include/ToString.h
+        include/PositionsVectorTransformer.h
         )
 
 set(SOURCE_FILES
@@ -67,10 +67,10 @@ set(SOURCE_FILES
         source/SpinType.cpp
         source/ElementType.cpp
         source/PositionsVector.cpp
-        source/Position.cpp
         source/AbstractVector.cpp
         source/PositionsVectorCollection.cpp
         source/ToString.cpp
+        source/PositionsVectorTransformer.cpp
         )
 
 file(GLOB_RECURSE RESOURCE_FILES resources/*.*)

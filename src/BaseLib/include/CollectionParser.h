@@ -5,27 +5,47 @@
 #ifndef AMOLQCPP_COLLECTIONPARSER_H
 #define AMOLQCPP_COLLECTIONPARSER_H
 
-#include "ElectronsVector.h"
-#include "AtomsVector.h"
-
+#include <Eigen/Eigenvalues>
 #include <nlohmann/json.hpp>
 
-class CollectionParser{
-public:
+class ElementTypesVector;
+class SpinTypesVector;
+class PositionsVector;
+class AtomsVector;
+class ElectronsVector;
+class PositionsVectorCollection;
+class ElectronsVectorCollection;
+class AtomsVectorCollection;
+
+namespace CollectionParser{
+    nlohmann::json positionsVectorToJson(const PositionsVector &positionsVector);
+    nlohmann::json elementTypesVectorToJson(const ElementTypesVector& elementTypesVector);
+    nlohmann::json spinTypesVectorToJson(const SpinTypesVector& spinTypesVector);
 
     nlohmann::json atomsVectorToJson(const AtomsVector& atomsVector);
     nlohmann::json electronsVectorToJson(const ElectronsVector& electronsVector);
-    nlohmann::json positionsVectorToJson(const PositionsVector &positionsVector);
 
-    AtomsVector atomsVectorFromJson (const std::string& filename);
-    ElectronsVector electronsVectorFromJson(const std::string& filename);
-    PositionsVector positionsVectorFromJson(const std::string &filename);
+    nlohmann::json positionsVectorCollectionToJson(const PositionsVectorCollection& positionsVectorCollection);
+    nlohmann::json electronsVectorCollectionToJson(const ElectronsVectorCollection& electronsVectorCollection);
 
-    nlohmann::json json, readJSON(const std::string& filename);
+    nlohmann::json atomsAndElectronsVectorToJson(const AtomsVector& atomsVector,const ElectronsVector& electronsVector);
+
+    nlohmann::json selfAdjointEigenSolverResultsToJsonArray(const Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> &eigenSolver);
+
+    PositionsVector positionsVectorFromJson(const nlohmann::json& json);
+    ElementTypesVector elementTypesVectorFromJson(const nlohmann::json& json);
+    SpinTypesVector spinTypesVectorFromJson(const nlohmann::json& json) ;
+
+    AtomsVector atomsVectorFromJson(const nlohmann::json& json) ;
+    ElectronsVector electronsVectorFromJson(const nlohmann::json& json) ;
+
+    PositionsVectorCollection positionsVectorCollectionFromJson(const nlohmann::json& json) ;
+    ElectronsVectorCollection electronsVectorCollectionFromJson(const nlohmann::json& json) ;
+
+    nlohmann::json readJSON(const std::string& filename);
     void writeJSON(const nlohmann::json& json, const std::string& filename);
 
-private:
-    PositionsVector array2DToPositionsVector(const nlohmann::json &coordinates);
+    PositionsVector arrayToPositionsVector(const nlohmann::json &json) ;
 };
 
 #endif //AMOLQCPP_COLLECTIONPARSER_H

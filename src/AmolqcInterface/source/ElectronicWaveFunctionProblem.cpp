@@ -53,12 +53,7 @@ void ElectronicWaveFunctionProblem::hessian(const Eigen::VectorXd &x, Eigen::Mat
     //TODO asserts?
     long dims = x.size();
 
-    cppoptlib::Problem<double,Eigen::Dynamic>::semifiniteHessian(x,hessian,2);
-
-    for (auto i : indicesOfElectronsAtNuclei_){
-        hessian.block(i*3,0,3,dims) = Eigen::MatrixXd::Zero(3,dims);
-        hessian.block(0,i*3,dims,3) = Eigen::MatrixXd::Zero(dims,3);
-    }
+    cppoptlib::Problem<double,Eigen::Dynamic>::semifiniteHessian(x,hessian,indicesOfElectronsNotAtNuclei_,3,0);
 }
 
 void ElectronicWaveFunctionProblem::fixGradient(Eigen::VectorXd &gradient) {
