@@ -42,13 +42,7 @@ Eigen::MatrixXd RadialBasis::inverseMatrixSqrt(const Eigen::MatrixXd& mat) const
     //TODO check if necessary, if not delete
     // With cwiseAbs(), negative eigenvalues are eliminated
     //Eigen::VectorXd inverseSqrtEigenvalues= eigenSolver.eigenvalues().cwiseAbs().cwiseInverse().cwiseSqrt();
-
     Eigen::VectorXd inverseSqrtEigenvalues= eigenSolver.eigenvalues().cwiseInverse().cwiseSqrt();
-
-    //std::cout << mat << std::endl << std::endl;
-    //std::cout << (eigenSolver.eigenvectors()
-    //              * inverseSqrtEigenvalues.asDiagonal())
-    //             * eigenSolver.eigenvectors().transpose().inverse() << std::endl;
 
     return (eigenSolver.eigenvectors()
            * inverseSqrtEigenvalues.asDiagonal())
