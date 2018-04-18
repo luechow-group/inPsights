@@ -35,21 +35,20 @@ Eigen::MatrixXd RadialBasis::Sab(int nmax) const {
 }
 
 Eigen::MatrixXd RadialBasis::inverseMatrixSqrt(const Eigen::MatrixXd& mat) const {
-    //assert(nmax > 0 && "The number of radial basis functions must be positive.");
 
     Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> eigenSolver(mat, Eigen::ComputeEigenvectors);
-    //if (eigenSolver.info() != Eigen::Success) abort();
+    if (eigenSolver.info() != Eigen::Success) abort();
 
+    //TODO check if necessary, if not delete
     // With cwiseAbs(), negative eigenvalues are eliminated
     //Eigen::VectorXd inverseSqrtEigenvalues= eigenSolver.eigenvalues().cwiseAbs().cwiseInverse().cwiseSqrt();
-    //TODO ACHTUNG!
+
     Eigen::VectorXd inverseSqrtEigenvalues= eigenSolver.eigenvalues().cwiseInverse().cwiseSqrt();
 
-
-    std::cout << mat << std::endl << std::endl;
-    std::cout << (eigenSolver.eigenvectors()
-                  * inverseSqrtEigenvalues.asDiagonal())
-                 * eigenSolver.eigenvectors().transpose().inverse() << std::endl;
+    //std::cout << mat << std::endl << std::endl;
+    //std::cout << (eigenSolver.eigenvectors()
+    //              * inverseSqrtEigenvalues.asDiagonal())
+    //             * eigenSolver.eigenvectors().transpose().inverse() << std::endl;
 
     return (eigenSolver.eigenvectors()
            * inverseSqrtEigenvalues.asDiagonal())
@@ -58,7 +57,7 @@ Eigen::MatrixXd RadialBasis::inverseMatrixSqrt(const Eigen::MatrixXd& mat) const
 
 double RadialBasis::operator()(double r, int idx) const {
     int nMax = nmax();
-    assert(idx >= 0 && "The radial basis function index must be smaller than nmax");
+    assert(idx >= 0 && "The radial basis function index must be positive.");
     assert(idx < nMax && "The radial basis function index must be smaller than nmax");
 
     Eigen::VectorXd hvec(nMax);
