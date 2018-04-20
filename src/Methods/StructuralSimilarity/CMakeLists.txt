@@ -32,7 +32,8 @@ set(HEADER_FILES
         include/QuaternionFit.h
         include/Hungarian.h
         include/RadialGaussianBasis.h
-        include/RadialGaussian.h
+        include/Gaussian.h
+        include/AngularBasis.h
         )
 
 set(SOURCE_FILES
@@ -40,6 +41,8 @@ set(SOURCE_FILES
         source/AtomicNeighborhoodDensityFunction.cpp
         source/QuaternionFit.cpp
         source/Hungarian.cpp
+        source/Gaussian.cpp
+        source/RadialGaussianBasis.cpp
         )
 
 file(GLOB_RECURSE RESOURCE_FILES resources/*.*)
