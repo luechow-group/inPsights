@@ -11,7 +11,7 @@
 class Electron : public Particle{
 public:
     
-    Electron(const Particle& particle, const Spin::SpinType& spinType = Spin::SpinType::none);
+    Electron(const Eigen::Vector3d& position, const Spin::SpinType& spinType = Spin::SpinType::none);
 
     Spin::SpinType spinType()const;
 
@@ -21,11 +21,7 @@ public:
 
     std::string toString() const override;
 
-
     int charge() const override;
-
-private:
-    Spin::SpinType spinType_;
 };
 
 #endif //AMOLQCPP_ELECTRON_H

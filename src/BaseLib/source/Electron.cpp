@@ -8,17 +8,16 @@
 using namespace Eigen;
 using namespace Spin;
 
-Electron::Electron(const Particle &particle, const SpinType & spinType)
-        : Particle(particle),
-          spinType_(spinType)
+Electron::Electron(const Eigen::Vector3d& position, const SpinType & spinType)
+        : Particle(position, int(spinType)+Spin::storageShift)
 {}
 
 Spin::SpinType Electron::spinType() const {
-    return spinType_;
+    return static_cast<SpinType>(type_-storageShift);
 }
 
 void Electron::setSpinType(const Spin::SpinType & spinType) {
-    spinType_ = spinType;
+    type_ = int(spinType)+storageShift;
 }
 
 int Electron::charge() const {
@@ -32,5 +31,5 @@ std::ostream& operator<< (std::ostream& os, const Electron& elec) {
 
 std::string Electron::toString() const {
 
-    return "e" + Spin::toString(spinType_) + ToString::vector3dToString(position_);
+    return "e" + Spin::toString(spinType()) + ToString::vector3dToString(position_);
 }

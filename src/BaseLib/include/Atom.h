@@ -10,7 +10,7 @@
 
 class Atom : public Particle{
 public:
-    Atom(const Particle& particle, const Elements::ElementType& elementType = Elements::ElementType::none);
+    Atom(const Eigen::Vector3d& position, const Elements::ElementType& elementType = Elements::ElementType::none);
 
     Elements::ElementType elementType() const;
     void setElementType(const Elements::ElementType & elementType);
@@ -18,10 +18,8 @@ public:
     friend std::ostream& operator<< (std::ostream& os, const Atom& atom);
 
     std::string toString() const override;
-    int charge() const override;
 
-private:
-    Elements::ElementType elementType_;
+    int charge() const override;
 };
 
 

@@ -8,10 +8,13 @@
 #include <Eigen/Core>
 #include <iostream>
 
+enum class Type{
+    none = 0
+};
+
 class Particle {
 public:
-    Particle(const Eigen::Vector3d& position);
-    Particle(double x, double y, double z);
+    Particle(const Eigen::Vector3d& position, int type = int(Type::none));
 
     Eigen::Vector3d position() const;
     void position(const Eigen::Vector3d& position);
@@ -25,6 +28,7 @@ protected:
     virtual int charge() const;
 
     Eigen::Vector3d position_;
+    int type_;
 };
 
 #endif //AMOLQCPP_PARTICLE_H

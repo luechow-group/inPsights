@@ -3,26 +3,26 @@
 //
 
 #include "Atom.h"
+
 #include "ElementInfo.h"
 #include "ToString.h"
 
 using namespace Eigen;
 using namespace Elements;
 
-Atom::Atom(const Particle &particle, const ElementType& elementType)
-        : Particle(particle),
-          elementType_(elementType) {}
+Atom::Atom(const Vector3d& position, const ElementType& elementType)
+        : Particle(position,ElementInfo::Z(elementType)) {}
 
-Elements::ElementType Atom::elementType() const {
-    return elementType_;
+ElementType Atom::elementType() const {
+    return static_cast<ElementType>(type_);
 };
 
 void Atom::setElementType(const ElementType &elementType) {
-    elementType_ = elementType;
+    type_ = ElementInfo::Z(elementType);
 }
 
 int Atom::charge() const {
-    return int(ElementInfo::Z(elementType_));
+    return type_;
 }
 
 std::ostream& operator<< (std::ostream& os, const Atom& atom) {
@@ -32,8 +32,8 @@ std::ostream& operator<< (std::ostream& os, const Atom& atom) {
 
 std::string Atom::toString() const {
     std::string string;
-    if (elementType_ != ElementType::none){
-        string = ElementInfo::symbol(elementType_);
+    if (elementType() != ElementType::none){
+        string = ElementInfo::symbol(elementType());
         if(string.length() == 1){
             string += " ";
         }

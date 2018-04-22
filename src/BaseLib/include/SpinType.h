@@ -9,13 +9,15 @@
 #include <cassert>
 
 namespace Spin {
-    enum class SpinType { alpha=1, none=0, beta=-1};
+    static const int storageShift = -2;
+
+    enum class SpinType { alpha=1, none=0, beta=-1}; // storage shifted: -1,-2,-3
 
     std::string toString(const SpinType& s);
 
     static double magneticQuantumNumber(SpinType spinType){
         assert(spinType != SpinType::none && "The SpinType cannot be 'none'.");
-        return double(spinType)/2.0;
+        return double(spinType)/2.;
     };
 
     static double quantumNumber(){
