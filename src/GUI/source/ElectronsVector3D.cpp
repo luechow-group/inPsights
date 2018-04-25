@@ -8,7 +8,8 @@
 
 #include <QPhongMaterial>
 #include <QExtrudedTextMesh>
-#include <AtomsVector.h>
+#include <ParticlesVector.h>
+#include <Metrics.h>
 
 ElectronsVector3D::ElectronsVector3D(Qt3DCore::QEntity *root,
                                      const ElectronsVector &electronsVector,
@@ -34,7 +35,7 @@ void ElectronsVector3D::drawElectrons(Qt3DCore::QEntity *root,
         Eigen::Vector3d vec = electronsVector[i].position();
         auto qvector3d = QVector3D(float(vec[0]), float(vec[1]), float(vec[2]));
         electrons3D.emplace_back(Electron3D(root, qvector3d,
-                                            electronsVector.spinTypesVector()[i]));
+                                            electronsVector.typesVector()[i]));
 
         // Draw Text
         if(showIndicesQ){
@@ -47,7 +48,7 @@ void ElectronsVector3D::drawElectrons(Qt3DCore::QEntity *root,
             QFont font(QString("Arial"), 12, 0, false);
             QVector3D shift;
 
-            if(electrons3D[i].getSpinType() == Spin::SpinType::alpha) shift = QVector3D(0.0f,0.15f,0.15f);
+            if(electrons3D[i].getSpinType() == Spins::SpinType::alpha) shift = QVector3D(0.0f,0.15f,0.15f);
             else shift = QVector3D(-0.0f,-0.15f,-0.15f);
 
             textTransform->setTranslation(qvector3d+shift);
@@ -68,14 +69,12 @@ void ElectronsVector3D::drawElectrons(Qt3DCore::QEntity *root,
 void ElectronsVector3D::drawConnections(Qt3DCore::QEntity *root,
                                         const AtomsVector &atomsVector,
                                         const ElectronsVector &electronsVector) {
-
-
     std::vector<long> electronsNotInNuclei;
 
     for (long i = 0; i < electronsVector.numberOfEntities(); ++i) {
         bool notAtNuclei = true;
         for (int k = 0; k < atomsVector.numberOfEntities(); ++k) {
-            if (Particle::distance(electronsVector[i], atomsVector[k]) < 0.1) {
+            if (Metrics::distance(electronsVector[i].position(), atomsVector[k].position()) < 0.1) {
                 notAtNuclei *= false;
             }
         }
@@ -89,15 +88,15 @@ void ElectronsVector3D::drawConnections(Qt3DCore::QEntity *root,
             auto e1 = electronsVector[electronsNotInNuclei[i]];
             auto e2 = electronsVector[electronsNotInNuclei[j]];
 
-            if (Particle::distance(e1, e2) < 2) {
+            if (Metrics::distance(e1.position(), e2.position()) < 2) {
                 auto p1 = e1.position();
                 auto p2 = e2.position();
                 auto q1 = QVector3D(p1[0], p1[1], p1[2]);
                 auto q2 = QVector3D(p2[0], p2[1], p2[2]);
 
-                if (e1.spinType() == e2.spinType())
+                if (e1.type() == e2.type())
                     Cylinder(root, Qt::magenta, {q1,q2}, 0.005,0.5);
-                else if (e1.spinType() != e2.spinType())
+                else if (e1.type() != e2.type())
                     Cylinder(root, Qt::green, {q1,q2}, 0.005,0.5);
                 else
                     Cylinder(root, Qt::cyan, {q1,q2}, 0.005, 0.25);

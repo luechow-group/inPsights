@@ -6,8 +6,7 @@
 #define AMOLQCPP_ELECTRONCOLLECTION3D_H
 
 #include "Abstract3dObject.h"
-#include "ElectronsVector.h"
-#include "AtomsVector.h"
+#include <ParticlesVector.h>
 
 class ElectronsVector3D{
 public:

@@ -43,4 +43,5 @@ private:
     long calculateIndex(long i) const override ;
 };
 
+
 #endif //AMOLQCPP_POSITIONSVECTOR_H

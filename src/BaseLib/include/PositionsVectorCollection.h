@@ -22,7 +22,6 @@ public:
 
     double norm(long i, long j) const;
 
-
     const std::vector<PositionsVector>& positionsVectorCollection() const;
     std::vector<PositionsVector>& positionsVectorCollection();
 

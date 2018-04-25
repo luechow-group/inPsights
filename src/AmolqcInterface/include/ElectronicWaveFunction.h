@@ -7,8 +7,8 @@
 
 #include <Eigen/Core>
 #include <vector>
-#include "AtomsVector.h"
-#include "ElectronsVectorCollection.h"
+
+#include <ParticlesVectorCollection.h>
 
 namespace ElectronPositioningMode {
   typedef enum {
@@ -37,7 +37,7 @@ public:
     void setRandomElectronPositionsVector(unsigned electronNumber,
                                            ElectronPositioningMode::electronPositioningModeType);
 
-    void evaluate(const ElectronsVector& electronsVector);
+    void evaluate(const ElectronsVector & electronsVector);
 
     void evaluate(const Eigen::VectorXd &electronPositionsVector);
 
@@ -55,7 +55,7 @@ public:
 
     double getInverseNegativeLogarithmizedProbabilityDensity();
 
-    ElectronsVector getElectronPositionsVector();
+    ElectronsVector getElectronsVector();
 
     Eigen::VectorXd getElectronDriftCollection();
 
@@ -75,6 +75,8 @@ public:
 
     SpinTypesVector getSpinTypesVector() const;
 
+    static SpinTypesVector createAmolqcSpinTypeVector(unsigned long numberOfAlphaElectrons,
+                                                      unsigned long numberOfBetaElectrons);
 private:
     explicit ElectronicWaveFunction();
     explicit ElectronicWaveFunction(const std::string& fileName);

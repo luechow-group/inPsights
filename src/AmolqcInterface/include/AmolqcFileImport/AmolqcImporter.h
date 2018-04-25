@@ -6,6 +6,8 @@
 #define AMOLQCPP_AMOLQCIMPORTER_H
 
 #include "Importer.h"
+#include <PositionsVector.h>
+#include <TypesVector.h>
 
 class AmolqcImporter : public Importer{
 public:
@@ -13,15 +15,15 @@ public:
 
 
     PositionsVector importPositionsVectorBlock(unsigned long startLineIdx,
-                                                     unsigned long startLineElement,
-                                                     unsigned long numberOfPositions) const;
+                                               unsigned long startLineElement,
+                                               unsigned long numberOfPositions) const;
     
     std::vector<SubstructureDataEntry> countSubstructures(unsigned long startLineIdx,
                                                           unsigned long blockLength) const;
 
 protected:
     SpinTypesVector getSpinTypesVector(unsigned long numberOfAlphaElectrons,
-                                             unsigned long numberOfBetaElectrons) const;
+                                       unsigned long numberOfBetaElectrons) const;
     
 };
 

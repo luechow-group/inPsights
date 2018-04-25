@@ -6,7 +6,7 @@
 #define AMOLQCPP_OPTIMIZATIONPATHFILEIMPORTER_H
 
 #include "AmolqcImporter.h"
-
+#include <ParticlesVectorCollection.h>
 
 class PathElementDataEntry{
     PathElementDataEntry(unsigned long startLineIdx, unsigned long numberOfPathElements)

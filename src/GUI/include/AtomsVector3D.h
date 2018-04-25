@@ -6,7 +6,7 @@
 #define AMOLQCPP_MOLECULARGEOMETRYIMPORTER_H
 
 #include "Abstract3dObject.h"
-#include "AtomsVector.h"
+#include "ParticlesVector.h"
 
 class AtomsVector3D{
 public:

@@ -69,7 +69,7 @@ int main(int argc, char *argv[]) {
     Eigen::VectorXd grad(n);
     electronicWaveFunctionProblem.putElectronsIntoNuclei(guess, grad);
     electronicWaveFunctionProblem.gradient(guess, grad);
-    auto gradev = ElectronsVector(grad, ec.spinTypesVector().spinTypesAsEigenVector());
+    auto gradev = ElectronsVector(grad, ec.spinTypesVector().typesAsEigenVector()());
     std::cout << "Gradient:\n" << gradev << std::endl;
 
     Eigen::MatrixXd hess(n, n);
@@ -80,7 +80,7 @@ int main(int argc, char *argv[]) {
     std::cout << std::endl;
 
     // save results
-    ElectronsVector ev(guess,ec.spinTypesVector().spinTypesAsEigenVector());
+    ElectronsVector ev(guess,ec.spinTypesVector().typesAsEigenVector()());
     nlohmann::json json = CollectionParser::atomsAndElectronsVectorToJson(av,ev);
     json["Value"] = electronicWaveFunctionProblem.value(guess);
     json["Gradient"] = CollectionParser::electronsVectorToJson(gradev)["ElectronsVector"];
@@ -108,7 +108,7 @@ int main(int argc, char *argv[]) {
             Visualization::drawEigenVector(root, eigenSolver.eigenvectors(), guess, evIndex);
 
             // Plot electrons with connections
-            ElectronsVector ecnew(guess, ec.spinTypesVector().spinTypesAsEigenVector());
+            ElectronsVector ecnew(guess, ec.spinTypesVector().typesAsEigenVector()());
             ElectronsVector3D(root, av, ecnew, true);
 
             //Qt3DRender::QRenderCapture capture(root);

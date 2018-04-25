@@ -49,7 +49,7 @@ int main(int argc, char *argv[]) {
 
     auto ac = electronicWaveFunctionProblem.getAtomsVector();
     auto ec = CollectionParser::electronsVectorFromJson(CollectionParser::readJSON(electronsVectorFilename));
-    std::cout << ac << std::endl;
+    std::cout << ac << std::endl<< std::endl;
     std::cout << ec << std::endl;
 
     Eigen::VectorXd x(ec.positionsVector().positionsAsEigenVector());
@@ -70,7 +70,7 @@ int main(int argc, char *argv[]) {
     //solver.setDistanceCriteriaUmrigar(0.1);
 
     solver.minimize(electronicWaveFunctionProblem, x);
-    std::cout << ElectronsVector(x,ec.spinTypesVector().spinTypesAsEigenVector())<<std::endl;
+    std::cout << ElectronsVector(PositionsVector(x),ec.typesVector())<<std::endl;
 
 
     if(showGui) {
@@ -80,7 +80,7 @@ int main(int argc, char *argv[]) {
         optimizationPath.prepend(ec);
 
         //append end point
-        optimizationPath.append(ElectronsVector(PositionsVector(x), optimizationPath.spinTypesVector()));
+        optimizationPath.append(ElectronsVector(PositionsVector(x), optimizationPath.typesVector()));
 
         return Visualization::visualizeOptPath(argc, argv, ac, optimizationPath);
     }

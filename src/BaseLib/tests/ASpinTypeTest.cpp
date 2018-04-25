@@ -6,7 +6,7 @@
 #include "SpinType.h"
 
 using namespace testing;
-using namespace Spin;
+using namespace Spins;
 
 class ASpinTypeTest : public Test {
 public:
@@ -15,8 +15,8 @@ public:
 };
 
 TEST_F(ASpinTypeTest , IntegerValues){
-    ASSERT_EQ(int(SpinType::alpha),1);
-    ASSERT_EQ(int(SpinType::beta),-1);
+    ASSERT_EQ(int(SpinType::alpha),-1);
+    ASSERT_EQ(int(SpinType::beta),-2);
     ASSERT_EQ(int(SpinType::none),0);
 }
 

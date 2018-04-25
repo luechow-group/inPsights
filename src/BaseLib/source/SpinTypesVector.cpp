@@ -2,21 +2,19 @@
 // Created by Michael Heuer on 29.10.17.
 //
 
-#include "SpinTypesVector.h"
+#include "ParticlesVector.h"
 
 using namespace Eigen;
 
 SpinTypesVector::SpinTypesVector(long size)
-        : AbstractVector(size),
-          spinTypes_(VectorXi::Constant(size,int(Spin::SpinType::none)))
+        : TypesVector(size)
 {}
 
-SpinTypesVector::SpinTypesVector(const VectorXi& spinTypes)
-        : AbstractVector(spinTypes.size()),
-          spinTypes_(spinTypes)
+SpinTypesVector::SpinTypesVector(const VectorXi& types)
+        : TypesVector(types)
 {
-    assert(spinTypes_.maxCoeff() <= int(Spin::SpinType::alpha));
-    assert(spinTypes_.minCoeff() >= int(Spin::SpinType::beta));
+    assert(types_.maxCoeff() <= Spin::spinTypeToInt(Spin::SpinType::alpha));
+    assert(types_.minCoeff() >= Spin::spinTypeToInt(Spin::SpinType::beta));
 }
 
 SpinTypesVector::SpinTypesVector(unsigned long numberOfAlphaElectrons, unsigned long numberOfBetaElectrons)
@@ -32,44 +30,19 @@ SpinTypesVector::SpinTypesVector(unsigned long numberOfAlphaElectrons, unsigned 
 }
 
 Spin::SpinType SpinTypesVector::operator[](long i) const {
-    return  Spin::SpinType(spinTypes_[calculateIndex(i)]);
+    return Spin::spinTypeFromInt(TypesVector::type(i));
 }
 
 void SpinTypesVector::insert(Spin::SpinType spinType, long i) {
-    assert(i >= 0 && "The index must be positive.");
-    assert(i <= numberOfEntities() && "The index must be smaller than the number of entities.");
-
-    VectorXi before = spinTypes_.head(i);
-    VectorXi after = spinTypes_.tail(numberOfEntities()-i);
-
-    spinTypes_.resize(numberOfEntities()+1);
-    spinTypes_ << before, int(spinType), after;
-
-    incrementNumberOfEntities();
+    TypesVector::insert(Spin::spinTypeToInt(spinType),i);
 }
 
 void SpinTypesVector::prepend(Spin::SpinType spinType) {
-    this->insert(spinType,0);
+    TypesVector::prepend(Spin::spinTypeToInt(spinType));
 }
 
 void SpinTypesVector::append(Spin::SpinType spinType) {
-    this->insert(spinType,numberOfEntities());
-}
-
-const VectorXi& SpinTypesVector::spinTypesAsEigenVector() const {
-    return spinTypes_;
-}
-
-VectorXi& SpinTypesVector::spinTypesAsEigenVector() {
-    return spinTypes_;
-}
-
-void SpinTypesVector::permute(long i, long j) {
-    if(i != j) {
-        int temp = spinTypes_[calculateIndex(i)];
-        spinTypes_[calculateIndex(i)] = spinTypes_[calculateIndex(j)];
-        spinTypes_[calculateIndex(j)] = temp;
-    }
+    TypesVector::append(Spin::spinTypeToInt(spinType));
 }
 
 std::ostream& operator<<(std::ostream& os, const SpinTypesVector& sc){

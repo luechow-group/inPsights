@@ -3,6 +3,7 @@
 //
 
 #include "AmolqcFileImport/OptimizationPathFileImporter.h"
+#include <ParticlesVectorCollection.h>
 
 OptimizationPathFileImporter::OptimizationPathFileImporter(const std::string &filename,
                                                            unsigned long multiplicity)

@@ -9,9 +9,7 @@
 #include <fstream>
 #include <vector>
 #include <iterator>
-
-#include "AtomsVector.h"
-#include "ElectronsVectorCollection.h"
+#include <sstream>
 
 class StringManipulator{
 public:

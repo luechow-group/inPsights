@@ -8,23 +8,26 @@
 #include <string>
 #include <cassert>
 
-namespace Spin {
-    static const int storageShift = -2;
+namespace Spins {
+    enum class SpinType {
+        none=0, alpha=-1, beta=-2
+    };
 
-    enum class SpinType { alpha=1, none=0, beta=-1}; // storage shifted: -1,-2,-3
+    SpinType first();
+
+    SpinType last();
+
+    SpinType spinTypeFromInt(int type);
+
+    int spinTypeToInt(SpinType spinType);
 
     std::string toString(const SpinType& s);
 
-    static double magneticQuantumNumber(SpinType spinType){
-        assert(spinType != SpinType::none && "The SpinType cannot be 'none'.");
-        return double(spinType)/2.;
-    };
+    double magneticQuantumNumber(SpinType spinType);
 
-    static double quantumNumber(){
-        return 1/2.0;
-    };
+    double quantumNumber();
 }
 
-std::ostream& operator<<(std::ostream& os, const Spin::SpinType& s);
+std::ostream& operator<<(std::ostream& os, const Spins::SpinType& s);
 
 #endif //AMOLQCPP_SPINTYPE_H

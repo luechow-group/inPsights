@@ -2,8 +2,9 @@
 // Created by Michael Heuer on 29.10.17.
 //
 
+
 #include <gtest/gtest.h>
-#include <ElectronsVector.h>
+#include <ParticlesVector.h>
 #include <PositionsVectorTransformer.h>
 #include <NaturalConstants.h>
 
@@ -12,12 +13,12 @@ using namespace Eigen;
 
 class APositionsVectorTransformerTest : public Test {
 public:
-    ElectronsVector ev;
+    ParticlesVector<Spins::SpinType> ev;
     void SetUp() override {
-        Electron e1 = {{0,0,0},Spin::SpinType::alpha};
-        Electron e2 = {{1,0,0},Spin::SpinType::alpha};
-        Electron e3 = {{0,1,0},Spin::SpinType::beta};
-        Electron e4 = {{0,0,1},Spin::SpinType::beta};
+        Particle<Spins::SpinType > e1 = {{0,0,0},Spins::SpinType::alpha};
+        Particle<Spins::SpinType > e2 = {{1,0,0},Spins::SpinType::alpha};
+        Particle<Spins::SpinType > e3 = {{0,1,0},Spins::SpinType::beta};
+        Particle<Spins::SpinType > e4 = {{0,0,1},Spins::SpinType::beta};
         ev.append(e1);
         ev.append(e2);
         ev.append(e3);
@@ -25,10 +26,7 @@ public:
     }
 };
 
-
-
 TEST_F(APositionsVectorTransformerTest, counterclockwiseRotation){
-    ElectronsVector electronsVector = ev;
 
     double angle = 120.*ConversionFactors::deg2rad; // 120° counterclockwise rotiation
     Eigen::Vector3d axis = {1,1,1};
@@ -41,16 +39,15 @@ TEST_F(APositionsVectorTransformerTest, counterclockwiseRotation){
 
     ASSERT_TRUE(rotmat.isApprox(expectedRotationMatrix));
 
-    PositionsVectorTransformer::rotateAroundAxis(electronsVector.positionsVector(), angle, axis);
+    PositionsVectorTransformer::rotateAroundAxis(ev.positionsVector(), angle, axis);
 
     Eigen::VectorXd expectedPositions(12);
     expectedPositions << 0,0,0, 0,0,1, 1,0,0, 0,1,0;
 
-    ASSERT_TRUE(electronsVector.positionsVector().positionsAsEigenVector().isApprox(expectedPositions));
+    ASSERT_TRUE(ev.positionsVector().positionsAsEigenVector().isApprox(expectedPositions));
 }
 
 TEST_F(APositionsVectorTransformerTest, clockwiseRotation){
-    ElectronsVector electronsVector = ev;
 
     double angle = -120.*ConversionFactors::deg2rad; // 120° clockwise rotiation
     Eigen::Vector3d axis = {1,1,1};
@@ -63,22 +60,21 @@ TEST_F(APositionsVectorTransformerTest, clockwiseRotation){
 
     ASSERT_TRUE(rotmat.isApprox(expectedRotationMatrix));
 
-    PositionsVectorTransformer::rotateAroundAxis(electronsVector.positionsVector(), angle, axis);
+    PositionsVectorTransformer::rotateAroundAxis(ev.positionsVector(), angle, axis);
 
     Eigen::VectorXd expectedPositions(12);
     expectedPositions << 0,0,0, 0,1,0, 0,0,1, 1,0,0;
 
-    ASSERT_TRUE(electronsVector.positionsVector().positionsAsEigenVector().isApprox(expectedPositions));
+    ASSERT_TRUE(ev.positionsVector().positionsAsEigenVector().isApprox(expectedPositions));
 }
 
 TEST_F(APositionsVectorTransformerTest, centerOfMassTranslation){
-    ElectronsVector electronsVector = ev;
 
-    auto centerOfMass = PositionsVectorTransformer::calculateCenterOfMass(electronsVector.positionsVector());
+    auto centerOfMass = PositionsVectorTransformer::calculateCenterOfMass(ev.positionsVector());
     Eigen::Vector3d expectedCenterOfMass = {1./4.,1./4.,1./4.};
     ASSERT_TRUE(centerOfMass.isApprox(expectedCenterOfMass));
 
-    PositionsVectorTransformer::translateCenterOfMassToOrigin(electronsVector.positionsVector());
+    PositionsVectorTransformer::translateCenterOfMassToOrigin(ev.positionsVector());
 
     Eigen::VectorXd expectedPositions(12);
     expectedPositions << \
@@ -87,6 +83,6 @@ TEST_F(APositionsVectorTransformerTest, centerOfMassTranslation){
     -1./4.,3./4.,-1./4.,\
     -1./4.,-1./4.,3./4.;
 
-    ASSERT_TRUE(electronsVector.positionsVector().positionsAsEigenVector().isApprox(expectedPositions));
+    ASSERT_TRUE(ev.positionsVector().positionsAsEigenVector().isApprox(expectedPositions));
 
 }
