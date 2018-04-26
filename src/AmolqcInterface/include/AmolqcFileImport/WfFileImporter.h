@@ -6,7 +6,7 @@
 #define WFFILEIMPORTER_H
 
 #include "AmolqcImporter.h"
-#include "AtomsVector.h"
+#include <ParticlesVector.h>
 
 enum JastrowTypes{
     none,

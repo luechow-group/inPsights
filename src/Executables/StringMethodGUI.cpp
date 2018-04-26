@@ -18,15 +18,13 @@
 #include "AtomsVector3D.h"
 #include "ElectronsVector3D.h"
 
-#include "ElementInfo.h"
-#include "ElementType.h"
+#include <TypesVector.h>
 #include "Sphere.h"
 #include "Bond3D.h"
 #include "Electron3D.h"
 #include "Polyline.h"
 
 #include "AmolqcFileImport/WfFileImporter.h"
-#include "Atom.h"
 
 #include "ArcLengthParametrizedBSpline.h"
 #include "StringMethodCoordinatesPlotter.h"
@@ -71,7 +69,8 @@ int main(int argc, char *argv[]) {
     //CollectionParser::writeJSON(CollectionParser::electronsVectorToJson(ec),"Ethylene-glob-max.json");
 
     //auto ecA = CollectionParser::electronsVectorFromJson(CollectionParser::readJSON("Ethane-glob-max.json"));
-    auto ecA = ElectronsVector(x0, Eigen::Vector2i(1,-1));
+    auto ecA = ElectronsVector(PositionsVector(x0),
+                               SpinTypesVector({Spins::SpinType::alpha,Spins::SpinType::beta}));
     auto ecB = ecA;
 
 
@@ -193,7 +192,7 @@ initialCoordinates.row((18 - 1) * 3 + 2) -= 0.05 * bend;//z bend
     WfFileImporter waveFunctionParser(ElectronicWaveFunction::getInstance().getFileName());
 
     AtomsVector3D molecularGeometry3D(root, waveFunctionParser.getAtomsVector());
-    ElectronsVector3D(root, ElectronicWaveFunction::getInstance().getElectronPositionsVector(), true);
+    ElectronsVector3D(root, ElectronicWaveFunction::getInstance().getElectronsVector(), true);
 
 
     //Draw tsguess

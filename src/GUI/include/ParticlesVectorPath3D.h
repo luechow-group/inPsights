@@ -5,8 +5,7 @@
 #ifndef AMOLQCPP_PARTICLECOLLECTIONPATH3D_H
 #define AMOLQCPP_PARTICLECOLLECTIONPATH3D_H
 
-#include "AtomsVector.h"
-#include "ElectronsVectorCollection.h"
+#include <ParticlesVectorCollection.h>
 
 class ParticlesVectorPath3D{
 public:

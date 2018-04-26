@@ -6,6 +6,7 @@
 #define AMOLQCPP_REFFILEIMPORTER_H
 
 #include "AmolqcImporter.h"
+#include <ParticlesVectorCollection.h>
 
 class RefFileImporter : public AmolqcImporter{
 public:

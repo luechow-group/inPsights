@@ -7,7 +7,7 @@
 
 #include "ElectronicWaveFunction.h"
 #include "problem.h"
-#include "ElectronsVectorCollection.h"
+#include <ParticlesVectorCollection.h>
 
 class ElectronicWaveFunctionProblem : public cppoptlib::Problem<double,Eigen::Dynamic>
 {
@@ -24,7 +24,7 @@ public:
 
     bool callback(const cppoptlib::Criteria<double> &state, Eigen::VectorXd &x, Eigen::VectorXd& grad) override;
 
-    AtomsVector getAtomsVector() const;
+    ParticlesVector<Elements::ElementType> getAtomsVector() const;
 
     unsigned getValueCallCount(){
         return valueCallCount_;

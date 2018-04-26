@@ -93,12 +93,13 @@ int main(int argc, char *argv[]) {
     auto n = ElectronicWaveFunction::getInstance().getNumberOfElectrons()*3;
     Eigen::VectorXd grad(n);
     electronicWaveFunctionProblem.putElectronsIntoNuclei(guess,grad);
-    electronicWaveFunctionProblem.gradient(guess,grad);
-    ElectronsVector gradev(grad,ev.spinTypesVector().spinTypesAsEigenVector());
+
 
 
     std::cout << "gradient:" << std::endl;
-    std::cout << ElectronsVector(grad,ev.spinTypesVector().spinTypesAsEigenVector()) << std::endl;
+    electronicWaveFunctionProblem.gradient(guess,grad);
+    ElectronsVector gradev(PositionsVector(grad),ev.typesVector());
+    std::cout << gradev << std::endl;
 
     for (auto & it : electronicWaveFunctionProblem.getIndicesOfElectronsAtNuclei()) std::cout << it << " ";
     std::cout << std::endl;
@@ -116,15 +117,13 @@ int main(int argc, char *argv[]) {
 
 
     // save results
-    nlohmann::json json = CollectionParser::atomsAndElectronsVectorToJson(av, ElectronsVector(guess,ev.spinTypesVector().spinTypesAsEigenVector()));
+    nlohmann::json json = CollectionParser::atomsAndElectronsVectorToJson(av, ElectronsVector(PositionsVector(guess),ev.typesVector()));
     json["Value"] = electronicWaveFunctionProblem.value(guess);
     json["Gradient"] = CollectionParser::electronsVectorToJson(gradev)["ElectronsVector"];
     json["ElectronsVector"]["AtNuclei"]= electronicWaveFunctionProblem.getIndicesOfElectronsAtNuclei();
     json["ElectronsVector"]["NotAtNuclei"]= electronicWaveFunctionProblem.getIndicesOfElectronsNotAtNuclei();
     json["HessianDiagonalization"] = CollectionParser::selfAdjointEigenSolverResultsToJsonArray(eigenSolver);
     CollectionParser::writeJSON(json,"CP+_Max2AB_TSguess.json");
-
-
 
     if (true) {
         QApplication app(argc, argv);
@@ -142,7 +141,7 @@ int main(int argc, char *argv[]) {
         Visualization::drawEigenVector(root,eigenSolver.eigenvectors(),guess,evIndex);
 
         // Plot electrons with connections
-        ElectronsVector ecnew(guess,ev.spinTypesVector().spinTypesAsEigenVector());
+        ElectronsVector ecnew(PositionsVector(guess),ev.typesVector());
         ElectronsVector3D(root, av, ecnew, true);
 
         return app.exec();

@@ -17,8 +17,8 @@ public:
         Vector3d pos1(1,2,3);
         Vector3d pos2(-1,0,3.5);
         Vector3d pos3(-7.3,0.5,9);
-        auto alpha = Spin::SpinType::alpha;
-        auto beta = Spin::SpinType::beta;
+        auto alpha = Spins::SpinType::alpha;
+        auto beta = Spins::SpinType::beta;
 
         ElectronsVector electronsVector;
 
@@ -43,8 +43,8 @@ TEST_F(AVisualizationTest, empty) {
 TEST_F(AVisualizationTest, shortenPath) {
     auto shortenedPath = Visualization::shortenPath(optimizationPath,10);
 
-    ASSERT_EQ(optimizationPath.spinTypesVector().spinTypesAsEigenVector(),
-              shortenedPath.spinTypesVector().spinTypesAsEigenVector());
+    ASSERT_EQ(optimizationPath.spinTypesVector().typesAsEigenVector()(),
+              shortenedPath.spinTypesVector().typesAsEigenVector()());
     ASSERT_EQ(optimizationPath[0].positionsVector().positionsAsEigenVector(),
               shortenedPath[0].positionsVector().positionsAsEigenVector());
 

@@ -2,8 +2,7 @@
 // Created by Michael Heuer on 02.11.17.
 //
 
-#include <iterator>
-#include <vector>
+
 #include <numeric>
 #include "Importer.h"
 

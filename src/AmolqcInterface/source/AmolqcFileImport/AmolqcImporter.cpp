@@ -3,6 +3,7 @@
 //
 
 #include "AmolqcFileImport/AmolqcImporter.h"
+#include "ElectronicWaveFunction.h"
 
 AmolqcImporter::AmolqcImporter(const std::string &filename)
         : Importer(filename) {}
@@ -25,8 +26,8 @@ PositionsVector AmolqcImporter::importPositionsVectorBlock(unsigned long startLi
 //TODO Necessary?
 SpinTypesVector
 AmolqcImporter::getSpinTypesVector(unsigned long numberOfAlphaElectrons,
-                                      unsigned long numberOfBetaElectrons) const {
-    return SpinTypesVector(numberOfAlphaElectrons,numberOfBetaElectrons);
+                                   unsigned long numberOfBetaElectrons) const {
+    return ElectronicWaveFunction::createAmolqcSpinTypeVector(numberOfAlphaElectrons,numberOfBetaElectrons);
 }
 
 std::vector<SubstructureDataEntry>

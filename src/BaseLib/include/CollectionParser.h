@@ -8,14 +8,7 @@
 #include <Eigen/Eigenvalues>
 #include <nlohmann/json.hpp>
 
-class ElementTypesVector;
-class SpinTypesVector;
-class PositionsVector;
-class AtomsVector;
-class ElectronsVector;
-class PositionsVectorCollection;
-class ElectronsVectorCollection;
-class AtomsVectorCollection;
+#include <ParticlesVectorCollection.h>
 
 namespace CollectionParser{
     nlohmann::json positionsVectorToJson(const PositionsVector &positionsVector);
