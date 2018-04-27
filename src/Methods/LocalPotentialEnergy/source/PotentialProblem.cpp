@@ -3,7 +3,8 @@
 //
 
 #include "PotentialProblem.h"
-#include "ElectronsVector.h"
+#include <ParticlesVector.h>
+#include <Metrics.h>
 
 PotentialProblem::PotentialProblem()
         : vPotNuclei_(0) {
@@ -19,7 +20,7 @@ PotentialProblem::PotentialProblem(const AtomsVector & atomsVector)
 double PotentialProblem::value(const Eigen::VectorXd &x) {
     double value;
 
-    ElectronsVector ec(x);
+    ElectronsVector ec(PositionsVector{x});
 
     // initiating V_pot as nn potentials
     value = vPotNuclei_;
@@ -28,7 +29,7 @@ double PotentialProblem::value(const Eigen::VectorXd &x) {
     for ( int i = 0; i < ec.numberOfEntities(); i++) {
         for (int j = 0; j < nuclei_.numberOfEntities(); j++) {
             value += -1.0 * nuclei_[j].charge() \
-                / Particle::distance(ec[i], nuclei_[j]);
+                / Metrics::distance(ec[i].position(), nuclei_[j].position());
         }
     }
 
@@ -36,7 +37,7 @@ double PotentialProblem::value(const Eigen::VectorXd &x) {
     for ( int i = 0; i < ec.numberOfEntities(); i++) {
         for (int j = i + 1; j < ec.numberOfEntities(); j++) {
             value += 1.0 \
-                / Particle::distance(ec[i], ec[j]);
+                / Metrics::distance(ec[i].position(), ec[j].position());
         }
     }
 
@@ -48,7 +49,7 @@ void PotentialProblem::gradient(const Eigen::VectorXd &x, Eigen::VectorXd &grad)
     int ci; // coordinate index (0,1,2 =: x,y,z)
     double sum;
 
-    ElectronsVector ec(x);
+    ElectronsVector ec(PositionsVector{x});
 
     for (int i = 0; i < x.size(); i++){
         ei = i / 3;
@@ -60,7 +61,7 @@ void PotentialProblem::gradient(const Eigen::VectorXd &x, Eigen::VectorXd &grad)
             sum += nuclei_[j].charge() \
                 * (nuclei_[j].position()[ci] \
                     - ec[ei].position()[ci]) \
-                / pow(Particle::distance(ec[ei], nuclei_[j]), 3.0);
+                / pow(Metrics::distance(ec[ei].position(), nuclei_[j].position()), 3.0);
         }
 
         // calculating ee contributions
@@ -69,7 +70,7 @@ void PotentialProblem::gradient(const Eigen::VectorXd &x, Eigen::VectorXd &grad)
                 sum += -1.0 \
                 * (ec[j].position()[ci] \
                     - ec[ei].position()[ci]) \
-                / pow(Particle::distance(ec[ei], ec[j]), 3.0);
+                / pow(Metrics::distance(ec[ei].position(), ec[j].position()), 3.0);
             }
         }
 
@@ -90,7 +91,7 @@ void PotentialProblem::calculateVPotNuclei() {
     for (int i = 0; i < nuclei_.numberOfEntities(); i++){
         for (int j = i+1; j< nuclei_.numberOfEntities(); j++){
             vPotNuclei_ += nuclei_[i].charge() * nuclei_[j].charge() \
-                / Particle::distance(nuclei_[i], nuclei_[j]);
+                / Metrics::distance(nuclei_[i].position(), nuclei_[j].position());
         }
     }
 }

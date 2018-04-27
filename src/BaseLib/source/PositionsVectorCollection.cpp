@@ -2,7 +2,6 @@
 // Created by Michael Heuer on 30.10.17.
 //
 
-#include <ElectronsVector.h>
 #include "PositionsVectorCollection.h"
 
 PositionsVectorCollection::PositionsVectorCollection()

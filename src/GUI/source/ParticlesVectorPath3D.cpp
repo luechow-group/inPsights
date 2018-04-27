@@ -21,13 +21,13 @@ ParticlesVectorPath3D::ParticlesVectorPath3D(Qt3DCore::QEntity *root,
             pointsList[i].emplace_back(QVector3D(float(tmp(0)),float(tmp(1)),float(tmp(2))));
         }
 
-        auto spinType = electronsVectorCollection.spinTypesVector()[i];
+        auto spinType = electronsVectorCollection.typesVector()[i];
 
-        if (spinType == Spin::SpinType::alpha) {
-            new Polyline(root,Spin::QColorFromSpinType(Spin::SpinType::alpha) , pointsList[i], radius);
+        if (spinType == Spins::SpinType::alpha) {
+            new Polyline(root,Spins::QColorFromSpinType(Spins::SpinType::alpha) , pointsList[i], radius);
         }
         else {
-            new Polyline(root,Spin::QColorFromSpinType(Spin::SpinType::beta) , pointsList[i], radius);
+            new Polyline(root,Spins::QColorFromSpinType(Spins::SpinType::beta) , pointsList[i], radius);
         }
 
     }

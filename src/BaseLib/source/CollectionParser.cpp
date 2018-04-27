@@ -3,9 +3,6 @@
 //
 
 #include "CollectionParser.h"
-#include "ElementInfo.h"
-#include "ElectronsVectorCollection.h"
-#include "AtomsVector.h"
 #include <fstream>
 
 nlohmann::json CollectionParser::positionsVectorToJson(const PositionsVector &positionsVector) {
@@ -48,14 +45,14 @@ nlohmann::json CollectionParser::spinTypesVectorToJson(const SpinTypesVector &sp
 
 nlohmann::json CollectionParser::atomsVectorToJson(const AtomsVector &atomsVector) {
     nlohmann::json j;
-    j["AtomsVector"]["ElementTypesVector"] = elementTypesVectorToJson(atomsVector.elementTypesVector())["ElementTypesVector"];
+    j["AtomsVector"]["ElementTypesVector"] = elementTypesVectorToJson(atomsVector.typesVector())["ElementTypesVector"];
     j["AtomsVector"]["PositionsVector"] = positionsVectorToJson(atomsVector.positionsVector())["PositionsVector"];
     return j;
 }
 
 nlohmann::json CollectionParser::electronsVectorToJson(const ElectronsVector &electronsVector) {
     nlohmann::json j;
-    j["ElectronsVector"]["SpinTypesVector"] = spinTypesVectorToJson(electronsVector.spinTypesVector())["SpinTypesVector"];
+    j["ElectronsVector"]["SpinTypesVector"] = spinTypesVectorToJson(electronsVector.typesVector())["SpinTypesVector"];
     j["ElectronsVector"]["PositionsVector"] = positionsVectorToJson(electronsVector.positionsVector())["PositionsVector"];
     return j;
 }
@@ -77,7 +74,7 @@ nlohmann::json CollectionParser::electronsVectorCollectionToJson(const Electrons
 
     nlohmann::json j;
     j["ElectronsVectorCollection"]["SpinTypesVector"] =
-            spinTypesVectorToJson(electronsVectorCollection.spinTypesVector())["SpinTypesVector"];
+            spinTypesVectorToJson(electronsVectorCollection.typesVector())["SpinTypesVector"];
     j["ElectronsVectorCollection"]["PositionsVectorCollection"] =
             positionsVectorCollectionToJson(electronsVectorCollection.positionsVectorCollection())["PositionsVectorCollection"];
     return j;
@@ -121,7 +118,7 @@ SpinTypesVector CollectionParser::spinTypesVectorFromJson(const nlohmann::json &
     auto spins = json["SpinTypesVector"].get<std::vector<int>>();
     SpinTypesVector spinTypesVector;
     for (int &spin : spins) {
-        spinTypesVector.append( (Spin::SpinType) spin);
+        spinTypesVector.append( (Spins::SpinType) spin);
     }
     return spinTypesVector;
 }

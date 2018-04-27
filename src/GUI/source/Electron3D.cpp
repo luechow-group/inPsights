@@ -4,9 +4,9 @@
 
 #include "Electron3D.h"
 
-Electron3D::Electron3D(Qt3DCore::QEntity *root, const QVector3D& location, const Spin::SpinType& spinType)
+Electron3D::Electron3D(Qt3DCore::QEntity *root, const QVector3D& location, const Spins::SpinType& spinType)
         : Sphere(root,
-                 Spin::QColorFromSpinType(spinType),
+                 Spins::QColorFromSpinType(spinType),
                  location,
                  float(Elements::ElementInfo::vdwRadius(Elements::ElementType::H)/10.0f/4.0f)),
           spinType_(spinType) {
