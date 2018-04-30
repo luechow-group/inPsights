@@ -12,12 +12,7 @@ double AtomicNeighborhoodDensityFunction::value(const Eigen::Vector3d &rvec) con
 
     double value = 0.0;
     for (int i = 0; i < positionsVector_.numberOfEntities(); ++i) {
-        double exponent = 0.0;
-        exponent += std::pow(rvec.x()-positionsVector_[i].x(),2);
-        exponent += std::pow(rvec.y()-positionsVector_[i].y(),2);
-        exponent += std::pow(rvec.z()-positionsVector_[i].z(),2);
-
-        value += std::exp(-alpha_*exponent);
+        value += std::exp(-alpha_*(rvec-positionsVector_[i]).squaredNorm());
     }
 
     return value;

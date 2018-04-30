@@ -30,7 +30,7 @@ private:
     SpatialFunction * fPtr_;
     SphericalIntegratorSettings settings_;
     Lebedev::SphericalSurfaceIntegrator sphericalSurfaceIntegrator_;
-    Eigen::Integrator<double> cartesianIntegrator_;
+    Eigen::Integrator<double> cartesianIntegrator_; //TODO rename to radial integrator
     Eigen::Integrator<double>::QuadratureRule quadratureRule_;
     double desiredRelativeRadialIntegrationError_;
     double desiredAbsoluteRadialIntegrationError_;

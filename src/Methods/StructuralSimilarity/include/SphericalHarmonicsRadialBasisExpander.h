@@ -7,7 +7,7 @@
 
 #include <BoostSphericalHarmonics.h>
 #include <LebedevSphericalIntegration/SpatialFunction.h>
-#include <SphericalIntegrator.h>
+#include "SphericalIntegrator.h"
 #include "RadialBasis.h"
 
 #include <utility>
@@ -100,7 +100,7 @@ private:
     RadialBasis radialBasis_;
     SphericalIntegrator sphericalIntegrator_;
 
-    int lmax_, nmax_, l_, n_, m_;
+    int lmax_, nmax_, l_, n_, m_; //TODO change type to unsigned
     double rCutoff_;
     SpatialFunction* fPtr_; // needed to access specialized f_->value
 };
@@ -122,8 +122,8 @@ public:
 
         double sum = 0.0;
 
-        for (int n = 1; n <= coefficients_.nmax_; ++n) {
-            for (int l = 0; l <= coefficients_.lmax_; ++l) {
+        for (unsigned n = 1; n <= coefficients_.nmax_; ++n) {
+            for (unsigned l = 0; l <= coefficients_.lmax_; ++l) {
                 for (int m = -l; m <= +l; ++m) {
                     sum += coefficients_.get(n,l,m)
                            * radialBasis_(rvec.norm(),n-1)

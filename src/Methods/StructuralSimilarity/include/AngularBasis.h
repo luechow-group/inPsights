@@ -7,21 +7,23 @@
 
 #include <Eigen/Core>
 #include <boost/math/special_functions/spherical_harmonic.hpp>
-
-static const double RADZERO = 1e-10;
+#include <BoostSphericalHarmonics.h>
+#include "RadialGaussianBasis.h"
 
 class AngularBasis{
 public:
 
     AngularBasis(unsigned lmax = 4)
-            : lmax_(lmax)
+            : lmax_(lmax),
+              coefficientsYlm_(lmax_*lmax_+2*lmax_+1)
     {}
 
     std::complex<double> operator()(unsigned l, int m, const Eigen::Vector3d& r) const {
-        double theta = acos(r.z());
-        double phi = atan2(r.y(), r.x());
+        double theta,phi;
+        BoostSphericalHarmonics::ToSphericalCoords(r.normalized(),theta,phi);
         if (phi < 0.) phi += 2*M_PI;
-        this->(l,m,theta,phi);
+
+        return AngularBasis::operator()(l,m,theta,phi);
     };
 
     std::complex<double> operator()(unsigned l, int m, double theta, double phi) const {
@@ -34,9 +36,33 @@ public:
         return boost::math::spherical_harmonic<double,double>(l, m, theta, phi);
     };
 
+
+    void computeCoefficients(const Eigen::Vector3d& rvec) {
+
+        double r = rvec.norm();
+
+        if (r < ZeroLimits::radiusZero) {
+            coefficientsYlm_(0) = boost::math::spherical_harmonic<double, double>(0, 0, 0.0, 0.0);
+        } else {
+            double theta,phi;
+            BoostSphericalHarmonics::ToSphericalCoords(rvec.normalized(),theta,phi);
+            if (phi < 0.) phi += 2*M_PI;
+
+            for (unsigned l = 0; l <= lmax_; ++l) {
+                for (int m = -l; m <= l; ++m) {
+                    coefficientsYlm_(l*l+l+m) = boost::math::spherical_harmonic<double, double>(l,m,theta,phi);
+                }
+            }
+        }
+    }
+
+    std::complex<double> getCoefficient(unsigned l, int m){
+        return coefficientsYlm_(l*l+l+m);
+    }
+
 private:
     unsigned lmax_;
-    Eigen::VectorXcd coeffs;
+    Eigen::VectorXcd coefficientsYlm_; //TODO why complex?
 };
 
 #endif //AMOLQCPP_ANGULARBASIS_H

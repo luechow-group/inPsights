@@ -3,10 +3,14 @@
 //
 
 #include "RadialGaussianBasis.h"
+#include <Eigen/Eigenvalues>
+#include <Eigen/Cholesky>
+#include <unsupported/Eigen/MatrixFunctions>
 
 // adaptive
-explicit RadialGaussianBasis::RadialGaussianBasis(int nmax, int lmax, double sigma0 = 1/2.)
+RadialGaussianBasis::RadialGaussianBasis(unsigned nmax, unsigned lmax, double sigma0)
         : nmax_(nmax),
+          lmax_(lmax),
           sigma0_(sigma0),
           basis_(createBasis(nmax,lmax,sigma0)),
           rCut_((*basis_.end()).center()),//TODO check this!
@@ -15,8 +19,9 @@ explicit RadialGaussianBasis::RadialGaussianBasis(int nmax, int lmax, double sig
 {};
 
 // equispaced
-explicit RadialGaussianBasis::RadialGaussianBasis(int nmax, double rCut = 4.0, double sigma = 1/2.)
+RadialGaussianBasis::RadialGaussianBasis(unsigned nmax, double rCut, unsigned lmax, double sigma)
         : nmax_(nmax),
+          lmax_(lmax),
           sigma0_(sigma),
           basis_(createBasis(nmax,rCut,sigma)),
           rCut_(rCut),
@@ -24,7 +29,7 @@ explicit RadialGaussianBasis::RadialGaussianBasis(int nmax, double rCut = 4.0, d
           radialTransform_(calculateRadialTransform(Sab_))
 {};
 
-double RadialGaussianBasis::operator()(double r, int n) const{
+double RadialGaussianBasis::operator()(double r, unsigned n) const{
     assert(n > 0 && "The radial basis function index must be positive");
     assert(n <= nmax_ && "The radial basis function index must be smaller than or equal to nmax");
 
@@ -44,7 +49,7 @@ Eigen::MatrixXd RadialGaussianBasis::radialTransform() const{
     return radialTransform_;
 };
 
-std::vector<Gaussian> RadialGaussianBasis::createBasis(int nmax, double rCut, double sigma) {
+std::vector<Gaussian> RadialGaussianBasis::createBasis(unsigned nmax, double rCut, double sigma) {
 
     std::vector<Gaussian> basis;
     for (int i = 0; i < nmax; ++i) {
@@ -54,7 +59,7 @@ std::vector<Gaussian> RadialGaussianBasis::createBasis(int nmax, double rCut, do
     return basis;
 };
 
-std::vector<Gaussian> RadialGaussianBasis::createBasis(int nmax, int lmax, double sigma0) {
+std::vector<Gaussian> RadialGaussianBasis::createBasis(unsigned nmax, unsigned lmax, double sigma0) {
     double rCenter = 0;
     double sigmaStride = 1/2.;
 
@@ -67,7 +72,7 @@ std::vector<Gaussian> RadialGaussianBasis::createBasis(int nmax, int lmax, doubl
     return basis;
 };
 
-Eigen::MatrixXd RadialGaussianBasis::Sab(int nmax) const{
+Eigen::MatrixXd RadialGaussianBasis::Sab(unsigned nmax) const{
     Eigen::MatrixXd S(nmax,nmax);
 
     for (int i = 0; i < basis_.size(); ++i) {

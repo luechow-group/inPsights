@@ -4,19 +4,20 @@
 
 #include<Gaussian.h>
 
-IGaussian::IGaussian(double sigma = 1/2.)
-        : sigma_(sigma), alpha_(1./(2*sigma*sigma)) {}
+IGaussian::IGaussian(double sigma)
+        : sigma_(sigma),
+          alpha_(1./(2*sigma*sigma)),
+          normalizationConstant_(calculateNormalizationConstant()) {}
 
 
-Gaussian::Gaussian(double rCenter = 0, double sigma = 1/2.)
+Gaussian::Gaussian(double rCenter, double sigma)
         : IGaussian(sigma),
           rCenter_(rCenter),
-          normalizationConstant_(normalizationConstant()),
           normalizationConstant_g2_r2_(normalizationConstant_g2_r2())
 {}
 
 // computes the normalization constant for the 1D volume integral
-double Gaussian::normalizationConstant() const {
+double Gaussian::calculateNormalizationConstant() const {
     return  sqrt(alpha_/M_PI);
 };
 
@@ -61,17 +62,15 @@ double Gaussian::g2_r2_normalizedValue(double r) const {
 };
 
 
-SphericalGaussian::SphericalGaussian(const Eigen::Vector3d& rCenter = Eigen::Vector3d::Zero(), double sigma = 1/2.)
+SphericalGaussian::SphericalGaussian(const Eigen::Vector3d& rCenter, double sigma)
         : IGaussian(sigma),
-          rCenter_(rCenter),
-          normalizationConstant_(normalizationConstant())
+          rCenter_(rCenter)
 {};
 
 // computes the normalization constant for the 3D volume integral
-double SphericalGaussian::normalizationConstant() const {
+double SphericalGaussian::calculateNormalizationConstant() const {
     return pow(alpha_/M_PI, 3./2.);
 };
-
 
 double SphericalGaussian::value(const Eigen::Vector3d &r) const {
     return std::exp(-alpha_*(r-rCenter_).squaredNorm());

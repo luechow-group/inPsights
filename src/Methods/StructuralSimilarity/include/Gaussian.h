@@ -10,16 +10,18 @@
 #include <utility>
 
 class IGaussian{
+
 public:
-
-    explicit IGaussian(double sigma = 1/2.);
-
     double alpha() const { return alpha_; };
 
+    double getNormalizationConstant(){ return normalizationConstant_; };
 
-    virtual double normalizationConstant() const = 0;
+private:
+    virtual double calculateNormalizationConstant() const = 0;
 
 protected:
+    explicit IGaussian(double sigma = 1/2.);
+
     double sigma_,alpha_;
     double normalizationConstant_;
 };
@@ -27,11 +29,10 @@ protected:
 
 class Gaussian : public IGaussian{
 public:
-
     explicit Gaussian(double rCenter = 0, double sigma = 1/2.);
 
     // computes the normalization constant for the 1D volume integral
-    double normalizationConstant() const override;
+    double calculateNormalizationConstant() const override;
 
 
     // computes the normalization constant for the integral S g^2 r^2 dr
@@ -53,10 +54,10 @@ private:
 
 
 class SphericalGaussian : public IGaussian{
+public:
+    SphericalGaussian(const Eigen::Vector3d& rCenter = Eigen::Vector3d::Zero(), double sigma = 1/2.);
 
-    explicit SphericalGaussian(const Eigen::Vector3d& rCenter = Eigen::Vector3d::Zero(), double sigma = 1/2.);
-
-    double normalizationConstant() const override;
+    double calculateNormalizationConstant() const override;
 
     double value(const Eigen::Vector3d& r) const;
 
