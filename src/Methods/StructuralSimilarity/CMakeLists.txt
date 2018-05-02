@@ -34,6 +34,7 @@ set(HEADER_FILES
         include/RadialGaussianBasis.h
         include/Gaussian.h
         include/AngularBasis.h
+        include/Cutoff.h
         )
 
 set(SOURCE_FILES
