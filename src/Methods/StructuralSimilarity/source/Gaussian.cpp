@@ -3,10 +3,11 @@
 //
 
 #include<Gaussian.h>
+#include <cmath>
 
 IGaussian::IGaussian(double sigma)
         : sigma_(sigma),
-          alpha_(1./(2*sigma*sigma)),
+          alpha_(1./(2*pow(sigma,2))),
           normalizationConstant_(calculateNormalizationConstant()) {}
 
 
@@ -29,11 +30,11 @@ double Gaussian::normalizationConstant_g2_r2() const{
     double W0 = 2*alpha_*rCenter_;
     double integral_r2_g2_dr =
             1./(4.*pow(w, 5/2.))
-            *exp(-w*rCenter_*rCenter_)
+            *exp(-w*pow(rCenter_,2))
             *(2*sqrt(w)*W0
               + sqrt(M_PI)
-                *exp(W0*W0/w)
-                *(w+2*W0*W0)
+                *exp(pow(W0,2)/w)
+                *(w+2*pow(W0,2))
                 *boost::math::erfc<double>(-W0/sqrt(w))
             );
     return  1./sqrt(integral_r2_g2_dr);
@@ -44,9 +45,9 @@ double Gaussian::normalizationConstant_g_r2() const{
     double w = alpha_;
     double W0 = alpha_*rCenter_;
     double integral_r2_g_dr =
-            1./(4.*pow(w, 2.5))*exp(-w*rCenter_*rCenter_)*(
+            1./(4.*pow(w, 2.5))*exp(-w*pow(rCenter_,2))*(
                     2*sqrt(w)*W0 +
-                    sqrt(M_PI)*exp(W0*W0/w)*(w+2*W0*W0)*(
+                    sqrt(M_PI)*exp(pow(W0,2)/w)*(w+2*pow(W0,2))*(
                             1 - boost::math::erf<double>(-W0/sqrt(w))
                     )
             );
@@ -54,7 +55,7 @@ double Gaussian::normalizationConstant_g_r2() const{
 };
 
 double Gaussian::value(double r) const {
-    return std::exp(-alpha_*(r-rCenter_)*(r-rCenter_));
+    return std::exp(-alpha_*pow(r-rCenter_,2));
 };
 
 double Gaussian::g2_r2_normalizedValue(double r) const {
