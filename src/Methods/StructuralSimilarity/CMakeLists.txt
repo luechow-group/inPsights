@@ -36,6 +36,7 @@ set(HEADER_FILES
         include/AngularBasis.h
         include/Cutoff.h
         include/CoefficientsVector.h
+        include/ExpansionSettings.h
         )
 
 set(SOURCE_FILES
