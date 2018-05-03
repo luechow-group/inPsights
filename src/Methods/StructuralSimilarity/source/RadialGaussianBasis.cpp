@@ -6,6 +6,7 @@
 #include <Eigen/Eigenvalues>
 #include <Eigen/Cholesky>
 #include <unsupported/Eigen/MatrixFunctions>
+#include "CoefficientMatrix.h"
 
 // adaptive
 RadialGaussianBasis::RadialGaussianBasis(unsigned nmax, unsigned lmax, double sigma0)
@@ -101,4 +102,69 @@ Eigen::MatrixXd RadialGaussianBasis::calculateRadialTransform(const Eigen::Matri
     Eigen::LLT<Eigen::MatrixXd> lltOfSab(Sab);
     auto L = lltOfSab.matrixL();
     return Eigen::Inverse<Eigen::MatrixXd>(L);
+}
+
+//TODO old integrand function => delete if other works
+//double operator()(double rvar) const {
+//    double exp_ik = exp(-beta_ik * (rvar - rho_ik) * (rvar - rho_ik));
+//    return rvar * rvar * boost::math::sph_bessel<double>(l, 2 * ai * ri * rvar) * exp_ik;
+//}
+
+// Compute integrals S r^2 dr i_l(2*ai*ri*r) exp(-beta_ik*(r-rho_ik)^2) //TODO what is the difference between r and ri
+double RadialGaussianBasis::calculateIntegral(double ai, double ri,unsigned l, double rho_ik,double beta_ik) const {
+    int n_steps = 100;
+
+    // Sample coordinates along r-axis
+    double sigma_ik = sqrt(0.5/beta_ik);
+    double r_min = rho_ik - 4*sigma_ik;
+    double r_max = rho_ik + 4*sigma_ik;
+    if (r_min < 0.) {
+        r_max -= r_min;
+        r_min = 0.;
+    }
+
+    auto integrandFunction = [beta_ik,rho_ik,ai,ri,l](double r) -> double
+    {
+        double exp_ik = exp(-beta_ik * (r - rho_ik) * (r - rho_ik));
+        return r * r * boost::math::sph_bessel<double>(l, 2 * ai * ri * r) * exp_ik;
+    };
+
+    GaussKronrod::Integrator<double> integrator(n_steps);
+    GaussKronrod::Integrator<double>::QuadratureRule quadratureRule = Eigen::Integrator<double>::GaussKronrod15;
+    // Define the desired absolute and relative errors.
+    double desAbsErr = 0;
+    double desRelErr = Eigen::NumTraits<double>::epsilon() * 50;
+    double integral = integrator.quadratureAdaptive(integrandFunction, r_min, r_max, desAbsErr, desRelErr, quadratureRule);
+
+    return integral;
+};
+
+double RadialGaussianBasis::computeCoefficient(unsigned n, unsigned l, const Eigen::Vector3d &neighborPosition, double neighborSigma) const {
+    //double neighborSigma = sigma0_;
+
+    if (neighborSigma < ZeroLimits::radiusZero) {
+        //TODO temporary, just to make it work. Lookup original implementation for actual treatment
+        return 0;//!? basis_[n].g2_r2_normalizedValue(neighborPosition.norm() * radialTransform_(n-1,l));//TODO
+    } else {
+
+        //TODO Optimize
+        double ai = 1/(2. * pow(neighborSigma,2));
+        double ri = neighborPosition.norm();
+        SphericalGaussian gi_sph(Eigen::Vector3d::Zero(), neighborSigma); // <- position should not matter, as only normalization used here
+        double norm_g_dV_sph_i = gi_sph.getNormalizationConstant();
+
+        // Prefactor (r-independent)
+            double basisFunctionAlpha = basis_[n].alpha(); //ak
+            double basisFunctionCenter = basis_[n].center(); //rk
+            double norm_r2_g2_dr_rad_k = basis_[n].normalizationConstant_g2_r2();
+            double beta_ik = ai + basisFunctionAlpha;
+            double rho_ik = basisFunctionAlpha * basisFunctionCenter / beta_ik;
+            double prefac =
+                    4 * M_PI *
+                    norm_r2_g2_dr_rad_k * norm_g_dV_sph_i *
+                    exp(-ai * ri * ri) *
+                    exp(-basisFunctionAlpha * pow(basisFunctionCenter,2) * (1 - basisFunctionAlpha / beta_ik)); // eq 32 bzw. 33
+
+        return prefac * calculateIntegral(ai, ri, l, rho_ik, beta_ik);
+    }
 }
