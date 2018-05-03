@@ -5,23 +5,19 @@
 #include "Cutoff.h"
 #include <cmath>
 
-Cutoff::Cutoff(double cutoffRadius = 4., double cutoffWidth = 1., double centerWeight = 1.)
+Cutoff::Cutoff(double cutoffRadius, double cutoffWidth, double centerWeight)
         : cutoffRadius_(cutoffRadius),
-          cutoffWidth_(cutoffWidth), // GAP Paper: 1.0 Angstrom is regarded the length scale of atomic interactions
+          cutoffWidth_(cutoffWidth),
           centerWeight_(centerWeight),
           innerPlateauRadius_(cutoffRadius_ - cutoffWidth_)
 {}
 
-bool Cutoff::withinCutoffQ(const Eigen::Vector3d& position,
-                           const Eigen::Vector3d& expansionCenter = Eigen::Vector3d::Zero()) const {
-    return distance(position, expansionCenter) < cutoffRadius_;
+bool Cutoff::withinCutoffRadiusQ(double distance) const {
+    return distance < cutoffRadius_;
 }
 
 double Cutoff::getWeight(double distanceFromExpansionCenter) const{
-    // use this and delete centerWeight?
-    //if (r == 0)
-    //    return 1.;
-
+    //TODO delete centerWeight and use: 'if (0 <= distanceFromExpansionCenter...' instead?
     if (0 < distanceFromExpansionCenter && distanceFromExpansionCenter <= innerPlateauRadius_)
         return 1.;
     else if (innerPlateauRadius_ < distanceFromExpansionCenter && distanceFromExpansionCenter <= cutoffRadius_)
@@ -32,7 +28,7 @@ double Cutoff::getWeight(double distanceFromExpansionCenter) const{
 
 
 double Cutoff::getWeight(const Eigen::Vector3d& position,
-                         const Eigen::Vector3d& expansionCenter = Eigen::Vector3d::Zero()) const {
+                         const Eigen::Vector3d& expansionCenter) const {
     return getWeight(distance(position, expansionCenter));
 }
 
@@ -52,6 +48,6 @@ double Cutoff::getCenterWeight(){ return centerWeight_; }
 
 
 double Cutoff::distance(const Eigen::Vector3d &position,
-                        const Eigen::Vector3d &expansionCenter = Eigen::Vector3d::Zero()) const {
+                        const Eigen::Vector3d &expansionCenter){
     return (position-expansionCenter).eval().norm();
 }
