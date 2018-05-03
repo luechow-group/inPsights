@@ -3,38 +3,56 @@
 //
 
 #include "RadialGaussianBasis.h"
+#include "CoefficientsVector.h"
 #include <Eigen/Eigenvalues>
 #include <Eigen/Cholesky>
 #include <unsupported/Eigen/MatrixFunctions>
-#include "CoefficientsVector.h"
 
-RadialGaussianBasis::RadialGaussianBasis(unsigned nmax, unsigned lmax, double sigma0)
-        : nmax_(nmax),
-          lmax_(lmax),
-          sigma0_(sigma0),
-          basis_(createBasis(nmax,lmax,sigma0)),
-          rCut_((*basis_.end()).center()),//TODO check this!
-          Sab_(Sab(nmax)),
-          radialTransform_(calculateRadialTransform(Sab_))
-{};
 
-RadialGaussianBasis::RadialGaussianBasis(unsigned nmax, double rCut, unsigned lmax, double sigma)
-        : nmax_(nmax),
-          lmax_(lmax),
-          sigma0_(sigma),
-          basis_(createBasis(nmax,rCut,sigma)),
-          rCut_(rCut),
-          Sab_(Sab(nmax)),
+RadialGaussianBasis::RadialGaussianBasis(const ExpansionSettings &settings)
+        : s_(settings),
+          basis_(createBasis(s_)),
+          Sab_(Sab(s_.radial.nmax)),
           radialTransform_(calculateRadialTransform(Sab_))
-{};
+{}
+
+std::vector<Gaussian> RadialGaussianBasis::createBasis(ExpansionSettings& settings) {
+
+    std::vector<Gaussian> basis;
+    double basisFunctionCenter = 0;
+    
+    switch (settings.radial.basisType){
+        case RadialGaussianBasisType::equispaced : {
+            for (int i = 0; i < settings.radial.nmax; ++i) {
+                basisFunctionCenter = (settings.radial.cutoffRadius*i)/double(s_.radial.nmax);
+                basis.emplace_back(basisFunctionCenter, settings.radial.sigmaAtom);
+            }
+        }
+        case RadialGaussianBasisType::adaptive :{
+            basisFunctionCenter = 0;
+            double sigmaStride = 1/2.;
+            
+            for (int i = 0; i < settings.radial.nmax; ++i) {
+                double sigmaAdaptive = std::sqrt( 4/(2.*settings.angular.lmax + 1) * pow(basisFunctionCenter,2)+ pow(settings.radial.sigmaAtom,2) );
+                basis.emplace_back(basisFunctionCenter, sigmaAdaptive);
+                basisFunctionCenter += sigmaStride*sigmaAdaptive;
+            }
+
+            // Attention: the cutoff radius is changed here 
+            settings.radial.cutoffRadius = (*basis_.end()).center(); //TODO check this: is the last basis function centered at the cutoff radius?
+        }
+    }
+    return basis;
+}
+
 
 double RadialGaussianBasis::operator()(double r, unsigned n) const{
     assert(n > 0 && "The radial basis function index must be positive");
-    assert(n <= nmax_ && "The radial basis function index must be smaller than or equal to nmax");
+    assert(n <= s_.radial.nmax && "The radial basis function index must be smaller than or equal to nmax");
 
-    Eigen::VectorXd hvec(nmax_);
+    Eigen::VectorXd hvec(s_.radial.nmax);
 
-    for (int i = 0; i < nmax_; ++i) {
+    for (int i = 0; i < s_.radial.nmax; ++i) {
         hvec(i) = basis_[i].g2_r2_normalizedValue(r); //TODO store this?
     }
     return radialTransform_.col(n-1).dot(hvec);
@@ -48,34 +66,11 @@ Eigen::MatrixXd RadialGaussianBasis::radialTransform() const{
     return radialTransform_;
 };
 
-std::vector<Gaussian> RadialGaussianBasis::createBasis(unsigned nmax, double rCut, double sigma) {
-
-    std::vector<Gaussian> basis;
-    for (int i = 0; i < nmax; ++i) {
-        double rCenter = (rCut*i)/double(nmax);
-        basis.emplace_back(rCenter,sigma);
-    }
-    return basis;
-};
-
-std::vector<Gaussian> RadialGaussianBasis::createBasis(unsigned nmax, unsigned lmax, double sigma0) {
-    double rCenter = 0;
-    double sigmaStride = 1/2.;
-
-    std::vector<Gaussian> basis;
-    for (int i = 1; i <= nmax; ++i) {
-        double sigma = std::sqrt( 4/(2.*lmax + 1) * rCenter*rCenter + sigma0*sigma0 );
-        basis.emplace_back(rCenter,sigma);
-        rCenter += sigmaStride*sigma;
-    }
-    return basis;
-};
-
 Eigen::MatrixXd RadialGaussianBasis::Sab(unsigned nmax) const{
     Eigen::MatrixXd S(nmax,nmax);
 
-    for (int i = 0; i < basis_.size(); ++i) {
-        for (int j = 0; j < basis_.size(); ++j) { // skip iterations
+    for (int i = 0; i < nmax; ++i) {
+        for (int j = 0; j < nmax; ++j) { // skip iterations
             double a = basis_[i].alpha();
             double b = basis_[j].alpha();
             double rCenterA = basis_[i].center();

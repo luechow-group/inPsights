@@ -13,6 +13,8 @@ class IGaussian{
 public:
     double alpha() const { return alpha_; };
 
+    double sigma() const { return sigma_; };
+
     double getNormalizationConstant(){ return normalizationConstant_; };
 
 private:

@@ -5,14 +5,16 @@
 #ifndef AMOLQCPP_ANGULARBASIS_H
 #define AMOLQCPP_ANGULARBASIS_H
 
+#include "ExpansionSettings.h"
+#include <BoostSphericalHarmonics.h>
 #include <Eigen/Core>
 #include <boost/math/special_functions/spherical_harmonic.hpp>
-#include <BoostSphericalHarmonics.h>
-#include "RadialGaussianBasis.h"
+
+
 
 class AngularBasis{
 public:
-    explicit AngularBasis(unsigned lmax);
+    explicit AngularBasis(const AngularBasisSettings& settings = AngularBasisSettings::defaults());
 
     std::complex<double> computeCoefficient(unsigned l, int m, const Eigen::Vector3d& position) const;
 
@@ -21,7 +23,7 @@ public:
     std::complex<double> operator()(unsigned l, int m, double theta, double phi) const;
 
 private:
-    unsigned lmax_;
+    AngularBasisSettings s_;
 };
 
 #endif //AMOLQCPP_ANGULARBASIS_H

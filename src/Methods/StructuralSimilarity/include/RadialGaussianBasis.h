@@ -6,6 +6,7 @@
 #define AMOLQCPP_RADIALGAUSSIANBASIS_H
 
 #include "Gaussian.h"
+#include "ExpansionSettings.h"
 #include <Eigen/Core>
 #include <boost/math/special_functions/bessel.hpp>
 #include <GaussKronrodCartesianIntegration.h>
@@ -18,24 +19,16 @@ namespace ZeroLimits{
 class RadialGaussianBasis{
 public:
 
-    //TODO understand and discriminate the sigmas // sigma0 = 1/2. default
-
-    double sigma(){ return sigma0_; };
-
-    // adaptive
-    explicit RadialGaussianBasis(unsigned nmax, unsigned lmax, double sigma0 = 1/2.);
-
-    // equispaced
-    explicit RadialGaussianBasis(unsigned nmax, double rCut = 4.0, unsigned lmax = 4, double sigma = 1/2.); // sensible default?
-
+    explicit RadialGaussianBasis(const ExpansionSettings& settings = ExpansionSettings::defaults());
+    
     double operator()(double r, unsigned n) const;
 
     double computeCoefficient(unsigned n, unsigned l, const Eigen::Vector3d& neighborPosition, double neighborSigma) const;
 
+    double sigmaBasisFunction(unsigned n){ return basis_[n-1].sigma(); };
+    
 private:
-    std::vector<Gaussian> createBasis(unsigned nmax, double rCut, double sigma);
-
-    std::vector<Gaussian> createBasis(unsigned nmax, unsigned lmax, double sigma0);
+    std::vector<Gaussian> createBasis(ExpansionSettings& settings);
 
     Eigen::MatrixXd Smatrix() const;
 
@@ -47,11 +40,8 @@ private:
 
     double calculateIntegral(double ai, double ri,unsigned l, double rho_ik,double beta_ik) const;
 
-    unsigned nmax_,lmax_;
-    double sigma0_;
+    ExpansionSettings s_;
     std::vector<Gaussian> basis_;
-    double rCut_;
-
     Eigen::MatrixXd Sab_, radialTransform_;
 };
 
