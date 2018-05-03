@@ -35,6 +35,7 @@ set(HEADER_FILES
         include/Gaussian.h
         include/AngularBasis.h
         include/Cutoff.h
+        include/CoefficientsVector.h
         )
 
 set(SOURCE_FILES
@@ -46,6 +47,7 @@ set(SOURCE_FILES
         source/RadialGaussianBasis.cpp
         source/AngularBasis.cpp
         source/Cutoff.cpp
+        source/CoefficientsVector.cpp
         )
 
 file(GLOB_RECURSE RESOURCE_FILES resources/*.*)
