@@ -2,20 +2,23 @@
 // Created by Michael Heuer on 20.04.18.
 //
 
-#include<Gaussian.h>
+#include "Gaussian.h"
 #include <cmath>
+#include <boost/math/special_functions.hpp>
 
 IGaussian::IGaussian(double sigma)
         : sigma_(sigma),
           alpha_(1./(2*pow(sigma,2))),
-          normalizationConstant_(calculateNormalizationConstant()) {}
+          normalizationConstant_(0) {}
 
 
 Gaussian::Gaussian(double rCenter, double sigma)
         : IGaussian(sigma),
           rCenter_(rCenter),
           normalizationConstant_g2_r2_(normalizationConstant_g2_r2())
-{}
+{
+    normalizationConstant_= Gaussian::calculateNormalizationConstant();
+}
 
 // computes the normalization constant for the 1D volume integral
 double Gaussian::calculateNormalizationConstant() const {
@@ -66,7 +69,9 @@ double Gaussian::g2_r2_normalizedValue(double r) const {
 SphericalGaussian::SphericalGaussian(const Eigen::Vector3d& rCenter, double sigma)
         : IGaussian(sigma),
           rCenter_(rCenter)
-{};
+{
+    normalizationConstant_= SphericalGaussian::calculateNormalizationConstant();
+};
 
 // computes the normalization constant for the 3D volume integral
 double SphericalGaussian::calculateNormalizationConstant() const {

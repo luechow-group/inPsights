@@ -6,7 +6,6 @@
 #define AMOLQCPP_RADIALGAUSSIAN_H
 
 #include <Eigen/Core>
-#include <boost/math/special_functions.hpp>
 #include <utility>
 
 class IGaussian{
