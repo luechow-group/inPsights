@@ -18,6 +18,8 @@ public:
 
     std::complex<double> computeCoefficient(unsigned l, int m, double theta, double phi) const;
 
+    std::complex<double> operator()(unsigned l, int m, double theta, double phi) const;
+
 private:
     unsigned lmax_;
 };

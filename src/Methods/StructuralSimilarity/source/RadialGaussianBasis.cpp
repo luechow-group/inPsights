@@ -6,9 +6,8 @@
 #include <Eigen/Eigenvalues>
 #include <Eigen/Cholesky>
 #include <unsupported/Eigen/MatrixFunctions>
-#include "CoefficientMatrix.h"
+#include "CoefficientsVector.h"
 
-// adaptive
 RadialGaussianBasis::RadialGaussianBasis(unsigned nmax, unsigned lmax, double sigma0)
         : nmax_(nmax),
           lmax_(lmax),
@@ -19,7 +18,6 @@ RadialGaussianBasis::RadialGaussianBasis(unsigned nmax, unsigned lmax, double si
           radialTransform_(calculateRadialTransform(Sab_))
 {};
 
-// equispaced
 RadialGaussianBasis::RadialGaussianBasis(unsigned nmax, double rCut, unsigned lmax, double sigma)
         : nmax_(nmax),
           lmax_(lmax),

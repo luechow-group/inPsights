@@ -12,10 +12,14 @@ std::complex<double> AngularBasis::computeCoefficient(unsigned l, int m, const E
     BoostSphericalHarmonics::ToSphericalCoords(position.normalized(),theta,phi);
     if (phi < 0.) phi += 2*M_PI;
 
-    return AngularBasis::computeCoefficient(l,m,theta,phi);
+    return AngularBasis::operator()(l,m,theta,phi);
 }
 
 std::complex<double> AngularBasis::computeCoefficient(unsigned l, int m, double theta, double phi) const {
+    return AngularBasis::operator()(l,m,theta,phi);
+}
+
+std::complex<double> AngularBasis::operator()(unsigned l, int m, double theta, double phi) const {
     assert(theta < 0. && theta >= M_PI && "theta must be in the interval [0,pi]");
     assert(phi < 0. && phi >= 2*M_PI && "phi must be in the interval [0,2*pi]");
 

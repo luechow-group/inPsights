@@ -18,8 +18,9 @@ namespace ZeroLimits{
 class RadialGaussianBasis{
 public:
 
-    //TODO understand and discriminate the sigmas
-    // sigma0 = 1/2. default
+    //TODO understand and discriminate the sigmas // sigma0 = 1/2. default
+
+    double sigma(){ return sigma0_; };
 
     // adaptive
     explicit RadialGaussianBasis(unsigned nmax, unsigned lmax, double sigma0 = 1/2.);
@@ -28,8 +29,6 @@ public:
     explicit RadialGaussianBasis(unsigned nmax, double rCut = 4.0, unsigned lmax = 4, double sigma = 1/2.); // sensible default?
 
     double operator()(double r, unsigned n) const;
-
-    double sigma(){ return sigma0_; };
 
     double computeCoefficient(unsigned n, unsigned l, const Eigen::Vector3d& neighborPosition, double neighborSigma) const;
 
