@@ -44,6 +44,8 @@ set(SOURCE_FILES
         source/Hungarian.cpp
         source/Gaussian.cpp
         source/RadialGaussianBasis.cpp
+        source/AngularBasis.cpp
+        source/Cutoff.cpp
         )
 
 file(GLOB_RECURSE RESOURCE_FILES resources/*.*)
