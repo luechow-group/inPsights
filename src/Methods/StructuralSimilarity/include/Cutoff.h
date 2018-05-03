@@ -5,47 +5,37 @@
 #ifndef AMOLQCPP_CUTOFF_H
 #define AMOLQCPP_CUTOFF_H
 
-#include <cmath>
+
 #include <Eigen/Core>
 
 class Cutoff{
 public:
-    explicit Cutoff(double rCut = 4., double rCutWidth = 1./2)
-            : rCut_(rCut),
-              rCutWidth_(rCutWidth)
+    explicit Cutoff(double cutoffRadius = 4., double cutoffWidth = 1., double centerWeight = 1.)
+            : cutoffRadius_(cutoffRadius),
+              cutoffWidth_(cutoffWidth), // GAP Paper: 1.0 Angstrom is regarded the length scale of atomic interactions
+              centerWeight_(centerWeight),
+              innerPlateauRadius_(cutoffRadius_ - cutoffWidth_)
     {}
 
-    double getWeight(double r){
-        double innerPlateauRadius = (rCut_-rCutWidth_);
+    bool withinCutoffQ(const Eigen::Vector3d& position,
+                       const Eigen::Vector3d& expansionCenter = Eigen::Vector3d::Zero()) const;
 
-        if (0 < r && r <= innerPlateauRadius)
-            return 1.;
-        else if (innerPlateauRadius < r && r <= rCut_)
-            return 0.5*( 1 + cos( M_PI*(r-innerPlateauRadius)/rCutWidth_) );
-        else
-            return 0.;
-    };
+    
+    double getWeight(double distanceFromExpansionCenter) const;
 
-    double getWeight(const Eigen::Vector3d& rVec, const Eigen::Vector3d& rCenter = Eigen::Vector3d::Zero()){
-        return getWeight((rVec-rCenter).eval().norm());
-    }
+    double getWeight(const Eigen::Vector3d& position,
+                     const Eigen::Vector3d& expansionCenter = Eigen::Vector3d::Zero()) const;
 
-    Eigen::Vector3d getWeightGradient(const Eigen::Vector3d& rVec){
+    Eigen::Vector3d getWeightGradient(const Eigen::Vector3d& position) const;
 
-        double r = rVec.norm();
-        Eigen::Vector3d rDir = rVec.normalized();
 
-        double innerPlateauRadius = (rCut_-rCutWidth_);
-
-        if (r <= innerPlateauRadius || r > rCut_)
-            return Eigen::Vector3d::Zero();
-        else if (innerPlateauRadius < r && r <= rCut_)
-            return 0.5*( 1 + sin( M_PI*(r-innerPlateauRadius)/rCutWidth_)*M_PI/rCutWidth_ )*rDir;
-    };
-
+    double getCenterWeight(){ return centerWeight_; }
 
 private:
-    double rCut_, rCutWidth_;
+    double distance(const Eigen::Vector3d &position,
+                    const Eigen::Vector3d &expansionCenter = Eigen::Vector3d::Zero()) const;
+    
+    double cutoffRadius_, cutoffWidth_, centerWeight_, innerPlateauRadius_;
 };
 
 #endif //AMOLQCPP_CUTOFF_H
