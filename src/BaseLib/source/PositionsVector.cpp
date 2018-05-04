@@ -76,9 +76,9 @@ long PositionsVector::calculateIndex(long i) const {
 }
 
 Eigen::Ref<Eigen::Vector3d> PositionsVector::operator()(long i){
-    return Eigen::Ref<Eigen::Vector3d>(positions_.segment(i*3,3));
+    return Eigen::Ref<Eigen::Vector3d>(positions_.segment(i*entityLength_,entityLength_));
 }
 
 const Eigen::Ref<const Eigen::Vector3d>& PositionsVector::operator()(long i) const{
-    return Eigen::Ref<const Eigen::Vector3d>(positions_.segment(i*3,3));
+    return Eigen::Ref<const Eigen::Vector3d>(positions_.segment(i*entityLength_,entityLength_));
 }
