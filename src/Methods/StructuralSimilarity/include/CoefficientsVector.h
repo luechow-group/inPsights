@@ -14,18 +14,18 @@ class CoefficientsVector : AbstractVector {
 public:
 
     // Preallocates the coefficient matrix
-    explicit CoefficientsVector(ParticlesVector<Type> particleVector,
+    explicit CoefficientsVector(unsigned numberOfParticles,
                                 const ExpansionSettings& settings = ExpansionSettings::defaults())
-            : s_(),
+            : s_(settings),
               entityLength_(unsigned( s_.radial.nmax * (pow(s_.angular.lmax,2) + 2*s_.angular.lmax + 1) )),
-              coefficients_(Eigen::VectorXcd::Zero(particleVector.numberOfEntities() * entityLength_))
-    {}
+              coefficients_(Eigen::VectorXcd::Zero(numberOfParticles * entityLength_))
+    {
+        // increment counter for each entity
+        for (int j = 0; j < numberOfParticles; ++j) incrementNumberOfEntities();
+    }
 
-    explicit CoefficientsVector(Particle<Type> particleVector,
-                                const ExpansionSettings& settings = ExpansionSettings::defaults())
-            : s_(),
-              entityLength_(unsigned( s_.radial.nmax * (pow(s_.angular.lmax,2) + 2*s_.angular.lmax + 1) )),
-              coefficients_(Eigen::VectorXcd::Zero(entityLength_))
+    explicit CoefficientsVector(const ExpansionSettings& settings = ExpansionSettings::defaults())
+            : CoefficientsVector(1, settings)
     {}
 
     std::complex<double> getCoefficient(unsigned i, unsigned n, unsigned l, int m) const {
@@ -57,6 +57,10 @@ public:
         assert(coefficientsVector.numberOfEntities() == 1
                && "CoeffcientsVector of the single particle must have the size 1.");
         coefficients_.segment( calculateIndex(i), entityLength_) = coefficientsVector.asEigenVector();
+    }
+
+    void operator*=(double weight){
+        coefficients_ *= weight;
     }
 
     const ExpansionSettings& getSettings(){

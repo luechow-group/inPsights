@@ -48,7 +48,6 @@ set(SOURCE_FILES
         source/RadialGaussianBasis.cpp
         source/AngularBasis.cpp
         source/Cutoff.cpp
-        source/CoefficientsVector.cpp
         source/ExpansionSettings.cpp
         )
 

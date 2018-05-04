@@ -132,7 +132,7 @@ double RadialGaussianBasis::calculateIntegral(double ai, double ri,unsigned l, d
     return integral;
 };
 
-double RadialGaussianBasis::computeCoefficient(unsigned n, unsigned l, const Eigen::Vector3d &neighborPosition, double neighborSigma) const {
+double RadialGaussianBasis::computeCoefficient(unsigned n, unsigned l, double centerToNeighborDistance, double neighborSigma) const {
     //double neighborSigma = sigma0_;
 
     if (neighborSigma < ZeroLimits::radiusZero) {
@@ -142,7 +142,7 @@ double RadialGaussianBasis::computeCoefficient(unsigned n, unsigned l, const Eig
 
         //TODO Optimize
         double ai = 1/(2. * pow(neighborSigma,2));
-        double ri = neighborPosition.norm();
+        double ri = centerToNeighborDistance;
         SphericalGaussian gi_sph(Eigen::Vector3d::Zero(), neighborSigma); // <- position should not matter, as only normalization used here
         double norm_g_dV_sph_i = gi_sph.getNormalizationConstant();
 

@@ -12,10 +12,6 @@
 #include <GaussKronrodCartesianIntegration.h>
 #include <cmath>
 
-namespace ZeroLimits{
-    const double radiusZero = 1e-10;
-}
-
 class RadialGaussianBasis{
 public:
 
@@ -23,7 +19,7 @@ public:
     
     double operator()(double r, unsigned n) const;
 
-    double computeCoefficient(unsigned n, unsigned l, const Eigen::Vector3d& neighborPosition, double neighborSigma) const;
+    double computeCoefficient(unsigned n, unsigned l, double centerToNeighborDistance, double neighborSigma) const;
 
     double sigmaBasisFunction(unsigned n){ return basis_[n-1].sigma(); };
     
