@@ -15,11 +15,16 @@ public:
     ExpansionSettings() = default;
 
     static ExpansionSettings defaults();
+    bool operator==(const ExpansionSettings& other) const;
+    void checkBounds(unsigned n, unsigned l, int m) const;
 
     class RadialGaussianBasisSettings{
     public:
         RadialGaussianBasisSettings() = default;
         static RadialGaussianBasisSettings defaults();
+        bool operator==(const RadialGaussianBasisSettings& other) const;
+        void checkBounds(unsigned n) const;
+
 
         unsigned nmax;
         RadialGaussianBasisType basisType;
@@ -30,6 +35,8 @@ public:
     public:
         AngularBasisSettings() = default;
         static AngularBasisSettings defaults();
+        bool operator==(const AngularBasisSettings& other) const;
+        void checkBounds(unsigned l, int m) const;
 
         unsigned lmax;
     };
