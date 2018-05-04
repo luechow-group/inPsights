@@ -49,6 +49,7 @@ set(SOURCE_FILES
         source/AngularBasis.cpp
         source/Cutoff.cpp
         source/CoefficientsVector.cpp
+        source/ExpansionSettings.cpp
         )
 
 file(GLOB_RECURSE RESOURCE_FILES resources/*.*)

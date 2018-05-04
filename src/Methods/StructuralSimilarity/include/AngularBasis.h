@@ -14,7 +14,7 @@
 
 class AngularBasis{
 public:
-    explicit AngularBasis(const AngularBasisSettings& settings = AngularBasisSettings::defaults());
+    explicit AngularBasis(const ExpansionSettings::AngularBasisSettings& settings = ExpansionSettings::AngularBasisSettings::defaults());
 
     std::complex<double> computeCoefficient(unsigned l, int m, const Eigen::Vector3d& position) const;
 
@@ -23,7 +23,7 @@ public:
     std::complex<double> operator()(unsigned l, int m, double theta, double phi) const;
 
 private:
-    AngularBasisSettings s_;
+    ExpansionSettings::AngularBasisSettings s_;
 };
 
 #endif //AMOLQCPP_ANGULARBASIS_H

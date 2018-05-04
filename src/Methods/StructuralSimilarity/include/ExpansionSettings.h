@@ -10,48 +10,28 @@ enum class RadialGaussianBasisType{
 };
 
 
-class RadialGaussianBasisSettings{
-public:
-    RadialGaussianBasisSettings() = default;
-
-    static RadialGaussianBasisSettings defaults(){
-        RadialGaussianBasisSettings s{};
-        s.nmax = 10;
-        s.basisType = RadialGaussianBasisType::equispaced;
-        s.sigmaAtom = 0.5;
-        s.cutoffRadius = 4.0;
-
-        return s;
-    };
-
-    unsigned nmax;
-    RadialGaussianBasisType basisType;
-    double sigmaAtom, cutoffRadius;
-};
-
-class AngularBasisSettings{
-public:
-    AngularBasisSettings() = default;
-
-    static AngularBasisSettings defaults(){
-        AngularBasisSettings s{};
-        s.lmax = 10;
-        return s;
-    };
-
-    unsigned lmax;
-};
-
 class ExpansionSettings{
 public:
     ExpansionSettings() = default;
 
-    static ExpansionSettings defaults(){
-        ExpansionSettings s{};
-        s.radial = RadialGaussianBasisSettings::defaults();
-        s.angular = AngularBasisSettings::defaults();
+    static ExpansionSettings defaults();
 
-        return s;
+    class RadialGaussianBasisSettings{
+    public:
+        RadialGaussianBasisSettings() = default;
+        static RadialGaussianBasisSettings defaults();
+
+        unsigned nmax;
+        RadialGaussianBasisType basisType;
+        double sigmaAtom, cutoffRadius;
+    };
+
+    class AngularBasisSettings{
+    public:
+        AngularBasisSettings() = default;
+        static AngularBasisSettings defaults();
+
+        unsigned lmax;
     };
 
     RadialGaussianBasisSettings radial;

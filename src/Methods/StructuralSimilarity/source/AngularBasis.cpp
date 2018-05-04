@@ -4,7 +4,7 @@
 
 #include "AngularBasis.h"
 
-AngularBasis::AngularBasis(const AngularBasisSettings& settings)
+AngularBasis::AngularBasis(const ExpansionSettings::AngularBasisSettings& settings)
         : s_(settings)
 {}
 
