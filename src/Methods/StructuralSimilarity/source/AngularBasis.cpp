@@ -21,11 +21,11 @@ std::complex<double> AngularBasis::computeCoefficient(unsigned l, int m, double 
 }
 
 std::complex<double> AngularBasis::operator()(unsigned l, int m, double theta, double phi) const {
-    assert(theta < 0. && theta >= M_PI && "theta must be in the interval [0,pi]");
-    assert(phi < 0. && phi >= 2*M_PI && "phi must be in the interval [0,2*pi]");
+    assert(theta >= 0. && theta <= M_PI && "theta must be in the interval [0,pi]");
+    assert(phi >= 0. && phi <= 2*M_PI && "phi must be in the interval [0,2*pi]");
 
     assert(l <= s_.lmax && l >=0 && "l must be in the interval [0,lmax]");
-    assert(m <= s_.lmax && m >=-s_.lmax && "l must be in the interval [-lmax,lmax]");
+    assert(unsigned(abs(m)) <= s_.lmax && "l must be in the interval [-lmax,lmax]");
 
     return boost::math::spherical_harmonic<double,double>(l, m, theta, phi);
 }
