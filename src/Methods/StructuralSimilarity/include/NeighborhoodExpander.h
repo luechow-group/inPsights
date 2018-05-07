@@ -2,25 +2,25 @@
 // Created by Michael Heuer on 20.04.18.
 //
 
-#ifndef AMOLQCPP_SOAPEXPANSION_H
-#define AMOLQCPP_SOAPEXPANSION_H
+#ifndef AMOLQCPP_NEIGHBORHOODEXPANDER_H
+#define AMOLQCPP_NEIGHBORHOODEXPANDER_H
 
 #include "RadialGaussianBasis.h"
 #include "AngularBasis.h"
-#include "CoefficientsVector.h"
+#include "NeighborhoodExpansionCoefficientsVector.h"
 #include <Particle.h>
 
-//TODO find better name e.g. NeighborBasisExpander
 template <typename Type>
-class SoapExpansion{
+class NeighborhoodExpander{
 public:
-    explicit SoapExpansion(const ExpansionSettings& settings = ExpansionSettings::defaults())
-            : s_(settings),
+    explicit NeighborhoodExpander(unsigned numberOfParticles, const ExpansionSettings& settings = ExpansionSettings::defaults())
+            : numberOfParticles_(numberOfParticles),
+              s_(settings),
               radialGaussianBasis_(s_),
               angularBasis_(s_.angular)
     {}
 
-    CoefficientsVector<Type> expandParticle(const Particle<Type> &center,
+    NeighborhoodExpansionCoefficientsVector<Type> expandParticle(const Particle<Type> &center,
                                             const Particle<Type> &neighbor,
                                             double neighborSigma) const {
         double theta,phi;
@@ -36,19 +36,19 @@ public:
             phi = 0.;
         }
 
-        CoefficientsVector<Type> coefficientsVector(s_);
+        NeighborhoodExpansionCoefficientsVector<Type> singleNeighbor(1,s_);
 
         for (unsigned n = 1; n <= s_.radial.nmax; ++n) {
             for (unsigned l = 0; l <= s_.angular.lmax; ++l) {
-                for (int m = -l; m <= l; ++m) {
+                for (int m = -int(l); m <= int(l); ++m) {
                     auto coefficient = radialGaussianBasis_.computeCoefficient(n, l, centerToNeighborDistance, neighborSigma)
                                        * angularBasis_.computeCoefficient(l, m, theta, phi);
 
-                    coefficientsVector.storeCoefficient(0, n, l, m, coefficient);
+                    singleNeighbor.storeCoefficient(0, n, l, m, coefficient);
                 }
             }
         }
-        return coefficientsVector;
+        return singleNeighbor;
     }
 
     const ExpansionSettings& getSettings(){
@@ -56,9 +56,10 @@ public:
     }
 
 private:
+    unsigned numberOfParticles_;
     ExpansionSettings s_;
     RadialGaussianBasis radialGaussianBasis_;
     AngularBasis angularBasis_;
 };
 
-#endif //AMOLQCPP_SOAPEXPANSION_H
+#endif //AMOLQCPP_NEIGHBORHOODEXPANDER_H

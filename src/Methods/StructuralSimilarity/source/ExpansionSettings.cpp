@@ -15,7 +15,7 @@ ExpansionSettings ExpansionSettings::defaults() {
 
 ExpansionSettings::RadialGaussianBasisSettings ExpansionSettings::RadialGaussianBasisSettings::defaults() {
     ExpansionSettings::RadialGaussianBasisSettings s{};
-    s.nmax = 10;
+    s.nmax = 2;
     s.basisType = RadialGaussianBasisType::equispaced;
     s.sigmaAtom = 0.5;
     s.cutoffRadius = 4.0;
@@ -25,7 +25,7 @@ ExpansionSettings::RadialGaussianBasisSettings ExpansionSettings::RadialGaussian
 
 ExpansionSettings::AngularBasisSettings ExpansionSettings::AngularBasisSettings::defaults() {
     ExpansionSettings::AngularBasisSettings s{};
-    s.lmax = 10;
+    s.lmax = 2;
 
     return s;
 };

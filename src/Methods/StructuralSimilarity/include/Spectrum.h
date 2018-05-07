@@ -6,7 +6,7 @@
 #define AMOLQCPP_SPECTRUM_H
 
 #include "Cutoff.h"
-#include "SoapExpansion.h"
+#include "NeighborhoodExpander.h"
 #include <ParticlesVector.h>
 #include <vector>
 
@@ -17,7 +17,7 @@ public:
     explicit Spectrum(const ParticlesVector<Type>& particlesVector,
                       const ExpansionSettings& settings = ExpansionSettings::defaults())
             : particlesVector_(particlesVector),
-              soapExpansion_(settings),
+              neighborhoodExpander(unsigned(particlesVector_.numberOfEntities()),settings),
               coefficientsVector_(unsigned(particlesVector_.numberOfEntities()), settings),
               cutoffFunction_()
     {}
@@ -36,7 +36,7 @@ public:
 
         for (unsigned j = 0; j < particlesVector_.numberOfEntities(); ++j) {
 
-            /*//TODO arbitrary? change this */ double neighborSigma = soapExpansion_.getSettings().radial.sigmaAtom;
+            /*//TODO arbitrary? change this */ double neighborSigma = neighborhoodExpander.getSettings().radial.sigmaAtom;
 
             double centerToNeighborDistance = Cutoff::distance(particlesVector_[j].position(),
                                                                particlesVector_[centerParticleId].position());
@@ -50,24 +50,24 @@ public:
 
                 if (j == centerParticleId) weight *= cutoffFunction_.getCenterWeight();
 
-                auto atomicCoefficientsVector = soapExpansion_.expandParticle(particlesVector_[centerParticleId],
+                auto atomicCoefficientsVector = neighborhoodExpander.expandParticle(particlesVector_[centerParticleId],
                                                                               particlesVector_[j], neighborSigma);
                 atomicCoefficientsVector *= weight*weightScale;
 
-                coefficientsVector_.storeParticleExpansion(j, atomicCoefficientsVector);
+                coefficientsVector_.storeSingleNeighborExpansion(j, atomicCoefficientsVector);
             }
         }
     }
 
-    CoefficientsVector<Type> getCoefficients(){
+    NeighborhoodExpansionCoefficientsVector<Type> getCoefficients(){
         return coefficientsVector_;
     }
 
 
 private:
     ParticlesVector<Type> particlesVector_;
-    SoapExpansion<Type> soapExpansion_;
-    CoefficientsVector<Type> coefficientsVector_;
+    NeighborhoodExpander<Type> neighborhoodExpander;
+    NeighborhoodExpansionCoefficientsVector<Type> coefficientsVector_;
     Cutoff cutoffFunction_;
 };
 

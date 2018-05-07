@@ -35,9 +35,9 @@ set(HEADER_FILES
         include/Gaussian.h
         include/AngularBasis.h
         include/Spectrum.h
-        include/SoapExpansion.h
+        include/NeighborhoodExpander.h
         include/Cutoff.h
-        include/CoefficientsVector.h
+        include/NeighborhoodExpansionCoefficientsVector.h
         include/ExpansionSettings.h
         )
 
