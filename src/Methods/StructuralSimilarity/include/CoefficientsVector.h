@@ -63,7 +63,7 @@ public:
         coefficients_ *= weight;
     }
 
-    const ExpansionSettings& getSettings(){
+    const ExpansionSettings& getSettings() const {
         return s_;
     }
 
