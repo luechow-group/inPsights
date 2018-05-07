@@ -58,6 +58,6 @@ void ExpansionSettings::RadialGaussianBasisSettings::checkBounds(unsigned n) con
 }
 
 void ExpansionSettings::AngularBasisSettings::checkBounds(unsigned l, int m) const {
-    assert( l <= lmax && "l must be smaller than lmax");
+    assert( l <= lmax && "l must be less than or equal to lmax");
     assert( unsigned(abs(m)) <= lmax && "abs(m) must be smaller than lmax");
 }

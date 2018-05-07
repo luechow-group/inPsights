@@ -39,7 +39,7 @@ public:
         CoefficientsVector<Type> coefficientsVector(s_);
 
         for (unsigned n = 1; n <= s_.radial.nmax; ++n) {
-            for (unsigned l = 0; l <= s_.angular.lmax+1; ++l) {
+            for (unsigned l = 0; l <= s_.angular.lmax; ++l) {
                 for (int m = -l; m <= l; ++m) {
                     auto coefficient = radialGaussianBasis_.computeCoefficient(n, l, centerToNeighborDistance, neighborSigma)
                                        * angularBasis_.computeCoefficient(l, m, theta, phi);
