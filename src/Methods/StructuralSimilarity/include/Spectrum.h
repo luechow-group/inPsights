@@ -17,8 +17,9 @@ public:
     explicit Spectrum(const ParticlesVector<Type>& particlesVector,
                       const ExpansionSettings& settings = ExpansionSettings::defaults())
             : particlesVector_(particlesVector),
+              soapExpansion_(settings),
               coefficientsVector_(unsigned(particlesVector_.numberOfEntities()), settings),
-              soapExpansion_(settings)
+              cutoffFunction_()
     {}
 
     void compute(){
