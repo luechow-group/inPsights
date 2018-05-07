@@ -58,6 +58,10 @@ public:
         }
     }
 
+    CoefficientsVector<Type> getCoefficients(){
+        return coefficientsVector_;
+    }
+
 
 private:
     ParticlesVector<Type> particlesVector_;
