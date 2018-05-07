@@ -67,6 +67,27 @@ public:
         return s_;
     }
 
+
+    friend std::ostream& operator<<(std::ostream& os, const CoefficientsVector & cv){
+
+        auto s = cv.getSettings();
+
+        for (unsigned i = 0; i < cv.numberOfEntities(); i++) {
+            os << "i: " << i << std::endl;
+            for (unsigned n = 1; n <= s.radial.nmax; ++n) {
+                os << " n: "<< n << std::endl;
+                for (unsigned l = 0; l <= s.angular.lmax; ++l) {
+                    os << "  l: "<< l << std::endl;
+                    for (int m = -l; m <= l; ++m) {
+                       os << "   m: " << m << " " << cv.getCoefficient(i,n,l,m) << std::endl;
+                    }
+                }
+            }
+        }
+        return os;
+    }
+
+
 private:
     ExpansionSettings s_;
     unsigned entityLength_;
