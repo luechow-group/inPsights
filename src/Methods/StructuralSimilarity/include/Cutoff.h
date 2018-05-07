@@ -14,7 +14,6 @@ public:
 
     bool withinCutoffRadiusQ(double distance) const;
 
-    
     double getWeight(double distanceFromExpansionCenter) const;
 
     double getWeight(const Eigen::Vector3d& position,

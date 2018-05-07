@@ -37,8 +37,8 @@ public:
 
             /*//TODO arbitrary? change this */ double neighborSigma = soapExpansion_.getSettings().radial.sigmaAtom;
 
-            double centerToNeighborDistance =Cutoff::distance(particlesVector_[j].position(),
-                                                              particlesVector_[centerParticleId].position());
+            double centerToNeighborDistance = Cutoff::distance(particlesVector_[j].position(),
+                                                               particlesVector_[centerParticleId].position());
 
             // skip this iteration if particle i is outside the cutoff radius
             if (!cutoffFunction_.withinCutoffRadiusQ(centerToNeighborDistance)){
