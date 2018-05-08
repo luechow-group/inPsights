@@ -39,6 +39,7 @@ set(HEADER_FILES
         include/Cutoff.h
         include/NeighborhoodExpansionCoefficientsVector.h
         include/ExpansionSettings.h
+        include/ParticlePool.h
         )
 
 set(SOURCE_FILES
