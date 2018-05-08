@@ -89,7 +89,7 @@ public:
         return os;
     }
 
-    unsigned countTypeOccurence(const Type& type) {
+    unsigned countTypeOccurence(const Type& type) const {
         unsigned count = 0;
         for (int i = 0; i < this->numberOfEntities(); ++i) {
             if (this->operator[](i).type() == type)
