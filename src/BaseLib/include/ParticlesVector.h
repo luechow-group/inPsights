@@ -89,6 +89,15 @@ public:
         return os;
     }
 
+    unsigned countTypeOccurence(const Type& type) {
+        unsigned count = 0;
+        for (int i = 0; i < this->numberOfEntities(); ++i) {
+            if (this->operator[](i).type() == type)
+                count++;
+        }
+        return count;
+    }
+
 protected:
     PositionsVector positionsVector_;
     TypesVector<Type> typesVector_;

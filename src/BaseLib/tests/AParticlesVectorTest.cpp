@@ -16,9 +16,11 @@ public:
     AtomsVector atoms;
     void SetUp() override {
         Particle<Spins::SpinType > e1 = {{1,2,3},Spins::SpinType::alpha};
-        Particle<Spins::SpinType > e2 = {{4,5,6},Spins::SpinType::beta};
+        Particle<Spins::SpinType > e2 = {{1,2,3},Spins::SpinType::alpha};
+        Particle<Spins::SpinType > e3 = {{4,5,6},Spins::SpinType::beta};
         electrons.append(e1);
         electrons.append(e2);
+        electrons.append(e3);
 
         Particle<Elements::ElementType> a1 = {{1,2,3},Elements::ElementType::H};
         Particle<Elements::ElementType> a2 = {{4,5,6},Elements::ElementType::Og};
@@ -40,7 +42,8 @@ TEST_F(AParticlesVectorTest, SpinTypeParticlesVector) {
     stringstream << electrons;
 
     std::string expectedOutput = " 1 ea   1.00000   2.00000   3.00000\n"
-                                 " 2 eb   4.00000   5.00000   6.00000\n";
+                                 " 2 ea   1.00000   2.00000   3.00000\n"
+                                 " 3 eb   4.00000   5.00000   6.00000\n";
     ASSERT_EQ(stringstream.str(), expectedOutput);
 }
 
@@ -55,4 +58,9 @@ TEST_F(AParticlesVectorTest, ElementTypeParticlesVector) {
 
 TEST_F(AParticlesVectorTest, Distance) {
     EXPECT_TRUE(false);
+}
+
+TEST_F(AParticlesVectorTest, CountTypeOccurence) {
+    ASSERT_EQ(electrons.countTypeOccurence(Spins::SpinType::alpha),2);
+    ASSERT_EQ(atoms.countTypeOccurence(Elements::ElementType::H),1);
 }
