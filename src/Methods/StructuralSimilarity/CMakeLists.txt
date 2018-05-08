@@ -37,7 +37,7 @@ set(HEADER_FILES
         include/Spectrum.h
         include/NeighborhoodExpander.h
         include/Cutoff.h
-        include/NeighborhoodExpansionCoefficientsVector.h
+        include/Environment.h
         include/ExpansionSettings.h
         include/ParticlePool.h
         )

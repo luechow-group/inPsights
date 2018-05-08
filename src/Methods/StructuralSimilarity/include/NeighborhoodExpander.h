@@ -7,7 +7,7 @@
 
 #include "RadialGaussianBasis.h"
 #include "AngularBasis.h"
-#include "NeighborhoodExpansionCoefficientsVector.h"
+#include "Environment.h"
 #include <Particle.h>
 
 template <typename Type>
@@ -20,7 +20,7 @@ public:
               angularBasis_(s_.angular)
     {}
 
-    NeighborhoodExpansionCoefficientsVector<Type> expandParticle(const Particle<Type> &center,
+    Environment<Type> expandParticle(const Particle<Type> &center,
                                             const Particle<Type> &neighbor,
                                             double neighborSigma) const {
         double theta,phi;
@@ -36,7 +36,7 @@ public:
             phi = 0.;
         }
 
-        NeighborhoodExpansionCoefficientsVector<Type> singleNeighbor(1,s_);
+        Environment<Type> singleNeighbor(1,s_);
 
         for (unsigned n = 1; n <= s_.radial.nmax; ++n) {
             for (unsigned l = 0; l <= s_.angular.lmax; ++l) {

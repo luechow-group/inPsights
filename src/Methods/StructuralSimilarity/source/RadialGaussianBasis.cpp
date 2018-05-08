@@ -3,7 +3,7 @@
 //
 
 #include "RadialGaussianBasis.h"
-#include "NeighborhoodExpansionCoefficientsVector.h"
+#include "Environment.h"
 #include <Eigen/Eigenvalues>
 #include <Eigen/Cholesky>
 #include <unsupported/Eigen/MatrixFunctions>

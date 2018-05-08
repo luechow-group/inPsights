@@ -2,25 +2,26 @@
 // Created by Michael Heuer on 03.05.18.
 //
 
-#ifndef AMOLQCPP_NEIGHBORHOODEXPANSIONCOEFFICIENTSVECTOR_H
-#define AMOLQCPP_NEIGHBORHOODEXPANSIONCOEFFICIENTSVECTOR_H
+#ifndef AMOLQCPP_ENVIRONMENT_H
+#define AMOLQCPP_ENVIRONMENT_H
 
 #include <Eigen/Core>
 #include "ExpansionSettings.h"
 #include <ParticlesVector.h>
 
 template <typename Type>
-class NeighborhoodExpansionCoefficientsVector : AbstractVector {
+class Environment : AbstractVector {
 public:
 
     // Preallocates the coefficient matrix
-    explicit NeighborhoodExpansionCoefficientsVector(unsigned numberOfParticles,
+    explicit Environment(unsigned numberOfParticles,
                                                      const ExpansionSettings& settings = ExpansionSettings::defaults())
             : AbstractVector(numberOfParticles),
               s_(settings),
               angularEntityLength_( s_.angular.lmax*s_.angular.lmax + 2*s_.angular.lmax + 1),
               entityLength_(s_.radial.nmax * angularEntityLength_),
-              coefficients_(Eigen::VectorXcd::Zero(numberOfParticles * entityLength_))
+              coefficients_(Eigen::VectorXcd::Zero(numberOfParticles * entityLength_)),
+              powerSpectrum_(Eigen::VectorXd::Zero(s_.radial.nmax*s_.radial.nmax* (s_.angular.lmax+1)))
     {}
 
     std::complex<double> getCoefficient(unsigned i, unsigned n, unsigned l, int m) const {
@@ -47,7 +48,7 @@ public:
     }
 
     void storeSingleNeighborExpansion(unsigned i,
-                                      const NeighborhoodExpansionCoefficientsVector<Type> &singleNeighborExpansionCoefficients) {
+                                      const Environment<Type> &singleNeighborExpansionCoefficients) {
         assert(s_ == singleNeighborExpansionCoefficients.s_
                && "The expansion settings must be identical.");
         assert(singleNeighborExpansionCoefficients.numberOfEntities() == 1
@@ -64,7 +65,7 @@ public:
     }
 
 
-    friend std::ostream& operator<<(std::ostream& os, const NeighborhoodExpansionCoefficientsVector & cv){
+    friend std::ostream& operator<<(std::ostream& os, const Environment & cv){
 
         auto s = cv.getSettings();
 
@@ -83,11 +84,23 @@ public:
         return os;
     }
 
+    double calculatePowerSpectrumCoefficient(unsigned n1, unsigned n2, unsigned l) {
+
+        double sum = 0;
+
+        for (int m = -int(l); m < int(l); ++m) {
+            sum += std::conj(getCoefficient(n1,l,m)) * getCoefficient(n2,l,m);
+        }
+
+        return M_PI*sqrt(8./(2.*l+1))* sum;
+    }
+
 
 private:
     ExpansionSettings s_;
     unsigned  angularEntityLength_, entityLength_;
     Eigen::VectorXcd coefficients_;
+    Eigen::VectorXd powerSpectrum_;
 };
 
-#endif //AMOLQCPP_NEIGHBORHOODEXPANSIONCOEFFICIENTSVECTOR_H
+#endif //AMOLQCPP_ENVIRONMENT_H

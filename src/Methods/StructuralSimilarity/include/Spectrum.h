@@ -59,7 +59,7 @@ public:
         }
     }
 
-    NeighborhoodExpansionCoefficientsVector<Type> getCoefficients(){
+    Environment<Type> getCoefficients(){
         return coefficientsVector_;
     }
 
@@ -67,7 +67,7 @@ public:
 private:
     ParticlesVector<Type> particlesVector_;
     NeighborhoodExpander<Type> neighborhoodExpander;
-    NeighborhoodExpansionCoefficientsVector<Type> coefficientsVector_;
+    Environment<Type> coefficientsVector_;
     Cutoff cutoffFunction_;
 };
 
