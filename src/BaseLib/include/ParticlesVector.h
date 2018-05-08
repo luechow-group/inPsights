@@ -76,7 +76,7 @@ public:
         this->insert(particle,numberOfEntities());
     }
 
-    void permute(long i, long j) {
+    void permute(long i, long j) override {
         positionsVector_.permute(i,j);
         typesVector_.permute(i,j);
     }
