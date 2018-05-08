@@ -9,25 +9,27 @@
 #include "AbstractVector.h"
 #include "SpinType.h"
 #include "ElementType.h"
+#include <vector>
 
 template <typename Type>
 class TypesVector : public AbstractVector {
 public:
-    //TypesVector(unsigned long numberOfAlphaElectrons, unsigned long numberOfBetaElectrons); //TODO refactor into own class
 
-    TypesVector(long size = 0)
+    // unsigned long empty is there to be specialized in TypesVector<Spin::SpinTypes>
+    TypesVector(unsigned long size = 0, unsigned long empty = 0)
             : AbstractVector(size),
               types_(Eigen::VectorXi::Constant(size, 0))
     {}
 
+    //TODO specialise
     TypesVector(std::vector<Type> types)
             : AbstractVector(0),
               types_(0)
     {
         for (const auto& type : types){
-            assert(types_.minCoeff() >= int(Spins::first()));
-            assert(types_.maxCoeff() <= int(Elements::last()));
-            append(type);
+            assert(int(type) >= int(Spins::first()));
+            assert(int(type) <= int(Elements::last()));
+            this->append(type);
         }
     }
 
@@ -96,5 +98,16 @@ protected:
 
 using SpinTypesVector = TypesVector<Spins::SpinType>;
 using ElementTypesVector = TypesVector<Elements::ElementType>;
+
+// Template Specialisation
+template<>
+SpinTypesVector::TypesVector(unsigned long numberOfAlphaElectrons,
+                             unsigned long numberOfBetaElectrons);
+
+template<>
+SpinTypesVector::TypesVector(std::vector<Spins::SpinType> types);
+
+template<>
+ElementTypesVector ::TypesVector(std::vector<Elements::ElementType> types);
 
 #endif //AMOLQCPP_TYPESVECTOR_H

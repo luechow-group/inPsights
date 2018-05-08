@@ -39,22 +39,15 @@ public:
         return static_cast<Type>(type_);
     }
 
+    // Generic implementation
     std::string toString() const{
-        std::string typeString;
+        std::string typeString = std::to_string(type_);
 
-        if(type_ < 0)
-            // particle is an electron
-            typeString = "e" + Spins::toString(Spins::spinTypeFromInt(type_));
-        else if (type_ > 0) {
-            // particle is an atom
-            typeString = Elements::ElementInfo::symbol(Elements::elementTypeFromInt(type_));
-            if(typeString.length() == 1){
-                typeString += " ";
-            }
-        }
-        else typeString = "  "; // particle is none
+        if(typeString.size() == 1)
+            typeString = "0"+typeString;
+        typeString += ToString::vector3dToString(position_);
 
-        return typeString + ToString::vector3dToString(position_);
+       return typeString;
     }
 
     friend std::ostream& operator<< (std::ostream& os, const Particle<Type>& p) {
@@ -62,13 +55,9 @@ public:
         return os;
     }
 
+    //Generic
     int charge() const{
-        if(type_ < 0)
-            return -1;
-        else if (type_ > 0)
-            return Elements::ElementInfo::Z(Elements::elementTypeFromInt(type_));
-        else
-            return 0;
+        return 0;
     }
     
 protected:
@@ -78,5 +67,16 @@ protected:
 
 using Electron = Particle<Spins::SpinType>;
 using Atom = Particle<Elements::ElementType>;
+
+template<>
+std::string Electron::toString() const;
+template<>
+std::string Atom::toString() const;
+
+template<>
+int Electron::charge() const;
+template<>
+int Atom::charge() const;
+
 
 #endif //AMOLQCPP_PARTICLE_H

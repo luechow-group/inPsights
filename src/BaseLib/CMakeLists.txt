@@ -55,8 +55,10 @@ set(SOURCE_FILES
         source/PositionsVectorCollection.cpp
         source/ToString.cpp
         source/PositionsVectorTransformer.cpp
+        source/TypesVector.cpp
         source/Metrics.cpp
         source/MolecularGeometry.cpp
+        source/Particle.cpp
         )
 
 file(GLOB_RECURSE RESOURCE_FILES resources/*.*)

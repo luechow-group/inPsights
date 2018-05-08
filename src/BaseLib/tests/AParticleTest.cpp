@@ -28,7 +28,7 @@ TEST_F(AParticleTest, CopyConstructor) {
     ASSERT_EQ(electron1.position(), electron1Copy.position());
 }
 
-TEST_F(AParticleTest, SpinTypeParticle) {
+TEST_F(AParticleTest, Electron) {
     std::stringstream stringstream;
     stringstream << electron1;
 
@@ -36,12 +36,17 @@ TEST_F(AParticleTest, SpinTypeParticle) {
     ASSERT_EQ(electron1.type(), Spins::SpinType::alpha);
 }
 
-TEST_F(AParticleTest, ElementTypeParticle) {
+TEST_F(AParticleTest, Atom) {
     std::stringstream stringstream;
     stringstream << atom1;
 
     ASSERT_EQ(stringstream.str(), "H    1.00000   2.00000   3.00000");
     ASSERT_EQ(atom1.type(), Elements::ElementType::H);
+}
+
+TEST_F(AParticleTest, Charge) {
+    ASSERT_EQ(atom1.charge(),+1);
+    ASSERT_EQ(electron1.charge(),-1);
 }
 
 /*TEST_F(AParticleTest, Distance) {

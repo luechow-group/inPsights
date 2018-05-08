@@ -18,13 +18,13 @@ public:
 };
 
 TEST_F(ATypesVectorTest, SpinTypesStream){
-    TypesVector<Spins::SpinType> tv({Spins::SpinType::none,
+    TypesVector<Spins::SpinType> tv({Spins::SpinType::alpha,
                                      Spins::SpinType::alpha,
                                      Spins::SpinType::beta});
     std::stringstream stringstream;
     stringstream << tv;
 
-    ASSERT_TRUE(stringstream.str() == "-\na\nb\n");
+    ASSERT_TRUE(stringstream.str() == "a\na\nb\n");
 }
 
 TEST_F(ATypesVectorTest, ElementTypesStream){
@@ -36,4 +36,12 @@ TEST_F(ATypesVectorTest, ElementTypesStream){
     std::cout << tv;
 
     ASSERT_TRUE(stringstream.str() == "H\nHe\nOg\n");
+}
+
+TEST_F(ATypesVectorTest, SpecializedConstructor){
+    SpinTypesVector stv(2,3);
+    std::stringstream stringstream;
+    stringstream << stv;
+    std::cout << stv;
+
 }
