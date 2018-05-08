@@ -26,19 +26,11 @@ set(HEADER_FILES
         include/ElementInfo.h
         include/pElementInfo.h
         include/ElementType.h
-        #include/ElementTypesVector.h
         include/NaturalConstants.h
-        #include/Atom.h
-        #include/AtomsVector.h
-        #include/AtomsVectorCollection.h
         include/Particle.h
         include/ParticlesVector.h
         include/ParticlesVectorCollection.h
-        #include/Electron.h
-        #include/ElectronsVector.h
-        #include/ElectronsVectorCollection.h
         include/SpinType.h
-        #include/SpinTypesVector.h
         include/Importer.h
         include/CollectionParser.h
         include/AbstractVector.h
@@ -48,20 +40,12 @@ set(HEADER_FILES
         include/PositionsVectorTransformer.h
         include/TypesVector.h
         include/Metrics.h
+        include/MolecularGeometry.h
         )
 
 set(SOURCE_FILES
         source/pElementInfo.cpp
         source/ElementInfo.cpp
-        #source/ElementTypesVector.cpp
-        #source/Atom.cpp
-        #source/AtomsVector.cpp
-        #source/AtomsVectorCollection.cpp
-        #source/ParticlesVector.cpp
-        #source/Electron.cpp
-        #source/ElectronsVector.cpp
-        #source/ElectronsVectorCollection.cpp
-        #source/SpinTypesVector.cpp
         source/Importer.cpp
         source/CollectionParser.cpp
         source/SpinType.cpp
@@ -72,6 +56,7 @@ set(SOURCE_FILES
         source/ToString.cpp
         source/PositionsVectorTransformer.cpp
         source/Metrics.cpp
+        source/MolecularGeometry.cpp
         )
 
 file(GLOB_RECURSE RESOURCE_FILES resources/*.*)
