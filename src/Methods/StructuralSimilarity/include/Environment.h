@@ -9,25 +9,24 @@
 #include "ExpansionSettings.h"
 #include <ParticlesVector.h>
 
-template <typename Type>
 class Environment : AbstractVector {
 public:
 
     // Preallocates the coefficient matrix
     explicit Environment(unsigned numberOfParticles,
-                                                     const ExpansionSettings& settings = ExpansionSettings::defaults())
+                         const ExpansionSettings& settings = ExpansionSettings::defaults())
             : AbstractVector(numberOfParticles),
               s_(settings),
               angularEntityLength_( s_.angular.lmax*s_.angular.lmax + 2*s_.angular.lmax + 1),
               entityLength_(s_.radial.nmax * angularEntityLength_),
               coefficients_(Eigen::VectorXcd::Zero(numberOfParticles * entityLength_)),
-              powerSpectrum_(Eigen::VectorXd::Zero(s_.radial.nmax*s_.radial.nmax* (s_.angular.lmax+1)))
+              //powerSpectrum_(Eigen::VectorXd::Zero(s_.radial.nmax*s_.radial.nmax* (2*s_.angular.lmax+1)))
     {}
 
     std::complex<double> getCoefficient(unsigned i, unsigned n, unsigned l, int m) const {
-    s_.checkBounds(n,l,m);
-    return coefficients_( calculateIndex(i) + (n-1)*angularEntityLength_ + (l*l+l+m) );
-}
+        s_.checkBounds(n,l,m);
+        return coefficients_( calculateIndex(i) + (n-1)*angularEntityLength_ + (l*l+l+m) );
+    }
 
     void storeCoefficient(unsigned i, unsigned n, unsigned l, int m, const std::complex<double> &coefficient) {
         s_.checkBounds(n,l,m);
@@ -47,8 +46,7 @@ public:
         return coefficients_.segment(calculateIndex(i),entityLength_);
     }
 
-    void storeSingleNeighborExpansion(unsigned i,
-                                      const Environment<Type> &singleNeighborExpansionCoefficients) {
+    void storeSingleNeighborExpansion(unsigned i, const Environment& singleNeighborExpansionCoefficients) {
         assert(s_ == singleNeighborExpansionCoefficients.s_
                && "The expansion settings must be identical.");
         assert(singleNeighborExpansionCoefficients.numberOfEntities() == 1
@@ -63,7 +61,6 @@ public:
     const ExpansionSettings& getSettings() const {
         return s_;
     }
-
 
     friend std::ostream& operator<<(std::ostream& os, const Environment & cv){
 
@@ -84,15 +81,34 @@ public:
         return os;
     }
 
-    double calculatePowerSpectrumCoefficient(unsigned n1, unsigned n2, unsigned l) {
-
+    double powerSpectrumCoefficient(unsigned n1, unsigned n2, unsigned l) const {
+        s_.radial.checkBounds(n1);
+        s_.radial.checkBounds(n2);
+        s_.angular.checkBounds(l);
         double sum = 0;
 
         for (int m = -int(l); m < int(l); ++m) {
             sum += std::conj(getCoefficient(n1,l,m)) * getCoefficient(n2,l,m);
         }
 
-        return M_PI*sqrt(8./(2.*l+1))* sum;
+        return M_PI * sqrt(8./(2.*l+1)) * sum;
+    }
+    
+    Eigen::VectorXd powerSpectrum() const {
+
+        unsigned angularEntityLength = 2*s_.angular.lmax+1;
+        unsigned entityLength = s_.radial.nmax * angularEntityLength;
+        Eigen::VectorXd powerSpectrum(Eigen::VectorXd::Zero(s_.radial.nmax*entityLength);
+
+        for (unsigned n1 = 1; n1 <= s_.radial.nmax; ++n1) {
+            for (unsigned n2 = 1; n2 <= s_.radial.nmax; ++n2) {
+                for (unsigned l = 0; l <= s_.angular.lmax; ++l) {
+                    powerSpectrum(0,(n1-1)*entityLength + (n2-1)*angularEntityLength + (l+s_.angular.lmax) )
+                            = powerSpectrumCoefficient(n1, n2, l);
+                }
+            }
+        }
+        return powerSpectrum;
     }
 
 
@@ -100,7 +116,6 @@ private:
     ExpansionSettings s_;
     unsigned  angularEntityLength_, entityLength_;
     Eigen::VectorXcd coefficients_;
-    Eigen::VectorXd powerSpectrum_;
 };
 
 #endif //AMOLQCPP_ENVIRONMENT_H
