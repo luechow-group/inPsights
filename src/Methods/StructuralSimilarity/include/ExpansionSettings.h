@@ -37,7 +37,7 @@ public:
     public:
         static AngularBasisSettings defaults();
         bool operator==(const AngularBasisSettings& other) const;
-        void checkBounds(unsigned l, int m) const;
+        void checkBounds(unsigned l, int m = 0) const;
 
         unsigned lmax;
 
