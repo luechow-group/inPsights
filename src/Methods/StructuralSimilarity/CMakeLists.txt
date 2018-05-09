@@ -34,7 +34,6 @@ set(HEADER_FILES
         include/RadialGaussianBasis.h
         include/Gaussian.h
         include/AngularBasis.h
-        include/Spectrum.h
         include/NeighborhoodExpander.h
         include/Cutoff.h
         include/Environment.h

@@ -19,8 +19,8 @@ public:
               s_(settings),
               angularEntityLength_( s_.angular.lmax*s_.angular.lmax + 2*s_.angular.lmax + 1),
               entityLength_(s_.radial.nmax * angularEntityLength_),
-              coefficients_(Eigen::VectorXcd::Zero(numberOfParticles * entityLength_)),
-              //powerSpectrum_(Eigen::VectorXd::Zero(s_.radial.nmax*s_.radial.nmax* (2*s_.angular.lmax+1)))
+              coefficients_(Eigen::VectorXcd::Zero(entityLength_))
+              //,powerSpectrum_(Eigen::VectorXd::Zero(s_.radial.nmax*s_.radial.nmax* (2*s_.angular.lmax+1)))
     {}
 
     std::complex<double> getCoefficient(unsigned i, unsigned n, unsigned l, int m) const {
@@ -81,34 +81,42 @@ public:
         return os;
     }
 
-    double powerSpectrumCoefficient(unsigned n1, unsigned n2, unsigned l) const {
+    std::complex<double> powerSpectrumCoefficient(unsigned n1, unsigned n2, unsigned l) const {
         s_.radial.checkBounds(n1);
         s_.radial.checkBounds(n2);
         s_.angular.checkBounds(l);
-        double sum = 0;
 
-        for (int m = -int(l); m < int(l); ++m) {
-            sum += std::conj(getCoefficient(n1,l,m)) * getCoefficient(n2,l,m);
+        std::complex<double> sum;
+        sum.real(0);
+        sum.imag(0);
+
+        //Seems wrong
+        for (unsigned i1 = 0; i1 < numberOfEntities(); i1++) {
+            for (unsigned i2 = 0; i2 < numberOfEntities(); i2++) {
+                for (int m = -int(l); m < int(l); ++m) {
+                    sum += std::conj(getCoefficient(i1, n1, l, m)) * getCoefficient(i2, n2, l, m);
+                }
+            }
         }
 
         return M_PI * sqrt(8./(2.*l+1)) * sum;
     }
     
-    Eigen::VectorXd powerSpectrum() const {
+    Eigen::VectorXcd powerSpectrum() const {
 
         unsigned angularEntityLength = 2*s_.angular.lmax+1;
         unsigned entityLength = s_.radial.nmax * angularEntityLength;
-        Eigen::VectorXd powerSpectrum(Eigen::VectorXd::Zero(s_.radial.nmax*entityLength);
+        Eigen::VectorXcd powerSpectrumVec(Eigen::VectorXd::Zero(s_.radial.nmax*entityLength));
 
         for (unsigned n1 = 1; n1 <= s_.radial.nmax; ++n1) {
             for (unsigned n2 = 1; n2 <= s_.radial.nmax; ++n2) {
                 for (unsigned l = 0; l <= s_.angular.lmax; ++l) {
-                    powerSpectrum(0,(n1-1)*entityLength + (n2-1)*angularEntityLength + (l+s_.angular.lmax) )
+                    powerSpectrumVec(0,(n1-1)*entityLength + (n2-1)*angularEntityLength + (l+s_.angular.lmax) )
                             = powerSpectrumCoefficient(n1, n2, l);
                 }
             }
         }
-        return powerSpectrum;
+        return powerSpectrumVec;
     }
 
 
