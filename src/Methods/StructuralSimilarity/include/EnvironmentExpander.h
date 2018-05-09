@@ -2,8 +2,8 @@
 // Created by Michael Heuer on 20.04.18.
 //
 
-#ifndef AMOLQCPP_NEIGHBORHOODEXPANDER_H
-#define AMOLQCPP_NEIGHBORHOODEXPANDER_H
+#ifndef AMOLQCPP_ENVIRONMENTEXPANDER_H
+#define AMOLQCPP_ENVIRONMENTEXPANDER_H
 
 #include "RadialGaussianBasis.h"
 #include "AngularBasis.h"
@@ -13,9 +13,9 @@
 #include <BoostSphericalHarmonics.h>
 #include <Particle.h>
 
-class NeighborhoodExpander{
+class EnvironmentExpander{
 public:
-    explicit NeighborhoodExpander(const AtomsVector & atoms,
+    explicit EnvironmentExpander(const AtomsVector & atoms,
                                   const ExpansionSettings& settings = ExpansionSettings::defaults())
             : atoms_(atoms),
               s_(settings),
@@ -110,4 +110,4 @@ private:
     Cutoff cutoffFunction_;
 };
 
-#endif //AMOLQCPP_NEIGHBORHOODEXPANDER_H
+#endif //AMOLQCPP_ENVIRONMENTEXPANDER_H
