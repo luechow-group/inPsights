@@ -50,13 +50,14 @@ namespace BoostSphericalHarmonics {
     double realSphericalHarmonicY(unsigned l, int m, double theta, double phi) {
         using namespace std;
         using namespace boost::math;
-        if (m < 0) {
-            return sqrt(2) * pow(-1, m) * spherical_harmonic_i<double>(l, abs(m), theta, phi);
-        } else if (m > 0) {
-            return sqrt(2) * pow(-1, m) * spherical_harmonic_r<double>(l, m, theta, phi);
-        } else {
+
+        if (m == 0)  {
             return spherical_harmonic_r<double>(l, 0, theta, phi);
-        }
+        } else if (m < 0) {
+            return sqrt(2) * pow(-1, m) * spherical_harmonic_i<double>(l, abs(m), theta, phi);
+        } else { // (m > 0)
+            return sqrt(2) * pow(-1, m) * spherical_harmonic_r<double>(l, m, theta, phi);
+        } 
     }
 
     double realSphericalHarmonicY(unsigned l, int m, const Eigen::Vector3d &dir) {
