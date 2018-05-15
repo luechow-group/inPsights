@@ -5,59 +5,74 @@
 #include "ExpansionSettings.h"
 #include <cassert>
 
+// undefined settings
+
+unsigned ExpansionSettings::Radial::nmax = 0;
+RadialGaussianBasisType ExpansionSettings::Radial::basisType = RadialGaussianBasisType(0);
+double ExpansionSettings::Radial::sigmaAtom = 0;
+double ExpansionSettings::Radial::cutoffRadius = 0;
+unsigned ExpansionSettings::Angular::lmax = 0;
+
+double ExpansionSettings::Cutoff::cutoffRadius = 0;
+double ExpansionSettings::Cutoff::cutoffWidth = 0;
+double ExpansionSettings::Cutoff::centerWeight = 0;
+
+ExpansionMode ExpansionSettings::mode = ExpansionMode::Generic;
+
+
 ExpansionSettings ExpansionSettings::defaults() {
     ExpansionSettings s{};
-    s.radial = ExpansionSettings::RadialGaussianBasisSettings::defaults();
-    s.angular = ExpansionSettings::AngularBasisSettings::defaults();
+
+    s.radial = ExpansionSettings::Radial::defaults();
+    s.angular = ExpansionSettings::Angular::defaults();
+    s.cutoff = ExpansionSettings::Cutoff::defaults();
+    ExpansionSettings::mode = ExpansionMode::Generic;
 
     return s;
 };
 
-ExpansionSettings::RadialGaussianBasisSettings ExpansionSettings::RadialGaussianBasisSettings::defaults() {
-    ExpansionSettings::RadialGaussianBasisSettings s{};
-    s.nmax = 2;
-    s.basisType = RadialGaussianBasisType::equispaced;
-    s.sigmaAtom = 0.5;
-    s.cutoffRadius = 4.0;
+ExpansionSettings::Radial
+ExpansionSettings::Radial::defaults() {
+    ExpansionSettings::Radial r{};
 
-    return s;
+    ExpansionSettings::Radial::nmax = 2;
+    ExpansionSettings::Radial::basisType = RadialGaussianBasisType::equispaced;
+    ExpansionSettings::Radial::sigmaAtom = 0.5;
+    ExpansionSettings::Radial::cutoffRadius = 4.0;
+
+    return r;
 };
 
-ExpansionSettings::AngularBasisSettings ExpansionSettings::AngularBasisSettings::defaults() {
-    ExpansionSettings::AngularBasisSettings s{};
-    s.lmax = 2;
+ExpansionSettings::Angular
+ExpansionSettings::Angular::defaults() {
+    ExpansionSettings::Angular a{};
+    ExpansionSettings::Angular::lmax = 1;
 
-    return s;
+    return a;
 };
 
-bool ExpansionSettings::operator==(const ExpansionSettings &other) const {
-    return (this->radial == other.radial) && (this->angular == other.angular);
+ExpansionSettings::Cutoff
+ExpansionSettings::Cutoff::defaults() {
+    ExpansionSettings::Cutoff c{};
+
+    ExpansionSettings::Cutoff::cutoffRadius = 4.0;
+    ExpansionSettings::Cutoff::cutoffWidth = 1.0;
+    ExpansionSettings::Cutoff::centerWeight = 1.0;
+
+    return c;
 }
 
-bool ExpansionSettings::RadialGaussianBasisSettings::operator==(
-        const ExpansionSettings::RadialGaussianBasisSettings& other) const {
-    return (this->nmax == other.nmax) &&
-           (this->basisType == other.basisType) &&
-           (this->sigmaAtom == other.sigmaAtom) &&
-           (this->cutoffRadius == other.cutoffRadius);
+void ExpansionSettings::checkBounds(unsigned n, unsigned l, int m) {
+    ExpansionSettings::Radial::checkBounds(n);
+    ExpansionSettings::Angular::checkBounds(l,m);
 }
 
-bool ExpansionSettings::AngularBasisSettings::operator==(
-        const ExpansionSettings::AngularBasisSettings& other) const {
-    return this->lmax == other.lmax;
-}
-
-void ExpansionSettings::checkBounds(unsigned n, unsigned l, int m) const {
-    radial.checkBounds(n);
-    angular.checkBounds(l,m);
-}
-
-void ExpansionSettings::RadialGaussianBasisSettings::checkBounds(unsigned n) const {
+void ExpansionSettings::Radial::checkBounds(unsigned n) {
     assert( n <= nmax && "n must be smaller than nmax");
     assert( n >= 1 && "n must greater than or equal to 1");
 }
 
-void ExpansionSettings::AngularBasisSettings::checkBounds(unsigned l, int m) const {
+void ExpansionSettings::Angular::checkBounds(unsigned l, int m) {
     assert( l <= lmax && "l must be less than or equal to lmax");
     assert( unsigned(abs(m)) <= lmax && "abs(m) must be smaller than lmax");
 }

@@ -15,7 +15,7 @@
 class RadialGaussianBasis{
 public:
 
-    explicit RadialGaussianBasis(const ExpansionSettings& settings = ExpansionSettings::defaults());
+    explicit RadialGaussianBasis();
     
     double operator()(double r, unsigned n) const;
 
@@ -24,7 +24,7 @@ public:
     double sigmaBasisFunction(unsigned n){ return basis_[n-1].sigma(); };
     
 private:
-    std::vector<Gaussian> createBasis(ExpansionSettings& settings);
+    std::vector<Gaussian> createBasis();
 
     Eigen::MatrixXd Smatrix() const;
 
@@ -35,8 +35,7 @@ private:
     Eigen::MatrixXd calculateRadialTransform(const Eigen::MatrixXd &Sab);
 
     double calculateIntegral(double ai, double ri,unsigned l, double rho_ik,double beta_ik) const;
-
-    ExpansionSettings s_;
+    
     std::vector<Gaussian> basis_;
     Eigen::MatrixXd Sab_, radialTransform_;
 };

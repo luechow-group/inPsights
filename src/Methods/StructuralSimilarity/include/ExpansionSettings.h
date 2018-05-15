@@ -9,47 +9,58 @@ enum class RadialGaussianBasisType{
     equispaced = 0, adaptive,
 };
 
+enum class ExpansionMode {
+    Generic = 0, TypeSpecific
+};
+
+
 namespace ZeroLimits{
     const double radiusZero = 1e-10; //TODO put in expansion settings
 }
 
+// Monostate pattern
 class ExpansionSettings{
 public:
+    ExpansionSettings() = default;
     static ExpansionSettings defaults();
-    bool operator==(const ExpansionSettings& other) const;
-    void checkBounds(unsigned n, unsigned l, int m) const;
+    static void checkBounds(unsigned n, unsigned l, int m);
 
-    class RadialGaussianBasisSettings{
+    class Radial{
     public:
-        static RadialGaussianBasisSettings defaults();
-        bool operator==(const RadialGaussianBasisSettings& other) const;
-        void checkBounds(unsigned n) const;
+        Radial() = default;
+        static Radial defaults();
+        static void checkBounds(unsigned n);
 
-        unsigned nmax;
-        RadialGaussianBasisType basisType;
-        double sigmaAtom, cutoffRadius;
-
-    private:
-        RadialGaussianBasisSettings() = default;
+        static unsigned nmax;
+        static RadialGaussianBasisType basisType;
+        static double sigmaAtom, cutoffRadius;
     };
 
-    class AngularBasisSettings{
+    class Angular{
     public:
-        static AngularBasisSettings defaults();
-        bool operator==(const AngularBasisSettings& other) const;
-        void checkBounds(unsigned l, int m = 0) const;
+        Angular() = default;
+        static Angular defaults();
+        static void checkBounds(unsigned l, int m = 0);
 
-        unsigned lmax;
-
-    private:
-        AngularBasisSettings() = default;
+        static unsigned lmax;
     };
 
-    RadialGaussianBasisSettings radial;
-    AngularBasisSettings angular;
+    class Cutoff{
+    public:
+        Cutoff() = default;
+        static Cutoff defaults();
+
+        static double cutoffRadius, cutoffWidth, centerWeight;
+    };
+
+    static ExpansionMode mode;
 
 private:
-    ExpansionSettings() = default;
+    Radial radial;
+    Angular angular;
+    Cutoff cutoff;
+
+
 };
 
 

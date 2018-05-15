@@ -8,25 +8,21 @@
 
 #include <Eigen/Core>
 
-class Cutoff{
-public:
-    explicit Cutoff(double cutoffRadius = 4., double cutoffWidth = 1., double centerWeight = 1.);
+//TODO make Cutoff a namespace and put cutoff settings into Expansion settings class
+namespace Cutoff{
+    bool withinCutoffRadiusQ(double distance);
 
-    bool withinCutoffRadiusQ(double distance) const;
-
-    double getWeight(double distanceFromExpansionCenter) const;
+    double getWeight(double distanceFromExpansionCenter);
 
     double getWeight(const Eigen::Vector3d& position,
-                     const Eigen::Vector3d& expansionCenter = Eigen::Vector3d::Zero()) const;
+                     const Eigen::Vector3d& expansionCenter = Eigen::Vector3d::Zero());
 
-    Eigen::Vector3d getWeightGradient(const Eigen::Vector3d& position) const;
+    Eigen::Vector3d getWeightGradient(const Eigen::Vector3d& position);
 
     double getCenterWeight();
 
-    static double distance(const Eigen::Vector3d &position,
-                           const Eigen::Vector3d &expansionCenter = Eigen::Vector3d::Zero());
-private:
-    double cutoffRadius_, cutoffWidth_, centerWeight_, innerPlateauRadius_;
+    double distance(const Eigen::Vector3d &position,
+                    const Eigen::Vector3d &expansionCenter = Eigen::Vector3d::Zero());
 };
 
 #endif //AMOLQCPP_CUTOFF_H

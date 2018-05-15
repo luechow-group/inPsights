@@ -3,43 +3,49 @@
 //
 
 #include "RadialGaussianBasis.h"
-#include "Environment.h"
 #include <Eigen/Eigenvalues>
 #include <Eigen/Cholesky>
 #include <unsupported/Eigen/MatrixFunctions>
 
 
-RadialGaussianBasis::RadialGaussianBasis(const ExpansionSettings &settings)
-        : s_(settings),
-          basis_(createBasis(s_)),
-          Sab_(Sab(s_.radial.nmax)),
+RadialGaussianBasis::RadialGaussianBasis()
+        : basis_(createBasis()),
+          Sab_(Sab(ExpansionSettings::Radial::nmax)),
           radialTransform_(calculateRadialTransform(Sab_))
 {}
 
-std::vector<Gaussian> RadialGaussianBasis::createBasis(ExpansionSettings& settings) {
+std::vector<Gaussian> RadialGaussianBasis::createBasis() {
+    const auto& nmax = ExpansionSettings::Radial::nmax;
+    const auto& lmax = ExpansionSettings::Angular::lmax;
+    const auto& sigmaAtom = ExpansionSettings::Radial::sigmaAtom;
+
 
     std::vector<Gaussian> basis;
     double basisFunctionCenter = 0;
     
-    switch (settings.radial.basisType){
+    switch (ExpansionSettings::Radial::basisType){
         case RadialGaussianBasisType::equispaced : {
-            for (int i = 0; i < settings.radial.nmax; ++i) {
-                basisFunctionCenter = (settings.radial.cutoffRadius*i)/double(s_.radial.nmax);
-                basis.emplace_back(basisFunctionCenter, settings.radial.sigmaAtom);
+            const auto& cutoffRadius = ExpansionSettings::Radial::cutoffRadius;
+
+            for (int i = 0; i < nmax; ++i) {
+                basisFunctionCenter = (cutoffRadius*i) /double(nmax);
+                basis.emplace_back(basisFunctionCenter, sigmaAtom);
             }
         }
         case RadialGaussianBasisType::adaptive :{
             basisFunctionCenter = 0;
             double sigmaStride = 1/2.;
             
-            for (int i = 0; i < settings.radial.nmax; ++i) {
-                double sigmaAdaptive = std::sqrt( 4/(2.*settings.angular.lmax + 1) * pow(basisFunctionCenter,2)+ pow(settings.radial.sigmaAtom,2) );
+            for (int i = 0; i < nmax; ++i) {
+                double sigmaAdaptive = std::sqrt( 4/(2.*lmax + 1)
+                        * pow(basisFunctionCenter,2)+ pow(sigmaAtom,2) );
                 basis.emplace_back(basisFunctionCenter, sigmaAdaptive);
                 basisFunctionCenter += sigmaStride*sigmaAdaptive;
             }
 
-            // Attention: the cutoff radius is changed here 
-            settings.radial.cutoffRadius = (*basis_.end()).center(); //TODO check this: is the last basis function centered at the cutoff radius?
+            //TODO Attention: the cutoff radius is changed here
+            // add lock function?
+            ExpansionSettings::Radial::cutoffRadius = (*basis_.end()).center(); //TODO check this: is the last basis function centered at the cutoff radius?
         }
     }
     return basis;
@@ -47,12 +53,13 @@ std::vector<Gaussian> RadialGaussianBasis::createBasis(ExpansionSettings& settin
 
 
 double RadialGaussianBasis::operator()(double r, unsigned n) const{
+    const auto& nmax  = ExpansionSettings::Radial::nmax;
     assert(n > 0 && "The radial basis function index must be positive");
-    assert(n <= s_.radial.nmax && "The radial basis function index must be smaller than or equal to nmax");
+    assert(n <= nmax && "The radial basis function index must be smaller than or equal to nmax");
 
-    Eigen::VectorXd hvec(s_.radial.nmax);
+    Eigen::VectorXd hvec(nmax);
 
-    for (int i = 0; i < s_.radial.nmax; ++i) {
+    for (int i = 0; i < nmax; ++i) {
         hvec(i) = basis_[i].g2_r2_normalizedValue(r); //TODO store this?
     }
     return radialTransform_.col(n-1).dot(hvec);

@@ -38,7 +38,10 @@ set(HEADER_FILES
         include/Cutoff.h
         include/Environment.h
         include/ExpansionSettings.h
+        include/LocalSimilarity.h
+        include/PowerSpectrum.h
         include/ParticlePool.h
+        include/NeighborhoodExpansion.h
         )
 
 set(SOURCE_FILES
@@ -51,6 +54,11 @@ set(SOURCE_FILES
         source/AngularBasis.cpp
         source/Cutoff.cpp
         source/ExpansionSettings.cpp
+        source/ParticlePool.cpp
+        source/PowerSpectrum.cpp
+        source/LocalSimilarity.cpp
+        source/NeighborhoodExpander.cpp
+        source/NeighborhoodExpansion.cpp
         )
 
 file(GLOB_RECURSE RESOURCE_FILES resources/*.*)

@@ -10,20 +10,10 @@
 #include <Eigen/Core>
 #include <boost/math/special_functions/spherical_harmonic.hpp>
 
+namespace AngularBasis{
+    std::complex<double> computeCoefficient(unsigned l, int m, const Eigen::Vector3d& position);
 
-
-class AngularBasis{
-public:
-    explicit AngularBasis(const ExpansionSettings::AngularBasisSettings& settings = ExpansionSettings::AngularBasisSettings::defaults());
-
-    std::complex<double> computeCoefficient(unsigned l, int m, const Eigen::Vector3d& position) const;
-
-    std::complex<double> computeCoefficient(unsigned l, int m, double theta, double phi) const;
-
-    std::complex<double> operator()(unsigned l, int m, double theta, double phi) const;
-
-private:
-    ExpansionSettings::AngularBasisSettings s_;
+    std::complex<double> computeCoefficient(unsigned l, int m, double theta, double phi);
 };
 
 #endif //AMOLQCPP_ANGULARBASIS_H
