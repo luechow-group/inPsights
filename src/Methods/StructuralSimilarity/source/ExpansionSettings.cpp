@@ -5,74 +5,59 @@
 #include "ExpansionSettings.h"
 #include <cassert>
 
-// undefined settings
+namespace ExpansionSettings {
+    unsigned Radial::nmax = 0;
+    RadialGaussianBasisType Radial::basisType = RadialGaussianBasisType::equispaced;
+    double Radial::sigmaAtom = 0;
 
-unsigned ExpansionSettings::Radial::nmax = 0;
-RadialGaussianBasisType ExpansionSettings::Radial::basisType = RadialGaussianBasisType(0);
-double ExpansionSettings::Radial::sigmaAtom = 0;
-double ExpansionSettings::Radial::cutoffRadius = 0;
-unsigned ExpansionSettings::Angular::lmax = 0;
+    unsigned Angular::lmax = 0;
 
-double ExpansionSettings::Cutoff::cutoffRadius = 0;
-double ExpansionSettings::Cutoff::cutoffWidth = 0;
-double ExpansionSettings::Cutoff::centerWeight = 0;
+    double Cutoff::cutoffRadius = 0;
+    double Cutoff::cutoffWidth = 0;
+    double Cutoff::centerWeight = 0;
 
-ExpansionMode ExpansionSettings::mode = ExpansionMode::Generic;
+    ExpansionMode mode = ExpansionMode::Generic;
 
 
-ExpansionSettings ExpansionSettings::defaults() {
-    ExpansionSettings s{};
+    void defaults() {
+        Radial::defaults();
+        Angular::defaults();
+        Cutoff::defaults();
+        mode = ExpansionMode::Generic;
+    };
 
-    s.radial = ExpansionSettings::Radial::defaults();
-    s.angular = ExpansionSettings::Angular::defaults();
-    s.cutoff = ExpansionSettings::Cutoff::defaults();
-    ExpansionSettings::mode = ExpansionMode::Generic;
+    void Radial::defaults() {
+        nmax = 5;
+        basisType = RadialGaussianBasisType::equispaced;
+        sigmaAtom = 0.5;
+    };
 
-    return s;
-};
+    void Angular::defaults() {
+        lmax = 1;
+    };
 
-ExpansionSettings::Radial
-ExpansionSettings::Radial::defaults() {
-    ExpansionSettings::Radial r{};
+    void Cutoff::defaults() {
+        cutoffRadius = 4.0;
+        cutoffWidth = 1.0;
+        centerWeight = 1.0;
+    }
 
-    ExpansionSettings::Radial::nmax = 2;
-    ExpansionSettings::Radial::basisType = RadialGaussianBasisType::equispaced;
-    ExpansionSettings::Radial::sigmaAtom = 0.5;
-    ExpansionSettings::Radial::cutoffRadius = 4.0;
+    double Cutoff::innerPlateauRadius() {
+        return cutoffRadius - cutoffWidth;
+    }
 
-    return r;
-};
+    void checkBounds(unsigned n, unsigned l, int m) {
+        Radial::checkBounds(n);
+        Angular::checkBounds(l,m);
+    }
 
-ExpansionSettings::Angular
-ExpansionSettings::Angular::defaults() {
-    ExpansionSettings::Angular a{};
-    ExpansionSettings::Angular::lmax = 1;
+    void Radial::checkBounds(unsigned n) {
+        assert( n <= nmax && "n must be smaller than nmax");
+        assert( n >= 1 && "n must greater than or equal to 1");
+    }
 
-    return a;
-};
-
-ExpansionSettings::Cutoff
-ExpansionSettings::Cutoff::defaults() {
-    ExpansionSettings::Cutoff c{};
-
-    ExpansionSettings::Cutoff::cutoffRadius = 4.0;
-    ExpansionSettings::Cutoff::cutoffWidth = 1.0;
-    ExpansionSettings::Cutoff::centerWeight = 1.0;
-
-    return c;
-}
-
-void ExpansionSettings::checkBounds(unsigned n, unsigned l, int m) {
-    ExpansionSettings::Radial::checkBounds(n);
-    ExpansionSettings::Angular::checkBounds(l,m);
-}
-
-void ExpansionSettings::Radial::checkBounds(unsigned n) {
-    assert( n <= nmax && "n must be smaller than nmax");
-    assert( n >= 1 && "n must greater than or equal to 1");
-}
-
-void ExpansionSettings::Angular::checkBounds(unsigned l, int m) {
-    assert( l <= lmax && "l must be less than or equal to lmax");
-    assert( unsigned(abs(m)) <= lmax && "abs(m) must be smaller than lmax");
+    void Angular::checkBounds(unsigned l, int m) {
+        assert( l <= lmax && "l must be less than or equal to lmax");
+        assert( unsigned(abs(m)) <= lmax && "abs(m) must be smaller than lmax");
+    }
 }

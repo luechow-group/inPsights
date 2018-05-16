@@ -27,7 +27,7 @@ public:
 
 TEST_F(ALocalSimilarityTest , NormalizationInGenericMode) {
     ParticlePool pool(atoms);
-    auto s = ExpansionSettings::defaults();
+    ExpansionSettings::defaults();
 
     Environment e1(atoms,1);
     Environment e2(atoms,2);
@@ -38,7 +38,7 @@ TEST_F(ALocalSimilarityTest , NormalizationInGenericMode) {
 
 TEST_F(ALocalSimilarityTest , Diff) {
     ParticlePool pool(atoms);
-    auto s = ExpansionSettings::defaults();
+    ExpansionSettings::defaults();
 
     Environment e1(atoms,1);
     Environment e2(atoms,2);
@@ -48,13 +48,15 @@ TEST_F(ALocalSimilarityTest , Diff) {
 
 TEST_F(ALocalSimilarityTest , Cross) {
     ParticlePool pool(atoms);
-    auto s = ExpansionSettings::defaults();
+    ExpansionSettings::defaults();
+    ExpansionSettings::Cutoff::cutoffRadius = 1.2;
+    ExpansionSettings::Angular::lmax = 3;
 
     Environment e0(atoms,0);
     Environment e1(atoms,1);
     Environment e2(atoms,2);
 
-    ASSERT_NEAR(LocalSimilarity::localSimilarity(e0,e1), 1.0, absError);
+    ASSERT_LE(LocalSimilarity::localSimilarity(e0,e1),1.0);
     ASSERT_GE(LocalSimilarity::localSimilarity(e0,e1),0.0);
 
     ASSERT_LE(LocalSimilarity::localSimilarity(e0,e2),1.0);

@@ -6,11 +6,11 @@
 #define AMOLQCPP_RADIALGAUSSIANBASIS_H
 
 #include "Gaussian.h"
-#include "ExpansionSettings.h"
 #include <Eigen/Core>
 #include <boost/math/special_functions/bessel.hpp>
 #include <GaussKronrodCartesianIntegration.h>
 #include <cmath>
+#include "ExpansionSettings.h"
 
 class RadialGaussianBasis{
 public:

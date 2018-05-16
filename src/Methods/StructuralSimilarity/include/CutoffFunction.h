@@ -9,7 +9,7 @@
 #include <Eigen/Core>
 
 //TODO make Cutoff a namespace and put cutoff settings into Expansion settings class
-namespace Cutoff{
+namespace CutoffFunction{
     bool withinCutoffRadiusQ(double distance);
 
     double getWeight(double distanceFromExpansionCenter);

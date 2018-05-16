@@ -3,10 +3,10 @@
 //
 
 #include "NeighborhoodExpander.h"
-#include "Cutoff.h"
+#include "CutoffFunction.h"
 #include "AngularBasis.h"
 #include "Environment.h"
-
+#include <iomanip>
 NeighborhoodExpander::NeighborhoodExpander()
         : radialGaussianBasis_(){}
 
@@ -23,6 +23,8 @@ std::complex<double> NeighborhoodExpander::coefficient(double centerToNeighborDi
 
 NeighborhoodExpansion NeighborhoodExpander::expandEnvironment(const Environment& e, Elements::ElementType expansionType) const {
 
+    //std::cout << e.atoms_[e.centerId_].toString() << "->\n";//TODO delete
+
     auto numberOfParticles = unsigned(e.atoms_.numberOfEntities());
 
     NeighborhoodExpansion neighborhoodExpansion(numberOfParticles);
@@ -30,6 +32,7 @@ NeighborhoodExpansion NeighborhoodExpander::expandEnvironment(const Environment&
     for (unsigned j = 0; j < numberOfParticles; ++j) {
         const auto& center = e.atoms_[e.centerId_];
         const auto& neighbor = e.atoms_[j];
+
 
         //Only add type specific neighbors or ignore the type
         if(neighbor.type() != expansionType && expansionType !=Elements::ElementType::none) continue;
@@ -40,13 +43,19 @@ NeighborhoodExpansion NeighborhoodExpander::expandEnvironment(const Environment&
         double centerToNeighborDistance = centerToNeighborVector.norm();
 
         // skip this iteration if particle i is outside the cutoff radius
-        if (!Cutoff::withinCutoffRadiusQ(centerToNeighborDistance)){
-            continue;
+        if (!CutoffFunction::withinCutoffRadiusQ(centerToNeighborDistance)){
+            //std::cout << "x";//TODO delete
+            //std::cout << "\t" << neighbor.toString() << std::endl;//TODO delete
         } else {
             double weight = 1;
-            double weightScale = Cutoff::getWeight(centerToNeighborDistance);
+            double weightScale = CutoffFunction::getWeight(centerToNeighborDistance);
 
-            if (j == e.centerId_) weight *= ExpansionSettings::Cutoff::centerWeight;
+            if (j == e.centerId_) {
+                weight *= ExpansionSettings::Cutoff::centerWeight;
+                //std::cout << "*";//TODO delete
+            }
+            //std::cout << "\t" << neighbor.toString() << "\t";//TODO delete
+
             double theta, phi;
             if (centerToNeighborDistance > 0.) {
                 BoostSphericalHarmonics::ToSphericalCoords(centerToNeighborVector.normalized(), theta, phi);
@@ -56,7 +65,6 @@ NeighborhoodExpansion NeighborhoodExpander::expandEnvironment(const Environment&
                 phi = 0.;
                 //return something here?
             }
-
 
             for (unsigned n = 1; n <= ExpansionSettings::Radial::nmax; ++n) {
                 for (unsigned l = 0; l <= ExpansionSettings::Angular::lmax; ++l) {
@@ -68,11 +76,12 @@ NeighborhoodExpansion NeighborhoodExpander::expandEnvironment(const Environment&
                         //std::cout << AngularBasis::computeCoefficient(l, m, theta, phi) << ", ";
                         coefficient *= weight * weightScale;
 
+                        //std::cout<< std::setprecision(4) << coefficient << ",";
                         neighborhoodExpansion.storeCoefficient(n,l,m,coefficient);
                     }
                 }
             }
-            //std::cout << std::endl;
+            //std::cout << std::endl;//TODO delete
         }
     }
     return neighborhoodExpansion;

@@ -35,13 +35,14 @@ set(HEADER_FILES
         include/Gaussian.h
         include/AngularBasis.h
         include/NeighborhoodExpander.h
-        include/Cutoff.h
+        include/CutoffFunction.h
         include/Environment.h
         include/ExpansionSettings.h
         include/LocalSimilarity.h
         include/PowerSpectrum.h
         include/ParticlePool.h
         include/NeighborhoodExpansion.h
+        include/StructuralSimilarity.h
         )
 
 set(SOURCE_FILES
@@ -52,7 +53,7 @@ set(SOURCE_FILES
         source/Gaussian.cpp
         source/RadialGaussianBasis.cpp
         source/AngularBasis.cpp
-        source/Cutoff.cpp
+        source/CutoffFunction.cpp
         source/ExpansionSettings.cpp
         source/ParticlePool.cpp
         source/PowerSpectrum.cpp

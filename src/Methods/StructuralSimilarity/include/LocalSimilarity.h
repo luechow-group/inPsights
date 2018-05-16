@@ -6,6 +6,7 @@
 #define AMOLQCPP_LOCALSIMILARITY_H
 
 #include <complex>
+#include "NeighborhoodExpander.h"
 
 class Environment;
 
@@ -14,11 +15,18 @@ namespace LocalSimilarity {
     double unnormalizedLocalSimialrity(const Environment& e1, const Environment& e2);
     double localSimilarity(const Environment& e1, const Environment& e2);
 
-    /*static std::complex<double> distance(
-            const PowerSpectrum &a,
-            const PowerSpectrum &b) {
-        return sqrt(2 + 2 * a.asEigenVector().normalized().dot(b.asEigenVector().normalized()));
-    }*/
+    // static std::complex<double> distance(const PowerSpectrum &a, const PowerSpectrum &b)
+
+    void computeGeneric(NeighborhoodExpander &neighborhoodExpander,
+                        std::map<Elements::ElementType, NeighborhoodExpansion> &expansions1,
+                        std::map<Elements::ElementType, NeighborhoodExpansion> &expansions2);
+
+
+        double unnormalizedLocalSimialrity(const std::map<Elements::ElementType, NeighborhoodExpansion>& expansions1,
+                                           const std::map<Elements::ElementType, NeighborhoodExpansion>& expansions2);
+
+        std::map<Elements::ElementType, NeighborhoodExpansion>
+        computeExpansions(const Environment &e);
 
 };
 

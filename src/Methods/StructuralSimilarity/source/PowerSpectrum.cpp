@@ -21,14 +21,13 @@ Eigen::VectorXd PowerSpectrum::partialPowerSpectrum(const NeighborhoodExpansion&
         unsigned n1BlockStartIdx = (n1 - 1) * nmax * angularEntityLength;
 
         for (unsigned n2 = 1; n2 <= nmax; ++n2) {
-            unsigned n1n2BlockStartIdx = n1BlockStartIdx + (n1 - 1) * (n2 - 1) * angularEntityLength;
+            unsigned n1n2BlockStartIdx = n1BlockStartIdx + (n2 - 1) * angularEntityLength;
 
             for (unsigned l = 0; l <= lmax; ++l) {
-                //TODO NORM HERE?
+                //TODO NORM HERE
                 //expansionCoefficients[n1n2BlockStartIdx + l] = std::norm(powerSpectrumCoefficient(n1a, n1b,n1, n2, l));
                 expansionCoefficients[n1n2BlockStartIdx + l] = powerSpectrumCoefficient(n1a, n1b,n1, n2, l);
             }
-
         }
     }
     return expansionCoefficients;
@@ -39,9 +38,9 @@ double PowerSpectrum::powerSpectrumCoefficient(const NeighborhoodExpansion& gene
     return powerSpectrumCoefficient(generic,generic,n1,n2,l);
 }
 
-double PowerSpectrum::powerSpectrumCoefficient(const NeighborhoodExpansion& speciesA,/*replace by Type typeA*/
-                                                             const NeighborhoodExpansion& speciesB,/*replace by Type typeB*/
-                                                             unsigned n1, unsigned n2, unsigned l ) {/*, kappa_aa,kappa_b */
+double PowerSpectrum::powerSpectrumCoefficient(const NeighborhoodExpansion& speciesA,
+                                               const NeighborhoodExpansion& speciesB,
+                                               unsigned n1, unsigned n2, unsigned l ) {/*, kappa_aa,kappa_b */
 
     //assert(speciesA.getSettings() == speciesB.getSettings());
 
@@ -54,8 +53,13 @@ double PowerSpectrum::powerSpectrumCoefficient(const NeighborhoodExpansion& spec
     for (int m = -int(l); m < int(l); ++m) {
         //TODO sum up all particles ?? BEFORE OR AFTER MULTIPLICATION?
         // ACCOUNTED FOR
+                auto a = speciesA.getCoefficient(n1, l, m);
+                auto b = speciesA.getCoefficient(n2, l, m);
         sum += std::norm(std::conj(speciesA.getCoefficient(n1, l, m)) * speciesB.getCoefficient(n2, l, m));
+        assert(sum == sum && "Sum cannot be NaN!");
     }
+
+
 
     return M_PI * sqrt(8./(2.*l+1)) * sum;
 }

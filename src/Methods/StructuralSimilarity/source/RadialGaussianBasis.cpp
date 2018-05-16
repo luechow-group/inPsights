@@ -8,6 +8,7 @@
 #include <unsupported/Eigen/MatrixFunctions>
 
 
+
 RadialGaussianBasis::RadialGaussianBasis()
         : basis_(createBasis()),
           Sab_(Sab(ExpansionSettings::Radial::nmax)),
@@ -17,38 +18,45 @@ RadialGaussianBasis::RadialGaussianBasis()
 std::vector<Gaussian> RadialGaussianBasis::createBasis() {
     const auto& nmax = ExpansionSettings::Radial::nmax;
     const auto& lmax = ExpansionSettings::Angular::lmax;
-    const auto& sigmaAtom = ExpansionSettings::Radial::sigmaAtom;
+    const auto& sigmaAtom = ExpansionSettings::Radial::sigmaAtom; //TODO rename?
 
 
     std::vector<Gaussian> basis;
     double basisFunctionCenter = 0;
-    
+
+
+    auto type = ExpansionSettings::Radial::basisType;
+
     switch (ExpansionSettings::Radial::basisType){
         case RadialGaussianBasisType::equispaced : {
-            const auto& cutoffRadius = ExpansionSettings::Radial::cutoffRadius;
+
+            double bla = ExpansionSettings::Radial::nmax;
+            double cutoffRadius = ExpansionSettings::Cutoff::cutoffRadius;
 
             for (int i = 0; i < nmax; ++i) {
-                basisFunctionCenter = (cutoffRadius*i) /double(nmax);
+                basisFunctionCenter = (cutoffRadius*double(i)) /double(nmax);
                 basis.emplace_back(basisFunctionCenter, sigmaAtom);
             }
+            return basis;
         }
         case RadialGaussianBasisType::adaptive :{
             basisFunctionCenter = 0;
             double sigmaStride = 1/2.;
             
             for (int i = 0; i < nmax; ++i) {
-                double sigmaAdaptive = std::sqrt( 4/(2.*lmax + 1)
-                        * pow(basisFunctionCenter,2)+ pow(sigmaAtom,2) );
+                double sigmaAdaptive = std::sqrt( 4./(2.*lmax + 1) * pow(basisFunctionCenter,2)+ pow(sigmaAtom,2) );
                 basis.emplace_back(basisFunctionCenter, sigmaAdaptive);
                 basisFunctionCenter += sigmaStride*sigmaAdaptive;
             }
 
             //TODO Attention: the cutoff radius is changed here
             // add lock function?
-            ExpansionSettings::Radial::cutoffRadius = (*basis_.end()).center(); //TODO check this: is the last basis function centered at the cutoff radius?
+                    //TODO CHANGE THIS !!!!!!!!!!!!!!!!!!!!
+            ExpansionSettings::Cutoff::cutoffRadius = (*basis_.end()).center(); //TODO check this: is the last basis function centered at the cutoff radius?
+            return basis;
         }
     }
-    return basis;
+
 }
 
 
@@ -85,8 +93,7 @@ Eigen::MatrixXd RadialGaussianBasis::Sab(unsigned nmax) const{
 
             double w = a+b;
             double W0 = a*rCenterA + b*rCenterB;
-            double s;
-            s = 1./(4.*pow(w, 2.5));
+            double s = 1./(4.*pow(w, 2.5));
             s *= exp(-a*rCenterA*rCenterA-b*rCenterB*rCenterB);
             s *= 2*sqrt(w)*W0
                  + sqrt(M_PI)*exp(std::pow(W0,2)/w)*(w+2*std::pow(W0,2))
@@ -147,6 +154,8 @@ double RadialGaussianBasis::computeCoefficient(unsigned n, unsigned l, double ce
         return 0;//!? basis_[n].g2_r2_normalizedValue(neighborPosition.norm() * radialTransform_(n-1,l));//TODO
     } else {
 
+
+
         //TODO Optimize
         double ai = 1/(2. * pow(neighborSigma,2));
         double ri = centerToNeighborDistance;
@@ -154,9 +163,9 @@ double RadialGaussianBasis::computeCoefficient(unsigned n, unsigned l, double ce
         double norm_g_dV_sph_i = gi_sph.getNormalizationConstant();
 
         // Prefactor (r-independent)
-            double basisFunctionAlpha = basis_[n].alpha(); //ak
-            double basisFunctionCenter = basis_[n].center(); //rk
-            double norm_r2_g2_dr_rad_k = basis_[n].normalizationConstant_g2_r2();
+            double basisFunctionAlpha = basis_[n-1].alpha(); //ak
+            double basisFunctionCenter = basis_[n-1].center(); //rk
+            double norm_r2_g2_dr_rad_k = basis_[n-1].normalizationConstant_g2_r2();
             double beta_ik = ai + basisFunctionAlpha;
             double rho_ik = basisFunctionAlpha * basisFunctionCenter / beta_ik;
             double prefac =
@@ -165,6 +174,11 @@ double RadialGaussianBasis::computeCoefficient(unsigned n, unsigned l, double ce
                     exp(-ai * ri * ri) *
                     exp(-basisFunctionAlpha * pow(basisFunctionCenter,2) * (1 - basisFunctionAlpha / beta_ik)); // eq 32 bzw. 33
 
+        assert(prefac == prefac && "coeff cannot be NaN!");
+
+        auto integral = calculateIntegral(ai, ri, l, rho_ik, beta_ik);
+
+        assert(integral == integral && "coeff cannot be NaN!");
         return prefac * calculateIntegral(ai, ri, l, rho_ik, beta_ik);
     }
 }

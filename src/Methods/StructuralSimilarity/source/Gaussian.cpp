@@ -40,6 +40,8 @@ double Gaussian::normalizationConstant_g2_r2() const{
                 *(w+2*pow(W0,2))
                 *boost::math::erfc<double>(-W0/sqrt(w))
             );
+    assert(integral_r2_g2_dr == integral_r2_g2_dr && "coeff cannot be NaN!");
+    assert(integral_r2_g2_dr > 0);
     return  1./sqrt(integral_r2_g2_dr);
 };
 
