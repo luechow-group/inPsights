@@ -25,7 +25,7 @@ public:
     };
 };
 
-TEST_F(ALocalSimilarityTest , NormalizationInGenericMode) {
+TEST_F(ALocalSimilarityTest , GenericNormalization) {
     ParticlePool pool(atoms);
     ExpansionSettings::defaults();
 
@@ -36,7 +36,7 @@ TEST_F(ALocalSimilarityTest , NormalizationInGenericMode) {
     ASSERT_NEAR(LocalSimilarity::localSimilarity(e2,e2),1.0, absError);
 };
 
-TEST_F(ALocalSimilarityTest , Diff) {
+TEST_F(ALocalSimilarityTest , SameEnvironmentsOnDifferentCenters) {
     ParticlePool pool(atoms);
     ExpansionSettings::defaults();
 
@@ -63,4 +63,51 @@ TEST_F(ALocalSimilarityTest , Cross) {
     ASSERT_GE(LocalSimilarity::localSimilarity(e0,e2),0.0);
 
     ASSERT_NEAR(LocalSimilarity::localSimilarity(e0,e1),LocalSimilarity::localSimilarity(e0,e2), absError);
+};
+
+
+TEST_F(ALocalSimilarityTest , TypeSpecificNormalization) {
+    ParticlePool pool(atoms);
+    ExpansionSettings::defaults();
+    ExpansionSettings::mode = ExpansionMode::TypeSpecific;
+
+    Environment e1(atoms,1);
+    Environment e2(atoms,2);
+
+    ASSERT_NEAR(LocalSimilarity::localSimilarity(e1,e1),1.0, absError);
+    ASSERT_NEAR(LocalSimilarity::localSimilarity(e2,e2),1.0, absError);
+};
+
+TEST_F(ALocalSimilarityTest , SameEnvironmentOnDifferentCentersGeneric) {
+    ParticlePool pool(atoms);
+    ExpansionSettings::defaults();
+
+    Environment e1(atoms,1);
+    Environment e2(atoms,2);
+
+    ASSERT_NEAR(LocalSimilarity::localSimilarity(e1,e2),1.0, absError);
+};
+
+TEST_F(ALocalSimilarityTest , SameEnvironmentOnDifferentCentersTypeSpecific) {
+    ParticlePool pool(atoms);
+    ExpansionSettings::defaults();
+    ExpansionSettings::mode = ExpansionMode::TypeSpecific;
+
+    Environment e1(atoms,1);
+    Environment e2(atoms,2);
+
+    ASSERT_NEAR(LocalSimilarity::localSimilarity(e1,e2),1.0, absError);
+};
+
+TEST_F(ALocalSimilarityTest , IsolatedSpecies) {
+    ParticlePool pool(atoms);
+    ExpansionSettings::defaults();
+    ExpansionSettings::mode = ExpansionMode::TypeSpecific;
+
+    Environment e0(atoms,0);
+    Environment e1(atoms,1);
+    Environment e2(atoms,2);
+
+    ASSERT_NEAR(LocalSimilarity::localSimilarity(e0,e1),0.0, absError);
+    ASSERT_NEAR(LocalSimilarity::localSimilarity(e2,e0),0.0, absError);
 };
