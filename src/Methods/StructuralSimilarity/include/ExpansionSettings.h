@@ -6,6 +6,7 @@
 #define AMOLQCPP_EXPANSIONSETTINGS_H
 
 #include <cassert>
+#include "ElementType.h"
 
 enum class RadialGaussianBasisType{
     equispaced = 0, adaptive,
@@ -44,6 +45,10 @@ namespace ExpansionSettings{
 
         void defaults();
         double innerPlateauRadius();
+    }
+
+    namespace Alchemical{
+        extern std::map<std::pair<Elements::ElementType,Elements::ElementType>,double> pairSimilarities;
     }
 
     extern ExpansionMode mode;
