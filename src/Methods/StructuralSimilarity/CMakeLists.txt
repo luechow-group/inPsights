@@ -43,6 +43,7 @@ set(HEADER_FILES
         include/ParticlePool.h
         include/NeighborhoodExpansion.h
         include/StructuralSimilarity.h
+        include/Sinkhorn.h
         )
 
 set(SOURCE_FILES
@@ -60,6 +61,7 @@ set(SOURCE_FILES
         source/LocalSimilarity.cpp
         source/NeighborhoodExpander.cpp
         source/NeighborhoodExpansion.cpp
+        source/Sinkhorn.cpp
         )
 
 file(GLOB_RECURSE RESOURCE_FILES resources/*.*)
