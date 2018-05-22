@@ -2,8 +2,8 @@
 // Created by Michael Heuer on 08.05.18.
 //
 
-#ifndef AMOLQCPP_PARTICLEPOOL_H
-#define AMOLQCPP_PARTICLEPOOL_H
+#ifndef AMOLQCPP_PARTICLEKIT_H
+#define AMOLQCPP_PARTICLEKIT_H
 
 #include <vector>
 #include <ParticlesVector.h>
@@ -40,4 +40,4 @@ namespace ParticleKit{
     extern ElectronKit electronKit;
 };
 
-#endif //AMOLQCPP_PARTICLEPOOL_H
+#endif //AMOLQCPP_PARTICLEKIT_H

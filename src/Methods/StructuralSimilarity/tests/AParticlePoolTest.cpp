@@ -3,7 +3,7 @@
 //
 
 #include <gtest/gtest.h>
-#include "ParticlePool.h"
+#include "ParticleKit.h"
 #include <iomanip>
 
 using namespace testing;

@@ -3,7 +3,7 @@
 //
 
 #include "LocalSimilarity.h"
-#include "ParticlePool.h"
+#include "ParticleKit.h"
 #include "PowerSpectrum.h"
 #include "NeighborhoodExpander.h"
 

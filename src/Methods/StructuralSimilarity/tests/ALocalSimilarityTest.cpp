@@ -6,7 +6,7 @@
 #include <gtest/gtest.h>
 #include <ParticlesVector.h>
 #include "LocalSimilarity.h"
-#include "ParticlePool.h"
+#include "ParticleKit.h"
 #include "ExpansionSettings.h"
 #include "Environment.h"
 

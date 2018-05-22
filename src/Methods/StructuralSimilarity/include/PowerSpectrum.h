@@ -7,7 +7,6 @@
 
 #include <Eigen/Core>
 #include "ExpansionSettings.h"
-#include "ParticlePool.h"
 
 class NeighborhoodExpansion;
 

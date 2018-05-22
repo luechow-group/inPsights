@@ -2,7 +2,7 @@
 // Created by Michael Heuer on 15.05.18.
 //
 
-#include "ParticlePool.h"
+#include "ParticleKit.h"
 
 namespace ParticleKit {
     AtomKit atomKit = {};

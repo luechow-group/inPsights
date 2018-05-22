@@ -40,7 +40,7 @@ set(HEADER_FILES
         include/ExpansionSettings.h
         include/LocalSimilarity.h
         include/PowerSpectrum.h
-        include/ParticlePool.h
+        include/ParticleKit.h
         include/NeighborhoodExpansion.h
         include/Sinkhorn.h
         )
@@ -55,7 +55,7 @@ set(SOURCE_FILES
         source/AngularBasis.cpp
         source/CutoffFunction.cpp
         source/ExpansionSettings.cpp
-        source/ParticlePool.cpp
+        source/ParticleKit.cpp
         source/PowerSpectrum.cpp
         source/LocalSimilarity.cpp
         source/NeighborhoodExpander.cpp
