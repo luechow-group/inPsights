@@ -7,34 +7,30 @@
 
 #include <vector>
 #include <ParticlesVector.h>
-
-//TODO use std::map instead
+#include <MolecularGeometry.h>
 
 using  AtomKit = std::vector<std::pair<Elements::ElementType,unsigned>>;
 using  ElectronKit = std::pair<unsigned,unsigned>; // alpha, beta
 
-        //TODO MAKE MONOSTATE
-class ParticlePool{
-public:
-    explicit ParticlePool(const AtomKit& atomKit, int charge = 0, unsigned multiplicity = 1);
+namespace ParticlePool{
+    void create(const AtomKit& atomKit, int charge = 0, unsigned multiplicity = 1);
 
-    explicit ParticlePool(const AtomsVector& atoms, int charge = 0, unsigned multiplicity = 1);
+    void create(const AtomsVector& atoms, int charge = 0, unsigned multiplicity = 1);
 
-    ParticlePool(const AtomsVector& atoms, const ElectronsVector& electrons);
+    void create(const AtomsVector& atoms, const ElectronsVector& electrons);
 
-    AtomKit createAtomKitFromAtomsVector(const AtomsVector& atoms) const;
+    AtomKit createAtomKitFromAtomsVector(const AtomsVector& atoms);
 
-    ElectronKit createElectronKitFromAtomKit(const AtomKit &atomKit, int charge, unsigned multiplicity) const;
+    ElectronKit createElectronKitFromAtomKit(const AtomKit &atomKit, int charge, unsigned multiplicity);
 
-    bool isSubsetQ(const AtomsVector& atomsVector) const;
+    bool isSubsetQ(const AtomsVector& atomsVector);
 
-    static const AtomKit& atomKit();
+    unsigned numberOfAtoms();
 
-    static const ElectronKit& electronKit();
+    unsigned numberOfElectrons();
 
-private:
-    static AtomKit atomKit_;
-    static ElectronKit electronKit_;
+    extern AtomKit atomKit;
+    extern ElectronKit electronKit;
 };
 
 #endif //AMOLQCPP_PARTICLEPOOL_H

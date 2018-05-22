@@ -26,7 +26,7 @@ public:
 };
 
 TEST_F(ALocalSimilarityTest , GenericNormalization) {
-    ParticlePool pool(atoms);
+    ParticlePool::create(atoms);
     ExpansionSettings::defaults();
 
     Environment e1(atoms,1);
@@ -37,7 +37,7 @@ TEST_F(ALocalSimilarityTest , GenericNormalization) {
 };
 
 TEST_F(ALocalSimilarityTest , SameEnvironmentsOnDifferentCenters) {
-    ParticlePool pool(atoms);
+    ParticlePool::create(atoms);
     ExpansionSettings::defaults();
 
     Environment e1(atoms,1);
@@ -47,7 +47,7 @@ TEST_F(ALocalSimilarityTest , SameEnvironmentsOnDifferentCenters) {
 };
 
 TEST_F(ALocalSimilarityTest , Cross) {
-    ParticlePool pool(atoms);
+    ParticlePool::create(atoms);
     ExpansionSettings::defaults();
     ExpansionSettings::Cutoff::cutoffRadius = 1.2;
     ExpansionSettings::Angular::lmax = 3;
@@ -67,7 +67,7 @@ TEST_F(ALocalSimilarityTest , Cross) {
 
 
 TEST_F(ALocalSimilarityTest , TypeSpecificNormalization) {
-    ParticlePool pool(atoms);
+    ParticlePool::create(atoms);
     ExpansionSettings::defaults();
     ExpansionSettings::mode = ExpansionMode::TypeSpecific;
 
@@ -79,7 +79,7 @@ TEST_F(ALocalSimilarityTest , TypeSpecificNormalization) {
 };
 
 TEST_F(ALocalSimilarityTest , SameEnvironmentOnDifferentCentersGeneric) {
-    ParticlePool pool(atoms);
+    ParticlePool::create(atoms);
     ExpansionSettings::defaults();
 
     Environment e1(atoms,1);
@@ -89,7 +89,7 @@ TEST_F(ALocalSimilarityTest , SameEnvironmentOnDifferentCentersGeneric) {
 };
 
 TEST_F(ALocalSimilarityTest , SameEnvironmentOnDifferentCentersTypeSpecific) {
-    ParticlePool pool(atoms);
+    ParticlePool::create(atoms);
     ExpansionSettings::defaults();
     ExpansionSettings::mode = ExpansionMode::TypeSpecific;
 
@@ -100,7 +100,7 @@ TEST_F(ALocalSimilarityTest , SameEnvironmentOnDifferentCentersTypeSpecific) {
 };
 
 TEST_F(ALocalSimilarityTest , IsolatedSpecies) {
-    ParticlePool pool(atoms);
+    ParticlePool::create(atoms);
     ExpansionSettings::defaults();
     ExpansionSettings::mode = ExpansionMode::TypeSpecific;
 

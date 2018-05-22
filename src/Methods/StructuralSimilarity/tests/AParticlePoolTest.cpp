@@ -29,41 +29,35 @@ public:
 };
 
 TEST_F(AParticlePoolTest, Constructor1) {
-    ParticlePool particlePool(atoms,0,2);
-
-    auto atomKit = particlePool.atomKit();
-    auto electronKit = particlePool.electronKit();
+    ParticlePool::create(atoms,0,2);
 
     // tests order
-    ASSERT_EQ(atomKit[0].first, Elements::ElementType::H);
-    ASSERT_EQ(atomKit[1].first, Elements::ElementType::He);
+    ASSERT_EQ(ParticlePool::atomKit[0].first, Elements::ElementType::H);
+    ASSERT_EQ(ParticlePool::atomKit[1].first, Elements::ElementType::He);
 
-    ASSERT_EQ(atomKit[0].second, 1);
-    ASSERT_EQ(atomKit[1].second, 1);
+    ASSERT_EQ(ParticlePool::atomKit[0].second, 1);
+    ASSERT_EQ(ParticlePool::atomKit[1].second, 1);
 
-    ASSERT_EQ(electronKit.first, 2);
-    ASSERT_EQ(electronKit.second, 1);
+    ASSERT_EQ(ParticlePool::electronKit.first, 2);
+    ASSERT_EQ(ParticlePool::electronKit.second, 1);
 }
 
 TEST_F(AParticlePoolTest, Constructor2) {
-    ParticlePool particlePool(atoms,electrons);
-
-    auto atomKit = particlePool.atomKit();
-    auto electronKit = particlePool.electronKit();
+    ParticlePool::create(atoms,electrons);
 
     // tests order
-    ASSERT_EQ(atomKit[0].first, Elements::ElementType::H);
-    ASSERT_EQ(atomKit[1].first, Elements::ElementType::He);
+    ASSERT_EQ(ParticlePool::atomKit[0].first, Elements::ElementType::H);
+    ASSERT_EQ(ParticlePool::atomKit[1].first, Elements::ElementType::He);
 
-    ASSERT_EQ(atomKit[0].second, 1);
-    ASSERT_EQ(atomKit[1].second, 1);
+    ASSERT_EQ(ParticlePool::atomKit[0].second, 1);
+    ASSERT_EQ(ParticlePool::atomKit[1].second, 1);
 
-    ASSERT_EQ(electronKit.first, 2);
-    ASSERT_EQ(electronKit.second, 1);
+    ASSERT_EQ(ParticlePool::electronKit.first, 2);
+    ASSERT_EQ(ParticlePool::electronKit.second, 1);
 }
 
 TEST_F(AParticlePoolTest, WrongMultiplicityOrCharge) {
-    EXPECT_DEATH(ParticlePool particlePool(atoms),"");
+    EXPECT_DEATH(ParticlePool::create(atoms),"");
 }
 
 TEST_F(AParticlePoolTest, isSubsetQ) {
@@ -72,8 +66,8 @@ TEST_F(AParticlePoolTest, isSubsetQ) {
     Particle<Elements::ElementType> a1 = {{1,2,3},Elements::ElementType::He};
     atomsSubset.append(a1);
 
-    ParticlePool smallerParticlePool(atoms,0,2);
+    ParticlePool::create(atoms,0,2);
 
-    ASSERT_TRUE(smallerParticlePool.isSubsetQ(atomsSubset));
+    ASSERT_TRUE(ParticlePool::isSubsetQ(atomsSubset));
 
 }

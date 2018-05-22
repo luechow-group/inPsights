@@ -44,10 +44,10 @@ LocalSimilarity::computeExpansions(const Environment &e) {
             break;
         }
         case ExpansionMode::TypeSpecific: {
-            auto numberOfElementTypes = unsigned(ParticlePool::atomKit().size());
+            auto numberOfElementTypes = unsigned(ParticlePool::atomKit.size());
 
             for (unsigned t = 0; t < numberOfElementTypes; ++t) {
-                auto elementType = ParticlePool::atomKit()[t].first;
+                auto elementType = ParticlePool::atomKit[t].first;
                 expansions.emplace(elementType, neighborhoodExpander.expandEnvironment(e, elementType));
             };
             break;
@@ -84,18 +84,18 @@ double LocalSimilarity::unnormalizedLocalSimialrity(
         case ExpansionMode::TypeSpecific: {
 
             double sumAB = 0;
-            auto numberOfElementTypes = unsigned(ParticlePool::atomKit().size());
+            auto numberOfElementTypes = unsigned(ParticlePool::atomKit.size());
 
             for (unsigned a = 0; a < numberOfElementTypes; ++a) {
 
-                auto typeA = ParticlePool::atomKit()[a].first;
+                auto typeA = ParticlePool::atomKit[a].first;
 
                 const auto &e1a = expansions1.find(typeA)->second;
                 const auto &e2a = expansions2.find(typeA)->second;
 
                 for (unsigned b = 0; b < numberOfElementTypes; ++b) {
                     //p is the powerspectrum class
-                    auto typeB = ParticlePool::atomKit()[b].first;
+                    auto typeB = ParticlePool::atomKit[b].first;
 
                     if (typeA == typeB) { // kronecker delta
                         const auto &e1b = expansions1.find(typeB)->second;
