@@ -4,6 +4,10 @@
 
 #include "MolecularGeometry.h"
 
+MolecularGeometry::MolecularGeometry()
+        : atoms_(),electrons_()
+{};
+
 MolecularGeometry::MolecularGeometry(AtomsVector atoms, ElectronsVector electrons)
         : atoms_(std::move(atoms)),
           electrons_(std::move(electrons))

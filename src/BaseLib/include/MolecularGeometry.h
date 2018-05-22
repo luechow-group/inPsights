@@ -10,6 +10,7 @@
 
 class MolecularGeometry{
 public:
+    MolecularGeometry();
     MolecularGeometry(AtomsVector atoms, ElectronsVector electrons);
 
     const AtomsVector& atoms() const;
