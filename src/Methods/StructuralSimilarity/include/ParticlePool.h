@@ -13,15 +13,22 @@ using  AtomKit = std::vector<std::pair<Elements::ElementType,unsigned>>;
 using  ElectronKit = std::pair<unsigned,unsigned>; // alpha, beta
 
 namespace ParticleKit{
+
+    void create(const AtomKit& atomKit, const ElectronKit& electronKit);
+
     void create(const AtomKit& atomKit, int charge = 0, unsigned multiplicity = 1);
 
     void create(const AtomsVector& atoms, int charge = 0, unsigned multiplicity = 1);
 
     void create(const AtomsVector& atoms, const ElectronsVector& electrons);
 
-    AtomKit createAtomKitFromAtomsVector(const AtomsVector& atoms);
+    namespace {
+        void createAtomKitFromAtomsVector(const AtomsVector& atoms);
 
-    ElectronKit createElectronKitFromAtomKit(const AtomKit &atomKit, int charge, unsigned multiplicity);
+        void createElectronKitFromAtomKit(const AtomKit &atomKit, int charge, unsigned multiplicity);
+
+        void createElectronKitFromElectronsVector(const ElectronsVector &electronsVector);
+    }
 
     bool isSubsetQ(const AtomsVector& atomsVector);
 
