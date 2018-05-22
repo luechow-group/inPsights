@@ -42,7 +42,6 @@ set(HEADER_FILES
         include/PowerSpectrum.h
         include/ParticlePool.h
         include/NeighborhoodExpansion.h
-        include/StructuralSimilarity.h
         include/Sinkhorn.h
         )
 
