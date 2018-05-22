@@ -12,7 +12,7 @@
 using  AtomKit = std::vector<std::pair<Elements::ElementType,unsigned>>;
 using  ElectronKit = std::pair<unsigned,unsigned>; // alpha, beta
 
-namespace ParticlePool{
+namespace ParticleKit{
     void create(const AtomKit& atomKit, int charge = 0, unsigned multiplicity = 1);
 
     void create(const AtomsVector& atoms, int charge = 0, unsigned multiplicity = 1);

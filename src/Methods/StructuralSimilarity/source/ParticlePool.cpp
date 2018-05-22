@@ -4,13 +4,13 @@
 
 #include "ParticlePool.h"
 
-namespace ParticlePool {
+namespace ParticleKit {
     AtomKit atomKit = {};
 
     ElectronKit electronKit = {0, 0};
 
     void create(const AtomKit &atomKit, int charge, unsigned multiplicity) {
-        ParticlePool::atomKit = atomKit;
+        ParticleKit::atomKit = atomKit;
 
         //TODO refactor
         auto ekit = createElectronKitFromAtomKit(atomKit, charge, multiplicity);
@@ -23,7 +23,7 @@ namespace ParticlePool {
     }
 
     void create(const AtomsVector &atoms, const ElectronsVector &electrons) {
-        ParticlePool::atomKit = createAtomKitFromAtomsVector(atoms);
+        ParticleKit::atomKit = createAtomKitFromAtomsVector(atoms);
 
         electronKit.first = electrons.countTypeOccurence(Spins::SpinType::alpha);
         electronKit.second = electrons.countTypeOccurence(Spins::SpinType::beta);
