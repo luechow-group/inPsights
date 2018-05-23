@@ -116,7 +116,6 @@ TEST_F(ALocalSimilarityTest , IsolatedSpecies) {
 class ALocalSimilarityTest2 : public ::testing::Test {
 public:
     MolecularGeometry molecule;
-    double absError = 1e-8;
     void SetUp() override {
         molecule = {
                 AtomsVector(
