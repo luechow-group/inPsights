@@ -11,9 +11,7 @@
 
 using  AtomKit = std::vector<std::pair<Elements::ElementType,unsigned>>;
 using  ElectronKit = std::pair<unsigned,unsigned>; // alpha, beta
-
-using  Kit = std::vector<std::pair<int,unsigned>>;
-
+        
 namespace ParticleKit{
 
     void create(const AtomKit& atomKit, const ElectronKit& electronKit);
@@ -35,6 +33,10 @@ namespace ParticleKit{
     }
 
     bool isSubsetQ(const AtomsVector& atomsVector);
+
+    bool isSubsetQ(const ElectronsVector& electronsVector);
+
+    bool isSubsetQ(const MolecularGeometry& molecularGeometry);
 
     unsigned numberOfTypes();
 

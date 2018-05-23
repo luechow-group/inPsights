@@ -92,26 +92,27 @@ namespace ParticleKit {
     }
 
     bool isSubsetQ(const AtomsVector &atomsVector) {
-        bool isSubsetQ = true;
-
         for (auto const &elemenTypeNumberPair : atomKit) {
             auto elementType = elemenTypeNumberPair.first;
-            auto maxNumberOfAtoms = elemenTypeNumberPair.second;
+            auto maxCount = elemenTypeNumberPair.second;
 
-            unsigned short count = 0;
-            for (int j = 0; j < atomsVector.numberOfEntities(); ++j) {
-
-                if (atomsVector[j].type() == elementType)
-                    count++;
-                if (count > maxNumberOfAtoms) {
-                    isSubsetQ = false;
-                    goto outsideNestedLoop;
-                }
-            }
+            if(atomsVector.countTypeOccurence(elementType) > maxCount)
+                return false;
         }
+        return true;
+    }
 
-        outsideNestedLoop:
-        return isSubsetQ;
+    bool isSubsetQ(const ElectronsVector &electronsVector) {
+        if(electronsVector.countTypeOccurence(Spins::SpinType::alpha) > ParticleKit::electronKit.first)
+            return false;
+        else if (electronsVector.countTypeOccurence(Spins::SpinType::beta) > ParticleKit::electronKit.second)
+            return false;
+        else
+            return true;
+    }
+
+    bool isSubsetQ(const MolecularGeometry &molecularGeometry) {
+        return isSubsetQ(molecularGeometry.atoms()) && isSubsetQ(molecularGeometry.electrons());
     }
 
     unsigned numberOfTypes() {
