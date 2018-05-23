@@ -15,10 +15,10 @@ class APositionsVectorTransformerTest : public Test {
 public:
     ParticlesVector<Spins::SpinType> ev;
     void SetUp() override {
-        Particle<Spins::SpinType > e1 = {{0,0,0},Spins::SpinType::alpha};
-        Particle<Spins::SpinType > e2 = {{1,0,0},Spins::SpinType::alpha};
-        Particle<Spins::SpinType > e3 = {{0,1,0},Spins::SpinType::beta};
-        Particle<Spins::SpinType > e4 = {{0,0,1},Spins::SpinType::beta};
+        Particle<Spins::SpinType > e1 = {Spins::SpinType::alpha,{0, 0, 0}};
+        Particle<Spins::SpinType > e2 = {Spins::SpinType::alpha,{1, 0, 0}};
+        Particle<Spins::SpinType > e3 = {Spins::SpinType::beta ,{0, 1, 0}};
+        Particle<Spins::SpinType > e4 = {Spins::SpinType::beta ,{0, 0, 1}};
         ev.append(e1);
         ev.append(e2);
         ev.append(e3);

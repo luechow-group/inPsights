@@ -12,15 +12,15 @@ class AParticlePoolTest : public ::testing::Test {
 public:
     MolecularGeometry molecularGeometry;
     void SetUp() override {
-        Particle<Spins::SpinType > e1 = {{1,2,3},Spins::SpinType::alpha};
-        Particle<Spins::SpinType > e2 = {{1,2,3},Spins::SpinType::alpha};
-        Particle<Spins::SpinType > e3 = {{4,5,6},Spins::SpinType::beta};
+        Particle<Spins::SpinType > e1 = {Spins::SpinType::alpha,{1, 2, 3}};
+        Particle<Spins::SpinType > e2 = {Spins::SpinType::alpha,{1, 2, 3}};
+        Particle<Spins::SpinType > e3 = {Spins::SpinType::beta ,{4, 5, 6}};
         molecularGeometry.electrons().append(e1);
         molecularGeometry.electrons().append(e2);
         molecularGeometry.electrons().append(e3);
 
-        Particle<Elements::ElementType> a1 = {{1,2,3},Elements::ElementType::He};
-        Particle<Elements::ElementType> a2 = {{4,5,6},Elements::ElementType::H};
+        Particle<Elements::ElementType> a1 = {Elements::ElementType::He,{1, 2, 3}};
+        Particle<Elements::ElementType> a2 = {Elements::ElementType::H ,{4, 5, 6}};
         molecularGeometry.atoms().append(a1);
         molecularGeometry.atoms().append(a2);
     };
@@ -61,7 +61,7 @@ TEST_F(AParticlePoolTest, WrongMultiplicityOrCharge) {
 TEST_F(AParticlePoolTest, isSubsetQ) {
 
     AtomsVector atomsSubset;
-    Particle<Elements::ElementType> a1 = {{1,2,3}, Elements::ElementType::He};
+    Particle<Elements::ElementType> a1 = {Elements::ElementType::He,{1, 2, 3}};
     atomsSubset.append(a1);
 
     ParticleKit::create(molecularGeometry.atoms(),0,2);

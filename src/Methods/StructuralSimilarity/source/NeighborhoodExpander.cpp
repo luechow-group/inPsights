@@ -7,6 +7,8 @@
 #include "AngularBasis.h"
 #include "Environment.h"
 #include <iomanip>
+#include <Type.h>
+
 NeighborhoodExpander::NeighborhoodExpander()
         : radialGaussianBasis_(){}
 
@@ -21,25 +23,23 @@ std::complex<double> NeighborhoodExpander::coefficient(double centerToNeighborDi
     return coefficient* weight*weightScale;
 }
 
-NeighborhoodExpansion NeighborhoodExpander::expandEnvironment(const Environment& e, Elements::ElementType expansionType) const {
+NeighborhoodExpansion NeighborhoodExpander::expandEnvironment(const Environment& e, int expansionTypeId) const {
 
     //std::cout << e.atoms_[e.centerId_].toString() << "->\n";//TODO delete
 
-    auto numberOfParticles = unsigned(e.atoms_.numberOfEntities());
+    NeighborhoodExpansion neighborhoodExpansion;
 
-    NeighborhoodExpansion neighborhoodExpansion(numberOfParticles);
-
-    for (unsigned j = 0; j < numberOfParticles; ++j) {
-        const auto& center = e.atoms_[e.centerId_];
-        const auto& neighbor = e.atoms_[j];
+    for (unsigned j = 0; j < unsigned(e.molecularGeometry_.numberOfEntities()); ++j) {
+        const auto& center = e.center_;
+        const auto& neighbor = e.molecularGeometry_[j];
 
 
         //Only add type specific neighbors or ignore the type
-        if(neighbor.type() != expansionType && expansionType !=Elements::ElementType::none) continue;
+        if( int(neighbor.type()) != expansionTypeId && expansionTypeId != int(Type::None)) continue;
 
         double neighborSigma = 0.5;//TODO arbitrary? change this // double neighborSigma = s_.radial.sigmaAtom;
 
-        Eigen::Vector3d centerToNeighborVector = (neighbor.position()-center.position());
+        Eigen::Vector3d centerToNeighborVector = (neighbor.position()-center);
         double centerToNeighborDistance = centerToNeighborVector.norm();
 
         // skip this iteration if particle i is outside the cutoff radius
@@ -50,7 +50,7 @@ NeighborhoodExpansion NeighborhoodExpander::expandEnvironment(const Environment&
             double weight = 1;
             double weightScale = CutoffFunction::getWeight(centerToNeighborDistance);
 
-            if (j == e.centerId_) {
+            if (centerToNeighborDistance <= ZeroLimits::radiusZero) {//neighbor.position().isApprox(e.center_)) {//TODO FISHY to test for center!
                 weight *= ExpansionSettings::Cutoff::centerWeight;
                 //std::cout << "*";//TODO delete
             }

@@ -9,6 +9,7 @@
 #include "Particle.h"
 #include "PositionsVector.h"
 #include "TypesVector.h"
+#include <vector>
 
 template<typename Type>
 class ParticlesVector : public AbstractVector{
@@ -36,8 +37,15 @@ public:
                && "The number of entities in ParticlesVector, PositionsVector, and TypesVector must match.");
     }
 
+    ParticlesVector(std::vector<Particle<Type>> particles)
+            : ParticlesVector() {
+        for (const auto& particle : particles){
+            append(particle);
+        }
+    }
+    
     Particle<Type> operator[](long i) const {
-        return {positionsVector_[i],typesVector_[i]};
+        return {typesVector_[i],positionsVector_[i]};
     }
 
     const PositionsVector & positionsVector() const {

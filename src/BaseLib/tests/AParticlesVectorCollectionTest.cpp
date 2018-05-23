@@ -20,16 +20,16 @@ public:
     AtomsVectorCollection atomsVectorCollection;
 
     void SetUp() override {
-        Particle<Spins::SpinType > e1 = {pos1,Spins::SpinType::alpha};
-        Particle<Spins::SpinType > e2 = {pos2,Spins::SpinType::beta};
+        Particle<Spins::SpinType > e1 = {Spins::SpinType::alpha,pos1};
+        Particle<Spins::SpinType > e2 = {Spins::SpinType::beta,pos2};
         electronsVector.append(e1);
         electronsVector.append(e2);
 
         electronsVectorCollection.append(electronsVector);
         electronsVectorCollection.append(electronsVector);
 
-        Particle<Elements::ElementType> a1 = {pos1,Elements::ElementType::H};
-        Particle<Elements::ElementType> a2 = {pos2,Elements::ElementType::Og};
+        Particle<Elements::ElementType> a1 = {Elements::ElementType::H ,pos1};
+        Particle<Elements::ElementType> a2 = {Elements::ElementType::Og,pos2};
         atomsVector.append(a1);
         atomsVector.append(a2);
         atomsVectorCollection.append(atomsVector);

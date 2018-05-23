@@ -19,7 +19,9 @@ public:
     const ElectronsVector& electrons() const;
     ElectronsVector & electrons();
 
-    long numberOfEntities();
+    Particle<int> operator[](long i) const;
+
+    long numberOfEntities() const;
 
 private:
     AtomsVector atoms_;

@@ -6,16 +6,17 @@
 #define AMOLQCPP_ENVIRONMENT_H
 
 #include <Eigen/Core>
-#include <ParticlesVector.h>
+#include <utility>
+#include <MolecularGeometry.h>
 
 class Environment{
 public:
-    Environment(AtomsVector atoms, unsigned centerId)
-            : atoms_(atoms),
-              centerId_(centerId){}
+    Environment(MolecularGeometry molecularGeometry, Eigen::Vector3d center)
+            : molecularGeometry_(std::move(molecularGeometry)),
+              center_(std::move(center)){}
 
-    AtomsVector atoms_;
-    unsigned centerId_;
+    MolecularGeometry molecularGeometry_;
+    Eigen::Vector3d center_; //TODO be careful with many particles located at the same center => getCenterWeight?
 };
 
 #endif //AMOLQCPP_ENVIRONMENT_H

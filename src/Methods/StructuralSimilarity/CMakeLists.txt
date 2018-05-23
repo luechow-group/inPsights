@@ -61,7 +61,6 @@ set(SOURCE_FILES
         source/NeighborhoodExpander.cpp
         source/NeighborhoodExpansion.cpp
         source/Sinkhorn.cpp
-        source/MolecularGeometry.cpp
         )
 
 file(GLOB_RECURSE RESOURCE_FILES resources/*.*)

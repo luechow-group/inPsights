@@ -8,6 +8,7 @@
 #include "NeighborhoodExpander.h"
 
 #include <exception>
+#include <Type.h>
 
 double LocalSimilarity::localSimilarity(const Environment& e1, const Environment& e2) {
 
@@ -30,26 +31,35 @@ double LocalSimilarity::unnormalizedLocalSimialrity(const Environment& e1,
     return similarityValue;
 }
 
-std::map<Elements::ElementType, NeighborhoodExpansion>
+std::map<int, NeighborhoodExpansion>
 LocalSimilarity::computeExpansions(const Environment &e) {
 
     NeighborhoodExpander neighborhoodExpander;
-    std::map<Elements::ElementType, NeighborhoodExpansion> expansions;
+    std::map<int, NeighborhoodExpansion> expansions;//TODO MODIFY
 
     switch (ExpansionSettings::mode) {
         case ExpansionMode::Generic: {
-
-            auto noneType = Elements::ElementType::none;
-            expansions.emplace(noneType, neighborhoodExpander.expandEnvironment(e, noneType));
+            auto noneTypeId = int(Type::None);
+            expansions.emplace(noneTypeId, neighborhoodExpander.expandEnvironment(e, noneTypeId));
             break;
         }
         case ExpansionMode::TypeSpecific: {
+
             auto numberOfElementTypes = unsigned(ParticleKit::atomKit.size());
 
             for (unsigned t = 0; t < numberOfElementTypes; ++t) {
-                auto elementType = ParticleKit::atomKit[t].first;
-                expansions.emplace(elementType, neighborhoodExpander.expandEnvironment(e, elementType));
+                auto typeId = int(ParticleKit::atomKit[t].first);
+
+                expansions.emplace(typeId, neighborhoodExpander.expandEnvironment(e, typeId));
             };
+
+
+            //TODO ALSO EXPAND W.R.T. alpha and beta electrons
+            expansions.emplace(int(Spins::SpinType::alpha),
+                               neighborhoodExpander.expandEnvironment(e, int(Spins::SpinType::alpha)));
+            expansions.emplace(int(Spins::SpinType::beta),
+                               neighborhoodExpander.expandEnvironment(e, int(Spins::SpinType::beta)));
+
             break;
         }
     }
@@ -57,14 +67,16 @@ LocalSimilarity::computeExpansions(const Environment &e) {
 }
 
 double LocalSimilarity::unnormalizedLocalSimialrity(
-        const std::map<Elements::ElementType, NeighborhoodExpansion>& expansions1,
-        const std::map<Elements::ElementType, NeighborhoodExpansion>& expansions2) {
+        const std::map<int, NeighborhoodExpansion>& expansions1,
+        const std::map<int, NeighborhoodExpansion>& expansions2) {
+
+    //TODO MODIFY
 
     double similarityValue = 0;
     switch (ExpansionSettings::mode) {
         case ExpansionMode::Generic: {
 
-            auto noneType = Elements::ElementType::none;
+            auto noneType = int(Type::None);
             const auto &e1 = expansions1.find(noneType)->second;
             const auto &e2 = expansions2.find(noneType)->second;
 
@@ -84,19 +96,37 @@ double LocalSimilarity::unnormalizedLocalSimialrity(
         case ExpansionMode::TypeSpecific: {
 
             double sumAB = 0;
-            auto numberOfElementTypes = unsigned(ParticleKit::atomKit.size());
+            auto numberOfTypes = ParticleKit::numberOfTypes();
 
-            for (unsigned a = 0; a < numberOfElementTypes; ++a) {
+            for (unsigned a = 0; a < numberOfTypes; ++a) {
 
-                auto typeA = ParticleKit::atomKit[a].first;
+
+                //TODO THIS IS SUPER UGLY
+                int typeA;
+                if(a < ParticleKit::atomKit.size()) {
+                    typeA = int(ParticleKit::atomKit[a].first);//WRITE PARTICLE KIT ACCESSOR
+                } else if ( ParticleKit::atomKit.size() ) {
+                    typeA = int(Spins::SpinType::alpha);
+                } else {//if ( ParticleKit::atomKit.size() +1 )
+                    typeA = int(Spins::SpinType::beta);
+                }
 
                 const auto &e1a = expansions1.find(typeA)->second;
                 const auto &e2a = expansions2.find(typeA)->second;
 
-                for (unsigned b = 0; b < numberOfElementTypes; ++b) {
+                for (unsigned b = 0; b < numberOfTypes; ++b) {
                     //p is the powerspectrum class
-                    auto typeB = ParticleKit::atomKit[b].first;
+                    //TODO THIS IS SUPER UGLY
+                    int typeB;
+                    if(b < ParticleKit::atomKit.size()) {
+                        typeB = int(ParticleKit::atomKit[b].first);
+                    } else if ( ParticleKit::atomKit.size() ) {
+                        typeB = int(Spins::SpinType::alpha);
+                    } else {//if ( ParticleKit::atomKit.size() +1 )
+                        typeB = int(Spins::SpinType::beta);
+                    }
 
+                    // Alchemical similarity can be implemented here
                     if (typeA == typeB) { // kronecker delta
                         const auto &e1b = expansions1.find(typeB)->second;
                         const auto &e2b = expansions2.find(typeB)->second;
@@ -104,12 +134,13 @@ double LocalSimilarity::unnormalizedLocalSimialrity(
                         //std::cout << e1b << std::endl;//TODO Delete
                         //std::cout << e2b << std::endl;
 
-                        auto ps1 = PowerSpectrum::partialPowerSpectrum(e1a, e1b);
-                        auto ps2 = PowerSpectrum::partialPowerSpectrum(e2a, e2b);
+                        auto ps1 = PowerSpectrum::partialPowerSpectrum(e1a, e1b); // kroneckerdelta => (e1a, e1a)
+                        auto ps2 = PowerSpectrum::partialPowerSpectrum(e2a, e2b); // kroneckerdelta => (e2a, e2a)
 
                         sumAB += ps1.dot(ps2);
                     }
                 }
+
             }
             similarityValue = sumAB;
         }

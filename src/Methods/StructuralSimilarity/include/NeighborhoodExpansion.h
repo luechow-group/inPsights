@@ -10,12 +10,11 @@
 class NeighborhoodExpansion{
 public:
     // Preallocates the coefficient matrix
-    explicit NeighborhoodExpansion(unsigned numberOfParticles);
+    NeighborhoodExpansion();
 
-    std::complex<double> getCoefficient(/*unsigned i,*/ unsigned n, unsigned l, int m) const;
-    //unsigned calculateIndex(unsigned i) const { return i*entityLength_; }
+    std::complex<double> getCoefficient(unsigned n, unsigned l, int m) const;
 
-    void storeCoefficient(/*unsigned i,*/ unsigned n, unsigned l, int m, const std::complex<double> &coefficient);
+    void storeCoefficient(unsigned n, unsigned l, int m, const std::complex<double> &coefficient);
 
     Eigen::VectorXcd asEigenVector() const;
 
@@ -23,14 +22,12 @@ public:
 
     friend std::ostream& operator<<(std::ostream& os, const NeighborhoodExpansion & ne);
 
-    unsigned getNumberOfParticles() const;
-
     unsigned angularSubEntityLength(unsigned l) const;
+
     unsigned angularEntityLength(int l) const;
 
 private:
-    unsigned numberOfParticles_;
-    unsigned  /*angularSubEntityLength_,*/angularEntityLength_, entityLength_;
+    unsigned angularEntityLength_, entityLength_;
     Eigen::VectorXcd coefficients_;
 };
 

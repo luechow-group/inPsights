@@ -5,11 +5,10 @@
 #include "NeighborhoodExpansion.h"
 #include "ExpansionSettings.h"
 
-NeighborhoodExpansion::NeighborhoodExpansion(unsigned numberOfParticles)
-        : numberOfParticles_(numberOfParticles),
-          angularEntityLength_(angularEntityLength(ExpansionSettings::Angular::lmax)), //lmax*lmax+ 2*lmax+1
+NeighborhoodExpansion::NeighborhoodExpansion()
+        : angularEntityLength_(angularEntityLength(ExpansionSettings::Angular::lmax)), //lmax*lmax+ 2*lmax+1
           entityLength_(ExpansionSettings::Radial::nmax * angularEntityLength_),//TODO rename
-          coefficients_(Eigen::VectorXcd::Zero(/*numberOfParticles_**/entityLength_))
+          coefficients_(Eigen::VectorXcd::Zero(entityLength_))
 {}
 
 std::complex<double> NeighborhoodExpansion::getCoefficient(unsigned n, unsigned l, int m) const {
@@ -52,5 +51,3 @@ std::ostream& operator<<(std::ostream& os, const NeighborhoodExpansion & ne){
     }
     return os;
 }
-
-unsigned NeighborhoodExpansion::getNumberOfParticles() const { return numberOfParticles_; }

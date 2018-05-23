@@ -20,7 +20,7 @@ public:
               type_(0)
     {}
 
-    Particle(const Eigen::Vector3d& position, Type type)
+    Particle(Type type, const Eigen::Vector3d &position)
             : position_(position), type_(int(type))
     {}
 

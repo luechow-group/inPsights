@@ -14,23 +14,28 @@ public:
 
     ElectronsVector electrons;
     AtomsVector atoms;
+
     void SetUp() override {
-        Particle<Spins::SpinType > e1 = {{1,2,3},Spins::SpinType::alpha};
-        Particle<Spins::SpinType > e2 = {{1,2,3},Spins::SpinType::alpha};
-        Particle<Spins::SpinType > e3 = {{4,5,6},Spins::SpinType::beta};
+        Particle<Spins::SpinType > e1 = {Spins::SpinType::alpha,{1, 2, 3}};
+        Particle<Spins::SpinType > e2 = {Spins::SpinType::alpha,{1, 2, 3}};
+        Particle<Spins::SpinType > e3 = {Spins::SpinType::beta ,{4, 5, 6}};
         electrons.append(e1);
         electrons.append(e2);
         electrons.append(e3);
 
-        Particle<Elements::ElementType> a1 = {{1,2,3},Elements::ElementType::H};
-        Particle<Elements::ElementType> a2 = {{4,5,6},Elements::ElementType::Og};
+        Particle<Elements::ElementType> a1 = {Elements::ElementType::H ,{1, 2, 3}};
+        Particle<Elements::ElementType> a2 = {Elements::ElementType::Og,{4, 5, 6}};
         atoms.append(a1);
         atoms.append(a2);
     };
 };
 
-TEST_F(AParticlesVectorTest, Constructor) {
-    EXPECT_TRUE(false);
+TEST_F(AParticlesVectorTest, BraceInitialization) {
+
+    ParticlesVector<Elements::ElementType> particlesVector(
+            {{Elements::ElementType::H ,{1, 2, 3}},
+             {Elements::ElementType::Og,{4, 5, 6}}}
+    );
 }
 
 TEST_F(AParticlesVectorTest, CopyConstructor) {

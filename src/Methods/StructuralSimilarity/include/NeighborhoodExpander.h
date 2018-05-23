@@ -21,8 +21,7 @@ public:
                                      double neighborSigma,
                                      unsigned n, unsigned l, int m) const;
 
-    NeighborhoodExpansion expandEnvironment(const Environment& e,
-                                            Elements::ElementType expansionType = Elements::ElementType::none) const;
+    NeighborhoodExpansion expandEnvironment(const Environment& e, int expansionTypeId = 0) const;
 
 private:
     RadialGaussianBasis radialGaussianBasis_;

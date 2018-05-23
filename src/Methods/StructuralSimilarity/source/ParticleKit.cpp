@@ -114,6 +114,10 @@ namespace ParticleKit {
         return isSubsetQ;
     }
 
+    unsigned numberOfTypes() {
+        return unsigned(atomKit.size())+2; // alpha & beta type
+    }
+
     unsigned numberOfAtoms() {
         unsigned sum = 0;
 
@@ -125,5 +129,9 @@ namespace ParticleKit {
 
     unsigned numberOfElectrons() {
         return electronKit.first + electronKit.second;
+    }
+
+    unsigned numberOfParticles() {
+        return numberOfAtoms()+numberOfElectrons();
     }
 }
