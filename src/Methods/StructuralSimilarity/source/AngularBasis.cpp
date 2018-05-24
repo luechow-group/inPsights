@@ -6,7 +6,7 @@
 
 std::complex<double> AngularBasis::computeCoefficient(unsigned l, int m, const Eigen::Vector3d& position) {
     double theta,phi;
-    BoostSphericalHarmonics::ToSphericalCoords(position.normalized(),theta,phi);
+    BoostSphericalHarmonics::toSphericalCoords(position.normalized(), theta, phi);
     if (phi < 0.) phi += 2*M_PI;
 
     return AngularBasis::computeCoefficient(l,m,theta,phi);

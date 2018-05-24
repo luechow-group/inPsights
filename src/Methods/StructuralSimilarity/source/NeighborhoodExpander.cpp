@@ -58,7 +58,7 @@ NeighborhoodExpansion NeighborhoodExpander::expandEnvironment(const Environment&
 
             double theta, phi;
             if (centerToNeighborDistance > 0.) {
-                BoostSphericalHarmonics::ToSphericalCoords(centerToNeighborVector.normalized(), theta, phi);
+                BoostSphericalHarmonics::toSphericalCoords(centerToNeighborVector.normalized(), theta, phi);
                 if (phi < 0.) phi += 2 * M_PI;
             } else { // center and neighbor positions are identical
                 theta = 0.;

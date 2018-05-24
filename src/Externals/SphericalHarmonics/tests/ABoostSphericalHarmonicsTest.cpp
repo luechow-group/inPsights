@@ -52,7 +52,7 @@ TEST_F(ABoostSphericalHarmonicsTest, AngleBoundaries) {
                                        r * cos(theta)};
 
                 double rCalc, thetaCalc, phiCalc;
-                BoostSphericalHarmonics::ToSphericalRadialCoords(vec, rCalc, thetaCalc, phiCalc);
+                BoostSphericalHarmonics::toSphericalCoordsStandardizedWith2PiShift(vec, rCalc, thetaCalc, phiCalc);
 
                 ASSERT_NEAR(rCalc, r, absError);
                 ASSERT_NEAR(thetaCalc, theta, absError);
@@ -77,7 +77,7 @@ TEST_F(ABoostSphericalHarmonicsTest, ZAxisCase) {
                                    r * cos(theta)};
 
             double rCalc, thetaCalc, phiCalc;
-            BoostSphericalHarmonics::ToSphericalRadialCoords(vec, rCalc, thetaCalc, phiCalc);
+            BoostSphericalHarmonics::toSphericalCoordsStandardizedWith2PiShift(vec, rCalc, thetaCalc, phiCalc);
             //std::cout << phi/double(2 * M_PI)*360 << ",  "  << phiCalc/double(2 * M_PI)*360 << std::endl;
             ASSERT_NEAR(rCalc, r, absError);
             ASSERT_NEAR(thetaCalc, theta, absError);
@@ -101,7 +101,7 @@ TEST_F(ABoostSphericalHarmonicsTest, OriginCase) {
                                    r * cos(theta)};
 
             double rCalc, thetaCalc, phiCalc;
-            BoostSphericalHarmonics::ToSphericalRadialCoords(vec, rCalc, thetaCalc, phiCalc);
+            BoostSphericalHarmonics::toSphericalCoordsStandardizedWith2PiShift(vec, rCalc, thetaCalc, phiCalc);
 
             ASSERT_NEAR(rCalc, r, absError);
             ASSERT_NEAR(thetaCalc, 0.0, absError);
