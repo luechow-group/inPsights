@@ -11,6 +11,8 @@
 #include "LocalSimilarity.h"
 #include "Sinkhorn.h"
 #include "Environment.h"
+#include <vector>
+#include "NeighborhoodExpander.h"
 
 namespace StructuralSimilarity{
 
@@ -30,6 +32,12 @@ namespace StructuralSimilarity{
 
         Eigen::MatrixXd C = Eigen::MatrixXd::Zero(M+N,M+N);
 
+        // TODO Do LocalSimilarity::computeExpansion here once
+        //NeighborhoodExpander neighborhoodExpander;
+        //std::vector<std::map<int, NeighborhoodExpansion>> expansionsA;
+        //for (int k = 0; k < NA; ++k) {
+        //    expansionsA.emplace(N); // Exp for each particle, - what for doubled particles?
+        //}
 
         // Environments
         // Atoms A with Atoms B

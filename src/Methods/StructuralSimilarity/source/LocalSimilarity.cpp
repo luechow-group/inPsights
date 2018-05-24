@@ -10,60 +10,28 @@
 #include <exception>
 #include <Type.h>
 
-double LocalSimilarity::localSimilarity(const Environment& e1, const Environment& e2) {
+double LocalSimilarity::localSimilarity(const Environment& e1, const Environment& e2, unsigned zeta) {
 
-    auto exp1 = computeExpansions(e1);
-    auto exp2 = computeExpansions(e2);
+    NeighborhoodExpander expander;
+    auto exp1 = expander.computeExpansions(e1); //TODO optimization: store somewhere else
+    auto exp2 = expander.computeExpansions(e2);
 
     auto similarityValue = unnormalizedLocalSimilarity(exp1, exp2)
             / sqrt(unnormalizedLocalSimilarity(exp1, exp1) * unnormalizedLocalSimilarity(exp2, exp2));
 
     std::cout << "normalized: " << similarityValue << std::endl;
-    return similarityValue;
+    return pow(similarityValue,zeta);
 }
+
 double LocalSimilarity::unnormalizedLocalSimialrity(const Environment& e1,
                                                     const Environment& e2) {
-    auto exp1 = computeExpansions(e1);
-    auto exp2 = computeExpansions(e2);
+    NeighborhoodExpander expander;
+    auto exp1 = expander.computeExpansions(e1);//TODO optimization: store somewhere else
+    auto exp2 = expander.computeExpansions(e2);
 
     auto similarityValue = unnormalizedLocalSimilarity(exp1, exp2);
     std::cout << "unnormalized:" << similarityValue << std::endl;
     return similarityValue;
-}
-
-std::map<int, NeighborhoodExpansion>
-LocalSimilarity::computeExpansions(const Environment &e) {
-
-    NeighborhoodExpander neighborhoodExpander;
-    std::map<int, NeighborhoodExpansion> expansions;//TODO MODIFY
-
-    switch (ExpansionSettings::mode) {
-        case ExpansionMode::Generic: {
-            auto noneTypeId = int(Type::None);
-            expansions.emplace(noneTypeId, neighborhoodExpander.expandEnvironment(e, noneTypeId));
-            break;
-        }
-        case ExpansionMode::TypeSpecific: {
-
-            auto numberOfElementTypes = unsigned(ParticleKit::atomKit.size());
-
-            for (unsigned t = 0; t < numberOfElementTypes; ++t) {
-                auto typeId = int(ParticleKit::atomKit[t].first);
-
-                expansions.emplace(typeId, neighborhoodExpander.expandEnvironment(e, typeId));
-            };
-
-
-            //TODO ALSO EXPAND W.R.T. alpha and beta electrons
-            expansions.emplace(int(Spins::SpinType::alpha),
-                               neighborhoodExpander.expandEnvironment(e, int(Spins::SpinType::alpha)));
-            expansions.emplace(int(Spins::SpinType::beta),
-                               neighborhoodExpander.expandEnvironment(e, int(Spins::SpinType::beta)));
-
-            break;
-        }
-    }
-    return expansions;
 }
 
 double LocalSimilarity::unnormalizedLocalSimilarity(
@@ -117,6 +85,7 @@ double LocalSimilarity::unnormalizedLocalSimilarity(
                 for (unsigned b = 0; b < numberOfTypes; ++b) {
                     //p is the powerspectrum class
                     //TODO THIS IS SUPER UGLY
+                    //TODO optimization: store differently without an if
                     int typeB;
                     if(b < ParticleKit::atomKit.size()) {
                         typeB = int(ParticleKit::atomKit[b].first);
