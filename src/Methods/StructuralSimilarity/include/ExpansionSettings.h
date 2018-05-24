@@ -52,6 +52,8 @@ namespace ExpansionSettings{
     }
 
     extern ExpansionMode mode;
+    extern unsigned zeta;  // LocalSimilarity exponent
+    extern double gamma; // StructuralSimilarity regularization
 
     void defaults();
     void checkBounds(unsigned n, unsigned l, int m);

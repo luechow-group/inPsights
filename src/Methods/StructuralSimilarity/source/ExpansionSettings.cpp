@@ -8,6 +8,8 @@
 namespace ExpansionSettings {
 
     ExpansionMode mode = ExpansionMode::Generic;
+    unsigned zeta = 0;
+    double gamma = 0.0;
 
     void checkBounds(unsigned n, unsigned l, int m) {
         Radial::checkBounds(n);
@@ -19,13 +21,16 @@ namespace ExpansionSettings {
         Angular::defaults();
         Cutoff::defaults();
         mode = ExpansionMode::Generic;
+        zeta = 2;
+        gamma = 1.0; //TODO find sensible default value
+
     };
 
     namespace Radial {
 
         unsigned nmax = 0;
         RadialGaussianBasisType basisType = RadialGaussianBasisType::equispaced;
-        double sigmaAtom = 0;
+        double sigmaAtom = 0.0;
 
         void defaults() {
             nmax = 5;
@@ -55,9 +60,9 @@ namespace ExpansionSettings {
     }
     
     namespace Cutoff {
-        double cutoffRadius = 0;
-        double cutoffWidth = 0;
-        double centerWeight = 0;
+        double cutoffRadius = 0.0;
+        double cutoffWidth = 0.0;
+        double centerWeight = 0.0;
 
         void defaults() {
             cutoffRadius = 4.0;
