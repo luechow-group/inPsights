@@ -3,15 +3,19 @@
 //
 
 #include <BoostSphericalHarmonics.h>
-
+#include "iostream"
 using namespace std;
 using namespace boost::math;
 
 namespace BoostSphericalHarmonics {
 
-    Eigen::Vector3d ToVector(double phi, double theta) {
+    Eigen::Vector3d ToDirection(double phi, double theta) {
         double r = sin(theta);
         return {r * cos(phi), r * sin(phi), cos(theta)};
+    }
+
+    Eigen::Vector3d ToVector(double r,double phi, double theta) {
+        return r*ToDirection(phi, theta);
     }
 
     // Clamp the first argument to be greater than or equal to the second
@@ -37,6 +41,7 @@ namespace BoostSphericalHarmonics {
     }
 
 
+
     void ToSphericalCoords(const Eigen::Vector3d &dir, double &theta, double &phi) {
         assert(NearByMargin(dir.squaredNorm(), 1.0) && "dir is not unit");
         // Explicitly clamp the z coordinate so that numeric errors don't cause it
@@ -45,6 +50,25 @@ namespace BoostSphericalHarmonics {
         // We don't need to divide dir.y() or dir.x() by sin(theta) since they are
         // both scaled by it and atan2 will handle it appropriately.
         phi = atan2(dir.y(), dir.x());
+
+        //theta is element of [0,pi]
+        //phi is element of [-pi,pi]
+    }
+
+    void ToSphericalRadialCoords(const Eigen::Vector3d& vec, double& r, double& theta, double& phi){
+        r = vec.norm();
+        
+        if (r <= 0) {
+            theta = 0.;
+            phi = 0.;
+        } else {
+            ToSphericalCoords(vec.normalized(), theta, phi); //phi in [-pi,pi]
+            if( theta == 0. ){
+                phi = 0;
+            } else if (phi < 0.) {
+                phi += 2 * M_PI;  //phi in [0,2*pi]
+            }
+        }
     }
 
     double realSphericalHarmonicY(unsigned l, int m, double theta, double phi) {

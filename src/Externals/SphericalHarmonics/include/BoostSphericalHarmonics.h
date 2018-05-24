@@ -10,9 +10,11 @@
 
 namespace BoostSphericalHarmonics{
 
-    Eigen::Vector3d ToVector(double phi, double theta);
+    Eigen::Vector3d ToDirection(double phi, double theta);
 
-    void ToSphericalCoords(const Eigen::Vector3d& dir, double & theta, double & phi);
+    void ToSphericalCoords(const Eigen::Vector3d& dir, double& theta, double& phi);
+
+    void ToSphericalRadialCoords(const Eigen::Vector3d& vec, double& r, double& theta, double& phi);
 
     double realSphericalHarmonicY(unsigned l, int m, double theta, double phi);
 
