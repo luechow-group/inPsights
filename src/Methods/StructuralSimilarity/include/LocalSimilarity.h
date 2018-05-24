@@ -22,8 +22,8 @@ namespace LocalSimilarity {
                         std::map<Elements::ElementType, NeighborhoodExpansion> &expansions2);
 
 
-        double unnormalizedLocalSimialrity(const std::map<int, NeighborhoodExpansion>& expansions1,
-                                           const std::map<int, NeighborhoodExpansion>& expansions2);
+        double unnormalizedLocalSimilarity(const std::map<int, NeighborhoodExpansion> &expansions1,
+                                           const std::map<int, NeighborhoodExpansion> &expansions2);
 
         std::map<int, NeighborhoodExpansion> computeExpansions(const Environment &e);
 

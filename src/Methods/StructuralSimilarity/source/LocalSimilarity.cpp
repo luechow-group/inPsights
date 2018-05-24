@@ -15,8 +15,8 @@ double LocalSimilarity::localSimilarity(const Environment& e1, const Environment
     auto exp1 = computeExpansions(e1);
     auto exp2 = computeExpansions(e2);
 
-    auto similarityValue = unnormalizedLocalSimialrity(exp1,exp2)
-            / sqrt(unnormalizedLocalSimialrity(exp1,exp1) * unnormalizedLocalSimialrity(exp2,exp2));
+    auto similarityValue = unnormalizedLocalSimilarity(exp1, exp2)
+            / sqrt(unnormalizedLocalSimilarity(exp1, exp1) * unnormalizedLocalSimilarity(exp2, exp2));
 
     std::cout << "normalized: " << similarityValue << std::endl;
     return similarityValue;
@@ -26,7 +26,7 @@ double LocalSimilarity::unnormalizedLocalSimialrity(const Environment& e1,
     auto exp1 = computeExpansions(e1);
     auto exp2 = computeExpansions(e2);
 
-    auto similarityValue = unnormalizedLocalSimialrity(exp1,exp2);
+    auto similarityValue = unnormalizedLocalSimilarity(exp1, exp2);
     std::cout << "unnormalized:" << similarityValue << std::endl;
     return similarityValue;
 }
@@ -66,9 +66,9 @@ LocalSimilarity::computeExpansions(const Environment &e) {
     return expansions;
 }
 
-double LocalSimilarity::unnormalizedLocalSimialrity(
-        const std::map<int, NeighborhoodExpansion>& expansions1,
-        const std::map<int, NeighborhoodExpansion>& expansions2) {
+double LocalSimilarity::unnormalizedLocalSimilarity(
+        const std::map<int, NeighborhoodExpansion> &expansions1,
+        const std::map<int, NeighborhoodExpansion> &expansions2) {
 
     //TODO MODIFY
 
