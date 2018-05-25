@@ -17,6 +17,8 @@ add_executable(WavefunctionTransitionStates.exe WavefunctionTransitionStates.cpp
 add_executable(LocalPotentialEnergy.exe LocalPotentialEnergy.cpp)
 add_executable(ShowMaxima.exe ShowMaxima.cpp)
 add_executable(H6TSsearch.exe H6TSsearch.cpp)
+add_executable(StructuralSimilarity.exe StructuralSimilarity.cpp)
+
 
 target_link_libraries(StringMethodGUI.exe
         GUI
@@ -57,4 +59,9 @@ target_link_libraries(H6TSsearch.exe
         GUI
         BaseLib
         TransitionStateSearch
+        )
+
+target_link_libraries(StructuralSimilarity.exe
+        BaseLib
+        StructuralSimilarity
         )

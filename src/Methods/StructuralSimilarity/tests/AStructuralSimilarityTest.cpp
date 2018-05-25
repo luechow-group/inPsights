@@ -13,15 +13,15 @@ public:
                  {Elements::ElementType::H,{0,0,-0.37}}}),
              ElectronsVector(
                      {{Spins::SpinType::alpha,{0,0, 0.37}},
-                      {Spins::SpinType::alpha, {0,0,-0.37}}})
+                      {Spins::SpinType::alpha,{0,0,-0.37}}})
         };
 
         B = {AtomsVector(
-                {{Elements::ElementType::He,{0,0, 0.30}},
-                 {Elements::ElementType::He,{0,0,-0.30}}}),
+                {{Elements::ElementType::H,{0,0, 0.37}},
+                 {Elements::ElementType::He,{0,0,-0.37}}}),
              ElectronsVector(
-                     {{Spins::SpinType::beta,{0,0, 0.30}},
-                      {Spins::SpinType::beta, {0,0,-0.30}}})
+                     {{Spins::SpinType::alpha,{0,0, 0.37}},
+                      {Spins::SpinType::alpha,{0,0,-0.37}}})
         };
     }
 };
@@ -29,9 +29,7 @@ public:
 TEST_F(AStructuralSimilarityTest , Test) {
     ExpansionSettings::defaults();
     ExpansionSettings::mode = ExpansionMode::TypeSpecific;
-    AtomKit a={{Elements::ElementType::H,2},{Elements::ElementType::He,2}};
-    ElectronKit e = {2,2};
-    ParticleKit::create(a,e);
+    ParticleKit::create({{Elements::ElementType::H,2},{Elements::ElementType::He,2}},{2,2});
 
     ASSERT_TRUE(ParticleKit::isSubsetQ(A));
     ASSERT_TRUE(ParticleKit::isSubsetQ(B));
