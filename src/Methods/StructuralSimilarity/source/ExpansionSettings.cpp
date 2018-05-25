@@ -4,6 +4,7 @@
 
 #include "ExpansionSettings.h"
 #include <cassert>
+#include <limits>
 
 namespace ExpansionSettings {
 
@@ -31,11 +32,17 @@ namespace ExpansionSettings {
         unsigned nmax = 0;
         RadialGaussianBasisType basisType = RadialGaussianBasisType::equispaced;
         double sigmaAtom = 0.0;
+        unsigned integrationSteps = 0;
+        double desiredAbsoluteError = 0.0;
+        double desiredRelativeError = 0.0;
 
         void defaults() {
             nmax = 5;
             basisType = RadialGaussianBasisType::equispaced;
             sigmaAtom = 0.5;
+            integrationSteps = 100;
+            desiredAbsoluteError = 0.0;
+            desiredRelativeError = std::numeric_limits<double>::epsilon()*1e2;
         };
 
         void checkBounds(unsigned n) {

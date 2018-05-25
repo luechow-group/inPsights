@@ -27,6 +27,9 @@ namespace ExpansionSettings{
         extern RadialGaussianBasisType basisType;
         extern double sigmaAtom;
 
+        extern unsigned integrationSteps;
+        extern double desiredAbsoluteError,desiredRelativeError;
+
         void defaults();
         void checkBounds(unsigned n);
     };

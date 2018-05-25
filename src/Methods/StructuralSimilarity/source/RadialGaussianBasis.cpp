@@ -7,8 +7,6 @@
 #include <Eigen/Cholesky>
 #include <unsupported/Eigen/MatrixFunctions>
 
-
-
 RadialGaussianBasis::RadialGaussianBasis()
         : basis_(createBasis()),
           Sab_(Sab(ExpansionSettings::Radial::nmax)),
@@ -119,7 +117,6 @@ Eigen::MatrixXd RadialGaussianBasis::calculateRadialTransform(const Eigen::Matri
 
 // Compute integrals S r^2 dr i_l(2*ai*ri*r) exp(-beta_ik*(r-rho_ik)^2) //TODO what is the difference between r and ri
 double RadialGaussianBasis::calculateIntegral(double ai, double ri,unsigned l, double rho_ik,double beta_ik) const {
-    int n_steps = 100;
 
     // Sample coordinates along r-axis
     double sigma_ik = sqrt(0.5/beta_ik);
@@ -136,12 +133,11 @@ double RadialGaussianBasis::calculateIntegral(double ai, double ri,unsigned l, d
         return r * r * boost::math::sph_bessel<double>(l, 2 * ai * ri * r) * exp_ik;
     };
 
-    GaussKronrod::Integrator<double> integrator(n_steps);
+    GaussKronrod::Integrator<double> integrator(ExpansionSettings::Radial::integrationSteps);
     GaussKronrod::Integrator<double>::QuadratureRule quadratureRule = Eigen::Integrator<double>::GaussKronrod15;
-    // Define the desired absolute and relative errors.
-    double desAbsErr = 0;
-    double desRelErr = Eigen::NumTraits<double>::epsilon() * 50;
-    double integral = integrator.quadratureAdaptive(integrandFunction, r_min, r_max, desAbsErr, desRelErr, quadratureRule);
+
+    double integral = integrator.quadratureAdaptive(integrandFunction, r_min, r_max,
+            ExpansionSettings::Radial::desiredAbsoluteError, ExpansionSettings::Radial::desiredRelativeError, quadratureRule);
 
     return integral;
 };
