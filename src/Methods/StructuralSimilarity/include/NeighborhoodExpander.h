@@ -7,8 +7,12 @@
 
 #include "RadialGaussianBasis.h"
 #include "NeighborhoodExpansion.h"
-#include "ElementType.h"
 #include "Environment.h"
+#include <Type.h>
+
+using TypeSpecificExpansionsVector = std::map<int, NeighborhoodExpansion>; // expansion coeffs related to an int type
+
+using AllCentersSet = std::vector<TypeSpecificExpansionsVector>;
 
 class NeighborhoodExpander{
 public:
@@ -20,7 +24,9 @@ public:
 
     NeighborhoodExpansion expandEnvironment(const Environment& e, int expansionTypeId = 0) const;
 
-    std::map<int, NeighborhoodExpansion> computeExpansions(const Environment &e);
+    TypeSpecificExpansionsVector computeExpansions(const Environment &e);
+
+    AllCentersSet computeExpansions(MolecularGeometry molecule, Type type);//OTHER TYPE!! RENAME
 
 private:
     RadialGaussianBasis radialGaussianBasis_;

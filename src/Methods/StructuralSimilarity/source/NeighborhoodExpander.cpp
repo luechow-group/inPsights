@@ -9,6 +9,7 @@
 #include <iomanip>
 #include <Type.h>
 
+
 NeighborhoodExpander::NeighborhoodExpander()
         : radialGaussianBasis_(){}
 
@@ -51,10 +52,10 @@ NeighborhoodExpansion NeighborhoodExpander::expandEnvironment(const Environment&
     return neighborhoodExpansion;
 }
 
-std::map<int, NeighborhoodExpansion>
+TypeSpecificExpansionsVector
 NeighborhoodExpander::computeExpansions(const Environment &e) {
 
-    std::map<int, NeighborhoodExpansion> expansions;//TODO MODIFY
+    TypeSpecificExpansionsVector expansions;
 
     switch (ExpansionSettings::mode) {
         case ExpansionMode::Generic: {
@@ -83,4 +84,31 @@ NeighborhoodExpander::computeExpansions(const Environment &e) {
         }
     }
     return expansions;
+}
+
+AllCentersSet
+NeighborhoodExpander::computeExpansions(MolecularGeometry molecule, Type type) {
+    assert(ParticleKit::isSubsetQ(molecule)
+           && "The molecule must be composable from the set of particles specified in the particle  kit");
+    AllCentersSet exp;
+    switch (type){
+        case Type::Atomic:{
+            exp.reserve(unsigned(molecule.atoms().numberOfEntities()));
+
+            for (int k = 0; k < molecule.atoms().numberOfEntities(); ++k)
+                exp.push_back(computeExpansions({molecule,molecule.atoms()[k].position()}));
+
+            break;
+        }
+        case Type::Electronic:{
+            exp.reserve(unsigned(molecule.electrons().numberOfEntities()));
+
+            for (int k = 0; k < molecule.electrons().numberOfEntities(); ++k)
+                exp.push_back(computeExpansions({molecule,molecule.electrons()[k].position()}));
+            break;
+        }
+        case Type::None:
+            std::exception();
+    }
+    return exp;
 }

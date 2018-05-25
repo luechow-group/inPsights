@@ -13,31 +13,35 @@
 double LocalSimilarity::localSimilarity(const Environment& e1, const Environment& e2, unsigned zeta) {
 
     NeighborhoodExpander expander;
-    auto exp1 = expander.computeExpansions(e1); //TODO optimization: store somewhere else
+    auto exp1 = expander.computeExpansions(e1);
     auto exp2 = expander.computeExpansions(e2);
 
-    auto similarityValue = unnormalizedLocalSimilarity(exp1, exp2)
-            / sqrt(unnormalizedLocalSimilarity(exp1, exp1) * unnormalizedLocalSimilarity(exp2, exp2));
-
-    std::cout << "normalized: " << similarityValue << std::endl;
-    return pow(similarityValue,zeta);
+    return pow(localSimilarity(exp1,exp2),zeta);
 }
 
 double LocalSimilarity::unnormalizedLocalSimialrity(const Environment& e1,
                                                     const Environment& e2) {
     NeighborhoodExpander expander;
-    auto exp1 = expander.computeExpansions(e1);//TODO optimization: store somewhere else
+    auto exp1 = expander.computeExpansions(e1);
     auto exp2 = expander.computeExpansions(e2);
 
-    auto similarityValue = unnormalizedLocalSimilarity(exp1, exp2);
-    std::cout << "unnormalized:" << similarityValue << std::endl;
-    return similarityValue;
+    return unnormalizedLocalSimilarity(exp1, exp2);;
+}
+
+double LocalSimilarity::localSimilarity(
+        const TypeSpecificExpansionsVector &expansions1,
+        const TypeSpecificExpansionsVector &expansions2, unsigned zeta) {
+
+    auto similarityValue = unnormalizedLocalSimilarity(expansions1, expansions2)
+                           / sqrt(unnormalizedLocalSimilarity(expansions1, expansions1)
+                                  * unnormalizedLocalSimilarity(expansions2, expansions2));
+
+    return pow(similarityValue,zeta);
 }
 
 double LocalSimilarity::unnormalizedLocalSimilarity(
-        const std::map<int, NeighborhoodExpansion> &expansions1,
-        const std::map<int, NeighborhoodExpansion> &expansions2) {
-
+        const TypeSpecificExpansionsVector &expansions1,
+        const TypeSpecificExpansionsVector &expansions2) { //is type information of the neighbors needed here?
     //TODO MODIFY
 
     double similarityValue = 0;
@@ -83,7 +87,6 @@ double LocalSimilarity::unnormalizedLocalSimilarity(
                 const auto &e2a = expansions2.find(typeA)->second;
 
                 for (unsigned b = 0; b < numberOfTypes; ++b) {
-                    //p is the powerspectrum class
                     //TODO THIS IS SUPER UGLY
                     //TODO optimization: store differently without an if
                     int typeB;
@@ -109,12 +112,13 @@ double LocalSimilarity::unnormalizedLocalSimilarity(
                         sumAB += ps1.dot(ps2);
                     }
                 }
-
+                /*auto ps1 = PowerSpectrum::partialPowerSpectrum(e1a, e1a); // kroneckerdelta => (e1a, e1a)
+                auto ps2 = PowerSpectrum::partialPowerSpectrum(e2a, e2a); // kroneckerdelta => (e2a, e2a)
+                sumAB += ps1.dot(ps2);*/
             }
             similarityValue = sumAB;
         }
     }
-    std::cout << "\tunnormalized:" << similarityValue << std::endl;
     return similarityValue;
 }
 

@@ -8,17 +8,22 @@
 #include <complex>
 #include "NeighborhoodExpander.h"
 
-class Environment;
-
 namespace LocalSimilarity {
 
-    double unnormalizedLocalSimialrity(const Environment& e1, const Environment& e2);
-    double localSimilarity(const Environment& e1, const Environment& e2, unsigned zeta = ExpansionSettings::zeta);
+    double unnormalizedLocalSimialrity(const Environment& e1,
+                                       const Environment& e2);
+    double localSimilarity(const Environment& e1,
+                           const Environment& e2,
+                           unsigned zeta = ExpansionSettings::zeta);
 
     //std::complex<double> distance(const PowerSpectrum &a, const PowerSpectrum &b)
 
     double unnormalizedLocalSimilarity(const std::map<int, NeighborhoodExpansion> &expansions1,
                                        const std::map<int, NeighborhoodExpansion> &expansions2);
+
+    double localSimilarity(const TypeSpecificExpansionsVector &expansions1,
+                           const TypeSpecificExpansionsVector &expansions2,
+                           unsigned zeta = ExpansionSettings::zeta);
 };
 
 #endif //AMOLQCPP_LOCALSIMILARITY_H
