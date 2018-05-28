@@ -26,7 +26,7 @@ public:
 
     TypeSpecificExpansionsVector computeExpansions(const Environment &e);
 
-    AllCentersSet computeExpansions(MolecularGeometry molecule, Type type);//OTHER TYPE!! RENAME
+    AllCentersSet computeExpansions(MolecularGeometry molecule, GeneralStorageType type);//OTHER TYPE!! RENAME
 
 private:
     RadialGaussianBasis radialGaussianBasis_;

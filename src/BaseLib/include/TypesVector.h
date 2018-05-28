@@ -12,6 +12,20 @@
 #include <vector>
 
 template <typename Type>
+class IndexedType{
+public:
+    IndexedType(Type type, unsigned number)
+            : type_(type),index_(number) {}
+
+    bool operator==(IndexedType<Type> other) const {
+        return (type_ == other.type_) && (index_ == other.index_);
+    }
+
+    const Type type_;
+    const unsigned index_;
+};
+
+template <typename Type>
 class TypesVector : public AbstractVector {
 public:
 
@@ -83,6 +97,57 @@ public:
             types_[calculateIndex(i)] = types_[calculateIndex(j)];
             types_[calculateIndex(j)] = temp;
         }
+    }
+
+    unsigned countOccurence(const Type &type) const {
+        unsigned count = 0;
+        for (int i = 0; i < this->numberOfEntities(); ++i) {
+            if (this->operator[](i) == type)
+                count++;
+        }
+        return count;
+    }
+
+    IndexedType<Type> getIndexedTypeByIndex(long i) const {
+        auto type = this->operator[](i);
+        unsigned count = 0;
+
+        for (long j = 0; j < calculateIndex(i); ++j)
+            if(this->operator[](j) == type)
+                count++;
+
+        return {type,count};
+    };
+
+    std::pair<bool,long> findIndexOfIndexedType(IndexedType<Type> indexedType) const {
+        assert(indexedType.index_ < numberOfEntities());
+
+        unsigned count = 0;
+        for (unsigned j = 0; j < numberOfEntities(); ++j) {
+            if(this->operator[](j) == indexedType.type_) count++;
+            if(count-1 == indexedType.index_) return {true, j};
+        }
+        return {false,0};
+    }
+
+    std::vector<std::pair<Type,unsigned>> countTypes() const {
+        auto copy = types_;
+        std::sort(copy.data(), copy.data()+numberOfEntities());
+
+        std::vector<std::pair<Type,unsigned>> typeCountsPair;
+
+        if(numberOfEntities() > 0) {
+            unsigned count = 0;
+            for (int i = 1; i < numberOfEntities(); ++i) {
+                if (copy[i] == copy[i - 1])
+                    count++;
+                else {
+                    typeCountsPair.push_back({Type(copy[i - 1]), count});
+                    count = 0;
+                }
+            }
+        }
+        return typeCountsPair;
     }
 
     friend std::ostream& operator<<(std::ostream& os, const TypesVector& tv){

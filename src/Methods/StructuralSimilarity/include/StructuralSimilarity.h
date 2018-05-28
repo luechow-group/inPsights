@@ -13,6 +13,7 @@
 #include "Environment.h"
 #include <vector>
 #include "NeighborhoodExpander.h"
+#include "MolecularSpectrum.h"
 
 namespace StructuralSimilarity{
 
@@ -71,6 +72,10 @@ namespace StructuralSimilarity{
         auto NA = electronicA.size();
 
 
+        // we don't want to iterate over empty expansions
+                //=> store expansions minimalistically
+                // adapt to given ParticleKit layout   => use mappings
+
         Eigen::MatrixXd C = Eigen::MatrixXd::Zero(M+N,M+N);
 
         // Atoms A with Atoms B
@@ -107,11 +112,11 @@ namespace StructuralSimilarity{
                                const MolecularGeometry& B, double regularizationParameter) {
 
         NeighborhoodExpander expander;
-        auto Aatomic = expander.computeExpansions(A,Type::Atomic);
-        auto Aelectronic = expander.computeExpansions(A,Type::Electronic);
+        auto Aatomic = expander.computeExpansions(A,GeneralStorageType::Atomic);
+        auto Aelectronic = expander.computeExpansions(A,GeneralStorageType::Electronic);
 
-        auto Batomic = expander.computeExpansions(B,Type::Atomic);
-        auto Belectronic = expander.computeExpansions(B,Type::Electronic);
+        auto Batomic = expander.computeExpansions(B,GeneralStorageType::Atomic);
+        auto Belectronic = expander.computeExpansions(B,GeneralStorageType::Electronic);
 
         auto CAB = correlationMatrix(Aatomic,Aelectronic,Batomic,Belectronic);
         //auto bla = correlationMatrix(Aatomic,Aelectronic,Aatomic,Aelectronic);

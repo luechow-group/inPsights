@@ -59,7 +59,7 @@ NeighborhoodExpander::computeExpansions(const Environment &e) {
 
     switch (ExpansionSettings::mode) {
         case ExpansionMode::Generic: {
-            auto noneTypeId = int(Type::None);
+            auto noneTypeId = int(GeneralStorageType::None);
             expansions.emplace(noneTypeId, expandEnvironment(e, noneTypeId));
             break;
         }
@@ -87,12 +87,12 @@ NeighborhoodExpander::computeExpansions(const Environment &e) {
 }
 
 AllCentersSet
-NeighborhoodExpander::computeExpansions(MolecularGeometry molecule, Type type) {
+NeighborhoodExpander::computeExpansions(MolecularGeometry molecule, GeneralStorageType type) {
     assert(ParticleKit::isSubsetQ(molecule)
            && "The molecule must be composable from the set of particles specified in the particle  kit");
     AllCentersSet exp;
     switch (type){
-        case Type::Atomic:{
+        case GeneralStorageType::Atomic:{
             exp.reserve(unsigned(molecule.atoms().numberOfEntities()));
 
             for (int k = 0; k < molecule.atoms().numberOfEntities(); ++k)
@@ -100,14 +100,14 @@ NeighborhoodExpander::computeExpansions(MolecularGeometry molecule, Type type) {
 
             break;
         }
-        case Type::Electronic:{
+        case GeneralStorageType::Electronic:{
             exp.reserve(unsigned(molecule.electrons().numberOfEntities()));
 
             for (int k = 0; k < molecule.electrons().numberOfEntities(); ++k)
                 exp.push_back(computeExpansions({molecule,molecule.electrons()[k].position()}));
             break;
         }
-        case Type::None:
+        case GeneralStorageType::None:
             std::exception();
     }
     return exp;

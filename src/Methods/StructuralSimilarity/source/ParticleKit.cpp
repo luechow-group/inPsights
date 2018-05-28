@@ -11,6 +11,7 @@ namespace ParticleKit {
 
     void create(const AtomKit &atomKit, const ElectronKit &electronKit) {
         ParticleKit::atomKit = atomKit;
+
         ParticleKit::electronKit.first = electronKit.first;
         ParticleKit::electronKit.second = electronKit.second;
     }
@@ -51,7 +52,7 @@ namespace ParticleKit {
 
             for (const auto &element : elementsPresent) {
                 newAtomKit.emplace_back<std::pair<Elements::ElementType, unsigned>>(
-                        {element, atoms.countTypeOccurence(element)});
+                        {element, atoms.typesVector().countOccurence(element)});
             }
 
             ParticleKit::atomKit = newAtomKit;
@@ -60,8 +61,8 @@ namespace ParticleKit {
 
         void createElectronKitFromElectronsVector(const ElectronsVector &electronsVector) {
 
-            electronKit.first = electronsVector.countTypeOccurence(Spins::SpinType::alpha);
-            electronKit.second = electronsVector.countTypeOccurence(Spins::SpinType::beta);
+            electronKit.first = electronsVector.typesVector().countOccurence(Spins::SpinType::alpha);
+            electronKit.second = electronsVector.typesVector().countOccurence(Spins::SpinType::beta);
         }
 
         void createElectronKitFromAtomKit(const AtomKit &atomKit,
@@ -96,16 +97,16 @@ namespace ParticleKit {
             auto elementType = elemenTypeNumberPair.first;
             auto maxCount = elemenTypeNumberPair.second;
 
-            if(atomsVector.countTypeOccurence(elementType) > maxCount)
+            if(atomsVector.typesVector().countOccurence(elementType) > maxCount)
                 return false;
         }
         return true;
     }
 
     bool isSubsetQ(const ElectronsVector &electronsVector) {
-        if(electronsVector.countTypeOccurence(Spins::SpinType::alpha) > ParticleKit::electronKit.first)
+        if(electronsVector.typesVector().countOccurence(Spins::SpinType::alpha) > ParticleKit::electronKit.first)
             return false;
-        else if (electronsVector.countTypeOccurence(Spins::SpinType::beta) > ParticleKit::electronKit.second)
+        else if (electronsVector.typesVector().countOccurence(Spins::SpinType::beta) > ParticleKit::electronKit.second)
             return false;
         else
             return true;
@@ -116,7 +117,7 @@ namespace ParticleKit {
     }
 
     unsigned numberOfTypes() {
-        return unsigned(atomKit.size())+2; // alpha & beta type
+        return numberOfElementTypes() + numberOfSpinTypes();
     }
 
     unsigned numberOfAtoms() {
@@ -135,4 +136,18 @@ namespace ParticleKit {
     unsigned numberOfParticles() {
         return numberOfAtoms()+numberOfElectrons();
     }
+}
+
+unsigned ParticleKit::numberOfElementTypes() {
+    return unsigned(atomKit.size());
+}
+
+unsigned ParticleKit::numberOfSpinTypes() {
+    unsigned numberOfSpinTypes = 0;
+    if(electronKit.first>0) // alpha
+        numberOfSpinTypes +=1;
+    if(electronKit.second>0) // beta
+        numberOfSpinTypes +=1;
+
+    return numberOfSpinTypes;
 }

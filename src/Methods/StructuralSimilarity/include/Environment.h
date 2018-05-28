@@ -29,7 +29,7 @@ public:
               center_(std::move(center)){}
 
     std::vector<std::pair<Particle<int>,SphericalCoordinates>>
-    selectParticles(int expansionTypeId = int(Type::None)) const {
+    selectParticles(int expansionTypeId = int(GeneralStorageType::None)) const {
 
         std::vector<std::pair<Particle<int>,SphericalCoordinates>> selecetedParticles;
 

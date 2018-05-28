@@ -48,7 +48,7 @@ double LocalSimilarity::unnormalizedLocalSimilarity(
     switch (ExpansionSettings::mode) {
         case ExpansionMode::Generic: {
 
-            auto noneType = int(Type::None);
+            auto noneType = int(GeneralStorageType::None);
             const auto &e1 = expansions1.find(noneType)->second;
             const auto &e2 = expansions2.find(noneType)->second;
 

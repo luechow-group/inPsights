@@ -66,6 +66,6 @@ TEST_F(AParticlesVectorTest, Distance) {
 }
 
 TEST_F(AParticlesVectorTest, CountTypeOccurence) {
-    ASSERT_EQ(electrons.countTypeOccurence(Spins::SpinType::alpha),2);
-    ASSERT_EQ(atoms.countTypeOccurence(Elements::ElementType::H),1);
+    ASSERT_EQ(electrons.typesVector().countOccurence(Spins::SpinType::alpha),2);
+    ASSERT_EQ(atoms.typesVector().countOccurence(Elements::ElementType::H),1);
 }

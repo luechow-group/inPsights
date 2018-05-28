@@ -8,7 +8,7 @@
 
 using namespace testing;
 
-class AParticlePoolTest : public ::testing::Test {
+class AParticleKitTest : public ::testing::Test {
 public:
     MolecularGeometry molecularGeometry;
     void SetUp() override {
@@ -26,7 +26,7 @@ public:
     };
 };
 
-TEST_F(AParticlePoolTest, Constructor1) {
+TEST_F(AParticleKitTest, Constructor1) {
     ParticleKit::create(molecularGeometry.atoms(),0,2);
 
     // tests order
@@ -40,7 +40,7 @@ TEST_F(AParticlePoolTest, Constructor1) {
     ASSERT_EQ(ParticleKit::electronKit.second, 1);
 }
 
-TEST_F(AParticlePoolTest, Constructor2) {
+TEST_F(AParticleKitTest, Constructor2) {
     ParticleKit::create(molecularGeometry);
 
     // tests order
@@ -54,11 +54,11 @@ TEST_F(AParticlePoolTest, Constructor2) {
     ASSERT_EQ(ParticleKit::electronKit.second, 1);
 }
 
-TEST_F(AParticlePoolTest, WrongMultiplicityOrCharge) {
+TEST_F(AParticleKitTest, WrongMultiplicityOrCharge) {
     EXPECT_DEATH(ParticleKit::create(molecularGeometry.atoms()),"");
 }
 
-TEST_F(AParticlePoolTest, isSubsetQ) {
+TEST_F(AParticleKitTest, isSubsetQ) {
 
     AtomsVector atomsSubset;
     Particle<Elements::ElementType> a1 = {Elements::ElementType::He,{1, 2, 3}};

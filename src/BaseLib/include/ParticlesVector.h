@@ -48,6 +48,14 @@ public:
         return {typesVector_[i],positionsVector_[i]};
     }
 
+    std::pair<bool,Particle<Type>> findParticleByIndexedType(IndexedType<Type> indexedType) const {
+        auto boolIndexPair = typesVector_.findIndexOfIndexedType(indexedType);
+        if (boolIndexPair.first)
+            return {true,this->operator[](boolIndexPair.second)};
+        else
+            return {false,{}};
+    }
+
     const PositionsVector & positionsVector() const {
         return positionsVector_;
     }
@@ -95,15 +103,6 @@ public:
             os << ToString::unsignedLongToString(i + 1) << " " << pv[i] << std::endl;
         }
         return os;
-    }
-
-    unsigned countTypeOccurence(const Type& type) const {
-        unsigned count = 0;
-        for (int i = 0; i < this->numberOfEntities(); ++i) {
-            if (this->operator[](i).type() == type)
-                count++;
-        }
-        return count;
     }
 
 protected:

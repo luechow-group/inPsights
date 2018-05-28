@@ -5,7 +5,7 @@
 #ifndef AMOLQCPP_TYPE_H
 #define AMOLQCPP_TYPE_H
 
-enum class Type {
+enum class GeneralStorageType { //TODO FIND BETTER NAME
     Electronic = -1, None = 0, Atomic = 1
 };
 

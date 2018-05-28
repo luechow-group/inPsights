@@ -38,6 +38,10 @@ namespace ParticleKit{
 
     bool isSubsetQ(const MolecularGeometry& molecularGeometry);
 
+    unsigned numberOfElementTypes();
+
+    unsigned numberOfSpinTypes();
+
     unsigned numberOfTypes();
 
     unsigned numberOfAtoms();
