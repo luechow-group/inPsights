@@ -10,7 +10,7 @@
 
 namespace Spins {
     enum class SpinType {
-        none=0, alpha=-1, beta=-2
+        alpha=-2, beta=-1,none=0
     };
 
     SpinType first();

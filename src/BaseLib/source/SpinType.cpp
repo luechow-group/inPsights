@@ -4,11 +4,11 @@
 #include "SpinType.h"
 
 Spins::SpinType Spins::first() {
-    return Spins::SpinType::beta;
+    return Spins::SpinType::alpha;
 };
 
 Spins::SpinType Spins::last(){
-    return Spins::SpinType::alpha;
+    return Spins::SpinType::beta;
 };
 
 Spins::SpinType Spins::spinTypeFromInt(int type){

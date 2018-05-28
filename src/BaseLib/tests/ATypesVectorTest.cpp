@@ -20,10 +20,14 @@ public:
 
         stv = SpinTypesVector({Spins::SpinType::alpha,
                                Spins::SpinType::alpha,
+                               Spins::SpinType::beta,
+                               Spins::SpinType::alpha,
+                               Spins::SpinType::beta,
                                Spins::SpinType::beta});
         etv = ElementTypesVector({Elements::ElementType::H,
                                   Elements::ElementType::He,
                                   Elements::ElementType::Og,
+                                  Elements::ElementType::He,
                                   Elements::ElementType::He});
     }
 };
@@ -32,14 +36,14 @@ TEST_F(ATypesVectorTest, SpinTypesStream){
     std::stringstream stringstream;
     stringstream << stv;
 
-    ASSERT_EQ(stringstream.str(), "a\na\nb\n");
+    ASSERT_EQ(stringstream.str(), "a\na\nb\na\nb\nb\n");
 }
 
 TEST_F(ATypesVectorTest, ElementTypesStream){
     std::stringstream stringstream;
     stringstream << etv;
 
-    ASSERT_EQ(stringstream.str(), "H\nHe\nOg\nHe\n");
+    ASSERT_EQ(stringstream.str(), "H\nHe\nOg\nHe\nHe\n");
 }
 
 TEST_F(ATypesVectorTest, SpecializedConstructor){
@@ -65,7 +69,7 @@ TEST_F(ATypesVectorTest,CheckIndexedType_Present){
 }
 
 TEST_F(ATypesVectorTest,CheckIndexedTypePresentBut_WrongIndex){
-    auto wrongIndexedType = IndexedType<Elements::ElementType>(Elements::ElementType::He,2);
+    auto wrongIndexedType = IndexedType<Elements::ElementType>(Elements::ElementType::He,3);
 
     auto foundIndexPair = etv.findIndexOfIndexedType(wrongIndexedType);
     ASSERT_FALSE(foundIndexPair.first);
@@ -80,3 +84,25 @@ TEST_F(ATypesVectorTest,CheckIndexedType_MissingType){
     ASSERT_EQ(foundIndexPair.second,0);
 }
 
+TEST_F(ATypesVectorTest, CountTypes_ElementTypes){
+    auto result = etv.countTypes();
+
+    ASSERT_EQ(result[0].first, Elements::ElementType::H);
+    ASSERT_EQ(result[0].second, 1);
+
+    ASSERT_EQ(result[1].first, Elements::ElementType::He);
+    ASSERT_EQ(result[1].second, 3);
+
+    ASSERT_EQ(result[2].first, Elements::ElementType::Og);
+    ASSERT_EQ(result[2].second, 1);
+}
+
+TEST_F(ATypesVectorTest, CountTypes_SpinTypes){
+    auto result = stv.countTypes();
+
+    ASSERT_EQ(result[0].first, Spins::SpinType::alpha);
+    ASSERT_EQ(result[0].second, 3);
+
+    ASSERT_EQ(result[1].first, Spins::SpinType::beta);
+    ASSERT_EQ(result[1].second, 3);
+}

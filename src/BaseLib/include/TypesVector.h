@@ -131,20 +131,27 @@ public:
     }
 
     std::vector<std::pair<Type,unsigned>> countTypes() const {
-        auto copy = types_;
-        std::sort(copy.data(), copy.data()+numberOfEntities());
 
         std::vector<std::pair<Type,unsigned>> typeCountsPair;
 
         if(numberOfEntities() > 0) {
-            unsigned count = 0;
+            auto copy = types_;
+            std::sort(copy.data(), copy.data()+numberOfEntities());
+
+            unsigned count = 1;
             for (int i = 1; i < numberOfEntities(); ++i) {
-                if (copy[i] == copy[i - 1])
+                const auto& lastType = copy[i - 1];
+                const auto& currentType = copy[i];
+
+                if (currentType == lastType)
                     count++;
                 else {
-                    typeCountsPair.push_back({Type(copy[i - 1]), count});
-                    count = 0;
+                    typeCountsPair.push_back({Type(lastType), count}); // cast redundant?
+                    count = 1;
                 }
+                // treat last element
+                if(i == numberOfEntities()-1)
+                    typeCountsPair.push_back({Type(currentType), count});
             }
         }
         return typeCountsPair;
