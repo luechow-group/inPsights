@@ -8,16 +8,16 @@
 #include <Eigen/Core>
 #include "AbstractVector.h"
 #include "SpinType.h"
-#include "ElementType.h"
+#include "ElementType.h"l
 #include <vector>
 
 template <typename Type>
-class IndexedType{
+class NumberedType{
 public:
-    IndexedType(Type type, unsigned number)
+    NumberedType(Type type, unsigned number)
             : type_(type),index_(number) {}
 
-    bool operator==(IndexedType<Type> other) const {
+    bool operator==(NumberedType<Type> other) const {
         return (type_ == other.type_) && (index_ == other.index_);
     }
 
@@ -108,7 +108,7 @@ public:
         return count;
     }
 
-    IndexedType<Type> getIndexedTypeByIndex(long i) const {
+    NumberedType<Type> getIndexedTypeByIndex(long i) const {
         auto type = this->operator[](i);
         unsigned count = 0;
 
@@ -119,7 +119,7 @@ public:
         return {type,count};
     };
 
-    std::pair<bool,long> findIndexOfIndexedType(IndexedType<Type> indexedType) const {
+    std::pair<bool,long> findIndexOfIndexedType(NumberedType<Type> indexedType) const {
         assert(indexedType.index_ < numberOfEntities());
 
         unsigned count = 0;

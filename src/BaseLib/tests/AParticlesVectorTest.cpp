@@ -33,8 +33,8 @@ public:
 TEST_F(AParticlesVectorTest, BraceInitialization) {
 
     ParticlesVector<Elements::ElementType> particlesVector(
-            {{Elements::ElementType::H ,{1, 2, 3}},
-             {Elements::ElementType::Og,{4, 5, 6}}}
+            {{Elements::ElementType::H , {1, 2, 3}},
+             {Elements::ElementType::Og, {4, 5, 6}}}
     );
 }
 
