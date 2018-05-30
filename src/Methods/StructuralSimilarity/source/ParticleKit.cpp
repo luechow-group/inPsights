@@ -136,18 +136,41 @@ namespace ParticleKit {
     unsigned numberOfParticles() {
         return numberOfAtoms()+numberOfElectrons();
     }
-}
 
-unsigned ParticleKit::numberOfElementTypes() {
-    return unsigned(atomKit.size());
-}
 
-unsigned ParticleKit::numberOfSpinTypes() {
-    unsigned numberOfSpinTypes = 0;
-    if(electronKit.first>0) // alpha
-        numberOfSpinTypes +=1;
-    if(electronKit.second>0) // beta
-        numberOfSpinTypes +=1;
+    unsigned numberOfElementTypes() {
+        return unsigned(atomKit.size());
+    }
 
-    return numberOfSpinTypes;
+    unsigned numberOfSpinTypes() {
+        unsigned numberOfSpinTypes = 0;
+        if(electronKit.first>0) // alpha
+            numberOfSpinTypes +=1;
+        if(electronKit.second>0) // beta
+            numberOfSpinTypes +=1;
+
+        return numberOfSpinTypes;
+    }
+
+    NumberedElement getNumberedElementByIndex(unsigned idx){
+        assert(idx < numberOfAtoms());
+
+        unsigned count = 0;
+        for (auto& typeNumberPair : ParticleKit::atomKit) {
+            if(idx >= count + typeNumberPair.second) {
+                count += typeNumberPair.second;
+            } else {
+                return {typeNumberPair.first,idx-count};
+            }
+        }
+    }
+
+    NumberedSpin getNumberedSpinByIndex(unsigned idx) {
+        assert(idx < numberOfElectrons());
+
+        if( idx < electronKit.first)
+            return {Spins::SpinType::alpha, idx};
+        else
+            return {Spins::SpinType::beta, idx-electronKit.first};
+    }
 }

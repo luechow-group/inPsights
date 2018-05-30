@@ -8,7 +8,7 @@ include_directories(
         ${gtest_SOURCE_DIR}
         )
 
-add_executable("${PROJECT_NAME}Tests" ${TEST_SOURCE_FILES} main.cpp)
+add_executable("${PROJECT_NAME}Tests" ${TEST_SOURCE_FILES} TestMolecules.h main.cpp)
 
 target_link_libraries("${PROJECT_NAME}Tests"
         ${PROJECT_NAME}

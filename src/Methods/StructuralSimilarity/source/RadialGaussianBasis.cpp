@@ -145,7 +145,7 @@ double RadialGaussianBasis::calculateIntegral(double ai, double ri,unsigned l, d
 double RadialGaussianBasis::computeCoefficient(unsigned n, unsigned l, double centerToNeighborDistance, double neighborSigma) const {
     //double neighborSigma = sigma0_;
 
-    if (neighborSigma < ZeroLimits::radiusZero) {
+    if (neighborSigma < ExpansionSettings::Radial::radiusZero) {
         //TODO temporary, just to make it work. Lookup original implementation for actual treatment
         return 0;//!? basis_[n].g2_r2_normalizedValue(neighborPosition.norm() * radialTransform_(n-1,l));//TODO
     } else {

@@ -8,22 +8,38 @@
 #include <Eigen/Core>
 #include "AbstractVector.h"
 #include "SpinType.h"
-#include "ElementType.h"l
+#include "ElementType.h"
 #include <vector>
 
 template <typename Type>
 class NumberedType{
 public:
     NumberedType(Type type, unsigned number)
-            : type_(type),index_(number) {}
+            : type_(type),number_(number) {}
 
     bool operator==(NumberedType<Type> other) const {
-        return (type_ == other.type_) && (index_ == other.index_);
+        return (type_ == other.type_) && (number_ == other.number_);
+    }
+
+    bool operator<(NumberedType<Type> other) const {
+        return (type_ < other.type_) && (number_ < other.number_);
+    }
+
+    NumberedType<int> toIntType(){
+        return {int(type_),number_};
+    }
+
+    friend std::ostream& operator<<(std::ostream& os, const NumberedType& numberedType){
+        os << numberedType.number_ << numberedType.type_ << std::endl;
+        return os;
     }
 
     const Type type_;
-    const unsigned index_;
+    const unsigned number_;
 };
+
+using NumberedElement = NumberedType<Elements::ElementType >;
+using NumberedSpin = NumberedType<Spins::SpinType>;
 
 template <typename Type>
 class TypesVector : public AbstractVector {
@@ -108,7 +124,7 @@ public:
         return count;
     }
 
-    NumberedType<Type> getIndexedTypeByIndex(long i) const {
+    NumberedType<Type> getNumberedTypeByIndex(long i) const {
         auto type = this->operator[](i);
         unsigned count = 0;
 
@@ -120,12 +136,12 @@ public:
     };
 
     std::pair<bool,long> findIndexOfIndexedType(NumberedType<Type> indexedType) const {
-        assert(indexedType.index_ < numberOfEntities());
+        assert(indexedType.number_ < numberOfEntities());
 
         unsigned count = 0;
         for (unsigned j = 0; j < numberOfEntities(); ++j) {
             if(this->operator[](j) == indexedType.type_) count++;
-            if(count-1 == indexedType.index_) return {true, j};
+            if(count-1 == indexedType.number_) return {true, j};
         }
         return {false,0};
     }

@@ -54,9 +54,9 @@ TEST_F(ATypesVectorTest, SpecializedConstructor){
 }
 
 TEST_F(ATypesVectorTest,GetIndexedTypeFromIndex){
-    auto indexedType = etv.getIndexedTypeByIndex(3);
+    auto indexedType = etv.getNumberedTypeByIndex(3);
 
-    ASSERT_EQ(indexedType.index_,1);
+    ASSERT_EQ(indexedType.number_,1);
     ASSERT_EQ(indexedType.type_, Elements::ElementType::He);
 }
 

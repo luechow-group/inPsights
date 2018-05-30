@@ -48,7 +48,7 @@ public:
         return {typesVector_[i],positionsVector_[i]};
     }
 
-    std::pair<bool,Particle<Type>> findParticleByIndexedType(NumberedType<Type> indexedType) const {
+    std::pair<bool,Particle<Type>> findParticleByNumberedType(NumberedType<Type> indexedType) const {
         auto boolIndexPair = typesVector_.findIndexOfIndexedType(indexedType);
         if (boolIndexPair.first)
             return {true,this->operator[](boolIndexPair.second)};
@@ -110,8 +110,8 @@ protected:
     TypesVector<Type> typesVector_;
 };
 
-using ElectronsVector = ParticlesVector<Spins::SpinType>;
-using AtomsVector = ParticlesVector<Elements::ElementType>;
+using ElectronsVector = ParticlesVector<Spin>;
+using AtomsVector = ParticlesVector<Element>;
 
 
 #endif //AMOLQCPP_PARTICLESVECTOR_H

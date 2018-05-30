@@ -28,6 +28,8 @@ namespace Spins {
     double quantumNumber();
 }
 
+using Spin = Spins::SpinType;
+
 std::ostream& operator<<(std::ostream& os, const Spins::SpinType& s);
 
 #endif //AMOLQCPP_SPINTYPE_H

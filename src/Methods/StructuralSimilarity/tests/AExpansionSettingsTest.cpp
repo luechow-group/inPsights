@@ -12,14 +12,20 @@ public:
 };
 
 TEST_F(AExpansionSettingsTest , uninitialized) {
-    ASSERT_EQ(ExpansionSettings::Radial::nmax,0);
-    ASSERT_EQ(ExpansionSettings::Radial::basisType,RadialGaussianBasisType(0));
-    ASSERT_EQ(ExpansionSettings::Radial::sigmaAtom,0);
-    ASSERT_EQ(ExpansionSettings::Radial::basisType,RadialGaussianBasisType::equispaced);
+    ASSERT_EQ(ExpansionSettings::Radial::nmax,5);
+    ASSERT_EQ(ExpansionSettings::Radial::basisType, RadialGaussianBasisType::equispaced);
+    ASSERT_EQ(ExpansionSettings::Radial::sigmaAtom,0.5);
 
-    ASSERT_EQ(ExpansionSettings::Angular::lmax,0);
+    ASSERT_EQ(ExpansionSettings::Radial::integrationSteps,100);
+    ASSERT_EQ(ExpansionSettings::Radial::desiredAbsoluteError,0.0);
+    ASSERT_EQ(ExpansionSettings::Radial::desiredRelativeError,1e-6);
 
-    ASSERT_EQ(ExpansionSettings::Cutoff::cutoffRadius,0);
+
+    ASSERT_EQ(ExpansionSettings::Angular::lmax,3);
+
+    ASSERT_EQ(ExpansionSettings::Cutoff::cutoffRadius,4.0);
+    ASSERT_EQ(ExpansionSettings::Cutoff::cutoffWidth,1.0);
+    ASSERT_EQ(ExpansionSettings::Cutoff::centerWeight,1.0);
 
 
     ExpansionSettings::Radial::nmax = 4;

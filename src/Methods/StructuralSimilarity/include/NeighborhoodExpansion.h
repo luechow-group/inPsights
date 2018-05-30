@@ -7,6 +7,9 @@
 
 #include <Eigen/Core>
 
+// contains the expansions of all particles with identical type
+// that were within a given cutoff radius around a single center
+
 class NeighborhoodExpansion{
 public:
     // Preallocates the coefficient matrix

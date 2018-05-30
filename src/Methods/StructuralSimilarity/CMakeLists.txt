@@ -44,6 +44,7 @@ set(HEADER_FILES
         include/NeighborhoodExpansion.h
         include/Sinkhorn.h
         include/StructuralSimilarity.h
+        include/MolecularSpectrum.h
         )
 
 set(SOURCE_FILES
@@ -62,6 +63,7 @@ set(SOURCE_FILES
         source/NeighborhoodExpander.cpp
         source/NeighborhoodExpansion.cpp
         source/Sinkhorn.cpp
+        source/MolecularSpectrum.cpp
         )
 
 file(GLOB_RECURSE RESOURCE_FILES resources/*.*)

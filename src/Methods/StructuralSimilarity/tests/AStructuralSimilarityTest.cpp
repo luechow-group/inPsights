@@ -3,38 +3,69 @@
 //
 #include <gtest/gtest.h>
 #include "StructuralSimilarity.h"
+#include "TestMolecules.h"
+#include "PositionsVectorTransformer.h"
 
 class AStructuralSimilarityTest : public ::testing::Test {
 public:
-    MolecularGeometry A,B;
-    void SetUp() override {
-        A = {AtomsVector(
-                {{Elements::ElementType::H,{0,0, 0.37}},
-                 {Elements::ElementType::H,{0,0,-0.37}}}),
-             ElectronsVector(
-                     {{Spins::SpinType::alpha,{0,0, 0.37}},
-                      {Spins::SpinType::alpha,{0,0,-0.37}}})
-        };
+    double eps = std::numeric_limits<double>::epsilon()*1e3;
+    double regularizationParameter = 1.0;
 
-        B = {AtomsVector(
-                {{Elements::ElementType::H,{0,0, 0.37}},
-                 {Elements::ElementType::H,{0,0,-0.37}}}),
-             ElectronsVector(
-                     {{Spins::SpinType::alpha,{0,0, 0.37}},
-                      {Spins::SpinType::alpha,{0,0,-0.37}}})
-        };
+    void SetUp() override {
+        ExpansionSettings::defaults();
+        ExpansionSettings::mode = ExpansionMode::TypeSpecific;
+        ParticleKit::create({{Element::H,2},{Element::He,2}},{2,2});
     }
 };
 
-TEST_F(AStructuralSimilarityTest , Test) {
-    ExpansionSettings::defaults();
-    ExpansionSettings::mode = ExpansionMode::TypeSpecific;
-    ParticleKit::create({{Elements::ElementType::H,2},{Elements::ElementType::He,2}},{2,2});
+TEST_F(AStructuralSimilarityTest , Identity) {
+    auto A = TestMolecules::H2::ElectronsInCores::normal;
+    ASSERT_TRUE(ParticleKit::isSubsetQ(A));
+    ASSERT_NEAR(StructuralSimilarity::stucturalSimilarity(A,A,regularizationParameter), 1.0, eps);
+}
 
+TEST_F(AStructuralSimilarityTest , TranslationalSymmetry) {
+    auto A = TestMolecules::H2::ElectronsInCores::normal;
+    auto B = TestMolecules::H2::ElectronsInCores::translated;
     ASSERT_TRUE(ParticleKit::isSubsetQ(A));
     ASSERT_TRUE(ParticleKit::isSubsetQ(B));
+    ASSERT_NEAR(StructuralSimilarity::stucturalSimilarity(A,B,regularizationParameter), 1.0, eps);
+}
 
-    double result = StructuralSimilarity::stucturalSimilarity(A,B,1);
-    std::cout << "FINAL RESULT:" << result << std::endl;
-    ASSERT_EQ(result, 1.0);
+TEST_F(AStructuralSimilarityTest, PermutationalSymmetry1) {
+    auto A = TestMolecules::H2::ElectronsInCores::normal;
+    auto B = TestMolecules::H2::ElectronsInCores::permuted1;
+    ASSERT_TRUE(ParticleKit::isSubsetQ(A));
+    ASSERT_TRUE(ParticleKit::isSubsetQ(B));
+    ASSERT_NEAR(StructuralSimilarity::stucturalSimilarity(A,B,regularizationParameter), 1.0, eps);
+}
+
+TEST_F(AStructuralSimilarityTest, PermutationalSymmetry2) {
+    auto A = TestMolecules::H2::ElectronsInCores::normal;
+    auto B = TestMolecules::H2::ElectronsInCores::permuted2;
+    ASSERT_TRUE(ParticleKit::isSubsetQ(A));
+    ASSERT_TRUE(ParticleKit::isSubsetQ(B));
+    ASSERT_NEAR(StructuralSimilarity::stucturalSimilarity(A,B,regularizationParameter), 1.0, eps);
+}
+
+
+TEST_F(AStructuralSimilarityTest , RotationalSymmetry) {
+    auto mol = TestMolecules::H2::ElectronsOutsideCores::offCenter;
+
+    unsigned n = 13;
+    
+    for (unsigned i = 0; i < n; ++i) {
+        double angle = 2*M_PI*double(i)/double(n-1);
+        auto pos = mol.electrons().positionsVector();
+        PositionsVectorTransformer::rotateAroundAxis(pos,angle,
+                                                     mol.atoms()[0].position(),
+                                                     mol.atoms()[1].position());
+        
+        ElectronsVector rotatedElectrons(pos,mol.electrons().typesVector());
+        MolecularGeometry molRotated = {mol.atoms(),rotatedElectrons};
+
+        ASSERT_NEAR(StructuralSimilarity::stucturalSimilarity(mol,molRotated,regularizationParameter),1.0,eps);
+
+    }
+    
 }

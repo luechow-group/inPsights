@@ -26,6 +26,8 @@ namespace Elements {
     
 } // namespace Elements
 
+using Element = Elements::ElementType;
+
 std::ostream& operator<< (std::ostream& os, const Elements::ElementType& e);
 
 #endif // AMOLQCPP_ELEMENTTYPE_H

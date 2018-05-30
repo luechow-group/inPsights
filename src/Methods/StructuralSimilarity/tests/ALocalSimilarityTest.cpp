@@ -9,20 +9,14 @@
 #include "ParticleKit.h"
 #include "ExpansionSettings.h"
 #include "Environment.h"
+#include "TestMolecules.h"
 
 class ALocalSimilarityTest : public ::testing::Test {
 public:
 
-    MolecularGeometry molecule;
-    double absError = 1e-8;
-    void SetUp() override {
-            Atom a0 = {Elements::ElementType::C,{0,0, 0}};
-            Atom a1 = {Elements::ElementType::O,{0,0, 1}};
-            Atom a2 = {Elements::ElementType::O,{0,0,-1}};
-            molecule.atoms().append(a0);
-            molecule.atoms().append(a1);
-            molecule.atoms().append(a2);
-    };
+    MolecularGeometry molecule = TestMolecules::CO2::withoutElectrons;
+    double absError = std::numeric_limits<double>::epsilon()*1e3;
+    void SetUp() override {};
 };
 
 TEST_F(ALocalSimilarityTest , GenericNormalization) {
@@ -99,7 +93,7 @@ TEST_F(ALocalSimilarityTest , SameEnvironmentOnDifferentCentersTypeSpecific) {
     ASSERT_NEAR(LocalSimilarity::localSimilarity(e1,e2),1.0, absError);
 };
 
-TEST_F(ALocalSimilarityTest , IsolatedSpecies) {
+TEST_F(ALocalSimilarityTest, IsolatedSpecies) {
     ParticleKit::create(molecule);
     ExpansionSettings::defaults();
     ExpansionSettings::mode = ExpansionMode::TypeSpecific;
@@ -112,29 +106,15 @@ TEST_F(ALocalSimilarityTest , IsolatedSpecies) {
     ASSERT_NEAR(LocalSimilarity::localSimilarity(e2,e0),0.0, absError);
 };
 
-
-class ALocalSimilarityTest2 : public ::testing::Test {
-public:
-    MolecularGeometry molecule;
-    void SetUp() override {
-        molecule = {
-                AtomsVector(
-                {{Elements::ElementType::H,{0,0, 0.3705}},
-                 {Elements::ElementType::H,{0,0,-0.3705}}}),
-                ElectronsVector(
-                {{Spins::SpinType::alpha,{0,0, 0.3705}},
-                 {Spins::SpinType::beta, {0,0,-0.3705}}})
-        };
-    }
-};
-
-TEST_F(ALocalSimilarityTest2 , Test) {
+TEST_F(ALocalSimilarityTest , H2) {
     ExpansionSettings::defaults();
     ExpansionSettings::mode = ExpansionMode::TypeSpecific;
-    ParticleKit::create(molecule);
+    ParticleKit::create(TestMolecules::H2::ElectronsInCores::normal);
 
-    Environment a0(molecule, molecule.atoms()[0].position());
-    Environment e1(molecule, molecule.electrons()[1].position());
+    auto H2 = TestMolecules::H2::ElectronsInCores::normal;
+
+    Environment a0(H2, H2.atoms()[0].position());
+    Environment e1(H2, H2.electrons()[0].position());
 
     ASSERT_LE(LocalSimilarity::localSimilarity(a0,e1),1.0);
 }

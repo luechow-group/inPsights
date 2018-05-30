@@ -1,0 +1,70 @@
+//
+// Created by Michael Heuer on 30.05.18.
+//
+
+#ifndef AMOLQCPP_TESTMOLECULES_H
+#define AMOLQCPP_TESTMOLECULES_H
+
+#include <MolecularGeometry.h>
+
+namespace TestMolecules {
+    namespace H2 {
+        namespace ElectronsInCores {
+
+            const MolecularGeometry normal = {
+                    AtomsVector({{Element::H, {0, 0, 0.37}},
+                                 {Element::H, {0, 0, -0.37}}}),
+                    ElectronsVector({{Spin::alpha, {0, 0, 0.37}},
+                                     {Spin::beta,  {0, 0,-0.37}}})};
+
+            const MolecularGeometry translated = {
+                    AtomsVector({{Element::H, {0+1, 0+1, 0.37+1}},
+                                 {Element::H, {0+1, 0+1, -0.37+1}}}),
+                    ElectronsVector({{Spin::alpha, {0+1, 0+1, 0.37+1}},
+                                     {Spin::beta,  {0+1, 0+1,-0.37+1}}})};
+
+            const MolecularGeometry permuted1 = {
+                    AtomsVector({{Element::H, {0, 0, 0.37}},
+                                 {Element::H, {0, 0, -0.37}}}),
+                    ElectronsVector({{Spin::beta,  {0, 0, 0.37}},
+                                     {Spin::alpha, {0, 0,-0.37}}})};
+
+            const MolecularGeometry permuted2 = {
+                    AtomsVector({{Element::H, {0, 0, 0.37}},
+                                 {Element::H, {0, 0, -0.37}}}),
+                    ElectronsVector({{Spin::alpha, {0, 0, -0.37}},
+                                     {Spin::beta,  {0, 0, 0.37}}})};
+        }
+
+        namespace ElectronsOutsideCores{
+            const MolecularGeometry normal = {
+                    AtomsVector({{Element::H, {0, 0, 0.37}},
+                                 {Element::H, {0, 0, -0.37}}}),
+                    ElectronsVector({{Spin::alpha, {0, 0, 0.2}},
+                                     {Spin::beta,  {0, 0,-0.2}}})};
+
+            const MolecularGeometry offCenter = {
+                    AtomsVector({{Element::H, {0, 0,  0.37}},
+                                 {Element::H, {0, 0, -0.37}}}),
+                    ElectronsVector({{Spin::alpha, {0, 0.1, 0.2}},
+                                     {Spin::beta,  {0,-0.1,-0.2}}})};
+
+            const MolecularGeometry offCenterRotated90 = {
+                    AtomsVector({{Element::H, {0, 0,  0.37}},
+                                 {Element::H, {0, 0, -0.37}}}),
+                    ElectronsVector({{Spin::alpha, { 0.1, 0, 0.2}},
+                                     {Spin::beta,  {-0.1, 0,-0.2}}})};
+        }
+    }
+
+    namespace CO2{
+        const MolecularGeometry withoutElectrons = {
+                AtomsVector({{Elements::ElementType::C,{0,0, 0}},
+                             {Elements::ElementType::O,{0,0, 1}},
+                             {Elements::ElementType::O,{0,0,-1}}}),
+                ElectronsVector()
+        };
+    }
+}
+
+#endif //AMOLQCPP_TESTMOLECULES_H

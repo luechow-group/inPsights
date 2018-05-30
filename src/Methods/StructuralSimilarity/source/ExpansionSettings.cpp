@@ -8,8 +8,8 @@
 
 namespace ExpansionSettings {
 
-    ExpansionMode mode = ExpansionMode::Generic;
-    unsigned zeta = 2;
+    ExpansionMode mode = ExpansionMode::TypeSpecific;
+    double zeta = 2;
     double gamma = 1.0;
 
     void checkBounds(unsigned n, unsigned l, int m) {
@@ -28,13 +28,13 @@ namespace ExpansionSettings {
     };
 
     namespace Radial {
-
         unsigned nmax = 5;
         RadialGaussianBasisType basisType = RadialGaussianBasisType::equispaced;
         double sigmaAtom = 0.5;
+
         unsigned integrationSteps = 100;
         double desiredAbsoluteError = 0.0;
-        double desiredRelativeError = std::numeric_limits<double>::epsilon()*1e2;
+        double desiredRelativeError = 1e-6; //TODO
 
         void defaults() {
             nmax = 5;
@@ -68,8 +68,8 @@ namespace ExpansionSettings {
     
     namespace Cutoff {
         double cutoffRadius = 4.0;
-        double cutoffWidth = 1.0;
-        double centerWeight = 1.0;
+        double cutoffWidth = 1.0; //TODO
+        double centerWeight = 1.0; //TODO
 
         void defaults() {
             cutoffRadius = 4.0;

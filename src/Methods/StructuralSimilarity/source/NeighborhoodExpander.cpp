@@ -33,7 +33,7 @@ NeighborhoodExpansion NeighborhoodExpander::expandEnvironment(const Environment&
         double weight = 1; //TODO TypeSpecific Value? //const auto& neighbor = neighborCoordsPair.first;
         double weightScale = CutoffFunction::getWeight(neighborCoords.r);
 
-        if (neighborCoords.r <= ZeroLimits::radiusZero) {
+        if (neighborCoords.r <= ExpansionSettings::Radial::radiusZero) {
             weight *= ExpansionSettings::Cutoff::centerWeight;
             //TODO return something here?
         }
@@ -52,10 +52,10 @@ NeighborhoodExpansion NeighborhoodExpander::expandEnvironment(const Environment&
     return neighborhoodExpansion;
 }
 
-TypeSpecificExpansionsVector
+TypeSpecificNeighborhoodsAtOneCenter
 NeighborhoodExpander::computeExpansions(const Environment &e) {
 
-    TypeSpecificExpansionsVector expansions;
+    TypeSpecificNeighborhoodsAtOneCenter expansions;
 
     switch (ExpansionSettings::mode) {
         case ExpansionMode::Generic: {
@@ -86,7 +86,29 @@ NeighborhoodExpander::computeExpansions(const Environment &e) {
     return expansions;
 }
 
-AllCentersSet
+MolecularCenters
+NeighborhoodExpander::computeExpansions(MolecularGeometry molecule) {
+    assert(ParticleKit::isSubsetQ(molecule)
+           && "The molecule must be composable from the set of particles specified in the particle  kit");
+
+    MolecularCenters exp;
+
+    NumberedType<int> nt(int(Elements::ElementType::H),0);
+
+    for (int k = 0; k < molecule.atoms().numberOfEntities(); ++k) {
+        auto numberedType = molecule.atoms().typesVector().getNumberedTypeByIndex(k).toIntType();
+        exp[numberedType] = computeExpansions({molecule, molecule.atoms()[k].position()});
+        break;
+    }
+    for (int k = 0; k < molecule.electrons().numberOfEntities(); ++k) {
+        auto numberedType = molecule.electrons().typesVector().getNumberedTypeByIndex(k).toIntType();
+        exp[numberedType] = computeExpansions({molecule, molecule.electrons()[k].position()});
+        break;
+    }
+    return exp;
+}
+
+/*MolecularCenters
 NeighborhoodExpander::computeExpansions(MolecularGeometry molecule, GeneralStorageType type) {
     assert(ParticleKit::isSubsetQ(molecule)
            && "The molecule must be composable from the set of particles specified in the particle  kit");
@@ -112,3 +134,4 @@ NeighborhoodExpander::computeExpansions(MolecularGeometry molecule, GeneralStora
     }
     return exp;
 }
+*/

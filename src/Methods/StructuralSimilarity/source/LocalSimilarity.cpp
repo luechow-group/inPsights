@@ -29,8 +29,8 @@ double LocalSimilarity::unnormalizedLocalSimialrity(const Environment& e1,
 }
 
 double LocalSimilarity::localSimilarity(
-        const TypeSpecificExpansionsVector &expansions1,
-        const TypeSpecificExpansionsVector &expansions2, unsigned zeta) {
+        const TypeSpecificNeighborhoodsAtOneCenter &expansions1,
+        const TypeSpecificNeighborhoodsAtOneCenter &expansions2, double zeta) {
 
     auto similarityValue = unnormalizedLocalSimilarity(expansions1, expansions2)
                            / sqrt(unnormalizedLocalSimilarity(expansions1, expansions1)
@@ -40,8 +40,8 @@ double LocalSimilarity::localSimilarity(
 }
 
 double LocalSimilarity::unnormalizedLocalSimilarity(
-        const TypeSpecificExpansionsVector &expansions1,
-        const TypeSpecificExpansionsVector &expansions2) { //is type information of the neighbors needed here?
+        const TypeSpecificNeighborhoodsAtOneCenter &expansions1,
+        const TypeSpecificNeighborhoodsAtOneCenter &expansions2) { //is type information of the neighbors needed here?
     //TODO MODIFY
 
     double similarityValue = 0;
@@ -127,7 +127,3 @@ double LocalSimilarity::unnormalizedLocalSimilarity(
         const PowerSpectrum &b) {
     return sqrt(2 + 2 * a.asEigenVector().normalized().dot(b.asEigenVector().normalized()));
 }*/
-
-//atom specific
-
-// TODO STORE

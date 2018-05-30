@@ -5,7 +5,6 @@
 #ifndef AMOLQCPP_MOLECULARGEOMETRY_H
 #define AMOLQCPP_MOLECULARGEOMETRY_H
 
-#include <utility>
 #include "ParticlesVector.h"
 
 class MolecularGeometry{

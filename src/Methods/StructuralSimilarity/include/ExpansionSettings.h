@@ -16,13 +16,10 @@ enum class ExpansionMode {
     Generic = 0, TypeSpecific
 };
 
-
-namespace ZeroLimits{
-    const double radiusZero = 1e-10; //TODO put in expansion settings
-}
-
 namespace ExpansionSettings{
     namespace Radial{
+        const double radiusZero = 1e-10;
+
         extern unsigned nmax;
         extern RadialGaussianBasisType basisType;
         extern double sigmaAtom;
@@ -43,7 +40,6 @@ namespace ExpansionSettings{
     };
 
     namespace Cutoff {
-
         extern double cutoffRadius, cutoffWidth, centerWeight;
 
         void defaults();
@@ -52,10 +48,10 @@ namespace ExpansionSettings{
 
     namespace Alchemical{
         extern std::map<std::pair<Elements::ElementType,Elements::ElementType>,double> pairSimilarities;
-    }
+    }//TODO implement and use
 
     extern ExpansionMode mode;
-    extern unsigned zeta;  // LocalSimilarity exponent
+    extern double zeta;  // LocalSimilarity exponent
     extern double gamma; // StructuralSimilarity regularization
 
     void defaults();

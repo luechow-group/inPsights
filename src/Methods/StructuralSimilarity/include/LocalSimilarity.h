@@ -21,9 +21,9 @@ namespace LocalSimilarity {
     double unnormalizedLocalSimilarity(const std::map<int, NeighborhoodExpansion> &expansions1,
                                        const std::map<int, NeighborhoodExpansion> &expansions2);
 
-    double localSimilarity(const TypeSpecificExpansionsVector &expansions1,
-                           const TypeSpecificExpansionsVector &expansions2,
-                           unsigned zeta = ExpansionSettings::zeta);
+    double localSimilarity(const TypeSpecificNeighborhoodsAtOneCenter &expansions1,
+                           const TypeSpecificNeighborhoodsAtOneCenter &expansions2,
+                           double zeta = ExpansionSettings::zeta);
 };
 
 #endif //AMOLQCPP_LOCALSIMILARITY_H

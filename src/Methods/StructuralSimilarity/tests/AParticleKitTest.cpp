@@ -67,5 +67,16 @@ TEST_F(AParticleKitTest, isSubsetQ) {
     ParticleKit::create(molecularGeometry.atoms(),0,2);
 
     ASSERT_TRUE(ParticleKit::isSubsetQ(atomsSubset));
+}
 
+TEST_F(AParticleKitTest, NumberedType) {
+    ParticleKit::create({{Elements::ElementType::H,2},{Elements::ElementType::Ca,2},{Elements::ElementType::He,2}},{2,3});
+
+    ASSERT_EQ(ParticleKit::getNumberedElementByIndex(0), NumberedElement (Elements::ElementType::H,0));
+    ASSERT_EQ(ParticleKit::getNumberedElementByIndex(1), NumberedElement (Elements::ElementType::H,1));
+    ASSERT_EQ(ParticleKit::getNumberedElementByIndex(4), NumberedElement (Elements::ElementType::He,0));
+    ASSERT_EQ(ParticleKit::getNumberedElementByIndex(5), NumberedElement (Elements::ElementType::He,1));
+
+    ASSERT_EQ(ParticleKit::getNumberedSpinByIndex(1), NumberedSpin(Spins::SpinType::alpha,1));
+    ASSERT_EQ(ParticleKit::getNumberedSpinByIndex(4), NumberedSpin(Spins::SpinType::beta,2));
 }

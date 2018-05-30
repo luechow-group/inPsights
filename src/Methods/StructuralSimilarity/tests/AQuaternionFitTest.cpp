@@ -37,19 +37,19 @@ TEST_F(AQuaternionFitTest, IdenticalGeometries) {
 }
 
 TEST_F(AQuaternionFitTest, ThreeCollinearPoints) {
-  ASSERT_TRUE(false);
+  ASSERT_TRUE(false); //TODO
 }
 
 TEST_F(AQuaternionFitTest, CoplanarPoints) {
-  ASSERT_TRUE(false);
+  ASSERT_TRUE(false); //TODO
 }
 
 TEST_F(AQuaternionFitTest, TwoPoints) {
-  ASSERT_TRUE(false);
+  ASSERT_TRUE(false); //TODO
 }
 
 TEST_F(AQuaternionFitTest, SinglePoint) {
-  ASSERT_TRUE(false);
+  ASSERT_TRUE(false); //TODO
 }
 
 TEST_F(AQuaternionFitTest, RotateIdenticalGeometriesBy90DegreeAroundZAxis) {
