@@ -63,7 +63,7 @@ TEST_F(ALocalSimilarityTest , Cross) {
 TEST_F(ALocalSimilarityTest , TypeSpecificNormalization) {
     ParticleKit::create(molecule);
     ExpansionSettings::defaults();
-    ExpansionSettings::mode = ExpansionMode::TypeSpecific;
+    ExpansionSettings::mode = ExpansionSettings::Mode::TypeSpecific;
 
     Environment e1(molecule,molecule.atoms()[1].position());
     Environment e2(molecule,molecule.atoms()[2].position());
@@ -85,7 +85,7 @@ TEST_F(ALocalSimilarityTest , SameEnvironmentOnDifferentCentersGeneric) {
 TEST_F(ALocalSimilarityTest , SameEnvironmentOnDifferentCentersTypeSpecific) {
     ParticleKit::create(molecule);
     ExpansionSettings::defaults();
-    ExpansionSettings::mode = ExpansionMode::TypeSpecific;
+    ExpansionSettings::mode = ExpansionSettings::Mode::TypeSpecific;
 
     Environment e1(molecule,molecule.atoms()[1].position());
     Environment e2(molecule,molecule.atoms()[2].position());
@@ -96,7 +96,7 @@ TEST_F(ALocalSimilarityTest , SameEnvironmentOnDifferentCentersTypeSpecific) {
 TEST_F(ALocalSimilarityTest, IsolatedSpecies) {
     ParticleKit::create(molecule);
     ExpansionSettings::defaults();
-    ExpansionSettings::mode = ExpansionMode::TypeSpecific;
+    ExpansionSettings::mode = ExpansionSettings::Mode::TypeSpecific;
 
     Environment e0(molecule, molecule.atoms()[0].position());
     Environment e1(molecule, molecule.atoms()[1].position());
@@ -108,7 +108,7 @@ TEST_F(ALocalSimilarityTest, IsolatedSpecies) {
 
 TEST_F(ALocalSimilarityTest , H2) {
     ExpansionSettings::defaults();
-    ExpansionSettings::mode = ExpansionMode::TypeSpecific;
+    ExpansionSettings::mode = ExpansionSettings::Mode::TypeSpecific;
     ParticleKit::create(TestMolecules::H2::ElectronsInCores::normal);
 
     auto H2 = TestMolecules::H2::ElectronsInCores::normal;

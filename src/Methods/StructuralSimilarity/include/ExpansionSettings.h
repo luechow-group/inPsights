@@ -8,20 +8,16 @@
 #include <cassert>
 #include "ElementType.h"
 
-enum class RadialGaussianBasisType{
-    equispaced = 0, adaptive,
-};
-
-enum class ExpansionMode {
-    Generic = 0, TypeSpecific
-};
-
 namespace ExpansionSettings{
     namespace Radial{
+        enum class BasisType{
+            equispaced = 0, adaptive,
+        };
+
         const double radiusZero = 1e-10;
 
         extern unsigned nmax;
-        extern RadialGaussianBasisType basisType;
+        extern BasisType basisType;
         extern double sigmaAtom;
 
         extern unsigned integrationSteps;
@@ -50,7 +46,11 @@ namespace ExpansionSettings{
         extern std::map<std::pair<Elements::ElementType,Elements::ElementType>,double> pairSimilarities;
     }//TODO implement and use
 
-    extern ExpansionMode mode;
+    enum class Mode {
+        Generic = 0, TypeSpecific
+    };
+
+    extern Mode mode;
     extern double zeta;  // LocalSimilarity exponent
     extern double gamma; // StructuralSimilarity regularization
 

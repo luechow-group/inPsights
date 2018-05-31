@@ -26,7 +26,7 @@ std::vector<Gaussian> RadialGaussianBasis::createBasis() {
     auto type = ExpansionSettings::Radial::basisType;
 
     switch (ExpansionSettings::Radial::basisType){
-        case RadialGaussianBasisType::equispaced : {
+        case ExpansionSettings::Radial::BasisType::equispaced : {
 
             double bla = ExpansionSettings::Radial::nmax;
             double cutoffRadius = ExpansionSettings::Cutoff::cutoffRadius;
@@ -37,7 +37,7 @@ std::vector<Gaussian> RadialGaussianBasis::createBasis() {
             }
             return basis;
         }
-        case RadialGaussianBasisType::adaptive :{
+        case ExpansionSettings::Radial::BasisType::adaptive :{
             basisFunctionCenter = 0;
             double sigmaStride = 1/2.;
             

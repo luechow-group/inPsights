@@ -174,6 +174,8 @@ namespace StructuralSimilarity{
         MolecularSpectrum spectrumB(B);
 
         auto CAB = correlationMatrix(spectrumA,spectrumB);
+        //auto CAA = correlationMatrix(spectrumA,spectrumA);
+        //auto CBB = correlationMatrix(spectrumB,spectrumB);
         auto CAA = correlationMatrix(spectrumA);
         auto CBB = correlationMatrix(spectrumB);
 

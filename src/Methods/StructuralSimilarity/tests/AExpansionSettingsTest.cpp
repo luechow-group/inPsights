@@ -13,7 +13,7 @@ public:
 
 TEST_F(AExpansionSettingsTest , uninitialized) {
     ASSERT_EQ(ExpansionSettings::Radial::nmax,5);
-    ASSERT_EQ(ExpansionSettings::Radial::basisType, RadialGaussianBasisType::equispaced);
+    ASSERT_EQ(ExpansionSettings::Radial::basisType, ExpansionSettings::Radial::BasisType::equispaced);
     ASSERT_EQ(ExpansionSettings::Radial::sigmaAtom,0.5);
 
     ASSERT_EQ(ExpansionSettings::Radial::integrationSteps,100);
@@ -39,7 +39,7 @@ TEST_F(AExpansionSettingsTest, defaults) {
     ExpansionSettings::defaults();
 
     ASSERT_EQ(ExpansionSettings::Radial::nmax,5);
-    ASSERT_EQ(ExpansionSettings::Radial::basisType,RadialGaussianBasisType::equispaced);
+    ASSERT_EQ(ExpansionSettings::Radial::basisType,ExpansionSettings::Radial::BasisType::equispaced);
     ASSERT_EQ(ExpansionSettings::Radial::sigmaAtom,0.5);
 
     ASSERT_EQ(ExpansionSettings::Angular::lmax,3);

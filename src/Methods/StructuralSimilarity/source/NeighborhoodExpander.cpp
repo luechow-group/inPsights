@@ -58,12 +58,12 @@ NeighborhoodExpander::computeExpansions(const Environment &e) {
     TypeSpecificNeighborhoodsAtOneCenter expansions;
 
     switch (ExpansionSettings::mode) {
-        case ExpansionMode::Generic: {
+        case ExpansionSettings::Mode::Generic: {
             auto noneTypeId = int(GeneralStorageType::None);
             expansions.emplace(noneTypeId, expandEnvironment(e, noneTypeId));
             break;
         }
-        case ExpansionMode::TypeSpecific: {
+        case ExpansionSettings::Mode::TypeSpecific: {
 
             auto numberOfElementTypes = unsigned(ParticleKit::atomKit.size());
 

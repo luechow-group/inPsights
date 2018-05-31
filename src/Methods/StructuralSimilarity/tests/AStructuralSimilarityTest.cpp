@@ -13,7 +13,7 @@ public:
 
     void SetUp() override {
         ExpansionSettings::defaults();
-        ExpansionSettings::mode = ExpansionMode::TypeSpecific;
+        ExpansionSettings::mode = ExpansionSettings::Mode::TypeSpecific;
         ParticleKit::create({{Element::H,2},{Element::He,2}},{2,2});
     }
 };
@@ -32,7 +32,7 @@ TEST_F(AStructuralSimilarityTest , TranslationalSymmetry) {
     ASSERT_NEAR(StructuralSimilarity::stucturalSimilarity(A,B,regularizationParameter), 1.0, eps);
 }
 
-TEST_F(AStructuralSimilarityTest, PermutationalSymmetry1) {
+TEST_F(AStructuralSimilarityTest, PermutationalSymmetry1) {//TODO FIX THIS PROBLEM!!
     auto A = TestMolecules::H2::ElectronsInCores::normal;
     auto B = TestMolecules::H2::ElectronsInCores::permuted1;
     ASSERT_TRUE(ParticleKit::isSubsetQ(A));
@@ -48,7 +48,6 @@ TEST_F(AStructuralSimilarityTest, PermutationalSymmetry2) {
     ASSERT_NEAR(StructuralSimilarity::stucturalSimilarity(A,B,regularizationParameter), 1.0, eps);
 }
 
-
 TEST_F(AStructuralSimilarityTest , RotationalSymmetry) {
     auto mol = TestMolecules::H2::ElectronsOutsideCores::offCenter;
 
@@ -60,12 +59,11 @@ TEST_F(AStructuralSimilarityTest , RotationalSymmetry) {
         PositionsVectorTransformer::rotateAroundAxis(pos,angle,
                                                      mol.atoms()[0].position(),
                                                      mol.atoms()[1].position());
-        
+
         ElectronsVector rotatedElectrons(pos,mol.electrons().typesVector());
         MolecularGeometry molRotated = {mol.atoms(),rotatedElectrons};
 
         ASSERT_NEAR(StructuralSimilarity::stucturalSimilarity(mol,molRotated,regularizationParameter),1.0,eps);
 
     }
-    
 }

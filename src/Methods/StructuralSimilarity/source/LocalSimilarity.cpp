@@ -46,7 +46,7 @@ double LocalSimilarity::unnormalizedLocalSimilarity(
 
     double similarityValue = 0;
     switch (ExpansionSettings::mode) {
-        case ExpansionMode::Generic: {
+        case ExpansionSettings::Mode::Generic: {
 
             auto noneType = int(GeneralStorageType::None);
             const auto &e1 = expansions1.find(noneType)->second;
@@ -65,7 +65,7 @@ double LocalSimilarity::unnormalizedLocalSimilarity(
             similarityValue = ps1.dot(ps2);
             break;
         }
-        case ExpansionMode::TypeSpecific: {
+        case ExpansionSettings::Mode::TypeSpecific: {
 
             double sumAB = 0;
             auto numberOfTypes = ParticleKit::numberOfTypes();

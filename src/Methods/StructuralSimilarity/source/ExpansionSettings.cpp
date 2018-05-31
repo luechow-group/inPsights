@@ -8,7 +8,7 @@
 
 namespace ExpansionSettings {
 
-    ExpansionMode mode = ExpansionMode::TypeSpecific;
+    ExpansionSettings::Mode mode = ExpansionSettings::Mode::TypeSpecific;
     double zeta = 2;
     double gamma = 1.0;
 
@@ -21,7 +21,7 @@ namespace ExpansionSettings {
         Radial::defaults();
         Angular::defaults();
         Cutoff::defaults();
-        mode = ExpansionMode::Generic;
+        mode = ExpansionSettings::Mode::Generic;
         zeta = 2;
         gamma = 1.0; //TODO find sensible default value
 
@@ -29,7 +29,7 @@ namespace ExpansionSettings {
 
     namespace Radial {
         unsigned nmax = 5;
-        RadialGaussianBasisType basisType = RadialGaussianBasisType::equispaced;
+        BasisType basisType = BasisType::equispaced;
         double sigmaAtom = 0.5;
 
         unsigned integrationSteps = 100;
@@ -38,7 +38,7 @@ namespace ExpansionSettings {
 
         void defaults() {
             nmax = 5;
-            basisType = RadialGaussianBasisType::equispaced;
+            basisType = BasisType::equispaced;
             sigmaAtom = 0.5;
             integrationSteps = 100;
             desiredAbsoluteError = 0.0;
