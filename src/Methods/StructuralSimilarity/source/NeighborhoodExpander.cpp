@@ -67,17 +67,6 @@ NeighborhoodExpander::computeExpansions(const Environment &e) {
             for(auto & type : ParticleKit::kit){
                 expansions.emplace(type.first, expandEnvironment(e, type.first));
             }
-
-            /*for (unsigned t = 0; t < ParticleKit::numberOfElementTypes(); ++t) {
-                auto typeId = int(ParticleKit::atomKit[t].first);
-                expansions.emplace(typeId, expandEnvironment(e, typeId));
-            };
-            //TODO ALSO EXPAND W.R.T. alpha and beta electrons
-            if (ParticleKit::electronKit.first>0)
-                expansions.emplace(int(Spin::alpha), expandEnvironment(e, int(Spin::alpha)));
-            if (ParticleKit::electronKit.second>0)
-                expansions.emplace(int(Spin::beta), expandEnvironment(e, int(Spin::beta)));
-*/
             break;
         }
     }
@@ -90,9 +79,7 @@ NeighborhoodExpander::computeExpansions(MolecularGeometry molecule) {
            && "The molecule must be composable from the set of particles specified in the particle  kit");
 
     MolecularCenters exp;
-
-    NumberedType<int> nt(int(Elements::ElementType::H),0);
-
+    
     for (int k = 0; k < molecule.atoms().numberOfEntities(); ++k) {
         auto numberedType = molecule.atoms().typesVector().getNumberedTypeByIndex(k).toIntType();
         exp[numberedType] = computeExpansions({molecule, molecule.atoms()[k].position()});
@@ -105,31 +92,3 @@ NeighborhoodExpander::computeExpansions(MolecularGeometry molecule) {
     }
     return exp;
 }
-
-/*MolecularCenters
-NeighborhoodExpander::computeExpansions(MolecularGeometry molecule, GeneralStorageType type) {
-    assert(ParticleKit::isSubsetQ(molecule)
-           && "The molecule must be composable from the set of particles specified in the particle  kit");
-    AllCentersSet exp;
-    switch (type){
-        case GeneralStorageType::Atomic:{
-            exp.reserve(unsigned(molecule.atoms().numberOfEntities()));
-
-            for (int k = 0; k < molecule.atoms().numberOfEntities(); ++k)
-                exp.push_back(computeExpansions({molecule,molecule.atoms()[k].position()}));
-
-            break;
-        }
-        case GeneralStorageType::Electronic:{
-            exp.reserve(unsigned(molecule.electrons().numberOfEntities()));
-
-            for (int k = 0; k < molecule.electrons().numberOfEntities(); ++k)
-                exp.push_back(computeExpansions({molecule,molecule.electrons()[k].position()}));
-            break;
-        }
-        case GeneralStorageType::None:
-            std::exception();
-    }
-    return exp;
-}
-*/
