@@ -20,6 +20,8 @@ public:
 
     Particle<int> operator[](long i) const;
 
+    std::pair<bool,long> findIndexOfNumberedType(const NumberedType<int> &numberedType) const;
+
     long numberOfEntities() const;
 
 private:

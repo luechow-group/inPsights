@@ -35,6 +35,14 @@ TEST_F(AStructuralSimilarityTest , TranslationalSymmetry) {
 TEST_F(AStructuralSimilarityTest, PermutationalSymmetry1) {//TODO FIX THIS PROBLEM!!
     auto A = TestMolecules::H2::ElectronsInCores::normal;
     auto B = TestMolecules::H2::ElectronsInCores::permuted1;
+    ExpansionSettings::Radial::nmax =1;
+    ExpansionSettings::Angular::lmax =1;
+    ParticleKit::create({},{1,1});
+
+    for (auto& p : ParticleKit::kit) {
+        std::cout << p.first << "," << p.second << std::endl;
+    }
+
     ASSERT_TRUE(ParticleKit::isSubsetQ(A));
     ASSERT_TRUE(ParticleKit::isSubsetQ(B));
     ASSERT_NEAR(StructuralSimilarity::stucturalSimilarity(A,B,regularizationParameter), 1.0, eps);

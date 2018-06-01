@@ -8,28 +8,48 @@ namespace ParticleKit {
     AtomKit atomKit = {};
 
     ElectronKit electronKit = {0, 0};
+    TypeKit kit = {};
 
     void create(const AtomKit &atomKit, const ElectronKit &electronKit) {
         ParticleKit::atomKit = atomKit;
-
         ParticleKit::electronKit.first = electronKit.first;
         ParticleKit::electronKit.second = electronKit.second;
+
+        createKit(atomKit,electronKit);
+    }
+
+    void createKit(const AtomKit &atomKit, const ElectronKit &electronKit){
+        ParticleKit::kit = {};
+
+        for (const auto &i : atomKit)
+            ParticleKit::kit.push_back({int(i.first), i.second});
+
+        if (electronKit.first>0)
+            ParticleKit::kit.push_back({int(Spin::alpha),electronKit.first});
+
+        if (electronKit.second>0)
+            ParticleKit::kit.push_back({int(Spin::beta),electronKit.second});
     }
 
     void create(const AtomKit &atomKit, int charge, unsigned multiplicity) {
         ParticleKit::atomKit = atomKit;
 
         createElectronKitFromAtomKit(atomKit, charge, multiplicity);
+
+        createKit(ParticleKit::atomKit,ParticleKit::electronKit);
     }
 
     void create(const AtomsVector &atoms, int charge, unsigned multiplicity){
         createAtomKitFromAtomsVector(atoms);
         create(ParticleKit::atomKit, charge, multiplicity);
+
+        createKit(ParticleKit::atomKit,ParticleKit::electronKit);
     }
 
     void create(const AtomsVector &atoms, const ElectronsVector &electrons) {
         createAtomKitFromAtomsVector(atoms);
         createElectronKitFromElectronsVector(electrons);
+        createKit(ParticleKit::atomKit,ParticleKit::electronKit);
     }
 
     void create(const MolecularGeometry &molecularGeometry) {
@@ -117,7 +137,7 @@ namespace ParticleKit {
     }
 
     unsigned numberOfTypes() {
-        return numberOfElementTypes() + numberOfSpinTypes();
+        return unsigned(kit.size());
     }
 
     unsigned numberOfAtoms() {
@@ -150,6 +170,19 @@ namespace ParticleKit {
             numberOfSpinTypes +=1;
 
         return numberOfSpinTypes;
+    }
+
+    NumberedType<int> getNumberedTypeByIndex(unsigned idx){
+        assert(idx < ParticleKit::numberOfParticles());
+
+        unsigned count = 0;
+        for (auto& typeNumberPair : ParticleKit::kit) {
+            if(idx >= count + typeNumberPair.second) {
+                count += typeNumberPair.second;
+            } else {
+                return {typeNumberPair.first,idx-count};
+            }
+        }
     }
 
     NumberedElement getNumberedElementByIndex(unsigned idx){

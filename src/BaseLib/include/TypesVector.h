@@ -135,8 +135,9 @@ public:
         return {type,count};
     };
 
-    std::pair<bool,long> findIndexOfIndexedType(NumberedType<Type> indexedType) const {
-        assert(indexedType.number_ < numberOfEntities());
+    std::pair<bool,long> findIndexOfNumberedType(NumberedType<Type> indexedType) const {
+        assert(indexedType.number_ < numberOfEntities() &&
+               "This index is out of bounds.");
 
         unsigned count = 0;
         for (unsigned j = 0; j < numberOfEntities(); ++j) {

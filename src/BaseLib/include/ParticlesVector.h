@@ -48,14 +48,6 @@ public:
         return {typesVector_[i],positionsVector_[i]};
     }
 
-    std::pair<bool,Particle<Type>> findParticleByNumberedType(NumberedType<Type> indexedType) const {
-        auto boolIndexPair = typesVector_.findIndexOfIndexedType(indexedType);
-        if (boolIndexPair.first)
-            return {true,this->operator[](boolIndexPair.second)};
-        else
-            return {false,{}};
-    }
-
     const PositionsVector & positionsVector() const {
         return positionsVector_;
     }

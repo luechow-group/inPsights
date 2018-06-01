@@ -35,3 +35,19 @@ ElectronsVector & MolecularGeometry::electrons() { return electrons_; }
 long MolecularGeometry::numberOfEntities() const {
     return atoms_.numberOfEntities() + electrons_.numberOfEntities();
 }
+
+std::pair<bool,long> MolecularGeometry::findIndexOfNumberedType(const NumberedType<int> &numberedType) const {
+    if(numberedType.number_ >= int(Spins::first()) ||
+       numberedType.number_ <= int(Spins::last())) {
+        return electrons().typesVector().findIndexOfNumberedType(
+                NumberedSpin(Spins::spinTypeFromInt(numberedType.type_), numberedType.number_));
+    } else if(numberedType.number_ >= int(Elements::first()) ||
+              numberedType.number_ <= int(Elements::last())) {
+        return atoms().typesVector().findIndexOfNumberedType(
+                NumberedElement(Elements::elementTypeFromInt(numberedType.type_), numberedType.number_));
+    } else {
+        return {false,0};
+    }
+}
+
+

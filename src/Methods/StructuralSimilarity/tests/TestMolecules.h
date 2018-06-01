@@ -8,6 +8,27 @@
 #include <MolecularGeometry.h>
 
 namespace TestMolecules {
+
+    namespace twoElectrons {
+        const MolecularGeometry oppositeSpin = {
+                AtomsVector(),
+                ElectronsVector({{Spin::alpha, {0, 0, 0.37}},
+                                 {Spin::beta,  {0, 0,-0.37}}})};
+
+        const MolecularGeometry oppositeSpinReversedOrder = {
+                AtomsVector(),
+                ElectronsVector({{Spin::beta, {0, 0, 0.37}},
+                                 {Spin::alpha,  {0, 0,-0.37}}})};
+
+        const MolecularGeometry sameSpinAlpha= {
+                AtomsVector(),
+                ElectronsVector({{Spin::alpha, {0, 0, 0.37}},
+                                 {Spin::alpha, {0, 0,-0.37}}})};
+        const MolecularGeometry sameSpinBeta = {
+                AtomsVector(),
+                ElectronsVector({{Spin::beta, {0, 0, 0.37}},
+                                 {Spin::beta, {0, 0,-0.37}}})};
+    }
     namespace H2 {
         namespace ElectronsInCores {
 
@@ -25,8 +46,8 @@ namespace TestMolecules {
 
             const MolecularGeometry permuted1 = {
                     AtomsVector({{Element::H, {0, 0, 0.37}},
-                                 {Element::H, {0, 0, -0.37}}}),
-                    ElectronsVector({{Spin::beta,  {0, 0, 0.37}},
+                                 {Element::H, {0, 0,-0.37}}}),
+                    ElectronsVector({{Spin::beta,  {0, 0, 0.37}},// MAYBE THE WRONG ORDER IS A PROBLEM
                                      {Spin::alpha, {0, 0,-0.37}}})};
 
             const MolecularGeometry permuted2 = {

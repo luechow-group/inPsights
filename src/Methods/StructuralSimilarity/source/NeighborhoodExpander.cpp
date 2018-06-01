@@ -64,22 +64,20 @@ NeighborhoodExpander::computeExpansions(const Environment &e) {
             break;
         }
         case ExpansionSettings::Mode::TypeSpecific: {
+            for(auto & type : ParticleKit::kit){
+                expansions.emplace(type.first, expandEnvironment(e, type.first));
+            }
 
-            auto numberOfElementTypes = unsigned(ParticleKit::atomKit.size());
-
-            for (unsigned t = 0; t < numberOfElementTypes; ++t) {
+            /*for (unsigned t = 0; t < ParticleKit::numberOfElementTypes(); ++t) {
                 auto typeId = int(ParticleKit::atomKit[t].first);
-
                 expansions.emplace(typeId, expandEnvironment(e, typeId));
             };
-
-
             //TODO ALSO EXPAND W.R.T. alpha and beta electrons
-            expansions.emplace(int(Spins::SpinType::alpha),
-                               expandEnvironment(e, int(Spins::SpinType::alpha)));
-            expansions.emplace(int(Spins::SpinType::beta),
-                               expandEnvironment(e, int(Spins::SpinType::beta)));
-
+            if (ParticleKit::electronKit.first>0)
+                expansions.emplace(int(Spin::alpha), expandEnvironment(e, int(Spin::alpha)));
+            if (ParticleKit::electronKit.second>0)
+                expansions.emplace(int(Spin::beta), expandEnvironment(e, int(Spin::beta)));
+*/
             break;
         }
     }

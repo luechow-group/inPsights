@@ -79,4 +79,13 @@ TEST_F(AParticleKitTest, NumberedType) {
 
     ASSERT_EQ(ParticleKit::getNumberedSpinByIndex(1), NumberedSpin(Spins::SpinType::alpha,1));
     ASSERT_EQ(ParticleKit::getNumberedSpinByIndex(4), NumberedSpin(Spins::SpinType::beta,2));
+
+
+
+    ASSERT_EQ(ParticleKit::getNumberedTypeByIndex(0), NumberedType<int>(int(Element::H),0));
+    ASSERT_EQ(ParticleKit::getNumberedTypeByIndex(1), NumberedType<int>(int(Element::H),1));
+    ASSERT_EQ(ParticleKit::getNumberedTypeByIndex(4), NumberedType<int>(int(Element::He),0));
+    ASSERT_EQ(ParticleKit::getNumberedTypeByIndex(5), NumberedType<int>(int(Element::He),1));
+    ASSERT_EQ(ParticleKit::getNumberedTypeByIndex(7), NumberedType<int>(int(Spin::alpha),1));
+    ASSERT_EQ(ParticleKit::getNumberedTypeByIndex(10), NumberedType<int>(int(Spin::beta),2));
 }

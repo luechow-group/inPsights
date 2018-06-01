@@ -31,7 +31,7 @@ public:
     std::vector<std::pair<Particle<int>,SphericalCoordinates>>
     selectParticles(int expansionTypeId = 0) const {
 
-        std::vector<std::pair<Particle<int>,SphericalCoordinates>> selecetedParticles;
+        std::vector<std::pair<Particle<int>,SphericalCoordinates>> selectedParticles;
 
         for (unsigned j = 0; j < unsigned(molecularGeometry_.numberOfEntities()); ++j) {
             const auto &neighbor = molecularGeometry_[j];
@@ -41,12 +41,12 @@ public:
                 SphericalCoordinates sphericalCoords(neighbor.position()-center_);
 
                 if (CutoffFunction::withinCutoffRadiusQ(sphericalCoords.r)) {
-                    selecetedParticles.emplace_back<std::pair<Particle<int>,SphericalCoordinates>>(
+                    selectedParticles.emplace_back<std::pair<Particle<int>,SphericalCoordinates>>(
                             {neighbor,sphericalCoords});
                 }
             }
         }
-        return selecetedParticles;
+        return selectedParticles;
     }
 
     MolecularGeometry molecularGeometry_;

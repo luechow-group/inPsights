@@ -9,12 +9,15 @@
 #include <ParticlesVector.h>
 #include <MolecularGeometry.h>
 
-using  AtomKit = std::vector<std::pair<Elements::ElementType,unsigned>>;
-using  ElectronKit = std::pair<unsigned,unsigned>; // alpha, beta
-        
+using AtomKit = std::vector<std::pair<Elements::ElementType,unsigned>>;
+using ElectronKit = std::pair<unsigned,unsigned>; // alpha, beta
+using TypeKit = std::vector<std::pair<int,unsigned>>;
+
 namespace ParticleKit{
 
     void create(const AtomKit& atomKit, const ElectronKit& electronKit);
+
+    void createKit(const AtomKit &atomKit, const ElectronKit &electronKit);
 
     void create(const AtomKit& atomKit, int charge = 0, unsigned multiplicity = 1);
 
@@ -42,6 +45,8 @@ namespace ParticleKit{
 
     NumberedSpin getNumberedSpinByIndex(unsigned idx);
 
+    NumberedType<int> getNumberedTypeByIndex(unsigned idx);
+
     unsigned numberOfElementTypes();
 
     unsigned numberOfSpinTypes();
@@ -56,6 +61,7 @@ namespace ParticleKit{
 
     extern AtomKit atomKit;
     extern ElectronKit electronKit;
+    extern TypeKit kit;
 };
 
 #endif //AMOLQCPP_PARTICLEKIT_H

@@ -68,43 +68,22 @@ double LocalSimilarity::unnormalizedLocalSimilarity(
         case ExpansionSettings::Mode::TypeSpecific: {
 
             double sumAB = 0;
-            auto numberOfTypes = ParticleKit::numberOfTypes();
 
-            for (unsigned a = 0; a < numberOfTypes; ++a) {
+            for (auto & typeA : ParticleKit::kit) {
+                const auto &e1a = expansions1.find(typeA.first)->second;
+                const auto &e2a = expansions2.find(typeA.first)->second;
 
+                //std::cout << e1a << std::endl<< std::endl;
+                //std::cout << e2a << std::endl<< std::endl;
 
-                //TODO THIS IS SUPER UGLY
-                int typeA;
-                if(a < ParticleKit::atomKit.size()) {
-                    typeA = int(ParticleKit::atomKit[a].first);//WRITE PARTICLE KIT ACCESSOR
-                } else if ( ParticleKit::atomKit.size() ) {
-                    typeA = int(Spins::SpinType::alpha);
-                } else {//if ( ParticleKit::atomKit.size() +1 )
-                    typeA = int(Spins::SpinType::beta);
-                }
-
-                const auto &e1a = expansions1.find(typeA)->second;
-                const auto &e2a = expansions2.find(typeA)->second;
-
-                for (unsigned b = 0; b < numberOfTypes; ++b) {
-                    //TODO THIS IS SUPER UGLY
-                    //TODO optimization: store differently without an if
-                    int typeB;
-                    if(b < ParticleKit::atomKit.size()) {
-                        typeB = int(ParticleKit::atomKit[b].first);
-                    } else if ( ParticleKit::atomKit.size() ) {
-                        typeB = int(Spins::SpinType::alpha);
-                    } else {//if ( ParticleKit::atomKit.size() +1 )
-                        typeB = int(Spins::SpinType::beta);
-                    }
-
+                for (auto & typeB : ParticleKit::kit) {
                     // Alchemical similarity can be implemented here
-                    if (typeA == typeB) { // kronecker delta
-                        const auto &e1b = expansions1.find(typeB)->second;
-                        const auto &e2b = expansions2.find(typeB)->second;
+                    if (typeA.first == typeB.first) { // kronecker delta
+                        const auto &e1b = expansions1.find(typeB.first)->second;
+                        const auto &e2b = expansions2.find(typeB.first)->second;
 
-                        //std::cout << e1b << std::endl;//TODO Delete
-                        //std::cout << e2b << std::endl;
+                        //std::cout << e1b << std::endl<< std::endl;
+                        //std::cout << e2b << std::endl<< std::endl;
 
                         auto ps1 = PowerSpectrum::partialPowerSpectrum(e1a, e1b); // kroneckerdelta => (e1a, e1a)
                         auto ps2 = PowerSpectrum::partialPowerSpectrum(e2a, e2b); // kroneckerdelta => (e2a, e2a)
