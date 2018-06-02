@@ -10,11 +10,6 @@
 #include "Environment.h"
 #include <Type.h>
 
-//using TypemappedNeighborhoods = std::map<int,NeighborhoodExpansion>; // generic would be a single on
-////using ParticularNeighborhoods = std::vector<TypemappedNeighborhood>; // contains all expansions of one particle center
-//// map containing all centers of the molecule (according to the molecules atom + electron order)
-//using MolecularNeighborhoods = std::map<NumberedType<int>,TypemappedNeighborhoods>;
-
 using TypeSpecificNeighborhoodsAtOneCenter = std::map<int, NeighborhoodExpansion>; // expansion coeffs related to an int type
 
 using MolecularCenters = std::map<NumberedType<int>,TypeSpecificNeighborhoodsAtOneCenter>;
@@ -29,9 +24,9 @@ public:
 
     NeighborhoodExpansion expandEnvironment(const Environment& e, int expansionTypeId = 0) const;
 
-    TypeSpecificNeighborhoodsAtOneCenter computeExpansions(const Environment &e);
+    TypeSpecificNeighborhoodsAtOneCenter computeParticularExpansions(const Environment &e);
 
-    MolecularCenters computeExpansions(MolecularGeometry molecule);
+    MolecularCenters computeMolecularExpansions(MolecularGeometry molecule);
 
 private:
     RadialGaussianBasis radialGaussianBasis_;

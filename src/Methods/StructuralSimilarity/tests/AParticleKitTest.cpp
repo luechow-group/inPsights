@@ -58,10 +58,10 @@ TEST_F(AParticleKitTest, WrongMultiplicityOrCharge) {
     EXPECT_DEATH(ParticleKit::create(molecularGeometry.atoms()),"");
 }
 
-TEST_F(AParticleKitTest, isSubsetQ) {
+TEST_F(AParticleKitTest, isSubsetQTrue) {
 
     AtomsVector atomsSubset;
-    Particle<Elements::ElementType> a1 = {Elements::ElementType::He,{1, 2, 3}};
+    Atom a1 = {Element::He,{1, 2, 3}};
     atomsSubset.append(a1);
 
     ParticleKit::create(molecularGeometry.atoms(),0,2);
@@ -69,16 +69,32 @@ TEST_F(AParticleKitTest, isSubsetQ) {
     ASSERT_TRUE(ParticleKit::isSubsetQ(atomsSubset));
 }
 
+
+TEST_F(AParticleKitTest, isSubsetQFalse) {
+    MolecularGeometry mol(
+            AtomsVector({{Element::H,{0,0,0}}}),
+            ElectronsVector({{Spin::alpha,{0,0,0}}}));
+    ParticleKit::create(mol);
+
+    AtomsVector wrongElement({{Element::Ba,{1, 2, 3}}});
+    ASSERT_FALSE(ParticleKit::isSubsetQ(wrongElement));
+
+    AtomsVector wrongNumber({{Element::H,{0,0,0}},
+                             {Element::H,{0,0,0}}});
+    ASSERT_FALSE(ParticleKit::isSubsetQ(wrongNumber));
+}
+
+
 TEST_F(AParticleKitTest, NumberedType) {
     ParticleKit::create({{Elements::ElementType::H,2},{Elements::ElementType::Ca,2},{Elements::ElementType::He,2}},{2,3});
 
-    ASSERT_EQ(ParticleKit::getNumberedElementByIndex(0), NumberedElement (Elements::ElementType::H,0));
-    ASSERT_EQ(ParticleKit::getNumberedElementByIndex(1), NumberedElement (Elements::ElementType::H,1));
-    ASSERT_EQ(ParticleKit::getNumberedElementByIndex(4), NumberedElement (Elements::ElementType::He,0));
-    ASSERT_EQ(ParticleKit::getNumberedElementByIndex(5), NumberedElement (Elements::ElementType::He,1));
+    ASSERT_EQ(ParticleKit::getNumberedElementByIndex(0), NumberedElement (Element::H,0));
+    ASSERT_EQ(ParticleKit::getNumberedElementByIndex(1), NumberedElement (Element::H,1));
+    ASSERT_EQ(ParticleKit::getNumberedElementByIndex(4), NumberedElement (Element::He,0));
+    ASSERT_EQ(ParticleKit::getNumberedElementByIndex(5), NumberedElement (Element::He,1));
 
-    ASSERT_EQ(ParticleKit::getNumberedSpinByIndex(1), NumberedSpin(Spins::SpinType::alpha,1));
-    ASSERT_EQ(ParticleKit::getNumberedSpinByIndex(4), NumberedSpin(Spins::SpinType::beta,2));
+    ASSERT_EQ(ParticleKit::getNumberedSpinByIndex(1), NumberedSpin(Spin::alpha,1));
+    ASSERT_EQ(ParticleKit::getNumberedSpinByIndex(4), NumberedSpin(Spin::beta,2));
 
 
 

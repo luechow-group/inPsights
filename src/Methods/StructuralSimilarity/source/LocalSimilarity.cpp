@@ -7,14 +7,11 @@
 #include "PowerSpectrum.h"
 #include "NeighborhoodExpander.h"
 
-#include <exception>
-#include <Type.h>
-
 double LocalSimilarity::localSimilarity(const Environment& e1, const Environment& e2, unsigned zeta) {
 
     NeighborhoodExpander expander;
-    auto exp1 = expander.computeExpansions(e1);
-    auto exp2 = expander.computeExpansions(e2);
+    auto exp1 = expander.computeParticularExpansions(e1);
+    auto exp2 = expander.computeParticularExpansions(e2);
 
     return pow(localSimilarity(exp1,exp2),zeta);
 }
@@ -22,8 +19,8 @@ double LocalSimilarity::localSimilarity(const Environment& e1, const Environment
 double LocalSimilarity::unnormalizedLocalSimialrity(const Environment& e1,
                                                     const Environment& e2) {
     NeighborhoodExpander expander;
-    auto exp1 = expander.computeExpansions(e1);
-    auto exp2 = expander.computeExpansions(e2);
+    auto exp1 = expander.computeParticularExpansions(e1);
+    auto exp2 = expander.computeParticularExpansions(e2);
 
     return unnormalizedLocalSimilarity(exp1, exp2);;
 }
@@ -34,7 +31,7 @@ double LocalSimilarity::localSimilarity(
 
     auto similarityValue = unnormalizedLocalSimilarity(expansions1, expansions2)
                            / sqrt(unnormalizedLocalSimilarity(expansions1, expansions1)
-                                  * unnormalizedLocalSimilarity(expansions2, expansions2));
+                                 * unnormalizedLocalSimilarity(expansions2, expansions2));
 
     return pow(similarityValue,zeta);
 }
@@ -72,21 +69,21 @@ double LocalSimilarity::unnormalizedLocalSimilarity(
             for (auto & typeA : ParticleKit::kit) {
                 const auto &e1a = expansions1.find(typeA.first)->second;
                 const auto &e2a = expansions2.find(typeA.first)->second;
-
                 //std::cout << e1a << std::endl<< std::endl;
                 //std::cout << e2a << std::endl<< std::endl;
 
                 for (auto & typeB : ParticleKit::kit) {
                     // Alchemical similarity can be implemented here
-                    if (typeA.first == typeB.first) { // kronecker delta
+                    if (typeA.first == typeB.first) { //TODO kronecker delta or
                         const auto &e1b = expansions1.find(typeB.first)->second;
                         const auto &e2b = expansions2.find(typeB.first)->second;
-
                         //std::cout << e1b << std::endl<< std::endl;
                         //std::cout << e2b << std::endl<< std::endl;
 
                         auto ps1 = PowerSpectrum::partialPowerSpectrum(e1a, e1b); // kroneckerdelta => (e1a, e1a)
                         auto ps2 = PowerSpectrum::partialPowerSpectrum(e2a, e2b); // kroneckerdelta => (e2a, e2a)
+                        //std::cout << ps1.transpose() << std::endl;
+                        //std::cout << ps2.transpose() << std::endl;
 
                         sumAB += ps1.dot(ps2);
                     }

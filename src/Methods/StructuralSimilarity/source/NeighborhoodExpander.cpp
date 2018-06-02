@@ -23,7 +23,6 @@ NeighborhoodExpander::coefficient(unsigned n, unsigned l, int m, const Spherical
 }
 
 NeighborhoodExpansion NeighborhoodExpander::expandEnvironment(const Environment& e, int expansionTypeId) const {
-
     NeighborhoodExpansion neighborhoodExpansion;
 
     for (const auto& neighborCoordsPair : e.selectParticles(expansionTypeId)) {
@@ -33,14 +32,12 @@ NeighborhoodExpansion NeighborhoodExpander::expandEnvironment(const Environment&
         double weight = 1; //TODO TypeSpecific Value? //const auto& neighbor = neighborCoordsPair.first;
         double weightScale = CutoffFunction::getWeight(neighborCoords.r);
 
-        if (neighborCoords.r <= ExpansionSettings::Radial::radiusZero) {
-            weight *= ExpansionSettings::Cutoff::centerWeight;
-            //TODO return something here?
-        }
+        if (neighborCoords.r <= ExpansionSettings::Radial::radiusZero)
+            weight *= ExpansionSettings::Cutoff::centerWeight; //TODO return something here?
 
         for (unsigned n = 1; n <= ExpansionSettings::Radial::nmax; ++n) {
             for (unsigned l = 0; l <= ExpansionSettings::Angular::lmax; ++l) {
-                for (int m = -int(l); m < int(l); ++m) {
+                for (int m = -int(l); m <= int(l); ++m) {
 
                     //TODO use TypeSpecific sigma value?
                     auto coeff = coefficient(n, l, m, neighborCoords, weight, weightScale);//,neighborSigma);
@@ -53,13 +50,12 @@ NeighborhoodExpansion NeighborhoodExpander::expandEnvironment(const Environment&
 }
 
 TypeSpecificNeighborhoodsAtOneCenter
-NeighborhoodExpander::computeExpansions(const Environment &e) {
-
+NeighborhoodExpander::computeParticularExpansions(const Environment &e) { // WORKS!
     TypeSpecificNeighborhoodsAtOneCenter expansions;
 
     switch (ExpansionSettings::mode) {
         case ExpansionSettings::Mode::Generic: {
-            auto noneTypeId = int(GeneralStorageType::None);
+            auto noneTypeId = 0;
             expansions.emplace(noneTypeId, expandEnvironment(e, noneTypeId));
             break;
         }
@@ -74,21 +70,15 @@ NeighborhoodExpander::computeExpansions(const Environment &e) {
 }
 
 MolecularCenters
-NeighborhoodExpander::computeExpansions(MolecularGeometry molecule) {
+NeighborhoodExpander::computeMolecularExpansions(MolecularGeometry molecule) {
     assert(ParticleKit::isSubsetQ(molecule)
-           && "The molecule must be composable from the set of particles specified in the particle  kit");
-
+           && "The molecule must be composable from the set of particles specified in the particle kit");
     MolecularCenters exp;
-    
-    for (int k = 0; k < molecule.atoms().numberOfEntities(); ++k) {
-        auto numberedType = molecule.atoms().typesVector().getNumberedTypeByIndex(k).toIntType();
-        exp[numberedType] = computeExpansions({molecule, molecule.atoms()[k].position()});
-        break;
-    }
-    for (int k = 0; k < molecule.electrons().numberOfEntities(); ++k) {
-        auto numberedType = molecule.electrons().typesVector().getNumberedTypeByIndex(k).toIntType();
-        exp[numberedType] = computeExpansions({molecule, molecule.electrons()[k].position()});
-        break;
+
+    //TODO CHECK HERE FOR IDENTICAL CENTERS!
+    for (unsigned k = 0; k < unsigned(molecule.numberOfEntities()); ++k) {
+        auto numberedType = molecule.findNumberedTypeByIndex(k);
+        exp[numberedType] = computeParticularExpansions(Environment(molecule, molecule[k].position()));
     }
     return exp;
 }

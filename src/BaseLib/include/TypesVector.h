@@ -21,8 +21,8 @@ public:
         return (type_ == other.type_) && (number_ == other.number_);
     }
 
-    bool operator<(NumberedType<Type> other) const {
-        return (type_ < other.type_) && (number_ < other.number_);
+    bool operator<(const NumberedType<Type>& other) const {
+        return (type_ < other.type_) || (number_ < other.number_); //TODO FUCK YEAH!
     }
 
     NumberedType<int> toIntType(){
@@ -147,11 +147,14 @@ public:
         return {false,0};
     }
 
+    //TODO dirty - refactor
     std::vector<std::pair<Type,unsigned>> countTypes() const {
 
         std::vector<std::pair<Type,unsigned>> typeCountsPair;
-
         if(numberOfEntities() > 0) {
+            if(numberOfEntities() == 1) {
+                return {{this->operator[](0),1}};
+            }
             auto copy = types_;
             std::sort(copy.data(), copy.data()+numberOfEntities());
 

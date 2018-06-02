@@ -4,6 +4,7 @@
 
 #include <gtest/gtest.h>
 #include <ParticlesVector.h>
+#include <MolecularSpectrum.h>
 #include "LocalSimilarity.h"
 #include "ParticleKit.h"
 #include "ExpansionSettings.h"
@@ -25,8 +26,8 @@ TEST_F(ALocalSimilarityTest , GenericNormalization) {
     Environment e1(molecule,molecule.atoms()[1].position());
     Environment e2(molecule,molecule.atoms()[2].position());
 
-    ASSERT_NEAR(LocalSimilarity::localSimilarity(e1,e1),1.0, eps);
-    ASSERT_NEAR(LocalSimilarity::localSimilarity(e2,e2),1.0, eps);
+    ASSERT_NEAR(LocalSimilarity::localSimilarity(e1,e1), 1.0, eps);
+    ASSERT_NEAR(LocalSimilarity::localSimilarity(e2,e2), 1.0, eps);
 };
 
 TEST_F(ALocalSimilarityTest , SameEnvironmentsOnDifferentCenters) {
@@ -163,6 +164,48 @@ TEST_F(ALocalSimilarityTest, twoOppositeElectronsReversedOrder) {
     ASSERT_NEAR(val,0.0,eps);
 }
 
+TEST_F(ALocalSimilarityTest, twoOppositeSpinElectronsComparision) {
+    auto mol1 = TestMolecules::twoElectrons::oppositeSpin;
+    auto mol2 = TestMolecules::twoElectrons::oppositeSpinReversedOrder;
+    ParticleKit::create(mol1);
+
+    ExpansionSettings::defaults();
+    ExpansionSettings::mode = ExpansionSettings::Mode::TypeSpecific;
+
+    Environment mol1e0(mol1, mol1.electrons()[0].position());
+    Environment mol1e1(mol1, mol1.electrons()[1].position());
+
+    Environment mol2e0(mol2, mol2.electrons()[0].position());
+    Environment mol2e1(mol2, mol2.electrons()[1].position());
+
+    ASSERT_NEAR(LocalSimilarity::localSimilarity(mol1e0, mol1e1), 0.0, eps);
+    ASSERT_NEAR(LocalSimilarity::localSimilarity(mol2e0, mol2e1), 0.0, eps);
+
+    ASSERT_NEAR(LocalSimilarity::localSimilarity(mol1e0, mol2e1), 1.0, eps);
+    ASSERT_NEAR(LocalSimilarity::localSimilarity(mol2e0, mol1e1), 1.0, eps);
+};
+
+TEST_F(ALocalSimilarityTest, twoOppositeSpinElectronsComparisionMs) {
+    auto mol1 = TestMolecules::twoElectrons::oppositeSpin;
+    auto mol2 = TestMolecules::twoElectrons::oppositeSpinReversedOrder;
+    ParticleKit::create(mol1);
+
+    ExpansionSettings::defaults();
+    ExpansionSettings::mode = ExpansionSettings::Mode::TypeSpecific;
+
+    MolecularSpectrum ms1(mol1);
+    MolecularSpectrum ms2(mol2);
+
+    ASSERT_NEAR(LocalSimilarity::localSimilarity(ms1.molecularCenters_[NumberedType<int>(int(Spin::alpha),0)],
+                                                 ms2.molecularCenters_[NumberedType<int>(int(Spin::alpha),0)]), 1.0, eps);
+    ASSERT_NEAR(LocalSimilarity::localSimilarity(ms1.molecularCenters_[NumberedType<int>(int(Spin::beta),0)],
+                                                 ms2.molecularCenters_[NumberedType<int>(int(Spin::beta),0)]), 1.0, eps);
+    ASSERT_NEAR(LocalSimilarity::localSimilarity(ms1.molecularCenters_[NumberedType<int>(int(Spin::alpha),0)],
+                                                 ms2.molecularCenters_[NumberedType<int>(int(Spin::beta),0)]), 0.0, eps);
+    ASSERT_NEAR(LocalSimilarity::localSimilarity(ms1.molecularCenters_[NumberedType<int>(int(Spin::beta),0)],
+                                                 ms2.molecularCenters_[NumberedType<int>(int(Spin::alpha),0)]), 0.0, eps);
+}
+
 TEST_F(ALocalSimilarityTest, twoAlphaElectrons) {
     ExpansionSettings::defaults();
     ExpansionSettings::mode = ExpansionSettings::Mode::TypeSpecific;
@@ -193,3 +236,5 @@ TEST_F(ALocalSimilarityTest, twoBetaElectrons) {
 
     ASSERT_NEAR(val,1.0,eps);
 }
+
+

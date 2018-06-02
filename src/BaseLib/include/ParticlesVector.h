@@ -91,7 +91,6 @@ public:
 
     friend std::ostream& operator<<(std::ostream& os, const ParticlesVector<Type> & pv){
         for (unsigned long i = 0; i < pv.numberOfEntities(); i++) {
-
             os << ToString::unsignedLongToString(i + 1) << " " << pv[i] << std::endl;
         }
         return os;

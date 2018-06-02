@@ -112,13 +112,19 @@ namespace ParticleKit {
         };
     }
 
-    bool isSubsetQ(const AtomsVector &atomsVector) {
-        for (auto const &elemenTypeNumberPair : atomKit) {
-            auto elementType = elemenTypeNumberPair.first;
-            auto maxCount = elemenTypeNumberPair.second;
 
-            if(atomsVector.typesVector().countOccurence(elementType) > maxCount)
+
+    bool isSubsetQ(const AtomsVector &atomsVector) {
+        auto countedTypes = atomsVector.typesVector().countTypes();
+        for (const auto& typeCountPair : countedTypes){
+
+            auto it = std::find_if( ParticleKit::atomKit.begin(), ParticleKit::atomKit.end(),
+                    [typeCountPair](const std::pair<Element, unsigned >& element){
+                return element.first == typeCountPair.first;} );
+            if(it == ParticleKit::atomKit.end()) return false;
+            else if ((*it).second < typeCountPair.second) {
                 return false;
+            }
         }
         return true;
     }

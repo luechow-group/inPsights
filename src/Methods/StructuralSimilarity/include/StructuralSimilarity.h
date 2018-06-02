@@ -23,33 +23,34 @@ namespace StructuralSimilarity{
 
         for (unsigned i = 0; i < N; ++i) {
             auto neA = ParticleKit::getNumberedTypeByIndex(i);
-            if (!A.molecule_.findIndexOfNumberedType(neA).first) continue;
+            if (!A.molecule_.findIndexByNumberedType(neA).first)
+                continue;
             auto expA = A.molecularCenters_.find(neA)->second;
 
             for (unsigned j = 0; j < N; ++j) {
                 auto neB = ParticleKit::getNumberedTypeByIndex(j);
-                if (!B.molecule_.findIndexOfNumberedType(neB).first) continue;
+                if (!B.molecule_.findIndexByNumberedType(neB).first)
+                    continue;
                 auto expB = B.molecularCenters_.find(neB)->second;
 
-                auto val = LocalSimilarity::localSimilarity(expA, expB);
-                C(i, j) = val;
+                C(i, j) = LocalSimilarity::localSimilarity(expA, expB);
             }
         }
         return C;
     }
 
-    Eigen::MatrixXd correlationMatrix(MolecularSpectrum& A) {
+    Eigen::MatrixXd correlationMatrixSame(MolecularSpectrum& A) {
         auto N = ParticleKit::numberOfParticles();
         Eigen::MatrixXd C = Eigen::MatrixXd::Zero(N, N);
 
         for (unsigned i = 0; i < N; ++i) {
             auto neA = ParticleKit::getNumberedTypeByIndex(i);
-            if (!A.molecule_.findIndexOfNumberedType(neA).first) continue;
+            if (!A.molecule_.findIndexByNumberedType(neA).first) continue;
             auto expA = A.molecularCenters_.find(neA)->second;
 
             for (unsigned j = i; j < N; ++j) {
                 auto neB = ParticleKit::getNumberedTypeByIndex(j);
-                if (!A.molecule_.findIndexOfNumberedType(neB).first) continue;
+                if (!A.molecule_.findIndexByNumberedType(neB).first) continue;
                 auto expB = A.molecularCenters_.find(neB)->second;
 
                 auto val = LocalSimilarity::localSimilarity(expA, expB);
@@ -71,8 +72,8 @@ namespace StructuralSimilarity{
         MolecularSpectrum spectrumB(B);
 
         auto CAB = correlationMatrix(spectrumA,spectrumB);
-        auto CAA = correlationMatrix(spectrumA);
-        auto CBB = correlationMatrix(spectrumB);
+        auto CAA = correlationMatrixSame(spectrumA);
+        auto CBB = correlationMatrixSame(spectrumB);
 
         std::cout << CAB << std::endl << std::endl;
         std::cout << CAA << std::endl << std::endl;

@@ -29,6 +29,14 @@ namespace TestMolecules {
                 ElectronsVector({{Spin::beta, {0, 0, 0.37}},
                                  {Spin::beta, {0, 0,-0.37}}})};
     }
+    namespace threeElectrons {
+        const MolecularGeometry normal = {
+                AtomsVector(),
+                ElectronsVector({{Spin::alpha, {0, 0, 0.37}},
+                                 {Spin::alpha, {0, 0, 0.37}},
+                                 {Spin::beta,  {0, 0,-0.37}}})};
+    }
+
     namespace H2 {
         namespace ElectronsInCores {
 

@@ -8,5 +8,5 @@ MolecularSpectrum::MolecularSpectrum(MolecularGeometry molecule)
 {
     assert(ParticleKit::isSubsetQ(molecule));
     NeighborhoodExpander expander;
-    molecularCenters_ = expander.computeExpansions(molecule);
+    molecularCenters_ = expander.computeMolecularExpansions(molecule);
 }
