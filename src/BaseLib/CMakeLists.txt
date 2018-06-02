@@ -22,6 +22,8 @@ find_package(Qt5 REQUIRED COMPONENTS
         )
 
 set(HEADER_FILES
+        resources/TestMolecules.h
+
         include/ElementColor.h
         include/ElementInfo.h
         include/pElementInfo.h
@@ -62,15 +64,13 @@ set(SOURCE_FILES
         source/Particle.cpp
         )
 
-file(GLOB_RECURSE RESOURCE_FILES resources/*.*)
-file(COPY ${RESOURCE_FILES} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES})
 target_link_libraries(${PROJECT_NAME}
         nlohmann_json
         )
 target_include_directories(${PROJECT_NAME} PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/resources>
         )
 
 add_subdirectory(tests)

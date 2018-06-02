@@ -143,7 +143,7 @@ TEST_F(ALocalSimilarityTest, twoOppositeElectrons) {
 
     Environment e0(eaeb, eaeb.electrons()[0].position());
     Environment e1(eaeb, eaeb.electrons()[1].position());
-    
+
     ASSERT_NEAR(LocalSimilarity::localSimilarity(e0,e1),0.0,eps);
 }
 
