@@ -12,14 +12,14 @@ using namespace Eigen;
 class AParticleTest : public Test {
 public:
     Eigen::Vector3d pos1{1,2,3};
-    Electron electron1{Spins::SpinType::alpha, pos1};
+    Electron electron1{Spin::alpha, pos1};
     Atom atom1{Elements::ElementType::H, pos1};
 
     void SetUp() override {};
 };
 
 TEST_F(AParticleTest, Constructor) {
-    Electron electron2(Spins::SpinType::alpha,pos1);
+    Electron electron2(Spin::alpha,pos1);
     ASSERT_EQ(electron1.position(), electron2.position());
 }
 
@@ -33,7 +33,7 @@ TEST_F(AParticleTest, Electron) {
     stringstream << electron1;
 
     ASSERT_EQ(stringstream.str(), "ea   1.00000   2.00000   3.00000");
-    ASSERT_EQ(electron1.type(), Spins::SpinType::alpha);
+    ASSERT_EQ(electron1.type(), Spin::alpha);
 }
 
 TEST_F(AParticleTest, Atom) {

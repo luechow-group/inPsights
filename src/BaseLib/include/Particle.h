@@ -65,7 +65,7 @@ protected:
     int type_;
 };
 
-using Electron = Particle<Spins::SpinType>;
+using Electron = Particle<Spin>;
 using Atom = Particle<Element>;
 
 template<>

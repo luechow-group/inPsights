@@ -81,8 +81,8 @@ namespace ParticleKit {
 
         void createElectronKitFromElectronsVector(const ElectronsVector &electronsVector) {
 
-            electronKit.first = electronsVector.typesVector().countOccurence(Spins::SpinType::alpha);
-            electronKit.second = electronsVector.typesVector().countOccurence(Spins::SpinType::beta);
+            electronKit.first = electronsVector.typesVector().countOccurence(Spin::alpha);
+            electronKit.second = electronsVector.typesVector().countOccurence(Spin::beta);
         }
 
         void createElectronKitFromAtomKit(const AtomKit &atomKit,
@@ -130,9 +130,9 @@ namespace ParticleKit {
     }
 
     bool isSubsetQ(const ElectronsVector &electronsVector) {
-        if(electronsVector.typesVector().countOccurence(Spins::SpinType::alpha) > ParticleKit::electronKit.first)
+        if(electronsVector.typesVector().countOccurence(Spin::alpha) > ParticleKit::electronKit.first)
             return false;
-        else if (electronsVector.typesVector().countOccurence(Spins::SpinType::beta) > ParticleKit::electronKit.second)
+        else if (electronsVector.typesVector().countOccurence(Spin::beta) > ParticleKit::electronKit.second)
             return false;
         else
             return true;
@@ -208,8 +208,8 @@ namespace ParticleKit {
         assert(idx < numberOfElectrons());
 
         if( idx < electronKit.first)
-            return {Spins::SpinType::alpha, idx};
+            return {Spin::alpha, idx};
         else
-            return {Spins::SpinType::beta, idx-electronKit.first};
+            return {Spin::beta, idx-electronKit.first};
     }
 }

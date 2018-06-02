@@ -17,7 +17,7 @@ Element Elements::elementFromInt(int type){
     return static_cast<Element>(type);
 };
 
-int Elements::elementTypeToInt(Element element){
+int Elements::elementToInt(Element element){
     return int(element);
 };
 

@@ -18,15 +18,15 @@ int main(int argc, char *argv[]) {
             {{Element::H,{0,0, 0.37}},
              {Element::H,{0,0,-0.37}}}),
          ElectronsVector(
-                 {{Spins::SpinType::alpha,{0,0, 0.37}},
-                  {Spins::SpinType::alpha,{0,0,-0.37}}})
+                 {{Spin::alpha,{0,0, 0.37}},
+                  {Spin::alpha,{0,0,-0.37}}})
     };
     B = {AtomsVector(
             {{Element::H,{0,0, 0.37}},
              {Element::He,{0,0,-0.37}}}),
          ElectronsVector(
-                 {{Spins::SpinType::alpha,{0,0, 0.37}},
-                  {Spins::SpinType::alpha,{0,0,-0.37}}})
+                 {{Spin::alpha,{0,0, 0.37}},
+                  {Spin::alpha,{0,0,-0.37}}})
     };
 
     ExpansionSettings::defaults();

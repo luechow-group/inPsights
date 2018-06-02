@@ -3,42 +3,42 @@
 //
 #include "SpinType.h"
 
-Spins::SpinType Spins::first() {
-    return Spins::SpinType::alpha;
+Spin Spins::first() {
+    return Spin::alpha;
 };
 
-Spins::SpinType Spins::last(){
-    return Spins::SpinType::beta;
+Spin Spins::last(){
+    return Spin::beta;
 };
 
-Spins::SpinType Spins::spinTypeFromInt(int type){
-    return static_cast<Spins::SpinType>(type);//-storageShift);
+Spin Spins::spinFromInt(int type){
+    return static_cast<Spin>(type);//-storageShift);
 };
 
-int Spins::spinTypeToInt(Spins::SpinType spinType){
+int Spins::spinToInt(Spin spinType){
     return int(spinType);//+Spin::storageShift;
 };
 
-std::string Spins::toString(const Spins::SpinType& s){
+std::string Spins::toString(const Spin& s){
     switch(s) {
-        case Spins::SpinType::alpha: return "a";
-        case Spins::SpinType::beta: return "b";
-        case Spins::SpinType::none: return "-";
+        case Spin::alpha: return "a";
+        case Spin::beta: return "b";
+        case Spin::none: return "-";
     }
 }
 
-std::ostream& operator<<(std::ostream& os, const Spins::SpinType& s){
+std::ostream& operator<<(std::ostream& os, const Spin& s){
     os << Spins::toString(s);
     return os;
 }
 
-double Spins::magneticQuantumNumber(Spins::SpinType spinType) {
-    assert(spinType != Spins::SpinType::none && "The Spin::SpinType cannot be 'none'.");
+double Spins::magneticQuantumNumber(Spin spinType) {
+    assert(spinType != Spin::none && "The Spin::SpinType cannot be 'none'.");
 
     switch(spinType) {
-        case Spins::SpinType::alpha:
+        case Spin::alpha:
             return 1/2.;
-        case Spins::SpinType::beta:
+        case Spin::beta:
             return -1/2.;
         default:
             return 0;

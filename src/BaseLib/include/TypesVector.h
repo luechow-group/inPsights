@@ -39,7 +39,7 @@ public:
 };
 
 using NumberedElement = NumberedType<Element >;
-using NumberedSpin = NumberedType<Spins::SpinType>;
+using NumberedSpin = NumberedType<Spin>;
 
 template <typename Type>
 class TypesVector : public AbstractVector {
@@ -188,7 +188,7 @@ protected:
     Eigen::VectorXi types_;
 };
 
-using SpinTypesVector = TypesVector<Spins::SpinType>;
+using SpinTypesVector = TypesVector<Spin>;
 using ElementTypesVector = TypesVector<Element>;
 
 // Template Specialisation
@@ -197,7 +197,7 @@ SpinTypesVector::TypesVector(unsigned long numberOfAlphaElectrons,
                              unsigned long numberOfBetaElectrons);
 
 template<>
-SpinTypesVector::TypesVector(std::vector<Spins::SpinType> types);
+SpinTypesVector::TypesVector(std::vector<Spin> types);
 
 template<>
 ElementTypesVector ::TypesVector(std::vector<Element> types);

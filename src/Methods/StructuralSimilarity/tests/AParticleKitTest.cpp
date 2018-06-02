@@ -12,9 +12,9 @@ class AParticleKitTest : public ::testing::Test {
 public:
     MolecularGeometry molecularGeometry;
     void SetUp() override {
-        Particle<Spins::SpinType > e1 = {Spins::SpinType::alpha,{1, 2, 3}};
-        Particle<Spins::SpinType > e2 = {Spins::SpinType::alpha,{1, 2, 3}};
-        Particle<Spins::SpinType > e3 = {Spins::SpinType::beta ,{4, 5, 6}};
+        Particle<Spin > e1 = {Spin::alpha,{1, 2, 3}};
+        Particle<Spin > e2 = {Spin::alpha,{1, 2, 3}};
+        Particle<Spin > e3 = {Spin::beta ,{4, 5, 6}};
         molecularGeometry.electrons().append(e1);
         molecularGeometry.electrons().append(e2);
         molecularGeometry.electrons().append(e3);

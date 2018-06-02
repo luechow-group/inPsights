@@ -118,7 +118,7 @@ SpinTypesVector CollectionParser::spinTypesVectorFromJson(const nlohmann::json &
     auto spins = json["SpinTypesVector"].get<std::vector<int>>();
     SpinTypesVector spinTypesVector;
     for (int &spin : spins) {
-        spinTypesVector.append( (Spins::SpinType) spin);
+        spinTypesVector.append( (Spin) spin);
     }
     return spinTypesVector;
 }

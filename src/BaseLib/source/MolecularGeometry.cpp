@@ -51,7 +51,7 @@ NumberedType<int> MolecularGeometry::findNumberedTypeByIndex(unsigned idx) const
 std::pair<bool,long> MolecularGeometry::findIndexByNumberedType(const NumberedType<int> &numberedType) const {
     if(numberedType.type_ >= int(Spins::first()) && numberedType.type_ <= int(Spins::last())) {
         auto boolIdx = electrons().typesVector().findIndexOfNumberedType(
-                NumberedSpin(Spins::spinTypeFromInt(numberedType.type_), numberedType.number_));
+                NumberedSpin(Spins::spinFromInt(numberedType.type_), numberedType.number_));
 
         boolIdx.second += atoms().numberOfEntities(); // TODO is this the way it should be?
         return boolIdx;

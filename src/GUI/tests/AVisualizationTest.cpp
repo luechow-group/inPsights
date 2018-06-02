@@ -17,8 +17,8 @@ public:
         Vector3d pos1(1,2,3);
         Vector3d pos2(-1,0,3.5);
         Vector3d pos3(-7.3,0.5,9);
-        auto alpha = Spins::SpinType::alpha;
-        auto beta = Spins::SpinType::beta;
+        auto alpha = Spin::alpha;
+        auto beta = Spin::beta;
 
         ElectronsVector electronsVector;
 

@@ -22,7 +22,7 @@ namespace Elements {
 
     ElementType elementFromInt(int type);
 
-    int elementTypeToInt(ElementType element);
+    int elementToInt(ElementType element);
     
 } // namespace Elements
 

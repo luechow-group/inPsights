@@ -10,13 +10,13 @@ template<> SpinTypesVector::TypesVector(unsigned long numberOfAlphaElectrons,
           types_(Eigen::VectorXi::Constant(0, 0))
 {
     for (unsigned long i = 0; i < numberOfAlphaElectrons; ++i)
-        this->append(Spins::SpinType::alpha);
+        this->append(Spin::alpha);
 
     for (unsigned long i = 0; i < numberOfBetaElectrons; ++i)
-        this->append(Spins::SpinType::beta);
+        this->append(Spin::beta);
 }
 
-template<> SpinTypesVector::TypesVector(std::vector<Spins::SpinType> types)
+template<> SpinTypesVector::TypesVector(std::vector<Spin> types)
         : AbstractVector(0),
           types_(0)
 {

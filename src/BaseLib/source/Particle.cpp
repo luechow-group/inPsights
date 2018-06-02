@@ -6,7 +6,7 @@
 
 template<> std::string Electron::toString() const {
     std::string typeString = "";
-    typeString += "e" + Spins::toString(Spins::spinTypeFromInt(type_));
+    typeString += "e" + Spins::toString(Spins::spinFromInt(type_));
     typeString += ToString::vector3dToString(position_);
 
     return typeString;

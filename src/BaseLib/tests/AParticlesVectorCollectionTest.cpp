@@ -20,8 +20,8 @@ public:
     AtomsVectorCollection atomsVectorCollection;
 
     void SetUp() override {
-        Particle<Spins::SpinType > e1 = {Spins::SpinType::alpha,pos1};
-        Particle<Spins::SpinType > e2 = {Spins::SpinType::beta,pos2};
+        Particle<Spin > e1 = {Spin::alpha,pos1};
+        Particle<Spin > e2 = {Spin::beta,pos2};
         electronsVector.append(e1);
         electronsVector.append(e2);
 

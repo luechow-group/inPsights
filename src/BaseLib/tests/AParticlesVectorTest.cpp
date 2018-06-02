@@ -16,9 +16,9 @@ public:
     AtomsVector atoms;
 
     void SetUp() override {
-        Particle<Spins::SpinType > e1 = {Spins::SpinType::alpha,{1, 2, 3}};
-        Particle<Spins::SpinType > e2 = {Spins::SpinType::alpha,{1, 2, 3}};
-        Particle<Spins::SpinType > e3 = {Spins::SpinType::beta ,{4, 5, 6}};
+        Particle<Spin > e1 = {Spin::alpha,{1, 2, 3}};
+        Particle<Spin > e2 = {Spin::alpha,{1, 2, 3}};
+        Particle<Spin > e3 = {Spin::beta ,{4, 5, 6}};
         electrons.append(e1);
         electrons.append(e2);
         electrons.append(e3);
@@ -66,6 +66,6 @@ TEST_F(AParticlesVectorTest, Distance) {
 }
 
 TEST_F(AParticlesVectorTest, CountTypeOccurence) {
-    ASSERT_EQ(electrons.typesVector().countOccurence(Spins::SpinType::alpha),2);
+    ASSERT_EQ(electrons.typesVector().countOccurence(Spin::alpha),2);
     ASSERT_EQ(atoms.typesVector().countOccurence(Element::H),1);
 }

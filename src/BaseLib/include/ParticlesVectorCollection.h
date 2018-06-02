@@ -122,7 +122,7 @@ protected:
     TypesVector<Type> typesVector_;
 };
 
-using ElectronsVectorCollection = ParticlesVectorCollection<Spins::SpinType>;
+using ElectronsVectorCollection = ParticlesVectorCollection<Spin>;
 using AtomsVectorCollection = ParticlesVectorCollection<Element>;
 
 #endif //AMOLQCPP_PARTICLESVECTORCOLLECTION_H

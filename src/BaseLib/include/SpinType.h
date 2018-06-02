@@ -17,9 +17,9 @@ namespace Spins {
 
     SpinType last();
 
-    SpinType spinTypeFromInt(int type);
+    SpinType spinFromInt(int type);
 
-    int spinTypeToInt(SpinType spinType);
+    int spinToInt(SpinType spinType);
 
     std::string toString(const SpinType& s);
 

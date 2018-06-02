@@ -100,9 +100,9 @@ TEST_F(ATypesVectorTest, CountTypes_ElementTypes){
 TEST_F(ATypesVectorTest, CountTypes_SpinTypes){
     auto result = stv.countTypes();
 
-    ASSERT_EQ(result[0].first, Spins::SpinType::alpha);
+    ASSERT_EQ(result[0].first, Spin::alpha);
     ASSERT_EQ(result[0].second, 3);
 
-    ASSERT_EQ(result[1].first, Spins::SpinType::beta);
+    ASSERT_EQ(result[1].first, Spin::beta);
     ASSERT_EQ(result[1].second, 3);
 }
