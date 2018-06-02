@@ -5,23 +5,23 @@
 #include "ElementType.h"
 #include "ElementInfo.h"
 
-Elements::ElementType Elements::first() {
-    return Elements::ElementType::H;
+Element Elements::first() {
+    return Element::H;
 };
 
-Elements::ElementType Elements::last(){
-    return Elements::ElementType::Og;
+Element Elements::last(){
+    return Element::Og;
 };
 
-Elements::ElementType Elements::elementTypeFromInt(int type){
-    return static_cast<Elements::ElementType>(type);
+Element Elements::elementFromInt(int type){
+    return static_cast<Element>(type);
 };
 
-int Elements::elementTypeToInt(Elements::ElementType elementType){
-    return int(elementType);
+int Elements::elementTypeToInt(Element element){
+    return int(element);
 };
 
-std::ostream& operator<< (std::ostream& os, const Elements::ElementType & e){
+std::ostream& operator<< (std::ostream& os, const Element & e){
     os <<  Elements::ElementInfo::symbol(e);
     return os;
 };

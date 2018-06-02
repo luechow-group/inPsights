@@ -43,7 +43,7 @@ namespace ExpansionSettings{
     }
 
     namespace Alchemical{
-        extern std::map<std::pair<Elements::ElementType,Elements::ElementType>,double> pairSimilarities;
+        extern std::map<std::pair<Element,Element>,double> pairSimilarities;
     }//TODO implement and use
 
     enum class Mode {

@@ -20,9 +20,9 @@ namespace Elements {
 
     ElementType last();
 
-    ElementType elementTypeFromInt(int type);
+    ElementType elementFromInt(int type);
 
-    int elementTypeToInt(ElementType elementType);
+    int elementTypeToInt(ElementType element);
     
 } // namespace Elements
 

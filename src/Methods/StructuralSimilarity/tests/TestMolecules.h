@@ -88,9 +88,9 @@ namespace TestMolecules {
 
     namespace CO2{
         const MolecularGeometry withoutElectrons = {
-                AtomsVector({{Elements::ElementType::C,{0,0, 0}},
-                             {Elements::ElementType::O,{0,0, 1}},
-                             {Elements::ElementType::O,{0,0,-1}}}),
+                AtomsVector({{Element::C,{0,0, 0}},
+                             {Element::O,{0,0, 1}},
+                             {Element::O,{0,0,-1}}}),
                 ElectronsVector()
         };
     }

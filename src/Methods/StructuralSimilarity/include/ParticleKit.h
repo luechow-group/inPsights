@@ -9,7 +9,7 @@
 #include <ParticlesVector.h>
 #include <MolecularGeometry.h>
 
-using AtomKit = std::vector<std::pair<Elements::ElementType,unsigned>>;
+using AtomKit = std::vector<std::pair<Element,unsigned>>;
 using ElectronKit = std::pair<unsigned,unsigned>; // alpha, beta
 using TypeKit = std::vector<std::pair<int,unsigned>>;
 

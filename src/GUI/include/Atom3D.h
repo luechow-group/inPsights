@@ -14,9 +14,9 @@ public:
   Atom3D(const Atom3D& atom);
   Atom3D(Qt3DCore::QEntity *root,
        const QVector3D& location,
-       const Elements::ElementType& elementType);
+       const Element& elementType);
 
-  Elements::ElementType getElementType() const { return elementType_; };
+  Element getElementType() const { return elementType_; };
 
   Qt3DRender::QObjectPicker *picker;
 
@@ -24,7 +24,7 @@ public:
   //void onPressed(bool pressed);
 
 private:
-  const Elements::ElementType elementType_;
+  const Element elementType_;
 };
 
 #endif //AMOLQCPP_ATOM3D_H

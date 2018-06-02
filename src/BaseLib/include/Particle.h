@@ -66,7 +66,7 @@ protected:
 };
 
 using Electron = Particle<Spins::SpinType>;
-using Atom = Particle<Elements::ElementType>;
+using Atom = Particle<Element>;
 
 template<>
 std::string Electron::toString() const;

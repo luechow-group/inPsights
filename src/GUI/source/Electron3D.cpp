@@ -8,7 +8,7 @@ Electron3D::Electron3D(Qt3DCore::QEntity *root, const QVector3D& location, const
         : Sphere(root,
                  Spins::QColorFromSpinType(spinType),
                  location,
-                 float(Elements::ElementInfo::vdwRadius(Elements::ElementType::H)/10.0f/4.0f)),
+                 float(Elements::ElementInfo::vdwRadius(Element::H)/10.0f/4.0f)),
           spinType_(spinType) {
   setAlpha(0.5f);
   //connect(picker, &Qt3DRender::QObjectPicker::pressedChanged, this, &Atom::onPressed);

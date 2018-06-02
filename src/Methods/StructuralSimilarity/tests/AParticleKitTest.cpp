@@ -19,8 +19,8 @@ public:
         molecularGeometry.electrons().append(e2);
         molecularGeometry.electrons().append(e3);
 
-        Particle<Elements::ElementType> a1 = {Elements::ElementType::He,{1, 2, 3}};
-        Particle<Elements::ElementType> a2 = {Elements::ElementType::H ,{4, 5, 6}};
+        Particle<Element> a1 = {Element::He,{1, 2, 3}};
+        Particle<Element> a2 = {Element::H ,{4, 5, 6}};
         molecularGeometry.atoms().append(a1);
         molecularGeometry.atoms().append(a2);
     };
@@ -30,8 +30,8 @@ TEST_F(AParticleKitTest, Constructor1) {
     ParticleKit::create(molecularGeometry.atoms(),0,2);
 
     // tests order
-    ASSERT_EQ(ParticleKit::atomKit[0].first, Elements::ElementType::H);
-    ASSERT_EQ(ParticleKit::atomKit[1].first, Elements::ElementType::He);
+    ASSERT_EQ(ParticleKit::atomKit[0].first, Element::H);
+    ASSERT_EQ(ParticleKit::atomKit[1].first, Element::He);
 
     ASSERT_EQ(ParticleKit::atomKit[0].second, 1);
     ASSERT_EQ(ParticleKit::atomKit[1].second, 1);
@@ -44,8 +44,8 @@ TEST_F(AParticleKitTest, Constructor2) {
     ParticleKit::create(molecularGeometry);
 
     // tests order
-    ASSERT_EQ(ParticleKit::atomKit[0].first, Elements::ElementType::H);
-    ASSERT_EQ(ParticleKit::atomKit[1].first, Elements::ElementType::He);
+    ASSERT_EQ(ParticleKit::atomKit[0].first, Element::H);
+    ASSERT_EQ(ParticleKit::atomKit[1].first, Element::He);
 
     ASSERT_EQ(ParticleKit::atomKit[0].second, 1);
     ASSERT_EQ(ParticleKit::atomKit[1].second, 1);
@@ -86,7 +86,7 @@ TEST_F(AParticleKitTest, isSubsetQFalse) {
 
 
 TEST_F(AParticleKitTest, NumberedType) {
-    ParticleKit::create({{Elements::ElementType::H,2},{Elements::ElementType::Ca,2},{Elements::ElementType::He,2}},{2,3});
+    ParticleKit::create({{Element::H,2},{Element::Ca,2},{Element::He,2}},{2,3});
 
     ASSERT_EQ(ParticleKit::getNumberedElementByIndex(0), NumberedElement (Element::H,0));
     ASSERT_EQ(ParticleKit::getNumberedElementByIndex(1), NumberedElement (Element::H,1));

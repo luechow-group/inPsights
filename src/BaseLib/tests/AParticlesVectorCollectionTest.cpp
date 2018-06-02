@@ -28,8 +28,8 @@ public:
         electronsVectorCollection.append(electronsVector);
         electronsVectorCollection.append(electronsVector);
 
-        Particle<Elements::ElementType> a1 = {Elements::ElementType::H ,pos1};
-        Particle<Elements::ElementType> a2 = {Elements::ElementType::Og,pos2};
+        Particle<Element> a1 = {Element::H ,pos1};
+        Particle<Element> a2 = {Element::Og,pos2};
         atomsVector.append(a1);
         atomsVector.append(a2);
         atomsVectorCollection.append(atomsVector);

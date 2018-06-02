@@ -15,23 +15,23 @@ int main(int argc, char *argv[]) {
 
     MolecularGeometry A,B;
     A = {AtomsVector(
-            {{Elements::ElementType::H,{0,0, 0.37}},
-             {Elements::ElementType::H,{0,0,-0.37}}}),
+            {{Element::H,{0,0, 0.37}},
+             {Element::H,{0,0,-0.37}}}),
          ElectronsVector(
                  {{Spins::SpinType::alpha,{0,0, 0.37}},
                   {Spins::SpinType::alpha,{0,0,-0.37}}})
     };
     B = {AtomsVector(
-            {{Elements::ElementType::H,{0,0, 0.37}},
-             {Elements::ElementType::He,{0,0,-0.37}}}),
+            {{Element::H,{0,0, 0.37}},
+             {Element::He,{0,0,-0.37}}}),
          ElectronsVector(
                  {{Spins::SpinType::alpha,{0,0, 0.37}},
                   {Spins::SpinType::alpha,{0,0,-0.37}}})
     };
 
     ExpansionSettings::defaults();
-    ExpansionSettings::mode = ExpansionMode::TypeSpecific;
-    ParticleKit::create({{Elements::ElementType::H,2},{Elements::ElementType::He,2}},{2,2});
+    ExpansionSettings::mode = ExpansionSettings::Mode::TypeSpecific;
+    ParticleKit::create({{Element::H,2},{Element::He,2}},{2,2});
 
     double result = StructuralSimilarity::stucturalSimilarity(A,B,1);
 

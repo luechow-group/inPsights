@@ -177,7 +177,7 @@ Eigen::VectorXd ElectronicWaveFunction::getInverseNegativeLogarithmizedProbabili
   //return 0.5*getProbabilityAmplitude()*getProbabilityAmplitudeGradientCollection().cwiseInverse();
 }
 
-ParticlesVector<Elements::ElementType> ElectronicWaveFunction::getAtomsVector() const {
+ParticlesVector<Element> ElectronicWaveFunction::getAtomsVector() const {
     return atomsVector_;
 }
 

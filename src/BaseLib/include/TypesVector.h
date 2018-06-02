@@ -38,7 +38,7 @@ public:
     const unsigned number_;
 };
 
-using NumberedElement = NumberedType<Elements::ElementType >;
+using NumberedElement = NumberedType<Element >;
 using NumberedSpin = NumberedType<Spins::SpinType>;
 
 template <typename Type>
@@ -189,7 +189,7 @@ protected:
 };
 
 using SpinTypesVector = TypesVector<Spins::SpinType>;
-using ElementTypesVector = TypesVector<Elements::ElementType>;
+using ElementTypesVector = TypesVector<Element>;
 
 // Template Specialisation
 template<>
@@ -200,6 +200,6 @@ template<>
 SpinTypesVector::TypesVector(std::vector<Spins::SpinType> types);
 
 template<>
-ElementTypesVector ::TypesVector(std::vector<Elements::ElementType> types);
+ElementTypesVector ::TypesVector(std::vector<Element> types);
 
 #endif //AMOLQCPP_TYPESVECTOR_H

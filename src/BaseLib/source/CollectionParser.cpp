@@ -21,12 +21,12 @@ nlohmann::json CollectionParser::positionsVectorToJson(const PositionsVector &po
 
 nlohmann::json CollectionParser::elementTypesVectorToJson(const ElementTypesVector& elementTypesVector) {
 
-    auto elementTypes = nlohmann::json::array();
+    auto elements = nlohmann::json::array();
     for (int i = 0; i < elementTypesVector.numberOfEntities(); ++i)
-        elementTypes.emplace_back(Elements::ElementInfo::symbol(elementTypesVector[i]));
+        elements.emplace_back(Elements::ElementInfo::symbol(elementTypesVector[i]));
 
     nlohmann::json j;
-    j["ElementTypesVector"] = elementTypes;
+    j["ElementTypesVector"] = elements;
     return j;
 }
 

@@ -57,11 +57,11 @@ TEST_F(ATypesVectorTest,GetIndexedTypeFromIndex){
     auto indexedType = etv.getNumberedTypeByIndex(3);
 
     ASSERT_EQ(indexedType.number_,1);
-    ASSERT_EQ(indexedType.type_, Elements::ElementType::He);
+    ASSERT_EQ(indexedType.type_, Element::He);
 }
 
 TEST_F(ATypesVectorTest,CheckIndexedType_Present){
-    auto indexedType = NumberedType<Elements::ElementType>(Elements::ElementType::He,1);
+    auto indexedType = NumberedType<Element>(Element::He,1);
 
     auto foundIndexPair = etv.findIndexOfNumberedType(indexedType);
     ASSERT_TRUE(foundIndexPair.first);
@@ -69,7 +69,7 @@ TEST_F(ATypesVectorTest,CheckIndexedType_Present){
 }
 
 TEST_F(ATypesVectorTest,CheckIndexedTypePresentBut_WrongIndex){
-    auto wrongIndexedType = NumberedType<Elements::ElementType>(Elements::ElementType::He,3);
+    auto wrongIndexedType = NumberedType<Element>(Element::He,3);
 
     auto foundIndexPair = etv.findIndexOfNumberedType(wrongIndexedType);
     ASSERT_FALSE(foundIndexPair.first);
@@ -77,7 +77,7 @@ TEST_F(ATypesVectorTest,CheckIndexedTypePresentBut_WrongIndex){
 }
 
 TEST_F(ATypesVectorTest,CheckIndexedType_MissingType){
-    auto indexedType = NumberedType<Elements::ElementType>(Elements::ElementType::Ca,1);
+    auto indexedType = NumberedType<Element>(Element::Ca,1);
 
     auto foundIndexPair = etv.findIndexOfNumberedType(indexedType);
     ASSERT_FALSE(foundIndexPair.first);
@@ -87,13 +87,13 @@ TEST_F(ATypesVectorTest,CheckIndexedType_MissingType){
 TEST_F(ATypesVectorTest, CountTypes_ElementTypes){
     auto result = etv.countTypes();
 
-    ASSERT_EQ(result[0].first, Elements::ElementType::H);
+    ASSERT_EQ(result[0].first, Element::H);
     ASSERT_EQ(result[0].second, 1);
 
-    ASSERT_EQ(result[1].first, Elements::ElementType::He);
+    ASSERT_EQ(result[1].first, Element::He);
     ASSERT_EQ(result[1].second, 3);
 
-    ASSERT_EQ(result[2].first, Elements::ElementType::Og);
+    ASSERT_EQ(result[2].first, Element::Og);
     ASSERT_EQ(result[2].second, 1);
 }
 

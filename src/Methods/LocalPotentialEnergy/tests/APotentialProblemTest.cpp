@@ -14,9 +14,9 @@ using namespace Eigen;
 
 class APotentialProblemTest : public Test {public:
     void SetUp() override {
-        Atom atom1({1,2,3},Elements::ElementType::Ag);
-        Atom atom2({-1,0,3.5},Elements::ElementType::Au);
-        Atom atom3({-7.3,0.5,9},Elements::ElementType::C);
+        Atom atom1(Element::Ag,{1,2,3});
+        Atom atom2(Element::Au,{-1,0,3.5});
+        Atom atom3(Element::C,{-7.3,0.5,9});
 
         atomsVector.append(atom1);
         atomsVector.append(atom2);
@@ -30,7 +30,7 @@ class APotentialProblemTest : public Test {public:
         electronsVector.append(elec2);
         electronsVector.append(elec3);
 
-        atomsVector2.append(Atom({0,0,0},Elements::ElementType::H));
+        atomsVector2.append(Atom(Element::H,{0,0,0}));
         electronsVector2.append(Electron({0,0,2}));
     }
     AtomsVector atomsVector, atomsVector2;

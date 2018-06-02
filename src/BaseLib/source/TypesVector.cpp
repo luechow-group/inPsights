@@ -27,7 +27,7 @@ template<> SpinTypesVector::TypesVector(std::vector<Spins::SpinType> types)
     }
 }
 
-template<> ElementTypesVector ::TypesVector(std::vector<Elements::ElementType> types)
+template<> ElementTypesVector ::TypesVector(std::vector<Element> types)
         : AbstractVector(0),
           types_(0)
 {

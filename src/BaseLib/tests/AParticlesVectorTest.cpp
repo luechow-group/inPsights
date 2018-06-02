@@ -23,8 +23,8 @@ public:
         electrons.append(e2);
         electrons.append(e3);
 
-        Particle<Elements::ElementType> a1 = {Elements::ElementType::H ,{1, 2, 3}};
-        Particle<Elements::ElementType> a2 = {Elements::ElementType::Og,{4, 5, 6}};
+        Particle<Element> a1 = {Element::H ,{1, 2, 3}};
+        Particle<Element> a2 = {Element::Og,{4, 5, 6}};
         atoms.append(a1);
         atoms.append(a2);
     };
@@ -32,9 +32,9 @@ public:
 
 TEST_F(AParticlesVectorTest, BraceInitialization) {
 
-    ParticlesVector<Elements::ElementType> particlesVector(
-            {{Elements::ElementType::H , {1, 2, 3}},
-             {Elements::ElementType::Og, {4, 5, 6}}}
+    ParticlesVector<Element> particlesVector(
+            {{Element::H , {1, 2, 3}},
+             {Element::Og, {4, 5, 6}}}
     );
 }
 
@@ -67,5 +67,5 @@ TEST_F(AParticlesVectorTest, Distance) {
 
 TEST_F(AParticlesVectorTest, CountTypeOccurence) {
     ASSERT_EQ(electrons.typesVector().countOccurence(Spins::SpinType::alpha),2);
-    ASSERT_EQ(atoms.typesVector().countOccurence(Elements::ElementType::H),1);
+    ASSERT_EQ(atoms.typesVector().countOccurence(Element::H),1);
 }

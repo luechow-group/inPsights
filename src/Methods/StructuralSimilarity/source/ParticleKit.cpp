@@ -60,7 +60,7 @@ namespace ParticleKit {
         void createAtomKitFromAtomsVector(const AtomsVector &atoms) {
 
             AtomKit newAtomKit;
-            std::vector<Elements::ElementType> elementsPresent;
+            std::vector<Element> elementsPresent;
 
             for (int i = 0; i < atoms.numberOfEntities(); ++i) {
                 auto element = atoms[i].type();
@@ -71,7 +71,7 @@ namespace ParticleKit {
             std::sort(elementsPresent.begin(), elementsPresent.end());
 
             for (const auto &element : elementsPresent) {
-                newAtomKit.emplace_back<std::pair<Elements::ElementType, unsigned>>(
+                newAtomKit.emplace_back<std::pair<Element, unsigned>>(
                         {element, atoms.typesVector().countOccurence(element)});
             }
 

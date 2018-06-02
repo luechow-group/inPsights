@@ -14,7 +14,7 @@ template<> std::string Electron::toString() const {
 
 template<> std::string Atom::toString() const {
     std::string typeString = "";
-    typeString += Elements::ElementInfo::symbol(Elements::elementTypeFromInt(type_));
+    typeString += Elements::ElementInfo::symbol(Elements::elementFromInt(type_));
     if(typeString.length() == 1)
         typeString += " ";
     typeString += ToString::vector3dToString(position_);
@@ -28,5 +28,5 @@ int Electron::charge() const{
 }
 template<>
 int Atom::charge() const{
-    return Elements::ElementInfo::Z(Elements::elementTypeFromInt(type_));
+    return Elements::ElementInfo::Z(Elements::elementFromInt(type_));
 }

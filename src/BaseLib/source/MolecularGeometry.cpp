@@ -56,7 +56,7 @@ std::pair<bool,long> MolecularGeometry::findIndexByNumberedType(const NumberedTy
         return boolIdx;
     } else if(numberedType.type_ >= int(Elements::first()) || numberedType.type_ <= int(Elements::last())) {
         return atoms().typesVector().findIndexOfNumberedType(
-                NumberedElement(Elements::elementTypeFromInt(numberedType.type_), numberedType.number_));
+                NumberedElement(Elements::elementFromInt(numberedType.type_), numberedType.number_));
     } else {
         return {false,0};
     }
