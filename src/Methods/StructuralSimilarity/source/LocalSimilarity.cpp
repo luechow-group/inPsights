@@ -7,8 +7,8 @@
 #include "PowerSpectrum.h"
 #include "NeighborhoodExpander.h"
 
-double LocalSimilarity::localSimilarity(const Environment& e1, const Environment& e2, unsigned zeta) {
-
+double LocalSimilarity::localSimilarity(const Environment &e1, const Environment &e2, double zeta) {
+    assert(zeta > 0 && "Zeta must be positive.");
     NeighborhoodExpander expander;
     auto exp1 = expander.computeParticularExpansions(e1);
     auto exp2 = expander.computeParticularExpansions(e2);
@@ -28,6 +28,7 @@ double LocalSimilarity::unnormalizedLocalSimialrity(const Environment& e1,
 double LocalSimilarity::localSimilarity(
         const TypeSpecificNeighborhoodsAtOneCenter &expansions1,
         const TypeSpecificNeighborhoodsAtOneCenter &expansions2, double zeta) {
+    assert(zeta > 0 && "Zeta must be positive.");
 
     auto similarityValue = unnormalizedLocalSimilarity(expansions1, expansions2)
                            / sqrt(unnormalizedLocalSimilarity(expansions1, expansions1)

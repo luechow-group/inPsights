@@ -12,9 +12,9 @@ namespace LocalSimilarity {
 
     double unnormalizedLocalSimialrity(const Environment& e1,
                                        const Environment& e2);
-    double localSimilarity(const Environment& e1,
-                           const Environment& e2,
-                           unsigned zeta = ExpansionSettings::zeta);
+    double localSimilarity(const Environment &e1,
+                           const Environment &e2,
+                           double zeta = ExpansionSettings::zeta);
 
     //std::complex<double> distance(const PowerSpectrum &a, const PowerSpectrum &b)
 
