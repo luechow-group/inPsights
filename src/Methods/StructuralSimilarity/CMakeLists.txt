@@ -63,11 +63,9 @@ set(SOURCE_FILES
         source/NeighborhoodExpander.cpp
         source/NeighborhoodExpansion.cpp
         source/Sinkhorn.cpp
+        source/StructuralSimilarity.cpp
         source/MolecularSpectrum.cpp
         )
-
-file(GLOB_RECURSE RESOURCE_FILES resources/*.*)
-file(COPY ${RESOURCE_FILES} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES})
 target_include_directories(${PROJECT_NAME} PUBLIC

@@ -17,8 +17,8 @@ namespace TestMolecules {
 
         const MolecularGeometry oppositeSpinReversedOrder = {
                 AtomsVector(),
-                ElectronsVector({{Spin::beta, {0, 0, 0.37}},
-                                 {Spin::alpha,  {0, 0,-0.37}}})};
+                ElectronsVector({{Spin::beta,  {0, 0, 0.37}},
+                                 {Spin::alpha, {0, 0,-0.37}}})};
 
         const MolecularGeometry sameSpinAlpha= {
                 AtomsVector(),
@@ -87,7 +87,7 @@ namespace TestMolecules {
     }
 
     namespace CO2{
-        const MolecularGeometry withoutElectrons = {
+        const MolecularGeometry nuclei = {
                 AtomsVector({{Element::C,{0,0, 0}},
                              {Element::O,{0,0, 1}},
                              {Element::O,{0,0,-1}}}),

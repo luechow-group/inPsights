@@ -14,7 +14,7 @@
 class ALocalSimilarityTest : public ::testing::Test {
 public:
 
-    MolecularGeometry molecule = TestMolecules::CO2::withoutElectrons;
+    MolecularGeometry molecule = TestMolecules::CO2::nuclei;
     double eps = std::numeric_limits<double>::epsilon()*1e3;
     void SetUp() override {};
 };
