@@ -52,13 +52,13 @@ namespace TestMolecules {
                     ElectronsVector({{Spin::alpha, {0+1, 0+1, 0.37+1}},
                                      {Spin::beta,  {0+1, 0+1,-0.37+1}}})};
 
-            const MolecularGeometry permuted1 = {
+            const MolecularGeometry reversedElectronOrder = {
                     AtomsVector({{Element::H, {0, 0, 0.37}},
                                  {Element::H, {0, 0,-0.37}}}),
-                    ElectronsVector({{Spin::beta,  {0, 0, 0.37}},// MAYBE THE WRONG ORDER IS A PROBLEM
+                    ElectronsVector({{Spin::beta,  {0, 0, 0.37}},
                                      {Spin::alpha, {0, 0,-0.37}}})};
 
-            const MolecularGeometry permuted2 = {
+            const MolecularGeometry flippedSpins = {
                     AtomsVector({{Element::H, {0, 0, 0.37}},
                                  {Element::H, {0, 0, -0.37}}}),
                     ElectronsVector({{Spin::alpha, {0, 0, -0.37}},

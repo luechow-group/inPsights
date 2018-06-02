@@ -20,7 +20,7 @@ namespace StructuralSimilarity{
     Eigen::MatrixXd correlationMatrix(MolecularSpectrum& A,
                                       MolecularSpectrum& B);
 
-    Eigen::MatrixXd correlationMatrixSame(MolecularSpectrum& A);
+    Eigen::MatrixXd selfCorrelationMatrix(MolecularSpectrum &A);
 
     double stucturalSimilarity(const MolecularGeometry& A,
                                const MolecularGeometry& B, double regularizationParameter);

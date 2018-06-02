@@ -28,7 +28,7 @@ namespace StructuralSimilarity{
         return C;
     }
 
-    Eigen::MatrixXd correlationMatrixSame(MolecularSpectrum& A) {
+    Eigen::MatrixXd selfCorrelationMatrix(MolecularSpectrum &A) {
         auto N = ParticleKit::numberOfParticles();
         Eigen::MatrixXd C = Eigen::MatrixXd::Zero(N, N);
 
@@ -61,8 +61,8 @@ namespace StructuralSimilarity{
         MolecularSpectrum spectrumB(B);
 
         auto CAB = correlationMatrix(spectrumA,spectrumB);
-        auto CAA = correlationMatrixSame(spectrumA);
-        auto CBB = correlationMatrixSame(spectrumB);
+        auto CAA = selfCorrelationMatrix(spectrumA);
+        auto CBB = selfCorrelationMatrix(spectrumB);
 
         std::cout << CAB << std::endl << std::endl;
         std::cout << CAA << std::endl << std::endl;

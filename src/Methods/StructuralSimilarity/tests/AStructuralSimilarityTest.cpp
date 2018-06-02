@@ -32,7 +32,7 @@ TEST_F(AStructuralSimilarityTest , TranslationalSymmetry) {
     ASSERT_NEAR(StructuralSimilarity::stucturalSimilarity(A,B,regularizationParameter), 1.0, eps);
 }
 
-TEST_F(AStructuralSimilarityTest, PermutationalSymmetry1) {//TODO FIX THIS PROBLEM!!
+TEST_F(AStructuralSimilarityTest, PermutationalSymmetry_ReversedOrder) {
     auto A = TestMolecules::twoElectrons::oppositeSpin;
     auto B = TestMolecules::twoElectrons::oppositeSpinReversedOrder;
     ExpansionSettings::Radial::nmax =1;
@@ -44,15 +44,15 @@ TEST_F(AStructuralSimilarityTest, PermutationalSymmetry1) {//TODO FIX THIS PROBL
     ASSERT_NEAR(StructuralSimilarity::stucturalSimilarity(A,B,regularizationParameter), 1.0, eps);
 }
 
-TEST_F(AStructuralSimilarityTest, PermutationalSymmetry2) {
+TEST_F(AStructuralSimilarityTest, PermutationalSymmetry_FlippedSpins) {
     auto A = TestMolecules::H2::ElectronsInCores::normal;
-    auto B = TestMolecules::H2::ElectronsInCores::permuted2;
+    auto B = TestMolecules::H2::ElectronsInCores::flippedSpins;
     ASSERT_TRUE(ParticleKit::isSubsetQ(A));
     ASSERT_TRUE(ParticleKit::isSubsetQ(B));
     ASSERT_NEAR(StructuralSimilarity::stucturalSimilarity(A,B,regularizationParameter), 1.0, eps);
 }
 
-TEST_F(AStructuralSimilarityTest , RotationalSymmetry) {
+TEST_F(AStructuralSimilarityTest, RotationalSymmetry) {
     auto mol = TestMolecules::H2::ElectronsOutsideCores::offCenter;
 
     unsigned n = 13;
