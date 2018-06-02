@@ -143,10 +143,8 @@ TEST_F(ALocalSimilarityTest, twoOppositeElectrons) {
 
     Environment e0(eaeb, eaeb.electrons()[0].position());
     Environment e1(eaeb, eaeb.electrons()[1].position());
-
-    auto val = LocalSimilarity::localSimilarity(e0,e1);
-
-    ASSERT_NEAR(val,0.0,eps);
+    
+    ASSERT_NEAR(LocalSimilarity::localSimilarity(e0,e1),0.0,eps);
 }
 
 TEST_F(ALocalSimilarityTest, twoOppositeElectronsReversedOrder) {
@@ -159,9 +157,7 @@ TEST_F(ALocalSimilarityTest, twoOppositeElectronsReversedOrder) {
     Environment e0(ebea, ebea.electrons()[0].position());
     Environment e1(ebea, ebea.electrons()[1].position());
 
-    auto val = LocalSimilarity::localSimilarity(e0,e1);
-
-    ASSERT_NEAR(val,0.0,eps);
+    ASSERT_NEAR(LocalSimilarity::localSimilarity(e0,e1),0.0,eps);
 }
 
 TEST_F(ALocalSimilarityTest, twoOppositeSpinElectronsComparision) {
@@ -216,9 +212,7 @@ TEST_F(ALocalSimilarityTest, twoAlphaElectrons) {
     Environment e0(eaea, eaea.electrons()[0].position());
     Environment e1(eaea, eaea.electrons()[1].position());
 
-    auto val = LocalSimilarity::localSimilarity(e0,e1);
-
-    ASSERT_NEAR(val,1.0,eps);
+    ASSERT_NEAR(LocalSimilarity::localSimilarity(e0,e1),1.0,eps);
 }
 
 
@@ -232,9 +226,7 @@ TEST_F(ALocalSimilarityTest, twoBetaElectrons) {
     Environment e0(ebeb, ebeb.electrons()[0].position());
     Environment e1(ebeb, ebeb.electrons()[1].position());
 
-    auto val = LocalSimilarity::localSimilarity(e0,e1);
-
-    ASSERT_NEAR(val,1.0,eps);
+    ASSERT_NEAR(LocalSimilarity::localSimilarity(e0,e1),1.0,eps);
 }
 
 
