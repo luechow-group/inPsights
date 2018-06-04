@@ -12,36 +12,33 @@ namespace LocalSimilarity {
 
     double unnormalizedLocalSimilarity(const Environment &e1,
                                        const Environment &e2);
+
     double localSimilarity(const Environment& e1,
                            const Environment& e2,
                            double zeta = ExpansionSettings::zeta);
 
+    double unnormalizedLocalSelfSimilarity(const TypeSpecificNeighborhoodsAtOneCenter& expansions);
     double unnormalizedLocalSimilarity(const TypeSpecificNeighborhoodsAtOneCenter& expansions1,
                                        const TypeSpecificNeighborhoodsAtOneCenter& expansions2);
-
-    namespace {
-        double generic(const TypeSpecificNeighborhoodsAtOneCenter &expansions);
-
-        double generic(const TypeSpecificNeighborhoodsAtOneCenter &expansions1,
-                       const TypeSpecificNeighborhoodsAtOneCenter &expansions2);
-
-        double chemical(const TypeSpecificNeighborhoodsAtOneCenter &expansions);
-
-        double chemical(const TypeSpecificNeighborhoodsAtOneCenter &expansions1,
-                        const TypeSpecificNeighborhoodsAtOneCenter &expansions2);
-
-        double kroneckerDelta(int typeA, int typeB);
-        double alchemical(const TypeSpecificNeighborhoodsAtOneCenter &expansions);
-        double alchemical(const TypeSpecificNeighborhoodsAtOneCenter &expansions1,
-                          const TypeSpecificNeighborhoodsAtOneCenter &expansions2);
-    }
-
-    double unnormalizedLocalSelfSimilarity(const TypeSpecificNeighborhoodsAtOneCenter& expansions);
-
 
     double localSimilarity(const TypeSpecificNeighborhoodsAtOneCenter& expansions1,
                            const TypeSpecificNeighborhoodsAtOneCenter& expansions2,
                            double zeta = ExpansionSettings::zeta);
+
+
+    namespace {
+        double generic(const TypeSpecificNeighborhoodsAtOneCenter &expansions);
+        double generic(const TypeSpecificNeighborhoodsAtOneCenter &expansions1,
+                       const TypeSpecificNeighborhoodsAtOneCenter &expansions2);
+
+        double chemical(const TypeSpecificNeighborhoodsAtOneCenter &expansions);
+        double chemical(const TypeSpecificNeighborhoodsAtOneCenter &expansions1,
+                        const TypeSpecificNeighborhoodsAtOneCenter &expansions2);
+
+        double kroneckerDelta(int typeA, int typeB);
+        double alchemical(const TypeSpecificNeighborhoodsAtOneCenter &expansions1,
+                          const TypeSpecificNeighborhoodsAtOneCenter &expansions2);
+    }
 
     //std::complex<double> distance(const PowerSpectrum &a, const PowerSpectrum &b)
 };
