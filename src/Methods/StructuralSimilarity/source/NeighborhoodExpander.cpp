@@ -60,7 +60,7 @@ NeighborhoodExpander::computeParticularExpansions(const Environment &e) { // WOR
             expansions.emplace(noneTypeId, expandEnvironment(e, noneTypeId));
             break;
         }
-        case ExpansionSettings::Mode::TypeSpecific: {
+        case ExpansionSettings::Mode::Chemical: {
             for(auto & type : ParticleKit::kit){
                 expansions.emplace(type.first, expandEnvironment(e, type.first));
             }

@@ -9,7 +9,7 @@
 
 namespace ExpansionSettings {
 
-    ExpansionSettings::Mode mode = ExpansionSettings::Mode::TypeSpecific;
+    ExpansionSettings::Mode mode = ExpansionSettings::Mode::Chemical;
     double zeta = 2;
     double gamma = 1.0;
 
@@ -22,7 +22,7 @@ namespace ExpansionSettings {
         Radial::defaults();
         Angular::defaults();
         Cutoff::defaults();
-        mode = ExpansionSettings::Mode::TypeSpecific;
+        mode = ExpansionSettings::Mode::Chemical;
         zeta = 2;
         gamma = 1.0; //TODO find sensible default value
 

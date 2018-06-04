@@ -30,7 +30,7 @@ int main(int argc, char *argv[]) {
     };
 
     ExpansionSettings::defaults();
-    ExpansionSettings::mode = ExpansionSettings::Mode::TypeSpecific;
+    ExpansionSettings::mode = ExpansionSettings::Mode::Chemical;
     ParticleKit::create({{Element::H,2},{Element::He,2}},{2,2});
 
     double result = StructuralSimilarity::stucturalSimilarity(A,B,1);

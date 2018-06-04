@@ -51,7 +51,7 @@ namespace LocalSimilarity {
                 similarityValue = generic(expansions1, expansions2);
                 break;
             }
-            case ExpansionSettings::Mode::TypeSpecific: {
+            case ExpansionSettings::Mode::Chemical: {
                 similarityValue = typeSpecific(expansions1, expansions2);
                 break;
             }
@@ -71,7 +71,7 @@ namespace LocalSimilarity {
                 similarityValue = generic(expansions);
                 break;
             }
-            case ExpansionSettings::Mode::TypeSpecific: {
+            case ExpansionSettings::Mode::Chemical: {
                 similarityValue = typeSpecific(expansions);
                 break;
             }

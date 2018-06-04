@@ -51,7 +51,7 @@ namespace ExpansionSettings{
     }//TODO implement and use
 
     enum class Mode {
-        Generic = 0, TypeSpecific, Alchemical
+        Generic = 0, Chemical, Alchemical
     };
 
     extern Mode mode;
