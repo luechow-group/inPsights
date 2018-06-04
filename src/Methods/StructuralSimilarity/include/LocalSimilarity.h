@@ -10,8 +10,8 @@
 
 namespace LocalSimilarity {
 
-    double unnormalizedLocalSimialrity(const Environment& e1,
-                                       const Environment& e2);
+    double unnormalizedLocalSimilarity(const Environment &e1,
+                                       const Environment &e2);
     double localSimilarity(const Environment& e1,
                            const Environment& e2,
                            double zeta = ExpansionSettings::zeta);

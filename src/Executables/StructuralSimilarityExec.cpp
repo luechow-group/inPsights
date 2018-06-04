@@ -2,13 +2,11 @@
 // Created by Michael Heuer on 25.05.18.
 //
 #include <MolecularGeometry.h>
-#include <StructuralSimilarity.h>
+#include <StructuralSimilarityExec.h>
 #include <chrono>
 #include <ctime>
 
-
 int main(int argc, char *argv[]) {
-
     std::chrono::time_point<std::chrono::system_clock> start, end;
 
     start = std::chrono::system_clock::now();
@@ -30,8 +28,10 @@ int main(int argc, char *argv[]) {
     };
 
     ExpansionSettings::defaults();
+    ExpansionSettings::Radial::nmax = 1;
+    ExpansionSettings::Angular::lmax = 2;
     ExpansionSettings::mode = ExpansionSettings::Mode::Chemical;
-    ParticleKit::create({{Element::H,2},{Element::He,2}},{2,2});
+    ParticleKit::create({{Element::H,2},{Element::He,1}},{2,2});
 
     double result = StructuralSimilarity::stucturalSimilarity(A,B,1);
 

@@ -2,7 +2,7 @@
 // Created by Michael Heuer on 02.06.18.
 //
 
-#include "StructuralSimilarity.h"
+#include "StructuralSimilarityExec.h"
 
 namespace StructuralSimilarity{
 
@@ -42,7 +42,7 @@ namespace StructuralSimilarity{
                 if (!A.molecule_.findIndexByNumberedType(numberedType_j).first) continue;
                 auto expB = A.molecularCenters_.find(numberedType_j)->second;
 
-                C(i,j)  =LocalSimilarity::localSimilarity(expA, expB);
+                C(i,j) = LocalSimilarity::localSimilarity(expA, expB);
             }
         }
         // symmetrize the matrix
