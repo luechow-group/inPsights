@@ -161,6 +161,6 @@ template<>
 SpinTypesVector::TypesVector(std::vector<Spin> types);
 
 template<>
-ElementTypesVector ::TypesVector(std::vector<Element> types);
+ElementTypesVector::TypesVector(std::vector<Element> types);
 
 #endif //AMOLQCPP_TYPESVECTOR_H
