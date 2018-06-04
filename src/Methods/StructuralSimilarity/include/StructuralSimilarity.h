@@ -22,11 +22,11 @@ namespace StructuralSimilarity{
 
     Eigen::MatrixXd selfCorrelationMatrix(const MolecularSpectrum &A);
 
-    double structuralSimilarity(const MolecularGeometry &A,
-                                const MolecularGeometry &B, double regularizationParameter);
+    double kernel(const MolecularGeometry &A,
+                  const MolecularGeometry &B, double regularizationParameter);
 
-    double structuralSimilarity(const MolecularSpectrum &spectrumA,
-                                const MolecularSpectrum &spectrumB, double regularizationParameter);
+    double kernel(const MolecularSpectrum &spectrumA,
+                  const MolecularSpectrum &spectrumB, double regularizationParameter);
 
     double kernelDistance(const MolecularGeometry &A,
                           const MolecularGeometry &B, double regularizationParameter);

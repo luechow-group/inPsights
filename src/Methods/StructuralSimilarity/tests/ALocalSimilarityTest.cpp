@@ -28,8 +28,8 @@ TEST_F(ALocalSimilarityTest , GenericNormalization) {
     Environment e1(molecule,molecule.atoms()[1].position());
     Environment e2(molecule,molecule.atoms()[2].position());
 
-    ASSERT_NEAR(LocalSimilarity::localSimilarity(e1,e1), 1.0, eps);
-    ASSERT_NEAR(LocalSimilarity::localSimilarity(e2,e2), 1.0, eps);
+    ASSERT_NEAR(LocalSimilarity::kernel(e1, e1), 1.0, eps);
+    ASSERT_NEAR(LocalSimilarity::kernel(e2, e2), 1.0, eps);
 };
 
 TEST_F(ALocalSimilarityTest , SameEnvironmentsOnDifferentCenters) {
@@ -39,7 +39,7 @@ TEST_F(ALocalSimilarityTest , SameEnvironmentsOnDifferentCenters) {
     Environment e1(molecule,molecule.atoms()[1].position());
     Environment e2(molecule,molecule.atoms()[2].position());
 
-    ASSERT_NEAR(LocalSimilarity::localSimilarity(e1,e2),1.0, eps);
+    ASSERT_NEAR(LocalSimilarity::kernel(e1, e2),1.0, eps);
 };
 
 TEST_F(ALocalSimilarityTest , Cross) {
@@ -52,15 +52,15 @@ TEST_F(ALocalSimilarityTest , Cross) {
     Environment e1(molecule, molecule.atoms()[1].position());
     Environment e2(molecule, molecule.atoms()[2].position());
 
-    auto val = LocalSimilarity::localSimilarity(e0,e1);
+    auto val = LocalSimilarity::kernel(e0, e1);
     ASSERT_LT(val,1.0);
     ASSERT_GT(val,0.0);
 
-    auto val2 = LocalSimilarity::localSimilarity(e0,e2);
+    auto val2 = LocalSimilarity::kernel(e0, e2);
     ASSERT_LE(val2,1.0);
     ASSERT_GE(val2,0.0);
 
-    ASSERT_NEAR(LocalSimilarity::localSimilarity(e0,e1),LocalSimilarity::localSimilarity(e0,e2), eps);
+    ASSERT_NEAR(LocalSimilarity::kernel(e0, e1), LocalSimilarity::kernel(e0, e2), eps);
 };
 
 
@@ -72,8 +72,8 @@ TEST_F(ALocalSimilarityTest, TypeSpecificNormalization) {
     Environment e1(molecule,molecule.atoms()[1].position());
     Environment e2(molecule,molecule.atoms()[2].position());
 
-    ASSERT_NEAR(LocalSimilarity::localSimilarity(e1,e1),1.0, eps);
-    ASSERT_NEAR(LocalSimilarity::localSimilarity(e2,e2),1.0, eps);
+    ASSERT_NEAR(LocalSimilarity::kernel(e1, e1),1.0, eps);
+    ASSERT_NEAR(LocalSimilarity::kernel(e2, e2),1.0, eps);
 };
 
 TEST_F(ALocalSimilarityTest, SameEnvironmentOnDifferentCentersGeneric) {
@@ -83,7 +83,7 @@ TEST_F(ALocalSimilarityTest, SameEnvironmentOnDifferentCentersGeneric) {
     Environment e1(molecule,molecule.atoms()[1].position());
     Environment e2(molecule,molecule.atoms()[2].position());
 
-    ASSERT_NEAR(LocalSimilarity::localSimilarity(e1,e2),1.0, eps);
+    ASSERT_NEAR(LocalSimilarity::kernel(e1, e2),1.0, eps);
 };
 
 TEST_F(ALocalSimilarityTest, SameEnvironmentOnDifferentCentersTypeSpecific) {
@@ -94,7 +94,7 @@ TEST_F(ALocalSimilarityTest, SameEnvironmentOnDifferentCentersTypeSpecific) {
     Environment e1(molecule,molecule.atoms()[1].position());
     Environment e2(molecule,molecule.atoms()[2].position());
 
-    ASSERT_NEAR(LocalSimilarity::localSimilarity(e1,e2),1.0, eps);
+    ASSERT_NEAR(LocalSimilarity::kernel(e1, e2),1.0, eps);
 };
 
 TEST_F(ALocalSimilarityTest, IsolatedSpecies) {
@@ -106,8 +106,8 @@ TEST_F(ALocalSimilarityTest, IsolatedSpecies) {
     Environment e1(molecule, molecule.atoms()[1].position());
     Environment e2(molecule, molecule.atoms()[2].position());
 
-    ASSERT_NEAR(LocalSimilarity::localSimilarity(e0,e1),0.0, eps);
-    ASSERT_NEAR(LocalSimilarity::localSimilarity(e2,e0),0.0, eps);
+    ASSERT_NEAR(LocalSimilarity::kernel(e0, e1),0.0, eps);
+    ASSERT_NEAR(LocalSimilarity::kernel(e2, e0),0.0, eps);
 };
 
 TEST_F(ALocalSimilarityTest, H2sameCenter) {
@@ -120,7 +120,7 @@ TEST_F(ALocalSimilarityTest, H2sameCenter) {
     Environment a0(H2, H2.atoms()[0].position());
     Environment e0(H2, H2.electrons()[0].position());
 
-    ASSERT_NEAR(LocalSimilarity::localSimilarity(a0,e0), 1.0, eps);
+    ASSERT_NEAR(LocalSimilarity::kernel(a0, e0), 1.0, eps);
 }
 
 TEST_F(ALocalSimilarityTest, H2sameEnvironment) {
@@ -133,7 +133,7 @@ TEST_F(ALocalSimilarityTest, H2sameEnvironment) {
     Environment a0(H2, H2.atoms()[0].position());
     Environment e0(H2, H2.electrons()[0].position());
 
-    ASSERT_NEAR(LocalSimilarity::localSimilarity(a0,e0), 1.0, eps);
+    ASSERT_NEAR(LocalSimilarity::kernel(a0, e0), 1.0, eps);
 }
 
 TEST_F(ALocalSimilarityTest, twoOppositeElectrons) {
@@ -146,7 +146,7 @@ TEST_F(ALocalSimilarityTest, twoOppositeElectrons) {
     Environment e0(eaeb, eaeb.electrons()[0].position());
     Environment e1(eaeb, eaeb.electrons()[1].position());
 
-    ASSERT_NEAR(LocalSimilarity::localSimilarity(e0,e1),0.0,eps);
+    ASSERT_NEAR(LocalSimilarity::kernel(e0, e1),0.0,eps);
 }
 
 TEST_F(ALocalSimilarityTest, twoOppositeElectronsReversedOrder) {
@@ -159,7 +159,7 @@ TEST_F(ALocalSimilarityTest, twoOppositeElectronsReversedOrder) {
     Environment e0(ebea, ebea.electrons()[0].position());
     Environment e1(ebea, ebea.electrons()[1].position());
 
-    ASSERT_NEAR(LocalSimilarity::localSimilarity(e0,e1),0.0,eps);
+    ASSERT_NEAR(LocalSimilarity::kernel(e0, e1),0.0,eps);
 }
 
 TEST_F(ALocalSimilarityTest, twoOppositeSpinElectronsComparision) {
@@ -176,11 +176,11 @@ TEST_F(ALocalSimilarityTest, twoOppositeSpinElectronsComparision) {
     Environment mol2e0(mol2, mol2.electrons()[0].position());
     Environment mol2e1(mol2, mol2.electrons()[1].position());
 
-    ASSERT_NEAR(LocalSimilarity::localSimilarity(mol1e0, mol1e1), 0.0, eps);
-    ASSERT_NEAR(LocalSimilarity::localSimilarity(mol2e0, mol2e1), 0.0, eps);
+    ASSERT_NEAR(LocalSimilarity::kernel(mol1e0, mol1e1), 0.0, eps);
+    ASSERT_NEAR(LocalSimilarity::kernel(mol2e0, mol2e1), 0.0, eps);
 
-    ASSERT_NEAR(LocalSimilarity::localSimilarity(mol1e0, mol2e1), 1.0, eps);
-    ASSERT_NEAR(LocalSimilarity::localSimilarity(mol2e0, mol1e1), 1.0, eps);
+    ASSERT_NEAR(LocalSimilarity::kernel(mol1e0, mol2e1), 1.0, eps);
+    ASSERT_NEAR(LocalSimilarity::kernel(mol2e0, mol1e1), 1.0, eps);
 };
 
 TEST_F(ALocalSimilarityTest, twoOppositeSpinElectronsComparisionMs) {
@@ -194,14 +194,14 @@ TEST_F(ALocalSimilarityTest, twoOppositeSpinElectronsComparisionMs) {
     MolecularSpectrum ms1(mol1);
     MolecularSpectrum ms2(mol2);
 
-    ASSERT_NEAR(LocalSimilarity::localSimilarity(ms1.molecularCenters_[NumberedType<int>(int(Spin::alpha),0)],
-                                                 ms2.molecularCenters_[NumberedType<int>(int(Spin::alpha),0)]), 1.0, eps);
-    ASSERT_NEAR(LocalSimilarity::localSimilarity(ms1.molecularCenters_[NumberedType<int>(int(Spin::beta),0)],
-                                                 ms2.molecularCenters_[NumberedType<int>(int(Spin::beta),0)]), 1.0, eps);
-    ASSERT_NEAR(LocalSimilarity::localSimilarity(ms1.molecularCenters_[NumberedType<int>(int(Spin::alpha),0)],
-                                                 ms2.molecularCenters_[NumberedType<int>(int(Spin::beta),0)]), 0.0, eps);
-    ASSERT_NEAR(LocalSimilarity::localSimilarity(ms1.molecularCenters_[NumberedType<int>(int(Spin::beta),0)],
-                                                 ms2.molecularCenters_[NumberedType<int>(int(Spin::alpha),0)]), 0.0, eps);
+    ASSERT_NEAR(LocalSimilarity::kernel(ms1.molecularCenters_[NumberedType<int>(int(Spin::alpha), 0)],
+                                        ms2.molecularCenters_[NumberedType<int>(int(Spin::alpha), 0)]), 1.0, eps);
+    ASSERT_NEAR(LocalSimilarity::kernel(ms1.molecularCenters_[NumberedType<int>(int(Spin::beta), 0)],
+                                        ms2.molecularCenters_[NumberedType<int>(int(Spin::beta), 0)]), 1.0, eps);
+    ASSERT_NEAR(LocalSimilarity::kernel(ms1.molecularCenters_[NumberedType<int>(int(Spin::alpha), 0)],
+                                        ms2.molecularCenters_[NumberedType<int>(int(Spin::beta), 0)]), 0.0, eps);
+    ASSERT_NEAR(LocalSimilarity::kernel(ms1.molecularCenters_[NumberedType<int>(int(Spin::beta), 0)],
+                                        ms2.molecularCenters_[NumberedType<int>(int(Spin::alpha), 0)]), 0.0, eps);
 }
 
 TEST_F(ALocalSimilarityTest, twoAlphaElectrons) {
@@ -214,7 +214,7 @@ TEST_F(ALocalSimilarityTest, twoAlphaElectrons) {
     Environment e0(eaea, eaea.electrons()[0].position());
     Environment e1(eaea, eaea.electrons()[1].position());
 
-    ASSERT_NEAR(LocalSimilarity::localSimilarity(e0,e1),1.0,eps);
+    ASSERT_NEAR(LocalSimilarity::kernel(e0, e1),1.0,eps);
 }
 
 
@@ -228,7 +228,7 @@ TEST_F(ALocalSimilarityTest, twoBetaElectrons) {
     Environment e0(ebeb, ebeb.electrons()[0].position());
     Environment e1(ebeb, ebeb.electrons()[1].position());
 
-    ASSERT_NEAR(LocalSimilarity::localSimilarity(e0,e1),1.0,eps);
+    ASSERT_NEAR(LocalSimilarity::kernel(e0, e1),1.0,eps);
 }
 
 TEST_F(ALocalSimilarityTest, TypeSpecificAndAlchemicalComparison) {
@@ -244,16 +244,16 @@ TEST_F(ALocalSimilarityTest, TypeSpecificAndAlchemicalComparison) {
     Environment mol2e0(mol2, mol2.electrons()[0].position());
     Environment mol2e1(mol2, mol2.electrons()[1].position());
 
-    ASSERT_NEAR(LocalSimilarity::localSimilarity(mol1e0, mol1e1), 0.0, eps);
-    ASSERT_NEAR(LocalSimilarity::localSimilarity(mol2e0, mol2e1), 0.0, eps);
+    ASSERT_NEAR(LocalSimilarity::kernel(mol1e0, mol1e1), 0.0, eps);
+    ASSERT_NEAR(LocalSimilarity::kernel(mol2e0, mol2e1), 0.0, eps);
 
-    ASSERT_NEAR(LocalSimilarity::localSimilarity(mol1e0, mol2e1), 1.0, eps);
-    ASSERT_NEAR(LocalSimilarity::localSimilarity(mol2e0, mol1e1), 1.0, eps);
+    ASSERT_NEAR(LocalSimilarity::kernel(mol1e0, mol2e1), 1.0, eps);
+    ASSERT_NEAR(LocalSimilarity::kernel(mol2e0, mol1e1), 1.0, eps);
 
 
     ExpansionSettings::mode = ExpansionSettings::Mode::Alchemical;
-    auto simMol1e0e1 = LocalSimilarity::localSimilarity(mol1e0, mol1e1);
-    auto simMol2e0e1 = LocalSimilarity::localSimilarity(mol2e0, mol2e1);
+    auto simMol1e0e1 = LocalSimilarity::kernel(mol1e0, mol1e1);
+    auto simMol2e0e1 = LocalSimilarity::kernel(mol2e0, mol2e1);
 
     ASSERT_GT(simMol1e0e1, 0.0);
     ASSERT_LT(simMol1e0e1, 1.0);
@@ -263,7 +263,7 @@ TEST_F(ALocalSimilarityTest, TypeSpecificAndAlchemicalComparison) {
 
     ASSERT_EQ(simMol1e0e1,simMol2e0e1);
 
-    ASSERT_NEAR(LocalSimilarity::localSimilarity(mol1e0, mol2e1), 1.0, eps);
-    ASSERT_NEAR(LocalSimilarity::localSimilarity(mol2e0, mol1e1), 1.0, eps);
+    ASSERT_NEAR(LocalSimilarity::kernel(mol1e0, mol2e1), 1.0, eps);
+    ASSERT_NEAR(LocalSimilarity::kernel(mol2e0, mol1e1), 1.0, eps);
 
 };

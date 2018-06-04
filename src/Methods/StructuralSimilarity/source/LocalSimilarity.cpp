@@ -8,36 +8,36 @@
 #include "NeighborhoodExpander.h"
 
 namespace LocalSimilarity {
-    double localSimilarity(const Environment &e1, const Environment &e2, double zeta) {
+    double kernel(const Environment &e1, const Environment &e2, double zeta) {
         assert(zeta > 0 && "Zeta must be positive.");
         NeighborhoodExpander expander;
         auto expansion1 = expander.computeParticularExpansions(e1);
         auto expansion2 = expander.computeParticularExpansions(e2);
 
-        return pow(localSimilarity(expansion1, expansion2), zeta);
+        return pow(kernel(expansion1, expansion2), zeta);
     }
 
-    double unnormalizedLocalSimilarity(const Environment &e1, const Environment &e2) {
+    double unnormalizedKernel(const Environment &e1, const Environment &e2) {
         NeighborhoodExpander expander;
         auto expansion1 = expander.computeParticularExpansions(e1);
         auto expansion2 = expander.computeParticularExpansions(e2);
 
-        return unnormalizedLocalSimilarity(expansion1, expansion2);
+        return unnormalizedKernel(expansion1, expansion2);
     }
 
-    double localSimilarity(
+    double kernel(
             const TypeSpecificNeighborhoodsAtOneCenter &expansions1,
             const TypeSpecificNeighborhoodsAtOneCenter &expansions2, double zeta) {
         assert(zeta > 0 && "Zeta must be positive.");
 
-        auto similarityValue = unnormalizedLocalSimilarity(expansions1, expansions2)
-                               / sqrt(unnormalizedLocalSelfSimilarity(expansions1)
-                                      *unnormalizedLocalSelfSimilarity(expansions2));
+        auto similarityValue = unnormalizedKernel(expansions1, expansions2)
+                               / sqrt(unnormalizedSelfKernel(expansions1)
+                                      * unnormalizedSelfKernel(expansions2));
 
         return pow(similarityValue, zeta);
     }
 
-    double unnormalizedLocalSimilarity(
+    double unnormalizedKernel(
             const TypeSpecificNeighborhoodsAtOneCenter &expansions1,
             const TypeSpecificNeighborhoodsAtOneCenter &expansions2) {
 
@@ -59,7 +59,7 @@ namespace LocalSimilarity {
         return similarityValue;
     }
 
-    double unnormalizedLocalSelfSimilarity(const TypeSpecificNeighborhoodsAtOneCenter &expansions) {
+    double unnormalizedSelfKernel(const TypeSpecificNeighborhoodsAtOneCenter &expansions) {
         double similarityValue = 0;
         switch (ExpansionSettings::mode) {
             case ExpansionSettings::Mode::Generic: {
@@ -82,7 +82,7 @@ namespace LocalSimilarity {
     double kernelDistance(const TypeSpecificNeighborhoodsAtOneCenter &expansions1,
                           const TypeSpecificNeighborhoodsAtOneCenter &expansions2, double zeta) {
 
-        return sqrt(2-2*localSimilarity(expansions1,expansions1,zeta));
+        return sqrt(2-2* kernel(expansions1, expansions1, zeta));
     }
 
     namespace {

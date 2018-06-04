@@ -22,7 +22,7 @@ namespace StructuralSimilarity{
                     continue;
                 auto expB = B.molecularCenters_.find(numberedType_j)->second;
 
-                C(i, j) = LocalSimilarity::localSimilarity(expA, expB);
+                C(i, j) = LocalSimilarity::kernel(expA, expB);
             }
         }
         return C;
@@ -42,7 +42,7 @@ namespace StructuralSimilarity{
                 if (!A.molecule_.findIndexByNumberedType(numberedType_j).first) continue;
                 auto expB = A.molecularCenters_.find(numberedType_j)->second;
 
-                C(i,j) = LocalSimilarity::localSimilarity(expA, expB);
+                C(i,j) = LocalSimilarity::kernel(expA, expB);
             }
         }
         // symmetrize the matrix
@@ -53,16 +53,16 @@ namespace StructuralSimilarity{
         return C;
     }
 
-    double structuralSimilarity(const MolecularGeometry &A,
-                                const MolecularGeometry &B, double regularizationParameter) {
+    double kernel(const MolecularGeometry &A,
+                  const MolecularGeometry &B, double regularizationParameter) {
         MolecularSpectrum spectrumA(A);
         MolecularSpectrum spectrumB(B);
 
-        return structuralSimilarity(spectrumA, spectrumB, regularizationParameter);
+        return kernel(spectrumA, spectrumB, regularizationParameter);
     }
 
-    double structuralSimilarity(const MolecularSpectrum &spectrumA,
-                                const MolecularSpectrum &spectrumB, double regularizationParameter) {
+    double kernel(const MolecularSpectrum &spectrumA,
+                  const MolecularSpectrum &spectrumB, double regularizationParameter) {
 
         auto CAB = correlationMatrix(spectrumA,spectrumB);
         auto CAA = selfCorrelationMatrix(spectrumA);
@@ -84,6 +84,6 @@ namespace StructuralSimilarity{
     }
 
     double kernelDistance(const MolecularGeometry &A, const MolecularGeometry &B, double regularizationParameter) {
-        return sqrt(2-2* structuralSimilarity(A, B, regularizationParameter));
+        return sqrt(2-2* kernel(A, B, regularizationParameter));
     }
 }

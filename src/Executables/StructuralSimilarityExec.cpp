@@ -33,7 +33,7 @@ int main(int argc, char *argv[]) {
     ExpansionSettings::mode = ExpansionSettings::Mode::Chemical;
     ParticleKit::create({{Element::H,2},{Element::He,1}},{2,2});
 
-    double result = StructuralSimilarity::structuralSimilarity(A, B, 1);
+    double result = StructuralSimilarity::kernel(A, B, 1);
 
     end = std::chrono::system_clock::now();
     std::cout << "FINAL RESULT:" << result << std::endl;

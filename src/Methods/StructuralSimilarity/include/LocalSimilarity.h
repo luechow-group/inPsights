@@ -10,20 +10,20 @@
 
 namespace LocalSimilarity {
 
-    double unnormalizedLocalSimilarity(const Environment &e1,
-                                       const Environment &e2);
+    double unnormalizedKernel(const Environment &e1,
+                              const Environment &e2);
 
-    double localSimilarity(const Environment& e1,
-                           const Environment& e2,
-                           double zeta = ExpansionSettings::zeta);
+    double kernel(const Environment &e1,
+                  const Environment &e2,
+                  double zeta = ExpansionSettings::zeta);
 
-    double unnormalizedLocalSelfSimilarity(const TypeSpecificNeighborhoodsAtOneCenter& expansions);
-    double unnormalizedLocalSimilarity(const TypeSpecificNeighborhoodsAtOneCenter& expansions1,
-                                       const TypeSpecificNeighborhoodsAtOneCenter& expansions2);
+    double unnormalizedSelfKernel(const TypeSpecificNeighborhoodsAtOneCenter &expansions);
+    double unnormalizedKernel(const TypeSpecificNeighborhoodsAtOneCenter &expansions1,
+                              const TypeSpecificNeighborhoodsAtOneCenter &expansions2);
 
-    double localSimilarity(const TypeSpecificNeighborhoodsAtOneCenter& expansions1,
-                           const TypeSpecificNeighborhoodsAtOneCenter& expansions2,
-                           double zeta = ExpansionSettings::zeta);
+    double kernel(const TypeSpecificNeighborhoodsAtOneCenter &expansions1,
+                  const TypeSpecificNeighborhoodsAtOneCenter &expansions2,
+                  double zeta = ExpansionSettings::zeta);
 
     double kernelDistance(const TypeSpecificNeighborhoodsAtOneCenter &expansions1,
                           const TypeSpecificNeighborhoodsAtOneCenter &expansions2,
