@@ -48,7 +48,7 @@ namespace ExpansionSettings{
         const std::map<std::pair<int,int>,double> pairSimilarities = {
                 {{int(Spin::alpha),int(Spin::beta)}, 0.5}
         };
-    }//TODO implement and use
+    }
 
     enum class Mode {
         Generic = 0, Chemical, Alchemical

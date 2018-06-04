@@ -25,6 +25,9 @@ namespace LocalSimilarity {
                            const TypeSpecificNeighborhoodsAtOneCenter& expansions2,
                            double zeta = ExpansionSettings::zeta);
 
+    double distance(const TypeSpecificNeighborhoodsAtOneCenter& expansions1,
+                    const TypeSpecificNeighborhoodsAtOneCenter& expansions2,
+                    double zeta = ExpansionSettings::zeta);
 
     namespace {
         double generic(const TypeSpecificNeighborhoodsAtOneCenter &expansions);
@@ -39,8 +42,6 @@ namespace LocalSimilarity {
         double alchemical(const TypeSpecificNeighborhoodsAtOneCenter &expansions1,
                           const TypeSpecificNeighborhoodsAtOneCenter &expansions2);
     }
-
-    //std::complex<double> distance(const PowerSpectrum &a, const PowerSpectrum &b)
 };
 
 #endif //AMOLQCPP_LOCALSIMILARITY_H

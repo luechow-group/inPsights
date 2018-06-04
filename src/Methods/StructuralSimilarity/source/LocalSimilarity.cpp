@@ -79,6 +79,12 @@ namespace LocalSimilarity {
         return similarityValue;
     }
 
+    double distance(const TypeSpecificNeighborhoodsAtOneCenter &expansions1,
+                    const TypeSpecificNeighborhoodsAtOneCenter &expansions2, double zeta) {
+
+        return sqrt(2-2*localSimilarity(expansions1,expansions1,zeta));
+    }
+
     namespace {
         double generic(const TypeSpecificNeighborhoodsAtOneCenter &expansions) {
             int noneType = 0;
@@ -185,8 +191,4 @@ namespace LocalSimilarity {
         }
     }
 }
-/*static std::complex<double> distance(
-        const PowerSpectrum &a,
-        const PowerSpectrum &b) {
-    return sqrt(2 + 2 * a.asEigenVector().normalized().dot(b.asEigenVector().normalized()));
-}*/
+

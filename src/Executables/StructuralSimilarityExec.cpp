@@ -2,7 +2,7 @@
 // Created by Michael Heuer on 25.05.18.
 //
 #include <MolecularGeometry.h>
-#include <StructuralSimilarityExec.h>
+#include <StructuralSimilarity.h>
 #include <chrono>
 #include <ctime>
 

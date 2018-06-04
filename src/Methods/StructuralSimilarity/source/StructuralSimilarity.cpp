@@ -2,7 +2,7 @@
 // Created by Michael Heuer on 02.06.18.
 //
 
-#include "StructuralSimilarityExec.h"
+#include "StructuralSimilarity.h"
 
 namespace StructuralSimilarity{
 

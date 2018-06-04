@@ -43,7 +43,7 @@ set(HEADER_FILES
         include/ParticleKit.h
         include/NeighborhoodExpansion.h
         include/Sinkhorn.h
-        include/StructuralSimilarityExec.h
+        include/StructuralSimilarity.h
         include/MolecularSpectrum.h
         )
 

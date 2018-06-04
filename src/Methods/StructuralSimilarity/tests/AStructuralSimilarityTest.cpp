@@ -2,7 +2,7 @@
 // Created by Michael Heuer on 23.05.18.
 //
 #include <gtest/gtest.h>
-#include "StructuralSimilarityExec.h"
+#include "StructuralSimilarity.h"
 #include "TestMolecules.h"
 #include "PositionsVectorTransformer.h"
 
