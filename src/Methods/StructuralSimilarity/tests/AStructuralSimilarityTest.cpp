@@ -20,6 +20,10 @@ public:
 
 TEST_F(AStructuralSimilarityTest , Identity) {
     auto A = TestMolecules::H2::ElectronsInCores::normal;
+    ExpansionSettings::defaults();
+    ExpansionSettings::mode = ExpansionSettings::Mode::Chemical;
+    ParticleKit::create(A);
+    
     ASSERT_TRUE(ParticleKit::isSubsetQ(A));
     ASSERT_NEAR(StructuralSimilarity::stucturalSimilarity(A,A,regularizationParameter), 1.0, eps);
 }
@@ -27,6 +31,10 @@ TEST_F(AStructuralSimilarityTest , Identity) {
 TEST_F(AStructuralSimilarityTest , TranslationalSymmetry) {
     auto A = TestMolecules::H2::ElectronsInCores::normal;
     auto B = TestMolecules::H2::ElectronsInCores::translated;
+    ExpansionSettings::defaults();
+    ExpansionSettings::mode = ExpansionSettings::Mode::Chemical;
+    ParticleKit::create(A);
+    
     ASSERT_TRUE(ParticleKit::isSubsetQ(A));
     ASSERT_TRUE(ParticleKit::isSubsetQ(B));
     ASSERT_NEAR(StructuralSimilarity::stucturalSimilarity(A,B,regularizationParameter), 1.0, eps);
@@ -35,8 +43,9 @@ TEST_F(AStructuralSimilarityTest , TranslationalSymmetry) {
 TEST_F(AStructuralSimilarityTest, PermutationalSymmetry_ReversedOrder) {
     auto A = TestMolecules::twoElectrons::oppositeSpin;
     auto B = TestMolecules::twoElectrons::oppositeSpinReversedOrder;
+    ExpansionSettings::defaults();
+    ExpansionSettings::mode = ExpansionSettings::Mode::Chemical;
     ParticleKit::create(A);
-    ExpansionSettings::mode = ExpansionSettings::Mode::Alchemical;
 
     ASSERT_TRUE(ParticleKit::isSubsetQ(A));
     ASSERT_TRUE(ParticleKit::isSubsetQ(B));
@@ -46,8 +55,9 @@ TEST_F(AStructuralSimilarityTest, PermutationalSymmetry_ReversedOrder) {
 TEST_F(AStructuralSimilarityTest, PermutationalSymmetry_FlippedSpins) {
     auto A = TestMolecules::H2::ElectronsInCores::normal;
     auto B = TestMolecules::H2::ElectronsInCores::flippedSpins;
-    ParticleKit::create(A);
+    ExpansionSettings::defaults();
     ExpansionSettings::mode = ExpansionSettings::Mode::Chemical;
+    ParticleKit::create(A);
 
     ASSERT_TRUE(ParticleKit::isSubsetQ(A));
     ASSERT_TRUE(ParticleKit::isSubsetQ(B));
@@ -55,20 +65,23 @@ TEST_F(AStructuralSimilarityTest, PermutationalSymmetry_FlippedSpins) {
 }
 
 TEST_F(AStructuralSimilarityTest, RotationalSymmetry) {
-    auto mol = TestMolecules::H2::ElectronsOutsideCores::offCenter;
+    auto A = TestMolecules::H2::ElectronsOutsideCores::offCenter;
+    ExpansionSettings::defaults();
+    ExpansionSettings::mode = ExpansionSettings::Mode::Chemical;
+    ParticleKit::create(A);
 
     unsigned n = 13;
     for (unsigned i = 0; i < n; ++i) {
         double angle = 2*M_PI*double(i)/double(n-1);
-        auto pos = mol.electrons().positionsVector();
+        auto pos = A.electrons().positionsVector();
         PositionsVectorTransformer::rotateAroundAxis(pos,angle,
-                                                     mol.atoms()[0].position(),
-                                                     mol.atoms()[1].position());
+                                                     A.atoms()[0].position(),
+                                                     A.atoms()[1].position());
 
-        ElectronsVector rotatedElectrons(pos,mol.electrons().typesVector());
-        MolecularGeometry molRotated = {mol.atoms(),rotatedElectrons};
+        ElectronsVector rotatedElectrons(pos,A.electrons().typesVector());
+        MolecularGeometry molRotated = {A.atoms(),rotatedElectrons};
 
-        ASSERT_NEAR(StructuralSimilarity::stucturalSimilarity(mol,molRotated,regularizationParameter),1.0,eps);
+        ASSERT_NEAR(StructuralSimilarity::stucturalSimilarity(A,molRotated,regularizationParameter),1.0,eps);
     }
 }
 
