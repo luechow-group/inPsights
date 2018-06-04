@@ -48,7 +48,7 @@ namespace LocalSimilarity {
                 break;
             }
             case ExpansionSettings::Mode::Chemical: {
-                similarityValue = typeSpecific(expansions1, expansions2);
+                similarityValue = chemical(expansions1, expansions2);
                 break;
             }
             case ExpansionSettings::Mode::Alchemical: {
@@ -67,7 +67,7 @@ namespace LocalSimilarity {
                 break;
             }
             case ExpansionSettings::Mode::Chemical: {
-                similarityValue = typeSpecific(expansions);
+                similarityValue = chemical(expansions);
                 break;
             }
             case ExpansionSettings::Mode::Alchemical: {
@@ -100,7 +100,7 @@ namespace LocalSimilarity {
             return ps1.dot(ps2);
         }
 
-        double typeSpecific(const TypeSpecificNeighborhoodsAtOneCenter &expansions) {
+        double chemical(const TypeSpecificNeighborhoodsAtOneCenter &expansions) {
             double sum = 0;
 
             for (auto &alpha : ParticleKit::kit) {
@@ -116,8 +116,8 @@ namespace LocalSimilarity {
             return sum;
         }
 
-        double typeSpecific(const TypeSpecificNeighborhoodsAtOneCenter &expansions1,
-                            const TypeSpecificNeighborhoodsAtOneCenter &expansions2) {
+        double chemical(const TypeSpecificNeighborhoodsAtOneCenter &expansions1,
+                        const TypeSpecificNeighborhoodsAtOneCenter &expansions2) {
             double sum = 0;
             for (auto &alpha : ParticleKit::kit) {
                 const auto &alphaExpansion1 = expansions1.find(alpha.first)->second;

@@ -25,10 +25,10 @@ namespace LocalSimilarity {
         double generic(const TypeSpecificNeighborhoodsAtOneCenter &expansions1,
                        const TypeSpecificNeighborhoodsAtOneCenter &expansions2);
 
-        double typeSpecific(const TypeSpecificNeighborhoodsAtOneCenter &expansions);
+        double chemical(const TypeSpecificNeighborhoodsAtOneCenter &expansions);
 
-        double typeSpecific(const TypeSpecificNeighborhoodsAtOneCenter &expansions1,
-                            const TypeSpecificNeighborhoodsAtOneCenter &expansions2);
+        double chemical(const TypeSpecificNeighborhoodsAtOneCenter &expansions1,
+                        const TypeSpecificNeighborhoodsAtOneCenter &expansions2);
 
         double kroneckerDelta(int typeA, int typeB);
         double alchemical(const TypeSpecificNeighborhoodsAtOneCenter &expansions);
