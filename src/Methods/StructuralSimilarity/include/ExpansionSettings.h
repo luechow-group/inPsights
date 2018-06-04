@@ -6,7 +6,8 @@
 #define AMOLQCPP_EXPANSIONSETTINGS_H
 
 #include <cassert>
-#include "ElementType.h"
+#include <ElementType.h>
+#include <SpinType.h>
 
 namespace ExpansionSettings{
     namespace Radial{
@@ -43,11 +44,14 @@ namespace ExpansionSettings{
     }
 
     namespace Alchemical{
-        extern std::map<std::pair<Element,Element>,double> pairSimilarities;
+        //extern std::map<std::pair<int,int>,double> pairSimilarities;
+        const std::map<std::pair<int,int>,double> pairSimilarities = {
+                {{int(Spin::alpha),int(Spin::beta)}, 0.5}
+        };
     }//TODO implement and use
 
     enum class Mode {
-        Generic = 0, TypeSpecific
+        Generic = 0, TypeSpecific, Alchemical
     };
 
     extern Mode mode;

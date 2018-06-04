@@ -39,7 +39,6 @@ namespace TestMolecules {
 
     namespace H2 {
         namespace ElectronsInCores {
-
             const MolecularGeometry normal = {
                     AtomsVector({{Element::H, {0, 0, 0.37}},
                                  {Element::H, {0, 0, -0.37}}}),
@@ -83,6 +82,17 @@ namespace TestMolecules {
                                  {Element::H, {0, 0, -0.37}}}),
                     ElectronsVector({{Spin::alpha, { 0.1, 0, 0.2}},
                                      {Spin::beta,  {-0.1, 0,-0.2}}})};
+        }
+    }
+
+    namespace HeH {
+        namespace ElectronsInCores {
+            const MolecularGeometry normal = {
+                    AtomsVector({{Element::He,{0, 0, 0.37}},
+                                 {Element::H, {0, 0,-0.37}}}),
+                    ElectronsVector({{Spin::alpha,{0, 0, 0.37}},
+                                     {Spin::alpha,{0, 0, 0.37}},
+                                     {Spin::beta, {0, 0,-0.37}}})};
         }
     }
 

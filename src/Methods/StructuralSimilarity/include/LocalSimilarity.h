@@ -19,6 +19,23 @@ namespace LocalSimilarity {
     double unnormalizedLocalSimilarity(const TypeSpecificNeighborhoodsAtOneCenter& expansions1,
                                        const TypeSpecificNeighborhoodsAtOneCenter& expansions2);
 
+    namespace {
+        double generic(const TypeSpecificNeighborhoodsAtOneCenter &expansions);
+
+        double generic(const TypeSpecificNeighborhoodsAtOneCenter &expansions1,
+                       const TypeSpecificNeighborhoodsAtOneCenter &expansions2);
+
+        double typeSpecific(const TypeSpecificNeighborhoodsAtOneCenter &expansions);
+
+        double typeSpecific(const TypeSpecificNeighborhoodsAtOneCenter &expansions1,
+                            const TypeSpecificNeighborhoodsAtOneCenter &expansions2);
+
+        double kroneckerDelta(int typeA, int typeB);
+        double alchemical(const TypeSpecificNeighborhoodsAtOneCenter &expansions);
+        double alchemical(const TypeSpecificNeighborhoodsAtOneCenter &expansions1,
+                          const TypeSpecificNeighborhoodsAtOneCenter &expansions2);
+    }
+
     double unnormalizedLocalSelfSimilarity(const TypeSpecificNeighborhoodsAtOneCenter& expansions);
 
 

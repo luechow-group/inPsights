@@ -5,6 +5,7 @@
 #include "ExpansionSettings.h"
 #include <cassert>
 #include <limits>
+#include <SpinType.h>
 
 namespace ExpansionSettings {
 
@@ -21,7 +22,7 @@ namespace ExpansionSettings {
         Radial::defaults();
         Angular::defaults();
         Cutoff::defaults();
-        mode = ExpansionSettings::Mode::Generic;
+        mode = ExpansionSettings::Mode::TypeSpecific;
         zeta = 2;
         gamma = 1.0; //TODO find sensible default value
 
@@ -59,7 +60,6 @@ namespace ExpansionSettings {
             lmax = 3;
         };
 
-
         void checkBounds(unsigned l, int m) {
             assert(l <= lmax && "l must be less than or equal to lmax");
             assert(unsigned(abs(m)) <= lmax && "abs(m) must be smaller than lmax");
@@ -81,6 +81,10 @@ namespace ExpansionSettings {
             return cutoffRadius - cutoffWidth;
         }
 
+        //namespace Alchemical{
+        //    std::map<std::pair<int,int>,double> pairSimilarities = {
+        //            {{int(Spin::alpha),int(Spin::beta)}, 0.5} //pairs start with the smaller typeId
+        //    };
+        //}
     }
-
 }

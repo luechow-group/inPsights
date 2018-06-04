@@ -42,8 +42,7 @@ namespace StructuralSimilarity{
                 if (!A.molecule_.findIndexByNumberedType(numberedType_j).first) continue;
                 auto expB = A.molecularCenters_.find(numberedType_j)->second;
 
-                auto val = LocalSimilarity::localSimilarity(expA, expB);
-                C(i,j) = val;
+                C(i,j)  =LocalSimilarity::localSimilarity(expA, expB);
             }
         }
         // symmetrize the matrix

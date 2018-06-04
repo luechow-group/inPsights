@@ -11,6 +11,8 @@
 #include "Environment.h"
 #include "TestMolecules.h"
 
+#include "NeighborhoodExpander.h"
+
 class ALocalSimilarityTest : public ::testing::Test {
 public:
 
@@ -229,4 +231,39 @@ TEST_F(ALocalSimilarityTest, twoBetaElectrons) {
     ASSERT_NEAR(LocalSimilarity::localSimilarity(e0,e1),1.0,eps);
 }
 
+TEST_F(ALocalSimilarityTest, TypeSpecificAndAlchemicalComparison) {
+    auto mol1 = TestMolecules::twoElectrons::oppositeSpin;
+    auto mol2 = TestMolecules::twoElectrons::oppositeSpinReversedOrder;
+    ParticleKit::create(mol1);
+    ExpansionSettings::defaults();
 
+    ExpansionSettings::mode = ExpansionSettings::Mode::TypeSpecific;
+    Environment mol1e0(mol1, mol1.electrons()[0].position());
+    Environment mol1e1(mol1, mol1.electrons()[1].position());
+
+    Environment mol2e0(mol2, mol2.electrons()[0].position());
+    Environment mol2e1(mol2, mol2.electrons()[1].position());
+
+    ASSERT_NEAR(LocalSimilarity::localSimilarity(mol1e0, mol1e1), 0.0, eps);
+    ASSERT_NEAR(LocalSimilarity::localSimilarity(mol2e0, mol2e1), 0.0, eps);
+
+    ASSERT_NEAR(LocalSimilarity::localSimilarity(mol1e0, mol2e1), 1.0, eps);
+    ASSERT_NEAR(LocalSimilarity::localSimilarity(mol2e0, mol1e1), 1.0, eps);
+
+
+    ExpansionSettings::mode = ExpansionSettings::Mode::Alchemical;
+    auto simMol1e0e1 = LocalSimilarity::localSimilarity(mol1e0, mol1e1);
+    auto simMol2e0e1 = LocalSimilarity::localSimilarity(mol2e0, mol2e1);
+
+    ASSERT_GT(simMol1e0e1, 0.0);
+    ASSERT_LT(simMol1e0e1, 1.0);
+
+    ASSERT_GT(simMol2e0e1, 0.0);
+    ASSERT_LT(simMol2e0e1, 1.0);
+
+    ASSERT_EQ(simMol1e0e1,simMol2e0e1);
+
+    ASSERT_NEAR(LocalSimilarity::localSimilarity(mol1e0, mol2e1), 1.0, eps);
+    ASSERT_NEAR(LocalSimilarity::localSimilarity(mol2e0, mol1e1), 1.0, eps);
+
+};

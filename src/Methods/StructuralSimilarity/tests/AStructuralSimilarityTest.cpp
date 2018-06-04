@@ -35,9 +35,8 @@ TEST_F(AStructuralSimilarityTest , TranslationalSymmetry) {
 TEST_F(AStructuralSimilarityTest, PermutationalSymmetry_ReversedOrder) {
     auto A = TestMolecules::twoElectrons::oppositeSpin;
     auto B = TestMolecules::twoElectrons::oppositeSpinReversedOrder;
-    ExpansionSettings::Radial::nmax =1;
-    ExpansionSettings::Angular::lmax =1;
     ParticleKit::create(A);
+    ExpansionSettings::mode = ExpansionSettings::Mode::Alchemical;
 
     ASSERT_TRUE(ParticleKit::isSubsetQ(A));
     ASSERT_TRUE(ParticleKit::isSubsetQ(B));
@@ -47,6 +46,9 @@ TEST_F(AStructuralSimilarityTest, PermutationalSymmetry_ReversedOrder) {
 TEST_F(AStructuralSimilarityTest, PermutationalSymmetry_FlippedSpins) {
     auto A = TestMolecules::H2::ElectronsInCores::normal;
     auto B = TestMolecules::H2::ElectronsInCores::flippedSpins;
+    ParticleKit::create(A);
+    ExpansionSettings::mode = ExpansionSettings::Mode::TypeSpecific;
+
     ASSERT_TRUE(ParticleKit::isSubsetQ(A));
     ASSERT_TRUE(ParticleKit::isSubsetQ(B));
     ASSERT_NEAR(StructuralSimilarity::stucturalSimilarity(A,B,regularizationParameter), 1.0, eps);
@@ -56,7 +58,6 @@ TEST_F(AStructuralSimilarityTest, RotationalSymmetry) {
     auto mol = TestMolecules::H2::ElectronsOutsideCores::offCenter;
 
     unsigned n = 13;
-    
     for (unsigned i = 0; i < n; ++i) {
         double angle = 2*M_PI*double(i)/double(n-1);
         auto pos = mol.electrons().positionsVector();
@@ -68,6 +69,22 @@ TEST_F(AStructuralSimilarityTest, RotationalSymmetry) {
         MolecularGeometry molRotated = {mol.atoms(),rotatedElectrons};
 
         ASSERT_NEAR(StructuralSimilarity::stucturalSimilarity(mol,molRotated,regularizationParameter),1.0,eps);
-
     }
+}
+
+TEST_F(AStructuralSimilarityTest, AlchemicalSimilarity) {
+    auto A = TestMolecules::twoElectrons::sameSpinAlpha;
+    auto B = TestMolecules::twoElectrons::sameSpinBeta;
+    ParticleKit::create({},{2,2});
+    ASSERT_TRUE(ParticleKit::isSubsetQ(A));
+    ASSERT_TRUE(ParticleKit::isSubsetQ(B));
+
+    //ExpansionSettings::mode = ExpansionSettings::Mode::TypeSpecific;
+    //auto chemical = StructuralSimilarity::stucturalSimilarity(A,B,regularizationParameter);
+    //ASSERT_NEAR(chemical, 0.0, eps);
+
+    ExpansionSettings::mode = ExpansionSettings::Mode::Alchemical;
+    auto alchemicalSim = StructuralSimilarity::stucturalSimilarity(A,B,regularizationParameter);
+    ASSERT_GT(alchemicalSim, 0.0);
+    ASSERT_LT(alchemicalSim, 1.0);
 }

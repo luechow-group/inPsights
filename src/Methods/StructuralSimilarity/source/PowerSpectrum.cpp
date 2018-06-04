@@ -52,9 +52,6 @@ double PowerSpectrum::powerSpectrumCoefficient(const NeighborhoodExpansion& spec
 
     for (int m = -int(l); m < int(l); ++m) {
         //TODO sum up all particles ?? BEFORE OR AFTER MULTIPLICATION?
-        // ACCOUNTED FOR
-                auto a = speciesA.getCoefficient(n1, l, m);
-                auto b = speciesA.getCoefficient(n2, l, m);
         sum += std::norm(std::conj(speciesA.getCoefficient(n1, l, m)) * speciesB.getCoefficient(n2, l, m));
         assert(sum == sum && "Sum cannot be NaN!");
     }

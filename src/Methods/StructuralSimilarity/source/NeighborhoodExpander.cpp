@@ -53,6 +53,7 @@ TypeSpecificNeighborhoodsAtOneCenter
 NeighborhoodExpander::computeParticularExpansions(const Environment &e) { // WORKS!
     TypeSpecificNeighborhoodsAtOneCenter expansions;
 
+    //TODO FACTORY METHOD
     switch (ExpansionSettings::mode) {
         case ExpansionSettings::Mode::Generic: {
             auto noneTypeId = 0;
@@ -60,6 +61,12 @@ NeighborhoodExpander::computeParticularExpansions(const Environment &e) { // WOR
             break;
         }
         case ExpansionSettings::Mode::TypeSpecific: {
+            for(auto & type : ParticleKit::kit){
+                expansions.emplace(type.first, expandEnvironment(e, type.first));
+            }
+            break;
+        }
+        case ExpansionSettings::Mode::Alchemical: {
             for(auto & type : ParticleKit::kit){
                 expansions.emplace(type.first, expandEnvironment(e, type.first));
             }
@@ -80,5 +87,6 @@ NeighborhoodExpander::computeMolecularExpansions(MolecularGeometry molecule) {
         auto numberedType = molecule.findNumberedTypeByIndex(k);
         exp[numberedType] = computeParticularExpansions(Environment(molecule, molecule[k].position()));
     }
+
     return exp;
 }
