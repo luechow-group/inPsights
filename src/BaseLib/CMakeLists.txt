@@ -44,6 +44,7 @@ set(HEADER_FILES
         include/Metrics.h
         include/MolecularGeometry.h
         include/Type.h
+        include/NumberedType.h
         )
 
 set(SOURCE_FILES

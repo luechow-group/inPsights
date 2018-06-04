@@ -10,36 +10,9 @@
 #include "SpinType.h"
 #include "ElementType.h"
 #include <vector>
+#include "NumberedType.h"
 
-template <typename Type>
-class NumberedType{
-public:
-    NumberedType(Type type, unsigned number)
-            : type_(type),number_(number) {}
 
-    bool operator==(NumberedType<Type> other) const {
-        return (type_ == other.type_) && (number_ == other.number_);
-    }
-
-    bool operator<(const NumberedType<Type>& other) const {
-        return (type_ < other.type_) || (number_ < other.number_); //TODO FUCK YEAH!
-    }
-
-    NumberedType<int> toIntType(){
-        return {int(type_),number_};
-    }
-
-    friend std::ostream& operator<<(std::ostream& os, const NumberedType& numberedType){
-        os << numberedType.number_ << numberedType.type_ << std::endl;
-        return os;
-    }
-
-    const Type type_;
-    const unsigned number_;
-};
-
-using NumberedElement = NumberedType<Element >;
-using NumberedSpin = NumberedType<Spin>;
 
 template <typename Type>
 class TypesVector : public AbstractVector {
@@ -51,7 +24,6 @@ public:
               types_(Eigen::VectorXi::Constant(size, 0))
     {}
 
-    //TODO specialise
     TypesVector(std::vector<Type> types)
             : AbstractVector(0),
               types_(0)
@@ -63,14 +35,6 @@ public:
         }
     }
 
-    /*TypesVector(const Eigen::VectorXi& typesAsEigenVector)
-            : AbstractVector(typesAsEigenVector.size()),
-              types_(typesAsEigenVector)
-    {
-        assert(types_.minCoeff() >= int(Spins::first()));
-        assert(types_.maxCoeff() <= int(Elements::last()));
-    }*/
-
     Type operator[](long i) const {
         return static_cast<Type>(types_[calculateIndex(i)]);
     }
@@ -78,9 +42,6 @@ public:
     void insert(Type type, long i) {
         assert(i >= 0 && "The index must be positive.");
         assert(i <= numberOfEntities() && "The index must be smaller than the number of entities.");
-
-        //TODO! check if types are compatible
-        //if ()
 
         Eigen::VectorXi before = types_.head(i);
         Eigen::VectorXi after = types_.tail(numberOfEntities()-i);
@@ -191,7 +152,7 @@ protected:
 using SpinTypesVector = TypesVector<Spin>;
 using ElementTypesVector = TypesVector<Element>;
 
-// Template Specialisation
+// Template Specialisations
 template<>
 SpinTypesVector::TypesVector(unsigned long numberOfAlphaElectrons,
                              unsigned long numberOfBetaElectrons);
