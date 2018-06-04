@@ -25,7 +25,7 @@ TEST_F(AStructuralSimilarityTest , Identity) {
     ParticleKit::create(A);
     
     ASSERT_TRUE(ParticleKit::isSubsetQ(A));
-    ASSERT_NEAR(StructuralSimilarity::stucturalSimilarity(A,A,regularizationParameter), 1.0, eps);
+    ASSERT_NEAR(StructuralSimilarity::structuralSimilarity(A, A, regularizationParameter), 1.0, eps);
 }
 
 TEST_F(AStructuralSimilarityTest , TranslationalSymmetry) {
@@ -37,7 +37,7 @@ TEST_F(AStructuralSimilarityTest , TranslationalSymmetry) {
     
     ASSERT_TRUE(ParticleKit::isSubsetQ(A));
     ASSERT_TRUE(ParticleKit::isSubsetQ(B));
-    ASSERT_NEAR(StructuralSimilarity::stucturalSimilarity(A,B,regularizationParameter), 1.0, eps);
+    ASSERT_NEAR(StructuralSimilarity::structuralSimilarity(A, B, regularizationParameter), 1.0, eps);
 }
 
 TEST_F(AStructuralSimilarityTest, PermutationalSymmetry_ReversedOrder) {
@@ -49,7 +49,7 @@ TEST_F(AStructuralSimilarityTest, PermutationalSymmetry_ReversedOrder) {
 
     ASSERT_TRUE(ParticleKit::isSubsetQ(A));
     ASSERT_TRUE(ParticleKit::isSubsetQ(B));
-    ASSERT_NEAR(StructuralSimilarity::stucturalSimilarity(A,B,regularizationParameter), 1.0, eps);
+    ASSERT_NEAR(StructuralSimilarity::structuralSimilarity(A, B, regularizationParameter), 1.0, eps);
 }
 
 TEST_F(AStructuralSimilarityTest, PermutationalSymmetry_FlippedSpins) {
@@ -61,7 +61,7 @@ TEST_F(AStructuralSimilarityTest, PermutationalSymmetry_FlippedSpins) {
 
     ASSERT_TRUE(ParticleKit::isSubsetQ(A));
     ASSERT_TRUE(ParticleKit::isSubsetQ(B));
-    ASSERT_NEAR(StructuralSimilarity::stucturalSimilarity(A,B,regularizationParameter), 1.0, eps);
+    ASSERT_NEAR(StructuralSimilarity::structuralSimilarity(A, B, regularizationParameter), 1.0, eps);
 }
 
 TEST_F(AStructuralSimilarityTest, RotationalSymmetry) {
@@ -81,7 +81,7 @@ TEST_F(AStructuralSimilarityTest, RotationalSymmetry) {
         ElectronsVector rotatedElectrons(pos,A.electrons().typesVector());
         MolecularGeometry molRotated = {A.atoms(),rotatedElectrons};
 
-        ASSERT_NEAR(StructuralSimilarity::stucturalSimilarity(A,molRotated,regularizationParameter),1.0,eps);
+        ASSERT_NEAR(StructuralSimilarity::structuralSimilarity(A, molRotated, regularizationParameter),1.0,eps);
     }
 }
 
@@ -93,11 +93,11 @@ TEST_F(AStructuralSimilarityTest, AlchemicalSimilarity) {
     ASSERT_TRUE(ParticleKit::isSubsetQ(B));
 
     ExpansionSettings::mode = ExpansionSettings::Mode::Chemical;
-    auto chemical = StructuralSimilarity::stucturalSimilarity(A,B,regularizationParameter);
+    auto chemical = StructuralSimilarity::structuralSimilarity(A, B, regularizationParameter);
     ASSERT_NEAR(chemical, 0.0, eps);
 
     ExpansionSettings::mode = ExpansionSettings::Mode::Alchemical;
-    auto alchemicalSim = StructuralSimilarity::stucturalSimilarity(A,B,regularizationParameter);
+    auto alchemicalSim = StructuralSimilarity::structuralSimilarity(A, B, regularizationParameter);
     ASSERT_GT(alchemicalSim, 0.0);
     ASSERT_LT(alchemicalSim, 1.0);
 }

@@ -6,7 +6,7 @@
 
 namespace StructuralSimilarity{
 
-    Eigen::MatrixXd correlationMatrix(MolecularSpectrum& A, MolecularSpectrum& B) {
+    Eigen::MatrixXd correlationMatrix(const MolecularSpectrum& A, const MolecularSpectrum& B) {
         auto N = ParticleKit::numberOfParticles();
         Eigen::MatrixXd C = Eigen::MatrixXd::Zero(N, N);
 
@@ -28,7 +28,7 @@ namespace StructuralSimilarity{
         return C;
     }
 
-    Eigen::MatrixXd selfCorrelationMatrix(MolecularSpectrum &A) {
+    Eigen::MatrixXd selfCorrelationMatrix(const MolecularSpectrum &A) {
         auto N = ParticleKit::numberOfParticles();
         Eigen::MatrixXd C = Eigen::MatrixXd::Zero(N, N);
 
@@ -53,11 +53,16 @@ namespace StructuralSimilarity{
         return C;
     }
 
-    double stucturalSimilarity(const MolecularGeometry& A,
-                               const MolecularGeometry& B, double regularizationParameter) {
-
+    double structuralSimilarity(const MolecularGeometry &A,
+                                const MolecularGeometry &B, double regularizationParameter) {
         MolecularSpectrum spectrumA(A);
         MolecularSpectrum spectrumB(B);
+
+        return structuralSimilarity(spectrumA, spectrumB, regularizationParameter);
+    }
+
+    double structuralSimilarity(const MolecularSpectrum &spectrumA,
+                                const MolecularSpectrum &spectrumB, double regularizationParameter) {
 
         auto CAB = correlationMatrix(spectrumA,spectrumB);
         auto CAA = selfCorrelationMatrix(spectrumA);
@@ -78,4 +83,7 @@ namespace StructuralSimilarity{
         return kAB/sqrt(kAA*kBB);
     }
 
+    double kernelDistance(const MolecularGeometry &A, const MolecularGeometry &B, double regularizationParameter) {
+        return sqrt(2-2* structuralSimilarity(A, B, regularizationParameter));
+    }
 }

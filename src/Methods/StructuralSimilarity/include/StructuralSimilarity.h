@@ -17,13 +17,19 @@
 
 namespace StructuralSimilarity{
 
-    Eigen::MatrixXd correlationMatrix(MolecularSpectrum& A,
-                                      MolecularSpectrum& B);
+    Eigen::MatrixXd correlationMatrix(const MolecularSpectrum& A,
+                                      const MolecularSpectrum& B);
 
-    Eigen::MatrixXd selfCorrelationMatrix(MolecularSpectrum &A);
+    Eigen::MatrixXd selfCorrelationMatrix(const MolecularSpectrum &A);
 
-    double stucturalSimilarity(const MolecularGeometry& A,
-                               const MolecularGeometry& B, double regularizationParameter);
+    double structuralSimilarity(const MolecularGeometry &A,
+                                const MolecularGeometry &B, double regularizationParameter);
+
+    double structuralSimilarity(const MolecularSpectrum &spectrumA,
+                                const MolecularSpectrum &spectrumB, double regularizationParameter);
+
+    double kernelDistance(const MolecularGeometry &A,
+                          const MolecularGeometry &B, double regularizationParameter);
 };
 
 #endif //AMOLQCPP_STRUCTURALSIMILARITY_H

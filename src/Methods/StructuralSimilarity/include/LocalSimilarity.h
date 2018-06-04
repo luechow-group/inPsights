@@ -25,9 +25,9 @@ namespace LocalSimilarity {
                            const TypeSpecificNeighborhoodsAtOneCenter& expansions2,
                            double zeta = ExpansionSettings::zeta);
 
-    double distance(const TypeSpecificNeighborhoodsAtOneCenter& expansions1,
-                    const TypeSpecificNeighborhoodsAtOneCenter& expansions2,
-                    double zeta = ExpansionSettings::zeta);
+    double kernelDistance(const TypeSpecificNeighborhoodsAtOneCenter &expansions1,
+                          const TypeSpecificNeighborhoodsAtOneCenter &expansions2,
+                          double zeta = ExpansionSettings::zeta);
 
     namespace {
         double generic(const TypeSpecificNeighborhoodsAtOneCenter &expansions);
