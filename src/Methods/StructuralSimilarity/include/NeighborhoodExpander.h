@@ -8,7 +8,6 @@
 #include "RadialGaussianBasis.h"
 #include "NeighborhoodExpansion.h"
 #include "Environment.h"
-#include <Type.h>
 
 using TypeSpecificNeighborhoodsAtOneCenter = std::map<int, NeighborhoodExpansion>; // expansion coeffs related to an int type
 

@@ -6,9 +6,6 @@
 #include "CutoffFunction.h"
 #include "AngularBasis.h"
 #include "ParticleKit.h"
-#include <iomanip>
-#include <Type.h>
-
 
 NeighborhoodExpander::NeighborhoodExpander()
         : radialGaussianBasis_(){}
@@ -53,7 +50,6 @@ TypeSpecificNeighborhoodsAtOneCenter
 NeighborhoodExpander::computeParticularExpansions(const Environment &e) { // WORKS!
     TypeSpecificNeighborhoodsAtOneCenter expansions;
 
-    //TODO FACTORY METHOD
     switch (ExpansionSettings::mode) {
         case ExpansionSettings::Mode::Generic: {
             auto noneTypeId = 0;

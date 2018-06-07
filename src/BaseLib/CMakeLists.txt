@@ -43,7 +43,6 @@ set(HEADER_FILES
         include/TypesVector.h
         include/Metrics.h
         include/MolecularGeometry.h
-        include/Type.h
         include/NumberedType.h
         )
 

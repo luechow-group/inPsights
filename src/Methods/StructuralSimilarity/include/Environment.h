@@ -8,7 +8,6 @@
 #include <Eigen/Core>
 #include <utility>
 #include <MolecularGeometry.h>
-#include <Type.h>
 #include "CutoffFunction.h"
 #include <BoostSphericalHarmonics.h>
 

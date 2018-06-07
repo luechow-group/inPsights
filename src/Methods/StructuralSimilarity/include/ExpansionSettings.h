@@ -54,6 +54,8 @@ namespace ExpansionSettings{
         Generic = 0, Chemical, Alchemical
     };
 
+
+
     extern Mode mode;
     extern double zeta;  // LocalSimilarity exponent
     extern double gamma; // StructuralSimilarity regularization
