@@ -54,36 +54,36 @@ namespace StructuralSimilarity{
     }
 
     double kernel(const MolecularGeometry &A,
-                  const MolecularGeometry &B, double regularizationParameter) {
+                  const MolecularGeometry &B, double gamma) {
         MolecularSpectrum spectrumA(A);
         MolecularSpectrum spectrumB(B);
 
-        return kernel(spectrumA, spectrumB, regularizationParameter);
+        return kernel(spectrumA, spectrumB, gamma);
     }
 
     double kernel(const MolecularSpectrum &spectrumA,
-                  const MolecularSpectrum &spectrumB, double regularizationParameter) {
+                  const MolecularSpectrum &spectrumB, double gamma) {
 
         auto CAB = correlationMatrix(spectrumA,spectrumB);
         auto CAA = selfCorrelationMatrix(spectrumA);
         auto CBB = selfCorrelationMatrix(spectrumB);
 
-        std::cout << CAB << std::endl << std::endl;
-        std::cout << CAA << std::endl << std::endl;
-        std::cout << CBB << std::endl << std::endl;
+        //std::cout << CAB << std::endl << std::endl;
+        //std::cout << CAA << std::endl << std::endl;
+        //std::cout << CBB << std::endl << std::endl;
 
-        auto kAB = Sinkhorn::distance(CAB,regularizationParameter);
-        auto kAA = Sinkhorn::distance(CAA,regularizationParameter);
-        auto kBB = Sinkhorn::distance(CBB,regularizationParameter);
+        auto kAB = Sinkhorn::distance(CAB,gamma);
+        auto kAA = Sinkhorn::distance(CAA,gamma);
+        auto kBB = Sinkhorn::distance(CBB,gamma);
 
-        std::cout << kAB << std::endl;
-        std::cout << kAA << std::endl;
-        std::cout << kBB << std::endl;
+        //std::cout << kAB << std::endl;
+        //std::cout << kAA << std::endl;
+        //std::cout << kBB << std::endl;
 
         return kAB/sqrt(kAA*kBB);
     }
 
-    double kernelDistance(const MolecularGeometry &A, const MolecularGeometry &B, double regularizationParameter) {
-        return sqrt(2-2* kernel(A, B, regularizationParameter));
+    double kernelDistance(const MolecularGeometry &A, const MolecularGeometry &B, double gamma) {
+        return sqrt(2-2* kernel(A, B, gamma));
     }
 }

@@ -23,13 +23,13 @@ namespace StructuralSimilarity{
     Eigen::MatrixXd selfCorrelationMatrix(const MolecularSpectrum &A);
 
     double kernel(const MolecularGeometry &A,
-                  const MolecularGeometry &B, double regularizationParameter);
+                  const MolecularGeometry &B, double gamma = ExpansionSettings::gamma);
 
     double kernel(const MolecularSpectrum &spectrumA,
-                  const MolecularSpectrum &spectrumB, double regularizationParameter);
+                  const MolecularSpectrum &spectrumB, double gamma = ExpansionSettings::gamma);
 
     double kernelDistance(const MolecularGeometry &A,
-                          const MolecularGeometry &B, double regularizationParameter);
+                          const MolecularGeometry &B, double gamma = ExpansionSettings::gamma);
 };
 
 #endif //AMOLQCPP_STRUCTURALSIMILARITY_H
