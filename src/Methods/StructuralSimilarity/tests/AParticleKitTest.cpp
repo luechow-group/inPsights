@@ -82,6 +82,17 @@ TEST_F(AParticleKitTest, isSubsetQFalse) {
     AtomsVector wrongNumber({{Element::H,{0,0,0}},
                              {Element::H,{0,0,0}}});
     ASSERT_FALSE(ParticleKit::isSubsetQ(wrongNumber));
+
+    MolecularGeometry mol2(
+            AtomsVector({{Element::H,{0,0,0}}}),
+            ElectronsVector({{Spin::beta,{0,0,0}}}));
+    ASSERT_FALSE(ParticleKit::isSubsetQ(mol2));
+
+    MolecularGeometry mol3(
+            AtomsVector({{Element::H,{0,0,0}}}),
+            ElectronsVector({{Spin::alpha,{0,0,0}},
+                             {Spin::alpha,{0,0,0}}}));
+    ASSERT_FALSE(ParticleKit::isSubsetQ(mol2));
 }
 
 

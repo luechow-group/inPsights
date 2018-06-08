@@ -101,3 +101,32 @@ TEST_F(AStructuralSimilarityTest, AlchemicalSimilarity) {
     ASSERT_GT(alchemicalSim, 0.0);
     ASSERT_LT(alchemicalSim, 1.0);
 }
+
+TEST_F(AStructuralSimilarityTest, HeH_H2_Comparison) {
+    auto A = TestMolecules::H2::ElectronsInCores::normal;
+    auto B = TestMolecules::HeH::ElectronsInCores::normal;
+    ParticleKit::create({{Element::H,2},{Element::He,1}},{2,2});
+    ASSERT_TRUE(ParticleKit::isSubsetQ(A));
+    ASSERT_TRUE(ParticleKit::isSubsetQ(B));
+
+    ExpansionSettings::mode = ExpansionSettings::Mode::Generic;
+    auto generic = StructuralSimilarity::kernel(A, B, regularizationParameter);
+    ASSERT_LT(generic, 1.0);
+    ASSERT_GT(generic, 0.0);
+
+    ExpansionSettings::mode = ExpansionSettings::Mode::Chemical;
+    auto chemical = StructuralSimilarity::kernel(A, B, regularizationParameter);
+    ASSERT_LT(chemical, 1.0);
+    ASSERT_GT(chemical, 0.0);
+
+    ExpansionSettings::mode = ExpansionSettings::Mode::Alchemical;
+    auto alchemical = StructuralSimilarity::kernel(A, B, regularizationParameter);
+    ASSERT_LT(alchemical, 1.0);
+    ASSERT_GT(alchemical, 0.0);
+
+    // Alchemical similarity must be higher due to the increased similartiy of opposite spins
+    ASSERT_LT(chemical,generic);
+    ASSERT_LT(chemical,alchemical);
+}
+
+
