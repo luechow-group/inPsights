@@ -18,6 +18,7 @@ add_executable(LocalPotentialEnergy.exe LocalPotentialEnergy.cpp)
 add_executable(ShowMaxima.exe ShowMaxima.cpp)
 add_executable(H6TSsearch.exe H6TSsearch.cpp)
 add_executable(StructuralSimilarity.exe StructuralSimilarityExec.cpp)
+add_executable(OpenmpSandbox.exe OpenmpSandbox.cpp)
 
 
 target_link_libraries(StringMethodGUI.exe
@@ -63,5 +64,10 @@ target_link_libraries(H6TSsearch.exe
 
 target_link_libraries(StructuralSimilarity.exe
         BaseLib
+        AmolqcInterface
         StructuralSimilarity
+        )
+
+target_link_libraries(OpenmpSandbox.exe
+        BaseLib
         )
