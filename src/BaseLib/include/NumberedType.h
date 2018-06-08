@@ -16,7 +16,12 @@ public:
     }
 
     bool operator<(const NumberedType<Type>& other) const {
-        return (type_ < other.type_) || (number_ < other.number_);
+        if (type_ < other.type_)
+            return true;
+        else if (type_ == other.type_)
+            return (number_ < other.number_);
+        else
+            return false;
     }
 
     NumberedType<int> toIntType(){
