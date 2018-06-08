@@ -1,47 +1,40 @@
 //
 // Created by Michael Heuer on 25.05.18.
 //
-#include <MolecularGeometry.h>
 #include <StructuralSimilarity.h>
-#include <chrono>
-#include <ctime>
+#include <AmolqcFileImport/RefFileImporter.h>
 
 int main(int argc, char *argv[]) {
-    std::chrono::time_point<std::chrono::system_clock> start, end;
+    RefFileImporter importer("Ethane-max.ref");
+    auto atomsVector = importer.getAtomsVector();
+    auto numberOfSuperstructures = importer.numberOfSuperstructures();
 
-    start = std::chrono::system_clock::now();
-
-    MolecularGeometry A,B;
-    A = {AtomsVector(
-            {{Element::H,{0,0, 0.37}},
-             {Element::H,{0,0,-0.37}}}),
-         ElectronsVector(
-                 {{Spin::alpha,{0,0, 0.37}},
-                  {Spin::alpha,{0,0,-0.37}}})
-    };
-    B = {AtomsVector(
-            {{Element::H,{0,0, 0.37}},
-             {Element::He,{0,0,-0.37}}}),
-         ElectronsVector(
-                 {{Spin::alpha,{0,0, 0.37}},
-                  {Spin::alpha,{0,0,-0.37}}})
-    };
-
+    // Settings
     ExpansionSettings::defaults();
-    ExpansionSettings::Radial::nmax = 1;
-    ExpansionSettings::Angular::lmax = 2;
-    ExpansionSettings::mode = ExpansionSettings::Mode::Chemical;
-    ParticleKit::create({{Element::H,2},{Element::He,1}},{2,2});
+    ExpansionSettings::Radial::nmax = 5;
+    ExpansionSettings::Angular::lmax = 5;
+    ExpansionSettings::mode = ExpansionSettings::Mode::Alchemical;
+    ParticleKit::create(atomsVector, importer.getMaximaStructure(1,1));
 
-    double result = StructuralSimilarity::kernel(A, B, 1);
+    std::vector<MolecularSpectrum> spectra;
+    spectra.reserve(numberOfSuperstructures);
 
-    end = std::chrono::system_clock::now();
-    std::cout << "FINAL RESULT:" << result << std::endl;
+    for (unsigned long i = 0; i < numberOfSuperstructures; ++i) {
+        MolecularGeometry mol(atomsVector,importer.getMaximaStructure(i+1,1));
+        std::cout << mol;
+        spectra.emplace(spectra.begin()+i,mol);
+        std::cout << "done" << std::endl;
+    }
 
-    long elapsed_seconds = std::chrono::duration_cast<std::chrono::milliseconds>
-            (end-start).count();
-    std::time_t end_time = std::chrono::system_clock::to_time_t(end);
-
-    std::cout << "finished computation at " << std::ctime(&end_time)
-              << "elapsed time: " << elapsed_seconds << "ms\n";
+    std::cout << "{\n";
+    for (unsigned long i = 0; i < spectra.size(); ++i) {
+        const auto& A = spectra[i];
+        std::cout << "{";
+        for (unsigned long j = i+1; j < spectra.size(); ++j) {
+            const auto& B = spectra[j];
+            std::cout <<"{"<< i << ","<< j << ","<< StructuralSimilarity::kernel(A,B)<< "},";
+        }
+        std::cout << "},\n";
+    }
+    std::cout << "}";
 }
