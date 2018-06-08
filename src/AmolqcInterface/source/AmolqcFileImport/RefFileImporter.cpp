@@ -33,7 +33,7 @@ AtomsVector RefFileImporter::getAtomsVector() {
         double x = std::stod(lineElements[2]);
         double y = std::stod(lineElements[3]);
         double z = std::stod(lineElements[4]);
-        atomsVector.append(Atom({x,y,z},elementType));
+        atomsVector.append({elementType,{x,y,z}});
     }
     return atomsVector;
 }
@@ -81,5 +81,8 @@ ElectronsVectorCollection RefFileImporter::getAllSubstructures(unsigned long k) 
         positionsVectorCollection.append(this->getPositionsVector(k,m));
     }
     return ElectronsVectorCollection(positionsVectorCollection,this->getSpinTypesVector());
+}
 
+unsigned long RefFileImporter::numberOfSuperstructures() {
+    return numberOfSuperstructures_;
 }

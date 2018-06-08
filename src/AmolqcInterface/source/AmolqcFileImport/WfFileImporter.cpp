@@ -58,7 +58,7 @@ AtomsVector WfFileImporter::getAtomsVector() {
         y *= ConversionFactors::angstrom2bohr;
         z *= ConversionFactors::angstrom2bohr;
       }
-      atomsVector.append(Atom({x,y,z},elementType));
+      atomsVector.append({elementType,{x,y,z}});
     }
   return atomsVector;
 }
