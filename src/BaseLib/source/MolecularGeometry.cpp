@@ -62,5 +62,3 @@ std::pair<bool,long> MolecularGeometry::findIndexByNumberedType(const NumberedTy
         return {false,0};
     }
 }
-
-

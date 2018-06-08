@@ -26,6 +26,12 @@ public:
 
     long numberOfEntities() const;
 
+    friend std::ostream& operator<<(std::ostream &os, const MolecularGeometry &mol) {
+        os << mol.atoms() << std::endl;
+        os << mol.electrons() << std::endl;
+        return os;
+    }
+    
 private:
     AtomsVector atoms_;
     ElectronsVector electrons_;
