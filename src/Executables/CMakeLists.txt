@@ -67,7 +67,3 @@ target_link_libraries(StructuralSimilarity.exe
         AmolqcInterface
         StructuralSimilarity
         )
-
-target_link_libraries(OpenmpSandbox.exe
-        BaseLib
-        )
