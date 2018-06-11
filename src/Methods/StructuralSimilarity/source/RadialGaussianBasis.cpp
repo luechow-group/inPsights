@@ -29,7 +29,7 @@ std::vector<Gaussian> RadialGaussianBasis::createBasis() {
         case ExpansionSettings::Radial::BasisType::equispaced : {
 
             double bla = ExpansionSettings::Radial::nmax;
-            double cutoffRadius = ExpansionSettings::Cutoff::cutoffRadius;
+            double cutoffRadius = ExpansionSettings::Cutoff::radius;
 
             for (int i = 0; i < nmax; ++i) {
                 basisFunctionCenter = (cutoffRadius*double(i)) /double(nmax);
@@ -50,7 +50,7 @@ std::vector<Gaussian> RadialGaussianBasis::createBasis() {
             //TODO Attention: the cutoff radius is changed here
             // add lock function?
                     //TODO CHANGE THIS !!!!!!!!!!!!!!!!!!!!
-            ExpansionSettings::Cutoff::cutoffRadius = (*basis_.end()).center(); //TODO check this: is the last basis function centered at the cutoff radius?
+            ExpansionSettings::Cutoff::radius = (*basis_.end()).center(); //TODO check this: is the last basis function centered at the cutoff radius?
             return basis;
         }
     }

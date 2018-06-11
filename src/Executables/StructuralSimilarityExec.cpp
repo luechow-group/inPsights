@@ -50,6 +50,8 @@ int main(int argc, char *argv[]) {
     ExpansionSettings::mode = ExpansionSettings::Mode::Alchemical;
     ParticleKit::create(atomsVector, importer.getMaximaStructure(1,1));
 
+    std::cout << ExpansionSettings::toString() << "\n" << ParticleKit::toString() << std::endl;
+
     std::vector<MolecularSpectrum> spectra(numberOfSuperstructures);
     printf("size at the beginning %lu\n",spectra.size());
 

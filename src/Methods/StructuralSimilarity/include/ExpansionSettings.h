@@ -15,6 +15,9 @@ namespace ExpansionSettings{
             equispaced = 0, adaptive,
         };
 
+        std::string toString(const BasisType& type);
+        std::ostream& operator<<(std::ostream& os, const BasisType& type);
+
         const double radiusZero = 1e-10;
 
         extern unsigned nmax;
@@ -26,6 +29,8 @@ namespace ExpansionSettings{
 
         void defaults();
         void checkBounds(unsigned n);
+
+        std::string toString();
     };
 
     namespace Angular {
@@ -34,13 +39,16 @@ namespace ExpansionSettings{
         void defaults();
         void checkBounds(unsigned l, int m = 0);
 
+        std::string toString();
     };
 
     namespace Cutoff {
-        extern double cutoffRadius, cutoffWidth, centerWeight;
+        extern double radius, width, centerWeight;
 
         void defaults();
         double innerPlateauRadius();
+
+        std::string toString();
     }
 
     namespace Alchemical{
@@ -48,6 +56,8 @@ namespace ExpansionSettings{
         const std::map<std::pair<int,int>,double> pairSimilarities = {
                 {{int(Spin::alpha),int(Spin::beta)}, 0.5}
         };
+
+        std::string toString();
     }
 
     enum class Mode {
@@ -60,7 +70,11 @@ namespace ExpansionSettings{
 
     void defaults();
     void checkBounds(unsigned n, unsigned l, int m);
-};
 
+    std::string toString(const Mode& mode);
+    std::ostream& operator<<(std::ostream& os, const Mode& mode);
+
+    std::string toString();
+};
 
 #endif //AMOLQCPP_EXPANSIONSETTINGS_H

@@ -6,6 +6,7 @@
 #include <cassert>
 #include <limits>
 #include <SpinType.h>
+#include <sstream>
 
 namespace ExpansionSettings {
 
@@ -28,8 +29,35 @@ namespace ExpansionSettings {
 
     };
 
+    std::string toString(const Mode &mode) {
+        switch(mode) {
+            case ExpansionSettings::Mode::Generic : return "generic";
+            case ExpansionSettings::Mode::Chemical : return "chemical";
+            case ExpansionSettings::Mode::Alchemical : return "alchemical";
+        }
+    }
+
+    std::ostream &operator<<(std::ostream &os, const Mode &mode) {
+        os << toString(mode);
+        return os;
+    }
+
+    std::string toString() {
+        std::stringstream ss;
+        ss << "General:" << std::endl
+           << "--------" << std::endl
+           << "Expansion mode\t\t: "<< ExpansionSettings::mode << std::endl
+           << "Sharpness zeta\t\t: "<< zeta << std::endl
+           << "Regularization gamma: "<< gamma << std::endl
+           << std::endl
+           << Radial::toString() << std::endl
+           << Angular::toString() << std::endl
+           << Cutoff::toString();
+        return ss.str();
+    }
+
     namespace Radial {
-        unsigned nmax = 5;
+        unsigned nmax = 14;
         BasisType basisType = BasisType::equispaced;
         double sigmaAtom = 0.5;
 
@@ -51,40 +79,81 @@ namespace ExpansionSettings {
             assert(n >= 1 && "n must greater than or equal to 1");
         }
 
+        std::string toString(const BasisType &type) {
+            switch(type) {
+                case BasisType::equispaced : return "equispaced";
+                case BasisType::adaptive : return "adaptive";
+            }
+        }
+
+        std::ostream &operator<<(std::ostream &os, const BasisType &type) {
+            os << toString(type);
+            return os;
+        }
+
+        std::string toString() {
+            std::stringstream ss;
+            ss << "Radial:" << std::endl
+               << "-------" << std::endl
+               << "BasisType\t\t\t: " << basisType << std::endl
+               << "n_max\t\t\t\t: " << nmax << std::endl
+               << "sigma_atom\t\t\t: " << sigmaAtom << " angstrom" << std::endl
+               << "Integration steps\t: " << integrationSteps << std::endl
+               << "Desired abs. err\t: " << desiredAbsoluteError << std::endl
+               << "Desired rel. err\t: " << desiredRelativeError << std::endl;
+            return ss.str();
+        }
     }
 
     namespace Angular {
-        unsigned lmax = 3;
+        unsigned lmax = 14;
 
         void defaults() {
-            lmax = 3;
+            lmax = 14;
         };
 
         void checkBounds(unsigned l, int m) {
             assert(l <= lmax && "l must be less than or equal to lmax");
             assert(unsigned(abs(m)) <= lmax && "abs(m) must be smaller than lmax");
         }
+
+        std::string toString() {
+            std::stringstream ss;
+            ss << "Angular:" << std::endl
+               << "--------" << std::endl
+               << "l_max\t\t\t\t: " << lmax  << std::endl;
+            return ss.str();
+        }
     }
     
     namespace Cutoff {
-        double cutoffRadius = 4.0;
-        double cutoffWidth = 1.0; //TODO
+        double radius = 4.0;
+        double width = 1.0; //TODO
         double centerWeight = 1.0; //TODO
 
         void defaults() {
-            cutoffRadius = 4.0;
-            cutoffWidth = 1.0;
+            radius = 4.0;
+            width = 1.0;
             centerWeight = 1.0;
         }
 
         double innerPlateauRadius() {
-            return cutoffRadius - cutoffWidth;
+            return radius - width;
         }
 
-        //namespace Alchemical{
-        //    std::map<std::pair<int,int>,double> pairSimilarities = {
-        //            {{int(Spin::alpha),int(Spin::beta)}, 0.5} //pairs start with the smaller typeId
-        //    };
-        //}
+        std::string toString() {
+            std::stringstream ss;
+            ss << "Cutoff:" << std::endl
+               << "-------" << std::endl
+               << "Radius\t\t\t\t: " << radius << " angstrom" << std::endl
+               << "Width\t\t\t\t: " << width << " angstrom" << std::endl
+               << "Center weight\t\t: " << centerWeight << std::endl;
+            return ss.str();
+        }
     }
+    //namespace Alchemical{
+    //    std::map<std::pair<int,int>,double> pairSimilarities = {
+    //            {{int(Spin::alpha),int(Spin::beta)}, 0.5} //pairs start with the smaller typeId
+    //    };
+    //}
 }

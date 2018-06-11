@@ -45,7 +45,7 @@ TEST_F(ALocalSimilarityTest , SameEnvironmentsOnDifferentCenters) {
 TEST_F(ALocalSimilarityTest , Cross) {
     ParticleKit::create(molecule);
     ExpansionSettings::defaults();
-    ExpansionSettings::Cutoff::cutoffRadius = 1.2;
+    ExpansionSettings::Cutoff::radius = 1.2;
     ExpansionSettings::Angular::lmax = 3;
 
     Environment e0(molecule, molecule.atoms()[0].position());
