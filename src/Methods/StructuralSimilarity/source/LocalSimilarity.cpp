@@ -43,15 +43,15 @@ namespace LocalSimilarity {
 
         double similarityValue = 0;
         switch (ExpansionSettings::mode) {
-            case ExpansionSettings::Mode::Generic: {
+            case ExpansionSettings::Mode::generic: {
                 similarityValue = generic(expansions1, expansions2);
                 break;
             }
-            case ExpansionSettings::Mode::Chemical: {
+            case ExpansionSettings::Mode::chemical: {
                 similarityValue = chemical(expansions1, expansions2);
                 break;
             }
-            case ExpansionSettings::Mode::Alchemical: {
+            case ExpansionSettings::Mode::alchemical: {
                 similarityValue = alchemical(expansions1,expansions2);
                 break;
             }
@@ -62,15 +62,15 @@ namespace LocalSimilarity {
     double unnormalizedSelfKernel(const TypeSpecificNeighborhoodsAtOneCenter &expansions) {
         double similarityValue = 0;
         switch (ExpansionSettings::mode) {
-            case ExpansionSettings::Mode::Generic: {
+            case ExpansionSettings::Mode::generic: {
                 similarityValue = generic(expansions);
                 break;
             }
-            case ExpansionSettings::Mode::Chemical: {
+            case ExpansionSettings::Mode::chemical: {
                 similarityValue = chemical(expansions);
                 break;
             }
-            case ExpansionSettings::Mode::Alchemical: {
+            case ExpansionSettings::Mode::alchemical: {
                 similarityValue = alchemical(expansions,expansions);
                 // a dedicated self-similarity method for the alchemical expansion does not increase efficiency here
                 break;

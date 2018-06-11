@@ -61,7 +61,7 @@ namespace ExpansionSettings{
     }
 
     enum class Mode {
-        Generic = 0, Chemical, Alchemical
+        generic = 0, chemical, alchemical
     };
 
     extern Mode mode;

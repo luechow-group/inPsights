@@ -51,18 +51,18 @@ NeighborhoodExpander::computeParticularExpansions(const Environment &e) { // WOR
     TypeSpecificNeighborhoodsAtOneCenter expansions;
 
     switch (ExpansionSettings::mode) {
-        case ExpansionSettings::Mode::Generic: {
+        case ExpansionSettings::Mode::generic: {
             auto noneTypeId = 0;
             expansions.emplace(noneTypeId, expandEnvironment(e, noneTypeId));
             break;
         }
-        case ExpansionSettings::Mode::Chemical: {
+        case ExpansionSettings::Mode::chemical: {
             for(auto & type : ParticleKit::kit){
                 expansions.emplace(type.first, expandEnvironment(e, type.first));
             }
             break;
         }
-        case ExpansionSettings::Mode::Alchemical: {
+        case ExpansionSettings::Mode::alchemical: {
             for(auto & type : ParticleKit::kit){
                 expansions.emplace(type.first, expandEnvironment(e, type.first));
             }

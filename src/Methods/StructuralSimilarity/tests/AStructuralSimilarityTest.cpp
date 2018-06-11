@@ -13,7 +13,7 @@ public:
 
     void SetUp() override {
         ExpansionSettings::defaults();
-        ExpansionSettings::mode = ExpansionSettings::Mode::Chemical;
+        ExpansionSettings::mode = ExpansionSettings::Mode::chemical;
         ParticleKit::create({{Element::H,2},{Element::He,2}},{2,2});
     }
 };
@@ -21,7 +21,7 @@ public:
 TEST_F(AStructuralSimilarityTest , Identity) {
     auto A = TestMolecules::H2::ElectronsInCores::normal;
     ExpansionSettings::defaults();
-    ExpansionSettings::mode = ExpansionSettings::Mode::Chemical;
+    ExpansionSettings::mode = ExpansionSettings::Mode::chemical;
     ParticleKit::create(A);
     
     ASSERT_TRUE(ParticleKit::isSubsetQ(A));
@@ -32,7 +32,7 @@ TEST_F(AStructuralSimilarityTest , TranslationalSymmetry) {
     auto A = TestMolecules::H2::ElectronsInCores::normal;
     auto B = TestMolecules::H2::ElectronsInCores::translated;
     ExpansionSettings::defaults();
-    ExpansionSettings::mode = ExpansionSettings::Mode::Chemical;
+    ExpansionSettings::mode = ExpansionSettings::Mode::chemical;
     ParticleKit::create(A);
     
     ASSERT_TRUE(ParticleKit::isSubsetQ(A));
@@ -44,7 +44,7 @@ TEST_F(AStructuralSimilarityTest, PermutationalSymmetry_ReversedOrder) {
     auto A = TestMolecules::twoElectrons::oppositeSpin;
     auto B = TestMolecules::twoElectrons::oppositeSpinReversedOrder;
     ExpansionSettings::defaults();
-    ExpansionSettings::mode = ExpansionSettings::Mode::Chemical;
+    ExpansionSettings::mode = ExpansionSettings::Mode::chemical;
     ParticleKit::create(A);
 
     ASSERT_TRUE(ParticleKit::isSubsetQ(A));
@@ -56,7 +56,7 @@ TEST_F(AStructuralSimilarityTest, PermutationalSymmetry_FlippedSpins) {
     auto A = TestMolecules::H2::ElectronsInCores::normal;
     auto B = TestMolecules::H2::ElectronsInCores::flippedSpins;
     ExpansionSettings::defaults();
-    ExpansionSettings::mode = ExpansionSettings::Mode::Chemical;
+    ExpansionSettings::mode = ExpansionSettings::Mode::chemical;
     ParticleKit::create(A);
 
     ASSERT_TRUE(ParticleKit::isSubsetQ(A));
@@ -67,7 +67,7 @@ TEST_F(AStructuralSimilarityTest, PermutationalSymmetry_FlippedSpins) {
 TEST_F(AStructuralSimilarityTest, RotationalSymmetry) {
     auto A = TestMolecules::H2::ElectronsOutsideCores::offCenter;
     ExpansionSettings::defaults();
-    ExpansionSettings::mode = ExpansionSettings::Mode::Chemical;
+    ExpansionSettings::mode = ExpansionSettings::Mode::chemical;
     ParticleKit::create(A);
 
     unsigned n = 13;
@@ -92,11 +92,11 @@ TEST_F(AStructuralSimilarityTest, AlchemicalSimilarity) {
     ASSERT_TRUE(ParticleKit::isSubsetQ(A));
     ASSERT_TRUE(ParticleKit::isSubsetQ(B));
 
-    ExpansionSettings::mode = ExpansionSettings::Mode::Chemical;
+    ExpansionSettings::mode = ExpansionSettings::Mode::chemical;
     auto chemical = StructuralSimilarity::kernel(A, B, regularizationParameter);
     ASSERT_NEAR(chemical, 0.0, eps);
 
-    ExpansionSettings::mode = ExpansionSettings::Mode::Alchemical;
+    ExpansionSettings::mode = ExpansionSettings::Mode::alchemical;
     auto alchemicalSim = StructuralSimilarity::kernel(A, B, regularizationParameter);
     ASSERT_GT(alchemicalSim, 0.0);
     ASSERT_LT(alchemicalSim, 1.0);
@@ -109,17 +109,17 @@ TEST_F(AStructuralSimilarityTest, HeH_H2_Comparison) {
     ASSERT_TRUE(ParticleKit::isSubsetQ(A));
     ASSERT_TRUE(ParticleKit::isSubsetQ(B));
 
-    ExpansionSettings::mode = ExpansionSettings::Mode::Generic;
+    ExpansionSettings::mode = ExpansionSettings::Mode::generic;
     auto generic = StructuralSimilarity::kernel(A, B, regularizationParameter);
     ASSERT_LT(generic, 1.0);
     ASSERT_GT(generic, 0.0);
 
-    ExpansionSettings::mode = ExpansionSettings::Mode::Chemical;
+    ExpansionSettings::mode = ExpansionSettings::Mode::chemical;
     auto chemical = StructuralSimilarity::kernel(A, B, regularizationParameter);
     ASSERT_LT(chemical, 1.0);
     ASSERT_GT(chemical, 0.0);
 
-    ExpansionSettings::mode = ExpansionSettings::Mode::Alchemical;
+    ExpansionSettings::mode = ExpansionSettings::Mode::alchemical;
     auto alchemical = StructuralSimilarity::kernel(A, B, regularizationParameter);
     ASSERT_LT(alchemical, 1.0);
     ASSERT_GT(alchemical, 0.0);

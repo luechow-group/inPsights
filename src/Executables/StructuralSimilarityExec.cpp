@@ -47,7 +47,7 @@ int main(int argc, char *argv[]) {
     ExpansionSettings::defaults();
     ExpansionSettings::Radial::nmax = nmax;
     ExpansionSettings::Angular::lmax = lmax;
-    ExpansionSettings::mode = ExpansionSettings::Mode::Alchemical;
+    ExpansionSettings::mode = ExpansionSettings::Mode::alchemical;
     ParticleKit::create(atomsVector, importer.getMaximaStructure(1,1));
 
     std::cout << ExpansionSettings::toString() << "\n" << ParticleKit::toString() << std::endl;
