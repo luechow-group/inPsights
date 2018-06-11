@@ -9,8 +9,6 @@
 Eigen::VectorXd PowerSpectrum::partialPowerSpectrum(const NeighborhoodExpansion& n1a,
                                                     const NeighborhoodExpansion& n1b) {
 
-    //TODO? check if subset with particlepool
-
     const auto & nmax = ExpansionSettings::Radial::nmax;
     const auto & lmax = ExpansionSettings::Angular::lmax;
     unsigned angularEntityLength = 2 * lmax + 1;
@@ -24,7 +22,7 @@ Eigen::VectorXd PowerSpectrum::partialPowerSpectrum(const NeighborhoodExpansion&
             unsigned n1n2BlockStartIdx = n1BlockStartIdx + (n2 - 1) * angularEntityLength;
 
             for (unsigned l = 0; l <= lmax; ++l) {
-                //TODO NORM HERE
+                //TODO NORM HERE?
                 //expansionCoefficients[n1n2BlockStartIdx + l] = std::norm(powerSpectrumCoefficient(n1a, n1b,n1, n2, l));
                 expansionCoefficients[n1n2BlockStartIdx + l] = powerSpectrumCoefficient(n1a, n1b,n1, n2, l);
             }
@@ -33,16 +31,14 @@ Eigen::VectorXd PowerSpectrum::partialPowerSpectrum(const NeighborhoodExpansion&
     return expansionCoefficients;
 }
 
-double PowerSpectrum::powerSpectrumCoefficient(const NeighborhoodExpansion& generic,/*replace GenericType generic*/
+double PowerSpectrum::powerSpectrumCoefficient(const NeighborhoodExpansion& generic,
                                                unsigned n1, unsigned n2, unsigned l) {
     return powerSpectrumCoefficient(generic,generic,n1,n2,l);
 }
 
 double PowerSpectrum::powerSpectrumCoefficient(const NeighborhoodExpansion& speciesA,
                                                const NeighborhoodExpansion& speciesB,
-                                               unsigned n1, unsigned n2, unsigned l ) {/*, kappa_aa,kappa_b */
-
-    //assert(speciesA.getSettings() == speciesB.getSettings());
+                                               unsigned n1, unsigned n2, unsigned l ) {
 
     ExpansionSettings::Radial::checkBounds(n1);
     ExpansionSettings::Radial::checkBounds(n2);
@@ -53,7 +49,6 @@ double PowerSpectrum::powerSpectrumCoefficient(const NeighborhoodExpansion& spec
     for (int m = -int(l); m < int(l); ++m) {
         //TODO sum up all particles ?? BEFORE OR AFTER MULTIPLICATION?
         sum += std::norm(std::conj(speciesA.getCoefficient(n1, l, m)) * speciesB.getCoefficient(n2, l, m));
-        assert(sum == sum && "Sum cannot be NaN!");
     }
 
 
