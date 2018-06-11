@@ -13,6 +13,7 @@
 
 class MolecularSpectrum{
 public:
+    MolecularSpectrum() = default;
     explicit MolecularSpectrum(MolecularGeometry molecule);
 
     MolecularGeometry molecule_;

@@ -7,6 +7,9 @@
 #include <sstream>
 
 int main(int argc, char *argv[]) {
+    const int maxNumThreads = omp_get_max_threads();
+    printf("Maximum number of threads for this machine: %i\n", maxNumThreads);
+    omp_set_num_threads(maxNumThreads);
 
     if (argc < 4) {
         std::cout << "Arguments missing. \n"
@@ -36,7 +39,7 @@ int main(int argc, char *argv[]) {
     std::cout << "nmax: " << nmax << std::endl;
     std::cout << "lmax: " << lmax << std::endl;
 
-    RefFileImporter importer(argv[1]);//"Ethane-max.ref");
+    RefFileImporter importer(argv[1]);
     auto atomsVector = importer.getAtomsVector();
     auto numberOfSuperstructures = importer.numberOfSuperstructures();
 
@@ -47,26 +50,25 @@ int main(int argc, char *argv[]) {
     ExpansionSettings::mode = ExpansionSettings::Mode::Alchemical;
     ParticleKit::create(atomsVector, importer.getMaximaStructure(1,1));
 
-    std::vector<MolecularSpectrum> spectra;
-    spectra.reserve(numberOfSuperstructures);
+    std::vector<MolecularSpectrum> spectra(numberOfSuperstructures);
+    printf("size at the beginning %lu\n",spectra.size());
 
-    //#pragma omp parallel for shared(spectra)
+    double start = omp_get_wtime();
+    #pragma omp parallel for default(none) shared(start,numberOfSuperstructures,spectra,atomsVector,importer)
     for (unsigned long i = 0; i < numberOfSuperstructures; ++i) {
-        MolecularGeometry mol(atomsVector,importer.getMaximaStructure(i+1,1));
-        //std::cout << mol;
-        spectra.emplace(spectra.begin()+i,mol);
-        std::cout << "done" << std::endl;
+        spectra[i] = MolecularSpectrum({atomsVector,importer.getMaximaStructure(i+1,1)});
+        printf("Thread %d wrote element i=%d\nelapsed time: %fs\n", omp_get_thread_num(),i,omp_get_wtime()-start);
     }
+    //TODO RANDOMLY OCCURING ERROR
+    //Assertion failed: (m <= substructuresData_[k].numberOfSubstructures_ && "m value must be smaller than mmax"), function calculateLine, file /Users/michaelheuer/Projects/Amolqcpp/src/AmolqcInterface/source/AmolqcFileImport/RefFileImporter.cpp, line 45.
 
-    std::cout << "{\n";
+
     for (unsigned long i = 0; i < spectra.size(); ++i) {
-        const auto& A = spectra[i];
-        std::cout << "{";
+        #pragma omp parallel for default(none) shared(i,spectra) firstprivate(ExpansionSettings::gamma)
         for (unsigned long j = i+1; j < spectra.size(); ++j) {
-            const auto& B = spectra[j];
-            std::cout <<"{"<< i << ","<< j << ","<< StructuralSimilarity::kernel(A,B)<< "},";
+            double val = StructuralSimilarity::kernel(spectra[i],spectra[j],ExpansionSettings::gamma);
+            printf("{%lu,%lu,%f} \n",i, j, val);
         }
-        std::cout << "},\n";
     }
-    std::cout << "}";
+    printf("elapsed time: %fs",omp_get_wtime()-start);
 }
