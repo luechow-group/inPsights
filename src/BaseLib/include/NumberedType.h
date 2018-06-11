@@ -8,6 +8,7 @@
 template <typename Type>
 class NumberedType{
 public:
+    NumberedType() = default;
     NumberedType(Type type, unsigned number)
             : type_(type),number_(number) {}
 
@@ -33,8 +34,8 @@ public:
         return os;
     }
 
-    const Type type_;
-    const unsigned number_;
+    Type type_;
+    unsigned number_;
 };
 
 using NumberedElement = NumberedType<Element >;

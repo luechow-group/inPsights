@@ -80,8 +80,26 @@ NeighborhoodExpander::computeMolecularExpansions(MolecularGeometry molecule) {
 
     //TODO CHECK HERE FOR IDENTICAL CENTERS!
     for (unsigned k = 0; k < unsigned(molecule.numberOfEntities()); ++k) {
-        auto numberedType = molecule.findNumberedTypeByIndex(k);
-        exp[numberedType] = computeParticularExpansions(Environment(molecule, molecule[k].position()));
+
+        // check if center was calculated already ;
+        // TODO: not possible, if type specific center value is chosen which currently isn't the case;
+        bool computedAlreadyQ = false;
+
+        NumberedType<int> existingNumberedType;
+        for (unsigned i = 0; i < k; ++i) {
+            if((molecule[i].position()-molecule[k].position()).norm() <= ExpansionSettings::Radial::radiusZero){
+                existingNumberedType = molecule.findNumberedTypeByIndex(i);
+                computedAlreadyQ = true;
+                //std::cout << "found " << existingNumberedType << std::endl;
+                break;
+            }
+        }
+        auto newNumberedType = molecule.findNumberedTypeByIndex(k);
+        if(computedAlreadyQ){
+            exp[newNumberedType] = exp[existingNumberedType];
+        } else {
+            exp[newNumberedType] = computeParticularExpansions(Environment(molecule, molecule[k].position()));
+        }
     }
 
     return exp;
