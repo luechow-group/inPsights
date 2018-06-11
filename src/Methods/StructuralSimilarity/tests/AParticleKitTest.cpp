@@ -4,6 +4,7 @@
 
 #include <gtest/gtest.h>
 #include "ParticleKit.h"
+#include <TestMolecules.h>
 #include <iomanip>
 
 using namespace testing;
@@ -107,12 +108,15 @@ TEST_F(AParticleKitTest, NumberedType) {
     ASSERT_EQ(ParticleKit::getNumberedSpinByIndex(1), NumberedSpin(Spin::alpha,1));
     ASSERT_EQ(ParticleKit::getNumberedSpinByIndex(4), NumberedSpin(Spin::beta,2));
 
-
-
     ASSERT_EQ(ParticleKit::getNumberedTypeByIndex(0), NumberedType<int>(int(Element::H),0));
     ASSERT_EQ(ParticleKit::getNumberedTypeByIndex(1), NumberedType<int>(int(Element::H),1));
     ASSERT_EQ(ParticleKit::getNumberedTypeByIndex(4), NumberedType<int>(int(Element::He),0));
     ASSERT_EQ(ParticleKit::getNumberedTypeByIndex(5), NumberedType<int>(int(Element::He),1));
     ASSERT_EQ(ParticleKit::getNumberedTypeByIndex(7), NumberedType<int>(int(Spin::alpha),1));
     ASSERT_EQ(ParticleKit::getNumberedTypeByIndex(10), NumberedType<int>(int(Spin::beta),2));
+}
+
+TEST_F(AParticleKitTest, toString) {
+    ParticleKit::create(TestMolecules::HeH::ElectronsInCores::normal);
+    ASSERT_EQ(ParticleKit::toString(),"1*H, 1*He, 2*ea, 1*eb\n");
 }

@@ -59,6 +59,8 @@ namespace ParticleKit{
 
     unsigned numberOfParticles();
 
+    std::string toString();
+
     extern AtomKit atomKit;
     extern ElectronKit electronKit;
     extern TypeKit kit;

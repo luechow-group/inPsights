@@ -212,4 +212,14 @@ namespace ParticleKit {
         else
             return {Spin::beta, idx-electronKit.first};
     }
+
+    std::string toString(){
+        std::stringstream ss;
+        for (auto& typeNumberPair : ParticleKit::atomKit) {
+            ss << typeNumberPair.second << "*"<< typeNumberPair.first << ", ";
+        }
+        ss << electronKit.first << "*e" << Spin::alpha << ", "
+           << electronKit.second << "*e" << Spin::beta << std::endl;
+        return ss.str();
+    }
 }
