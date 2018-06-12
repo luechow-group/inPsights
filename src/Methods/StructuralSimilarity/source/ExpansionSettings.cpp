@@ -7,6 +7,7 @@
 #include <limits>
 #include <SpinType.h>
 #include <sstream>
+#include <ElementInfo.h>
 
 namespace ExpansionSettings {
 
@@ -52,7 +53,8 @@ namespace ExpansionSettings {
            << std::endl
            << Radial::toString() << std::endl
            << Angular::toString() << std::endl
-           << Cutoff::toString();
+           << Cutoff::toString() << std::endl
+           << Alchemical::toString() << std::endl;
         return ss.str();
     }
 
@@ -151,9 +153,34 @@ namespace ExpansionSettings {
             return ss.str();
         }
     }
-    //namespace Alchemical{
-    //    std::map<std::pair<int,int>,double> pairSimilarities = {
-    //            {{int(Spin::alpha),int(Spin::beta)}, 0.5} //pairs start with the smaller typeId
-    //    };
-    //}
+    namespace Alchemical{
+        std::map<std::pair<int,int>,double> pairSimilarities = {
+                {{int(Spin::alpha),int(Spin::beta)}, 0.5} //pairs start with the smaller typeId
+        };
+
+        std::string toString() {
+            std::stringstream ss;
+            ss << "Alchemical Similarities:" << std::endl
+               << "------------------------" << std::endl;
+
+            std::map<std::pair<int,int>, double>::iterator it;
+
+            for (it = pairSimilarities.begin(); it != pairSimilarities.end(); it++)
+            {
+                int type1 = it->first.first;
+                if(type1 < 0) ss << Spins::toString(Spin(type1));
+                else ss << Elements::ElementInfo::symbol(Element(type1));
+
+                ss << " <-> ";
+
+                int type2 = it->first.second;
+                if(type2 < 0) ss << Spins::toString(Spin(type2));
+                else ss << Elements::ElementInfo::symbol(Element(type2));
+
+                ss << ": " << it->second << std::endl;
+            }
+
+            return ss.str();
+        }
+    }
 }

@@ -217,7 +217,7 @@ namespace ParticleKit {
         std::stringstream ss;
 
         ss << "ParticleKit:" <<std::endl
-           << "-----------" << std::endl;
+           << "------------" << std::endl;
 
         for (auto& typeNumberPair : ParticleKit::atomKit) {
             ss << typeNumberPair.second << "*"<< typeNumberPair.first << ", ";

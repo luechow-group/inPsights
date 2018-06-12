@@ -52,10 +52,10 @@ namespace ExpansionSettings{
     }
 
     namespace Alchemical{
-        //extern std::map<std::pair<int,int>,double> pairSimilarities;
-        const std::map<std::pair<int,int>,double> pairSimilarities = {
-                {{int(Spin::alpha),int(Spin::beta)}, 0.5}
-        };
+        extern std::map<std::pair<int,int>,double> pairSimilarities;
+        //const std::map<std::pair<int,int>,double> pairSimilarities = {
+        //        {{int(Spin::alpha),int(Spin::beta)}, 0.5}
+        //};
 
         std::string toString();
     }
@@ -69,9 +69,11 @@ namespace ExpansionSettings{
     extern double gamma; // StructuralSimilarity regularization parameter
 
     void defaults();
+
     void checkBounds(unsigned n, unsigned l, int m);
 
     std::string toString(const Mode& mode);
+
     std::ostream& operator<<(std::ostream& os, const Mode& mode);
 
     std::string toString();
