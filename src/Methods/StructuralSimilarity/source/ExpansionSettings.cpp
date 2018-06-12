@@ -129,13 +129,13 @@ namespace ExpansionSettings {
     }
     
     namespace Cutoff {
-        double radius = 4.0;
-        double width = 1.0; //TODO
+        double radius = 8.0;//4.0*ConversionFactors::angstrom2bohr;
+        double width = 2.0;//1.0*ConversionFactors::angstrom2bohr; //TODO
         double centerWeight = 1.0; //TODO
 
         void defaults() {
-            radius = 4.0;
-            width = 1.0;
+            radius = 8.0;//4.0*ConversionFactors::angstrom2bohr;
+            width = 2.0;//1.0*ConversionFactors::angstrom2bohr;
             centerWeight = 1.0;
         }
 
