@@ -119,7 +119,7 @@ TEST_F(AParticleKitTest, NumberedType) {
 TEST_F(AParticleKitTest, toString) {
     ParticleKit::create(TestMolecules::HeH::ElectronsInCores::normal);
     std::string ref = "ParticleKit:\n"
-                      "-----------\n"
+                      "------------\n"
                       "1*H, 1*He, 2*ea, 1*eb\n";
     ASSERT_EQ(ParticleKit::toString(),ref);
 }

@@ -21,10 +21,10 @@ TEST_F(AExpansionSettingsTest , uninitialized) {
     ASSERT_EQ(ExpansionSettings::Radial::desiredRelativeError,1e-6);
 
 
-    ASSERT_EQ(ExpansionSettings::Angular::lmax,3);
+    ASSERT_EQ(ExpansionSettings::Angular::lmax,5);
 
-    ASSERT_EQ(ExpansionSettings::Cutoff::radius,4.0);
-    ASSERT_EQ(ExpansionSettings::Cutoff::width,1.0);
+    ASSERT_EQ(ExpansionSettings::Cutoff::radius,8.0);
+    ASSERT_EQ(ExpansionSettings::Cutoff::width,2.0);
     ASSERT_EQ(ExpansionSettings::Cutoff::centerWeight,1.0);
 
 
@@ -42,9 +42,11 @@ TEST_F(AExpansionSettingsTest, defaults) {
     ASSERT_EQ(ExpansionSettings::Radial::basisType,ExpansionSettings::Radial::BasisType::equispaced);
     ASSERT_EQ(ExpansionSettings::Radial::sigmaAtom,0.5);
 
-    ASSERT_EQ(ExpansionSettings::Angular::lmax,3);
+    ASSERT_EQ(ExpansionSettings::Angular::lmax,5);
 
-    ASSERT_EQ(ExpansionSettings::Cutoff::radius,4.0);
+    ASSERT_EQ(ExpansionSettings::Cutoff::radius,8.0);
+    ASSERT_EQ(ExpansionSettings::Cutoff::width,2.0);
+    ASSERT_EQ(ExpansionSettings::Cutoff::centerWeight,1.0);
 
     ExpansionSettings::Radial::nmax = 4;
     ExpansionSettings::Angular::lmax = 4;
@@ -75,12 +77,15 @@ TEST_F(AExpansionSettingsTest, toString) {
             "\n"
             "Angular:\n"
             "--------\n"
-            "l_max\t\t\t\t: 14\n"
+            "l_max\t\t\t\t: 5\n"
             "\n"
             "Cutoff:\n"
             "-------\n"
-            "Radius\t\t\t\t: 4 angstrom\n"
-            "Width\t\t\t\t: 1 angstrom\n"
-            "Center weight\t\t: 1\n";
+            "Radius\t\t\t\t: 8 angstrom\n"
+            "Width\t\t\t\t: 2 angstrom\n"
+            "Center weight\t\t: 1\n\n"
+            "Alchemical Similarities:\n"
+            "------------------------\n"
+            "a <-> b: 0.5\n\n";
     ASSERT_EQ(s,ref);
 }

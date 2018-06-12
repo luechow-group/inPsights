@@ -59,7 +59,7 @@ namespace ExpansionSettings {
     }
 
     namespace Radial {
-        unsigned nmax = 14;
+        unsigned nmax = 5;
         BasisType basisType = BasisType::equispaced;
         double sigmaAtom = 0.5;
 
@@ -108,10 +108,10 @@ namespace ExpansionSettings {
     }
 
     namespace Angular {
-        unsigned lmax = 14;
+        unsigned lmax = 5;
 
         void defaults() {
-            lmax = 14;
+            lmax = 5;
         };
 
         void checkBounds(unsigned l, int m) {
