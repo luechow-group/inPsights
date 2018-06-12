@@ -129,4 +129,27 @@ TEST_F(AStructuralSimilarityTest, HeH_H2_Comparison) {
     ASSERT_LT(chemical,alchemical);
 }
 
+TEST_F(AStructuralSimilarityTest, AlchemicalIdentity) {
+
+
+    auto A = TestMolecules::twoElectrons::sameSpinAlpha;
+    auto B = TestMolecules::twoElectrons::sameSpinBeta;
+    auto C = TestMolecules::twoElectrons::oppositeSpin;
+    ParticleKit::create({},{2,2});
+    ASSERT_TRUE(ParticleKit::isSubsetQ(A));
+    ASSERT_TRUE(ParticleKit::isSubsetQ(B));
+
+    // Force alchemical identity
+    ExpansionSettings::Alchemical::pairSimilarities[{int(Spin::alpha),int(Spin::beta)}] = 1.0;
+
+    ExpansionSettings::mode = ExpansionSettings::Mode::alchemical;
+    auto ab = StructuralSimilarity::kernel(A, B, regularizationParameter);
+    ASSERT_NEAR(ab, 1.0, eps);
+
+    auto bc = StructuralSimilarity::kernel(B, C, regularizationParameter);
+    ASSERT_NEAR(bc, 1.0, eps);
+
+    auto ac = StructuralSimilarity::kernel(A, C, regularizationParameter);
+    ASSERT_NEAR(ac, 1.0, eps);
+}
 
