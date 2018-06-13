@@ -17,10 +17,6 @@ include_directories(
 #find_package(Eigen3 REQUIRED)
 #include_directories( ${EIGEN3_INCLUDE_DIR} )
 
-find_package(Qt5 REQUIRED COMPONENTS
-        Core
-        )
-
 set(HEADER_FILES
         resources/TestMolecules.h
 
