@@ -51,11 +51,9 @@ add_definitions(
         -pthread
 )
 
-find_package(Eigen3 REQUIRED)
-include_directories(${EIGEN3_INCLUDE_DIR})
-
-
 add_library(${PROJECT_NAME} INTERFACE)
+
+target_link_libraries(${PROJECT_NAME} INTERFACE eigen)
 
 target_include_directories(${PROJECT_NAME} INTERFACE /
         MPFR/
