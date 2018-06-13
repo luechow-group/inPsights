@@ -46,15 +46,11 @@ set(SOURCE_FILES
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES})
 target_link_libraries(${PROJECT_NAME}
-        BaseLib
+        BaseLib #includes eigen already
         )
 
 target_include_directories(${PROJECT_NAME} PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         )
-
-#target_link_libraries(${PROJECT_NAME}_main
-#        ${PROJECT_NAME}
-#        )
 
 add_subdirectory(tests)

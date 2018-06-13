@@ -7,9 +7,6 @@ set ( PROJECT_PATH ${PROJECT_NAME})
 set ( OUTPUT_NAME "${PROJECT_FOLDER_NAME}" )
 message ( "-- ++ CREATING PROJECT OR MAKEFILE ---> ${OUTPUT_NAME}" )
 
-find_package(Eigen3 REQUIRED)
-include_directories( ${EIGEN3_INCLUDE_DIR} )
-
 if(DEFINED ENV{BOOST_ROOT})
         set(BOOST_ROOT "$ENV{BOOST_ROOT}")
         message("-- BOOST_ROOT is set: ${BOOST_ROOT}")

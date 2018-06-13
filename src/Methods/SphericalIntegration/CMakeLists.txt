@@ -8,9 +8,6 @@ set ( PROJECT_PATH ${PROJECT_NAME})
 set ( OUTPUT_NAME "${PROJECT_FOLDER_NAME}" )
 message ( "-- ++ CREATING PROJECT OR MAKEFILE ---> ${OUTPUT_NAME}" )
 
-find_package(Eigen3 REQUIRED)
-include_directories( ${EIGEN3_INCLUDE_DIR} )
-
 include_directories(
         include
         source
@@ -32,7 +29,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC
         )
 
 target_link_libraries(${PROJECT_NAME}
-        BaseLib
+        BaseLib #includes eigen already
         GaussKronrodCartesianIntegration
         LebedevSphericalIntegration
         SphericalHarmonics

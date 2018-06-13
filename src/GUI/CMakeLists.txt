@@ -12,11 +12,6 @@ message ( "-- ++ CREATING PROJECT OR MAKEFILE ---> ${OUTPUT_NAME}" )
 # Instruct CMake to run moc automatically when needed. Required for Qt to detect Q_OBJECT
 set(CMAKE_AUTOMOC ON)
 
-
-# Find Eigen lib
-find_package(Eigen3 REQUIRED)
-include_directories( ${EIGEN3_INCLUDE_DIR} )
-
 include_directories(
         include
         source
@@ -77,7 +72,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC
         )
 
 target_link_libraries(${PROJECT_NAME}
-        BaseLib
+        BaseLib #includes eigen already
         Qt5::Core
         Qt5::Gui
         Qt5::Widgets
