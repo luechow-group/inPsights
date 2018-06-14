@@ -42,7 +42,7 @@ unsigned long RefFileImporter::calculateLine(unsigned long k, unsigned long m) c
     assert( k > 0 && "k value must be greater than zero");
     assert( m > 0 && "m value must be greater than zero");
     assert( k <= numberOfSuperstructures_ && "k value must be smaller than kmax");
-    assert( m <= substructuresData_[k].numberOfSubstructures_  && "m value must be smaller than mmax");
+    assert( m <= substructuresData_[k-1].numberOfSubstructures_  && "m value must be smaller than mmax");
 
     unsigned long start = substructuresData_[k-1].startingLine_;
     unsigned long linesToSkip = (m-1)*(numberOfElectrons_+2);
@@ -75,7 +75,8 @@ ElectronsVector RefFileImporter::getMaximaStructure(unsigned long k, unsigned lo
 }
 
 ElectronsVectorCollection RefFileImporter::getAllSubstructures(unsigned long k) const {
-    unsigned long numberOfSubstructures = substructuresData_[k].numberOfSubstructures_;
+    assert( k > 0 && "k value must be greater than zero");
+    unsigned long numberOfSubstructures = substructuresData_[k-1].numberOfSubstructures_;
     PositionsVectorCollection positionsVectorCollection;
     for (unsigned long m = 1; m <= numberOfSubstructures; ++m) {
         positionsVectorCollection.append(this->getPositionsVector(k,m));
