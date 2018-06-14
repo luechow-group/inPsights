@@ -5,16 +5,11 @@
 
 #include <numeric>
 #include "Importer.h"
+#include <iostream>
+#include <exception>
 
 Importer::Importer(const std::string &filename)
-        : filename_(filename) {
-    file_.open(filename);
-    read_lines(file_, std::back_inserter(lines_));
-}
-
-Importer::~Importer() {
-    file_.close();
-}
+        : lines_(read_lines(filename)) {}
 
 std::string Importer::getLine(unsigned long idx) const {
     return lines_[idx];
@@ -67,11 +62,38 @@ public:
     operator std::string() const { return data; }
 };
 
-template<class OutIt>
-void Importer::read_lines(std::istream& is, OutIt dest)
-{
-    typedef std::istream_iterator<Line> InIt;
-    std::copy(InIt(is), InIt(), dest);
+//template<class OutIt>
+//void Importer::read_lines(std::istream& is, OutIt dest)
+//{
+//    typedef std::istream_iterator<Line> InIt;
+//    std::copy(InIt(is), InIt(), dest);
+//}
+std::vector<std::string> Importer::read_lines(const std::string& filename) {
+
+    std::ifstream file;
+    try {
+        file.open(filename);
+        if(!file.is_open())
+            throw std::exception();
+
+        while (!file.eof()) file.get();
+        file.close();
+    }
+    catch (std::ifstream::failure& e) {
+        std::cerr << "Exception opening/reading/closing file\n";
+    }
+
+    file.open (filename);
+    std::vector<std::string> lines;
+    if (file.is_open()) {
+        std::string line;
+        while (std::getline(file, line)) {
+            lines.push_back(line);
+        }
+    };
+    file.close();
+
+    return lines;
 }
 
 

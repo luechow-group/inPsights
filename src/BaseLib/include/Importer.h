@@ -24,7 +24,6 @@ class Importer{
 
 public:
     explicit Importer(const std::string& filename);
-    ~Importer();
 
     std::string getLine(unsigned long idx) const;
 
@@ -39,11 +38,8 @@ public:
     std::string strip(const std::string &s, char delim) const;
 
 private:
-    template<class OutIt>
-    void read_lines(std::istream& is, OutIt dest);
+    std::vector<std::string> read_lines(const std::string& file);
 
-    std::string filename_;
-    std::ifstream file_;
 protected:
     std::vector<std::string> lines_;
 };

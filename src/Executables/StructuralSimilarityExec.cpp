@@ -1,14 +1,16 @@
 //
 // Created by Michael Heuer on 25.05.18.
 //
-#include <StructuralSimilarity.h>
-#include <AmolqcFileImport/RefFileImporter.h>
 #include <omp.h>
-#include <sstream>
+
+#include <AmolqcFileImport/RefFileImporter.h>
+#include <StructuralSimilarity.h>
+
 
 int main(int argc, char *argv[]) {
+
     const int maxNumThreads = omp_get_max_threads();
-    printf("Maximum number of threads for this machine: %i\n", maxNumThreads);
+    //printf("Maximum number of threads for this machine: %i\n", maxNumThreads);
     omp_set_num_threads(maxNumThreads);
 
     if (argc < 4) {
@@ -21,16 +23,23 @@ int main(int argc, char *argv[]) {
         return false;
     }
 
-    std::istringstream nmaxString(argv[2]);
+    std::istringstream filenameInput(argv[1]);
+    std::string filename;
+    if (!(filenameInput >> filename)) {
+        std::cerr << "Invalid filename " << argv[1] << '\n';
+        return false;
+    }
+
+    std::istringstream nmaxInput(argv[2]);
     unsigned nmax;
-    if (!(nmaxString >> nmax) || nmax <= 0) {
+    if (!(nmaxInput >> nmax) || nmax <= 0) {
         std::cerr << "Invalid number " << argv[2] << '\n';
         return false;
     }
 
-    std::istringstream lmaxString(argv[3]);
+    std::istringstream lmaxInput(argv[3]);
     unsigned lmax;
-    if (!(lmaxString >> lmax)){
+    if (!(lmaxInput >> lmax)){
         std::cerr << "Invalid number " << argv[3] << '\n';
         return false;
     }
@@ -39,9 +48,16 @@ int main(int argc, char *argv[]) {
     std::cout << "nmax: " << nmax << std::endl;
     std::cout << "lmax: " << lmax << std::endl;
 
-    RefFileImporter importer(argv[1]);
+
+    RefFileImporter importer(filename);
+    std::cout << importer.numberOfSuperstructures() << std::endl;
     auto atomsVector = importer.getAtomsVector();
     auto numberOfSuperstructures = importer.numberOfSuperstructures();
+
+    ElectronsVectorCollection electronsVectors;
+    for (int k = 0; k < numberOfSuperstructures; ++k) {
+        electronsVectors.append(importer.getMaximaStructure(k+1,1));
+    }
 
     // Settings
     ExpansionSettings::defaults();
@@ -49,7 +65,7 @@ int main(int argc, char *argv[]) {
     ExpansionSettings::Angular::lmax = lmax;
     ExpansionSettings::mode = ExpansionSettings::Mode::alchemical;
     ExpansionSettings::Alchemical::pairSimilarities[{int(Spin::alpha),int(Spin::beta)}] = 1.0;
-    ParticleKit::create(atomsVector, importer.getMaximaStructure(1,1));
+    ParticleKit::create(atomsVector,importer.getMaximaStructure(1,1));
 
     std::cout << ExpansionSettings::toString() << "\n" << ParticleKit::toString() << std::endl;
 
@@ -57,15 +73,14 @@ int main(int argc, char *argv[]) {
     printf("size at the beginning %lu\n",spectra.size());
 
     double start = omp_get_wtime();
-    #pragma omp parallel for default(none) shared(start,numberOfSuperstructures,spectra,atomsVector,importer)
+    #pragma omp parallel for default(none) shared(start,numberOfSuperstructures,spectra,atomsVector,electronsVectors)
     for (unsigned long i = 0; i < numberOfSuperstructures; ++i) {
-        spectra[i] = MolecularSpectrum({atomsVector,importer.getMaximaStructure(i+1,1)});
+        spectra[i] = MolecularSpectrum({atomsVector,electronsVectors[i]});
         printf("Thread %d wrote element i=%d\nelapsed time: %fs\n", omp_get_thread_num(),i,omp_get_wtime()-start);
     }
     //TODO RANDOMLY OCCURING ERROR
     //Assertion failed: (m <= substructuresData_[k].numberOfSubstructures_ && "m value must be smaller than mmax"), function calculateLine, file /Users/michaelheuer/Projects/Amolqcpp/src/AmolqcInterface/source/AmolqcFileImport/RefFileImporter.cpp, line 45.
-
-
+            
     for (unsigned long i = 0; i < spectra.size(); ++i) {
         #pragma omp parallel for default(none) shared(i,spectra) firstprivate(ExpansionSettings::gamma)
         for (unsigned long j = i+1; j < spectra.size(); ++j) {
@@ -74,4 +89,5 @@ int main(int argc, char *argv[]) {
         }
     }
     printf("elapsed time: %fs",omp_get_wtime()-start);
+
 }
