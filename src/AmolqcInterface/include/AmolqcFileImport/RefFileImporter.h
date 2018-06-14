@@ -33,7 +33,8 @@ private:
             numberOfBetaElectrons_,
             numberOfSuperstructures_,
             totalNumberOfMaxima_,
-            maximalNumberOfSubstructures;
+            maximalNumberOfSubstructures; ;
+    const unsigned numberOfLinesAboveCoordinatesBlock = 2;
 
     std::vector<SubstructureDataEntry> substructuresData_;
 };

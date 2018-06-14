@@ -50,18 +50,18 @@ unsigned long RefFileImporter::calculateLine(unsigned long k, unsigned long m) c
 }
 
 PositionsVector RefFileImporter::getPositionsVector(unsigned long k, unsigned long m) const {
-    unsigned long startLine = calculateLine(k,m)+2;
+    unsigned long startLine = calculateLine(k,m)+numberOfLinesAboveCoordinatesBlock;
     return importPositionsVectorBlock(startLine, 0, numberOfElectrons_);
 }
 
 unsigned long RefFileImporter::getNumberOfMaxima(unsigned long k, unsigned long m) const {
-    unsigned long startLine = calculateLine(k,m)+2;
+    unsigned long startLine = calculateLine(k,m)+numberOfLinesAboveCoordinatesBlock;
     std::vector<std::string> lineElements = split(getLine(startLine));
     return std::stoul(lineElements[6]);
 }
 
 double RefFileImporter::getNegativeLogarithmizedProbabilityDensity(unsigned long k, unsigned long m) const {
-    unsigned long startLine = calculateLine(k,m)+2;
+    unsigned long startLine = calculateLine(k,m)+numberOfLinesAboveCoordinatesBlock;
     std::vector<std::string> lineElements = split(getLine(startLine));
     return std::stod(lineElements[4]);
 }
