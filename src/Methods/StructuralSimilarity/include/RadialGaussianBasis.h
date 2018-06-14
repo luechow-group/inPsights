@@ -7,10 +7,8 @@
 
 #include "Gaussian.h"
 #include <Eigen/Core>
-#include <boost/math/special_functions/bessel.hpp>
-#include <GaussKronrodCartesianIntegration.h>
-#include <cmath>
 #include "ExpansionSettings.h"
+#include <vector>
 
 class RadialGaussianBasis{
 public:

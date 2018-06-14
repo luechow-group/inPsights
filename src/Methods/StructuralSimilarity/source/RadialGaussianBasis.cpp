@@ -6,6 +6,12 @@
 #include <Eigen/Eigenvalues>
 #include <Eigen/Cholesky>
 #include <unsupported/Eigen/MatrixFunctions>
+#include <boost/math/special_functions/bessel.hpp>
+#include <GaussKronrodCartesianIntegration.h>
+#include <cmath>
+
+//#include <mathimf.h>
+//#include <mkl.h>
 
 RadialGaussianBasis::RadialGaussianBasis()
         : basis_(createBasis()),
@@ -16,23 +22,16 @@ RadialGaussianBasis::RadialGaussianBasis()
 std::vector<Gaussian> RadialGaussianBasis::createBasis() {
     const auto& nmax = ExpansionSettings::Radial::nmax;
     const auto& lmax = ExpansionSettings::Angular::lmax;
-    const auto& sigmaAtom = ExpansionSettings::Radial::sigmaAtom; //TODO rename?
+    const auto& sigmaAtom = ExpansionSettings::Radial::sigmaAtom;
 
 
     std::vector<Gaussian> basis;
     double basisFunctionCenter = 0;
 
-
-    auto type = ExpansionSettings::Radial::basisType;
-
     switch (ExpansionSettings::Radial::basisType){
         case ExpansionSettings::Radial::BasisType::equispaced : {
-
-            double bla = ExpansionSettings::Radial::nmax;
-            double cutoffRadius = ExpansionSettings::Cutoff::radius;
-
             for (int i = 0; i < nmax; ++i) {
-                basisFunctionCenter = (cutoffRadius*double(i)) /double(nmax);
+                basisFunctionCenter = (ExpansionSettings::Cutoff::radius*double(i)) /double(nmax);
                 basis.emplace_back(basisFunctionCenter, sigmaAtom);
             }
             return basis;
@@ -95,7 +94,8 @@ Eigen::MatrixXd RadialGaussianBasis::Sab(unsigned nmax) const{
             s *= exp(-a*rCenterA*rCenterA-b*rCenterB*rCenterB);
             s *= 2*sqrt(w)*W0
                  + sqrt(M_PI)*exp(std::pow(W0,2)/w)*(w+2*std::pow(W0,2))
-                   *boost::math::erfc<double>(-W0/sqrt(w));
+                 * erfc(-W0/sqrt(w)); // TODO which one is faster (with MKL)
+                 //*boost::math::erfc<double>(-W0/sqrt(w));
             s *= basis_[i].normalizationConstant_g2_r2()*basis_[j].normalizationConstant_g2_r2();
             S(i,j) = s;
         }
@@ -130,7 +130,9 @@ double RadialGaussianBasis::calculateIntegral(double ai, double ri,unsigned l, d
     auto integrandFunction = [beta_ik,rho_ik,ai,ri,l](double r) -> double
     {
         double exp_ik = exp(-beta_ik * (r - rho_ik) * (r - rho_ik));
-        return r * r * boost::math::sph_bessel<double>(l, 2 * ai * ri * r) * exp_ik;
+        return r * r * exp_ik
+               *jn(l, 2 * ai * ri * r); // TODO which one is faster (with MKL)
+               //* boost::math::sph_bessel<double>(l, 2 * ai * ri * r);
     };
 
     GaussKronrod::Integrator<double> integrator(ExpansionSettings::Radial::integrationSteps);
@@ -138,7 +140,6 @@ double RadialGaussianBasis::calculateIntegral(double ai, double ri,unsigned l, d
 
     double integral = integrator.quadratureAdaptive(integrandFunction, r_min, r_max,
             ExpansionSettings::Radial::desiredAbsoluteError, ExpansionSettings::Radial::desiredRelativeError, quadratureRule);
-
     return integral;
 };
 
