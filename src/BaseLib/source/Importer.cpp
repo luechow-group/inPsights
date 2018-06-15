@@ -46,7 +46,7 @@ std::string Importer::strip(const std::string &s) const {
 std::string Importer::strip(const std::string &s, char delim) const {
 
     auto vec = split(s,delim);
-    for (std::vector<std::string>::iterator it = vec.begin(); it != vec.end(); it++){
+    for (auto it = vec.begin(); it != vec.end(); it++){
         if( *it == std::to_string(delim)) vec.erase(it);
     }
     return std::accumulate(vec.begin(), vec.end(), std::string(""));

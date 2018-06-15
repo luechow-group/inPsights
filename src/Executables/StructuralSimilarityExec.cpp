@@ -2,7 +2,6 @@
 // Created by Michael Heuer on 25.05.18.
 //
 #include <omp.h>
-
 #include <AmolqcFileImport/RefFileImporter.h>
 #include <StructuralSimilarity.h>
 
@@ -10,7 +9,7 @@
 int main(int argc, char *argv[]) {
 
     const int maxNumThreads = omp_get_max_threads();
-    //printf("Maximum number of threads for this machine: %i\n", maxNumThreads);
+    printf("Maximum number of threads for this machine: %i\n", maxNumThreads);
     omp_set_num_threads(maxNumThreads);
 
     if (argc < 4) {
@@ -44,18 +43,17 @@ int main(int argc, char *argv[]) {
         return false;
     }
 
-    std::cout << argv[1] << std::endl;
+    std::cout << "filename: " << filename << std::endl;
     std::cout << "nmax: " << nmax << std::endl;
     std::cout << "lmax: " << lmax << std::endl;
 
 
     RefFileImporter importer(filename);
-    std::cout << importer.numberOfSuperstructures() << std::endl;
     auto atomsVector = importer.getAtomsVector();
     auto numberOfSuperstructures = importer.numberOfSuperstructures();
 
     ElectronsVectorCollection electronsVectors;
-    for (int k = 0; k < numberOfSuperstructures; ++k) {
+    for (unsigned long k = 0; k < numberOfSuperstructures; ++k) {
         electronsVectors.append(importer.getMaximaStructure(k+1,1));
     }
 
@@ -63,31 +61,30 @@ int main(int argc, char *argv[]) {
     ExpansionSettings::defaults();
     ExpansionSettings::Radial::nmax = nmax;
     ExpansionSettings::Angular::lmax = lmax;
-    ExpansionSettings::mode = ExpansionSettings::Mode::alchemical;
+    ExpansionSettings::mode = ExpansionSettings::Mode::chemical;
     ExpansionSettings::Alchemical::pairSimilarities[{int(Spin::alpha),int(Spin::beta)}] = 1.0;
     ParticleKit::create(atomsVector,importer.getMaximaStructure(1,1));
-
     std::cout << ExpansionSettings::toString() << "\n" << ParticleKit::toString() << std::endl;
 
     std::vector<MolecularSpectrum> spectra(numberOfSuperstructures);
-    printf("size at the beginning %lu\n",spectra.size());
+    printf("Spectra to calculate: %lu\n",spectra.size());
 
     double start = omp_get_wtime();
     #pragma omp parallel for default(none) shared(start,numberOfSuperstructures,spectra,atomsVector,electronsVectors)
+    //#pragma acc data copy(atomsVector,electronsVectors) create(spectra)
+    //#pragma acc kernels
     for (unsigned long i = 0; i < numberOfSuperstructures; ++i) {
         spectra[i] = MolecularSpectrum({atomsVector,electronsVectors[i]});
-        printf("Thread %d wrote element i=%d\nelapsed time: %fs\n", omp_get_thread_num(),i,omp_get_wtime()-start);
+        printf("Thread %d wrote element i=%ld\nelapsed time: %fs\n", omp_get_thread_num(),i,omp_get_wtime()-start);
     }
-    //TODO RANDOMLY OCCURING ERROR
-    //Assertion failed: (m <= substructuresData_[k].numberOfSubstructures_ && "m value must be smaller than mmax"), function calculateLine, file /Users/michaelheuer/Projects/Amolqcpp/src/AmolqcInterface/source/AmolqcFileImport/RefFileImporter.cpp, line 45.
-            
+
     for (unsigned long i = 0; i < spectra.size(); ++i) {
         #pragma omp parallel for default(none) shared(i,spectra) firstprivate(ExpansionSettings::gamma)
+        //#pragma acc kernels
         for (unsigned long j = i+1; j < spectra.size(); ++j) {
             double val = StructuralSimilarity::kernel(spectra[i],spectra[j],ExpansionSettings::gamma);
             printf("{%lu,%lu,%f} \n",i, j, val);
         }
     }
     printf("elapsed time: %fs",omp_get_wtime()-start);
-
 }

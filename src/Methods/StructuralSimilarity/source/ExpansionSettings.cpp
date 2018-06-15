@@ -13,7 +13,7 @@ namespace ExpansionSettings {
 
     ExpansionSettings::Mode mode = ExpansionSettings::Mode::chemical;
     double zeta = 2;
-    double gamma = 1.0;
+    double gamma = 0.1;
 
     void checkBounds(unsigned n, unsigned l, int m) {
         Radial::checkBounds(n);
@@ -26,7 +26,7 @@ namespace ExpansionSettings {
         Cutoff::defaults();
         mode = ExpansionSettings::Mode::chemical;
         zeta = 2;
-        gamma = 1.0; //TODO find sensible default value
+        gamma = 0.1; // small values yields an efficient Best-Match approximation
 
     };
 
