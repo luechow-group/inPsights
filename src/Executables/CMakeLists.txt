@@ -12,9 +12,6 @@ file(GLOB_RECURSE RESOURCE_FILES resources/*.*)
 file(COPY ${RESOURCE_FILES} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
 
-
-
-
 add_executable(StructuralSimilarity.exe StructuralSimilarityExec.cpp)
 target_link_libraries(StructuralSimilarity.exe
         BaseLib
@@ -63,6 +60,4 @@ if (DEFINED BUILD_GUI AND ON)
             BaseLib
             TransitionStateSearch
             )
-elseif (DEFINED BUILD_GUI AND OFF)
-    message("BUILD GUI IS OFF!!!!!!!!!!!!!!!")
 endif()

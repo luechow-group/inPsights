@@ -53,7 +53,14 @@ add_definitions(
 
 add_library(${PROJECT_NAME} INTERFACE)
 
-target_link_libraries(${PROJECT_NAME} INTERFACE eigen)
+if(TARGET eigen)
+
+endif()
+
+if (DEFINED BUILD_EIGEN AND (${BUILD_EIGEN}))
+    message("BUILD_EIGEN build eigen is ON.")
+    target_link_libraries(${PROJECT_NAME} INTERFACE eigen)
+endif()
 
 target_include_directories(${PROJECT_NAME} INTERFACE /
         MPFR/
