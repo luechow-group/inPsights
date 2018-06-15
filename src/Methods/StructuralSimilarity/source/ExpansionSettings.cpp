@@ -70,7 +70,7 @@ namespace ExpansionSettings {
         void defaults() {
             nmax = 5;
             basisType = BasisType::equispaced;
-            sigmaAtom = 0.5;
+            sigmaAtom = 1.0;//0.5*ConversionFactors::angstrom2bohr;
             integrationSteps = 100;
             desiredAbsoluteError = 0.0;
             desiredRelativeError = std::numeric_limits<double>::epsilon()*1e2;
