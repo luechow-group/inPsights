@@ -73,8 +73,10 @@ std::vector<std::string> Importer::read_lines(const std::string& filename) {
     std::ifstream file;
     try {
         file.open(filename);
-        if(!file.is_open())
+        if(!file.is_open()){
+            std::cerr << "File could not be be found" << std::endl;
             throw std::exception();
+        }
 
         while (!file.eof()) file.get();
         file.close();
