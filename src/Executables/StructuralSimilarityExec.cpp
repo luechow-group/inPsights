@@ -43,19 +43,18 @@ int main(int argc, char *argv[]) {
         return false;
     }
 
-    std::cout << "filename: " << filename << std::endl;
-    std::cout << "nmax: " << nmax << std::endl;
-    std::cout << "lmax: " << lmax << std::endl;
-
-
+    std::cout << "Filename: " << filename << std::endl;
     RefFileImporter importer(filename);
     auto atomsVector = importer.getAtomsVector();
-    auto numberOfSuperstructures = importer.numberOfSuperstructures();
+    std::cout << atomsVector<< std::endl;
 
+    auto numberOfSuperstructures = importer.numberOfSuperstructures();
+    std::cout <<"Number of superstrcuctures in "<< filename << ":" << numberOfSuperstructures << std::endl;
     ElectronsVectorCollection electronsVectors;
     for (unsigned long k = 0; k < numberOfSuperstructures; ++k) {
         electronsVectors.append(importer.getMaximaStructure(k+1,1));
     }
+    std::cout << electronsVectors << std::endl;
 
     // Settings
     ExpansionSettings::defaults();
