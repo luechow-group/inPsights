@@ -47,6 +47,6 @@
 
 }
 
-double Sinkhorn::distance(Eigen::MatrixXd correlationMatrix, double gamma) {
-    return (Pgamma(correlationMatrix,gamma).transpose()*correlationMatrix).trace();
+double Sinkhorn::distance(Eigen::MatrixXd correlationMatrix, double gamma, double eps) {
+    return (Pgamma(correlationMatrix,gamma,eps).transpose()*correlationMatrix).trace();
 }

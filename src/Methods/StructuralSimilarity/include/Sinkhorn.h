@@ -13,7 +13,7 @@ namespace Sinkhorn{
                            double gamma = ExpansionSettings::gamma,
                            double eps = std::numeric_limits<double>::epsilon());
 
-    double distance(Eigen::MatrixXd correlationMatrix, double gamma = ExpansionSettings::gamma);
+    double distance(Eigen::MatrixXd correlationMatrix, double gamma = ExpansionSettings::gamma, double eps = std::numeric_limits<double>::epsilon());
 }
 
 #endif //AMOLQCPP_SINKHORN_H

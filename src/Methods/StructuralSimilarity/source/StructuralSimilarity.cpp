@@ -72,9 +72,11 @@ namespace StructuralSimilarity{
         //std::cout << CAA << std::endl << std::endl;
         //std::cout << CBB << std::endl << std::endl;
 
-        auto kAB = Sinkhorn::distance(CAB,gamma);
-        auto kAA = Sinkhorn::distance(CAA,gamma);
-        auto kBB = Sinkhorn::distance(CBB,gamma);
+
+        double eps = 1e-8; //TODO move in settings?
+        auto kAB = Sinkhorn::distance(CAB,gamma,eps);
+        auto kAA = Sinkhorn::distance(CAA,gamma,eps);
+        auto kBB = Sinkhorn::distance(CBB,gamma,eps);
 
         //std::cout << kAB << std::endl;
         //std::cout << kAA << std::endl;
