@@ -94,7 +94,7 @@ int main(int argc, char *argv[]) {
     double start = omp_get_wtime();
     //#pragma acc data copy(atomsVector,electronsVectors) create(spectra)
     //#pragma acc kernels
-    //#pragma omp parallel for default(none) shared(start,numberOfSuperstructures,spectra,atomsVector,electronsVectors)
+    #pragma omp parallel for default(none) shared(start,numberOfSuperstructures,spectra,atomsVector,electronsVectors)
     for (unsigned i = 0; i < numberOfSuperstructures; ++i) {
         spectra[i] = MolecularSpectrum({atomsVector,electronsVectors[i]});
         printf("Thread %d wrote element i=%ld\nelapsed time: %fs\n", omp_get_thread_num(),i,omp_get_wtime()-start);

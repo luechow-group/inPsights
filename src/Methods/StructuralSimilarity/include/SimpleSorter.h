@@ -15,15 +15,15 @@ public:
     std::vector<std::vector<unsigned >> sort(std::vector<MolecularSpectrum> spectra, double threshold = 0.98){
         assert(!spectra.empty() && "The vector cannot be empty");
 
-        std::vector<std::vector<unsigned >> clusters({0});
-
+        std::vector<std::vector<unsigned >> clusters;
+        clusters.push_back({0});
         unsigned n = spectra.size();
         for (unsigned i = 1; i < n; ++i) {//iterate over all structures
             std::vector<std::vector<unsigned >>::iterator it;
+
             for (it = clusters.begin(); it != clusters.end(); ++it){
-                unsigned firstElementSpectrumIdx = (*it)[0]; // compare with the spectrum of the first element
                 //auto kdist = StructuralSimilarity::kernelDistance(spectra[i],spectra[spectrumIdxOfTheFirstElement]);
-                auto kdist = StructuralSimilarity::kernel(spectra[i],spectra[firstElementSpectrumIdx]);
+                auto kdist = StructuralSimilarity::kernel(spectra[i],spectra[(*it)[0]]);
                 if(kdist >= threshold) {
                     (*it).push_back(i);
                     break;
