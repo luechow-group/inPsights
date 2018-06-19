@@ -34,10 +34,15 @@ NeighborhoodExpansion NeighborhoodExpander::expandEnvironment(const Environment&
 
         for (unsigned n = 1; n <= ExpansionSettings::Radial::nmax; ++n) {
             for (unsigned l = 0; l <= ExpansionSettings::Angular::lmax; ++l) {
+
+                //radialGaussianBasis_.
+                auto radialCoeff = radialGaussianBasis_.computeCoefficients(neighborCoords.r,ExpansionSettings::Radial::sigmaAtom);
                 for (int m = -int(l); m <= int(l); ++m) {
 
-                    //TODO use TypeSpecific sigma value?
-                    auto coeff = coefficient(n, l, m, neighborCoords, weight, weightScale);//,neighborSigma);
+                    //TODO use TypeSpecific sigma value? Is neighbor sigma right?
+                    //auto coeff = coefficient(n, l, m, neighborCoords, weight, weightScale);//,neighborSigma);
+                    auto coeff = radialCoeff(n-1,l)* AngularBasis::computeCoefficient(l, m, neighborCoords.theta, neighborCoords.phi)
+                                 * weight*weightScale;
                     neighborhoodExpansion.storeCoefficient(n,l,m,coeff);
                 }
             }

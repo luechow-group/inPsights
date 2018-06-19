@@ -10,6 +10,20 @@
 #include "ExpansionSettings.h"
 #include <vector>
 
+struct ModifiedSphericalBessel1stKind
+{
+    ModifiedSphericalBessel1stKind(int degree);
+    void evaluate(double r, bool differentiate);
+
+    static std::vector<double> eval(int degree, double r);
+    static constexpr double RADZERO = 1e-10;
+    static constexpr double SPHZERO = 1e-4;
+
+    int _degree;
+    std::vector<double> _in;
+    std::vector<double> _din;
+};
+
 class RadialGaussianBasis{
 public:
 
@@ -18,9 +32,12 @@ public:
     double operator()(double r, unsigned n) const;
 
     double computeCoefficient(unsigned n, unsigned l, double centerToNeighborDistance, double neighborSigma) const;
+    Eigen::MatrixXd computeCoefficients(double centerToNeighborDistance, double neighborSigma) const;
 
     double sigmaBasisFunction(unsigned n){ return basis_[n-1].sigma(); };
-    
+
+
+
 private:
     std::vector<Gaussian> createBasis();
 
@@ -33,6 +50,7 @@ private:
     Eigen::MatrixXd calculateRadialTransform(const Eigen::MatrixXd &Sab);
 
     double calculateIntegral(double ai, double ri,unsigned l, double rho_ik,double beta_ik) const;
+    std::vector<double> calculateIntegrals(double ai, double ri, double rho_ik,double beta_ik) const;
     
     std::vector<Gaussian> basis_;
     Eigen::MatrixXd Sab_, radialTransform_;
