@@ -4,12 +4,12 @@
 #include <omp.h>
 #include <AmolqcFileImport/RefFileImporter.h>
 #include <StructuralSimilarity.h>
-
+#include "SimpleSorter.h"
 
 int main(int argc, char *argv[]) {
 
     const int maxNumThreads = omp_get_max_threads();
-    printf("Maximum number of threads for this machine: %i\n", maxNumThreads);
+    printf("Threads used: %i\n", maxNumThreads);
     omp_set_num_threads(maxNumThreads);
 
     if (argc < 4) {
@@ -48,10 +48,33 @@ int main(int argc, char *argv[]) {
     auto atomsVector = importer.getAtomsVector();
     std::cout << atomsVector<< std::endl;
 
-    auto numberOfSuperstructures = importer.numberOfSuperstructures();
-    std::cout <<"Number of superstrcuctures in "<< filename << ":" << numberOfSuperstructures << std::endl;
+    // Settings
+    ExpansionSettings::defaults();
+    ExpansionSettings::mode = ExpansionSettings::Mode::alchemical;
+    ExpansionSettings::Alchemical::pairSimilarities[{int(Spin::alpha),int(Spin::beta)}] = 0.5;
+    ParticleKit::create(atomsVector,importer.getMaximaStructure(1,1));
+    std::cout << ExpansionSettings::toString() << "\n" << ParticleKit::toString() << std::endl;
+
+    // Benchmark
+    /*for (unsigned i = 1; i <= 14; ++i) {
+        ExpansionSettings::Radial::nmax = i;
+        ExpansionSettings::Angular::lmax = i;
+        double start = omp_get_wtime();
+        MolecularSpectrum ms1({atomsVector,importer.getMaximaStructure(1,1)});
+        MolecularSpectrum ms2({atomsVector,importer.getMaximaStructure(2,1)});
+        auto t1 = omp_get_wtime()-start;
+
+        //auto k=LocalSimilarity::kernel({ms1.molecularCenters_[{6,0}]},{ms1.molecularCenters_[{6,1}]},ExpansionSettings::zeta);
+
+        auto k = StructuralSimilarity::kernel(ms1,ms2);
+        auto t2 = omp_get_wtime()-start;
+        printf("{%d,%d,%.17g,%f,%f},\n",i,i, k, t1, t2);
+    }*/
+
+    unsigned numberOfSuperstructures = importer.numberOfSuperstructures();
+    std::cout <<"Number of superstrcuctures in "<< filename << ": " << numberOfSuperstructures << std::endl;
     ElectronsVectorCollection electronsVectors;
-    for (unsigned long k = 0; k < numberOfSuperstructures; ++k) {
+    for (unsigned k = 0; k < numberOfSuperstructures; ++k) {
         electronsVectors.append(importer.getMaximaStructure(k+1,1));
     }
     std::cout << electronsVectors << std::endl;
@@ -69,21 +92,34 @@ int main(int argc, char *argv[]) {
     printf("Spectra to calculate: %lu\n",spectra.size());
 
     double start = omp_get_wtime();
-    #pragma omp parallel for default(none) shared(start,numberOfSuperstructures,spectra,atomsVector,electronsVectors)
     //#pragma acc data copy(atomsVector,electronsVectors) create(spectra)
     //#pragma acc kernels
-    for (unsigned long i = 0; i < numberOfSuperstructures; ++i) {
+    //#pragma omp parallel for default(none) shared(start,numberOfSuperstructures,spectra,atomsVector,electronsVectors)
+    for (unsigned i = 0; i < numberOfSuperstructures; ++i) {
         spectra[i] = MolecularSpectrum({atomsVector,electronsVectors[i]});
         printf("Thread %d wrote element i=%ld\nelapsed time: %fs\n", omp_get_thread_num(),i,omp_get_wtime()-start);
     }
 
+    double simBorder=0.98;
+
+    SimpleSorter sorter;
+    sorter.sort(spectra,simBorder);
+
+    // Inefficient
+    /*
+    Eigen::MatrixXd pairs = Eigen::MatrixXd::Identity(numberOfSuperstructures,numberOfSuperstructures);
     for (unsigned long i = 0; i < spectra.size(); ++i) {
-        #pragma omp parallel for default(none) shared(i,spectra) firstprivate(ExpansionSettings::gamma)
+        //#pragma omp parallel for default(none) shared(i,spectra,vec) firstprivate(ExpansionSettings::gamma)
         //#pragma acc kernels
         for (unsigned long j = i+1; j < spectra.size(); ++j) {
-            double val = StructuralSimilarity::kernel(spectra[i],spectra[j],ExpansionSettings::gamma);
-            printf("{%lu,%lu,%f} \n",i, j, val);
+            pairs(i,j) = StructuralSimilarity::kernel(spectra[i],spectra[j],ExpansionSettings::gamma);
+            printf("{%lu,%lu,%f} \n",i, j, pairs(i,j));
         }
     }
     printf("elapsed time: %fs",omp_get_wtime()-start);
+*/
+
+
+
+
 }

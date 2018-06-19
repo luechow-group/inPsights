@@ -42,6 +42,7 @@ set(HEADER_FILES
         include/Sinkhorn.h
         include/StructuralSimilarity.h
         include/MolecularSpectrum.h
+        include/SimpleSorter.h
         )
 
 set(SOURCE_FILES
