@@ -30,6 +30,9 @@ namespace StructuralSimilarity{
 
     double kernelDistance(const MolecularGeometry &A,
                           const MolecularGeometry &B, double gamma = ExpansionSettings::gamma);
+
+    double kernelDistance(const MolecularSpectrum &spectrumA,
+                          const MolecularSpectrum &spectrumB, double gamma = ExpansionSettings::gamma);
 };
 
 #endif //AMOLQCPP_STRUCTURALSIMILARITY_H

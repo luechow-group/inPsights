@@ -84,6 +84,10 @@ namespace StructuralSimilarity{
     }
 
     double kernelDistance(const MolecularGeometry &A, const MolecularGeometry &B, double gamma) {
-        return sqrt(2-2* kernel(A, B, gamma));
+        return sqrt(2.0-2.0*kernel(A, B, gamma));
+    }
+
+    double kernelDistance(const MolecularSpectrum& spectrumA, const MolecularSpectrum& spectrumB, double gamma) {
+        return sqrt(2.0-2.0*kernel(spectrumA, spectrumB, gamma));
     }
 }
