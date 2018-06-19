@@ -24,7 +24,7 @@ endif()
 
 # General settings
 if(CMAKE_BUILD_TYPE STREQUAL "Release")
-    add_definitions(-O3)
+    add_definitions(-O3 -Wall)
 endif()
 
 # Compiler specific optimization settings
