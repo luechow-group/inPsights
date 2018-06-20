@@ -8,45 +8,18 @@
 #include <Eigen/Core>
 #include <utility>
 #include <MolecularGeometry.h>
-#include "CutoffFunction.h"
-#include <SpecialMathFunctions/BoostSphericalHarmonics.h>
-#include <ExpansionSettings.h>
+
 class SphericalCoordinates{
 public:
-    SphericalCoordinates(const Eigen::Vector3d& vec)
-            : r(0),theta(0),phi(0) {
-        BoostSphericalHarmonics::toSphericalCoordsStandardizedWith2PiShift(vec, r, theta, phi);
-    }
-
+    SphericalCoordinates(const Eigen::Vector3d& vec);
     double r, theta, phi;
 };
 
 class Environment{
 public:
-    Environment(MolecularGeometry molecularGeometry, Eigen::Vector3d center)
-            : molecularGeometry_(std::move(molecularGeometry)),
-              center_(std::move(center)){}
+    Environment(MolecularGeometry molecularGeometry, Eigen::Vector3d center);
 
-    std::vector<std::pair<Particle<int>,SphericalCoordinates>>
-    selectParticles(int expansionTypeId = 0) const {
-
-        std::vector<std::pair<Particle<int>,SphericalCoordinates>> selectedParticles;
-
-        for (unsigned j = 0; j < unsigned(molecularGeometry_.numberOfEntities()); ++j) {
-            const auto &neighbor = molecularGeometry_[j];
-
-            if( neighbor.type() == expansionTypeId || ExpansionSettings::mode == ExpansionSettings::Mode::generic) {
-
-                SphericalCoordinates sphericalCoords(neighbor.position()-center_);
-
-                if (CutoffFunction::withinCutoffRadiusQ(sphericalCoords.r)) {
-                    selectedParticles.emplace_back<std::pair<Particle<int>,SphericalCoordinates>>(
-                            {neighbor,sphericalCoords});
-                }
-            }
-        }
-        return selectedParticles;
-    }
+    std::vector<std::pair<Particle<int>,SphericalCoordinates>> selectParticles(int expansionTypeId = 0) const;
 
     MolecularGeometry molecularGeometry_;
     Eigen::Vector3d center_; //TODO be careful with many particles located at the same center => getCenterWeight?

@@ -7,6 +7,7 @@
 
 #include <complex>
 #include "NeighborhoodExpander.h"
+#include "ExpansionSettings.h"
 
 namespace LocalSimilarity {
 

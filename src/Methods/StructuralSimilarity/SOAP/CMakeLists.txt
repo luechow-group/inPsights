@@ -42,6 +42,7 @@ set(SOURCE_FILES
         source/Sinkhorn.cpp
         source/StructuralSimilarity.cpp
         source/MolecularSpectrum.cpp
+        source/Environment.cpp
         )
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES})
