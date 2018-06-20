@@ -14,7 +14,7 @@ include_directories(
 )
 
 set(HEADER_FILES
-        include/RadialGaussianBasis.h
+        include/RadialBasis.h
         include/AngularBasis.h
         include/NeighborhoodExpander.h
         include/CutoffFunction.h
@@ -30,7 +30,7 @@ set(HEADER_FILES
         )
 
 set(SOURCE_FILES
-        source/RadialGaussianBasis.cpp
+        source/RadialBasis.cpp
         source/AngularBasis.cpp
         source/CutoffFunction.cpp
         source/ExpansionSettings.cpp

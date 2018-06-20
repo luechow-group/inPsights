@@ -6,17 +6,17 @@
 #include <Eigen/Cholesky>
 #include <unsupported/Eigen/MatrixFunctions>
 #include <SpecialMathFunctions/ModifiedSphericalBesser1stKind.h>
-#include "RadialGaussianBasis.h"
+#include "RadialBasis.h"
 #include "ExpansionSettings.h"
 
 
-RadialGaussianBasis::RadialGaussianBasis()
+RadialBasis::RadialBasis()
         : basis_(createBasis()),
           Sab_(Sab(ExpansionSettings::Radial::nmax)),
           radialTransform_(calculateRadialTransform(Sab_))
 {}
 
-std::vector<Gaussian> RadialGaussianBasis::createBasis() {
+std::vector<Gaussian> RadialBasis::createBasis() {
     const auto& nmax = ExpansionSettings::Radial::nmax;
     const auto& lmax = ExpansionSettings::Angular::lmax;
     const auto& sigmaAtom = ExpansionSettings::Radial::sigmaAtom;
@@ -55,7 +55,7 @@ std::vector<Gaussian> RadialGaussianBasis::createBasis() {
 }
 
 
-double RadialGaussianBasis::operator()(double r, unsigned n) const{
+double RadialBasis::operator()(double r, unsigned n) const{
     const auto& nmax  = ExpansionSettings::Radial::nmax;
     assert(n > 0 && "The radial basis function index must be positive");
     assert(n <= nmax && "The radial basis function index must be smaller than or equal to nmax");
@@ -68,15 +68,15 @@ double RadialGaussianBasis::operator()(double r, unsigned n) const{
     return radialTransform_.col(n-1).dot(hvec);
 };
 
-Eigen::MatrixXd RadialGaussianBasis::Smatrix() const{
+Eigen::MatrixXd RadialBasis::Smatrix() const{
     return Sab_;
 };
 
-Eigen::MatrixXd RadialGaussianBasis::radialTransform() const{
+Eigen::MatrixXd RadialBasis::radialTransform() const{
     return radialTransform_;
 };
 
-Eigen::MatrixXd RadialGaussianBasis::Sab(unsigned nmax) const{
+Eigen::MatrixXd RadialBasis::Sab(unsigned nmax) const{
     Eigen::MatrixXd S(nmax,nmax);
 
     for (int i = 0; i < nmax; ++i) {
@@ -101,7 +101,7 @@ Eigen::MatrixXd RadialGaussianBasis::Sab(unsigned nmax) const{
     return S;
 };
 
-Eigen::MatrixXd RadialGaussianBasis::calculateRadialTransform(const Eigen::MatrixXd &Sab){
+Eigen::MatrixXd RadialBasis::calculateRadialTransform(const Eigen::MatrixXd &Sab){
     Eigen::LLT<Eigen::MatrixXd> lltOfSab(Sab);
     auto L = lltOfSab.matrixL();
     return Eigen::Inverse<Eigen::MatrixXd>(L);
@@ -109,7 +109,7 @@ Eigen::MatrixXd RadialGaussianBasis::calculateRadialTransform(const Eigen::Matri
 
 /* Copied code from soapxx */
 // Compute integrals S r^2 dr i_l(2*ai*ri*r) exp(-beta_ik*(r-rho_ik)^2) //TODO what is the difference between r and ri
-std::vector<double> RadialGaussianBasis::calculateIntegrals(double ai, double ri, double rho_ik,double beta_ik) const {
+std::vector<double> RadialBasis::calculateIntegrals(double ai, double ri, double rho_ik,double beta_ik) const {
 
     auto lmax = ExpansionSettings::Angular::lmax;
     auto n_steps = ExpansionSettings::Radial::integrationSteps;
@@ -158,7 +158,7 @@ std::vector<double> RadialGaussianBasis::calculateIntegrals(double ai, double ri
 }
 
 /* Copied code from soapxx */
-Eigen::MatrixXd RadialGaussianBasis::computeCoefficients(double centerToNeighborDistance, double neighborSigma) const {
+Eigen::MatrixXd RadialBasis::computeCoefficients(double centerToNeighborDistance, double neighborSigma) const {
     const auto lmax = ExpansionSettings::Angular::lmax;
     const auto nmax = ExpansionSettings::Radial::nmax;
 

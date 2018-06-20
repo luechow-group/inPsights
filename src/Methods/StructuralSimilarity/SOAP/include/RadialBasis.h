@@ -10,10 +10,10 @@
 #include <vector>
 
 
-class RadialGaussianBasis{
+class RadialBasis{
 public:
 
-    explicit RadialGaussianBasis();
+    explicit RadialBasis();
     
     double operator()(double r, unsigned n) const;
 

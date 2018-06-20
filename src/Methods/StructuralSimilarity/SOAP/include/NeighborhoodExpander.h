@@ -5,7 +5,7 @@
 #ifndef AMOLQCPP_ENVIRONMENTEXPANDER_H
 #define AMOLQCPP_ENVIRONMENTEXPANDER_H
 
-#include "RadialGaussianBasis.h"
+#include "RadialBasis.h"
 #include "NeighborhoodExpansion.h"
 #include "Environment.h"
 
@@ -24,7 +24,7 @@ public:
     MolecularCenters computeMolecularExpansions(MolecularGeometry molecule);
 
 private:
-    RadialGaussianBasis radialGaussianBasis_;
+    RadialBasis radialGaussianBasis_;
 };
 
 #endif //AMOLQCPP_ENVIRONMENTEXPANDER_H

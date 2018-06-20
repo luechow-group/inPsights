@@ -4,7 +4,7 @@
 
 
 #include <gtest/gtest.h>
-#include <RadialGaussianBasis.h>
+#include <RadialBasis.h>
 #include "ExpansionSettings.h"
 
 using namespace testing;
@@ -14,5 +14,5 @@ class ARadialGaussianBasisTest : public ::testing::Test {};
 
 TEST_F(ARadialGaussianBasisTest, EquispacedCenters) {
     //ExpansionSettings::defaults();
-    RadialGaussianBasis();
+    RadialBasis();
 }
