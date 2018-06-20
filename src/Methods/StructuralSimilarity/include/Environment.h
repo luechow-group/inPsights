@@ -10,7 +10,7 @@
 #include <MolecularGeometry.h>
 #include "CutoffFunction.h"
 #include <SpecialMathFunctions/BoostSphericalHarmonics.h>
-
+#include <ExpansionSettings.h>
 class SphericalCoordinates{
 public:
     SphericalCoordinates(const Eigen::Vector3d& vec)
