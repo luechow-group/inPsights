@@ -39,19 +39,15 @@ double PowerSpectrum::powerSpectrumCoefficient(const NeighborhoodExpansion& gene
 double PowerSpectrum::powerSpectrumCoefficient(const NeighborhoodExpansion& speciesA,
                                                const NeighborhoodExpansion& speciesB,
                                                unsigned n1, unsigned n2, unsigned l ) {
-
     ExpansionSettings::Radial::checkBounds(n1);
     ExpansionSettings::Radial::checkBounds(n2);
     ExpansionSettings::Angular::checkBounds(l);
 
     double sum = 0;
-
     for (int m = -int(l); m < int(l); ++m) {
         //TODO sum up all particles ?? BEFORE OR AFTER MULTIPLICATION?
         sum += std::norm(std::conj(speciesA.getCoefficient(n1, l, m)) * speciesB.getCoefficient(n2, l, m));
     }
-
-
 
     return M_PI * sqrt(8./(2.*l+1)) * sum;
 }
