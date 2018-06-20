@@ -16,17 +16,12 @@ include_directories(
         )
 
 set(HEADER_FILES
-        include/RadialBasis.h
-        include/AtomicNeighborhoodDensityFunction.h
-        include/SphericalHarmonicsRadialBasisExpander.h
         include/QuaternionFit.h
         include/Hungarian.h
         include/SimpleSorter.h
         )
 
 set(SOURCE_FILES
-        source/RadialBasis.cpp
-        source/AtomicNeighborhoodDensityFunction.cpp
         source/QuaternionFit.cpp
         source/Hungarian.cpp
         )
@@ -39,7 +34,6 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 target_link_libraries(${PROJECT_NAME}
         BaseLib
         SOAP
-        SphericalIntegration
         )
 
 add_subdirectory(SOAP)
