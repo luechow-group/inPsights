@@ -5,7 +5,7 @@
 #ifndef AMOLQCPP_RADIALGAUSSIANBASIS_H
 #define AMOLQCPP_RADIALGAUSSIANBASIS_H
 
-#include "Gaussian.h"
+#include "SpecialMathFunctions/Gaussian.h"
 #include <Eigen/Core>
 #include <vector>
 
