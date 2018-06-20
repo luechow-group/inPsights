@@ -17,10 +17,6 @@ class NeighborhoodExpander{
 public:
     explicit NeighborhoodExpander();
 
-    std::complex<double>
-    coefficient(unsigned n, unsigned l, int m, const SphericalCoordinates &coords, double weight, double weightScale,
-                    double neighborSigma = ExpansionSettings::Radial::sigmaAtom) const;
-
     NeighborhoodExpansion expandEnvironment(const Environment& e, int expansionTypeId = 0) const;
 
     TypeSpecificNeighborhoodsAtOneCenter computeParticularExpansions(const Environment &e);

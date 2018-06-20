@@ -9,16 +9,7 @@
 
 NeighborhoodExpander::NeighborhoodExpander()
         : radialGaussianBasis_(){}
-
-std::complex<double>
-NeighborhoodExpander::coefficient(unsigned n, unsigned l, int m, const SphericalCoordinates &coords, double weight, double weightScale,
-                                  double neighborSigma) const {
-
-    return radialGaussianBasis_.computeCoefficient(n, l, coords.r, neighborSigma)
-           * AngularBasis::computeCoefficient(l, m, coords.theta, coords.phi)
-           * weight*weightScale;
-}
-
+        
 NeighborhoodExpansion NeighborhoodExpander::expandEnvironment(const Environment& e, int expansionTypeId) const {
     NeighborhoodExpansion neighborhoodExpansion;
 
