@@ -2,7 +2,7 @@
 // Created by Michael Heuer on 20.04.18.
 //
 
-#include "Gaussian.h"
+#include "SpecialMathFunctions/Gaussian.h"
 #include <cmath>
 #include <boost/math/special_functions.hpp>
 

@@ -20,7 +20,6 @@ set(HEADER_FILES
         include/QuaternionFit.h
         include/Hungarian.h
         include/RadialGaussianBasis.h
-        include/Gaussian.h
         include/AngularBasis.h
         include/NeighborhoodExpander.h
         include/CutoffFunction.h
@@ -41,7 +40,6 @@ set(SOURCE_FILES
         source/AtomicNeighborhoodDensityFunction.cpp
         source/QuaternionFit.cpp
         source/Hungarian.cpp
-        source/Gaussian.cpp
         source/RadialGaussianBasis.cpp
         source/AngularBasis.cpp
         source/CutoffFunction.cpp

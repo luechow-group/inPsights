@@ -42,6 +42,7 @@ set(HEADER_FILES
         include/NumberedType.h
         include/SpecialMathFunctions/BoostSphericalHarmonics.h
         include/SpecialMathFunctions/ModifiedSphericalBesser1stKind.h
+        include/SpecialMathFunctions/Gaussian.h
         )
 
 set(SOURCE_FILES
@@ -62,6 +63,7 @@ set(SOURCE_FILES
         source/Particle.cpp
         source/SpecialMathFunctions/BoostSphericalHarmonics.cpp
         source/SpecialMathFunctions/ModifiedSphericalBesser1stKind.cpp
+        source/SpecialMathFunctions/Gaussian.cpp
         )
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES})
