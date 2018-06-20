@@ -5,9 +5,7 @@
 #include <Eigen/Eigenvalues>
 #include <Eigen/Cholesky>
 #include <unsupported/Eigen/MatrixFunctions>
-
 #include <SpecialMathFunctions/ModifiedSphericalBesser1stKind.h>
-#include <GaussKronrodCartesianIntegration.h>
 #include "RadialGaussianBasis.h"
 #include "ExpansionSettings.h"
 
