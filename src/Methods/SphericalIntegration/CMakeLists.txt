@@ -32,7 +32,6 @@ target_link_libraries(${PROJECT_NAME}
         BaseLib #includes eigen already
         GaussKronrodCartesianIntegration
         LebedevSphericalIntegration
-        SphericalHarmonics
         )
 
 add_subdirectory(tests)

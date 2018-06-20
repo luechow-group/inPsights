@@ -5,7 +5,6 @@
 #ifndef AMOLQCPP_BOOSTSPHERICALHARMONICS_H
 #define AMOLQCPP_BOOSTSPHERICALHARMONICS_H
 
-#include <boost/math/special_functions/spherical_harmonic.hpp>
 #include <Eigen/Core>
 
 namespace BoostSphericalHarmonics{

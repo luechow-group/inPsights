@@ -9,7 +9,7 @@
 #include <utility>
 #include <MolecularGeometry.h>
 #include "CutoffFunction.h"
-#include <BoostSphericalHarmonics.h>
+#include <SpecialMathFunctions/BoostSphericalHarmonics.h>
 
 class SphericalCoordinates{
 public:

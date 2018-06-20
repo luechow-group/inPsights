@@ -2,8 +2,9 @@
 // Created by Michael Heuer on 20.03.18.
 //
 
-#include <BoostSphericalHarmonics.h>
-#include "iostream"
+#include "SpecialMathFunctions/BoostSphericalHarmonics.h"
+#include <boost/math/special_functions/spherical_harmonic.hpp>
+
 using namespace std;
 using namespace boost::math;
 

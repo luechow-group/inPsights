@@ -3,6 +3,8 @@
 //
 
 #include "AngularBasis.h"
+#include <SpecialMathFunctions/BoostSphericalHarmonics.h>
+#include <boost/math/special_functions/spherical_harmonic.hpp>
 
 std::complex<double> AngularBasis::computeCoefficient(unsigned l, int m, const Eigen::Vector3d& position) {
     double theta,phi;

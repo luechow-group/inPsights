@@ -40,6 +40,7 @@ set(HEADER_FILES
         include/Metrics.h
         include/MolecularGeometry.h
         include/NumberedType.h
+        include/SpecialMathFunctions/BoostSphericalHarmonics.h
         )
 
 set(SOURCE_FILES
@@ -58,6 +59,7 @@ set(SOURCE_FILES
         source/Metrics.cpp
         source/MolecularGeometry.cpp
         source/Particle.cpp
+        source/SpecialMathFunctions/BoostSphericalHarmonics.cpp
         )
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES})

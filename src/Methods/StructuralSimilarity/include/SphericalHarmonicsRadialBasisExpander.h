@@ -5,7 +5,7 @@
 #ifndef AMOLQCPP_SPHERICALHARMONICSRADIALBASISEXPANDER_H
 #define AMOLQCPP_SPHERICALHARMONICSRADIALBASISEXPANDER_H
 
-#include <BoostSphericalHarmonics.h>
+#include <SpecialMathFunctions/BoostSphericalHarmonics.h>
 #include <LebedevSphericalIntegration/SpatialFunction.h>
 #include "SphericalIntegrator.h"
 #include "RadialBasis.h"
