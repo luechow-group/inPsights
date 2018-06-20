@@ -47,6 +47,6 @@ Eigen::Vector3d CutoffFunction::getWeightGradient(const Eigen::Vector3d&position
 };
 
 double CutoffFunction::distance(const Eigen::Vector3d &position,
-                        const Eigen::Vector3d &expansionCenter){
+                                const Eigen::Vector3d &expansionCenter){
     return (position-expansionCenter).eval().norm();
 }

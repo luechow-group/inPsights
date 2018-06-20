@@ -101,16 +101,17 @@ TEST_F(ALocalSimilarityTest, SameEnvironmentOnDifferentCentersTypeSpecific) {
 };
 
 TEST_F(ALocalSimilarityTest, IsolatedSpecies) {
-    ParticleKit::create(molecule);
+    ParticleKit::create(TestMolecules::CO2::isolatedNuclei);
     ExpansionSettings::defaults();
     ExpansionSettings::mode = ExpansionSettings::Mode::chemical;
 
-    Environment e0(molecule, molecule.atoms()[0].position());
-    Environment e1(molecule, molecule.atoms()[1].position());
-    Environment e2(molecule, molecule.atoms()[2].position());
+    auto isolated = TestMolecules::CO2::isolatedNuclei;
+    Environment e0(isolated, isolated.atoms()[0].position());
+    Environment e1(isolated, isolated.atoms()[1].position());
+    Environment e2(isolated, isolated.atoms()[2].position());
 
-    ASSERT_NEAR(LocalSimilarity::kernel(e0, e1),0.0, eps);
-    ASSERT_NEAR(LocalSimilarity::kernel(e2, e0),0.0, eps);
+    ASSERT_NEAR(LocalSimilarity::kernel(e0, e1),1.0, eps);
+    ASSERT_NEAR(LocalSimilarity::kernel(e2, e0),1.0, eps);
 };
 
 TEST_F(ALocalSimilarityTest, H2sameCenter) {
@@ -269,4 +270,79 @@ TEST_F(ALocalSimilarityTest, TypeSpecificAndAlchemicalComparison) {
     ASSERT_NEAR(LocalSimilarity::kernel(mol1e0, mol2e1), 1.0, eps);
     ASSERT_NEAR(LocalSimilarity::kernel(mol2e0, mol1e1), 1.0, eps);
 
+};
+
+
+TEST_F(ALocalSimilarityTest, DissociationIntoTwoIsolatedSpecies) {
+    ExpansionSettings::defaults();
+    ExpansionSettings::mode = ExpansionSettings::Mode::chemical;
+    ExpansionSettings::Cutoff::radius = 2;// bohr
+    ExpansionSettings::Cutoff::width = 1;// bohr // the inner plateau ends at 1
+    ParticleKit::create({},{2,0}); //the particle kit consists of two alpha electrons
+
+    // alter !both! environments by moving the second electron
+    unsigned steps = 5  ;
+    double rmax = 3; // bohr (cutoff is at 8 bohr)
+
+    for (unsigned i = 0; i < steps; ++i) {
+        double r = rmax*double(i)/double(steps-1);
+
+        MolecularGeometry mol= {AtomsVector(),
+                                ElectronsVector({{Spin::alpha, {0,0,0}},
+                                                 {Spin::alpha, {0,0,r}}
+                                                 })};
+
+        Environment e0(mol, mol.electrons()[0].position());
+        Environment e1(mol, mol.electrons()[1].position());
+
+        ASSERT_EQ(LocalSimilarity::kernel(e0,e0),1);
+        ASSERT_EQ(LocalSimilarity::kernel(e1,e1),1);
+        ASSERT_EQ(LocalSimilarity::kernel(e0,e1),1);
+    }
+};
+
+TEST_F(ALocalSimilarityTest, DissociationIntoOneIsolatedSpecies) {
+    ExpansionSettings::defaults();
+    ExpansionSettings::mode = ExpansionSettings::Mode::generic;
+    ExpansionSettings::Cutoff::radius = 2;// bohr
+    ExpansionSettings::Cutoff::width = 1;// bohr
+    ParticleKit::create({},{3,0}); //the particle kit consists of three alpha electrons
+
+    MolecularGeometry mol;
+    mol= {AtomsVector(),ElectronsVector({{Spin::alpha,{0,0,0}},{Spin::alpha,{0,0,0}},{Spin::alpha, {0,0,-0.1}}})};
+    Environment e0(mol, mol.electrons()[0].position());
+    Environment e1(mol, mol.electrons()[1].position());
+    ASSERT_NEAR(LocalSimilarity::kernel(e0,e0),1,eps);
+    ASSERT_NEAR(LocalSimilarity::kernel(e1,e1),1,eps);
+    ASSERT_NEAR(LocalSimilarity::kernel(e0,e1),1,eps);
+
+    mol= {AtomsVector(),ElectronsVector({{Spin::alpha,{0,0,0}},{Spin::alpha,{0,0,0.5}},{Spin::alpha, {0,0,-0.1}}})};
+    e0 = Environment(mol, mol.electrons()[0].position());
+    e1 = Environment(mol, mol.electrons()[1].position());
+    ASSERT_NEAR(LocalSimilarity::kernel(e0,e0),1,eps);
+    ASSERT_NEAR(LocalSimilarity::kernel(e1,e1),1,eps);
+    ASSERT_GT(LocalSimilarity::kernel(e0,e1),0);
+    ASSERT_LT(LocalSimilarity::kernel(e0,e1),1);
+
+    mol= {AtomsVector(),ElectronsVector({{Spin::alpha,{0,0,0}},{Spin::alpha,{0,0,1.5}},{Spin::alpha, {0,0,-0.1}}})};
+    e0 = Environment(mol, mol.electrons()[0].position());
+    e1 = Environment(mol, mol.electrons()[1].position());
+    ASSERT_NEAR(LocalSimilarity::kernel(e0,e0),1,eps);
+    ASSERT_NEAR(LocalSimilarity::kernel(e1,e1),1,eps);
+    ASSERT_GT(LocalSimilarity::kernel(e0,e1),0);
+    ASSERT_LT(LocalSimilarity::kernel(e0,e1),1);
+
+    mol= {AtomsVector(),ElectronsVector({{Spin::alpha,{0,0,0}},{Spin::alpha,{0,0,2.0}},{Spin::alpha, {0,0,-0.1}}})};
+    e0 = Environment(mol, mol.electrons()[0].position());
+    e1 = Environment(mol, mol.electrons()[1].position());
+    ASSERT_NEAR(LocalSimilarity::kernel(e0,e0),1,eps);
+    ASSERT_NEAR(LocalSimilarity::kernel(e1,e1),1,eps);
+    ASSERT_NEAR(LocalSimilarity::kernel(e0,e1),0,eps);
+
+    mol= {AtomsVector(),ElectronsVector({{Spin::alpha,{0,0,0}},{Spin::alpha,{0,0,2.5}},{Spin::alpha, {0,0,-0.1}}})};
+    e0 = Environment(mol, mol.electrons()[0].position());
+    e1 = Environment(mol, mol.electrons()[1].position());
+    ASSERT_NEAR(LocalSimilarity::kernel(e0,e0),1,eps);
+    ASSERT_NEAR(LocalSimilarity::kernel(e1,e1),1,eps);
+    ASSERT_NEAR(LocalSimilarity::kernel(e0,e1),0,eps);
 };

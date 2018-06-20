@@ -25,16 +25,33 @@ namespace LocalSimilarity {
         return unnormalizedKernel(expansion1, expansion2);
     }
 
+    double unnormalizedSelfKernel(const Environment &e) {
+        NeighborhoodExpander expander;
+        auto expansion = expander.computeParticularExpansions(e);
+
+        return unnormalizedSelfKernel(expansion);
+    }
+
     double kernel(
             const TypeSpecificNeighborhoodsAtOneCenter &expansions1,
             const TypeSpecificNeighborhoodsAtOneCenter &expansions2, double zeta) {
         assert(zeta > 0 && "Zeta must be positive.");
 
-        auto similarityValue = unnormalizedKernel(expansions1, expansions2)
-                               / sqrt(unnormalizedSelfKernel(expansions1)
-                                      * unnormalizedSelfKernel(expansions2));
+        auto selfSimilarity1 = unnormalizedSelfKernel(expansions1);
+        auto selfSimilarity2 = unnormalizedSelfKernel(expansions2);
 
-        return pow(similarityValue, zeta);
+        auto eps = std::numeric_limits<double>::epsilon();
+        if(selfSimilarity1 <= eps  || selfSimilarity2 <= eps) {
+            if (selfSimilarity1 <= eps && selfSimilarity2 <= eps){
+                //printf("\nLocalSelfSimilarity: Warning: The analyzed structure contains two isolated environments.\n");
+                return 1;
+            } else {
+                //printf("\nLocalSelfSimilarity: Warning: The analyzed structure contains one isolated environments.\n");
+                return 0;
+            }
+        }
+        auto similarityValue = unnormalizedKernel(expansions1, expansions2);
+        return pow(similarityValue/sqrt(selfSimilarity1*selfSimilarity2), zeta);
     }
 
     double unnormalizedKernel(
@@ -56,6 +73,8 @@ namespace LocalSimilarity {
                 break;
             }
         }
+        assert(similarityValue >= 0 && "The similarity cannot be negative. "
+                                       "(It might be zero if one of the centers is completely isolated)");
         return similarityValue;
     }
 
@@ -76,13 +95,15 @@ namespace LocalSimilarity {
                 break;
             }
         }
+        assert(similarityValue >= 0 && "The similarity cannot be negative. "
+                                       "(It might be zero if the center is completely isolated)");
         return similarityValue;
     }
 
     double kernelDistance(const TypeSpecificNeighborhoodsAtOneCenter &expansions1,
                           const TypeSpecificNeighborhoodsAtOneCenter &expansions2, double zeta) {
 
-        return sqrt(2-2* kernel(expansions1, expansions1, zeta));
+        return sqrt(2.0-2.0* kernel(expansions1, expansions1, zeta));
     }
 
     namespace {

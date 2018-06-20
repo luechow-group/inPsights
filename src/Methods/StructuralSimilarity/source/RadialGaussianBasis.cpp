@@ -151,7 +151,7 @@ Eigen::MatrixXd RadialGaussianBasis::Sab(unsigned nmax) const{
             double W0 = a*rCenterA + b*rCenterB;
             double s = 1./(4.*pow(w, 2.5));
             s *= exp(-a*rCenterA*rCenterA-b*rCenterB*rCenterB);
-            s *= 2*sqrt(w)*W0
+            s *= 2.0*sqrt(w)*W0
                  + sqrt(M_PI)*exp(std::pow(W0,2)/w)*(w+2*std::pow(W0,2))
                  * erfc(-W0/sqrt(w)); // TODO which one is faster (with MKL)
                  //*boost::math::erfc<double>(-W0/sqrt(w));

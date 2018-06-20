@@ -101,8 +101,12 @@ namespace TestMolecules {
                 AtomsVector({{Element::C,{0,0, 0}},
                              {Element::O,{0,0, 1}},
                              {Element::O,{0,0,-1}}}),
-                ElectronsVector()
-        };
+                ElectronsVector()};
+        const MolecularGeometry isolatedNuclei = {
+                AtomsVector({{Element::C,{0,0, 0}},
+                             {Element::O,{0,0, 10}},
+                             {Element::O,{0,0,-10}}}),
+                ElectronsVector()};
     }
 }
 

@@ -13,6 +13,8 @@ namespace LocalSimilarity {
     double unnormalizedKernel(const Environment &e1,
                               const Environment &e2);
 
+    double unnormalizedSelfKernel(const Environment &e);
+
     double kernel(const Environment &e1,
                   const Environment &e2,
                   double zeta = ExpansionSettings::zeta);
