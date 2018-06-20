@@ -3,7 +3,7 @@
 //
 
 #include <gtest/gtest.h>
-#include "SpecialMathFunctions/BoostSphericalHarmonics.h"
+#include "../include/SpecialMathFunctions/BoostSphericalHarmonics.h"
 #include "iostream"
 using namespace testing;
 
