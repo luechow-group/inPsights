@@ -107,7 +107,7 @@ ElementTypesVector CollectionParser::elementTypesVectorFromJson(const nlohmann::
     auto elementSymbols = json["AtomsVector"]["ElementTypesVector"].get<std::vector<std::string>>();
     ElementTypesVector elementTypesVector;
     for (auto &elementSymbol : elementSymbols) {
-        elementTypesVector.append(Elements::ElementInfo::elementTypeForSymbol(elementSymbol));
+        elementTypesVector.append(Elements::ElementInfo::elementTypeFromSymbol(elementSymbol));
     }
     return elementTypesVector;
 }

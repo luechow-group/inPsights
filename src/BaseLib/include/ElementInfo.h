@@ -15,7 +15,7 @@ namespace Elements {
  */
     class ElementInfo {
     public:
-        static ElementType elementTypeForSymbol(std::string symbol);
+        static ElementType elementTypeFromSymbol(std::string symbol);
 
         static std::string symbol(ElementType e);
 

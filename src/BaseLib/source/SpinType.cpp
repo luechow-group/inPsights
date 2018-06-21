@@ -2,13 +2,14 @@
 // Created by Michael Heuer on 01.02.18.
 //
 #include "SpinType.h"
+#include <yaml-cpp/yaml.h>
 
 Spin Spins::first() {
     return Spin::alpha;
 };
 
 Spin Spins::last(){
-    return Spin::beta;
+return Spin::beta;
 };
 
 Spin Spins::spinFromInt(int type){
@@ -25,6 +26,15 @@ std::string Spins::toString(const Spin& s){
         case Spin::beta: return "b";
         case Spin::none: return "-";
     }
+}
+
+Spins::SpinType Spins::fromString(const std::string &s) {
+    if(s == "a")
+        return Spin::alpha;
+    else if(s == "b")
+        return Spin::beta;
+    else
+        return Spin::none;
 }
 
 std::ostream& operator<<(std::ostream& os, const Spin& s){
@@ -48,3 +58,25 @@ double Spins::magneticQuantumNumber(Spin spinType) {
 double Spins::quantumNumber(){
     return 1/2.0;
 };
+
+
+namespace YAML {
+    Node convert<Spin>::encode(const Spin &rhs) {
+        Node node;
+        node.push_back(Spins::toString(rhs));
+        return node;
+    }
+
+    bool convert<Spin>::decode(const Node &node, Spin &rhs) {
+        if (!node.IsScalar()) {
+            return false;
+        }
+        rhs = Spins::fromString(node.as<std::string>());
+        return true;
+    }
+
+    Emitter &operator<<(Emitter &out, const Spin &s) {
+        out << Spins::toString(s);
+        return out;
+    }
+}
