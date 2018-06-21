@@ -65,6 +65,7 @@ protected:
     int type_;
 };
 
+using TypedParticle = Particle<int>;
 using Electron = Particle<Spin>;
 using Atom = Particle<Element>;
 
@@ -78,5 +79,40 @@ int Electron::charge() const;
 template<>
 int Atom::charge() const;
 
+
+namespace YAML {
+    class Node; class Emitter;
+    template <typename Type> struct convert;
+
+    template<>
+    struct convert<Eigen::Vector3d> {
+        static Node encode(const Eigen::Vector3d& rhs);
+        static bool decode(const Node& node, Eigen::Vector3d& rhs);
+    };
+    Emitter& operator<< (Emitter& out, const Eigen::Vector3d& p);
+}
+
+
+namespace YAML {
+    class Node; class Emitter;
+    template <typename Type> struct convert;
+
+    template<> struct convert<TypedParticle> {
+        static Node encode(const TypedParticle & rhs);
+        static bool decode(const Node& node, TypedParticle & rhs);
+    };
+    template<> struct convert<Atom> {
+        static Node encode(const Atom & rhs);
+        static bool decode(const Node& node, Atom& rhs);
+    };
+    template<> struct convert<Electron> {
+        static Node encode(const Electron & rhs);
+        static bool decode(const Node& node, Electron& rhs);
+    };
+
+    Emitter& operator<< (Emitter& out, const TypedParticle& p);
+    Emitter& operator<< (Emitter& out, const Atom& p);
+    Emitter& operator<< (Emitter& out, const Electron& p);
+}
 
 #endif //AMOLQCPP_PARTICLE_H
