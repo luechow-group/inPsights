@@ -5,7 +5,7 @@
 #include "SimpleSorter.h"
 #include "MolecularSpectrum.h"
 
-std::vector<std::vector<unsigned >> SimpleSorter::sort(std::vector<MolecularSpectrum> spectra, double threshold = 0.98){
+std::vector<std::vector<unsigned >> SimpleSorter::sort(std::vector<MolecularSpectrum> spectra, double threshold){
     assert(!spectra.empty() && "The vector cannot be empty");
 
     std::vector<std::vector<unsigned >> clusters;
