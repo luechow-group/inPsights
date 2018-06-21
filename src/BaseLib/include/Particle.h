@@ -11,6 +11,7 @@
 #include "ToString.h"
 #include "ElementType.h"
 #include "SpinType.h"
+#include "EigenYamlConversion.h"
 
 template<typename Type>
 class Particle {
@@ -80,17 +81,6 @@ template<>
 int Atom::charge() const;
 
 
-namespace YAML {
-    class Node; class Emitter;
-    template <typename Type> struct convert;
-
-    template<>
-    struct convert<Eigen::Vector3d> {
-        static Node encode(const Eigen::Vector3d& rhs);
-        static bool decode(const Node& node, Eigen::Vector3d& rhs);
-    };
-    Emitter& operator<< (Emitter& out, const Eigen::Vector3d& p);
-}
 
 
 namespace YAML {

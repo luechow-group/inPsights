@@ -40,6 +40,7 @@ set(HEADER_FILES
         include/Metrics.h
         include/MolecularGeometry.h
         include/NumberedType.h
+        include/EigenYamlConversion.h
         include/SpecialMathFunctions/BoostSphericalHarmonics.h
         include/SpecialMathFunctions/ModifiedSphericalBesser1stKind.h
         include/SpecialMathFunctions/Gaussian.h
@@ -61,6 +62,7 @@ set(SOURCE_FILES
         source/Metrics.cpp
         source/MolecularGeometry.cpp
         source/Particle.cpp
+        source/EigenYamlConversion.cpp
         source/SpecialMathFunctions/BoostSphericalHarmonics.cpp
         source/SpecialMathFunctions/ModifiedSphericalBesser1stKind.cpp
         source/SpecialMathFunctions/Gaussian.cpp
