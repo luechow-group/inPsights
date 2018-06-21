@@ -10,9 +10,9 @@ int main(int argc, char *argv[]) {
     Eigen::Vector3d vec(1,2,3);
     Element et = Element::Ba;
 
-    //TypedParticle p{int(et),vec};
+    TypedParticle p{int(et),vec};
     Atom  a{et,vec};
-    //Electron e{Spin::alpha,vec};
+    Electron e{Spin::alpha,vec};
 
 
 
@@ -20,11 +20,11 @@ int main(int argc, char *argv[]) {
     //out << YAML::DoubleQuoted << YAML::Flow;
     //out << YAML::BeginMap;
     //out << YAML::Key << "clusters";
-    //out << p;
+    out << p;
     out << et;
-    //out << vec;
-    //out << a;
-    //out << e;
+    out << vec;
+    out << a;
+    out << e;
     //out << YAML::EndMap;
     std::cout << out.c_str() << std::endl;
 }

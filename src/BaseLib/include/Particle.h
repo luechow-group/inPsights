@@ -7,9 +7,9 @@
 
 #include <Eigen/Core>
 #include <iostream>
+
 #include "ToString.h"
 #include "ElementType.h"
-#include "ElementInfo.h"
 #include "SpinType.h"
 
 template<typename Type>

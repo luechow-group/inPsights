@@ -4,6 +4,8 @@
 
 #include "CollectionParser.h"
 #include <fstream>
+#include <iostream>
+#include "ElementInfo.h"
 
 nlohmann::json CollectionParser::positionsVectorToJson(const PositionsVector &positionsVector) {
 

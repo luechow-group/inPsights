@@ -3,6 +3,7 @@
 //
 
 #include "Particle.h"
+#include "ElementInfo.h"
 #include <yaml-cpp/yaml.h>
 
 template<> std::string Electron::toString() const {
