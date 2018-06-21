@@ -12,6 +12,11 @@ file(GLOB_RECURSE RESOURCE_FILES resources/*.*)
 file(COPY ${RESOURCE_FILES} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
 
+
+add_executable(BaseLib.exe BaseLib.cpp)
+target_link_libraries(BaseLib.exe
+        BaseLib
+        )
 add_executable(StructuralSimilarity.exe StructuralSimilarityExec.cpp)
 target_link_libraries(StructuralSimilarity.exe
         BaseLib
