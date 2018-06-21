@@ -10,6 +10,7 @@
 #include "PositionsVector.h"
 #include "TypesVector.h"
 #include <vector>
+#include <yaml-cpp/yaml.h>
 
 template<typename Type>
 class ParticlesVector : public AbstractVector{
@@ -101,8 +102,42 @@ protected:
     TypesVector<Type> typesVector_;
 };
 
+using TypedParticlesVector = ParticlesVector<int>;
 using ElectronsVector = ParticlesVector<Spin>;
 using AtomsVector = ParticlesVector<Element>;
 
+namespace YAML {
+    template<typename Type> struct convert<ParticlesVector<Type>> {
+        static Node encode(const ParticlesVector<Type> & pv){
+            Node node;
+            for (unsigned long i = 0; i < pv.numberOfEntities(); i++) {
+                node.push_back(pv[i]);
+            }
+            return node;
+
+        }
+        static bool decode(const Node& nodes, ParticlesVector<Type> & rhs){
+            if(!nodes.IsSequence())
+                return false;
+
+            ParticlesVector<Type> pv;
+            for (const auto &i : nodes)
+                pv.append(i.as<Particle<Type>>());
+
+            rhs = pv;
+            return true;
+        }
+    };
+
+    template<typename Type>
+    Emitter& operator<< (Emitter& out, const ParticlesVector<Type>& pv){
+        out << BeginSeq;
+        for (unsigned i = 0; i < pv.numberOfEntities(); ++i)
+            out << pv[i];
+
+        out << EndSeq;
+        return out;
+    };
+}
 
 #endif //AMOLQCPP_PARTICLESVECTOR_H

@@ -3,7 +3,7 @@
 //
 
 #include <omp.h>
-#include <Particle.h>
+#include <ParticlesVector.h>
 #include <yaml-cpp/yaml.h>
 
 int main(int argc, char *argv[]) {
@@ -14,17 +14,14 @@ int main(int argc, char *argv[]) {
     Atom  a{et,vec};
     Electron e{Spin::alpha,vec};
 
+    AtomsVector av{{a,a}};
 
 
     YAML::Emitter out;
     //out << YAML::DoubleQuoted << YAML::Flow;
     //out << YAML::BeginMap;
     //out << YAML::Key << "clusters";
-    out << p;
-    out << et;
-    out << vec;
-    out << a;
-    out << e;
+    out << av;
     //out << YAML::EndMap;
     std::cout << out.c_str() << std::endl;
 }
