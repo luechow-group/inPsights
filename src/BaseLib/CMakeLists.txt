@@ -69,6 +69,7 @@ set(SOURCE_FILES
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES})
 target_link_libraries(${PROJECT_NAME}
         nlohmann_json
+        yaml-cpp
         )
 
 if (DEFINED BUILD_EIGEN AND (${BUILD_EIGEN}))

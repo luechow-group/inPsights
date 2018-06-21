@@ -28,11 +28,5 @@ std::vector<std::vector<unsigned >> SimpleSorter::sort(std::vector<MolecularSpec
         }
     }
 
-    for (auto& cluster : clusters){
-        for(auto& element : cluster){
-            std::cout << element << ",";
-        }
-        std::cout << std::endl;
-    }
     return clusters;
 };

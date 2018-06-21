@@ -10,3 +10,6 @@
 [submodule "src/Externals/json"]
 	path = src/Externals/json
 	url = https://github.com/nlohmann/json.git
+[submodule "src/Externals/yaml-cpp"]
+	path = src/Externals/yaml-cpp
+	url = https://github.com/jbeder/yaml-cpp.git
