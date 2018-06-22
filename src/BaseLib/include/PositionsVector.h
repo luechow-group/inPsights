@@ -43,5 +43,16 @@ private:
     long calculateIndex(long i) const override ;
 };
 
+namespace YAML {
+    class Node; class Emitter;
+    template <typename Type> struct convert;
+
+    template<> struct convert<PositionsVector> {
+        static Node encode(const PositionsVector &rhs);
+        static bool decode(const Node &node, PositionsVector &rhs);
+    };
+    Emitter &operator<<(Emitter &out, const PositionsVector &p) ;
+}
+
 
 #endif //AMOLQCPP_POSITIONSVECTOR_H

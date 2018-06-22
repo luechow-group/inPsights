@@ -3,7 +3,8 @@
 //
 
 #include <omp.h>
-#include <ParticlesVector.h>
+#include <ParticlesVectorCollection.h>
+#include <ElementType.h>
 #include <yaml-cpp/yaml.h>
 #include <fstream>
 
@@ -16,17 +17,24 @@ int main(int argc, char *argv[]) {
     Electron e{Spin::alpha,vec};
 
     AtomsVector av{{a,a}};
+    AtomsVectorCollection avc;
+    avc.append(av);
+    avc.append(av);
 
     YAML::Node n;
     n["test"] = av;
+    n["position"] = av.positionsVector();
 
+    std::cout << n << std::endl;
 
     YAML::Emitter out;
     out << YAML::DoubleQuoted;
     //out << YAML::Flow; //JSON
     out << YAML::BeginMap;
     out << YAML::Key << "Atoms" << YAML::Value << av;
+    out << YAML::Key << "Positions" << YAML::Value << av.positionsVector();
     out << YAML::EndMap;
+
 
 
     std::cout << "out\n" << out.c_str() << std::endl;
@@ -36,6 +44,5 @@ int main(int argc, char *argv[]) {
 
     std::ifstream in("results.yaml");
     std::cout << "in\n"<< YAML::Load(in);
-
-
+    
 }

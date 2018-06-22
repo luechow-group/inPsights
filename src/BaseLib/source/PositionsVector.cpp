@@ -4,6 +4,8 @@
 
 #include "PositionsVector.h"
 #include "ToString.h"
+#include <yaml-cpp/yaml.h>
+#include <EigenYamlConversion.h>
 
 using namespace Eigen;
 
@@ -81,4 +83,32 @@ Eigen::Ref<Eigen::Vector3d> PositionsVector::operator()(long i){
 
 const Eigen::Ref<const Eigen::Vector3d>& PositionsVector::operator()(long i) const{
     return Eigen::Ref<const Eigen::Vector3d>(positions_.segment(i*entityLength_,entityLength_));
+}
+
+namespace YAML {
+    Node convert<PositionsVector>::encode(const PositionsVector &rhs) {
+        Node node;
+
+        for (unsigned i = 0; i < rhs.numberOfEntities(); ++i) {
+            node.push_back(rhs[i]);
+        }
+        return node;
+    }
+    bool convert<PositionsVector>::decode(const Node &node, PositionsVector &rhs) {
+        if (!node.IsScalar())
+            return false;
+        PositionsVector pv;
+        for (unsigned i = 0; i < node.size(); ++i)
+            pv[i] = node[i].as<Eigen::Vector3d>();
+        rhs = pv;
+        return true;
+    }
+
+    Emitter &operator<<(Emitter &out, const PositionsVector &p) {
+        out << Flow << BeginSeq;
+        for (unsigned i = 0; i < p.numberOfEntities(); ++i)
+            out << p[i];
+        out << EndSeq;
+        return out;
+    }
 }
