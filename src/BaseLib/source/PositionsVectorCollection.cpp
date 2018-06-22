@@ -102,9 +102,9 @@ namespace YAML {
     }
 
     Emitter &operator<<(Emitter &out, const PositionsVectorCollection &pvc) {
-        out << BeginSeq;
+        out << Flow << BeginSeq << Newline;
         for (unsigned i = 0; i < pvc.numberOfEntities(); ++i)
-            out << pvc[i];
+            out << pvc[i] << Newline;
         out << EndSeq;
         return out;
     }

@@ -27,16 +27,7 @@ TEST_F(AYamlTest, JsonCompatibility){
     out << YAML::Key << "Molecule" << YAML::Value << mol;
     out << YAML::EndMap;
 
-    std::ofstream ofstream("AYamlTest.json");
-
-    std::string outstring = out.c_str();;
-    ofstream << outstring;
-    ofstream.close();
-
-    std::cout << outstring<< std::endl;
-    
-    
-    std::string expected = "{\"Molecule\": {\"Atoms\": [[\"He\", [0, 0, 0.37]], [\"H\", [0, 0, -0.37]]], \"Electrons\": [[\"a\", [0, 0, 0.37]], [\"a\", [0, 0, 0.37]], [\"b\", [0, 0, -0.37]]]}}";
-
+    std::string outstring = out.c_str();
+    std::string expected = "{\"Molecule\": {\"Atoms\": {\"Types\": [\"He\", \"H\"],\n  \"Positions\": [[0, 0, 0.37], [0, 0, -0.37]]},\n\"Electrons\": {\"Types\": [\"a\", \"a\", \"b\"],\n  \"Positions\": [[0, 0, 0.37], [0, 0, 0.37], [0, 0, -0.37]]}}}";
     ASSERT_EQ(outstring,expected);
 }

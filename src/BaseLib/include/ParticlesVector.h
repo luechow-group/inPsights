@@ -110,20 +110,17 @@ namespace YAML {
     template<typename Type> struct convert<ParticlesVector<Type>> {
         static Node encode(const ParticlesVector<Type> & pv){
             Node node;
-            for (unsigned long i = 0; i < pv.numberOfEntities(); i++) {
-                node.push_back(pv[i]);
-            }
+            node["Types"] = pv.typesVector();
+            node["Positions"] = pv.positionsVector();
             return node;
 
         }
         static bool decode(const Node& nodes, ParticlesVector<Type> & rhs){
-            if(!nodes.IsSequence())
+            if(!nodes.IsMap())
                 return false;
-
-            ParticlesVector<Type> pv;
-            for (const auto &i : nodes)
-                pv.append(i.as<Particle<Type>>());
-
+            ParticlesVector<Type> pv(
+                    nodes["Positions"].as<PositionsVector>(),
+                    nodes["Types"].as<TypesVector<Type>>());
             rhs = pv;
             return true;
         }
@@ -131,10 +128,10 @@ namespace YAML {
 
     template<typename Type>
     Emitter& operator<< (Emitter& out, const ParticlesVector<Type>& pv){
-        out << Flow << BeginSeq;
-        for (unsigned i = 0; i < pv.numberOfEntities(); ++i)
-            out << pv[i];
-        out << EndSeq;
+        out << BeginMap// << Newline
+            << Key << "Types" << Value << pv.typesVector() << Newline
+            << Key << "Positions" << Value <<  pv.positionsVector()// << Newline
+            << EndMap;
         return out;
     };
 }

@@ -78,9 +78,8 @@ namespace YAML {
     }
 
     Emitter &operator<<(Emitter &out, const MolecularGeometry &p) {
-
         out << BeginMap
-            << Key << "Atoms" << Value << p.atoms()
+            << Key << "Atoms" << Value << p.atoms() << Newline
             << Key << "Electrons" << Value <<  p.electrons()
             << EndMap;
         return out;

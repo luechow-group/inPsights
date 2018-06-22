@@ -134,8 +134,6 @@ namespace YAML {
             Node node;
             node["Types"] = pv.typesVector();
             node["Positions"] = pv.positionsVectorCollection();
-            //for (unsigned long i = 0; i < pv.numberOfEntities(); i++)
-            //    node.push_back(pv[i]);
             return node;
 
         }
@@ -145,12 +143,6 @@ namespace YAML {
             ParticlesVectorCollection<Type> pv(
                     nodes["Types"].as<TypesVector<Type>>(),
                     nodes["PositionsVectorCollection"].as<PositionsVectorCollection>());
-
-            //if(!nodes.IsSequence())
-            //                return false;
-            //ParticlesVectorCollection<Type> pv;
-            //for (const auto &i : nodes)
-            //    pv.append(i.as<ParticlesVector<Type>>());
             rhs = pv;
             return true;
         }
@@ -158,15 +150,10 @@ namespace YAML {
 
     template<typename Type>
     Emitter& operator<< (Emitter& out, const ParticlesVectorCollection<Type>& pv){
-
-        out << BeginMap;
-        out << Key << "Types" << Value << pv.typesVector();
-        out << Key << "PositionsVectorCollection" <<  pv.positionsVectorCollection();
-        out << EndMap;
-        //out << BeginSeq;
-        //for (unsigned i = 0; i < pv.numberOfEntities(); ++i)
-        //    out << pv[i];
-        //out << EndSeq;
+        out << BeginMap
+            << Key << "Types" << Value << pv.typesVector() << Newline
+            << Key << "PositionsVectorCollection" <<  pv.positionsVectorCollection()
+            << EndMap;
         return out;
     };
 }

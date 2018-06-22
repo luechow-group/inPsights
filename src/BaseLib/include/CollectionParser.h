@@ -15,18 +15,20 @@
 
 namespace Serialization{
     template<typename Type>
-    std::string yamlStringFrom(const std::string &key, const Type &value){
+    std::string yamlStringFrom(const std::string &key, const Type &value, YAML::EMITTER_MANIP format = YAML::EMITTER_MANIP::Flow){
         YAML::Emitter out;
-        out << YAML::BeginMap;
-        out << YAML::Key << key << YAML::Value << value;
+        out << YAML::BeginMap << YAML::Newline;
+        out << format;
+        out << YAML::Key << key << YAML::Value << value << YAML::Newline;
         out << YAML::EndMap;
         return out.c_str();
     };
 
     template<typename Type>
-    std::string yamlStringFrom(const Type &scalar){
+    std::string yamlStringFrom(const Type &scalar, YAML::EMITTER_MANIP format = YAML::EMITTER_MANIP::Flow){
         YAML::Emitter out;
-        out << scalar;
+        out << format;
+        out << scalar << YAML::Newline;
         return out.c_str();
     };
 
@@ -36,7 +38,7 @@ namespace Serialization{
         out << YAML::Flow;
         out << YAML::DoubleQuoted;
         out << YAML::BeginMap;
-        out << YAML::Key << key << YAML::Value << value;
+        out << YAML::Key << key  << YAML::Newline << YAML::Value << value << YAML::Newline;
         out << YAML::EndMap;
         return out.c_str();
     };
@@ -46,7 +48,7 @@ namespace Serialization{
         YAML::Emitter out;
         out << YAML::Flow;
         out << YAML::DoubleQuoted;
-        out << scalar;
+        out << scalar << YAML::Newline;
         return out.c_str();
     };
 };

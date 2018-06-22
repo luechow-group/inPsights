@@ -15,17 +15,20 @@
 int main(int argc, char *argv[]) {
 
     auto mol = TestMolecules::HeH::ElectronsInCores::normal;
-    PositionsVectorCollection pvc;
-    pvc.append(mol.atoms().positionsVector());
-    pvc.append(mol.atoms().positionsVector());
+    AtomsVectorCollection avc;
+    avc.append(mol.atoms());
+    avc.append(mol.atoms());
 
-    auto out = Serialization::yamlStringFrom<PositionsVectorCollection>("Pvc",pvc);
-    auto out2 = Serialization::yamlStringFrom<MolecularGeometry>("Pvc",mol);
+    auto out1 = Serialization::yamlStringFrom<MolecularGeometry>("mol",mol);
+    std::cout << out1 << std::endl;
 
-
+    auto out2 = Serialization::jsonStringFrom<MolecularGeometry>("mol",mol);
     std::cout << out2 << std::endl;
 
-    std::ofstream filejson("results.json");
-    filejson << out.c_str();
-    filejson.close();
+    auto out3 =  Serialization::yamlStringFrom<AtomsVectorCollection>("avc",avc);
+    std::cout << out3 << std::endl;
+
+    auto out4 = Serialization::jsonStringFrom<AtomsVectorCollection>("avc",avc);
+    std::cout << out4 << std::endl;
+
 }

@@ -5,6 +5,7 @@
 #include <AmolqcFileImport/RefFileImporter.h>
 #include <StructuralSimilarity.h>
 #include "SimpleSorter.h"
+#include "CollectionParser.h"
 
 int main(int argc, char *argv[]) {
 
@@ -103,7 +104,9 @@ int main(int argc, char *argv[]) {
     double simBorder=0.98;
 
     SimpleSorter sorter;
-    sorter.sort(spectra,simBorder);
+    auto clusters = sorter.sort(spectra,simBorder);
+    std::cout << Serialization::yamlStringFrom(clusters) << std::endl;
+
 
     // Inefficient
     /*
