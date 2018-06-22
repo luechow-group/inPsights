@@ -8,7 +8,49 @@
 #include <Eigen/Eigenvalues>
 #include <nlohmann/json.hpp>
 
-#include <ParticlesVectorCollection.h>
+#include "ParticlesVectorCollection.h"
+#include "PositionsVectorCollection.h"
+#include "fstream"
+#include <yaml-cpp/yaml.h>
+
+namespace Serialization{
+    template<typename Type>
+    std::string yamlStringFrom(const std::string &key, const Type &value){
+        YAML::Emitter out;
+        out << YAML::BeginMap;
+        out << YAML::Key << key << YAML::Value << value;
+        out << YAML::EndMap;
+        return out.c_str();
+    };
+
+    template<typename Type>
+    std::string yamlStringFrom(const Type &scalar){
+        YAML::Emitter out;
+        out << scalar;
+        return out.c_str();
+    };
+
+    template<typename Type>
+    std::string jsonStringFrom(const std::string &key, const Type &value){
+        YAML::Emitter out;
+        out << YAML::Flow;
+        out << YAML::DoubleQuoted;
+        out << YAML::BeginMap;
+        out << YAML::Key << key << YAML::Value << value;
+        out << YAML::EndMap;
+        return out.c_str();
+    };
+
+    template<typename Type>
+    std::string jsonStringFrom(const Type &scalar){
+        YAML::Emitter out;
+        out << YAML::Flow;
+        out << YAML::DoubleQuoted;
+        out << scalar;
+        return out.c_str();
+    };
+};
+
 
 namespace CollectionParser{
     nlohmann::json positionsVectorToJson(const PositionsVector &positionsVector);
@@ -40,5 +82,6 @@ namespace CollectionParser{
 
     PositionsVector arrayToPositionsVector(const nlohmann::json &json) ;
 };
+
 
 #endif //AMOLQCPP_COLLECTIONPARSER_H

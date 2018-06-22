@@ -62,8 +62,7 @@ double Spins::quantumNumber(){
 
 namespace YAML {
     Node convert<Spin>::encode(const Spin &rhs) {
-        Node node;
-        node.push_back(Spins::toString(rhs));
+        Node node = YAML::convert<std::string>::encode(Spins::toString(rhs));
         return node;
     }
 
@@ -79,4 +78,6 @@ namespace YAML {
         out << Spins::toString(s);
         return out;
     }
+
+
 }

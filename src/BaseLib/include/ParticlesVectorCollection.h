@@ -122,6 +122,7 @@ protected:
     TypesVector<Type> typesVector_;
 };
 
+using TypedParticlesVectorCollection = ParticlesVectorCollection<int>;
 using ElectronsVectorCollection = ParticlesVectorCollection<Spin>;
 using AtomsVectorCollection = ParticlesVectorCollection<Element>;
 
@@ -131,20 +132,25 @@ namespace YAML {
     template<typename Type> struct convert<ParticlesVectorCollection<Type>> {
         static Node encode(const ParticlesVectorCollection<Type> & pv){
             Node node;
-            for (unsigned long i = 0; i < pv.numberOfEntities(); i++) {
-                node.push_back(pv[i]);
-            }
+            node["Types"] = pv.typesVector();
+            node["Positions"] = pv.positionsVectorCollection();
+            //for (unsigned long i = 0; i < pv.numberOfEntities(); i++)
+            //    node.push_back(pv[i]);
             return node;
 
         }
         static bool decode(const Node& nodes, ParticlesVectorCollection<Type> & rhs){
-            if(!nodes.IsSequence())
+            if(!nodes.IsMap())
                 return false;
+            ParticlesVectorCollection<Type> pv(
+                    nodes["Types"].as<TypesVector<Type>>(),
+                    nodes["PositionsVectorCollection"].as<PositionsVectorCollection>());
 
-            ParticlesVectorCollection<Type> pv;
-            for (const auto &i : nodes)
-                pv.append(i.as<ParticlesVector<Type>>());
-
+            //if(!nodes.IsSequence())
+            //                return false;
+            //ParticlesVectorCollection<Type> pv;
+            //for (const auto &i : nodes)
+            //    pv.append(i.as<ParticlesVector<Type>>());
             rhs = pv;
             return true;
         }
@@ -152,11 +158,15 @@ namespace YAML {
 
     template<typename Type>
     Emitter& operator<< (Emitter& out, const ParticlesVectorCollection<Type>& pv){
-        out << BeginSeq;
-        for (unsigned i = 0; i < pv.numberOfEntities(); ++i)
-            out << pv[i];
 
-        out << EndSeq;
+        out << BeginMap;
+        out << Key << "Types" << Value << pv.typesVector();
+        out << Key << "PositionsVectorCollection" <<  pv.positionsVectorCollection();
+        out << EndMap;
+        //out << BeginSeq;
+        //for (unsigned i = 0; i < pv.numberOfEntities(); ++i)
+        //    out << pv[i];
+        //out << EndSeq;
         return out;
     };
 }

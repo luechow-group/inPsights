@@ -131,10 +131,9 @@ namespace YAML {
 
     template<typename Type>
     Emitter& operator<< (Emitter& out, const ParticlesVector<Type>& pv){
-        out << BeginSeq;
+        out << Flow << BeginSeq;
         for (unsigned i = 0; i < pv.numberOfEntities(); ++i)
             out << pv[i];
-
         out << EndSeq;
         return out;
     };

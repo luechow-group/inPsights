@@ -62,3 +62,27 @@ std::pair<bool,long> MolecularGeometry::findIndexByNumberedType(const NumberedTy
         return {false,0};
     }
 }
+
+namespace YAML {
+    Node convert<MolecularGeometry>::encode(const MolecularGeometry &rhs) {
+        Node node;
+        node["Atoms"] = rhs.atoms();
+        node["Electrons"] = rhs.electrons();
+        return node;
+    }
+    bool convert<MolecularGeometry>::decode(const Node &node, MolecularGeometry &rhs) {
+        if (!node.IsMap())
+            return false;
+        rhs = MolecularGeometry({node["Atoms"].as<AtomsVector>(),node["Electrons"].as<ElectronsVector>()});
+        return true;
+    }
+
+    Emitter &operator<<(Emitter &out, const MolecularGeometry &p) {
+
+        out << BeginMap
+            << Key << "Atoms" << Value << p.atoms()
+            << Key << "Electrons" << Value <<  p.electrons()
+            << EndMap;
+        return out;
+    }
+}

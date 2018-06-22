@@ -4,6 +4,7 @@
 
 #include "EigenYamlConversion.h"
 #include <yaml-cpp/yaml.h>
+#include <ToString.h>
 
 namespace YAML {
     Node convert<Eigen::Vector3d>::encode(const Eigen::Vector3d &rhs) {

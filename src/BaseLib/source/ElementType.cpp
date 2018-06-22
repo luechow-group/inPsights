@@ -29,8 +29,7 @@ std::ostream& operator<< (std::ostream& os, const Element & e){
 
 namespace YAML {
     Node convert<Element>::encode(const Element &rhs) {
-        Node node;
-        node.push_back(Elements::ElementInfo::symbol(rhs));
+        Node node = YAML::convert<std::string>::encode(Elements::ElementInfo::symbol(rhs));
         return node;
     }
 

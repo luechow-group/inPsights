@@ -11,8 +11,8 @@
 #include "ElementType.h"
 #include <vector>
 #include "NumberedType.h"
-
-
+#include "TypesVector.h"
+#include <yaml-cpp/yaml.h>
 
 template <typename Type>
 class TypesVector : public AbstractVector {
@@ -149,6 +149,7 @@ protected:
     Eigen::VectorXi types_;
 };
 
+using IntegerTypesVector = TypesVector<int>;
 using SpinTypesVector = TypesVector<Spin>;
 using ElementTypesVector = TypesVector<Element>;
 
@@ -162,5 +163,42 @@ SpinTypesVector::TypesVector(std::vector<Spin> types);
 
 template<>
 ElementTypesVector::TypesVector(std::vector<Element> types);
+
+
+
+namespace YAML {
+    template<typename Type> struct convert<TypesVector<Type>> {
+    static Node encode(const TypesVector<Type> & tv){
+        Node node;
+        for (unsigned long i = 0; i < tv.numberOfEntities(); i++) {
+            node.push_back(tv[i]);
+        }
+        return node;
+    }
+
+    static bool decode(const Node& nodes, TypesVector<Type> & rhs){
+        if(!nodes.IsSequence())
+            return false;
+
+        TypesVector<Type> tv;
+        for (const auto &i : nodes)
+            tv.append(i.as<Type>());
+
+        rhs = tv;
+        return true;
+    }
+};
+
+template<typename Type>
+Emitter& operator<< (Emitter& out, const TypesVector<Type>& tv){
+    out << YAML::Flow << BeginSeq;
+    for (unsigned i = 0; i < tv.numberOfEntities(); ++i)
+        out << tv[i];
+    out << EndSeq;
+    return out;
+};
+}
+
+
 
 #endif //AMOLQCPP_TYPESVECTOR_H

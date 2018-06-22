@@ -37,4 +37,17 @@ private:
     ElectronsVector electrons_;
 };
 
+namespace YAML {
+    class Node; class Emitter;
+    template <typename Type> struct convert;
+
+    template<>
+    struct convert<MolecularGeometry> {
+        static Node encode(const MolecularGeometry& rhs);
+        static bool decode(const Node& node, MolecularGeometry& rhs);
+    };
+    Emitter& operator<< (Emitter& out, const MolecularGeometry& p);
+}
+
+
 #endif //AMOLQCPP_MOLECULARGEOMETRY_H

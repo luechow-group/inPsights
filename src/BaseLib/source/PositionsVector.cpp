@@ -93,7 +93,7 @@ namespace YAML {
         return node;
     }
     bool convert<PositionsVector>::decode(const Node &node, PositionsVector &rhs) {
-        if (!node.IsScalar())
+        if (!node.IsSequence())
             return false;
         PositionsVector pv;
         for (unsigned i = 0; i < node.size(); ++i)

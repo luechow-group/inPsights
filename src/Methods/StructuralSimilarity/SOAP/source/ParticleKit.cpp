@@ -3,6 +3,7 @@
 //
 
 #include "ParticleKit.h"
+#include "ElementInfo.h"
 
 namespace ParticleKit {
     AtomKit atomKit = {};
