@@ -125,4 +125,40 @@ protected:
 using ElectronsVectorCollection = ParticlesVectorCollection<Spin>;
 using AtomsVectorCollection = ParticlesVectorCollection<Element>;
 
+
+// copy of particlesvector => template?
+namespace YAML {
+    template<typename Type> struct convert<ParticlesVectorCollection<Type>> {
+        static Node encode(const ParticlesVectorCollection<Type> & pv){
+            Node node;
+            for (unsigned long i = 0; i < pv.numberOfEntities(); i++) {
+                node.push_back(pv[i]);
+            }
+            return node;
+
+        }
+        static bool decode(const Node& nodes, ParticlesVectorCollection<Type> & rhs){
+            if(!nodes.IsSequence())
+                return false;
+
+            ParticlesVectorCollection<Type> pv;
+            for (const auto &i : nodes)
+                pv.append(i.as<ParticlesVector<Type>>());
+
+            rhs = pv;
+            return true;
+        }
+    };
+
+    template<typename Type>
+    Emitter& operator<< (Emitter& out, const ParticlesVectorCollection<Type>& pv){
+        out << BeginSeq;
+        for (unsigned i = 0; i < pv.numberOfEntities(); ++i)
+            out << pv[i];
+
+        out << EndSeq;
+        return out;
+    };
+}
+
 #endif //AMOLQCPP_PARTICLESVECTORCOLLECTION_H

@@ -3,6 +3,7 @@
 //
 
 #include "PositionsVectorCollection.h"
+#include <yaml-cpp/yaml.h>
 
 PositionsVectorCollection::PositionsVectorCollection()
         : AbstractVector(0),
@@ -80,4 +81,31 @@ const std::vector<PositionsVector>& PositionsVectorCollection::positionsVectorCo
 
 std::vector<PositionsVector>& PositionsVectorCollection::positionsVectorCollection() {
     return positionsVectorCollection_;
+}
+
+
+namespace YAML {
+    Node convert<PositionsVectorCollection>::encode(const PositionsVectorCollection &rhs) {
+        Node node;
+        for (unsigned i = 0; i < rhs.numberOfEntities(); ++i)
+            node.push_back(rhs[i]);
+        return node;
+    }
+    bool convert<PositionsVectorCollection>::decode(const Node &node, PositionsVectorCollection &rhs) {
+        if (!node.IsScalar())
+            return false;
+        PositionsVectorCollection pvc;
+        for (unsigned i = 0; i < node.size(); ++i)
+            pvc[i] = node[i].as<PositionsVector>();
+        rhs = pvc;
+        return true;
+    }
+
+    Emitter &operator<<(Emitter &out, const PositionsVectorCollection &pvc) {
+        out << Flow << BeginSeq;
+        for (unsigned i = 0; i < pvc.numberOfEntities(); ++i)
+            out << pvc[i];
+        out << EndSeq;
+        return out;
+    }
 }

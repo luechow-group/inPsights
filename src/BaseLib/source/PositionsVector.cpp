@@ -88,10 +88,8 @@ const Eigen::Ref<const Eigen::Vector3d>& PositionsVector::operator()(long i) con
 namespace YAML {
     Node convert<PositionsVector>::encode(const PositionsVector &rhs) {
         Node node;
-
-        for (unsigned i = 0; i < rhs.numberOfEntities(); ++i) {
+        for (unsigned i = 0; i < rhs.numberOfEntities(); ++i)
             node.push_back(rhs[i]);
-        }
         return node;
     }
     bool convert<PositionsVector>::decode(const Node &node, PositionsVector &rhs) {

@@ -24,6 +24,8 @@ int main(int argc, char *argv[]) {
     YAML::Node n;
     n["test"] = av;
     n["position"] = av.positionsVector();
+    n["pvc"] = avc.positionsVectorCollection();
+    n["avc"] = avc;
 
     std::cout << n << std::endl;
 
@@ -33,8 +35,9 @@ int main(int argc, char *argv[]) {
     out << YAML::BeginMap;
     out << YAML::Key << "Atoms" << YAML::Value << av;
     out << YAML::Key << "Positions" << YAML::Value << av.positionsVector();
+    out << YAML::Key << "PositionsColl" << YAML::Value << avc.positionsVectorCollection();
+    out << YAML::Key << "AtomsColl" << YAML::Value << avc;
     out << YAML::EndMap;
-
 
 
     std::cout << "out\n" << out.c_str() << std::endl;
@@ -44,5 +47,5 @@ int main(int argc, char *argv[]) {
 
     std::ifstream in("results.yaml");
     std::cout << "in\n"<< YAML::Load(in);
-    
+
 }
