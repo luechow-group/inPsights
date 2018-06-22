@@ -5,7 +5,7 @@
 #include <AmolqcFileImport/RefFileImporter.h>
 #include <StructuralSimilarity.h>
 #include "SimpleSorter.h"
-#include "CollectionParser.h"
+#include "Serialization.h"
 
 int main(int argc, char *argv[]) {
 

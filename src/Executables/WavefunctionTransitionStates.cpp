@@ -8,7 +8,7 @@
 #include <QApplication>
 
 #include "ElectronicWaveFunctionProblem.h"
-#include "CollectionParser.h"
+#include "Serialization.h"
 #include "MoleculeWidget.h"
 #include "ElectronsVector3D.h"
 #include "AtomsVector3D.h"
@@ -30,8 +30,10 @@ int main(int argc, char *argv[]) {
     //nlohmann::json json = CollectionParser::atomsAndElectronsVectorToJson(av,ev);
     //CollectionParser::writeJSON(json,"CP+_Max1A.json");
 
-    auto ev = CollectionParser::electronsVectorFromJson(CollectionParser::readJSON("CP+_Max2A.json"));
-    PositionsVector pv = ev.positionsVector();
+    //auto ev = CollectionParser::electronsVectorFromJson(CollectionParser::readJSON("CP+_Max2A.json"));
+    //PositionsVector pv = ev.positionsVector();
+
+    auto ev =
 
     // MaxA1
     /*

@@ -97,7 +97,7 @@ namespace YAML {
             return false;
         PositionsVector pv;
         for (unsigned i = 0; i < node.size(); ++i)
-            pv[i] = node[i].as<Eigen::Vector3d>();
+            pv.append(node[i].as<Eigen::Vector3d>());
         rhs = pv;
         return true;
     }

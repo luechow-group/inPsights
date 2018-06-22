@@ -2,7 +2,7 @@
 // Created by Michael Heuer on 07.11.17.
 //
 
-#include <CollectionParser.h>
+#include <Serialization.h>
 #include <AmolqcFileImport/RefFileImporter.h>
 #include <ElectronicWaveFunctionProblem.h>
 #include <MoleculeWidget.h>

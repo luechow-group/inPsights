@@ -2,7 +2,7 @@
 // Created by Michael Heuer on 07.11.17.
 //
 
-#include "CollectionParser.h"
+#include "Serialization.h"
 #include "ElectronicWaveFunctionProblem.h"
 #include "solver/bfgsnssolver.h"
 #include "solver/bfgssolver.h"
