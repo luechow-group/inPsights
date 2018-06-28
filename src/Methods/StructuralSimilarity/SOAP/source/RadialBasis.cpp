@@ -28,7 +28,7 @@ std::vector<Gaussian> RadialBasis::createBasis() {
     switch (ExpansionSettings::Radial::basisType){
         case ExpansionSettings::Radial::BasisType::equispaced : {
             for (int i = 0; i < nmax; ++i) {
-                basisFunctionCenter = (ExpansionSettings::Cutoff::radius*double(i)) /double(nmax);
+                basisFunctionCenter = (ExpansionSettings::Cutoff::radius*double(i)) /double(nmax-1);
                 basis.emplace_back(basisFunctionCenter, sigmaAtom);
             }
             return basis;
