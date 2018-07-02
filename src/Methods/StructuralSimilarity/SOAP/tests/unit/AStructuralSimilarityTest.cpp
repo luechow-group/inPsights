@@ -130,8 +130,6 @@ TEST_F(AStructuralSimilarityTest, HeH_H2_Comparison) {
 }
 
 TEST_F(AStructuralSimilarityTest, AlchemicalIdentity) {
-
-
     auto A = TestMolecules::twoElectrons::sameSpinAlpha;
     auto B = TestMolecules::twoElectrons::sameSpinBeta;
     auto C = TestMolecules::twoElectrons::oppositeSpin;
@@ -152,4 +150,3 @@ TEST_F(AStructuralSimilarityTest, AlchemicalIdentity) {
     auto ac = StructuralSimilarity::kernel(A, C, regularizationParameter);
     ASSERT_NEAR(ac, 1.0, eps);
 }
-
