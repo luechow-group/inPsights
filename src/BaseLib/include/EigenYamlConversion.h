@@ -5,7 +5,7 @@
 #ifndef AMOLQCPP_EIGENYAMLCONVERSION_H
 #define AMOLQCPP_EIGENYAMLCONVERSION_H
 
-#include<Eigen/core>
+#include<Eigen/Core>
 
 namespace YAML {
     class Node; class Emitter;

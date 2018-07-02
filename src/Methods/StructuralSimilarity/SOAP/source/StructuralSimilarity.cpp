@@ -9,20 +9,22 @@ namespace StructuralSimilarity{
     Eigen::MatrixXd correlationMatrix(const MolecularSpectrum& A, const MolecularSpectrum& B) {
         auto N = ParticleKit::numberOfParticles();
         Eigen::MatrixXd C = Eigen::MatrixXd::Zero(N, N);
-
+        NumberedType<int> numberedType_i, numberedType_j;
+        TypeSpecificNeighborhoodsAtOneCenter expA,expB;
+        #pragma omp parallel for default(none) shared(N,A,B,C,ExpansionSettings::zeta) private(numberedType_i,numberedType_j,expA,expB)
         for (unsigned i = 0; i < N; ++i) {
-            auto numberedType_i = ParticleKit::getNumberedTypeByIndex(i);
+            //printf("Thread %d calculates correlation matrix elements\n", omp_get_thread_num());
+            numberedType_i = ParticleKit::getNumberedTypeByIndex(i);
             if (!A.molecule_.findIndexByNumberedType(numberedType_i).first)
                 continue;
-            auto expA = A.molecularCenters_.find(numberedType_i)->second;
+            expA = A.molecularCenters_.find(numberedType_i)->second;
 
             for (unsigned j = 0; j < N; ++j) {
-                auto numberedType_j = ParticleKit::getNumberedTypeByIndex(j);
+                numberedType_j = ParticleKit::getNumberedTypeByIndex(j);
                 if (!B.molecule_.findIndexByNumberedType(numberedType_j).first)
                     continue;
-                auto expB = B.molecularCenters_.find(numberedType_j)->second;
-
-                C(i, j) = LocalSimilarity::kernel(expA, expB);
+                expB = B.molecularCenters_.find(numberedType_j)->second;
+                C(i, j) = LocalSimilarity::kernel(expA, expB,ExpansionSettings::zeta);
             }
         }
         return C;
@@ -32,17 +34,21 @@ namespace StructuralSimilarity{
         auto N = ParticleKit::numberOfParticles();
         Eigen::MatrixXd C = Eigen::MatrixXd::Zero(N, N);
 
+        NumberedType<int> numberedType_i, numberedType_j;
+        TypeSpecificNeighborhoodsAtOneCenter expA,expB;
+        #pragma omp parallel for default(none) shared(N,A,C,ExpansionSettings::zeta) private(numberedType_i,numberedType_j,expA,expB)
         for (unsigned i = 0; i < N; ++i) {
-            auto numberedType_i = ParticleKit::getNumberedTypeByIndex(i);
+            //printf("Thread %d calculates selfcorrelation matrix elements\n", omp_get_thread_num());
+            numberedType_i = ParticleKit::getNumberedTypeByIndex(i);
             if (!A.molecule_.findIndexByNumberedType(numberedType_i).first) continue;
-            auto expA = A.molecularCenters_.find(numberedType_i)->second;
+            expA = A.molecularCenters_.find(numberedType_i)->second;
 
             for (unsigned j = i; j < N; ++j) {
-                auto numberedType_j = ParticleKit::getNumberedTypeByIndex(j);
+                numberedType_j = ParticleKit::getNumberedTypeByIndex(j);
                 if (!A.molecule_.findIndexByNumberedType(numberedType_j).first) continue;
-                auto expB = A.molecularCenters_.find(numberedType_j)->second;
+                expB = A.molecularCenters_.find(numberedType_j)->second;
 
-                C(i,j) = LocalSimilarity::kernel(expA, expB);
+                C(i,j) = LocalSimilarity::kernel(expA, expB,ExpansionSettings::zeta);
             }
         }
         // symmetrize the matrix
