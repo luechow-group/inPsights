@@ -64,8 +64,8 @@ namespace ExpansionSettings {
         double sigmaAtom = 0.5;
 
         unsigned integrationSteps = 100;
-        double desiredAbsoluteError = 0.0;
-        double desiredRelativeError = 1e-6; //TODO
+        double desiredAbsoluteError = 0.0;// TODO Deprecated delete
+        double desiredRelativeError = 1e-6;// TODO Deprecated delete
 
         void defaults() {
             nmax = 5;
