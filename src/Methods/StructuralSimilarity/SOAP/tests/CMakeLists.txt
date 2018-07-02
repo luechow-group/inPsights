@@ -4,6 +4,7 @@ enable_testing()
 FILE(GLOB TEST_SOURCE_FILES
         *
         unit/*
+        integration/*
         )
 
 include_directories(
