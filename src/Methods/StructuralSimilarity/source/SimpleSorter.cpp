@@ -13,7 +13,7 @@ std::vector<std::vector<unsigned >> SimpleSorter::sort(std::vector<MolecularSpec
     unsigned n = spectra.size();
     for (unsigned i = 1; i < n; ++i) {//iterate over all structures
         std::vector<std::vector<unsigned >>::iterator it;
-
+        printf("i=%d\n",i);
         for (it = clusters.begin(); it != clusters.end(); ++it){
             //auto kdist = StructuralSimilarity::kernelDistance(spectra[i],spectra[spectrumIdxOfTheFirstElement]);
             auto kdist = StructuralSimilarity::kernel(spectra[i],spectra[(*it)[0]]);

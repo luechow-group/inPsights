@@ -28,6 +28,17 @@ TEST_F(AStructuralSimilarityTest , Identity) {
     ASSERT_NEAR(StructuralSimilarity::kernel(A, A, regularizationParameter), 1.0, eps);
 }
 
+TEST_F(AStructuralSimilarityTest , nmax1) {
+    auto A = TestMolecules::H2::ElectronsInCores::normal;
+    ExpansionSettings::defaults();
+    ExpansionSettings::Radial::nmax=1;
+    ExpansionSettings::mode = ExpansionSettings::Mode::chemical;
+    ParticleKit::create(A);
+
+    ASSERT_TRUE(ParticleKit::isSubsetQ(A));
+    ASSERT_NEAR(StructuralSimilarity::kernel(A, A, regularizationParameter), 1.0, eps);
+}
+
 TEST_F(AStructuralSimilarityTest , TranslationalSymmetry) {
     auto A = TestMolecules::H2::ElectronsInCores::normal;
     auto B = TestMolecules::H2::ElectronsInCores::translated;
@@ -130,8 +141,6 @@ TEST_F(AStructuralSimilarityTest, HeH_H2_Comparison) {
 }
 
 TEST_F(AStructuralSimilarityTest, AlchemicalIdentity) {
-
-
     auto A = TestMolecules::twoElectrons::sameSpinAlpha;
     auto B = TestMolecules::twoElectrons::sameSpinBeta;
     auto C = TestMolecules::twoElectrons::oppositeSpin;
@@ -152,4 +161,3 @@ TEST_F(AStructuralSimilarityTest, AlchemicalIdentity) {
     auto ac = StructuralSimilarity::kernel(A, C, regularizationParameter);
     ASSERT_NEAR(ac, 1.0, eps);
 }
-

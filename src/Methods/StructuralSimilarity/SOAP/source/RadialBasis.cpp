@@ -21,6 +21,7 @@ std::vector<Gaussian> RadialBasis::createBasis() {
     const auto& lmax = ExpansionSettings::Angular::lmax;
     const auto& sigmaAtom = ExpansionSettings::Radial::sigmaAtom;
 
+    assert(nmax > 1 && "nmax must be greater than 1");
 
     std::vector<Gaussian> basis;
     double basisFunctionCenter = 0;

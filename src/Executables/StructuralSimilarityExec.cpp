@@ -98,16 +98,15 @@ int main(int argc, char *argv[]) {
     #pragma omp parallel for default(none) shared(start,numberOfSuperstructures,spectra,atomsVector,electronsVectors)
     for (unsigned i = 0; i < numberOfSuperstructures; ++i) {
         spectra[i] = MolecularSpectrum({atomsVector,electronsVectors[i]});
-        printf("Thread %d wrote element i=%ld\nelapsed time: %fs\n", omp_get_thread_num(),i,omp_get_wtime()-start);
+        printf("Thread %d wrote element i=%ld\telapsed time: %fs\n", omp_get_thread_num(),i,omp_get_wtime()-start);
     }
 
     double simBorder=0.98;
 
     SimpleSorter sorter;
     auto clusters = sorter.sort(spectra,simBorder);
-    std::cout << Serialization::yamlStringFrom(clusters) << std::endl;
-
-
+    std::cout << Serialization::yamlStringFrom(clusters,YAML::Flow) << std::endl;
+    printf("elapsed time: %fs",omp_get_wtime()-start);
     // Inefficient
     /*
     Eigen::MatrixXd pairs = Eigen::MatrixXd::Identity(numberOfSuperstructures,numberOfSuperstructures);
