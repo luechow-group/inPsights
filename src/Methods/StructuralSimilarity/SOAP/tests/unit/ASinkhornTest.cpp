@@ -130,11 +130,30 @@ void doublyStochasticCheck(const Eigen::MatrixXd& regularizedMatrix,
     ASSERT_NEAR(regularizedMatrix.sum(),1.0,eps);
 }
 
+TEST_F(ASinkhornTest, BestMatchOfPermutedIdenticalEnvironments) {
+    Eigen::MatrixXd C(2,2); // covariance matrix of two permuted particles
+    C << 0,1,1,0;  // the system is composed of two permuted but otherwise identical environments
+    Eigen::MatrixXd Pref(2,2);
+    Pref << 0,0.5,0.5,0;
+    Eigen::MatrixXd expected(2,2);
+    expected << 0.5,0,0,0.5;
+
+    compareWithReferenceImplementations(C);
+    Eigen::MatrixXd P = Sinkhorn::Pgamma(C, 0.00001) ;
+    doublyStochasticCheck(P);
+
+    Eigen::MatrixXd result = P*C.transpose();
+
+    ASSERT_TRUE(result.isApprox(expected));
+    ASSERT_EQ(result.trace(),1); // the similarity must equal 1
+}
+
 TEST_F(ASinkhornTest, DoublyStochasticCheck_2x2) {
     Eigen::MatrixXd C(2,2);
     C << 0.6,0.5,0.5,0.2;
     compareWithReferenceImplementations(C);
     doublyStochasticCheck(Sinkhorn::Pgamma(C, 1));
+    std::cout << Sinkhorn::Pgamma(C, 1) << std::endl;
 }
 
 TEST_F(ASinkhornTest, DoublyStochasticCheck_20x20RandomMatrix) {
