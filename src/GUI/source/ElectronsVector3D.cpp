@@ -88,7 +88,7 @@ void ElectronsVector3D::drawConnections(Qt3DCore::QEntity *root,
             auto e1 = electronsVector[electronsNotInNuclei[i]];
             auto e2 = electronsVector[electronsNotInNuclei[j]];
 
-            double distanceThreshold = 1.2;
+            double distanceThreshold = 1.6;
             if (Metrics::distance(e1.position(), e2.position()) < distanceThreshold) {
                 auto p1 = e1.position();
                 auto p2 = e2.position();
