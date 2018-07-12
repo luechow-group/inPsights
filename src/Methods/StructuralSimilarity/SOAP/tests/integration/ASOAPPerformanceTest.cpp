@@ -17,6 +17,42 @@ public:
     }
 };
 
+TEST_F(ASOAPPerformanceTest, SingleGlobalSimTiming) {
+
+    unsigned nmax = 8;
+    unsigned lmax = nmax;
+    unsigned nParticles = 20; // nParticles = nTypes
+
+    ExpansionSettings::Radial::nmax = nmax;
+    ExpansionSettings::Angular::lmax = lmax;
+    ExpansionSettings::mode = ExpansionSettings::Mode::alchemical;
+    //ExpansionSettings::Alchemical::pairSimilarities[{int(Spin::alpha),int(Spin::beta)}] = 0.5;
+
+
+    //Distribute the particles on a unit circle
+    MolecularGeometry mol;
+    for (unsigned i = 0; i < nParticles; ++i) {
+        double angle = 2. * M_PI * double(i) / (nParticles - 1);
+        mol.atoms().append({Element(i), {cos(angle), sin(angle), 0}});
+    }
+    ParticleKit::create(mol);
+
+    double start;
+
+    start = omp_get_wtime();
+    MolecularSpectrum ms(mol);
+    double t1 = omp_get_wtime() - start;
+    start = omp_get_wtime();
+    double K = StructuralSimilarity::kernel(ms, ms, regularizationParameter);
+    double t2 = omp_get_wtime() - start;
+
+    printf("{%d,%d,%f,%f,%f},\n",nmax,nParticles,K,t1,t2);
+    fflush(stdout);
+
+    EXPECT_TRUE(false);
+}
+
+
 TEST_F(ASOAPPerformanceTest, GlobalSimPerformance){
 
     printf("{\n");
