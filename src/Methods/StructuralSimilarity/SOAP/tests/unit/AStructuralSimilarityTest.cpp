@@ -120,7 +120,7 @@ TEST_F(AStructuralSimilarityTest, HeH_H2_Comparison) {
     ASSERT_TRUE(ParticleKit::isSubsetQ(A));
     ASSERT_TRUE(ParticleKit::isSubsetQ(B));
 
-    ExpansionSettings::mode = ExpansionSettings::Mode::generic;
+    ExpansionSettings::mode = ExpansionSettings::Mode::typeAgnostic;
     auto generic = StructuralSimilarity::kernel(A, B, regularizationParameter);
     ASSERT_LT(generic, 1.0);
     ASSERT_GT(generic, 0.0);

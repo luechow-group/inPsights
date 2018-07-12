@@ -47,7 +47,7 @@ NeighborhoodExpander::computeParticularExpansions(const Environment &e) { // WOR
     TypeSpecificNeighborhoodsAtOneCenter expansions;
 
     switch (ExpansionSettings::mode) {
-        case ExpansionSettings::Mode::generic: {
+        case ExpansionSettings::Mode::typeAgnostic: {
             auto noneTypeId = 0;
             expansions.emplace(noneTypeId, expandEnvironment(e, noneTypeId));
             break;
