@@ -24,7 +24,7 @@ public:
 TEST_F(ALocalSimilarityTest , GenericNormalization) {
     ParticleKit::create(molecule);
     ExpansionSettings::defaults();
-    ExpansionSettings::mode = ExpansionSettings::Mode::generic;
+    ExpansionSettings::mode = ExpansionSettings::Mode::typeAgnostic;
 
     Environment e1(molecule,molecule.atoms()[1].position());
     Environment e2(molecule,molecule.atoms()[2].position());
@@ -46,7 +46,7 @@ TEST_F(ALocalSimilarityTest , SameEnvironmentsOnDifferentCenters) {
 TEST_F(ALocalSimilarityTest , Cross) {
     ParticleKit::create(molecule);
     ExpansionSettings::defaults();
-    ExpansionSettings::mode = ExpansionSettings::Mode::generic;
+    ExpansionSettings::mode = ExpansionSettings::Mode::typeAgnostic;
     ExpansionSettings::Cutoff::radius = 1.2;
     ExpansionSettings::Angular::lmax = 3;
 
@@ -81,7 +81,7 @@ TEST_F(ALocalSimilarityTest, TypeSpecificNormalization) {
 TEST_F(ALocalSimilarityTest, SameEnvironmentOnDifferentCentersGeneric) {
     ParticleKit::create(molecule);
     ExpansionSettings::defaults();
-    ExpansionSettings::mode = ExpansionSettings::Mode::generic;
+    ExpansionSettings::mode = ExpansionSettings::Mode::typeAgnostic;
 
     Environment e1(molecule,molecule.atoms()[1].position());
     Environment e2(molecule,molecule.atoms()[2].position());
@@ -303,7 +303,7 @@ TEST_F(ALocalSimilarityTest, DissociationIntoTwoIsolatedSpecies) {
 
 TEST_F(ALocalSimilarityTest, DissociationIntoOneIsolatedSpecies) {
     ExpansionSettings::defaults();
-    ExpansionSettings::mode = ExpansionSettings::Mode::generic;
+    ExpansionSettings::mode = ExpansionSettings::Mode::typeAgnostic;
     ExpansionSettings::Cutoff::radius = 2;// bohr
     ExpansionSettings::Cutoff::width = 1;// bohr
     ParticleKit::create({},{3,0}); //the particle kit consists of three alpha electrons

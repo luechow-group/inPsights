@@ -24,7 +24,7 @@ std::vector<std::pair<Particle<int>,SphericalCoordinates>> Environment::selectPa
     for (unsigned j = 0; j < unsigned(molecularGeometry_.numberOfEntities()); ++j) {
         const auto &neighbor = molecularGeometry_[j];
 
-        if( neighbor.type() == expansionTypeId || ExpansionSettings::mode == ExpansionSettings::Mode::generic) {
+        if( neighbor.type() == expansionTypeId || ExpansionSettings::mode == ExpansionSettings::Mode::typeAgnostic) {
 
             SphericalCoordinates sphericalCoords(neighbor.position()-center_);
 

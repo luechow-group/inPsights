@@ -33,7 +33,7 @@ namespace LocalSimilarity {
                           double zeta = ExpansionSettings::zeta);
 
     namespace {
-        double generic(const TypeSpecificNeighborhoodsAtOneCenter &expansions);
+        double typeAgnostic(const TypeSpecificNeighborhoodsAtOneCenter &expansions);
         double generic(const TypeSpecificNeighborhoodsAtOneCenter &expansions1,
                        const TypeSpecificNeighborhoodsAtOneCenter &expansions2);
 

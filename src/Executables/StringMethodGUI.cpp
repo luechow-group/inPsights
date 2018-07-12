@@ -37,7 +37,7 @@
 #include <QtCharts/QScatterSeries>
 
 #include "solver/bfgsnssolver.h"
-#include "CollectionParser.h"
+#include "Serialization.h"
 
 int main(int argc, char *argv[]) {
 

@@ -30,7 +30,7 @@ set(HEADER_FILES
         include/ParticlesVectorCollection.h
         include/SpinType.h
         include/Importer.h
-        include/CollectionParser.h
+        include/Serialization.h
         include/AbstractVector.h
         include/PositionsVector.h
         include/PositionsVectorCollection.h
@@ -50,7 +50,7 @@ set(SOURCE_FILES
         source/pElementInfo.cpp
         source/ElementInfo.cpp
         source/Importer.cpp
-        source/CollectionParser.cpp
+        source/Serialization.cpp
         source/SpinType.cpp
         source/ElementType.cpp
         source/PositionsVector.cpp

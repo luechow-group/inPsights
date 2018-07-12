@@ -32,7 +32,7 @@ namespace ExpansionSettings {
 
     std::string toString(const Mode &mode) {
         switch(mode) {
-            case ExpansionSettings::Mode::generic : return "generic";
+            case ExpansionSettings::Mode::typeAgnostic : return "typeAgnostic";
             case ExpansionSettings::Mode::chemical : return "chemical";
             case ExpansionSettings::Mode::alchemical : return "alchemical";
         }
@@ -64,8 +64,8 @@ namespace ExpansionSettings {
         double sigmaAtom = 0.5;
 
         unsigned integrationSteps = 100;
-        double desiredAbsoluteError = 0.0;
-        double desiredRelativeError = 1e-6; //TODO
+        double desiredAbsoluteError = 0.0;// TODO Deprecated delete
+        double desiredRelativeError = 1e-6;// TODO Deprecated delete
 
         void defaults() {
             nmax = 5;

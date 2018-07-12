@@ -10,7 +10,7 @@
 
 #include "ElectronicWaveFunctionProblem.h"
 #include "AmolqcFileImport/RefFileImporter.h"
-#include "CollectionParser.h"
+#include "Serialization.h"
 #include "PositionsVectorTransformer.h"
 #include "MoleculeWidget.h"
 #include "ElectronsVector3D.h"

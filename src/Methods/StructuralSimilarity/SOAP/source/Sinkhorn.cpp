@@ -4,7 +4,7 @@
 
 #include "Sinkhorn.h"
 
- Eigen::MatrixXd Sinkhorn::Pgamma(const Eigen::MatrixXd &C, double gamma, double eps){
+Eigen::MatrixXd Sinkhorn::Pgamma(const Eigen::MatrixXd &C, double gamma, double eps){
     auto N = unsigned(C.rows());
     auto M = unsigned(C.cols());
 

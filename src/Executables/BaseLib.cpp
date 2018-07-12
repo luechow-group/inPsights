@@ -10,7 +10,7 @@
 #include <fstream>
 #include <TestMolecules.h>
 #include <nlohmann/json.hpp>
-#include <CollectionParser.h>
+#include <Serialization.h>
 
 int main(int argc, char *argv[]) {
 
@@ -19,7 +19,19 @@ int main(int argc, char *argv[]) {
     avc.append(mol.atoms());
     avc.append(mol.atoms());
 
-    auto out1 = Serialization::yamlStringFrom<MolecularGeometry>("mol",mol);
+    //TEST EXPORT/IMPORT
+    auto out = Serialization::yamlStringFrom<MolecularGeometry>(mol);
+    std::cout << out << std::endl;
+    std::string filename = "res.yaml";
+    std::ofstream file(filename);
+    file << out;
+    file.close();
+    auto y = YAML::LoadFile(filename);
+    std::cout << y["Atoms"].as<AtomsVector>() << std::endl;
+    std::cout << y["Electrons"].as<ElectronsVector>() << std::endl;
+
+
+    auto out1 = Serialization::yamlStringFrom<MolecularGeometry>("Molecule",mol);
     std::cout << out1 << std::endl;
 
     auto out2 = Serialization::jsonStringFrom<MolecularGeometry>("mol",mol);

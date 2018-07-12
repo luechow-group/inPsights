@@ -5,7 +5,7 @@
 #include <QApplication>
 #include <solver/newtonraphsonsolver.h>
 
-#include "CollectionParser.h"
+#include "Serialization.h"
 #include "ElectronicWaveFunctionProblem.h"
 #include "solver/bfgsnssolver.h"
 #include "solver/bfgssolver.h"

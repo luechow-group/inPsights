@@ -2,7 +2,7 @@
 // Created by Leonard Reuter on 07.03.18.
 //
 
-#include "CollectionParser.h"
+#include "Serialization.h"
 
 #include "solver/gradientdescentsolver.h"
 
