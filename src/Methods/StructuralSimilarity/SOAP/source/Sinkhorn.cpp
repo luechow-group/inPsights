@@ -8,7 +8,6 @@ Eigen::MatrixXd Sinkhorn::Pgamma(const Eigen::MatrixXd &C, double gamma, double 
     auto N = unsigned(C.rows());
     auto M = unsigned(C.cols());
 
-
     Eigen::VectorXd u = Eigen::VectorXd::Constant(N,1./double(N));
     Eigen::VectorXd v = Eigen::VectorXd::Constant(M,1./double(M));
     Eigen::VectorXd uOld(N),vOld(M);
@@ -44,7 +43,6 @@ Eigen::MatrixXd Sinkhorn::Pgamma(const Eigen::MatrixXd &C, double gamma, double 
     } while ( uDeviation > err && vDeviation > err);
 
     return K.cwiseProduct(u*v.transpose());
-
 }
 
 double Sinkhorn::distance(Eigen::MatrixXd correlationMatrix, double gamma, double eps) {
