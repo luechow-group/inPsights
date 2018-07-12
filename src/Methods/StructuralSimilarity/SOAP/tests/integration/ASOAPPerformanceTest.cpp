@@ -17,10 +17,68 @@ public:
     }
 };
 
-TEST_F(ASOAPPerformanceTest, Performance){
+TEST_F(ASOAPPerformanceTest, GlobalSimPerformance){
 
     printf("{\n");
-    for (unsigned nmax = 2; nmax <= 10; ++nmax) {
+    for (unsigned nmax = 2; nmax <= 10; nmax=nmax+2) {
+        unsigned lmax = nmax;
+        unsigned nParticles = 30; // nParticles = nTypes
+        printf("{%d,\n",nmax);
+        //calculate a molecular spectrum
+        ExpansionSettings::Radial::nmax = nmax;
+        ExpansionSettings::Angular::lmax = lmax;
+        //ExpansionSettings::Alchemical::pairSimilarities[{int(Spin::alpha),int(Spin::beta)}] = 0.5;
+
+        //Distribute the particles on a unit circle
+        MolecularGeometry mol;
+        unsigned nSkip = 5;
+        for (unsigned i = 0; i < nParticles; i=i+nSkip) {
+            for (unsigned j = 1; j <= nSkip; ++j) {
+                double angle = 2. * M_PI * double(i+j) / (nParticles - 1);
+                mol.atoms().append({Element(i + j), {cos(angle), sin(angle), 0}});
+            }
+            ParticleKit::create(mol);
+
+            double start;
+            MolecularSpectrum ms;
+
+            ExpansionSettings::mode = ExpansionSettings::Mode::typeAgnostic;
+            start = omp_get_wtime();
+            ms = MolecularSpectrum(mol);
+            double t1a = omp_get_wtime() - start;
+            start = omp_get_wtime();
+            double generic = StructuralSimilarity::kernel(ms, ms, regularizationParameter);
+            double t1b = omp_get_wtime() - start;
+
+            ExpansionSettings::mode = ExpansionSettings::Mode::chemical;
+            start = omp_get_wtime();
+            ms = MolecularSpectrum(mol);
+            double t2a = omp_get_wtime() - start;
+            start = omp_get_wtime();
+            double chemical = StructuralSimilarity::kernel(ms, ms, regularizationParameter);
+            double t2b = omp_get_wtime() - start;
+
+            ExpansionSettings::mode = ExpansionSettings::Mode::alchemical;
+            start = omp_get_wtime();
+            ms = MolecularSpectrum(mol);
+            double t3a = omp_get_wtime() - start;
+            start = omp_get_wtime();
+            double alchemical = StructuralSimilarity::kernel(ms, ms, regularizationParameter);
+            double t3b = omp_get_wtime() - start;
+
+            printf("{%d,%f,%f,%f,%f,%f,%f},\n", i+nSkip,t1a,t2a,t3a,t1b,t2b,t3b);
+            fflush(stdout);
+        }
+        printf("},\n");
+    }
+    printf("}\n");
+    EXPECT_TRUE(false);
+}
+
+TEST_F(ASOAPPerformanceTest, LocalSimPerformance){
+
+    printf("{\n");
+    for (unsigned nmax = 2; nmax <= 10; nmax=nmax+2) {
         unsigned lmax = nmax;
         unsigned nParticles = 30; // nParticles = nTypes
         printf("{%d,\n",nmax);
@@ -33,22 +91,40 @@ TEST_F(ASOAPPerformanceTest, Performance){
         double radius = 1.0;
 
         MolecularGeometry mol;
-        for (unsigned i = 0; i < nParticles; ++i) {
-            double angle = 2. * M_PI * double(i) / (nParticles - 1);
-            mol.atoms().append({Element(i + 1), {cos(angle), sin(angle), 0}});
-            //std::cout << mol << std::endl;
+        unsigned nSkip = 5;
+        for (unsigned i = 0; i < nParticles; i=i+nSkip) {
+            for (unsigned j = 1; j <= nSkip; ++j) {
+                double angle = 2. * M_PI * double(i+j) / (nParticles - 1);
+                mol.atoms().append({Element(i + j), {cos(angle), sin(angle), 0}});
+            }
             ParticleKit::create(mol);
 
-            double start = omp_get_wtime();
-            MolecularSpectrum ms(mol);
-            double t_spec = omp_get_wtime() - start;
-            //printf("i=%d\nMS,elapsed time: %fs,",i,omp_get_wtime()-start);
 
+            double start;
+            Environment e1{{},{}};
+
+            MolecularSpectrum ms(mol);
+
+            ExpansionSettings::mode = ExpansionSettings::Mode::typeAgnostic;
+            e1 = Environment(mol,mol.atoms()[0].position());
             start = omp_get_wtime();
-            double K = StructuralSimilarity::kernel(ms, ms, regularizationParameter);
-            double t_sim = omp_get_wtime() - start;
+            double generic = LocalSimilarity::kernel(e1,e1);
+            double t1 = omp_get_wtime() - start;
+
+            ExpansionSettings::mode = ExpansionSettings::Mode::chemical;
+            e1 = Environment(mol,mol.atoms()[0].position());
+            start = omp_get_wtime();
+            double chemical = LocalSimilarity::kernel(e1,e1);
+            double t2 = omp_get_wtime() - start;
+
+            ExpansionSettings::mode = ExpansionSettings::Mode::alchemical;
+            e1 = Environment(mol,mol.atoms()[0].position());
+            start = omp_get_wtime();
+            double alchemical = LocalSimilarity::kernel(e1,e1);
+            double t3 = omp_get_wtime() - start;
+
             //printf(" SS=%f, elapsed time: %fs\n",K,omp_get_wtime()-start);
-            printf("{%d,%f,%f},\n", i+1, t_spec, t_sim);
+            printf("{%d,%f,%f,%f},\n", i+nSkip,t1,t2,t3);
             fflush(stdout);
         }
         printf("},\n");
