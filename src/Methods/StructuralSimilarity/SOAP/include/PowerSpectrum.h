@@ -12,16 +12,18 @@ class NeighborhoodExpansion;
 
 namespace PowerSpectrum {
     //function to calculate p_ab(X_i)
-    Eigen::VectorXd partialPowerSpectrum(const NeighborhoodExpansion& n1a,
-                                         const NeighborhoodExpansion& n1b);
+    Eigen::VectorXcd partialPowerSpectrum(const NeighborhoodExpansion& n1a,
+                                          const NeighborhoodExpansion& n1b);
+
+    Eigen::VectorXcd partialPowerSpectrum(const NeighborhoodExpansion& n); //TODO CAN THIS SAFE COMPUTATIONAL TIME?
 
     // PARTICLE-TYPE SPECIFIC
-    double powerSpectrumCoefficient(const NeighborhoodExpansion& speciesA,/*replace by Type typeA*/
-                                    const NeighborhoodExpansion& speciesB,/*replace by Type typeB*/
-                                    unsigned n1, unsigned n2, unsigned l );
+    std::complex<double> powerSpectrumCoefficient(const NeighborhoodExpansion& speciesA,/*replace by Type typeA*/
+                                                  const NeighborhoodExpansion& speciesB,/*replace by Type typeB*/
+                                                  unsigned n1, unsigned n2, unsigned l );
     // GENERIC
-    double powerSpectrumCoefficient(const NeighborhoodExpansion& generic,/*replace GenericType generic*/
-                                    unsigned n1, unsigned n2, unsigned l);
+    std::complex<double> powerSpectrumCoefficient(const NeighborhoodExpansion& generic,/*replace GenericType generic*/
+                                                  unsigned n1, unsigned n2, unsigned l);
 
 };
 

@@ -111,8 +111,8 @@ namespace LocalSimilarity {
             int noneType = 0;
             const auto &exp = expansions.find(noneType)->second;
 
-            auto ps = PowerSpectrum::partialPowerSpectrum(exp, exp).normalized();
-            return ps.normalized().dot(ps);
+            auto ps = PowerSpectrum::partialPowerSpectrum(exp, exp).normalized(); // TODO CHECK THIS!
+            return std::norm(ps.dot(ps)); // TODO NORM HERE OR LATER?
         }
 
         double typeAgnostic(const TypeSpecificNeighborhoodsAtOneCenter &expansions1,
@@ -124,11 +124,11 @@ namespace LocalSimilarity {
 
             auto ps1 = PowerSpectrum::partialPowerSpectrum(exp1, exp1).normalized();
             auto ps2 = PowerSpectrum::partialPowerSpectrum(exp2, exp2).normalized();
-            return ps1.dot(ps2);
+            return std::norm(ps1.dot(ps2));
         }
 
         double chemical(const TypeSpecificNeighborhoodsAtOneCenter &expansions) {
-            double sum = 0;
+            std::complex<double> sum = {0,0};
 
             for (auto &alpha : ParticleKit::kit) {
                 const auto &alphaExpansion = expansions.find(alpha.first)->second;
@@ -137,15 +137,15 @@ namespace LocalSimilarity {
                     const auto &betaExpansion = expansions.find(beta.first)->second;
 
                     auto ps = PowerSpectrum::partialPowerSpectrum(alphaExpansion, betaExpansion);
-                    sum += ps.dot(ps);
+                    sum += ps.dot(ps);// TODO NORM HERE?
                 }
             }
-            return sum;
+            return std::norm(sum);// TODO NORM HERE?
         }
 
         double chemical(const TypeSpecificNeighborhoodsAtOneCenter &expansions1,
                         const TypeSpecificNeighborhoodsAtOneCenter &expansions2) {
-            double sum = 0;
+            std::complex<double> sum = 0;
             for (auto &alpha : ParticleKit::kit) {
                 const auto &alphaExpansion1 = expansions1.find(alpha.first)->second;
                 const auto &alphaExpansion2 = expansions2.find(alpha.first)->second;
@@ -159,7 +159,7 @@ namespace LocalSimilarity {
                     sum += ps1.dot(ps2);
                 }
             }
-            return sum;
+            return std::norm(sum);
         }
 
         double kroneckerDelta(int typeA, int typeB) {
@@ -181,7 +181,7 @@ namespace LocalSimilarity {
 
         double alchemical(const TypeSpecificNeighborhoodsAtOneCenter &expansions1,
                           const TypeSpecificNeighborhoodsAtOneCenter &expansions2) {
-            double sum = 0;
+            std::complex<double> sum = 0;
             for (auto &alpha : ParticleKit::kit) {
                 for (auto &alphaPrimed : ParticleKit::kit) {
 
@@ -208,7 +208,7 @@ namespace LocalSimilarity {
                     }
                 }
             }
-            return sum;
+            return std::norm(sum);
         }
     }
 }

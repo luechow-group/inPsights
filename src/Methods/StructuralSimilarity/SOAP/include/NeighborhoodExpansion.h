@@ -17,6 +17,8 @@ public:
 
     std::complex<double> getCoefficient(unsigned n, unsigned l, int m) const;
 
+    Eigen::Ref<const Eigen::VectorXcd> getCoefficients_nl(unsigned n, unsigned l) const;
+
     void storeCoefficient(unsigned n, unsigned l, int m, const std::complex<double> &coefficient);
 
     Eigen::VectorXcd asEigenVector() const;
