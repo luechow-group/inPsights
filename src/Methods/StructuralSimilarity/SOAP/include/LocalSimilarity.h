@@ -34,8 +34,8 @@ namespace LocalSimilarity {
 
     namespace {
         double typeAgnostic(const TypeSpecificNeighborhoodsAtOneCenter &expansions);
-        double generic(const TypeSpecificNeighborhoodsAtOneCenter &expansions1,
-                       const TypeSpecificNeighborhoodsAtOneCenter &expansions2);
+        double typeAgnostic(const TypeSpecificNeighborhoodsAtOneCenter &expansions1,
+                            const TypeSpecificNeighborhoodsAtOneCenter &expansions2);
 
         double chemical(const TypeSpecificNeighborhoodsAtOneCenter &expansions);
         double chemical(const TypeSpecificNeighborhoodsAtOneCenter &expansions1,

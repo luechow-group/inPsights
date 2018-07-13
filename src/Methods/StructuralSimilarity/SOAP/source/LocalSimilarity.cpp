@@ -61,7 +61,7 @@ namespace LocalSimilarity {
         double similarityValue = 0;
         switch (ExpansionSettings::mode) {
             case ExpansionSettings::Mode::typeAgnostic: {
-                similarityValue = generic(expansions1, expansions2);
+                similarityValue = typeAgnostic(expansions1, expansions2);
                 break;
             }
             case ExpansionSettings::Mode::chemical: {
@@ -115,8 +115,8 @@ namespace LocalSimilarity {
             return ps.normalized().dot(ps);
         }
 
-        double generic(const TypeSpecificNeighborhoodsAtOneCenter &expansions1,
-                       const TypeSpecificNeighborhoodsAtOneCenter &expansions2) {
+        double typeAgnostic(const TypeSpecificNeighborhoodsAtOneCenter &expansions1,
+                            const TypeSpecificNeighborhoodsAtOneCenter &expansions2) {
 
             int noneType = 0;
             const auto &exp1 = expansions1.find(noneType)->second;
