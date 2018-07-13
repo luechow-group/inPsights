@@ -10,6 +10,9 @@ using namespace testing;
 
 class ASinkhornTest : public ::testing::Test {
 public:
+
+    double eps = std::numeric_limits<double>::epsilon()*1e2;
+
     Eigen::MatrixXd sinkhornSoapxxReference(const Eigen::MatrixXd& matrix,
                                             double gamma = ExpansionSettings::gamma,
                                             double eps = std::numeric_limits<double>::epsilon()) {
@@ -140,7 +143,7 @@ TEST_F(ASinkhornTest, BestMatchOfPermutedIdenticalEnvironments) {
 
     compareWithReferenceImplementations(C);
     Eigen::MatrixXd P = Sinkhorn::Pgamma(C, 0.00001) ;
-    doublyStochasticCheck(P);
+    doublyStochasticCheck(P,eps);
 
     Eigen::MatrixXd result = P*C.transpose();
 
@@ -152,31 +155,30 @@ TEST_F(ASinkhornTest, DoublyStochasticCheck_2x2) {
     Eigen::MatrixXd C(2,2);
     C << 0.6,0.5,0.5,0.2;
     compareWithReferenceImplementations(C);
-    doublyStochasticCheck(Sinkhorn::Pgamma(C, 1));
+    doublyStochasticCheck(Sinkhorn::Pgamma(C,1), eps);
     std::cout << Sinkhorn::Pgamma(C, 1) << std::endl;
 }
 
 TEST_F(ASinkhornTest, DoublyStochasticCheck_20x20RandomMatrix) {
     Eigen::MatrixXd C = Eigen::MatrixXd::Random(20,20);
     compareWithReferenceImplementations(C);
-    doublyStochasticCheck(Sinkhorn::Pgamma(C, 1));
+    doublyStochasticCheck(Sinkhorn::Pgamma(C,1), eps);
 }
 
 TEST_F(ASinkhornTest, DoublyStochasticCheck_20x10RandomMatrix) {
     Eigen::MatrixXd C = Eigen::MatrixXd::Random(20,10);
     compareWithReferenceImplementations(C);
-    doublyStochasticCheck(Sinkhorn::Pgamma(C, 1));
+    doublyStochasticCheck(Sinkhorn::Pgamma(C,1), eps);
 }
 
 TEST_F(ASinkhornTest, DoublyStochasticCheck_10x20RandomMatrix) {
     Eigen::MatrixXd C = Eigen::MatrixXd::Random(10,20);
     compareWithReferenceImplementations(C);
-    doublyStochasticCheck(Sinkhorn::Pgamma(C, 1));
+    doublyStochasticCheck(Sinkhorn::Pgamma(C,1), eps);
 }
 
 TEST_F(ASinkhornTest, DoublyStochasticCheck_100x100RandomMatrix) {
     Eigen::MatrixXd C = Eigen::MatrixXd::Random(100,100);
-    auto eps = std::numeric_limits<double>::epsilon()*1e3;
-    compareWithReferenceImplementations(C,eps);
-    doublyStochasticCheck(Sinkhorn::Pgamma(C, 1),eps);
+    compareWithReferenceImplementations(C);
+    doublyStochasticCheck(Sinkhorn::Pgamma(C,1), eps);
 }
