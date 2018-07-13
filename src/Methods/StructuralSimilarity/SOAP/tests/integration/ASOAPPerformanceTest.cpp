@@ -5,6 +5,7 @@
 #include <gtest/gtest.h>
 #include "StructuralSimilarity.h"
 #include "TestMolecules.h"
+#include <omp.h>
 
 class ASOAPPerformanceTest : public ::testing::Test {
 public:

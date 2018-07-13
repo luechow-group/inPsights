@@ -1,7 +1,7 @@
 //
 // Created by Michael Heuer on 02.06.18.
 //
-
+#include <omp.h>
 #include "StructuralSimilarity.h"
 
 namespace StructuralSimilarity{
