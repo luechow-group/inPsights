@@ -19,6 +19,7 @@ target_link_libraries(BaseLib.exe
         )
 add_executable(StructuralSimilarity.exe StructuralSimilarityExec.cpp)
 target_link_libraries(StructuralSimilarity.exe
+        AmolqcInterface
         BaseLib
         StructuralSimilarity
         )

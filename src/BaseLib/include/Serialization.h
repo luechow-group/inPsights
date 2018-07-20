@@ -6,7 +6,6 @@
 #define AMOLQCPP_COLLECTIONPARSER_H
 
 #include <Eigen/Eigenvalues>
-#include <nlohmann/json.hpp>
 
 #include "ParticlesVectorCollection.h"
 #include "PositionsVectorCollection.h"

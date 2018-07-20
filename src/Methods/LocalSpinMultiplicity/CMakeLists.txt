@@ -11,12 +11,6 @@ message ( "-- ++ CREATING PROJECT OR MAKEFILE ---> ${OUTPUT_NAME}" )
 find_package(Eigen3 REQUIRED)
 include_directories( ${EIGEN3_INCLUDE_DIR} )
 
-include_directories(
-        include
-        source
-        tests/resources
-)
-
 set(HEADER_FILES
         include/pse.h
         include/Particle.h
@@ -50,7 +44,10 @@ target_link_libraries(${PROJECT_NAME}
         )
 
 target_include_directories(${PROJECT_NAME} PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        PUBLIC
+            include
+        PRIVATE
+            source
         )
 
 add_subdirectory(tests)

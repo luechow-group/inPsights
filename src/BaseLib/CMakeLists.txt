@@ -2,17 +2,10 @@ cmake_minimum_required(VERSION 3.5)
 
 project(BaseLib CXX)
 
-
 set ( PROJECT_FOLDER_NAME ${PROJECT_NAME} )
-
 set ( PROJECT_PATH ${PROJECT_NAME})
 set ( OUTPUT_NAME "${PROJECT_FOLDER_NAME}" )
 message ( "-- ++ CREATING PROJECT OR MAKEFILE ---> ${OUTPUT_NAME}" )
-
-include_directories(
-        include
-        source
-        )
 
 #find_package(Eigen3 REQUIRED)
 #include_directories( ${EIGEN3_INCLUDE_DIR} )
@@ -69,6 +62,12 @@ set(SOURCE_FILES
         )
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES})
+
+target_include_directories(${PROJECT_NAME}
+        PUBLIC include
+        PRIVATE source
+)
+
 target_link_libraries(${PROJECT_NAME}
         nlohmann_json
         yaml-cpp
@@ -79,9 +78,12 @@ if (DEFINED BUILD_EIGEN AND (${BUILD_EIGEN}))
         target_link_libraries(${PROJECT_NAME} eigen)
 endif()
 
-target_include_directories(${PROJECT_NAME} PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/resources>
+target_include_directories(${PROJECT_NAME}
+        PUBLIC
+                include
+                resources
+        PRIVATE
+                source
         )
 
 add_subdirectory(tests)
