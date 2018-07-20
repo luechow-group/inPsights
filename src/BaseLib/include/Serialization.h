@@ -5,15 +5,13 @@
 #ifndef AMOLQCPP_COLLECTIONPARSER_H
 #define AMOLQCPP_COLLECTIONPARSER_H
 
-#include <Eigen/Eigenvalues>
+#include <yaml-cpp/yaml.h>
+#include <fstream>
 
 #include "ParticlesVectorCollection.h"
 #include "PositionsVectorCollection.h"
-#include "fstream"
-#include <yaml-cpp/yaml.h>
 
 namespace Serialization{
-
 
     template<typename Type>
     std::string yamlStringFrom(const std::string &key, const Type &value,

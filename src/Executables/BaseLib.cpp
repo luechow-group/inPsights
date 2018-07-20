@@ -9,7 +9,6 @@
 #include <yaml-cpp/yaml.h>
 #include <fstream>
 #include <TestMolecules.h>
-#include <nlohmann/json.hpp>
 #include <Serialization.h>
 
 int main(int argc, char *argv[]) {
@@ -43,4 +42,18 @@ int main(int argc, char *argv[]) {
     auto out4 = Serialization::jsonStringFrom<AtomsVectorCollection>("avc",avc);
     std::cout << out4 << std::endl;
 
+    YAML::Node node;
+    node["scalar"] = 2;
+    node["Atoms"] = avc[0];
+
+    Eigen::Matrix2d mat;
+    mat << 1,2,3,4;
+
+    YAML::Emitter emitter;
+    emitter << YAML::Flow
+            << YAML::BeginMap
+            << YAML::Key << "Data" << YAML::Value << node
+            << YAML::Key << "Matrix" << YAML::Value << 1234//mat
+            << YAML::EndMap;
+    std::cout << emitter.c_str() << std::endl;
 }

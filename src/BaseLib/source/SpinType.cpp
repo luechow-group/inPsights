@@ -24,7 +24,7 @@ std::string Spins::toString(const Spin& s){
     switch(s) {
         case Spin::alpha: return "a";
         case Spin::beta: return "b";
-        case Spin::none: return "-";
+        default: return "-";
     }
 }
 

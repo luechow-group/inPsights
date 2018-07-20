@@ -32,7 +32,7 @@ int main(int argc, char *argv[]) {
     //nlohmann::json json = CollectionParser::atomsAndElectronsVectorToJson(av,ev);
     //CollectionParser::writeJSON(json,"H6TS_CAS23_Ic444_GlobMax.json");
 
-    auto ec = CollectionParser::electronsVectorFromJson(CollectionParser::readJSON("H6TS_CAS23_Ic444_GlobMax.json"));
+    auto ec = YAML::LoadFile("H6TS_CAS23_Ic444_GlobMax.json")["Electrons"].as<ElectronsVector>();
     auto x1 = ec.positionsVector().positionsAsEigenVector();
 
     // cyclic permutation
@@ -69,7 +69,7 @@ int main(int argc, char *argv[]) {
     Eigen::VectorXd grad(n);
     electronicWaveFunctionProblem.putElectronsIntoNuclei(guess, grad);
     electronicWaveFunctionProblem.gradient(guess, grad);
-    auto gradev = ElectronsVector(grad, ec.spinTypesVector().typesAsEigenVector()());
+    auto gradev = ElectronsVector(PositionsVector(grad),ec.typesVector());
     std::cout << "Gradient:\n" << gradev << std::endl;
 
     Eigen::MatrixXd hess(n, n);
@@ -80,14 +80,14 @@ int main(int argc, char *argv[]) {
     std::cout << std::endl;
 
     // save results
-    ElectronsVector ev(guess,ec.spinTypesVector().typesAsEigenVector()());
-    nlohmann::json json = CollectionParser::atomsAndElectronsVectorToJson(av,ev);
-    json["Value"] = electronicWaveFunctionProblem.value(guess);
-    json["Gradient"] = CollectionParser::electronsVectorToJson(gradev)["ElectronsVector"];
-    json["ElectronsVector"]["AtNuclei"]= electronicWaveFunctionProblem.getIndicesOfElectronsAtNuclei();
-    json["ElectronsVector"]["NotAtNuclei"]= electronicWaveFunctionProblem.getIndicesOfElectronsNotAtNuclei();
-    //json["HessianDiagonalization"] = CollectionParser::selfAdjointEigenSolverResultsToJsonArray(eigenSolver);
-    CollectionParser::writeJSON(json,"H6TS_2pairs_swap.json");
+    //ElectronsVector ev(guess,ec.typesVector().typesAsEigenVector()());
+    //nlohmann::json json = CollectionParser::atomsAndElectronsVectorToJson(av,ev);
+    //json["Value"] = electronicWaveFunctionProblem.value(guess);
+    //json["Gradient"] = CollectionParser::electronsVectorToJson(gradev)["ElectronsVector"];
+    //json["ElectronsVector"]["AtNuclei"]= electronicWaveFunctionProblem.getIndicesOfElectronsAtNuclei();
+    //json["ElectronsVector"]["NotAtNuclei"]= electronicWaveFunctionProblem.getIndicesOfElectronsNotAtNuclei();
+    ////json["HessianDiagonalization"] = CollectionParser::selfAdjointEigenSolverResultsToJsonArray(eigenSolver);
+    //CollectionParser::writeJSON(json,"H6TS_2pairs_swap.json");
 
 
     for (int i = 0; i < 17; ++i) {
@@ -108,7 +108,7 @@ int main(int argc, char *argv[]) {
             Visualization::drawEigenVector(root, eigenSolver.eigenvectors(), guess, evIndex);
 
             // Plot electrons with connections
-            ElectronsVector ecnew(guess, ec.spinTypesVector().typesAsEigenVector()());
+            ElectronsVector ecnew(PositionsVector(guess), ec.typesVector());
             ElectronsVector3D(root, av, ecnew, true);
 
             //Qt3DRender::QRenderCapture capture(root);
