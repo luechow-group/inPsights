@@ -43,8 +43,8 @@ void PositionsVector::insert(const Eigen::Vector3d &position, long i) {
 }
 
 std::ostream& operator<<(std::ostream& os, const PositionsVector& pc){
-    for (unsigned long i = 0; i < pc.numberOfEntities(); i++){
-        os << ToString::unsignedLongToString(i + 1) << " " << ToString::vector3dToString(pc[i]) << std::endl;
+    for (long i = 0; i < pc.numberOfEntities(); i++){
+        os << ToString::longToString(i + 1) << " " << ToString::vector3dToString(pc[i]) << std::endl;
     }
     return os;
 }
