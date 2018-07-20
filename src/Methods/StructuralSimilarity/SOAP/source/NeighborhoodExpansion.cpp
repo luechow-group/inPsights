@@ -16,6 +16,14 @@ std::complex<double> NeighborhoodExpansion::getCoefficient(unsigned n, unsigned 
     return coefficients_[(n-1)*angularEntityLength_ + (angularEntityLength(l-1)) + (m+l)];
 }
 
+Eigen::Ref<const Eigen::VectorXcd> NeighborhoodExpansion::getCoefficients_nl(unsigned n, unsigned l) const {
+    Eigen::VectorXcd coeffs(2*l+1);
+    unsigned start = (n-1)*angularEntityLength_ + (angularEntityLength(l-1));
+    //Eigen::Ref<Eigen::VectorXcd>ref = coefficients_.segment(start, 2*l+1); // return only reference?
+    //return ref;
+    return coefficients_.segment(start, 2*l+1);
+}
+
 unsigned NeighborhoodExpansion::angularEntityLength(int l) const {
     if( l < 0) return 0;
     else return l*l + angularSubEntityLength(unsigned(l));
