@@ -51,6 +51,8 @@ std::vector<Gaussian> RadialBasis::createBasis() {
             ExpansionSettings::Cutoff::radius = (*basis_.end()).center(); //TODO check this: is the last basis function centered at the cutoff radius?
             return basis;
         }
+        default:
+            return {}; //TODO treat undefined behavior
     }
 
 }

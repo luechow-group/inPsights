@@ -190,6 +190,7 @@ namespace ParticleKit {
                 return {typeNumberPair.first,idx-count};
             }
         }
+        return {0,0}; //TODO undefined behavior
     }
 
     NumberedElement getNumberedElementByIndex(unsigned idx){
@@ -203,6 +204,7 @@ namespace ParticleKit {
                 return {typeNumberPair.first,idx-count};
             }
         }
+        return {Element::none,0}; //TODO undefined behavior
     }
 
     NumberedSpin getNumberedSpinByIndex(unsigned idx) {
