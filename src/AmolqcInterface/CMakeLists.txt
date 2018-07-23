@@ -44,9 +44,4 @@ target_link_libraries(${PROJECT_NAME}
         AmolqcppInterface
         )
 
-add_executable(${PROJECT_NAME}_main main.cpp)
-target_link_libraries(${PROJECT_NAME}_main
-        ${PROJECT_NAME}
-        )
-
 add_subdirectory(tests)
