@@ -32,9 +32,14 @@ namespace ExpansionSettings {
 
     std::string toString(const Mode &mode) {
         switch(mode) {
-            case ExpansionSettings::Mode::typeAgnostic : return "typeAgnostic";
-            case ExpansionSettings::Mode::chemical : return "chemical";
-            case ExpansionSettings::Mode::alchemical : return "alchemical";
+            case ExpansionSettings::Mode::typeAgnostic :
+                return "typeAgnostic";
+            case ExpansionSettings::Mode::chemical :
+                return "chemical";
+            case ExpansionSettings::Mode::alchemical :
+                return "alchemical";
+            default:
+                return "undefined";
         }
     }
 
@@ -83,8 +88,12 @@ namespace ExpansionSettings {
 
         std::string toString(const BasisType &type) {
             switch(type) {
-                case BasisType::equispaced : return "equispaced";
-                case BasisType::adaptive : return "adaptive";
+                case BasisType::equispaced :
+                    return "equispaced";
+                case BasisType::adaptive :
+                    return "adaptive";
+                default:
+                    return "undefined";
             }
         }
 

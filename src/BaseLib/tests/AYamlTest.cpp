@@ -5,7 +5,6 @@
 #include <gtest/gtest.h>
 #include <sstream>
 #include <TestMolecules.h>
-#include <nlohmann/json.hpp>
 #include <yaml-cpp/yaml.h>
 #include <fstream>
 #include <sstream>

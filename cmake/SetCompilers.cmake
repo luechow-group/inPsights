@@ -35,7 +35,7 @@ elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
     add_definitions(-ftracer -floop-optimize -funroll-loops -mtune=native -mmmx -msse2 -mfpmath=sse -g)
 elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
     # using Intel C++
-    add_definitions(-ipo)
+    add_definitions(-ipo -inline-forceinline)
 elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
     # using Visual Studio C++
     message(" ## WARNING ##: Amolqcpp was not tested with the Microsoft Visual Studio compiler.

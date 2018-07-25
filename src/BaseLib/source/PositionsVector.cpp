@@ -43,8 +43,8 @@ void PositionsVector::insert(const Eigen::Vector3d &position, long i) {
 }
 
 std::ostream& operator<<(std::ostream& os, const PositionsVector& pc){
-    for (unsigned long i = 0; i < pc.numberOfEntities(); i++){
-        os << ToString::unsignedLongToString(i + 1) << " " << ToString::vector3dToString(pc[i]) << std::endl;
+    for (long i = 0; i < pc.numberOfEntities(); i++){
+        os << ToString::longToString(i + 1) << " " << ToString::vector3dToString(pc[i]) << std::endl;
     }
     return os;
 }
@@ -78,11 +78,11 @@ long PositionsVector::calculateIndex(long i) const {
 }
 
 Eigen::Ref<Eigen::Vector3d> PositionsVector::operator()(long i){
-    return Eigen::Ref<Eigen::Vector3d>(positions_.segment(i*entityLength_,entityLength_));
+    return Eigen::Ref<Eigen::Vector3d>(positions_.segment(calculateIndex(i),entityLength_));
 }
 
 const Eigen::Ref<const Eigen::Vector3d>& PositionsVector::operator()(long i) const{
-    return Eigen::Ref<const Eigen::Vector3d>(positions_.segment(i*entityLength_,entityLength_));
+    return Eigen::Ref<const Eigen::Vector3d>(positions_.segment(calculateIndex(i),entityLength_));
 }
 
 namespace YAML {

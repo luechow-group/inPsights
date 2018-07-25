@@ -3,6 +3,7 @@
 //
 
 #include "Serialization.h"
+
 #include "ElectronicWaveFunctionProblem.h"
 #include "solver/bfgsnssolver.h"
 #include "solver/bfgssolver.h"
@@ -48,7 +49,7 @@ int main(int argc, char *argv[]) {
     ElectronicWaveFunctionProblem electronicWaveFunctionProblem(wavefunctionFilename);
 
     auto ac = electronicWaveFunctionProblem.getAtomsVector();
-    auto ec = CollectionParser::electronsVectorFromJson(CollectionParser::readJSON(electronsVectorFilename));
+    auto ec = YAML::LoadFile(electronsVectorFilename)["Electrons"].as<ElectronsVector>();
     std::cout << ac << std::endl<< std::endl;
     std::cout << ec << std::endl;
 

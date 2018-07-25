@@ -15,7 +15,7 @@ public:
 
 TEST_F(AToStringTest, UsignedLong){
     int a = 19;
-    ASSERT_EQ(ToString::unsignedLongToString(a, 2)," 19");
+    ASSERT_EQ(ToString::longToString(a, 2)," 19");
 }
 
 TEST_F(AToStringTest, Double){

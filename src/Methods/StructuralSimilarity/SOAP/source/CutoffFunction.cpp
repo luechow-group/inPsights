@@ -44,6 +44,8 @@ Eigen::Vector3d CutoffFunction::getWeightGradient(const Eigen::Vector3d&position
         return Eigen::Vector3d::Zero();
     else if (innerPlateauRadius < distanceFromExpansionCenter && distanceFromExpansionCenter <= cutoffRadius)
         return 0.5*( 1 + sin( M_PI*(distanceFromExpansionCenter-innerPlateauRadius)/cutoffWidth)*M_PI/cutoffWidth )*direction;
+    else
+        return Eigen::Vector3d::Zero(); //TODO is this the correct behavior?
 };
 
 double CutoffFunction::distance(const Eigen::Vector3d &position,

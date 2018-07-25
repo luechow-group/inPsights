@@ -8,19 +8,14 @@ set ( PROJECT_PATH ${PROJECT_NAME})
 set ( OUTPUT_NAME "${PROJECT_FOLDER_NAME}" )
 message ( "-- ++ CREATING PROJECT OR MAKEFILE ---> ${OUTPUT_NAME}" )
 
-file(GLOB_RECURSE RESOURCE_FILES resources/*.*)
-file(COPY ${RESOURCE_FILES} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-
-
-
 add_executable(BaseLib.exe BaseLib.cpp)
 target_link_libraries(BaseLib.exe
         BaseLib
         )
 add_executable(StructuralSimilarity.exe StructuralSimilarityExec.cpp)
 target_link_libraries(StructuralSimilarity.exe
-        BaseLib
         AmolqcInterface
+        BaseLib
         StructuralSimilarity
         )
 
