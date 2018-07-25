@@ -36,8 +36,6 @@ std::complex<double> PowerSpectrum::powerSpectrumCoefficient(const NeighborhoodE
     return powerSpectrumCoefficient(generic,generic,n1,n2,l); // TODO CAN WE SAVE EFFORT HERE?
 }
 
-#include <iostream>
-//double
 std::complex<double> PowerSpectrum::powerSpectrumCoefficient(const NeighborhoodExpansion& speciesA,
                                                              const NeighborhoodExpansion& speciesB,
                                                              unsigned n1, unsigned n2, unsigned l ) {
@@ -45,19 +43,8 @@ std::complex<double> PowerSpectrum::powerSpectrumCoefficient(const NeighborhoodE
     ExpansionSettings::Radial::checkBounds(n2);
     ExpansionSettings::Angular::checkBounds(l);
 
-    std::complex<double> sum2 = (speciesA.getCoefficients_nl(n1, l).array().conjugate()
+    std::complex<double> sum = (speciesA.getCoefficients_nl(n1, l).array().conjugate()
                   * speciesB.getCoefficients_nl(n2, l).array()).sum();
-    //std::cout << speciesA.getCoefficients_nl(n1, l).transpose()//<< ", "<< speciesB.getCoefficients_nl(n2, l).transpose()
-    //          << " ELEMENTS: ";
-    //std::complex<double> sum={0,0};
-    //for (int m = -int(l); m <= int(l); ++m) {
-    //    //TODO sum up all particles ?? BEFORE OR AFTER MULTIPLICATION?
-    //    //std::cout << speciesA.getCoefficient(n1, l, m); //<< ", " << speciesB.getCoefficient(n2, l, m);
-    //    sum += std::conj(speciesA.getCoefficient(n1, l, m)) * speciesB.getCoefficient(n2, l, m); // TODO CAREFUL: the conjugation order is flipped
-    //}
-    //std::cout << std::endl;
-    //std::cout << sum << ",\t" << sum2 << std::endl;
-    return M_PI * sqrt(8./(2.*l+1)) * sum2; // in the soapxx code, this prefactor can be replaced by 1 (using a bool)
-    //return M_PI * sqrt(8./(2.*l+1)) * std::norm(sum);
+    return M_PI * sqrt(8./(2.*l+1)) * sum; // in the soapxx code, this prefactor can be replaced by 1 (using a bool)
 }
 
