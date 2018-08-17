@@ -7,10 +7,11 @@
 
 #include <Eigen/Core>
 #include <iostream>
+
 #include "ToString.h"
 #include "ElementType.h"
-#include "ElementInfo.h"
 #include "SpinType.h"
+#include "EigenYamlConversion.h"
 
 template<typename Type>
 class Particle {
@@ -20,7 +21,7 @@ public:
               type_(0)
     {}
 
-    Particle(const Eigen::Vector3d& position, Type type)
+    Particle(Type type, const Eigen::Vector3d &position)
             : position_(position), type_(int(type))
     {}
 
@@ -39,22 +40,15 @@ public:
         return static_cast<Type>(type_);
     }
 
+    // Generic implementation
     std::string toString() const{
-        std::string typeString;
+        std::string typeString = std::to_string(type_);
 
-        if(type_ < 0)
-            // particle is an electron
-            typeString = "e" + Spins::toString(Spins::spinTypeFromInt(type_));
-        else if (type_ > 0) {
-            // particle is an atom
-            typeString = Elements::ElementInfo::symbol(Elements::elementTypeFromInt(type_));
-            if(typeString.length() == 1){
-                typeString += " ";
-            }
-        }
-        else typeString = "  "; // particle is none
+        if(typeString.size() == 1)
+            typeString = "0"+typeString;
+        typeString += ToString::vector3dToString(position_);
 
-        return typeString + ToString::vector3dToString(position_);
+       return typeString;
     }
 
     friend std::ostream& operator<< (std::ostream& os, const Particle<Type>& p) {
@@ -62,13 +56,9 @@ public:
         return os;
     }
 
+    //Generic
     int charge() const{
-        if(type_ < 0)
-            return -1;
-        else if (type_ > 0)
-            return Elements::ElementInfo::Z(Elements::elementTypeFromInt(type_));
-        else
-            return 0;
+        return 0;
     }
     
 protected:
@@ -76,7 +66,41 @@ protected:
     int type_;
 };
 
-using Electron = Particle<Spins::SpinType>;
-using Atom = Particle<Elements::ElementType>;
+using TypedParticle = Particle<int>;
+using Electron = Particle<Spin>;
+using Atom = Particle<Element>;
+
+template<>
+std::string Electron::toString() const;
+template<>
+std::string Atom::toString() const;
+
+template<>
+int Electron::charge() const;
+template<>
+int Atom::charge() const;
+
+
+namespace YAML {
+    class Node; class Emitter;
+    template <typename Type> struct convert;
+
+    template<> struct convert<TypedParticle> {
+        static Node encode(const TypedParticle & rhs);
+        static bool decode(const Node& node, TypedParticle & rhs);
+    };
+    template<> struct convert<Atom> {
+        static Node encode(const Atom & rhs);
+        static bool decode(const Node& node, Atom& rhs);
+    };
+    template<> struct convert<Electron> {
+        static Node encode(const Electron & rhs);
+        static bool decode(const Node& node, Electron& rhs);
+    };
+
+    Emitter& operator<< (Emitter& out, const TypedParticle& p);
+    Emitter& operator<< (Emitter& out, const Atom& p);
+    Emitter& operator<< (Emitter& out, const Electron& p);
+}
 
 #endif //AMOLQCPP_PARTICLE_H

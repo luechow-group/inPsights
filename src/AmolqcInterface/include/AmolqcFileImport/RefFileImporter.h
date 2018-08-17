@@ -22,6 +22,8 @@ public:
     unsigned long getNumberOfMaxima(unsigned long k, unsigned long m) const;
     double getNegativeLogarithmizedProbabilityDensity(unsigned long k, unsigned long m) const;
 
+    unsigned long numberOfSuperstructures();
+
 private:
     unsigned long calculateLine(unsigned long k, unsigned long m) const;
 
@@ -29,10 +31,11 @@ private:
             numberOfElectrons_,
             numberOfAlphaElectrons_,
             numberOfBetaElectrons_,
-            numberOfSuperstructures_, totalNumberOfMaxima_, maximalNumberOfSubstructures;
-    // line idx, numerOfSubstructures, totalNumberOfMaxima
+            numberOfSuperstructures_,
+            totalNumberOfMaxima_,
+            maximalNumberOfSubstructures; ;
+    const unsigned numberOfLinesAboveCoordinatesBlock = 2;
 
-    //std::vector<std::tuple<unsigned long,unsigned long,unsigned long>> substructuresData_;
     std::vector<SubstructureDataEntry> substructuresData_;
 };
 

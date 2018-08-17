@@ -17,16 +17,16 @@ public:
         Vector3d pos1(1,2,3);
         Vector3d pos2(-1,0,3.5);
         Vector3d pos3(-7.3,0.5,9);
-        auto alpha = Spins::SpinType::alpha;
-        auto beta = Spins::SpinType::beta;
+        auto alpha = Spin::alpha;
+        auto beta = Spin::beta;
 
         ElectronsVector electronsVector;
 
         for (int i = 0; i < 1000; i++){
             electronsVector = ElectronsVector();
-            electronsVector.append(Electron(pos1,alpha));
-            electronsVector.append(Electron(pos2,alpha));
-            electronsVector.append(Electron(pos3,beta));
+            electronsVector.append(Electron(alpha,pos1));
+            electronsVector.append(Electron(alpha,pos2));
+            electronsVector.append(Electron(beta,pos3));
 
             optimizationPath.append(electronsVector);
 
@@ -37,14 +37,12 @@ public:
     }
 };
 
-TEST_F(AVisualizationTest, empty) {
-}
 
 TEST_F(AVisualizationTest, shortenPath) {
     auto shortenedPath = Visualization::shortenPath(optimizationPath,10);
 
-    ASSERT_EQ(optimizationPath.spinTypesVector().typesAsEigenVector()(),
-              shortenedPath.spinTypesVector().typesAsEigenVector()());
+    ASSERT_EQ(optimizationPath.typesVector().typesAsEigenVector(),
+              shortenedPath.typesVector().typesAsEigenVector());
     ASSERT_EQ(optimizationPath[0].positionsVector().positionsAsEigenVector(),
               shortenedPath[0].positionsVector().positionsAsEigenVector());
 

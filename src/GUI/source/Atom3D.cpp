@@ -5,7 +5,7 @@
 #include "Atom3D.h"
 #include "Helper.h"
 
-Atom3D::Atom3D(Qt3DCore::QEntity *root, const QVector3D& location, const Elements::ElementType& elementType)
+Atom3D::Atom3D(Qt3DCore::QEntity *root, const QVector3D& location, const Element& elementType)
   : Sphere(root,
            QColorFromElementType(elementType),
            location,

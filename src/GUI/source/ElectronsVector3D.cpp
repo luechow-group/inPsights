@@ -48,7 +48,7 @@ void ElectronsVector3D::drawElectrons(Qt3DCore::QEntity *root,
             QFont font(QString("Arial"), 12, 0, false);
             QVector3D shift;
 
-            if(electrons3D[i].getSpinType() == Spins::SpinType::alpha) shift = QVector3D(0.0f,0.15f,0.15f);
+            if(electrons3D[i].getSpinType() == Spin::alpha) shift = QVector3D(0.0f,0.15f,0.15f);
             else shift = QVector3D(-0.0f,-0.15f,-0.15f);
 
             textTransform->setTranslation(qvector3d+shift);
@@ -88,16 +88,22 @@ void ElectronsVector3D::drawConnections(Qt3DCore::QEntity *root,
             auto e1 = electronsVector[electronsNotInNuclei[i]];
             auto e2 = electronsVector[electronsNotInNuclei[j]];
 
-            if (Metrics::distance(e1.position(), e2.position()) < 2) {
+            double distanceThreshold = 1.6;
+            if (Metrics::distance(e1.position(), e2.position()) < distanceThreshold) {
                 auto p1 = e1.position();
                 auto p2 = e2.position();
                 auto q1 = QVector3D(p1[0], p1[1], p1[2]);
                 auto q2 = QVector3D(p2[0], p2[1], p2[2]);
 
                 if (e1.type() == e2.type())
-                    Cylinder(root, Qt::magenta, {q1,q2}, 0.005,0.5);
+                    if(e1.type() == Spin::alpha)
+                        Cylinder(root,Spins::QColorFromSpinType(Spin::alpha), {q1,q2}, 0.015,0.5);
+                    else if(e1.type() == Spin::beta)
+                        Cylinder(root,Spins::QColorFromSpinType(Spin::beta), {q1,q2}, 0.015,0.5);
+                    else
+                        Cylinder(root,Spins::QColorFromSpinType(Spin::none), {q1,q2}, 0.015,0.5);
                 else if (e1.type() != e2.type())
-                    Cylinder(root, Qt::green, {q1,q2}, 0.005,0.5);
+                    Cylinder(root, Qt::magenta, {q1,q2}, 0.005,0.25);
                 else
                     Cylinder(root, Qt::cyan, {q1,q2}, 0.005, 0.25);
             }

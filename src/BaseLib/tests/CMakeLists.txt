@@ -1,7 +1,10 @@
 cmake_minimum_required(VERSION 3.5)
 enable_testing()
 
-FILE(GLOB TEST_SOURCE_FILES *)
+FILE(GLOB TEST_SOURCE_FILES
+        *
+        SpecialMathFunctions/*)
+
 
 add_executable("${PROJECT_NAME}_RunAllTests" ${TEST_SOURCE_FILES})
 

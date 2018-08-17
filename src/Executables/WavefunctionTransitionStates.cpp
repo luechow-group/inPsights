@@ -8,7 +8,7 @@
 #include <QApplication>
 
 #include "ElectronicWaveFunctionProblem.h"
-#include "CollectionParser.h"
+#include "Serialization.h"
 #include "MoleculeWidget.h"
 #include "ElectronsVector3D.h"
 #include "AtomsVector3D.h"
@@ -28,10 +28,13 @@ int main(int argc, char *argv[]) {
     RefFileImporter refFileImporter("CP+.ref");
     //auto ev = refFileImporter.getMaximaStructure(1,1);
     //nlohmann::json json = CollectionParser::atomsAndElectronsVectorToJson(av,ev);
-    //CollectionParser::writeJSON(json,"CP+_Max1A.json");
+    //CollectionParser::writeJSON(json,"CP+_Max1A.json")
+    auto ev = YAML::LoadFile("CP+_Max1A.json")["Electrons"].as<ElectronsVector>();
 
-    auto ev = CollectionParser::electronsVectorFromJson(CollectionParser::readJSON("CP+_Max2A.json"));
+    //auto ev = CollectionParser::electronsVectorFromJson(CollectionParser::readJSON("CP+_Max2A.json"));
     PositionsVector pv = ev.positionsVector();
+
+    //auto ev =
 
     // MaxA1
     /*
@@ -117,13 +120,23 @@ int main(int argc, char *argv[]) {
 
 
     // save results
-    nlohmann::json json = CollectionParser::atomsAndElectronsVectorToJson(av, ElectronsVector(PositionsVector(guess),ev.typesVector()));
-    json["Value"] = electronicWaveFunctionProblem.value(guess);
-    json["Gradient"] = CollectionParser::electronsVectorToJson(gradev)["ElectronsVector"];
-    json["ElectronsVector"]["AtNuclei"]= electronicWaveFunctionProblem.getIndicesOfElectronsAtNuclei();
-    json["ElectronsVector"]["NotAtNuclei"]= electronicWaveFunctionProblem.getIndicesOfElectronsNotAtNuclei();
-    json["HessianDiagonalization"] = CollectionParser::selfAdjointEigenSolverResultsToJsonArray(eigenSolver);
-    CollectionParser::writeJSON(json,"CP+_Max2AB_TSguess.json");
+    //nlohmann::json json = CollectionParser::atomsAndElectronsVectorToJson(av, ElectronsVector(PositionsVector(guess),ev.typesVector()));
+
+    YAML::Node node;
+
+
+
+
+    node["Value"] = electronicWaveFunctionProblem.value(guess);
+    node["Gradient"] = gradev;
+    node["ElectronsVector"]["AtNuclei"]= electronicWaveFunctionProblem.getIndicesOfElectronsAtNuclei();
+    node["ElectronsVector"]["NotAtNuclei"]= electronicWaveFunctionProblem.getIndicesOfElectronsNotAtNuclei();
+    //node["HessianDiagonalization"] = CollectionParser::selfAdjointEigenSolverResultsToJsonArray(eigenSolver);//TODO
+
+    std::string filename = "CP+_Max2AB_TSguess.json";
+    std::ofstream file(filename);
+    file << Serialization::jsonStringFrom(node);
+
 
     if (true) {
         QApplication app(argc, argv);

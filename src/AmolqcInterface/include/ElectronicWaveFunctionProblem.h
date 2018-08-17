@@ -24,7 +24,7 @@ public:
 
     bool callback(const cppoptlib::Criteria<double> &state, Eigen::VectorXd &x, Eigen::VectorXd& grad) override;
 
-    ParticlesVector<Elements::ElementType> getAtomsVector() const;
+    ParticlesVector<Element> getAtomsVector() const;
 
     unsigned getValueCallCount(){
         return valueCallCount_;

@@ -32,4 +32,15 @@ private:
     long numberOfPositionEntities_;
 };
 
+namespace YAML {
+    class Node; class Emitter;
+    template <typename Type> struct convert;
+
+    template<> struct convert<PositionsVectorCollection> {
+        static Node encode(const PositionsVectorCollection &rhs);
+        static bool decode(const Node &node, PositionsVectorCollection &rhs);
+    };
+    Emitter &operator<<(Emitter &out, const PositionsVectorCollection &p) ;
+}
+
 #endif //AMOLQCPP_POSITIONSVECTORCOLLECTION_H

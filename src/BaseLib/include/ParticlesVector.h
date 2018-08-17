@@ -9,6 +9,8 @@
 #include "Particle.h"
 #include "PositionsVector.h"
 #include "TypesVector.h"
+#include <vector>
+#include <yaml-cpp/yaml.h>
 
 template<typename Type>
 class ParticlesVector : public AbstractVector{
@@ -36,8 +38,15 @@ public:
                && "The number of entities in ParticlesVector, PositionsVector, and TypesVector must match.");
     }
 
+    ParticlesVector(std::vector<Particle<Type>> particles)
+            : ParticlesVector() {
+        for (const auto& particle : particles){
+            append(particle);
+        }
+    }
+    
     Particle<Type> operator[](long i) const {
-        return {positionsVector_[i],typesVector_[i]};
+        return {typesVector_[i],positionsVector_[i]};
     }
 
     const PositionsVector & positionsVector() const {
@@ -76,15 +85,14 @@ public:
         this->insert(particle,numberOfEntities());
     }
 
-    void permute(long i, long j) {
+    void permute(long i, long j) override {
         positionsVector_.permute(i,j);
         typesVector_.permute(i,j);
     }
 
     friend std::ostream& operator<<(std::ostream& os, const ParticlesVector<Type> & pv){
-        for (unsigned long i = 0; i < pv.numberOfEntities(); i++) {
-
-            os << ToString::unsignedLongToString(i + 1) << " " << pv[i] << std::endl;
+        for (long i = 0; i < pv.numberOfEntities(); i++) {
+            os << ToString::longToString(i + 1) << " " << pv[i] << std::endl;
         }
         return os;
     }
@@ -94,8 +102,38 @@ protected:
     TypesVector<Type> typesVector_;
 };
 
-using ElectronsVector = ParticlesVector<Spins::SpinType>;
-using AtomsVector = ParticlesVector<Elements::ElementType>;
+using TypedParticlesVector = ParticlesVector<int>;
+using ElectronsVector = ParticlesVector<Spin>;
+using AtomsVector = ParticlesVector<Element>;
 
+namespace YAML {
+    template<typename Type> struct convert<ParticlesVector<Type>> {
+        static Node encode(const ParticlesVector<Type> & pv){
+            Node node;
+            node["Types"] = pv.typesVector();
+            node["Positions"] = pv.positionsVector();
+            return node;
+
+        }
+        static bool decode(const Node& nodes, ParticlesVector<Type> & rhs){
+            if(!nodes.IsMap())
+                return false;
+            ParticlesVector<Type> pv(
+                    nodes["Positions"].as<PositionsVector>(),
+                    nodes["Types"].as<TypesVector<Type>>());
+            rhs = pv;
+            return true;
+        }
+    };
+
+    template<typename Type>
+    Emitter& operator<< (Emitter& out, const ParticlesVector<Type>& pv){
+        out << BeginMap// << Newline
+            << Key << "Types" << Value << pv.typesVector() << Newline
+            << Key << "Positions" << Value <<  pv.positionsVector()// << Newline
+            << EndMap;
+        return out;
+    };
+}
 
 #endif //AMOLQCPP_PARTICLESVECTOR_H

@@ -28,9 +28,9 @@ namespace Elements {
 
                 /* Constructor for default (empty) element */
                 ElementData() : d_symbol(""), d_Z(0), d_mass(-1),
-                                d_color({0,0,0}),
                                 d_vdWRadius(-1), d_valElectrons(-1),
-                                d_sElectrons(-1), d_pElectrons(-1), d_dElectrons(-1), d_fElectrons(-1) {};
+                                d_sElectrons(-1), d_pElectrons(-1), d_dElectrons(-1), d_fElectrons(-1),
+                                d_color({0,0,0}) {};
 
                 /* Constructor for adding a new element */
                 ElementData(std::string symbol, unsigned int Z, double mass,
@@ -38,10 +38,10 @@ namespace Elements {
                             double vdWRadiusInPicometers = -1, int valElectrons = -1, int sElectrons = -1,
                             int pElectrons = -1, int dElectrons = -1, int fElectrons = -1) :
                         d_symbol(symbol), d_Z(Z), d_mass(mass),
-                        d_color(color),
                         d_vdWRadius(vdWRadiusInPicometers / 100 * ConversionFactors::angstrom2bohr),
                         d_valElectrons(valElectrons), d_sElectrons(sElectrons),
-                        d_pElectrons(pElectrons), d_dElectrons(dElectrons),d_fElectrons(fElectrons) {};
+                        d_pElectrons(pElectrons), d_dElectrons(dElectrons),d_fElectrons(fElectrons),
+                        d_color(color) {};
 
                 /* Element symbol as string */
                 std::string symbol() const { return d_symbol; }

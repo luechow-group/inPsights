@@ -37,7 +37,7 @@
 #include <QtCharts/QScatterSeries>
 
 #include "solver/bfgsnssolver.h"
-#include "CollectionParser.h"
+#include "Serialization.h"
 
 int main(int argc, char *argv[]) {
 
@@ -70,7 +70,7 @@ int main(int argc, char *argv[]) {
 
     //auto ecA = CollectionParser::electronsVectorFromJson(CollectionParser::readJSON("Ethane-glob-max.json"));
     auto ecA = ElectronsVector(PositionsVector(x0),
-                               SpinTypesVector({Spins::SpinType::alpha,Spins::SpinType::beta}));
+                               SpinTypesVector({Spin::alpha,Spin::beta}));
     auto ecB = ecA;
 
 

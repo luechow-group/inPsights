@@ -23,11 +23,11 @@ ParticlesVectorPath3D::ParticlesVectorPath3D(Qt3DCore::QEntity *root,
 
         auto spinType = electronsVectorCollection.typesVector()[i];
 
-        if (spinType == Spins::SpinType::alpha) {
-            new Polyline(root,Spins::QColorFromSpinType(Spins::SpinType::alpha) , pointsList[i], radius);
+        if (spinType == Spin::alpha) {
+            new Polyline(root,Spins::QColorFromSpinType(Spin::alpha) , pointsList[i], radius);
         }
         else {
-            new Polyline(root,Spins::QColorFromSpinType(Spins::SpinType::beta) , pointsList[i], radius);
+            new Polyline(root,Spins::QColorFromSpinType(Spin::beta) , pointsList[i], radius);
         }
 
     }

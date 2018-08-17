@@ -4,6 +4,8 @@
 
 #include "PositionsVector.h"
 #include "ToString.h"
+#include <yaml-cpp/yaml.h>
+#include <EigenYamlConversion.h>
 
 using namespace Eigen;
 
@@ -41,8 +43,8 @@ void PositionsVector::insert(const Eigen::Vector3d &position, long i) {
 }
 
 std::ostream& operator<<(std::ostream& os, const PositionsVector& pc){
-    for (unsigned long i = 0; i < pc.numberOfEntities(); i++){
-        os << ToString::unsignedLongToString(i + 1) << " " << ToString::vector3dToString(pc[i]) << std::endl;
+    for (long i = 0; i < pc.numberOfEntities(); i++){
+        os << ToString::longToString(i + 1) << " " << ToString::vector3dToString(pc[i]) << std::endl;
     }
     return os;
 }
@@ -76,9 +78,35 @@ long PositionsVector::calculateIndex(long i) const {
 }
 
 Eigen::Ref<Eigen::Vector3d> PositionsVector::operator()(long i){
-    return Eigen::Ref<Eigen::Vector3d>(positions_.segment(i*entityLength_,entityLength_));
+    return Eigen::Ref<Eigen::Vector3d>(positions_.segment(calculateIndex(i),entityLength_));
 }
 
 const Eigen::Ref<const Eigen::Vector3d>& PositionsVector::operator()(long i) const{
-    return Eigen::Ref<const Eigen::Vector3d>(positions_.segment(i*entityLength_,entityLength_));
+    return Eigen::Ref<const Eigen::Vector3d>(positions_.segment(calculateIndex(i),entityLength_));
+}
+
+namespace YAML {
+    Node convert<PositionsVector>::encode(const PositionsVector &rhs) {
+        Node node;
+        for (unsigned i = 0; i < rhs.numberOfEntities(); ++i)
+            node.push_back(rhs[i]);
+        return node;
+    }
+    bool convert<PositionsVector>::decode(const Node &node, PositionsVector &rhs) {
+        if (!node.IsSequence())
+            return false;
+        PositionsVector pv;
+        for (unsigned i = 0; i < node.size(); ++i)
+            pv.append(node[i].as<Eigen::Vector3d>());
+        rhs = pv;
+        return true;
+    }
+
+    Emitter &operator<<(Emitter &out, const PositionsVector &p) {
+        out << Flow << BeginSeq;
+        for (unsigned i = 0; i < p.numberOfEntities(); ++i)
+            out << p[i];
+        out << EndSeq;
+        return out;
+    }
 }

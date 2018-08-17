@@ -47,7 +47,7 @@ AtomsVector WfFileImporter::getAtomsVector() {
 
     for (unsigned i = 1; i <= numberOfNuclei_; ++i) {
       std::vector<std::string> lineElements = split(getLine(startLine+i));
-      Elements::ElementType elementType = Elements::ElementInfo::elementTypeForSymbol(lineElements[0]);
+      Element elementType = Elements::ElementInfo::elementTypeFromSymbol(lineElements[0]);
       double x = std::stod(lineElements[1]);
       double y = std::stod(lineElements[2]);
       double z = std::stod(lineElements[3]);
@@ -58,7 +58,7 @@ AtomsVector WfFileImporter::getAtomsVector() {
         y *= ConversionFactors::angstrom2bohr;
         z *= ConversionFactors::angstrom2bohr;
       }
-      atomsVector.append(Atom({x,y,z},elementType));
+      atomsVector.append({elementType,{x,y,z}});
     }
   return atomsVector;
 }

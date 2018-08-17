@@ -13,12 +13,12 @@ using namespace Eigen;
 
 class APositionsVectorTransformerTest : public Test {
 public:
-    ParticlesVector<Spins::SpinType> ev;
+    ParticlesVector<Spin> ev;
     void SetUp() override {
-        Particle<Spins::SpinType > e1 = {{0,0,0},Spins::SpinType::alpha};
-        Particle<Spins::SpinType > e2 = {{1,0,0},Spins::SpinType::alpha};
-        Particle<Spins::SpinType > e3 = {{0,1,0},Spins::SpinType::beta};
-        Particle<Spins::SpinType > e4 = {{0,0,1},Spins::SpinType::beta};
+        Particle<Spin > e1 = {Spin::alpha,{0, 0, 0}};
+        Particle<Spin > e2 = {Spin::alpha,{1, 0, 0}};
+        Particle<Spin > e3 = {Spin::beta ,{0, 1, 0}};
+        Particle<Spin > e4 = {Spin::beta ,{0, 0, 1}};
         ev.append(e1);
         ev.append(e2);
         ev.append(e3);

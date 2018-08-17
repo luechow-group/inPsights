@@ -122,7 +122,40 @@ protected:
     TypesVector<Type> typesVector_;
 };
 
-using ElectronsVectorCollection = ParticlesVectorCollection<Spins::SpinType>;
-using AtomsVectorCollection = ParticlesVectorCollection<Elements::ElementType>;
+using TypedParticlesVectorCollection = ParticlesVectorCollection<int>;
+using ElectronsVectorCollection = ParticlesVectorCollection<Spin>;
+using AtomsVectorCollection = ParticlesVectorCollection<Element>;
+
+
+// copy of particlesvector => template?
+namespace YAML {
+    template<typename Type> struct convert<ParticlesVectorCollection<Type>> {
+        static Node encode(const ParticlesVectorCollection<Type> & pv){
+            Node node;
+            node["Types"] = pv.typesVector();
+            node["Positions"] = pv.positionsVectorCollection();
+            return node;
+
+        }
+        static bool decode(const Node& nodes, ParticlesVectorCollection<Type> & rhs){
+            if(!nodes.IsMap())
+                return false;
+            ParticlesVectorCollection<Type> pv(
+                    nodes["Types"].as<TypesVector<Type>>(),
+                    nodes["PositionsVectorCollection"].as<PositionsVectorCollection>());
+            rhs = pv;
+            return true;
+        }
+    };
+
+    template<typename Type>
+    Emitter& operator<< (Emitter& out, const ParticlesVectorCollection<Type>& pv){
+        out << BeginMap
+            << Key << "Types" << Value << pv.typesVector() << Newline
+            << Key << "PositionsVectorCollection" <<  pv.positionsVectorCollection()
+            << EndMap;
+        return out;
+    };
+}
 
 #endif //AMOLQCPP_PARTICLESVECTORCOLLECTION_H

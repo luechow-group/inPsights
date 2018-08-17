@@ -29,11 +29,11 @@ AtomsVector RefFileImporter::getAtomsVector() {
 
     for (unsigned i = 1; i <= numberOfNuclei_; ++i) {
         std::vector<std::string> lineElements = split(getLine(i));
-        Elements::ElementType elementType = Elements::ElementInfo::elementTypeForSymbol(lineElements[1]);
+        Element elementType = Elements::ElementInfo::elementTypeFromSymbol(lineElements[1]);
         double x = std::stod(lineElements[2]);
         double y = std::stod(lineElements[3]);
         double z = std::stod(lineElements[4]);
-        atomsVector.append(Atom({x,y,z},elementType));
+        atomsVector.append({elementType,{x,y,z}});
     }
     return atomsVector;
 }
@@ -42,7 +42,7 @@ unsigned long RefFileImporter::calculateLine(unsigned long k, unsigned long m) c
     assert( k > 0 && "k value must be greater than zero");
     assert( m > 0 && "m value must be greater than zero");
     assert( k <= numberOfSuperstructures_ && "k value must be smaller than kmax");
-    assert( m <= substructuresData_[k].numberOfSubstructures_  && "m value must be smaller than mmax");
+    assert( m <= substructuresData_[k-1].numberOfSubstructures_  && "m value must be smaller than or equal to mmax");
 
     unsigned long start = substructuresData_[k-1].startingLine_;
     unsigned long linesToSkip = (m-1)*(numberOfElectrons_+2);
@@ -50,18 +50,18 @@ unsigned long RefFileImporter::calculateLine(unsigned long k, unsigned long m) c
 }
 
 PositionsVector RefFileImporter::getPositionsVector(unsigned long k, unsigned long m) const {
-    unsigned long startLine = calculateLine(k,m)+2;
+    unsigned long startLine = calculateLine(k,m)+numberOfLinesAboveCoordinatesBlock;
     return importPositionsVectorBlock(startLine, 0, numberOfElectrons_);
 }
 
 unsigned long RefFileImporter::getNumberOfMaxima(unsigned long k, unsigned long m) const {
-    unsigned long startLine = calculateLine(k,m)+2;
+    unsigned long startLine = calculateLine(k,m)+numberOfLinesAboveCoordinatesBlock;
     std::vector<std::string> lineElements = split(getLine(startLine));
     return std::stoul(lineElements[6]);
 }
 
 double RefFileImporter::getNegativeLogarithmizedProbabilityDensity(unsigned long k, unsigned long m) const {
-    unsigned long startLine = calculateLine(k,m)+2;
+    unsigned long startLine = calculateLine(k,m)+numberOfLinesAboveCoordinatesBlock;
     std::vector<std::string> lineElements = split(getLine(startLine));
     return std::stod(lineElements[4]);
 }
@@ -75,11 +75,15 @@ ElectronsVector RefFileImporter::getMaximaStructure(unsigned long k, unsigned lo
 }
 
 ElectronsVectorCollection RefFileImporter::getAllSubstructures(unsigned long k) const {
-    unsigned long numberOfSubstructures = substructuresData_[k].numberOfSubstructures_;
+    assert( k > 0 && "k value must be greater than zero");
+    unsigned long numberOfSubstructures = substructuresData_[k-1].numberOfSubstructures_;
     PositionsVectorCollection positionsVectorCollection;
     for (unsigned long m = 1; m <= numberOfSubstructures; ++m) {
         positionsVectorCollection.append(this->getPositionsVector(k,m));
     }
     return ElectronsVectorCollection(positionsVectorCollection,this->getSpinTypesVector());
+}
 
+unsigned long RefFileImporter::numberOfSuperstructures() {
+    return numberOfSuperstructures_;
 }

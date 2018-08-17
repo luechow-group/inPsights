@@ -11,7 +11,7 @@
 #include "ElementInfo.h"
 
 
-static QColor QColorFromElementType(const Elements::ElementType& elementType){
+static QColor QColorFromElementType(const Element& elementType){
   return QColor(Elements::ElementInfo::color(elementType).R,
                 Elements::ElementInfo::color(elementType).G,
                 Elements::ElementInfo::color(elementType).B);

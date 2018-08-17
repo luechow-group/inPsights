@@ -12,14 +12,14 @@
 // add QColorFromSpinType method to the namespace Spin declared in BaseLib
 namespace Spins {
     static QColor QColorFromSpinType(const SpinType& spinType){
-      switch (spinType){
-          case SpinType::alpha:
-          return Qt::red;
-        case SpinType::beta:
-          return Qt::blue;
-        case SpinType::none:
-          return Qt::black;
-      }
+        switch (spinType){
+            case SpinType::alpha:
+                return Qt::red;
+            case SpinType::beta:
+                return Qt::blue;
+            case SpinType::none:
+                return Qt::darkMagenta;
+        }
     }
 }
 
@@ -29,9 +29,9 @@ public:
     Electron3D(const Electron3D& electron);
     Electron3D(Qt3DCore::QEntity *root,
          const QVector3D& location,
-         const Spins::SpinType& spinType);
+         const Spin& spinType);
 
-    Spins::SpinType getSpinType() const { return spinType_; };
+    Spin getSpinType() const { return spinType_; };
 
     Qt3DRender::QObjectPicker *picker;
 
@@ -39,7 +39,7 @@ public:
     //void onPressed(bool pressed);
 
 private:
-    const Spins::SpinType spinType_;
+    const Spin spinType_;
 };
 
 #endif //AMOLQCPP_ELECTRON3D_H

@@ -20,12 +20,25 @@ namespace Elements {
 
     ElementType last();
 
-    ElementType elementTypeFromInt(int type);
+    ElementType elementFromInt(int type);
 
-    int elementTypeToInt(ElementType elementType);
+    int elementToInt(ElementType element);
     
 } // namespace Elements
 
+using Element = Elements::ElementType;
+
 std::ostream& operator<< (std::ostream& os, const Elements::ElementType& e);
+
+namespace YAML {
+    class Node; class Emitter;
+    template <typename Type> struct convert;
+
+    template<> struct convert<Element> {
+        static Node encode(const Element &rhs);
+        static bool decode(const Node &node, Element &rhs);
+    };
+    Emitter &operator<<(Emitter &out, const Element &e);
+}
 
 #endif // AMOLQCPP_ELEMENTTYPE_H

@@ -2,7 +2,7 @@
 // Created by Leonard Reuter on 07.03.18.
 //
 
-#include "CollectionParser.h"
+#include "Serialization.h"
 
 #include "solver/gradientdescentsolver.h"
 
@@ -25,8 +25,7 @@ int main(int argc, char *argv[]) {
     PotentialProblem potentialProblem(nuclei);
 
 
-    ElectronsVector electrons = CollectionParser::electronsVectorFromJson(
-            CollectionParser::readJSON("LR_H2_artificial_start.json"));
+    ElectronsVector electrons = YAML::LoadFile("LR_H2_artificial_start.json")["Electrons"].as<ElectronsVector>();
 
     double energy = -1.1745;
 

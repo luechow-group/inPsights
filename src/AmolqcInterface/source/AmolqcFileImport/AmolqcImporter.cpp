@@ -70,6 +70,8 @@ AmolqcImporter::countSubstructures(unsigned long startLineIdx, unsigned long blo
         };
 
         currentLineIdx +=  blockLength;
+        if( currentLineIdx >= lines_.size())
+            break;
         currentLine = getLine(currentLineIdx);
         sumOfMaximaNumbersTillCurrent = sumOfMaximaNumbersWithCurrent;
     }

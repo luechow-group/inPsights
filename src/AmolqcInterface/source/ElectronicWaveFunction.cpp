@@ -92,7 +92,7 @@ unsigned long ElectronicWaveFunction::getNumberOfElectrons() const {
   return numberOfElectrons_;
 }
 
-void ElectronicWaveFunction::evaluate(const ParticlesVector<Spins::SpinType> &electronsVector) {
+void ElectronicWaveFunction::evaluate(const ParticlesVector<Spin> &electronsVector) {
     evaluate(electronsVector.positionsVector().positionsAsEigenVector());
 }
 
@@ -145,7 +145,7 @@ double ElectronicWaveFunction::getInverseNegativeLogarithmizedProbabilityDensity
   return -1.0/std::log(pow(getProbabilityAmplitude(),2));
 }
 
-ParticlesVector<Spins::SpinType> ElectronicWaveFunction::getElectronsVector(){
+ParticlesVector<Spin> ElectronicWaveFunction::getElectronsVector(){
   return {PositionsVector(electronPositionsVectorAsEigenVector_), getSpinTypesVector()};
 };
 
@@ -177,23 +177,23 @@ Eigen::VectorXd ElectronicWaveFunction::getInverseNegativeLogarithmizedProbabili
   //return 0.5*getProbabilityAmplitude()*getProbabilityAmplitudeGradientCollection().cwiseInverse();
 }
 
-ParticlesVector<Elements::ElementType> ElectronicWaveFunction::getAtomsVector() const {
+ParticlesVector<Element> ElectronicWaveFunction::getAtomsVector() const {
     return atomsVector_;
 }
 
-TypesVector<Spins::SpinType > ElectronicWaveFunction::getSpinTypesVector() const {
+TypesVector<Spin > ElectronicWaveFunction::getSpinTypesVector() const {
   return spinTypesVector_;
 }
 
-TypesVector<Spins::SpinType>
+TypesVector<Spin>
 ElectronicWaveFunction::createAmolqcSpinTypeVector(unsigned long numberOfAlphaElectrons, 
                                                    unsigned long numberOfBetaElectrons) {
-  TypesVector<Spins::SpinType> spinTypesVector(0);
+  TypesVector<Spin> spinTypesVector(0);
 
   for (unsigned long i = 0; i < numberOfAlphaElectrons+numberOfBetaElectrons; ++i) {
-    Spins::SpinType spinType;
-    if (i < numberOfAlphaElectrons) spinType = Spins::SpinType::alpha;
-    else spinType = Spins::SpinType::beta;
+    Spin spinType;
+    if (i < numberOfAlphaElectrons) spinType = Spin::alpha;
+    else spinType = Spin::beta;
 
     spinTypesVector.append(spinType);
   }
