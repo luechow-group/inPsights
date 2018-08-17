@@ -8,7 +8,6 @@
 #include <MolecularGeometry.h>
 
 namespace TestMolecules {
-
     namespace twoElectrons {
         const MolecularGeometry oppositeSpin = {
                 AtomsVector(),
@@ -107,6 +106,15 @@ namespace TestMolecules {
                              {Element::O,{0,0, 10}},
                              {Element::O,{0,0,-10}}}),
                 ElectronsVector()};
+    }
+
+    namespace CoulombPotentialTest{
+        const MolecularGeometry HeH = {
+                AtomsVector({{Element::He,{0, 0,-1}},
+                             {Element::H, {0, 0, 1}}}),
+                ElectronsVector({{Spin::alpha,{0, 0,-1}},
+                                 {Spin::alpha,{0, 0, 0}},
+                                 {Spin::beta, {0, 0,-1}}})};
     }
 }
 

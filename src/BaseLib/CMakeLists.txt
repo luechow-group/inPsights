@@ -37,6 +37,7 @@ set(HEADER_FILES
         include/SpecialMathFunctions/BoostSphericalHarmonics.h
         include/SpecialMathFunctions/ModifiedSphericalBesser1stKind.h
         include/SpecialMathFunctions/Gaussian.h
+        include/CoulombPotential.h
         )
 
 set(SOURCE_FILES
