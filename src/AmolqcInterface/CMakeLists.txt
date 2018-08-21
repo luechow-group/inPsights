@@ -25,6 +25,7 @@ set(SOURCE_FILES
         source/AmolqcFileImport/AmolqcImporter.cpp
         )
 
+set(NORULES YES)
 add_subdirectory(amolqc)
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES})
