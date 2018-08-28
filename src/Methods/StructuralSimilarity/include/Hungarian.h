@@ -37,13 +37,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define LOCALSPINMULTIPLICITY_HUNGARIAN_H
 #include <Eigen/Dense>
 
-enum matchtype {MATCH_MIN=0,MATCH_MAX=1};
+enum class matchtype {MATCH_MIN=0,MATCH_MAX=1};
+
+using ArrayXb = Eigen::Array<bool,Eigen::Dynamic,1>;
+using ArrayXXb = Eigen::Array<bool,Eigen::Dynamic,Eigen::Dynamic>;
 
 namespace Hungarian {
-    void reduce(Eigen::MatrixXd& m);
-    int hasMark(Eigen::VectorXd& v);
-    void swapStarsAndPrimes(int i, int j, Eigen::MatrixXd& stars, Eigen::MatrixXd& primes);
-    void findMatching(Eigen::MatrixXd &m, Eigen::MatrixXd & result, matchtype type);
+    void reduce(Eigen::MatrixXd &m);
+    int hasMark(ArrayXb &v);
+    void swapStarsAndPrimes(int i, int j, ArrayXXb& stars, ArrayXXb& primes);
+    Eigen::PermutationMatrix<Eigen::Dynamic> findMatching(Eigen::MatrixXd &m, matchtype type = matchtype::MATCH_MIN);
 }
 
 #endif //LOCALSPINMULTIPLICITY_HUNGARIAN_H
