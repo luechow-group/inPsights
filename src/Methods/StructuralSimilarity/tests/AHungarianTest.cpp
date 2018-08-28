@@ -5,19 +5,50 @@
 #include <gmock/gmock.h>
 #include "Hungarian.h"
 
-TEST(HungarianTest, SimpleTests)
-{
-    Eigen::MatrixXd inputs[2]={Eigen::MatrixXd(4,4),Eigen::MatrixXd(4,4)};
-    Eigen::MatrixXd outputsExpected[3]={Eigen::MatrixXd(4,4),Eigen::MatrixXd(4,4),Eigen::MatrixXd(4,4)};
-    Eigen::MatrixXd outputs[2]={Eigen::MatrixXd(4,4),Eigen::MatrixXd(4,4)};
-    inputs[0]<<             88,83,69,92,     77,37,49,92,    11,69,5,86,     8,9,98,23;
-    inputs[1]<<             90,75,75,80,     35,85,55,65,    125,95,90,105,  45,110,95,115;
-    // for matrix of input 1 several solutions exist. Hence test for any of expected outputs 1 and 2
-    outputsExpected[0]<<    0,0,1,0,         0,1,0,0,        1,0,0,0,        0,0,0,1;
-    outputsExpected[1]<<    0,1,0,0,         0,0,0,1,        0,0,1,0,        1,0,0,0;
-    outputsExpected[2]<<    0,0,0,1,         0,0,1,0,        0,1,0,0,        1,0,0,0;
-    Hungarian::findMatching(inputs[0],outputs[0],MATCH_MIN);
-    Hungarian::findMatching(inputs[1],outputs[1],MATCH_MIN);
-    EXPECT_EQ(outputs[0],outputsExpected[0]);
-    EXPECT_THAT(outputs[1],::testing::AnyOf(outputsExpected[1],outputsExpected[2]));
+TEST(HungarianTest, OneSolution) {
+    Eigen::MatrixXd input(4,4);
+    input << \
+    88,83,69,92,\
+    77,37,49,92,\
+    11,69,5,86,\
+    8,9,98,23;
+
+    Eigen::MatrixXd expectedOutput(4,4);
+    expectedOutput << \
+    0,0,1,0,\
+    0,1,0,0,\
+    1,0,0,0,\
+    0,0,0,1;
+
+    Eigen::MatrixXd output(4,4);
+    Hungarian::findMatching(input,output,MATCH_MIN);
+    ASSERT_EQ(output,expectedOutput);
+}
+
+
+TEST(HungarianTest, TwoSolutions) {
+    Eigen::MatrixXd input(4,4);
+    input <<\
+    90,75,75,80,\
+    35,85,55,65,\
+    125,95,90,105,\
+    45,110,95,115;
+
+    Eigen::MatrixXd output(4,4);
+    Hungarian::findMatching(input,output,MATCH_MIN);
+
+    Eigen::MatrixXd expectedOutputs[2] = {Eigen::MatrixXd(4,4),Eigen::MatrixXd(4,4)};
+    expectedOutputs[0]<< \
+    0,1,0,0,\
+    0,0,0,1,\
+    0,0,1,0,\
+    1,0,0,0;
+
+    expectedOutputs[1]<<\
+    0,0,0,1,\
+    0,0,1,0,\
+    0,1,0,0,\
+    1,0,0,0;
+
+    ASSERT_THAT(output,::testing::AnyOf(expectedOutputs[0],expectedOutputs[1]));
 }
