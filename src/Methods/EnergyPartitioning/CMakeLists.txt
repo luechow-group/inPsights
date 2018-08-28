@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
 
-project(EnergyPartioning C CXX Fortran)
+project(EnergyPartitioning CXX)
 
 set ( PROJECT_FOLDER_NAME ${PROJECT_NAME} )
 set ( PROJECT_PATH ${PROJECT_NAME})
@@ -9,11 +9,11 @@ message ( "-- ++ CREATING PROJECT OR MAKEFILE ---> ${OUTPUT_NAME}" )
 
 
 set(HEADER_FILES
-
+        include/RawDataReader.h
         )
 
 set(SOURCE_FILES
-
+        source/RawDataReader.cpp
         )
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES})
