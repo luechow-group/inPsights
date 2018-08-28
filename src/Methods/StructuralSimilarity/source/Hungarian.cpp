@@ -64,7 +64,7 @@ int Hungarian::hasMark(ArrayXb &v) {
             return i;
         }
     }
-    return -1; //TODO make more efficient
+    return -1;
 }
 
 /*
@@ -120,10 +120,9 @@ void Hungarian::swapStarsAndPrimes(int i, int j, ArrayXXb & stars, ArrayXXb & pr
  * implementation of the Hungarian matching algorithm
  * referenced from: http://csclab.murraystate.edu/bob.pilgrim/445/munkres.html
  */
-Eigen::PermutationMatrix<Eigen::Dynamic> Hungarian::findMatching(MatrixXd& m, matchtype type) {
+Eigen::PermutationMatrix<Eigen::Dynamic> Hungarian::findMatching(MatrixXd& m, Matchtype type) {
     MatrixXd n = m; // make a copy of m for reducing
-    int dim = n.rows(); // dimension of matrix, used for checking if we've reduced
-    // the matrix enough yet
+    int dim = n.rows(); // dimension of matrix, used for checking if we've reduced the matrix enough yet
 
     ArrayXXb stars(m.rows(), m.cols()); // matrix for storing our "starred" 0s (0*)
     stars.fill(false);
@@ -136,7 +135,7 @@ Eigen::PermutationMatrix<Eigen::Dynamic> Hungarian::findMatching(MatrixXd& m, ma
 
     // to do maximization rather than minimization, we have to
     // transform the matrix by subtracting every value from the maximum
-    if (type == matchtype::MATCH_MAX) {
+    if (type == Matchtype::MATCH_MAX) {
         double max = n.maxCoeff();
         MatrixXd maxMat(n.rows(), n.cols());
         maxMat.fill(max);
@@ -182,9 +181,7 @@ Eigen::PermutationMatrix<Eigen::Dynamic> Hungarian::findMatching(MatrixXd& m, ma
         }
 
         if (coveredCols == dim) {
-            //result = stars;
             Eigen::VectorXi permutation(dim);
-
             for (int i = 0; i < dim; i++) {
                 for (int j = 0; j < dim; j++) {
                     if (stars(i, j)) {
@@ -201,7 +198,7 @@ Eigen::PermutationMatrix<Eigen::Dynamic> Hungarian::findMatching(MatrixXd& m, ma
         for (int i=0; i<n.rows(); i++) {
             for (int j=0; j<n.cols(); j++) {
                 if (n(i,j) == 0 && !rowCover(i) && !colCover(j)) {
-                    primes(i,j) = 1;
+                    primes(i,j) = true;
                     // if no starred zero in the row...
                     ArrayXb row = stars.row(i);
                     if (hasMark(row) < 0) {
@@ -230,7 +227,7 @@ Eigen::PermutationMatrix<Eigen::Dynamic> Hungarian::findMatching(MatrixXd& m, ma
         // Step 6
         // Should now be no more uncovered zeroes
         // Get the minimum uncovered element
-        double min = 1000000;//std::numeric_limits<double>::max();
+        double min = std::numeric_limits<double>::max();
         for (int i=0; i<n.rows(); i++) {
             for (int j=0; j<n.cols(); j++) {
                 if (!rowCover(i) && !colCover(j) && n(i,j) < min) {
