@@ -22,7 +22,6 @@ namespace CoulombPotential {
 
         // symmetrization
         V = V.selfadjointView<Eigen::Upper>();
-        auto bla = V.selfadjointView<Eigen::Upper>();
 
         // optionally calculate in SI units
         if (!atomicUnits) V * std::pow(Constant::elementaryCharge,2)/(4.0*M_PI*Constant::electricConstant);
