@@ -75,6 +75,22 @@ TEST(HungarianTest, FlippedPositions) {
 }
 
 
+TEST(HungarianTest, TranslatedPositions) {
+    auto p1 = TestMolecules::H2::ElectronsInCores::normal.electrons().positionsVector();;
+    auto p2 = TestMolecules::H2::ElectronsInCores::translated.electrons().positionsVector();
+
+    auto input = Metrics::positionalDistances(p1,p2);
+    ASSERT_EQ(input.rows(),2);
+    ASSERT_EQ(input.cols(),2);
+
+    Eigen::MatrixXd output(2,2);
+    Hungarian::findMatching(input,output,MATCH_MIN);
+
+    Eigen::MatrixXd expectedOutput = Eigen::MatrixXd::Identity(2,2);
+
+    ASSERT_EQ(output,expectedOutput);
+}
+
 TEST(HungarianTest, TranslatedAndFlippedPositions) {
 
     auto p1 = TestMolecules::H2::ElectronsInCores::translated.electrons().positionsVector();;
