@@ -3,8 +3,12 @@
 //
 
 #include <RawDataReader.h>
+#include "ReferenceData.h"
 
 int main(int argc, char *argv[]) {
-    RawDataReader reader;
+
+    ReferenceSampleMapping mapping;
+
+    RawDataReader reader(mapping);
     reader.read("raw1.bin");
 }
