@@ -26,7 +26,7 @@ public:
     void prepend(const Eigen::Vector3d& position);
 
     PositionsRef positionsRef();
-    void resetToAllRef();
+    void resetRefToAll();
 
     void permute(long i, long j) override;
     void permute(const Eigen::PermutationMatrix<Eigen::Dynamic>& permutation) override;
