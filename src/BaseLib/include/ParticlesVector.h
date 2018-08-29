@@ -90,6 +90,11 @@ public:
         typesVector_.permute(i,j);
     }
 
+    void permute(const Eigen::PermutationMatrix<Eigen::Dynamic> &permutation) override {
+        positionsVector_.permute(permutation);
+        typesVector_.permute(permutation);
+    }
+
     friend std::ostream& operator<<(std::ostream& os, const ParticlesVector<Type> & pv){
         for (long i = 0; i < pv.numberOfEntities(); i++) {
             os << ToString::longToString(i + 1) << " " << pv[i] << std::endl;

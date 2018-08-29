@@ -105,6 +105,11 @@ public:
         }
     }
 
+    void permute(const Eigen::PermutationMatrix<Eigen::Dynamic> &permutation) {
+        positionsVectorCollection_.permute(permutation);
+        typesVector_.permute(permutation);
+    }
+
     friend std::ostream& operator<<(std::ostream& os, const ParticlesVectorCollection<Type> & pvc){
         for (unsigned long i = 0; i < pvc.numberOfEntities(); i++) {
 

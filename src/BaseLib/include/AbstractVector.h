@@ -6,22 +6,25 @@
 #define AMOLQCPP_ABSTRACTVECTOR_H
 
 #include <iostream>
+#include <Eigen/Core>
 
 /* AbstractVector
  * keeps track of the number of countable entities
  */
 class AbstractVector {
 public:
-    explicit AbstractVector(long numberOfEntities = 0);
-
     long numberOfEntities() const;
 
 protected:
+    explicit AbstractVector(long numberOfEntities = 0);
+
     void incrementNumberOfEntities();
 
     void setNumberOfEntities(long numberOfEntities);
 
-    virtual void permute(long i, long j){}; //TODO MAKE IT ABSTRACT
+    virtual void permute(long i, long j) = 0;
+
+    virtual void permute(const Eigen::PermutationMatrix<Eigen::Dynamic>& permutation) = 0;
 
     virtual long calculateIndex(long i) const;
 

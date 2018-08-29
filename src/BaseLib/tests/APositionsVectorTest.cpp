@@ -95,3 +95,18 @@ TEST_F(APositionsVectorTest, print) {
     os << positionsVector;
     ASSERT_EQ(os.str()," 1    0.00000  -2.01238   7.13000\n 2    0.00000  -9.89870 -12.23800\n 3  -99.90000  99.90000   9.99000\n");
 }
+
+TEST_F(APositionsVectorTest, permute) {
+    VectorXd positions(9);
+    positions<< position0, position1, position2;
+    PositionsVector positionsVector(positions);
+
+    Eigen::VectorXi p(3);
+    p << 0,2,1;
+    PermutationMatrix<Eigen::Dynamic> perm(p);
+    positionsVector.permute(perm);
+
+    ASSERT_EQ(positionsVector[0],position0);
+    ASSERT_EQ(positionsVector[1],position2);
+    ASSERT_EQ(positionsVector[2],position1);
+}

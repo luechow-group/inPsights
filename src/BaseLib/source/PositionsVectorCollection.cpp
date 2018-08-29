@@ -2,8 +2,9 @@
 // Created by Michael Heuer on 30.10.17.
 //
 
-#include "PositionsVectorCollection.h"
+#include <PositionsVectorCollection.h>
 #include <yaml-cpp/yaml.h>
+
 
 PositionsVectorCollection::PositionsVectorCollection()
         : AbstractVector(0),
@@ -67,6 +68,12 @@ void PositionsVectorCollection::permute(long i, long j) {
         //positionsVectorCollection_.( static_cast<unsigned long>(calculateIndex(i)) )
         //        = positionsVectorCollection_.at( static_cast<unsigned long>(calculateIndex(j)) );
         //positionsVectorCollection_.at( static_cast<unsigned long>(calculateIndex(j)) ) = temp;
+    }
+}
+
+void PositionsVectorCollection::permute(const Eigen::PermutationMatrix<Eigen::Dynamic> &permutation) {
+    for(auto & pv : positionsVectorCollection_){
+        pv.permute(permutation);
     }
 }
 

@@ -19,6 +19,7 @@ public:
     void append(const Eigen::Vector3d& position);
     void prepend(const Eigen::Vector3d& position);
     void permute(long i, long j) override;
+    void permute(const Eigen::PermutationMatrix<Eigen::Dynamic>& permutation) override;
 
     /* TODO
     void replace(long i);
@@ -41,6 +42,9 @@ private:
     unsigned entityLength_ = 3;
 
     long calculateIndex(long i) const override ;
+
+    Eigen::PermutationMatrix<Eigen::Dynamic> adaptedToEntityLength(const Eigen::PermutationMatrix<Eigen::Dynamic> &permutation);
+
 };
 
 namespace YAML {

@@ -68,12 +68,18 @@ public:
         return types_;
     }
 
-    void permute(long i, long j) {
+    void permute(long i, long j) override {
         if(i != j) {
             int temp = types_[calculateIndex(i)];
             types_[calculateIndex(i)] = types_[calculateIndex(j)];
             types_[calculateIndex(j)] = temp;
         }
+    }
+
+    void permute(const Eigen::PermutationMatrix<Eigen::Dynamic> &permutation) override {
+        assert(permutation.indices().size() == numberOfEntities()
+        && "The permutation vector length must be equal to the number of entities");
+        types_ = permutation*types_;
     }
 
     unsigned countOccurence(const Type &type) const {
