@@ -39,6 +39,7 @@ set(HEADER_FILES
         include/SpecialMathFunctions/Gaussian.h
         include/CoulombPotential.h
         include/BinaryFileReader.h
+        include/Interval.h
         )
 
 set(SOURCE_FILES

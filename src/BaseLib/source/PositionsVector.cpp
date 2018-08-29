@@ -30,7 +30,7 @@ PositionsVector::PositionsVector(const VectorXd &positions)
     resetToAllRef();
 }
 
-Eigen::Vector3d PositionsVector::operator[](long i) const {//TODO return const ref
+Eigen::Vector3d PositionsVector::operator[](long i) const {
     return positions_.segment(calculateIndex(i),entityLength_);
 }
 
@@ -73,7 +73,6 @@ Eigen::VectorXd & PositionsVector::positionsAsEigenVector() {
 }
 
 PositionsRef PositionsVector::positionsRef(){
-    //TODO add mutex?
     return *positionsRefPtr_;
 }
 

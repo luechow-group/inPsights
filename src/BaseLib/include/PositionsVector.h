@@ -8,32 +8,9 @@
 #include <Eigen/Core>
 #include <memory>
 #include "AbstractVector.h"
+#include "Interval.h"
 
 using PositionsRef = Eigen::Ref<Eigen::VectorXd>;
-
-class Interval {
-public:
-    Interval() = default;
-
-    Interval(long start, long n)
-    : start_(start),end_(start+n) {
-        assert(start_ >= 0);
-        assert(start_ <= end_);
-    }
-    explicit Interval(long idx)
-    : Interval({idx,1}){}
-
-    bool checkBounds(long numberOfEntities) const {
-        return end() <= numberOfEntities;
-    }
-
-    long start() const { return start_;};
-    long end() const { return end_;};
-    long numberOfEntities() const { return end()-start();};
-
-private:
-    long start_,end_;
-};
 
 class PositionsVector : public AbstractVector{
 public:
@@ -41,6 +18,8 @@ public:
     explicit PositionsVector(const Eigen::VectorXd& positions);
 
     Eigen::Vector3d operator[](long i) const;
+    PositionsVector& entity(long i);
+    PositionsVector& slice(const Interval& interval);
 
     void insert(const Eigen::Vector3d& position, long i);
     void append(const Eigen::Vector3d& position);
@@ -58,14 +37,10 @@ public:
     PositionsVector(const PositionsVector& rhs);
     PositionsVector& operator=(const PositionsVector& rhs);
 
-    PositionsVector& entity(long i);
-    PositionsVector& slice(const Interval& interval);
+    const Eigen::VectorXd & positionsAsEigenVector() const;
+    Eigen::VectorXd & positionsAsEigenVector();
 
     friend std::ostream& operator<<(std::ostream& os, const PositionsVector& pc);
-
-    const Eigen::VectorXd & positionsAsEigenVector() const;
-
-    Eigen::VectorXd & positionsAsEigenVector();
 
 private:
     Eigen::VectorXd positions_;
