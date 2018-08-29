@@ -2,12 +2,13 @@
 // Created by Michael Heuer on 29.10.17.
 //
 
-#include "PositionsVector.h"
-#include "ToString.h"
+#include <PositionsVector.h>
+#include <ToString.h>
 #include <yaml-cpp/yaml.h>
 #include <EigenYamlConversion.h>
 #include <PositionsVector.h>
 #include <PositionsVectorTransformer.h>
+#include <ReturnAndReset.h>
 
 using namespace Eigen;
 
@@ -32,6 +33,13 @@ PositionsVector::PositionsVector(const VectorXd &positions)
 
 Eigen::Vector3d PositionsVector::operator[](long i) const {
     return positions_.segment(calculateIndex(i),entityLength_);
+}
+
+Eigen::Vector3d PositionsVector::position(long i, bool resetAfterwardsQ) {
+    if(resetAfterwardsQ)
+        return RETURN_AND_RESET<PositionsVector,Eigen::Vector3d>(*this,positionsRef().segment(calculateIndex(i),entityLength_)).returnAndReset();
+    else
+        return positionsRef().segment(calculateIndex(i),entityLength_);
 }
 
 void PositionsVector::insert(const Eigen::Vector3d &position, long i) {
@@ -134,10 +142,10 @@ void PositionsVector::rotate(double angle,const Eigen::Vector3d &center,const Ei
     this->translate(-center,false);
 
     for (long i = 0; i < sliceInterval_.numberOfEntities(); ++i) {
-        long idx = sliceInterval_.start()+i;
-
+        //long idx = sliceInterval_.start()+i;
         //TODO refactoring needed: implement methods to get the i-th Vector3d of a slice
-        positionsRef().segment(calculateIndex(i), entityLength_) = this->operator[](idx).transpose() * rotMat;
+        //positionsRef().segment(calculateIndex(i), entityLength_) = this->operator[](idx).transpose() * rotMat;
+        positionsRef().segment(calculateIndex(i), entityLength_) = position(i, false).transpose() * rotMat;
     }
     this->translate(center,false);
 

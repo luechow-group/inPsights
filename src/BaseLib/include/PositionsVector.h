@@ -18,6 +18,7 @@ public:
     explicit PositionsVector(const Eigen::VectorXd& positions);
 
     Eigen::Vector3d operator[](long i) const;
+    Eigen::Vector3d position(long i, bool resetAfterwardsQ = true);
     PositionsVector& entity(long i);
     PositionsVector& slice(const Interval& interval);
 
@@ -26,7 +27,6 @@ public:
     void prepend(const Eigen::Vector3d& position);
 
     PositionsRef positionsRef();
-    void resetRefToAll();
 
     void permute(long i, long j) override;
     void permute(const Eigen::PermutationMatrix<Eigen::Dynamic>& permutation) override;
@@ -41,12 +41,14 @@ public:
     Eigen::VectorXd & positionsAsEigenVector();
 
     friend std::ostream& operator<<(std::ostream& os, const PositionsVector& pc);
-
+    void resetRefToAll();
 private:
     Eigen::VectorXd positions_;
     const unsigned entityLength_ = 3;
     Interval sliceInterval_;
     std::unique_ptr<PositionsRef> positionsRefPtr_;
+
+
 
     long calculateIndex(long i) const override ;
 
