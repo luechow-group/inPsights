@@ -46,7 +46,6 @@ private:
     Eigen::VectorXd positions_;
     const unsigned entityLength_ = 3;
     Interval sliceInterval_;
-public:
     std::unique_ptr<PositionsRef> positionsRefPtr_;
 
     long calculateIndex(long i) const override ;
