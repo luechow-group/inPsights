@@ -14,8 +14,8 @@ using namespace Eigen;
 PositionsVector::PositionsVector()
         : AbstractVector(),
           positions_(0),
-          positionsRefPtr_(std::make_unique<PositionsRef>(positions_)),
-          sliceInterval_({0,0})
+          sliceInterval_({0,0}),
+          positionsRefPtr_(std::make_unique<PositionsRef>(positions_))
 {}
 
 PositionsVector::PositionsVector(const VectorXd &positions)
