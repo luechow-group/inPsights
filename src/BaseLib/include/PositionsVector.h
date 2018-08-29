@@ -47,20 +47,19 @@ public:
     void prepend(const Eigen::Vector3d& position);
 
     PositionsRef positionsRef();
-    void resetRef();
+    void resetToAllRef();
 
     void permute(long i, long j) override;
     void permute(const Eigen::PermutationMatrix<Eigen::Dynamic>& permutation) override;
-    void translate(const Eigen::Vector3d& shift);
-    void rotateAroundOrigin(double angle, const Eigen::Vector3d &axisDirection);
-    void rotate(double angle, const Eigen::Vector3d &center, const Eigen::Vector3d &axisDirection);
+    void translate(const Eigen::Vector3d& shift, bool resetAfterwardsQ = true);
+    void rotateAroundOrigin(double angle, const Eigen::Vector3d &axisDirection, bool resetAfterwardsQ= true);
+    void rotate(double angle, const Eigen::Vector3d &center, const Eigen::Vector3d &axisDirection, bool resetAfterwardsQ = true);
 
     PositionsVector(const PositionsVector& rhs);
     PositionsVector& operator=(const PositionsVector& rhs);
 
     PositionsVector& entity(long i);
     PositionsVector& slice(const Interval& interval);
-    PositionsVector& all();
 
     friend std::ostream& operator<<(std::ostream& os, const PositionsVector& pc);
 

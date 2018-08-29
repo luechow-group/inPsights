@@ -14,8 +14,8 @@ using namespace Eigen;
 PositionsVector::PositionsVector()
         : AbstractVector(),
           positions_(0),
-          positionsRefPtr_(),
-          sliceInterval_()
+          positionsRefPtr_(std::make_unique<PositionsRef>(positions_)),
+          sliceInterval_({0,0})
 {}
 
 PositionsVector::PositionsVector(const VectorXd &positions)
@@ -26,6 +26,8 @@ PositionsVector::PositionsVector(const VectorXd &positions)
 
     AbstractVector::setNumberOfEntities(size/3);
     positions_ = positions;
+
+    resetToAllRef();
 }
 
 Eigen::Vector3d PositionsVector::operator[](long i) const {//TODO return const ref
@@ -75,9 +77,10 @@ PositionsRef PositionsVector::positionsRef(){
     return *positionsRefPtr_;
 }
 
-void PositionsVector::resetRef() {
+void PositionsVector::resetToAllRef() {
     positionsRefPtr_.reset();
-    sliceInterval_ = {0,0};
+    positionsRefPtr_ = std::make_unique<PositionsRef>(positions_);
+    sliceInterval_ = {0,numberOfEntities()};
 }
 
 void PositionsVector::permute(long i, long j) {
@@ -103,31 +106,32 @@ Eigen::PermutationMatrix<Eigen::Dynamic> PositionsVector::adaptedToEntityLength(
 }
 
 void PositionsVector::permute(const Eigen::PermutationMatrix<Eigen::Dynamic> &permutation) {
-    assert(permutation.indices().size() == numberOfEntities()
+    assert(permutation.indices().size() == sliceInterval_.numberOfEntities()
     && "The permutation vector length must be equal to the number of entities");
 
-    positions_ = adaptedToEntityLength(permutation)*positions_;
+    positionsRef() = adaptedToEntityLength(permutation)*positionsRef();
+
+    resetToAllRef();
 }
 
+void PositionsVector::translate(const Eigen::Vector3d &shift, bool resetAfterwardsQ) {
 
-void PositionsVector::translate(const Eigen::Vector3d &shift) {
-
-    for (long i = 0; i < sliceInterval_.numberOfEntities(); ++i) {
+    for (long i = 0; i < sliceInterval_.numberOfEntities(); ++i)
         positionsRef().segment(calculateIndex(i),3) += shift;
-    }
+
+    if(resetAfterwardsQ) resetToAllRef();
 }
 
-void PositionsVector::rotateAroundOrigin(double angle, const Eigen::Vector3d &axisDirection) {
-    rotate(angle,{0,0,0},axisDirection);
+void PositionsVector::rotateAroundOrigin(double angle, const Eigen::Vector3d &axisDirection, bool resetAfterwardsQ) {
+    rotate(angle,{0,0,0},axisDirection,resetAfterwardsQ);
 }
 
-void PositionsVector::rotate(double angle,
-                             const Eigen::Vector3d &center,
-                             const Eigen::Vector3d &axisDirection) {
+void PositionsVector::rotate(double angle,const Eigen::Vector3d &center,const Eigen::Vector3d &axisDirection, bool resetAfterwardsQ) {
+
     auto rotMat = PositionsVectorTransformer::rotationMatrixFromQuaternion(
             PositionsVectorTransformer::quaternionFromAngleAndAxis(angle, axisDirection - center));
 
-    this->translate(-center);
+    this->translate(-center,false);
 
     for (long i = 0; i < sliceInterval_.numberOfEntities(); ++i) {
         long idx = sliceInterval_.start()+i;
@@ -135,24 +139,26 @@ void PositionsVector::rotate(double angle,
         //TODO refactoring needed: implement methods to get the i-th Vector3d of a slice
         positionsRef().segment(calculateIndex(i), entityLength_) = this->operator[](idx).transpose() * rotMat;
     }
-    this->translate(center);
+    this->translate(center,false);
+
+    if (resetAfterwardsQ) resetToAllRef();
 };
 
 PositionsVector::PositionsVector(const PositionsVector& rhs)
         : AbstractVector(rhs) {
     positions_ = rhs.positionsAsEigenVector();
-    resetRef();
+    resetToAllRef();
 }
 
 PositionsVector& PositionsVector::operator=(const PositionsVector& rhs){
     if(this == &rhs) {
-        resetRef(); //TODO BE CAREFUL
+        resetToAllRef();
         return *this;
     }
 
     AbstractVector::setNumberOfEntities(rhs.numberOfEntities());
     positions_ = rhs.positionsAsEigenVector();
-    resetRef();
+    resetToAllRef();
 
     return *this;
 }
@@ -170,12 +176,6 @@ PositionsVector& PositionsVector::slice(const Interval& interval) {
             positions_.segment(calculateIndex(interval.start()),interval.numberOfEntities()*entityLength_));
     return *this;
 }
-
-PositionsVector& PositionsVector::all() {
-    sliceInterval_ = Interval({0,numberOfEntities()});
-    return slice(sliceInterval_);
-}
-
 
 long PositionsVector::calculateIndex(long i) const {
     return AbstractVector::calculateIndex(i)*entityLength_;

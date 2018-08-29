@@ -97,7 +97,7 @@ TEST_F(APositionsVectorTest, print) {
     ASSERT_EQ(os.str()," 1    0.00000  -2.01238   7.13000\n 2    0.00000  -9.89870 -12.23800\n 3  -99.90000  99.90000   9.99000\n");
 }
 
-TEST_F(APositionsVectorTest, permute) {
+TEST_F(APositionsVectorTest, permuteAll) {
     VectorXd positions(9);
     positions<< position0, position1, position2;
     PositionsVector positionsVector(positions);
@@ -110,6 +110,44 @@ TEST_F(APositionsVectorTest, permute) {
     ASSERT_EQ(positionsVector[0],position0);
     ASSERT_EQ(positionsVector[1],position2);
     ASSERT_EQ(positionsVector[2],position1);
+}
+
+TEST_F(APositionsVectorTest, permuteAllCyclic) {
+    VectorXd positions(9);
+    positions<< position0, position1, position2;
+    PositionsVector positionsVector(positions);
+
+    Eigen::VectorXi p(3);
+    p << 2,0,1;
+    PermutationMatrix<Eigen::Dynamic> perm(p);
+    positionsVector.permute(perm);
+
+    ASSERT_EQ(positionsVector[0],position1);
+    ASSERT_EQ(positionsVector[1],position2);
+    ASSERT_EQ(positionsVector[2],position0);
+}
+
+TEST_F(APositionsVectorTest, permuteSlice) {
+    VectorXd positions(9);
+    positions<< position0, position1, position2;
+    PositionsVector positionsVector(positions);
+
+    Eigen::VectorXi p1(2);
+    p1 << 1,0;
+    positionsVector.slice({1,2}).permute(PermutationMatrix<Eigen::Dynamic>(p1));
+
+    ASSERT_EQ(positionsVector[0],position0);
+    ASSERT_EQ(positionsVector[1],position2);
+    ASSERT_EQ(positionsVector[2],position1);
+
+    Eigen::VectorXi p2(3);
+    p2 << 2,0,1;
+
+    // test resetToAll()
+    positionsVector.permute(PermutationMatrix<Eigen::Dynamic>(p2));
+    ASSERT_EQ(positionsVector[0],position2);
+    ASSERT_EQ(positionsVector[1],position1);
+    ASSERT_EQ(positionsVector[2],position0);
 }
 
 TEST_F(APositionsVectorTest, slice) {
@@ -129,7 +167,7 @@ TEST_F(APositionsVectorTest, slice) {
     ASSERT_EQ(*positionsVector.slice({1,2}).positionsRefPtr_, positions.segment(3,6));
     ASSERT_EQ(*positionsVector.slice({0,3}).positionsRefPtr_, positions.segment(0,9));
 
-    ASSERT_EQ(*positionsVector.slice({0,3}).positionsRefPtr_,*positionsVector.all().positionsRefPtr_);
+    ASSERT_EQ(*positionsVector.slice({0,3}).positionsRefPtr_,*positionsVector.positionsRefPtr_);
 
     EXPECT_DEATH(*positionsVector.entity(-1).positionsRefPtr_,"");
     EXPECT_DEATH(*positionsVector.slice({0,4}).positionsRefPtr_,"");
@@ -152,6 +190,7 @@ TEST_F(APositionsVectorTest, translate) {
     ASSERT_EQ(positionsVector.positionsAsEigenVector(),expected[1]);
 }
 
+
 TEST_F(APositionsVectorTest, rotateAllCounterClockwise) {
     VectorXd positions(12);
     positions <<\
@@ -164,7 +203,7 @@ TEST_F(APositionsVectorTest, rotateAllCounterClockwise) {
     double angle = 120.*ConversionFactors::deg2rad; // 120° counterclockwise rotiation
     Eigen::Vector3d axis = {1,1,1};
 
-    p.all().rotateAroundOrigin(angle,axis);
+    p.rotateAroundOrigin(angle,axis);
 
     Eigen::VectorXd expectedPositions(12);
     expectedPositions << \
@@ -188,7 +227,7 @@ TEST_F(APositionsVectorTest, rotateAllClockwise) {
     double angle = -120.*ConversionFactors::deg2rad; // 120° clockwise rotiation
     Eigen::Vector3d axis = {1,1,1};
 
-    p.all().rotateAroundOrigin(angle,axis);
+    p.rotateAroundOrigin(angle,axis);
 
     Eigen::VectorXd expectedPositions(12);
     expectedPositions << \

@@ -38,7 +38,7 @@ Eigen::Matrix3d PositionsVectorTransformer::rotationMatrixFromQuaternion(const E
 
 void PositionsVectorTransformer::translateCenterOfMassToOrigin(PositionsVector& positionsVector){
     auto center = PositionsVectorTransformer::calculateCenterOfMass(positionsVector);
-    positionsVector.all().translate(-center);
+    positionsVector.translate(-center);
 };
 
 void PositionsVectorTransformer::rotateAroundAxis(PositionsVector &p, double angle,
@@ -47,12 +47,12 @@ void PositionsVectorTransformer::rotateAroundAxis(PositionsVector &p, double ang
     auto rotMat = rotationMatrixFromQuaternion(
             quaternionFromAngleAndAxis(angle, axisEnd - axisStart));
 
-    p.all().translate(-axisStart);
+    p.translate(-axisStart);
 
     for (unsigned i = 0; i < p.numberOfEntities(); i++)
         p.entity(i).positionsRef() = p[i].transpose()*rotMat;
 
-    p.all().translate(axisStart);
+    p.translate(axisStart);
 }
 
 void PositionsVectorTransformer::rotateAroundAxis(PositionsVector &positionsVector, double angle,
