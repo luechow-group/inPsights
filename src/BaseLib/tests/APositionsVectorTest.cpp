@@ -116,20 +116,37 @@ TEST_F(APositionsVectorTest, slice) {
     positions<< position0, position1, position2;
     PositionsVector positionsVector(positions);
 
-    ASSERT_EQ(*positionsVector.slice(0).positionsRefPtr_, positions.segment(0,3));
-    ASSERT_EQ(*positionsVector.slice(1).positionsRefPtr_, positions.segment(3,3));
-    ASSERT_EQ(*positionsVector.slice(2).positionsRefPtr_, positions.segment(6,3));
+    ASSERT_EQ(*positionsVector.entity(0).positionsRefPtr_, positions.segment(0,3));
+    ASSERT_EQ(*positionsVector.entity(1).positionsRefPtr_, positions.segment(3,3));
+    ASSERT_EQ(*positionsVector.entity(2).positionsRefPtr_, positions.segment(6,3));
 
-    ASSERT_EQ(*positionsVector.slice({0,0}).positionsRefPtr_,*positionsVector.slice(0).positionsRefPtr_);
-    ASSERT_EQ(*positionsVector.slice({1,1}).positionsRefPtr_,*positionsVector.slice(1).positionsRefPtr_);
-    ASSERT_EQ(*positionsVector.slice({2,2}).positionsRefPtr_,*positionsVector.slice(2).positionsRefPtr_);
+    ASSERT_EQ(*positionsVector.slice({0,1}).positionsRefPtr_,*positionsVector.entity(0).positionsRefPtr_);
+    ASSERT_EQ(*positionsVector.slice({1,1}).positionsRefPtr_,*positionsVector.entity(1).positionsRefPtr_);
+    ASSERT_EQ(*positionsVector.slice({2,1}).positionsRefPtr_,*positionsVector.entity(2).positionsRefPtr_);
 
-    ASSERT_EQ(*positionsVector.slice({0,1}).positionsRefPtr_, positions.segment(0,6));
+    ASSERT_EQ(*positionsVector.slice({0,2}).positionsRefPtr_, positions.segment(0,6));
     ASSERT_EQ(*positionsVector.slice({1,2}).positionsRefPtr_, positions.segment(3,6));
-    ASSERT_EQ(*positionsVector.slice({0,2}).positionsRefPtr_, positions.segment(0,9));
+    ASSERT_EQ(*positionsVector.slice({0,3}).positionsRefPtr_, positions.segment(0,9));
 
-    ASSERT_EQ(*positionsVector.slice({0,2}).positionsRefPtr_,*positionsVector.all().positionsRefPtr_);
+    ASSERT_EQ(*positionsVector.slice({0,3}).positionsRefPtr_,*positionsVector.all().positionsRefPtr_);
 
-    EXPECT_DEATH(*positionsVector.slice(-1).positionsRefPtr_,"");
-    EXPECT_DEATH(*positionsVector.slice({0,3}).positionsRefPtr_,"");
+    EXPECT_DEATH(*positionsVector.entity(-1).positionsRefPtr_,"");
+    EXPECT_DEATH(*positionsVector.slice({0,4}).positionsRefPtr_,"");
+}
+
+TEST_F(APositionsVectorTest, translate) {
+    VectorXd positions(9);
+    positions<< position0, position1, position2;
+    PositionsVector positionsVector(positions);
+
+    VectorXd expected[2] = {VectorXd(9),VectorXd(9)};
+    expected[0] << 1,2,3,5,6,7,7,8,9;
+    expected[1] << 1,2,3,6,7,8,8,9,10;
+
+    positionsVector.entity(1).translate({1,1,1});
+    std::cout << positionsVector << std::endl;
+    ASSERT_EQ(positionsVector.positionsAsEigenVector(),expected[0]);
+    positionsVector.slice({1,2}).translate({1,1,1});
+    std::cout << positionsVector << std::endl;
+    ASSERT_EQ(positionsVector.positionsAsEigenVector(),expected[1]);
 }

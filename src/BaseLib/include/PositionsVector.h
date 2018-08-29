@@ -15,13 +15,13 @@ class Interval {
 public:
     Interval() = default;
 
-    Interval(long start, long end)
-    : start_(start),end_(end) {
+    Interval(long start, long n)
+    : start_(start),end_(start+n) {
         assert(start_ >= 0);
         assert(start_ <= end_);
     }
-    explicit Interval(long element)
-    : Interval({element,element}){}
+    explicit Interval(long idx)
+    : Interval({idx,1}){}
 
     bool checkBounds(long numberOfEntities) const {
         return end() <= numberOfEntities;
@@ -29,7 +29,7 @@ public:
 
     long start() const { return start_;};
     long end() const { return end_;};
-    long numberOfEntities() const { return end()-start()+1;}; //TODO empty intervals?
+    long numberOfEntities() const { return end()-start();};
 
 private:
     long start_,end_;
@@ -45,13 +45,19 @@ public:
     void insert(const Eigen::Vector3d& position, long i);
     void append(const Eigen::Vector3d& position);
     void prepend(const Eigen::Vector3d& position);
+
+    PositionsRef positionsRef();
+    void resetRef();
+
     void permute(long i, long j) override;
     void permute(const Eigen::PermutationMatrix<Eigen::Dynamic>& permutation) override;
+    void translate(const Eigen::Vector3d& shift);
 
+    
     PositionsVector(const PositionsVector& rhs);
     PositionsVector& operator=(const PositionsVector& rhs);
 
-    PositionsVector& slice(long i);
+    PositionsVector& entity(long i);
     PositionsVector& slice(const Interval& interval);
     PositionsVector& all();
 
@@ -61,13 +67,10 @@ public:
 
     Eigen::VectorXd & positionsAsEigenVector();
 
-    Eigen::Ref<Eigen::Vector3d> operator()(long i);//TODO DEPRECATED
-
-    const Eigen::Ref<const Eigen::Vector3d>& operator()(long i) const;
-
 private:
     Eigen::VectorXd positions_;
     const unsigned entityLength_ = 3;
+    Interval sliceInterval_;
 public:
     std::unique_ptr<PositionsRef> positionsRefPtr_;
 

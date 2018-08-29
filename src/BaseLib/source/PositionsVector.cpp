@@ -6,13 +6,16 @@
 #include "ToString.h"
 #include <yaml-cpp/yaml.h>
 #include <EigenYamlConversion.h>
+#include <PositionsVector.h>
+
 
 using namespace Eigen;
 
 PositionsVector::PositionsVector()
         : AbstractVector(),
           positions_(0),
-          positionsRefPtr_()
+          positionsRefPtr_(),
+          sliceInterval_()
 {}
 
 PositionsVector::PositionsVector(const VectorXd &positions)
@@ -67,6 +70,16 @@ Eigen::VectorXd & PositionsVector::positionsAsEigenVector() {
     return positions_;
 }
 
+PositionsRef PositionsVector::positionsRef(){
+    //TODO add mutex?
+    return *positionsRefPtr_;
+}
+
+void PositionsVector::resetRef() {
+    positionsRefPtr_.reset();
+    sliceInterval_ = {0,0};
+}
+
 void PositionsVector::permute(long i, long j) {
     if(i != j) {
         Eigen::Vector3d temp = positions_.segment(calculateIndex(i),entityLength_);
@@ -96,49 +109,55 @@ void PositionsVector::permute(const Eigen::PermutationMatrix<Eigen::Dynamic> &pe
     positions_ = adaptedToEntityLength(permutation)*positions_;
 }
 
+
+void PositionsVector::translate(const Eigen::Vector3d &shift) {
+
+    for (long i = 0; i < sliceInterval_.numberOfEntities(); ++i) {
+        positionsRef().segment(i*entityLength_,3) += shift;
+    }
+}
+
 PositionsVector::PositionsVector(const PositionsVector& rhs)
         : AbstractVector(rhs) {
     positions_ = rhs.positionsAsEigenVector();
-    positionsRefPtr_.reset();
+    resetRef();
 }
 
 PositionsVector& PositionsVector::operator=(const PositionsVector& rhs){
-    if(this == &rhs)
+    if(this == &rhs) {
+        resetRef(); //TODO BE CAREFUL
         return *this;
+    }
 
     AbstractVector::setNumberOfEntities(rhs.numberOfEntities());
     positions_ = rhs.positionsAsEigenVector();
-    positionsRefPtr_.reset();
+    resetRef();
 
     return *this;
 }
 
-PositionsVector& PositionsVector::slice(long i) {
-    return slice(Interval(i));
+PositionsVector& PositionsVector::entity(long i) {
+    sliceInterval_ = Interval(i);
+    return slice(sliceInterval_);
 }
+
 PositionsVector& PositionsVector::slice(const Interval& interval) {
     assert(interval.checkBounds(numberOfEntities()) && "The end variable of the interval is out of bounds.");
-
+    sliceInterval_ = interval;
     positionsRefPtr_.reset();
     positionsRefPtr_ = std::make_unique<PositionsRef>(
             positions_.segment(calculateIndex(interval.start()),interval.numberOfEntities()*entityLength_));
     return *this;
 }
+
 PositionsVector& PositionsVector::all() {
-    return slice(Interval({0,numberOfEntities()-1}));
+    sliceInterval_ = Interval({0,numberOfEntities()});
+    return slice(sliceInterval_);
 }
 
 
 long PositionsVector::calculateIndex(long i) const {
     return AbstractVector::calculateIndex(i)*entityLength_;
-}
-
-Eigen::Ref<Eigen::Vector3d> PositionsVector::operator()(long i){//TODO DEPRECATED
-    return Eigen::Ref<Eigen::Vector3d>(positions_.segment(calculateIndex(i),entityLength_));
-}
-
-const Eigen::Ref<const Eigen::Vector3d>& PositionsVector::operator()(long i) const{
-    return Eigen::Ref<const Eigen::Vector3d>(positions_.segment(calculateIndex(i),entityLength_));
 }
 
 namespace YAML {
