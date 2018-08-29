@@ -3,7 +3,8 @@
 //
 
 #include <gtest/gtest.h>
-#include "PositionsVector.h"
+#include <PositionsVector.h>
+#include <NaturalConstants.h>
 
 using namespace testing;
 using namespace Eigen;
@@ -144,9 +145,107 @@ TEST_F(APositionsVectorTest, translate) {
     expected[1] << 1,2,3,6,7,8,8,9,10;
 
     positionsVector.entity(1).translate({1,1,1});
-    std::cout << positionsVector << std::endl;
+
     ASSERT_EQ(positionsVector.positionsAsEigenVector(),expected[0]);
     positionsVector.slice({1,2}).translate({1,1,1});
-    std::cout << positionsVector << std::endl;
+
     ASSERT_EQ(positionsVector.positionsAsEigenVector(),expected[1]);
+}
+
+TEST_F(APositionsVectorTest, rotateAllCounterClockwise) {
+    VectorXd positions(12);
+    positions <<\
+    0,0,0,\
+    1,0,0,\
+    0,1,0,\
+    0,0,1;
+    PositionsVector p(positions);
+
+    double angle = 120.*ConversionFactors::deg2rad; // 120° counterclockwise rotiation
+    Eigen::Vector3d axis = {1,1,1};
+
+    p.all().rotateAroundOrigin(angle,axis);
+
+    Eigen::VectorXd expectedPositions(12);
+    expectedPositions << \
+    0,0,0,\
+    0,0,1,\
+    1,0,0,\
+    0,1,0;
+
+    ASSERT_TRUE(p.positionsAsEigenVector().isApprox(expectedPositions));
+}
+
+TEST_F(APositionsVectorTest, rotateAllClockwise) {
+    VectorXd positions(12);
+    positions <<\
+    0,0,0,\
+    1,0,0,\
+    0,1,0,\
+    0,0,1;
+    PositionsVector p(positions);
+
+    double angle = -120.*ConversionFactors::deg2rad; // 120° clockwise rotiation
+    Eigen::Vector3d axis = {1,1,1};
+
+    p.all().rotateAroundOrigin(angle,axis);
+
+    Eigen::VectorXd expectedPositions(12);
+    expectedPositions << \
+    0,0,0,\
+    0,1,0,\
+    0,0,1,\
+    1,0,0;
+
+    ASSERT_TRUE(p.positionsAsEigenVector().isApprox(expectedPositions));
+}
+
+
+TEST_F(APositionsVectorTest, rotateSliceCounterClockwise) {
+    VectorXd positions(12);
+    positions <<\
+    0,0,0,\
+    1,0,0,\
+    0,1,0,\
+    0,0,1;
+    PositionsVector p(positions);
+
+    double angle = 120.*ConversionFactors::deg2rad; // 120° counterclockwise rotiation
+    Eigen::Vector3d axis = {1,1,1};
+
+    p.slice({2,2}).rotateAroundOrigin(angle,axis);
+
+    Eigen::VectorXd expectedPositions(12);
+    expectedPositions << \
+    0,0,0,\
+    1,0,0,\
+    1,0,0,\
+    0,1,0;
+
+    ASSERT_TRUE(p.positionsAsEigenVector().isApprox(expectedPositions));
+}
+
+TEST_F(APositionsVectorTest, rotateSliceClockwise) {
+    VectorXd positions(12);
+    positions <<\
+    0,0,0,\
+    1,0,0,\
+    0,1,0,\
+    0,0,1;
+    PositionsVector p(positions);
+
+
+    double angle = -120.*ConversionFactors::deg2rad; // 120° clockwise rotiation
+    Eigen::Vector3d axis = {1,1,1};
+
+    p.slice({2,2}).rotateAroundOrigin(angle,axis);
+
+    Eigen::VectorXd expectedPositions(12);
+    expectedPositions << \
+    0,0,0,\
+    1,0,0,\
+    0,0,1,\
+    1,0,0;
+
+    ASSERT_TRUE(p.positionsAsEigenVector().isApprox(expectedPositions));
 }

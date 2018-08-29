@@ -52,8 +52,9 @@ public:
     void permute(long i, long j) override;
     void permute(const Eigen::PermutationMatrix<Eigen::Dynamic>& permutation) override;
     void translate(const Eigen::Vector3d& shift);
+    void rotateAroundOrigin(double angle, const Eigen::Vector3d &axisDirection);
+    void rotate(double angle, const Eigen::Vector3d &center, const Eigen::Vector3d &axisDirection);
 
-    
     PositionsVector(const PositionsVector& rhs);
     PositionsVector& operator=(const PositionsVector& rhs);
 

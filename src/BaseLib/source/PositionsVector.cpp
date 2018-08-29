@@ -7,7 +7,7 @@
 #include <yaml-cpp/yaml.h>
 #include <EigenYamlConversion.h>
 #include <PositionsVector.h>
-
+#include <PositionsVectorTransformer.h>
 
 using namespace Eigen;
 
@@ -113,9 +113,30 @@ void PositionsVector::permute(const Eigen::PermutationMatrix<Eigen::Dynamic> &pe
 void PositionsVector::translate(const Eigen::Vector3d &shift) {
 
     for (long i = 0; i < sliceInterval_.numberOfEntities(); ++i) {
-        positionsRef().segment(i*entityLength_,3) += shift;
+        positionsRef().segment(calculateIndex(i),3) += shift;
     }
 }
+
+void PositionsVector::rotateAroundOrigin(double angle, const Eigen::Vector3d &axisDirection) {
+    rotate(angle,{0,0,0},axisDirection);
+}
+
+void PositionsVector::rotate(double angle,
+                             const Eigen::Vector3d &center,
+                             const Eigen::Vector3d &axisDirection) {
+    auto rotMat = PositionsVectorTransformer::rotationMatrixFromQuaternion(
+            PositionsVectorTransformer::quaternionFromAngleAndAxis(angle, axisDirection - center));
+
+    this->translate(-center);
+
+    for (long i = 0; i < sliceInterval_.numberOfEntities(); ++i) {
+        long idx = sliceInterval_.start()+i;
+
+        //TODO refactoring needed: implement methods to get the i-th Vector3d of a slice
+        positionsRef().segment(calculateIndex(i), entityLength_) = this->operator[](idx).transpose() * rotMat;
+    }
+    this->translate(center);
+};
 
 PositionsVector::PositionsVector(const PositionsVector& rhs)
         : AbstractVector(rhs) {
