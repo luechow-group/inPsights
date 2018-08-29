@@ -11,10 +11,12 @@ using namespace Eigen;
 
 PositionsVector::PositionsVector()
         : AbstractVector(),
-          positions_(0)
+          positions_(0),
+          positionsRefPtr_()
 {}
 
-PositionsVector::PositionsVector(const VectorXd &positions) {
+PositionsVector::PositionsVector(const VectorXd &positions)
+: PositionsVector() {
     auto size = positions.size();
     assert(size >= 0 && "Vector cannot be empty");
     assert(size%3 == 0 && "Vector must be 3N-dimensional");
@@ -23,7 +25,7 @@ PositionsVector::PositionsVector(const VectorXd &positions) {
     positions_ = positions;
 }
 
-Eigen::Vector3d PositionsVector::operator[](long i) const {
+Eigen::Vector3d PositionsVector::operator[](long i) const {//TODO return const ref
     return positions_.segment(calculateIndex(i),entityLength_);
 }
 
@@ -94,11 +96,44 @@ void PositionsVector::permute(const Eigen::PermutationMatrix<Eigen::Dynamic> &pe
     positions_ = adaptedToEntityLength(permutation)*positions_;
 }
 
+PositionsVector::PositionsVector(const PositionsVector& rhs)
+        : AbstractVector(rhs) {
+    positions_ = rhs.positionsAsEigenVector();
+    positionsRefPtr_.reset();
+}
+
+PositionsVector& PositionsVector::operator=(const PositionsVector& rhs){
+    if(this == &rhs)
+        return *this;
+
+    AbstractVector::setNumberOfEntities(rhs.numberOfEntities());
+    positions_ = rhs.positionsAsEigenVector();
+    positionsRefPtr_.reset();
+
+    return *this;
+}
+
+PositionsVector& PositionsVector::slice(long i) {
+    return slice(Interval(i));
+}
+PositionsVector& PositionsVector::slice(const Interval& interval) {
+    assert(interval.checkBounds(numberOfEntities()) && "The end variable of the interval is out of bounds.");
+
+    positionsRefPtr_.reset();
+    positionsRefPtr_ = std::make_unique<PositionsRef>(
+            positions_.segment(calculateIndex(interval.start()),interval.numberOfEntities()*entityLength_));
+    return *this;
+}
+PositionsVector& PositionsVector::all() {
+    return slice(Interval({0,numberOfEntities()-1}));
+}
+
+
 long PositionsVector::calculateIndex(long i) const {
     return AbstractVector::calculateIndex(i)*entityLength_;
 }
 
-Eigen::Ref<Eigen::Vector3d> PositionsVector::operator()(long i){
+Eigen::Ref<Eigen::Vector3d> PositionsVector::operator()(long i){//TODO DEPRECATED
     return Eigen::Ref<Eigen::Vector3d>(positions_.segment(calculateIndex(i),entityLength_));
 }
 

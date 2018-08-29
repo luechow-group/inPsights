@@ -110,3 +110,26 @@ TEST_F(APositionsVectorTest, permute) {
     ASSERT_EQ(positionsVector[1],position2);
     ASSERT_EQ(positionsVector[2],position1);
 }
+
+TEST_F(APositionsVectorTest, slice) {
+    VectorXd positions(9);
+    positions<< position0, position1, position2;
+    PositionsVector positionsVector(positions);
+
+    ASSERT_EQ(*positionsVector.slice(0).positionsRefPtr_, positions.segment(0,3));
+    ASSERT_EQ(*positionsVector.slice(1).positionsRefPtr_, positions.segment(3,3));
+    ASSERT_EQ(*positionsVector.slice(2).positionsRefPtr_, positions.segment(6,3));
+
+    ASSERT_EQ(*positionsVector.slice({0,0}).positionsRefPtr_,*positionsVector.slice(0).positionsRefPtr_);
+    ASSERT_EQ(*positionsVector.slice({1,1}).positionsRefPtr_,*positionsVector.slice(1).positionsRefPtr_);
+    ASSERT_EQ(*positionsVector.slice({2,2}).positionsRefPtr_,*positionsVector.slice(2).positionsRefPtr_);
+
+    ASSERT_EQ(*positionsVector.slice({0,1}).positionsRefPtr_, positions.segment(0,6));
+    ASSERT_EQ(*positionsVector.slice({1,2}).positionsRefPtr_, positions.segment(3,6));
+    ASSERT_EQ(*positionsVector.slice({0,2}).positionsRefPtr_, positions.segment(0,9));
+
+    ASSERT_EQ(*positionsVector.slice({0,2}).positionsRefPtr_,*positionsVector.all().positionsRefPtr_);
+
+    EXPECT_DEATH(*positionsVector.slice(-1).positionsRefPtr_,"");
+    EXPECT_DEATH(*positionsVector.slice({0,3}).positionsRefPtr_,"");
+}
