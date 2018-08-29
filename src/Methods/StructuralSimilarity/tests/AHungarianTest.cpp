@@ -1,5 +1,5 @@
 //
-// Created by Morian Sonnet on 22.05.2017.
+// Created by Michael Heuer on 28.08.2018.
 //
 
 #include <gmock/gmock.h>
@@ -15,16 +15,10 @@ TEST(HungarianTest, OneSolution) {
     11,69,5,86,\
     8,9,98,23;
 
-    Eigen::MatrixXd expectedOutput(4,4);
-    expectedOutput << \
-    0,0,1,0,\
-    0,1,0,0,\
-    1,0,0,0,\
-    0,0,0,1;
+    Eigen::VectorXi expectedOutput(4);
+    expectedOutput << 2,1,0,3;
 
-    Eigen::MatrixXd output(4,4);
-    Hungarian::findMatching(input,output,MATCH_MIN);
-    ASSERT_EQ(output,expectedOutput);
+    ASSERT_EQ(Hungarian<double>::findMatching(input).indices(),expectedOutput);
 }
 
 
@@ -36,24 +30,13 @@ TEST(HungarianTest, TwoSolutions) {
     125,95,90,105,\
     45,110,95,115;
 
-    Eigen::MatrixXd output(4,4);
-    Hungarian::findMatching(input,output,MATCH_MIN);
+    Eigen::VectorXi expectedOutputs[2] = {Eigen::VectorXi(4),Eigen::VectorXi(4)};
+    expectedOutputs[0]<< 1,3,2,0;
+    expectedOutputs[1]<< 3,2,1,0;
 
-    Eigen::MatrixXd expectedOutputs[2] = {Eigen::MatrixXd(4,4),Eigen::MatrixXd(4,4)};
-    expectedOutputs[0]<< \
-    0,1,0,0,\
-    0,0,0,1,\
-    0,0,1,0,\
-    1,0,0,0;
-
-    expectedOutputs[1]<<\
-    0,0,0,1,\
-    0,0,1,0,\
-    0,1,0,0,\
-    1,0,0,0;
-
-    ASSERT_THAT(output,::testing::AnyOf(expectedOutputs[0],expectedOutputs[1]));
+    ASSERT_THAT(Hungarian<double>::findMatching(input).indices(),testing::AnyOf(expectedOutputs[0],expectedOutputs[1]));
 }
+
 
 TEST(HungarianTest, FlippedPositions) {
     auto p1 = TestMolecules::H2::ElectronsInCores::normal.electrons().positionsVector();;
@@ -63,15 +46,9 @@ TEST(HungarianTest, FlippedPositions) {
     ASSERT_EQ(input.rows(),2);
     ASSERT_EQ(input.cols(),2);
 
-    Eigen::MatrixXd output(2,2);
-    Hungarian::findMatching(input,output,MATCH_MIN);
-
-    Eigen::MatrixXd expectedOutput(2,2);
-    expectedOutput << \
-    0,1,\
-    1,0;
-
-    ASSERT_EQ(output,expectedOutput);
+    Eigen::VectorXi expectedOutput(2);
+    expectedOutput << 1,0;
+    ASSERT_EQ(Hungarian<double>::findMatching(input).indices(),expectedOutput);
 }
 
 
@@ -83,12 +60,9 @@ TEST(HungarianTest, TranslatedPositions) {
     ASSERT_EQ(input.rows(),2);
     ASSERT_EQ(input.cols(),2);
 
-    Eigen::MatrixXd output(2,2);
-    Hungarian::findMatching(input,output,MATCH_MIN);
-
-    Eigen::MatrixXd expectedOutput = Eigen::MatrixXd::Identity(2,2);
-
-    ASSERT_EQ(output,expectedOutput);
+    Eigen::VectorXi expectedOutput(2);
+    expectedOutput << 0,1;
+    ASSERT_EQ(Hungarian<double>::findMatching(input).indices(),expectedOutput);
 }
 
 TEST(HungarianTest, TranslatedAndFlippedPositions) {
@@ -100,13 +74,7 @@ TEST(HungarianTest, TranslatedAndFlippedPositions) {
     ASSERT_EQ(input.rows(),2);
     ASSERT_EQ(input.cols(),2);
 
-    Eigen::MatrixXd output(2,2);
-    Hungarian::findMatching(input,output,MATCH_MIN);
-
-    Eigen::MatrixXd expectedOutput(2,2);
-    expectedOutput << \
-    0,1,\
-    1,0;
-
-    ASSERT_EQ(output,expectedOutput);
+    Eigen::VectorXi expectedOutput(2);
+    expectedOutput << 1,0;
+    ASSERT_EQ(Hungarian<double>::findMatching(input).indices(),expectedOutput);
 }

@@ -73,6 +73,27 @@ void PositionsVector::permute(long i, long j) {
     }
 }
 
+Eigen::PermutationMatrix<Eigen::Dynamic> PositionsVector::adaptedToEntityLength(const Eigen::PermutationMatrix<Eigen::Dynamic> &permutation){
+    Eigen::VectorXi raw(permutation.indices().size()*entityLength_);
+
+    for (int i = 0; i < permutation.indices().size(); ++i) {
+        auto originIdx = i*entityLength_;
+        auto targetIdx = permutation.indices()[i]*entityLength_;
+
+        raw[originIdx+0] = targetIdx+0;
+        raw[originIdx+1] = targetIdx+1;
+        raw[originIdx+2] = targetIdx+2;
+    }
+    return PermutationMatrix<Eigen::Dynamic>(raw);
+}
+
+void PositionsVector::permute(const Eigen::PermutationMatrix<Eigen::Dynamic> &permutation) {
+    assert(permutation.indices().size() == numberOfEntities()
+    && "The permutation vector length must be equal to the number of entities");
+
+    positions_ = adaptedToEntityLength(permutation)*positions_;
+}
+
 long PositionsVector::calculateIndex(long i) const {
     return AbstractVector::calculateIndex(i)*entityLength_;
 }
@@ -96,8 +117,8 @@ namespace YAML {
         if (!node.IsSequence())
             return false;
         PositionsVector pv;
-        for (unsigned i = 0; i < node.size(); ++i)
-            pv.append(node[i].as<Eigen::Vector3d>());
+        for (const auto &i : node)
+            pv.append(i.as<Eigen::Vector3d>());
         rhs = pv;
         return true;
     }
