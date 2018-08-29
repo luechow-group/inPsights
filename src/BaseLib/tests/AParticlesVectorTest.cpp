@@ -38,9 +38,9 @@ TEST_F(AParticlesVectorTest, BraceInitialization) {
     );
 }
 
-TEST_F(AParticlesVectorTest, CopyConstructor) {
-    EXPECT_TRUE(false);
-}
+//TEST_F(AParticlesVectorTest, CopyConstructor) {
+//    EXPECT_TRUE(false);
+//}
 
 TEST_F(AParticlesVectorTest, SpinTypeParticlesVector) {
     std::stringstream stringstream;
@@ -59,10 +59,6 @@ TEST_F(AParticlesVectorTest, ElementTypeParticlesVector) {
     std::string expectedOutput = " 1 H    1.00000   2.00000   3.00000\n"
                                  " 2 Og   4.00000   5.00000   6.00000\n";
     ASSERT_EQ(stringstream.str(), expectedOutput);
-}
-
-TEST_F(AParticlesVectorTest, Distance) {
-    EXPECT_TRUE(false);
 }
 
 TEST_F(AParticlesVectorTest, CountTypeOccurence) {
