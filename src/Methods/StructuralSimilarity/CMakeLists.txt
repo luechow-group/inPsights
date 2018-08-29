@@ -16,7 +16,7 @@ set(HEADER_FILES
 
 set(SOURCE_FILES
         source/QuaternionFit.cpp
-        source/Hungarian.cpp
+        #source/Hungarian.cpp
         source/SimpleSorter.cpp
         )
 

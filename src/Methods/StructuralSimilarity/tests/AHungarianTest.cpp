@@ -1,15 +1,13 @@
 //
-// Created by Morian Sonnet on 22.05.2017.
+// Created by Michael Heuer on 28.08.2018.
 //
 
 #include <gmock/gmock.h>
-//#include "HungarianAlternative.h"
 #include "Hungarian.h"
 #include "Metrics.h"
 #include "TestMolecules.h"
 
 TEST(HungarianTest, OneSolution) {
-    //Eigen::ArrayXXi input(4,4);
     Eigen::MatrixXd input(4,4);
     input << \
     88,83,69,92,\
@@ -20,12 +18,11 @@ TEST(HungarianTest, OneSolution) {
     Eigen::VectorXi expectedOutput(4);
     expectedOutput << 2,1,0,3;
 
-    ASSERT_EQ(Hungarian::findMatching(input).indices(),expectedOutput);
+    ASSERT_EQ(Hungarian<double>::findMatching(input).indices(),expectedOutput);
 }
 
 
 TEST(HungarianTest, TwoSolutions) {
-    //Eigen::ArrayXXi input(4,4);
     Eigen::MatrixXd input(4,4);
     input <<\
     90,75,75,80,\
@@ -37,7 +34,7 @@ TEST(HungarianTest, TwoSolutions) {
     expectedOutputs[0]<< 1,3,2,0;
     expectedOutputs[1]<< 3,2,1,0;
 
-    ASSERT_THAT(Hungarian::findMatching(input).indices(),testing::AnyOf(expectedOutputs[0],expectedOutputs[1]));
+    ASSERT_THAT(Hungarian<double>::findMatching(input).indices(),testing::AnyOf(expectedOutputs[0],expectedOutputs[1]));
 }
 
 
@@ -51,7 +48,7 @@ TEST(HungarianTest, FlippedPositions) {
 
     Eigen::VectorXi expectedOutput(2);
     expectedOutput << 1,0;
-    ASSERT_EQ(Hungarian::findMatching(input).indices(),expectedOutput);
+    ASSERT_EQ(Hungarian<double>::findMatching(input).indices(),expectedOutput);
 }
 
 
@@ -65,7 +62,7 @@ TEST(HungarianTest, TranslatedPositions) {
 
     Eigen::VectorXi expectedOutput(2);
     expectedOutput << 0,1;
-    ASSERT_EQ(Hungarian::findMatching(input).indices(),expectedOutput);
+    ASSERT_EQ(Hungarian<double>::findMatching(input).indices(),expectedOutput);
 }
 
 TEST(HungarianTest, TranslatedAndFlippedPositions) {
@@ -79,5 +76,5 @@ TEST(HungarianTest, TranslatedAndFlippedPositions) {
 
     Eigen::VectorXi expectedOutput(2);
     expectedOutput << 1,0;
-    ASSERT_EQ(Hungarian::findMatching(input).indices(),expectedOutput);
+    ASSERT_EQ(Hungarian<double>::findMatching(input).indices(),expectedOutput);
 }
