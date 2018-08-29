@@ -47,6 +47,7 @@ void PositionsVector::insert(const Eigen::Vector3d &position, long i) {
     positions_ << before, position, after;
 
     incrementNumberOfEntities();
+    resetToAllRef();
 }
 
 std::ostream& operator<<(std::ostream& os, const PositionsVector& pc){
