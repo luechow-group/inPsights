@@ -5,6 +5,8 @@
 #ifndef AMOLQCPP_RETURNANDRESET_H
 #define AMOLQCPP_RETURNANDRESET_H
 
+#include <utility>
+
 template <typename ObjectType, typename ReturnType>
 struct RETURN_AND_RESET{
     RETURN_AND_RESET(ObjectType& obj, ReturnType vec) : obj_(obj), vec_(std::move(vec)){};
