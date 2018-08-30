@@ -14,7 +14,7 @@ struct RETURN_AND_RESET{
     ReturnType returnAndReset(){ return vec_; };
 
     ~RETURN_AND_RESET(){
-        obj_.resetRefToAll();
+        obj_.resetRef();
     }
     ObjectType& obj_;
     ReturnType vec_;

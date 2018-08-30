@@ -304,6 +304,6 @@ TEST_F(APositionsVectorTest, ResetManual){
     ASSERT_EQ(p.position(0),position0);
     ASSERT_EQ(p.slice({1,2}, Reset::Manual).position(0,Usage::Finished),position1);
     ASSERT_EQ(p.position(0),position1);
-    p.resetRefToAll();
+    p.resetRef();
     ASSERT_EQ(p.position(0),position0);
 }

@@ -23,7 +23,7 @@ public:
     void resetter(const Usage& usage){
         if( resetType_ == Reset::Automatic
             || (resetType_ == Reset::OnFinished && usage == Usage::Finished))
-            resetRefToAll();
+            resetRef();
     }
 
     Eigen::Vector3d operator[](long i) const;
@@ -53,7 +53,7 @@ public:
     Eigen::VectorXd & positionsAsEigenVector();
 
     friend std::ostream& operator<<(std::ostream& os, const PositionsVector& pc);
-    void resetRefToAll();
+    void resetRef();
 private:
     Eigen::VectorXd positions_;
     const unsigned entityLength_ = 3;
@@ -61,12 +61,9 @@ private:
     Interval sliceInterval_;
     std::unique_ptr<PositionsRef> positionsRefPtr_;
 
-
-
     long calculateIndex(long i) const override ;
 
     Eigen::PermutationMatrix<Eigen::Dynamic> adaptedToEntityLength(const Eigen::PermutationMatrix<Eigen::Dynamic> &permutation);
-
 };
 
 namespace YAML {

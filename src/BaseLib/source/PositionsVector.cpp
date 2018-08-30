@@ -28,7 +28,7 @@ PositionsVector::PositionsVector(const VectorXd &positions)
     AbstractVector::setNumberOfEntities(size/3);
     positions_ = positions;
 
-    resetRefToAll();
+    resetRef();
 }
 
 Eigen::Vector3d PositionsVector::operator[](long i) const {
@@ -56,7 +56,7 @@ void PositionsVector::insert(const Eigen::Vector3d &position, long i) {
     positions_ << before, position, after;
 
     incrementNumberOfEntities();
-    resetRefToAll();
+    resetRef();
 }
 
 std::ostream& operator<<(std::ostream& os, const PositionsVector& pc){
@@ -88,7 +88,7 @@ PositionsRef PositionsVector::positionsRef(){
     return *positionsRefPtr_;
 }
 
-void PositionsVector::resetRefToAll() {
+void PositionsVector::resetRef() {
     positionsRefPtr_.reset();
     positionsRefPtr_ = std::make_unique<PositionsRef>(positions_);
     sliceInterval_ = {0,numberOfEntities()};
@@ -131,7 +131,7 @@ void PositionsVector::permute(const Eigen::PermutationMatrix<Eigen::Dynamic> &pe
 
     positionsRef() = adaptedToEntityLength(permutation)*positionsRef();
 
-    resetRefToAll();
+    resetRef();
 }
 
 void PositionsVector::translate(const Eigen::Vector3d &shift, const Usage& usage) {
@@ -163,18 +163,18 @@ void PositionsVector::rotate(double angle,const Eigen::Vector3d &center,const Ei
 PositionsVector::PositionsVector(const PositionsVector& rhs)
         : AbstractVector(rhs) {
     positions_ = rhs.positionsAsEigenVector();
-    resetRefToAll();
+    resetRef();
 }
 
 PositionsVector& PositionsVector::operator=(const PositionsVector& rhs){
     if(this == &rhs) {
-        resetRefToAll();
+        resetRef();
         return *this;
     }
 
     AbstractVector::setNumberOfEntities(rhs.numberOfEntities());
     positions_ = rhs.positionsAsEigenVector();
-    resetRefToAll();
+    resetRef();
 
     return *this;
 }
