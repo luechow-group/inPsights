@@ -12,21 +12,23 @@ using namespace Eigen;
 class AParticlesVectorTest : public Test {
 public:
 
+    Electron e0,e1,e2;
+    Atom a0,a1;
     ElectronsVector electrons;
     AtomsVector atoms;
 
     void SetUp() override {
-        Particle<Spin > e1 = {Spin::alpha,{1, 2, 3}};
-        Particle<Spin > e2 = {Spin::alpha,{1, 2, 3}};
-        Particle<Spin > e3 = {Spin::beta ,{4, 5, 6}};
+        e0 = {Spin::alpha,{1, 2, 3}};
+        e1 = {Spin::alpha,{4, 5, 6}};
+        e2 = {Spin::beta ,{7, 8, 9}};
+        electrons.append(e0);
         electrons.append(e1);
         electrons.append(e2);
-        electrons.append(e3);
 
-        Particle<Element> a1 = {Element::H ,{1, 2, 3}};
-        Particle<Element> a2 = {Element::Og,{4, 5, 6}};
+        a0 = {Element::H ,{1, 2, 3}};
+        a1 = {Element::Og,{4, 5, 6}};
+        atoms.append(a0);
         atoms.append(a1);
-        atoms.append(a2);
     };
 };
 
@@ -47,8 +49,8 @@ TEST_F(AParticlesVectorTest, SpinTypeParticlesVector) {
     stringstream << electrons;
 
     std::string expectedOutput = " 1 ea   1.00000   2.00000   3.00000\n"
-                                 " 2 ea   1.00000   2.00000   3.00000\n"
-                                 " 3 eb   4.00000   5.00000   6.00000\n";
+                                 " 2 ea   4.00000   5.00000   6.00000\n"
+                                 " 3 eb   7.00000   8.00000   9.00000\n";
     ASSERT_EQ(stringstream.str(), expectedOutput);
 }
 
@@ -64,4 +66,36 @@ TEST_F(AParticlesVectorTest, ElementTypeParticlesVector) {
 TEST_F(AParticlesVectorTest, CountTypeOccurence) {
     ASSERT_EQ(electrons.typesVector().countOccurence(Spin::alpha),2);
     ASSERT_EQ(atoms.typesVector().countOccurence(Element::H),1);
+}
+
+TEST_F(AParticlesVectorTest, Permute){
+    auto e = electrons;
+
+    VectorXi p(3);
+    p << 2,0,1;
+
+    e.permute(PermutationMatrix<Dynamic>(p));
+    ASSERT_EQ(e[0].type(),e1.type());
+    ASSERT_EQ(e[1].type(),e2.type());
+    ASSERT_EQ(e[2].type(),e0.type());
+
+    ASSERT_EQ(e[0].position(),e1.position());
+    ASSERT_EQ(e[1].position(),e2.position());
+    ASSERT_EQ(e[2].position(),e0.position());
+}
+
+TEST_F(AParticlesVectorTest, PermuteSlice){
+    auto e = electrons;
+
+    VectorXi p(2);
+    p << 1,0;
+
+    e.slice({1,2}).permute(PermutationMatrix<Dynamic>(p));
+    ASSERT_EQ(e[0].type(),e0.type());
+    ASSERT_EQ(e[1].type(),e2.type());
+    ASSERT_EQ(e[2].type(),e1.type());
+
+    ASSERT_EQ(e[0].position(),e0.position());
+    ASSERT_EQ(e[1].position(),e2.position());
+    ASSERT_EQ(e[2].position(),e1.position());
 }

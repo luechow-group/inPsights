@@ -19,13 +19,17 @@ public:
     ParticlesVector()
             : AbstractVector(0),
               positionsVector_(),
-              typesVector_(0)
+              typesVector_(0),
+              resetType_(Reset::Automatic),
+              sliceInterval_({0,numberOfEntities()})
     {}
 
     ParticlesVector(const PositionsVector &positionsVector)
             : AbstractVector(positionsVector.numberOfEntities()),
               positionsVector_(positionsVector),
-              typesVector_(numberOfEntities())
+              typesVector_(numberOfEntities()),
+              resetType_(Reset::Automatic),
+              sliceInterval_({0,numberOfEntities()})
     {}
 
     ParticlesVector(const PositionsVector &positionsVector,
@@ -37,6 +41,22 @@ public:
                && numberOfEntities() == typesVector_.numberOfEntities()
                && "The number of entities in ParticlesVector, PositionsVector, and TypesVector must match.");
     }
+
+    ParticlesVector& slice(const Interval& interval, const Reset& resetType = Reset::Automatic) {
+        assert(interval.checkBounds(numberOfEntities()) && "The end variable of the interval is out of bounds.");
+        resetType_ = resetType;
+        sliceInterval_ = interval;
+
+        typesVector().slice(interval,resetType);
+        positionsVector().slice(interval,resetType);
+
+        return *this;
+    }
+
+    ParticlesVector& entity(long i, const Reset& resetType = Reset::Automatic) {
+        return slice(Interval(i), resetType);
+    }
+
 
     ParticlesVector(std::vector<Particle<Type>> particles)
             : ParticlesVector() {
@@ -90,10 +110,16 @@ public:
         typesVector_.permute(i,j);
     }
 
+    void permute(const Eigen::PermutationMatrix<Eigen::Dynamic> &permutation, const Usage &usage) {
+        positionsVector_.permute(permutation,usage);
+        typesVector_.permute(permutation,usage);
+    }
+
     void permute(const Eigen::PermutationMatrix<Eigen::Dynamic> &permutation) override {
         positionsVector_.permute(permutation);
         typesVector_.permute(permutation);
     }
+
 
     friend std::ostream& operator<<(std::ostream& os, const ParticlesVector<Type> & pv){
         for (long i = 0; i < pv.numberOfEntities(); i++) {
@@ -105,6 +131,9 @@ public:
 protected:
     PositionsVector positionsVector_;
     TypesVector<Type> typesVector_;
+
+    Reset resetType_;
+    Interval sliceInterval_;
 };
 
 using TypedParticlesVector = ParticlesVector<int>;
