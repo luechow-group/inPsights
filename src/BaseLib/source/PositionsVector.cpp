@@ -60,11 +60,10 @@ void PositionsVector::insert(const Eigen::Vector3d &position, long i) {
 }
 
 std::ostream& operator<<(std::ostream& os, const PositionsVector& pc){
-    //TODO!!!return RETURN_AND_RESET<PositionsVector,Eigen::Vector3d>(*this,positionsRef().segment(calculateIndex(i),entityLength_)).returnAndReset();
-
     for (long i = 0; i < pc.numberOfEntities(); i++){
         os << ToString::longToString(i + 1) << " " << ToString::vector3dToString(pc[i]) << std::endl;
     }
+    const_cast<PositionsVector&>(pc).resetRef(); //TODO refactor
     return os;
 }
 
@@ -84,7 +83,11 @@ Eigen::VectorXd & PositionsVector::positionsAsEigenVector() {
     return positions_;
 }
 
-PositionsRef PositionsVector::positionsRef(){
+PositionsRef PositionsVector::positionsRef(const Usage& usage){
+    if( resetType_ == Reset::Automatic
+        || (resetType_ == Reset::OnFinished && usage == Usage::Finished))
+        return RETURN_AND_RESET<PositionsVector,PositionsRef>(*this,*positionsRefPtr_).returnAndReset();
+    else
     return *positionsRefPtr_;
 }
 
@@ -129,15 +132,20 @@ void PositionsVector::permute(const Eigen::PermutationMatrix<Eigen::Dynamic> &pe
     assert(permutation.indices().size() == sliceInterval_.numberOfEntities()
     && "The permutation vector length must be equal to the number of entities");
 
-    positionsRef() = adaptedToEntityLength(permutation)*positionsRef();
+    resetType_=Reset::OnFinished;
+    positionsRef(Usage::NotFinished) = adaptedToEntityLength(permutation)*positionsRef(Usage::NotFinished);
 
     resetRef();
 }
 
 void PositionsVector::translate(const Eigen::Vector3d &shift, const Usage& usage) {
-    for (long i = 0; i < sliceInterval_.numberOfEntities(); ++i)
-        positionsRef().segment(calculateIndex(i),3) += shift;
+    auto tmp = resetType_;
+    resetType_ = Reset::OnFinished;
 
+    for (long i = 0; i < sliceInterval_.numberOfEntities(); ++i)
+        positionsRef(Usage::NotFinished).segment(calculateIndex(i),3) += shift;
+
+    resetType_ = tmp;
     resetter(usage);
 }
 
@@ -149,7 +157,9 @@ void PositionsVector::rotate(double angle,const Eigen::Vector3d &center,const Ei
     auto rotMat = PositionsVectorTransformer::rotationMatrixFromQuaternion(
             PositionsVectorTransformer::quaternionFromAngleAndAxis(angle, axisDirection - center));
 
+    auto tmp = resetType_;
     resetType_=Reset::OnFinished;
+
     this->translate(-center,Usage::NotFinished);
 
     for (long i = 0; i < sliceInterval_.numberOfEntities(); ++i)
@@ -157,6 +167,7 @@ void PositionsVector::rotate(double angle,const Eigen::Vector3d &center,const Ei
 
     this->translate(center,Usage::NotFinished);
 
+    resetType_ = tmp;
     resetter(usage);
 };
 

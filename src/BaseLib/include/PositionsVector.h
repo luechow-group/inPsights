@@ -32,11 +32,9 @@ public:
     void insert(const Eigen::Vector3d& position, long i);
     void append(const Eigen::Vector3d& position);
     void prepend(const Eigen::Vector3d& position);
-
-    PositionsRef positionsRef();
-
     void permute(long i, long j) override;
 
+    PositionsRef positionsRef(const Usage& usage = Usage::NotFinished);
     Eigen::Vector3d position(long i, const Usage& usage = Usage::NotFinished);
     void permute(const Eigen::PermutationMatrix<Eigen::Dynamic>& permutation, const Usage& usage);
     void permute(const Eigen::PermutationMatrix<Eigen::Dynamic>& permutation) override;
