@@ -290,7 +290,6 @@ TEST_F(APositionsVectorTest, RotateSliceClockwise) {
     ASSERT_TRUE(p.positionsAsEigenVector().isApprox(expectedPositions));
 }
 
-
 TEST_F(APositionsVectorTest, ResetOnFinished){
     PositionsVector p(positions);
 
