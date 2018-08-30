@@ -18,12 +18,6 @@ public:
     PositionsVector();
     explicit PositionsVector(const Eigen::VectorXd& positions);
 
-    void resetter(const Usage& usage){
-        if( resetType_ == Reset::Automatic
-            || (resetType_ == Reset::OnFinished && usage == Usage::Finished))
-            resetRef();
-    }
-
     Eigen::Vector3d operator[](long i) const;
 
     PositionsVector& entity(long i, const Reset& resetType = Reset::Automatic);
@@ -50,6 +44,8 @@ public:
 
     friend std::ostream& operator<<(std::ostream& os, const PositionsVector& pc);
     void resetRef();
+    void resetter(const Usage& usage);
+
 private:
     Eigen::VectorXd positions_;
     const unsigned entityLength_ = 3;

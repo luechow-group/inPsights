@@ -97,6 +97,12 @@ void PositionsVector::resetRef() {
     sliceInterval_ = {0,numberOfEntities()};
 }
 
+void PositionsVector::resetter(const Usage &usage) {
+    if( resetType_ == Reset::Automatic
+        || (resetType_ == Reset::OnFinished && usage == Usage::Finished))
+        resetRef();
+}
+
 void PositionsVector::permute(long i, long j) {
     if(i != j) {
         Eigen::Vector3d temp = positions_.segment(calculateIndex(i),entityLength_);
