@@ -84,9 +84,9 @@ TEST_F(APositionsVectorTest, Append) {
 
 TEST_F(APositionsVectorTest, Print) {
     VectorXd positions(9);
-    Eigen::Vector3d a(0,-2.01238,7.13);
-    Eigen::Vector3d b(1e-10,-9.8987,-12.238);
-    Eigen::Vector3d c(-99.9,99.9,9.99);
+    Vector3d a(0,-2.01238,7.13);
+    Vector3d b(1e-10,-9.8987,-12.238);
+    Vector3d c(-99.9,99.9,9.99);
     positions<< a, b, c;
     PositionsVector positionsVector(positions);
     std::ostringstream os;
@@ -97,9 +97,9 @@ TEST_F(APositionsVectorTest, Print) {
 TEST_F(APositionsVectorTest, PermuteAll) {
     PositionsVector p(positions);
 
-    Eigen::VectorXi pvec(3);
+    VectorXi pvec(3);
     pvec << 0,2,1;
-    PermutationMatrix<Eigen::Dynamic> perm(pvec);
+    PermutationMatrix<Dynamic> perm(pvec);
     p.permute(perm);
 
     ASSERT_EQ(p[0],position0);
@@ -110,9 +110,9 @@ TEST_F(APositionsVectorTest, PermuteAll) {
 TEST_F(APositionsVectorTest, PermuteAllCyclic) {
     PositionsVector p(positions);
 
-    Eigen::VectorXi pvec(3);
+    VectorXi pvec(3);
     pvec << 2,0,1;
-    PermutationMatrix<Eigen::Dynamic> perm(pvec);
+    PermutationMatrix<Dynamic> perm(pvec);
     p.permute(perm);
 
     ASSERT_EQ(p[0],position1);
@@ -123,19 +123,16 @@ TEST_F(APositionsVectorTest, PermuteAllCyclic) {
 TEST_F(APositionsVectorTest, PermuteSlice) {
     PositionsVector p(positions);
 
-    Eigen::VectorXi p1(2);
+    VectorXi p1(2);
     p1 << 1,0;
-    p.slice({1,2}).permute(PermutationMatrix<Eigen::Dynamic>(p1));
-
+    p.slice({1,2}).permute(PermutationMatrix<Dynamic>(p1));
     ASSERT_EQ(p[0],position0);
     ASSERT_EQ(p[1],position2);
     ASSERT_EQ(p[2],position1);
 
-    Eigen::VectorXi p2(3);
+    VectorXi p2(3);
     p2 << 2,0,1;
-
-    // test resetToAll()
-    p.permute(PermutationMatrix<Eigen::Dynamic>(p2));
+    p.permute(PermutationMatrix<Dynamic>(p2));
     ASSERT_EQ(p[0],position2);
     ASSERT_EQ(p[1],position1);
     ASSERT_EQ(p[2],position0);
@@ -164,7 +161,7 @@ TEST_F(APositionsVectorTest, Slice) {
 
 TEST_F(APositionsVectorTest, Translate) {
     PositionsVector p(positions);
-    
+
     VectorXd expected[2] = {VectorXd(9),VectorXd(9)};
     expected[0] << 1,2,3,5,6,7,7,8,9;
     expected[1] << 1,2,3,6,7,8,8,9,10;
@@ -187,11 +184,11 @@ TEST_F(APositionsVectorTest, RotateAllCounterClockwise) {
     PositionsVector p(positions);
 
     double angle = 120.*ConversionFactors::deg2rad; // 120° counterclockwise rotiation
-    Eigen::Vector3d axis = {1,1,1};
+    Vector3d axis = {1,1,1};
 
     p.rotateAroundOrigin(angle,axis);
 
-    Eigen::VectorXd expectedPositions(12);
+    VectorXd expectedPositions(12);
     expectedPositions << \
     0,0,0,\
     0,0,1,\
@@ -211,11 +208,11 @@ TEST_F(APositionsVectorTest, RotateAllClockwise) {
     PositionsVector p(positions);
 
     double angle = -120.*ConversionFactors::deg2rad; // 120° clockwise rotiation
-    Eigen::Vector3d axis = {1,1,1};
+    Vector3d axis = {1,1,1};
 
     p.rotateAroundOrigin(angle,axis);
 
-    Eigen::VectorXd expectedPositions(12);
+    VectorXd expectedPositions(12);
     expectedPositions << \
     0,0,0,\
     0,1,0,\
@@ -236,11 +233,11 @@ TEST_F(APositionsVectorTest, RotateSliceCounterClockwise) {
     PositionsVector p(positions);
 
     double angle = 120.*ConversionFactors::deg2rad; // 120° counterclockwise rotiation
-    Eigen::Vector3d axis = {1,1,1};
+    Vector3d axis = {1,1,1};
 
     p.slice({2,2}).rotateAroundOrigin(angle,axis);
 
-    Eigen::VectorXd expectedPositions(12);
+    VectorXd expectedPositions(12);
     expectedPositions << \
     0,0,0,\
     1,0,0,\
@@ -260,11 +257,11 @@ TEST_F(APositionsVectorTest, RotateSliceClockwise) {
     PositionsVector p(positions);
 
     double angle = -120.*ConversionFactors::deg2rad; // 120° clockwise rotiation
-    Eigen::Vector3d axis = {1,1,1};
+    Vector3d axis = {1,1,1};
 
     p.slice({2,2}).rotateAroundOrigin(angle,axis);
 
-    Eigen::VectorXd expectedPositions(12);
+    VectorXd expectedPositions(12);
     expectedPositions << \
     0,0,0,\
     1,0,0,\
