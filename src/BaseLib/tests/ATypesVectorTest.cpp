@@ -155,7 +155,7 @@ TEST_F(ATypesVectorTest, PermuteSlice){
 
     s.slice({1,2}).permute(PermutationMatrix<Dynamic>(p));
     ASSERT_EQ(s[0],Spin::alpha);
-    ASSERT_EQ(s[1],Spin::alpha);
-    ASSERT_EQ(s[2],Spin::beta);
+    ASSERT_EQ(s[1],Spin::beta);
+    ASSERT_EQ(s[2],Spin::alpha);
 
 }
