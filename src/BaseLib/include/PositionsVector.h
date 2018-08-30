@@ -26,7 +26,6 @@ public:
     void insert(const Eigen::Vector3d& position, long i);
     void append(const Eigen::Vector3d& position);
     void prepend(const Eigen::Vector3d& position);
-    void permute(long i, long j) override;
 
     PositionsRef positionsRef(const Usage& usage = Usage::NotFinished);
     Eigen::Vector3d position(long i, const Usage& usage = Usage::NotFinished);

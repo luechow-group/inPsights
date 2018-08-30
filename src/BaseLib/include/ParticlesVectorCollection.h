@@ -98,14 +98,7 @@ public:
         insert(particlesVector,0);
     }
 
-    void permute(long i, long j) final {
-        if(i != j) {
-            positionsVectorCollection_.permute(i,j);
-            typesVector_.permute(i,j);
-        }
-    }
-
-    void permute(const Eigen::PermutationMatrix<Eigen::Dynamic> &permutation) {
+    void permute(const Eigen::PermutationMatrix<Eigen::Dynamic> &permutation) override {
         positionsVectorCollection_.permute(permutation);
         typesVector_.permute(permutation);
     }

@@ -137,14 +137,6 @@ public:
         return types_;
     }
 
-    void permute(long i, long j) override {
-        if(i != j) {
-            int temp = types_[calculateIndex(i)];
-            types_[calculateIndex(i)] = types_[calculateIndex(j)];
-            types_[calculateIndex(j)] = temp;
-        }
-    }
-
     void permute(const Eigen::PermutationMatrix<Eigen::Dynamic> &permutation) override {
         permuteMethod(permutation);
         resetRef();

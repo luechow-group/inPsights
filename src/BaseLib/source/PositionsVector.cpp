@@ -105,14 +105,6 @@ void PositionsVector::resetStrategy(const Usage &usage) {
         resetRef();
 }
 
-void PositionsVector::permute(long i, long j) {
-    if(i != j) {
-        Eigen::Vector3d temp = positions_.segment(calculateIndex(i),entityLength_);
-        positions_.segment(calculateIndex(i),entityLength_) = positions_.segment(calculateIndex(j),entityLength_);
-        positions_.segment(calculateIndex(j),entityLength_) = temp;
-    }
-}
-
 Eigen::PermutationMatrix<Eigen::Dynamic> PositionsVector::adaptedToEntityLength(const Eigen::PermutationMatrix<Eigen::Dynamic> &permutation){
     Eigen::VectorXi raw(permutation.indices().size()*entityLength_);
 

@@ -105,11 +105,6 @@ public:
         this->insert(particle,numberOfEntities());
     }
 
-    void permute(long i, long j) override {
-        positionsVector_.permute(i,j);
-        typesVector_.permute(i,j);
-    }
-
     void permute(const Eigen::PermutationMatrix<Eigen::Dynamic> &permutation, const Usage &usage) {
         positionsVector_.permute(permutation,usage);
         typesVector_.permute(permutation,usage);

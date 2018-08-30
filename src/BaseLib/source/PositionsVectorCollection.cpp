@@ -57,20 +57,6 @@ void PositionsVectorCollection::prepend(const PositionsVector &positionsVector) 
     insert(positionsVector,0);
 }
 
-void PositionsVectorCollection::permute(long i, long j) {
-    if(i != j) {
-        PositionsVector tempi =positionsVectorCollection_[calculateIndex(i)];
-        PositionsVector tempj =positionsVectorCollection_[calculateIndex(j)];
-
-        positionsVectorCollection_.at(calculateIndex(i)) = tempj;
-        positionsVectorCollection_.at(calculateIndex(j)) = tempi;
-
-        //positionsVectorCollection_.( static_cast<unsigned long>(calculateIndex(i)) )
-        //        = positionsVectorCollection_.at( static_cast<unsigned long>(calculateIndex(j)) );
-        //positionsVectorCollection_.at( static_cast<unsigned long>(calculateIndex(j)) ) = temp;
-    }
-}
-
 void PositionsVectorCollection::permute(const Eigen::PermutationMatrix<Eigen::Dynamic> &permutation) {
     for(auto & pv : positionsVectorCollection_){
         pv.permute(permutation);
@@ -80,7 +66,7 @@ void PositionsVectorCollection::permute(const Eigen::PermutationMatrix<Eigen::Dy
 double PositionsVectorCollection::norm(long i, long j) const{
     return (positionsVectorCollection_[i].positionsAsEigenVector()
             - positionsVectorCollection_[j].positionsAsEigenVector()).norm();
-};
+}
 
 const std::vector<PositionsVector>& PositionsVectorCollection::positionsVectorCollection() const {
     return positionsVectorCollection_;

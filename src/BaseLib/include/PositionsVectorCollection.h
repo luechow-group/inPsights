@@ -18,7 +18,7 @@ public:
     void insert (const PositionsVector& positionsVector, long i);
     void append (const PositionsVector& positionsVector);
     void prepend(const PositionsVector& positionsVector);
-    void permute(long i, long j) override;
+
     void permute(const Eigen::PermutationMatrix<Eigen::Dynamic> &permutation) override;
 
     double norm(long i, long j) const;
