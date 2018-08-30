@@ -7,6 +7,9 @@
 
 #include <utility>
 
+enum class Reset{Automatic, Manual, OnFinished};
+enum class Usage{NotFinished, Finished};
+
 template <typename ObjectType, typename ReturnType>
 struct RETURN_AND_RESET{
     RETURN_AND_RESET(ObjectType& obj, ReturnType vec) : obj_(obj), vec_(std::move(vec)){};

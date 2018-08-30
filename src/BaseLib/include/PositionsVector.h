@@ -9,11 +9,9 @@
 #include <memory>
 #include "AbstractVector.h"
 #include "Interval.h"
+#include "ReturnAndReset.h"
 
 using PositionsRef = Eigen::Ref<Eigen::VectorXd>;
-
-enum class Reset{Automatic, Manual, OnFinished};
-enum class Usage{NotFinished, Finished};
 
 class PositionsVector : public AbstractVector{
 public:

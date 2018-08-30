@@ -8,7 +8,7 @@
 #include <EigenYamlConversion.h>
 #include <PositionsVector.h>
 #include <PositionsVectorTransformer.h>
-#include <ReturnAndReset.h>
+
 
 using namespace Eigen;
 
