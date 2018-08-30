@@ -15,6 +15,7 @@ using namespace Eigen;
 PositionsVector::PositionsVector()
         : AbstractVector(),
           positions_(0),
+          resetType_(Reset::Automatic),
           sliceInterval_({0,0}),
           positionsRefPtr_(std::make_unique<PositionsRef>(positions_))
 {}
@@ -92,6 +93,7 @@ PositionsRef PositionsVector::positionsRef(const Usage& usage){
 }
 
 void PositionsVector::resetRef() {
+    resetType_ = Reset::Automatic;
     positionsRefPtr_.reset();
     positionsRefPtr_ = std::make_unique<PositionsRef>(positions_);
     sliceInterval_ = {0,numberOfEntities()};

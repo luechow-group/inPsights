@@ -47,8 +47,8 @@ public:
     void resetStrategy(const Usage &usage);
 
 private:
-    Eigen::VectorXd positions_;
     const unsigned entityLength_ = 3;
+    Eigen::VectorXd positions_;
     Reset resetType_;
     Interval sliceInterval_;
     std::unique_ptr<PositionsRef> positionsRefPtr_;
