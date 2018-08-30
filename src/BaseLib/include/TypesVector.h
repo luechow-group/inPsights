@@ -67,10 +67,6 @@ public:
     }
 
 
-    TypesVector<Type>& entity(long i, const Reset& resetType = Reset::Automatic) {
-        return slice(Interval(i), resetType);
-    }
-
     TypesVector<Type>& slice(const Interval& interval, const Reset& resetType = Reset::Automatic) {
         assert(interval.checkBounds(numberOfEntities()) && "The end variable of the interval is out of bounds.");
         resetType_ = resetType;
@@ -81,7 +77,12 @@ public:
         return *this;
     }
 
-    TypesRef typesRef(const Usage& usage){
+    TypesVector<Type>& entity(long i, const Reset& resetType = Reset::Automatic) {
+        return slice(Interval(i), resetType);
+    }
+
+
+    TypesRef typesRef(const Usage& usage = Usage::NotFinished){
         if( resetType_ == Reset::Automatic
             || (resetType_ == Reset::OnFinished && usage == Usage::Finished))
             return RETURN_AND_RESET<TypesVector<Type>,TypesRef>(*this,*typesRefPtr_).returnAndReset();
@@ -142,18 +143,6 @@ public:
             types_[calculateIndex(i)] = types_[calculateIndex(j)];
             types_[calculateIndex(j)] = temp;
         }
-    }
-
-    void permuteMethod(const Eigen::PermutationMatrix<Eigen::Dynamic> &permutation) {
-        assert(permutation.indices().size() == sliceInterval_.numberOfEntities()
-               && "The permutation vector length must be equal to the number of entities");
-
-        auto tmp = resetType_;
-        resetType_ = Reset::OnFinished;
-
-        typesRef(Usage::NotFinished) = permutation*typesRef(Usage::NotFinished);
-
-        resetType_ = tmp;
     }
 
     void permute(const Eigen::PermutationMatrix<Eigen::Dynamic> &permutation) override {
@@ -241,6 +230,18 @@ private:
     Reset resetType_;
     Interval sliceInterval_;
     std::unique_ptr<TypesRef> typesRefPtr_;
+
+    void permuteMethod(const Eigen::PermutationMatrix<Eigen::Dynamic> &permutation) {
+        assert(permutation.indices().size() == sliceInterval_.numberOfEntities()
+               && "The permutation vector length must be equal to the number of entities");
+
+        auto tmp = resetType_;
+        resetType_ = Reset::OnFinished;
+
+        typesRef(Usage::NotFinished) = permutation*typesRef(Usage::NotFinished);
+
+        resetType_ = tmp;
+    }
 };
 
 using IntegerTypesVector = TypesVector<int>;
