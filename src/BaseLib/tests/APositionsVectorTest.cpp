@@ -15,8 +15,13 @@ public:
         position0 = Vector3d(1,2,3);
         position1 = Vector3d(4,5,6);
         position2 = Vector3d(7,8,9);
+
+        VectorXd pvec(9);
+        pvec<< position0, position1, position2;
+        positions = pvec;
     }
     Vector3d position0,position1,position2;
+    VectorXd positions;
 };
 
 TEST_F(APositionsVectorTest, NumberOfEntities){
@@ -29,33 +34,30 @@ TEST_F(APositionsVectorTest, NumberOfEntities){
 }
 
 TEST_F(APositionsVectorTest, IndexOperator){
+    PositionsVector p(positions);
 
-    VectorXd positions(9);
-    positions<< position0, position1, position2;
-    PositionsVector positionsVector(positions);
+    ASSERT_EQ(p[0],position0);
+    ASSERT_EQ(p[1],position1);
+    ASSERT_EQ(p[2],position2);
+    ASSERT_EQ(p[-1],position2);
+    ASSERT_EQ(p[-2],position1);
+    ASSERT_EQ(p[-3],position0);
 
-    ASSERT_EQ(positionsVector[0],position0);
-    ASSERT_EQ(positionsVector[1],position1);
-    ASSERT_EQ(positionsVector[2],position2);
-    ASSERT_EQ(positionsVector[-1],position2);
-    ASSERT_EQ(positionsVector[-2],position1);
-    ASSERT_EQ(positionsVector[-3],position0);
-
-    EXPECT_DEATH(positionsVector[3],"");
-    EXPECT_DEATH(positionsVector[-4],"");
+    EXPECT_DEATH(p[3],"");
+    EXPECT_DEATH(p[-4],"");
 }
 
 TEST_F(APositionsVectorTest, Insert){
-    VectorXd positions(6);
-    positions<< position0, position2;
+    VectorXd positionsSmall(6);
+    positionsSmall<< position0, position2;
     Vector3d position(position1);
-    PositionsVector positionsVector(positions);
+    PositionsVector p(positionsSmall);
 
-    positionsVector.insert(position,1);
+    p.insert(position,1);
 
-    ASSERT_EQ(positionsVector[0],position0);
-    ASSERT_EQ(positionsVector[1],position1);
-    ASSERT_EQ(positionsVector[2],position2);
+    ASSERT_EQ(p[0],position0);
+    ASSERT_EQ(p[1],position1);
+    ASSERT_EQ(p[2],position2);
 }
 
 
@@ -288,19 +290,21 @@ TEST_F(APositionsVectorTest, RotateSliceClockwise) {
     ASSERT_TRUE(p.positionsAsEigenVector().isApprox(expectedPositions));
 }
 
-TEST_F(APositionsVectorTest, UglyReturnAndResetHack){
-    VectorXd positions(9);
-    positions<< position0, position1, position2;
+
+TEST_F(APositionsVectorTest, ResetOnFinished){
     PositionsVector p(positions);
 
-    ASSERT_EQ(p[0],position0);
     ASSERT_EQ(p.position(0),position0);
-    ASSERT_EQ(p.slice({1, 2}).position(0),position1);
-    ASSERT_EQ(p.position(0),position0);
-
-    ASSERT_EQ(p.position(0),position0);
-    ASSERT_EQ(p.slice({1, 2}).position(0, false),position1);
+    ASSERT_EQ(p.slice({1,2}, Reset::Manual).position(0),position1);
     ASSERT_EQ(p.position(0),position1);
-    ASSERT_EQ(p.position(0),position0);
+}
 
+TEST_F(APositionsVectorTest, ResetManual){
+    PositionsVector p(positions);
+
+    ASSERT_EQ(p.position(0),position0);
+    ASSERT_EQ(p.slice({1,2}, Reset::Manual).position(0,Usage::Finished),position1);
+    ASSERT_EQ(p.position(0),position1);
+    p.resetRefToAll();
+    ASSERT_EQ(p.position(0),position0);
 }

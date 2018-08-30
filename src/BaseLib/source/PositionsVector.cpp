@@ -35,8 +35,9 @@ Eigen::Vector3d PositionsVector::operator[](long i) const {
     return positions_.segment(calculateIndex(i),entityLength_);
 }
 
-Eigen::Vector3d PositionsVector::position(long i, bool resetAfterwardsQ) {
-    if(resetAfterwardsQ)
+Eigen::Vector3d PositionsVector::position(long i, const Usage& usage) {
+    if( resetType_ == Reset::Automatic
+    || (resetType_ == Reset::OnFinished && usage == Usage::Finished))
         return RETURN_AND_RESET<PositionsVector,Eigen::Vector3d>(*this,positionsRef().segment(calculateIndex(i),entityLength_)).returnAndReset();
     else
         return positionsRef().segment(calculateIndex(i),entityLength_);
@@ -59,6 +60,8 @@ void PositionsVector::insert(const Eigen::Vector3d &position, long i) {
 }
 
 std::ostream& operator<<(std::ostream& os, const PositionsVector& pc){
+    //TODO!!!return RETURN_AND_RESET<PositionsVector,Eigen::Vector3d>(*this,positionsRef().segment(calculateIndex(i),entityLength_)).returnAndReset();
+
     for (long i = 0; i < pc.numberOfEntities(); i++){
         os << ToString::longToString(i + 1) << " " << ToString::vector3dToString(pc[i]) << std::endl;
     }
@@ -113,6 +116,15 @@ Eigen::PermutationMatrix<Eigen::Dynamic> PositionsVector::adaptedToEntityLength(
     return PermutationMatrix<Eigen::Dynamic>(raw);
 }
 
+void PositionsVector::permute(const Eigen::PermutationMatrix<Eigen::Dynamic> &permutation, const Usage &usage) {
+    assert(permutation.indices().size() == sliceInterval_.numberOfEntities()
+           && "The permutation vector length must be equal to the number of entities");
+
+    positionsRef() = adaptedToEntityLength(permutation)*positionsRef();
+
+    resetter(usage);
+}
+
 void PositionsVector::permute(const Eigen::PermutationMatrix<Eigen::Dynamic> &permutation) {
     assert(permutation.indices().size() == sliceInterval_.numberOfEntities()
     && "The permutation vector length must be equal to the number of entities");
@@ -122,34 +134,30 @@ void PositionsVector::permute(const Eigen::PermutationMatrix<Eigen::Dynamic> &pe
     resetRefToAll();
 }
 
-void PositionsVector::translate(const Eigen::Vector3d &shift, bool resetAfterwardsQ) {
-
+void PositionsVector::translate(const Eigen::Vector3d &shift, const Usage& usage) {
     for (long i = 0; i < sliceInterval_.numberOfEntities(); ++i)
         positionsRef().segment(calculateIndex(i),3) += shift;
 
-    if(resetAfterwardsQ) resetRefToAll();
+    resetter(usage);
 }
 
-void PositionsVector::rotateAroundOrigin(double angle, const Eigen::Vector3d &axisDirection, bool resetAfterwardsQ) {
-    rotate(angle,{0,0,0},axisDirection,resetAfterwardsQ);
+void PositionsVector::rotateAroundOrigin(double angle, const Eigen::Vector3d &axisDirection, const Usage& usage) {
+    rotate(angle,{0,0,0},axisDirection,usage);
 }
 
-void PositionsVector::rotate(double angle,const Eigen::Vector3d &center,const Eigen::Vector3d &axisDirection, bool resetAfterwardsQ) {
-
+void PositionsVector::rotate(double angle,const Eigen::Vector3d &center,const Eigen::Vector3d &axisDirection, const Usage& usage) {
     auto rotMat = PositionsVectorTransformer::rotationMatrixFromQuaternion(
             PositionsVectorTransformer::quaternionFromAngleAndAxis(angle, axisDirection - center));
 
-    this->translate(-center,false);
+    resetType_=Reset::OnFinished;
+    this->translate(-center,Usage::NotFinished);
 
-    for (long i = 0; i < sliceInterval_.numberOfEntities(); ++i) {
-        //long idx = sliceInterval_.start()+i;
-        //TODO refactoring needed: implement methods to get the i-th Vector3d of a slice
-        //positionsRef().segment(calculateIndex(i), entityLength_) = this->operator[](idx).transpose() * rotMat;
-        positionsRef().segment(calculateIndex(i), entityLength_) = position(i, false).transpose() * rotMat;
-    }
-    this->translate(center,false);
+    for (long i = 0; i < sliceInterval_.numberOfEntities(); ++i)
+        positionsRef().segment(calculateIndex(i), entityLength_) = position(i,Usage::NotFinished).transpose() * rotMat;
 
-    if (resetAfterwardsQ) resetRefToAll();
+    this->translate(center,Usage::NotFinished);
+
+    resetter(usage);
 };
 
 PositionsVector::PositionsVector(const PositionsVector& rhs)
@@ -171,13 +179,13 @@ PositionsVector& PositionsVector::operator=(const PositionsVector& rhs){
     return *this;
 }
 
-PositionsVector& PositionsVector::entity(long i) {
-    sliceInterval_ = Interval(i);
-    return slice(sliceInterval_);
+PositionsVector& PositionsVector::entity(long i, const Reset& resetType) {
+    return slice(Interval(i), resetType);
 }
 
-PositionsVector& PositionsVector::slice(const Interval& interval) {
+PositionsVector& PositionsVector::slice(const Interval& interval, const Reset& resetType) {
     assert(interval.checkBounds(numberOfEntities()) && "The end variable of the interval is out of bounds.");
+    resetType_ = resetType;
     sliceInterval_ = interval;
     positionsRefPtr_.reset();
     positionsRefPtr_ = std::make_unique<PositionsRef>(

@@ -12,15 +12,24 @@
 
 using PositionsRef = Eigen::Ref<Eigen::VectorXd>;
 
+enum class Reset{Automatic, Manual, OnFinished};
+enum class Usage{NotFinished, Finished};
+
 class PositionsVector : public AbstractVector{
 public:
     PositionsVector();
     explicit PositionsVector(const Eigen::VectorXd& positions);
 
+    void resetter(const Usage& usage){
+        if( resetType_ == Reset::Automatic
+            || (resetType_ == Reset::OnFinished && usage == Usage::Finished))
+            resetRefToAll();
+    }
+
     Eigen::Vector3d operator[](long i) const;
-    Eigen::Vector3d position(long i, bool resetAfterwardsQ = true);
-    PositionsVector& entity(long i);
-    PositionsVector& slice(const Interval& interval);
+
+    PositionsVector& entity(long i, const Reset& resetType = Reset::Automatic);
+    PositionsVector& slice(const Interval& interval, const Reset& resetType = Reset::Automatic);
 
     void insert(const Eigen::Vector3d& position, long i);
     void append(const Eigen::Vector3d& position);
@@ -29,10 +38,13 @@ public:
     PositionsRef positionsRef();
 
     void permute(long i, long j) override;
+
+    Eigen::Vector3d position(long i, const Usage& usage = Usage::NotFinished);
+    void permute(const Eigen::PermutationMatrix<Eigen::Dynamic>& permutation, const Usage& usage);
     void permute(const Eigen::PermutationMatrix<Eigen::Dynamic>& permutation) override;
-    void translate(const Eigen::Vector3d& shift, bool resetAfterwardsQ = true);
-    void rotateAroundOrigin(double angle, const Eigen::Vector3d &axisDirection, bool resetAfterwardsQ= true);
-    void rotate(double angle, const Eigen::Vector3d &center, const Eigen::Vector3d &axisDirection, bool resetAfterwardsQ = true);
+    void translate(const Eigen::Vector3d& shift, const Usage& usage = Usage::NotFinished);
+    void rotateAroundOrigin(double angle, const Eigen::Vector3d &axisDirection, const Usage& usage = Usage::NotFinished);
+    void rotate(double angle, const Eigen::Vector3d &center, const Eigen::Vector3d &axisDirection, const Usage& usage = Usage::NotFinished);
 
     PositionsVector(const PositionsVector& rhs);
     PositionsVector& operator=(const PositionsVector& rhs);
@@ -45,6 +57,7 @@ public:
 private:
     Eigen::VectorXd positions_;
     const unsigned entityLength_ = 3;
+    Reset resetType_;
     Interval sliceInterval_;
     std::unique_ptr<PositionsRef> positionsRefPtr_;
 
