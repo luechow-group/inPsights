@@ -9,11 +9,12 @@
 #include <sstream>
 
 using namespace testing;
+using namespace Eigen;
 
 class ATypesVectorTest : public Test {
 public:
 
-    SpinTypesVector stv;
+    SpinTypesVector stv, stvsmall;
     ElementTypesVector etv;
 
     void SetUp() override {
@@ -24,6 +25,11 @@ public:
                                Spin::alpha,
                                Spin::beta,
                                Spin::beta});
+
+        stvsmall = SpinTypesVector({Spin::alpha,
+                                    Spin::alpha,
+                                    Spin::beta});
+
         etv = ElementTypesVector({Element::H,
                                   Element::He,
                                   Element::Og,
@@ -105,4 +111,17 @@ TEST_F(ATypesVectorTest, CountTypes_SpinTypes){
 
     ASSERT_EQ(result[1].first, Spin::beta);
     ASSERT_EQ(result[1].second, 3);
+}
+
+TEST_F(ATypesVectorTest, Permute){
+    auto s = stvsmall;
+
+    VectorXi p(3);
+    p << 2,0,1;
+
+    s.permute(PermutationMatrix<Dynamic>(p));
+    ASSERT_EQ(s[0],Spin::alpha);
+    ASSERT_EQ(s[1],Spin::beta);
+    ASSERT_EQ(s[2],Spin::alpha);
+
 }
