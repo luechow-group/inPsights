@@ -99,3 +99,30 @@ TEST_F(AParticlesVectorTest, PermuteSlice){
     ASSERT_EQ(e[1].position(),e2.position());
     ASSERT_EQ(e[2].position(),e1.position());
 }
+
+TEST_F(AParticlesVectorTest, IntegrationTest_PermuteAndTranslateAlphaElectrons){
+    auto e = electrons;
+
+    VectorXi p(2);
+    p << 1,0;
+
+    // swap positions
+    e.positionsVector().slice({0,2},Reset::OnFinished).permute(PermutationMatrix<Dynamic>(p),Usage::NotFinished);
+    e.positionsVector().translate({0,0,0.5},Usage::Finished);
+
+    e.typesVector().slice({1,2}).permute(PermutationMatrix<Dynamic>(p));
+
+    e.slice({0,2}).permute(PermutationMatrix<Dynamic>(p));
+
+    ASSERT_EQ(e[0].type(),e2.type());
+    ASSERT_EQ(e[1].type(),e0.type());
+    ASSERT_EQ(e[2].type(),e1.type());
+
+    ASSERT_EQ(e[0].position(),e0.position()+Vector3d(0,0,0.5));
+    ASSERT_EQ(e[1].position(),e1.position()+Vector3d(0,0,0.5));
+    ASSERT_EQ(e[2].position(),e2.position());
+
+    std::cout << e << std::endl;
+
+
+}

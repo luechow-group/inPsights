@@ -2,7 +2,7 @@
 // Created by Michael Heuer on 07.03.18.
 //
 
-#include "AbstractVector.h"
+#include <AbstractVector.h>
 #include <assert.h>
 
 AbstractVector::AbstractVector(long numberOfEntities)
