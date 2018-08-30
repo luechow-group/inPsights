@@ -97,7 +97,7 @@ void PositionsVector::resetRef() {
     sliceInterval_ = {0,numberOfEntities()};
 }
 
-void PositionsVector::resetter(const Usage &usage) {
+void PositionsVector::resetStrategy(const Usage &usage) {
     if( resetType_ == Reset::Automatic
         || (resetType_ == Reset::OnFinished && usage == Usage::Finished))
         resetRef();
@@ -125,22 +125,25 @@ Eigen::PermutationMatrix<Eigen::Dynamic> PositionsVector::adaptedToEntityLength(
     return PermutationMatrix<Eigen::Dynamic>(raw);
 }
 
-void PositionsVector::permute(const Eigen::PermutationMatrix<Eigen::Dynamic> &permutation, const Usage &usage) {
+void PositionsVector::permuteMethod(const Eigen::PermutationMatrix<Eigen::Dynamic> &permutation) {
     assert(permutation.indices().size() == sliceInterval_.numberOfEntities()
            && "The permutation vector length must be equal to the number of entities");
 
-    positionsRef() = adaptedToEntityLength(permutation)*positionsRef();
+    auto tmp = resetType_;
+    resetType_=Reset::OnFinished;
 
-    resetter(usage);
+    positionsRef(Usage::NotFinished) = adaptedToEntityLength(permutation)*positionsRef(Usage::NotFinished);
+
+    resetType_ = tmp;
+}
+
+void PositionsVector::permute(const Eigen::PermutationMatrix<Eigen::Dynamic> &permutation, const Usage &usage) {
+    permuteMethod(permutation);
+    resetStrategy(usage);
 }
 
 void PositionsVector::permute(const Eigen::PermutationMatrix<Eigen::Dynamic> &permutation) {
-    assert(permutation.indices().size() == sliceInterval_.numberOfEntities()
-    && "The permutation vector length must be equal to the number of entities");
-
-    resetType_=Reset::OnFinished;
-    positionsRef(Usage::NotFinished) = adaptedToEntityLength(permutation)*positionsRef(Usage::NotFinished);
-
+    permuteMethod(permutation);
     resetRef();
 }
 
@@ -152,7 +155,7 @@ void PositionsVector::translate(const Eigen::Vector3d &shift, const Usage& usage
         positionsRef(Usage::NotFinished).segment(calculateIndex(i),3) += shift;
 
     resetType_ = tmp;
-    resetter(usage);
+    resetStrategy(usage);
 }
 
 void PositionsVector::rotateAroundOrigin(double angle, const Eigen::Vector3d &axisDirection, const Usage& usage) {
@@ -164,7 +167,7 @@ void PositionsVector::rotate(double angle,const Eigen::Vector3d &center,const Ei
             PositionsVectorTransformer::quaternionFromAngleAndAxis(angle, axisDirection - center));
 
     auto tmp = resetType_;
-    resetType_=Reset::OnFinished;
+    resetType_ = Reset::OnFinished;
 
     this->translate(-center,Usage::NotFinished);
 
@@ -174,7 +177,7 @@ void PositionsVector::rotate(double angle,const Eigen::Vector3d &center,const Ei
     this->translate(center,Usage::NotFinished);
 
     resetType_ = tmp;
-    resetter(usage);
+    resetStrategy(usage);
 };
 
 PositionsVector::PositionsVector(const PositionsVector& rhs)

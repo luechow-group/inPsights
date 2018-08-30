@@ -44,7 +44,7 @@ public:
 
     friend std::ostream& operator<<(std::ostream& os, const PositionsVector& pc);
     void resetRef();
-    void resetter(const Usage& usage);
+    void resetStrategy(const Usage &usage);
 
 private:
     Eigen::VectorXd positions_;
@@ -56,6 +56,8 @@ private:
     long calculateIndex(long i) const override ;
 
     Eigen::PermutationMatrix<Eigen::Dynamic> adaptedToEntityLength(const Eigen::PermutationMatrix<Eigen::Dynamic> &permutation);
+
+    void permuteMethod(const Eigen::PermutationMatrix<Eigen::Dynamic>& permutation);
 };
 
 namespace YAML {
