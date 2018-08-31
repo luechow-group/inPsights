@@ -26,7 +26,7 @@ bool RawDataReader::read(const std::string &fileName){
         int nElectrons = readInt(input);
         int nAlpha = readInt(input);
 
-        unsigned numberOfAlphaElectrons, numberOfBetaElectrons;;
+        unsigned numberOfAlphaElectrons, numberOfBetaElectrons;
 
         assert(nAlpha >=0 && nElectrons > 0);
         numberOfAlphaElectrons = static_cast<unsigned>(nAlpha);
@@ -38,19 +38,14 @@ bool RawDataReader::read(const std::string &fileName){
 
         while (checkEOF(input,totalLength)) {
 
+            // don't move read methods into constructor as this messes up the ifstream stride
+            auto sample = readVectorXd(input, size_t(nElectrons),3);
+            auto kineticEnergies = readVectorXd(input, size_t(nElectrons));
+            auto s = Sample(ElectronsVector(PositionsVector(sample), spins),kineticEnergies);
 
-
-            auto s = Sample(
-                    ElectronsVector(PositionsVector(readVectorXd(input, size_t(nElectrons),3)), spins),
-                    readVectorXd(input, size_t(nElectrons)));
-
-            auto r = Reference(
-                    ElectronsVector(PositionsVector(readVectorXd(input, size_t(nElectrons),3)), spins),
-                    readDouble(input));
-            //std::cout << readVectorXd(input, size_t(nElectrons), 3).transpose() << std::endl << std::endl;
-            //std::cout << readVectorXd(input, size_t(nElectrons)).transpose() << std::endl << std::endl;
-            //std::cout << readVectorXd(input, size_t(nElectrons), 3).transpose() << std::endl << std::endl;
-            //std::cout << readDouble(input) << std::endl;
+            auto maximum = readVectorXd(input, size_t(nElectrons),3);
+            auto value = readDouble(input);
+            auto r = Reference(ElectronsVector(PositionsVector(maximum), spins),value);
 
             mapping_.map.insert(RefSamplePair(r,s));
 
@@ -62,6 +57,7 @@ bool RawDataReader::read(const std::string &fileName){
         std::cout << "input not good"<< std::endl;
         return false;
     }
+
 
 
 }
