@@ -36,6 +36,20 @@ namespace TestMolecules {
                                  {Spin::beta,  {0, 0,-0.37}}})};
     }
 
+    namespace eightElectrons {
+        const MolecularGeometry square = {
+                AtomsVector(),
+                ElectronsVector({{Spin::alpha, { 1, 0, 0}},
+                                 {Spin::alpha, { 1, 1, 0}},
+                                 {Spin::alpha, { 0, 1, 0}},
+                                 {Spin::alpha, {-1, 1, 0}},
+                                 {Spin::beta,  {-1, 0, 0}},
+                                 {Spin::beta,  {-1,-1, 0}},
+                                 {Spin::beta,  { 0,-1, 0}},
+                                 {Spin::beta,  { 1,-1, 0}}})};
+    }
+
+
     namespace H2 {
         namespace ElectronsInCores {
             const MolecularGeometry normal = {

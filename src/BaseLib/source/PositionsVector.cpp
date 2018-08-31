@@ -207,6 +207,16 @@ PositionsVector& PositionsVector::slice(const Interval& interval, const Reset& r
     return *this;
 }
 
+bool PositionsVector::operator==(const PositionsVector& other) const {
+    return (positions_.isApprox(other.positions_),0)
+    && (sliceInterval_ == other.getSliceInterval())
+    && (resetType_ == other.getResetType());
+}
+
+bool PositionsVector::operator!=(const PositionsVector&other) const {
+    return !(*this == other);
+}
+
 long PositionsVector::calculateIndex(long i) const {
     return AbstractVector::calculateIndex(i)*entityLength_;
 }

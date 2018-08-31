@@ -17,6 +17,10 @@ public:
         assert(n_ >= 0);
     }
 
+    bool operator==(const Interval& other)const{
+        return (start_ == other.start_) && (n_ == other.n_);
+    }
+
     explicit Interval(long idx)
             : Interval({idx,1}){}
 

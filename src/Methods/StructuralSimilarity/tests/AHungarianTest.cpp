@@ -78,3 +78,69 @@ TEST(HungarianTest, TranslatedAndFlippedPositions) {
     expectedOutput << 1,0;
     ASSERT_EQ(Hungarian<double>::findMatching(input).indices(),expectedOutput);
 }
+
+#include <algorithm>
+#include <random>
+TEST(HungarianTest, IntegrationTest_IdenticalPermutation) {
+    auto ev = TestMolecules::eightElectrons::square.electrons();
+
+    auto nAlpha = ev.typesVector().countOccurence(Spin::alpha);
+    auto nBeta = ev.typesVector().countOccurence(Spin::beta);
+    // assume that vector is ordered
+    Interval alphaElectrons({0,nAlpha}), betaElectrons({nAlpha,nBeta});
+    // add noise
+
+    auto evp = ev;
+
+    // Add random noise
+    double scalingFactor = 0.01;
+    //evp.positionsVector().positionsRef() += (Eigen::VectorXd::Random(evp.numberOfEntities()*3)*scalingFactor);
+
+    // Create random permutations
+    std::random_device rd;
+    std::mt19937 g(rd());
+
+    Eigen::PermutationMatrix<Eigen::Dynamic> permAlpha(nAlpha),permBeta(nBeta);
+    permAlpha.setIdentity();
+    permBeta.setIdentity();
+
+    std::shuffle(permAlpha.indices().data(), permAlpha.indices().data()+permAlpha.indices().size(),g);
+    std::shuffle(permBeta.indices().data(), permBeta.indices().data()+permBeta.indices().size(),g);
+
+    std::cout << evp << std::endl;
+    std::cout << permAlpha.indices().transpose()<< std::endl;
+    std::cout << permBeta.indices().transpose()<< std::endl;
+
+    // Permute
+    evp.slice(alphaElectrons).permute(permAlpha);
+    evp.slice(betaElectrons).permute(permBeta);
+    std::cout << evp << std::endl;
+
+
+    // Find bestmatch permutation to permute ev to evp
+    auto costMatrixAlpha = Metrics::positionalDistances(
+            PositionsVector(ev.positionsVector().slice(alphaElectrons).positionsRef()),
+            PositionsVector(evp.positionsVector().slice(alphaElectrons).positionsRef()));
+    auto costMatrixBeta = Metrics::positionalDistances(
+            PositionsVector(ev.positionsVector().slice(betaElectrons).positionsRef()),
+            PositionsVector(evp.positionsVector().slice(betaElectrons).positionsRef()));
+
+
+    auto bestMatchAlpha = Hungarian<double>::findMatching(costMatrixAlpha);
+    auto bestMatchBeta = Hungarian<double>::findMatching(costMatrixBeta);
+
+    //auto combinedPerm = Eigen::VectorXi(nAlpha+nBeta);
+    //combinedPerm.segment(alphaElectrons.start(),alphaElectrons.numberOfEntities()) = bestMatchAlpha.indices();
+    //combinedPerm.segment(betaElectrons.start(),betaElectrons.numberOfEntities()) = bestMatchBeta.indices();
+
+    std::cout << bestMatchAlpha.indices().transpose()<< std::endl;
+    std::cout << bestMatchBeta.indices().transpose()<< std::endl;
+
+    // permute evp to match original ev
+    evp.slice(alphaElectrons).permute(bestMatchAlpha.inverse());
+    evp.slice(betaElectrons).permute(bestMatchBeta.inverse());
+    std::cout << evp << std::endl;
+
+    ASSERT_EQ(ev,evp);
+
+}

@@ -216,6 +216,19 @@ public:
         return os;
     }
 
+    const Reset& getResetType() const { return resetType_; }
+    const Interval& getSliceInterval() const { return sliceInterval_; }
+
+    bool operator==(const TypesVector<Type>& other) const {
+        return (types_ == other.types_)
+        && (sliceInterval_ == other.getSliceInterval())
+        && (resetType_ == other.getResetType());
+    }
+
+    bool operator!=(const TypesVector<Type>& other) const {
+        return !(*this == other);
+    }
+
 private:
     Eigen::VectorXi types_;
 

@@ -117,6 +117,7 @@ public:
 
 
     friend std::ostream& operator<<(std::ostream& os, const ParticlesVector<Type> & pv){
+        //TODO print only slice?
         for (long i = 0; i < pv.numberOfEntities(); i++) {
             os << ToString::longToString(i + 1) << " " << pv[i] << std::endl;
         }

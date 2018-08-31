@@ -45,6 +45,13 @@ public:
     void resetRef();
     void resetStrategy(const Usage &usage);
 
+    const Reset& getResetType() const { return resetType_; }
+    const Interval& getSliceInterval() const { return sliceInterval_; }
+
+    bool operator==(const PositionsVector& other) const;
+
+    bool operator!=(const PositionsVector& other) const;
+
 private:
     const unsigned entityLength_ = 3;
     Eigen::VectorXd positions_;
