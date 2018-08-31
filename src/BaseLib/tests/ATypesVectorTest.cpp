@@ -9,11 +9,12 @@
 #include <sstream>
 
 using namespace testing;
+using namespace Eigen;
 
 class ATypesVectorTest : public Test {
 public:
 
-    SpinTypesVector stv;
+    SpinTypesVector stv, stvsmall;
     ElementTypesVector etv;
 
     void SetUp() override {
@@ -24,6 +25,11 @@ public:
                                Spin::alpha,
                                Spin::beta,
                                Spin::beta});
+
+        stvsmall = SpinTypesVector({Spin::alpha,
+                                    Spin::alpha,
+                                    Spin::beta});
+
         etv = ElementTypesVector({Element::H,
                                   Element::He,
                                   Element::Og,
@@ -105,4 +111,51 @@ TEST_F(ATypesVectorTest, CountTypes_SpinTypes){
 
     ASSERT_EQ(result[1].first, Spin::beta);
     ASSERT_EQ(result[1].second, 3);
+}
+
+TEST_F(ATypesVectorTest, Slice){
+    auto s = stvsmall;
+    auto types = s.typesAsEigenVector();
+
+    ASSERT_EQ(s.entity(0).typesRef(), types.segment(0,1));
+    ASSERT_EQ(s.entity(1).typesRef(), types.segment(1,1));
+    ASSERT_EQ(s.entity(2).typesRef(), types.segment(2,1));
+
+    ASSERT_EQ(s.slice({0,1}).typesRef(),s.entity(0).typesRef());
+    ASSERT_EQ(s.slice({1,1}).typesRef(),s.entity(1).typesRef());
+    ASSERT_EQ(s.slice({2,1}).typesRef(),s.entity(2).typesRef());
+
+    ASSERT_EQ(s.slice({0,2}).typesRef(), types.segment(0,2));
+    ASSERT_EQ(s.slice({1,2}).typesRef(), types.segment(1,2));
+    ASSERT_EQ(s.slice({0,3}).typesRef(), types.segment(0,3));
+
+    ASSERT_EQ(s.slice({0,3}).typesRef(),s.typesRef());
+
+    EXPECT_DEATH(s.entity(-1).typesRef(),"");
+    EXPECT_DEATH(s.slice({0,4}).typesRef(),"");
+}
+
+TEST_F(ATypesVectorTest, Permute){
+    auto s = stvsmall;
+
+    VectorXi p(3);
+    p << 2,0,1;
+
+    s.permute(PermutationMatrix<Dynamic>(p));
+    ASSERT_EQ(s[0],Spin::alpha);
+    ASSERT_EQ(s[1],Spin::beta);
+    ASSERT_EQ(s[2],Spin::alpha);
+}
+
+TEST_F(ATypesVectorTest, PermuteSlice){
+    auto s = stvsmall;
+
+    VectorXi p(2);
+    p << 1,0;
+
+    s.slice({1,2}).permute(PermutationMatrix<Dynamic>(p));
+    ASSERT_EQ(s[0],Spin::alpha);
+    ASSERT_EQ(s[1],Spin::beta);
+    ASSERT_EQ(s[2],Spin::alpha);
+
 }

@@ -6,7 +6,12 @@
 #define AMOLQCPP_POSITIONSVECTOR_H
 
 #include <Eigen/Core>
+#include <memory>
 #include "AbstractVector.h"
+#include "Interval.h"
+#include "ReturnAndReset.h"
+
+using PositionsRef = Eigen::Ref<Eigen::VectorXd>;
 
 class PositionsVector : public AbstractVector{
 public:
@@ -15,36 +20,43 @@ public:
 
     Eigen::Vector3d operator[](long i) const;
 
+    PositionsVector& entity(long i, const Reset& resetType = Reset::Automatic);
+    PositionsVector& slice(const Interval& interval, const Reset& resetType = Reset::Automatic);
+
     void insert(const Eigen::Vector3d& position, long i);
     void append(const Eigen::Vector3d& position);
     void prepend(const Eigen::Vector3d& position);
-    void permute(long i, long j) override;
+
+    PositionsRef positionsRef(const Usage& usage = Usage::NotFinished);
+    Eigen::Vector3d position(long i, const Usage& usage = Usage::NotFinished);
+    void permute(const Eigen::PermutationMatrix<Eigen::Dynamic>& permutation, const Usage& usage);
     void permute(const Eigen::PermutationMatrix<Eigen::Dynamic>& permutation) override;
+    void translate(const Eigen::Vector3d& shift, const Usage& usage = Usage::NotFinished);
+    void rotateAroundOrigin(double angle, const Eigen::Vector3d &axisDirection, const Usage& usage = Usage::NotFinished);
+    void rotate(double angle, const Eigen::Vector3d &center, const Eigen::Vector3d &axisDirection, const Usage& usage = Usage::NotFinished);
 
-    /* TODO
-    void replace(long i);
-    void remove(long i);
-    ParticlesVector part(std::vector<long> indices);
-    */
-
-    friend std::ostream& operator<<(std::ostream& os, const PositionsVector& pc);
+    PositionsVector(const PositionsVector& rhs);
+    PositionsVector& operator=(const PositionsVector& rhs);
 
     const Eigen::VectorXd & positionsAsEigenVector() const;
-
     Eigen::VectorXd & positionsAsEigenVector();
 
-    Eigen::Ref<Eigen::Vector3d> operator()(long i);
-
-    const Eigen::Ref<const Eigen::Vector3d>& operator()(long i) const;
+    friend std::ostream& operator<<(std::ostream& os, const PositionsVector& pc);
+    void resetRef();
+    void resetStrategy(const Usage &usage);
 
 private:
+    const unsigned entityLength_ = 3;
     Eigen::VectorXd positions_;
-    unsigned entityLength_ = 3;
+    Reset resetType_;
+    Interval sliceInterval_;
+    std::unique_ptr<PositionsRef> positionsRefPtr_;
 
     long calculateIndex(long i) const override ;
 
     Eigen::PermutationMatrix<Eigen::Dynamic> adaptedToEntityLength(const Eigen::PermutationMatrix<Eigen::Dynamic> &permutation);
 
+    void permuteMethod(const Eigen::PermutationMatrix<Eigen::Dynamic>& permutation);
 };
 
 namespace YAML {

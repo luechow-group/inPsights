@@ -22,8 +22,6 @@ protected:
 
     void setNumberOfEntities(long numberOfEntities);
 
-    virtual void permute(long i, long j) = 0;
-
     virtual void permute(const Eigen::PermutationMatrix<Eigen::Dynamic>& permutation) = 0;
 
     virtual long calculateIndex(long i) const;

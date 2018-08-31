@@ -37,13 +37,13 @@ public:
     };
 };
 
-TEST_F(AParticlesVectorCollectionTest, Constructor) {
+/*TEST_F(AParticlesVectorCollectionTest, Constructor) {
     EXPECT_TRUE(false);
 }
 
 TEST_F(AParticlesVectorCollectionTest, CopyConstructor) {
     EXPECT_TRUE(false);
-}
+}*/
 
 TEST_F(AParticlesVectorCollectionTest, SpinTypeParticlesVectorCollection) {
     std::stringstream stringstream;
@@ -75,6 +75,3 @@ TEST_F(AParticlesVectorCollectionTest, ElementTypeParticlesVectorCollection) {
     ASSERT_EQ(stringstream.str(), expectedOutput);
 }
 
-TEST_F(AParticlesVectorCollectionTest, Distance) {
-    EXPECT_TRUE(false);
-}
