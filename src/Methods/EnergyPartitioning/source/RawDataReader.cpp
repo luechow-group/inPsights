@@ -32,10 +32,7 @@ bool RawDataReader::read(const std::string &fileName){
         numberOfAlphaElectrons = static_cast<unsigned>(nAlpha);
         numberOfBetaElectrons = static_cast<unsigned>(nElectrons-nAlpha);
         auto spins = SpinTypesVector(numberOfAlphaElectrons,numberOfBetaElectrons);
-
-
-        std::cout << nElectrons << " " << nAlpha << std::endl; // N alpha electrons, core positions
-
+        
         while (checkEOF(input,totalLength)) {
 
             // don't move read methods into constructor as this messes up the ifstream stride
