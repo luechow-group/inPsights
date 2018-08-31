@@ -11,4 +11,9 @@ int main(int argc, char *argv[]) {
 
     RawDataReader reader(mapping);
     reader.read("raw1.bin");
+
+
+    for (const auto& i : mapping.map){
+        std::cout << i.first.maximum_ << std::endl;
+    }
 }
