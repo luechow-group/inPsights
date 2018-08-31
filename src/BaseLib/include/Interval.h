@@ -12,23 +12,20 @@ public:
     Interval() = default;
 
     Interval(long start, long n)
-            : start_(start),end_(start+n) {
+            : start_(start),n_(n) {
         assert(start_ >= 0);
-        assert(start_ <= end_);
+        assert(n_ >= 0);
     }
+
     explicit Interval(long idx)
             : Interval({idx,1}){}
 
-    bool checkBounds(long numberOfEntities) const {
-        return end() <= numberOfEntities;
-    }
-
     long start() const { return start_;};
-    long end() const { return end_;};
-    long numberOfEntities() const { return end()-start();};
+    long end() const { return start()+n_;};
+    long numberOfEntities() const { return n_;};
 
 private:
-    long start_,end_;
+    long start_,n_;
 };
 
 #endif //AMOLQCPP_INTERVAL_H

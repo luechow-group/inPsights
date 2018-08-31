@@ -68,7 +68,7 @@ public:
 
 
     TypesVector<Type>& slice(const Interval& interval, const Reset& resetType = Reset::Automatic) {
-        assert(interval.checkBounds(numberOfEntities()) && "The end variable of the interval is out of bounds.");
+        assert(interval.numberOfEntities() <= numberOfEntities() && "The interval is too long.");
         resetType_ = resetType;
         sliceInterval_ = interval;
         typesRefPtr_.reset();
