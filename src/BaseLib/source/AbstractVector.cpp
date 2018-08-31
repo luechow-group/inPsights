@@ -5,8 +5,10 @@
 #include <AbstractVector.h>
 #include <assert.h>
 
-AbstractVector::AbstractVector(long numberOfEntities)
-        : numberOfEntities_(numberOfEntities){
+AbstractVector::AbstractVector(long numberOfEntities, long entityLength)
+        :
+        entityLength_(entityLength),
+        numberOfEntities_(numberOfEntities){
     assert(numberOfEntities >= 0 && "The number of Entities must be non-negative.");
 };
 
@@ -26,6 +28,6 @@ void AbstractVector::setNumberOfEntities(long numberOfEntities){
 long AbstractVector::calculateIndex(long i) const {
     assert(i < numberOfEntities() && "Index is out of bounds");
     assert(i >= -numberOfEntities() && "Reverse index is out of bounds");
-    if (i >= 0) return i;
-    return (numberOfEntities()+i);
+    if (i >= 0) return i*entityLength_;
+    return (numberOfEntities()+i)*entityLength_;
 }

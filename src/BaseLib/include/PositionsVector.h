@@ -59,8 +59,6 @@ private:
     Interval sliceInterval_;
     std::unique_ptr<PositionsRef> positionsRefPtr_;
 
-    long calculateIndex(long i) const override ;
-
     Eigen::PermutationMatrix<Eigen::Dynamic> adaptedToEntityLength(const Eigen::PermutationMatrix<Eigen::Dynamic> &permutation);
 
     void permuteMethod(const Eigen::PermutationMatrix<Eigen::Dynamic>& permutation);

@@ -13,7 +13,7 @@
 using namespace Eigen;
 
 PositionsVector::PositionsVector()
-        : AbstractVector(),
+        : AbstractVector(0,3),
           positions_(0),
           resetType_(Reset::Automatic),
           sliceInterval_({0,0}),
@@ -217,9 +217,6 @@ bool PositionsVector::operator!=(const PositionsVector&other) const {
     return !(*this == other);
 }
 
-long PositionsVector::calculateIndex(long i) const {
-    return AbstractVector::calculateIndex(i)*entityLength_;
-}
 
 namespace YAML {
     Node convert<PositionsVector>::encode(const PositionsVector &rhs) {
