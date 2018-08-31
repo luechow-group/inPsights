@@ -12,11 +12,14 @@ message ( "-- ++ CREATING PROJECT OR MAKEFILE ---> ${OUTPUT_NAME}" )
 set(HEADER_FILES
         include/RawDataReader.h
         include/SampleData.h
-        include/ReferenceData.h
+        include/Reference.h
+        include/Comparators.h
+        include/ReferenceSampleMapping.h
         )
 
 set(SOURCE_FILES
         source/RawDataReader.cpp
+        source/Comparators.cpp
         )
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES})

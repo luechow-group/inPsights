@@ -7,7 +7,7 @@
 
 #include <BinaryFileReader.h>
 #include "SampleData.h"
-#include "ReferenceData.h"
+#include "ReferenceSampleMapping.h"
 
 class RawDataReader : public BinaryFileReader{
 public:

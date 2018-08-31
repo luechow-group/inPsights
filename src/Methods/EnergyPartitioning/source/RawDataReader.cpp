@@ -3,7 +3,7 @@
 //
 
 #include <RawDataReader.h>
-#include "ReferenceData.h"
+#include "Reference.h"
 #include "ParticlesVector.h"
 
 RawDataReader::RawDataReader(ReferenceSampleMapping& mapping, int recordDelimiterLength)
@@ -32,7 +32,7 @@ bool RawDataReader::read(const std::string &fileName){
         numberOfAlphaElectrons = static_cast<unsigned>(nAlpha);
         numberOfBetaElectrons = static_cast<unsigned>(nElectrons-nAlpha);
         auto spins = SpinTypesVector(numberOfAlphaElectrons,numberOfBetaElectrons);
-        
+
         while (checkEOF(input,totalLength)) {
 
             // don't move read methods into constructor as this messes up the ifstream stride
