@@ -48,7 +48,7 @@ void PositionsVector::insert(const Eigen::Vector3d &position, long i) {
     assert(i >= 0 && "The index must be positive.");
     assert(i <= numberOfEntities() && "The index must be smaller than the number of entities.");
 
-    long start = i*entityLength_;
+    long start = calculateIndex(i);
 
     VectorXd before = positions_.head(start);
     VectorXd after = positions_.tail(numberOfEntities()*entityLength_-start);
