@@ -17,27 +17,19 @@
 #include <yaml-cpp/yaml.h>
 #include <cassert>
 
-using TypesRef = Eigen::Ref<Eigen::VectorXi>;
+#include "ISliceable.h"
 
 template <typename Type>
-class TypesVector : public AbstractVector {
+class TypesVector : public ISliceable<int> {
 public:
 
-    // unsigned long empty is there to be specialized in TypesVector<Spin::SpinTypes>
-    TypesVector(unsigned long size = 0, unsigned long empty = 0)
-            : AbstractVector(size),
-              types_(Eigen::VectorXi::Constant(size, 0)),
-              resetType_(Reset::Automatic),
-              sliceInterval_({0,numberOfEntities()}),
-              typesRefPtr_(std::make_unique<TypesRef>(types_))
-              {}
+    // unsigned long dummy is there to be specialized in TypesVector<Spin::SpinTypes>
+    TypesVector(unsigned long size = 0, unsigned long dummy = 0)
+    : ISliceable<int>(size)
+    {}
 
     TypesVector(std::vector<Type> types)
-            : AbstractVector(0),
-              types_(0),
-              resetType_(Reset::Automatic),
-              sliceInterval_({0,0}),
-              typesRefPtr_()
+    : ISliceable<int>(0)
     {
         for (const auto& type : types){
             assert(int(type) >= int(Spins::first()));
@@ -47,105 +39,48 @@ public:
         resetRef();
     }
 
-    TypesVector(const TypesVector& rhs)
-    : AbstractVector(rhs) {
-        types_ = rhs.typesAsEigenVector();
-        resetRef();
-    }
-
-    TypesVector& operator=(const TypesVector& rhs){
-        if(this == &rhs) {
-            resetRef();
-            return *this;
-        }
-
-        AbstractVector::setNumberOfEntities(rhs.numberOfEntities());
-        types_ = rhs.typesAsEigenVector();
-        resetRef();
-
-        return *this;
-    }
-
-
+    // TEMPALTE IN ISLICABLE?
     TypesVector<Type>& slice(const Interval& interval, const Reset& resetType = Reset::Automatic) {
-        assert(interval.numberOfEntities() <= numberOfEntities() && "The interval is too long.");
-        resetType_ = resetType;
-        sliceInterval_ = interval;
-        typesRefPtr_.reset();
-        typesRefPtr_ = std::make_unique<TypesRef>(
-                types_.segment(calculateIndex(interval.start()),interval.numberOfEntities()));
+        ISliceable<int>::slice(interval,resetType); // template specialization necessary?
         return *this;
     }
-
     TypesVector<Type>& entity(long i, const Reset& resetType = Reset::Automatic) {
         return slice(Interval(i), resetType);
     }
 
-
-    TypesRef typesRef(const Usage& usage = Usage::NotFinished){
-        if( resetType_ == Reset::Automatic
-            || (resetType_ == Reset::OnFinished && usage == Usage::Finished))
-            return RETURN_AND_RESET<TypesVector<Type>,TypesRef>(*this,*typesRefPtr_).returnAndReset();
-        else
-            return *typesRefPtr_;
-    }
-
-    void resetRef() {
-        resetType_ = Reset::Automatic;
-        typesRefPtr_.reset();
-        typesRefPtr_ = std::make_unique<TypesRef>(types_);
-        sliceInterval_ = {0,numberOfEntities()};
-    }
-
-    void resetStrategy(const Usage &usage) {
-        if( resetType_ == Reset::Automatic
-            || (resetType_ == Reset::OnFinished && usage == Usage::Finished))
-            resetRef();
-    }
-
     Type operator[](long i) const {
-        return static_cast<Type>(types_[calculateIndex(i)]);
+        return static_cast<Type>(data_[calculateIndex(i)]);
     }
 
+    // TODO MOVE TO ISLICEABLE
     void insert(Type type, long i) {
         assert(i >= 0 && "The index must be positive.");
         assert(i <= numberOfEntities() && "The index must be smaller than the number of entities.");
 
-        Eigen::VectorXi before = types_.head(i);
-        Eigen::VectorXi after = types_.tail(numberOfEntities()-i);
+        Eigen::VectorXi before = data_.head(i);
+        Eigen::VectorXi after = data_.tail(numberOfEntities()-i);
 
-        types_.resize(numberOfEntities()+1);
-        types_ << before, int(type), after;
+        data_.resize(numberOfEntities()+1);
+        data_ << before, int(type), after;
 
         incrementNumberOfEntities();
         resetRef();
     }
-
     void prepend(Type type) {
-        this->insert(type,0);
+        insert(type,0);
     }
-
     void append(Type type) {
-        this->insert(type,numberOfEntities());
+        insert(type,numberOfEntities());
     }
 
-    const Eigen::VectorXi& typesAsEigenVector() const {
-        return types_;
+
+    bool operator==(const TypesVector<Type> &other) const {
+        return ISliceable<int>::operator==(other);
+    }
+    bool operator!=(const TypesVector<Type> &other) const {
+        return ISliceable<int>::operator!=(other);
     }
 
-    Eigen::VectorXi& typesAsEigenVector() {
-        return types_;
-    }
-
-    void permute(const Eigen::PermutationMatrix<Eigen::Dynamic> &permutation) override {
-        permuteMethod(permutation);
-        resetRef();
-    }
-
-    void permute(const Eigen::PermutationMatrix<Eigen::Dynamic> &permutation, const Usage &usage) {
-        permuteMethod(permutation);
-        resetStrategy(usage);
-    }
 
     unsigned countOccurence(const Type &type) const { // cannot handle slices
         unsigned count = 0;
@@ -187,7 +122,7 @@ public:
             if(numberOfEntities() == 1) {
                 return {{this->operator[](0),1}};
             }
-            auto copy = types_;
+            auto copy = data_;
             std::sort(copy.data(), copy.data()+numberOfEntities());
 
             unsigned count = 1;
@@ -214,38 +149,6 @@ public:
             os << tv[i] << std::endl;
         }
         return os;
-    }
-
-    const Reset& getResetType() const { return resetType_; }
-    const Interval& getSliceInterval() const { return sliceInterval_; }
-
-    bool operator==(const TypesVector<Type>& other) const {
-        return (types_ == other.types_)
-        && (sliceInterval_ == other.getSliceInterval())
-        && (resetType_ == other.getResetType());
-    }
-
-    bool operator!=(const TypesVector<Type>& other) const {
-        return !(*this == other);
-    }
-
-private:
-    Eigen::VectorXi types_;
-
-    Reset resetType_;
-    Interval sliceInterval_;
-    std::unique_ptr<TypesRef> typesRefPtr_;
-
-    void permuteMethod(const Eigen::PermutationMatrix<Eigen::Dynamic> &permutation) {
-        assert(permutation.indices().size() == sliceInterval_.numberOfEntities()
-               && "The permutation vector length must be equal to the number of entities");
-
-        auto tmp = resetType_;
-        resetType_ = Reset::OnFinished;
-
-        typesRef(Usage::NotFinished) = permutation*typesRef(Usage::NotFinished);
-
-        resetType_ = tmp;
     }
 };
 

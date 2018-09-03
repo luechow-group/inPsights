@@ -64,7 +64,7 @@ std::ostream& operator<<(std::ostream& os, const PositionsVector& pc){
     for (long i = 0; i < pc.numberOfEntities(); i++){
         os << ToString::longToString(i + 1) << " " << ToString::vector3dToString(pc[i]) << std::endl;
     }
-    const_cast<PositionsVector&>(pc).resetRef(); //TODO refactor
+    const_cast<PositionsVector &>(pc).resetRef(); //TODO refactor
     return os;
 }
 

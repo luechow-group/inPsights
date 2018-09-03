@@ -20,8 +20,17 @@ long AbstractVector::numberOfEntities() const{
     return numberOfEntities_;
 }
 
+long AbstractVector::entityLength() const{
+    return entityLength_;
+}
+
+void AbstractVector::setEntityLength(long entityLength) {
+    assert(entityLength > 0  && "The entity length must be positive.");
+    entityLength_ = entityLength;
+}
+
 void AbstractVector::setNumberOfEntities(long numberOfEntities){
-    assert(numberOfEntities >= 0  && "The number of Entities must be non-negative.");
+    assert(numberOfEntities >= 0  && "The number of entities must be non-negative.");
     numberOfEntities_ = numberOfEntities;
 }
 

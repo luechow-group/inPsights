@@ -121,24 +121,24 @@ TEST_F(ATypesVectorTest, CountTypes_SpinTypes){
 
 TEST_F(ATypesVectorTest, Slice){
     auto s = stvsmall;
-    auto types = s.typesAsEigenVector();
+    auto types = s.asEigenVector();
 
-    ASSERT_EQ(s.entity(0).typesRef(), types.segment(0,1));
-    ASSERT_EQ(s.entity(1).typesRef(), types.segment(1,1));
-    ASSERT_EQ(s.entity(2).typesRef(), types.segment(2,1));
+    ASSERT_EQ(s.entity(0).dataRef(), types.segment(0,1));
+    ASSERT_EQ(s.entity(1).dataRef(), types.segment(1,1));
+    ASSERT_EQ(s.entity(2).dataRef(), types.segment(2,1));
 
-    ASSERT_EQ(s.slice({0,1}).typesRef(),s.entity(0).typesRef());
-    ASSERT_EQ(s.slice({1,1}).typesRef(),s.entity(1).typesRef());
-    ASSERT_EQ(s.slice({2,1}).typesRef(),s.entity(2).typesRef());
+    ASSERT_EQ(s.slice({0, 1}).dataRef(), s.entity(0).dataRef());
+    ASSERT_EQ(s.slice({1, 1}).dataRef(), s.entity(1).dataRef());
+    ASSERT_EQ(s.slice({2, 1}).dataRef(), s.entity(2).dataRef());
 
-    ASSERT_EQ(s.slice({0,2}).typesRef(), types.segment(0,2));
-    ASSERT_EQ(s.slice({1,2}).typesRef(), types.segment(1,2));
-    ASSERT_EQ(s.slice({0,3}).typesRef(), types.segment(0,3));
+    ASSERT_EQ(s.slice({0, 2}).dataRef(), types.segment(0,2));
+    ASSERT_EQ(s.slice({1, 2}).dataRef(), types.segment(1,2));
+    ASSERT_EQ(s.slice({0, 3}).dataRef(), types.segment(0,3));
 
-    ASSERT_EQ(s.slice({0,3}).typesRef(),s.typesRef());
+    ASSERT_EQ(s.slice({0, 3}).dataRef(), s.dataRef());
 
-    EXPECT_DEATH(s.entity(-1).typesRef(),"");
-    EXPECT_DEATH(s.slice({0,4}).typesRef(),"");
+    EXPECT_DEATH(s.entity(-1).dataRef(),"");
+    EXPECT_DEATH(s.slice({0, 4}).dataRef(),"");
 }
 
 TEST_F(ATypesVectorTest, Permute){

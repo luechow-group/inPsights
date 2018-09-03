@@ -80,8 +80,8 @@ public:
 
     void insert(const ParticlesVector<Type> &particlesVector, long i) {
         if (typesVector_.numberOfEntities() != 0) {
-            assert(typesVector_.typesAsEigenVector()
-                   == particlesVector.typesVector().typesAsEigenVector());
+            assert(typesVector_.asEigenVector()
+                   == particlesVector.typesVector().asEigenVector());
         }
         else{
             typesVector_ = particlesVector.typesVector();

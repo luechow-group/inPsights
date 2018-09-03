@@ -14,12 +14,14 @@
 class AbstractVector {
 public:
     long numberOfEntities() const;
+    long entityLength() const;
 
 protected:
     explicit AbstractVector(long numberOfEntities = 0, long entityLength = 1);
 
     void incrementNumberOfEntities();
 
+    void setEntityLength(long entityLength = 1);
     void setNumberOfEntities(long numberOfEntities);
 
     virtual void permute(const Eigen::PermutationMatrix<Eigen::Dynamic>& permutation) = 0;
