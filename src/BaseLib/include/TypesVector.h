@@ -5,19 +5,14 @@
 #ifndef AMOLQCPP_TYPESVECTOR_H
 #define AMOLQCPP_TYPESVECTOR_H
 
-#include <vector>
-#include "AbstractVector.h"
 #include "SpinType.h"
 #include "ElementType.h"
 #include "NumberedType.h"
-#include "TypesVector.h"
-#include "Interval.h"
-#include "ReturnAndReset.h"
-#include <Eigen/Core>
-#include <yaml-cpp/yaml.h>
-#include <cassert>
-
 #include "ISliceable.h"
+
+#include <vector>
+#include <yaml-cpp/yaml.h>
+
 
 template <typename Type>
 class TypesVector : public IInsertable<int> {

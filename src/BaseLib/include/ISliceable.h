@@ -5,11 +5,11 @@
 #ifndef AMOLQCPP_ISLICEABLE_H
 #define AMOLQCPP_ISLICEABLE_H
 
+#include "AbstractVector.h"
 #include "ReturnAndReset.h"
 #include "Interval.h"
 #include <memory>
 #include <Eigen/Core>
-#include "AbstractVector.h"
 
 
 template<typename Scalar>
