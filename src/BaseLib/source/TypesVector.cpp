@@ -7,7 +7,7 @@
 template<> SpinTypesVector::TypesVector(
         unsigned long numberOfAlphaElectrons,
         unsigned long numberOfBetaElectrons)
-        : IInsertable<int>(0)
+        : InsertableVector<int>(0)
 {
     for (unsigned long i = 0; i < numberOfAlphaElectrons; ++i)
         this->append(Spin::alpha);
@@ -17,7 +17,7 @@ template<> SpinTypesVector::TypesVector(
 }
 
 template<> SpinTypesVector::TypesVector(std::vector<Spin> types)
-        : IInsertable<int>(0)
+        : InsertableVector<int>(0)
 {
     for (const auto& type : types){
         assert(int(type) >= int(Spins::first()));
@@ -27,7 +27,7 @@ template<> SpinTypesVector::TypesVector(std::vector<Spin> types)
 }
 
 template<> ElementTypesVector::TypesVector(std::vector<Element> types)
-        : IInsertable<int>(0)
+        : InsertableVector<int>(0)
 {
     for (const auto& type : types){
         assert(int(type) >= int(Elements::first()));

@@ -41,8 +41,8 @@ set(HEADER_FILES
         include/BinaryFileReader.h
         include/Interval.h
         include/ReturnAndReset.h
-        include/ISliceable.h
-        include/IInsertable.h
+        include/SliceableDataVector.h
+        include/InsertableVector.h
         )
 
 set(SOURCE_FILES

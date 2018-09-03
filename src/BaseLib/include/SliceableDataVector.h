@@ -2,8 +2,8 @@
 // Created by Michael Heuer on 31.08.18.
 //
 
-#ifndef AMOLQCPP_ISLICEABLE_H
-#define AMOLQCPP_ISLICEABLE_H
+#ifndef AMOLQCPP_SLICEABLEDATAVECTOR_H
+#define AMOLQCPP_SLICEABLEDATAVECTOR_H
 
 #include "AbstractVector.h"
 #include "ReturnAndReset.h"
@@ -13,18 +13,17 @@
 
 
 template<typename Scalar>
-class ISliceable : public AbstractVector {
+class SliceableDataVector : public AbstractVector {
 protected:
-
-    using VectorType = Eigen::Matrix<Scalar, Eigen::Dynamic,1>;
-    using RefVectorType = Eigen::Ref<VectorType>;
+    using EigenVecType = Eigen::Matrix<Scalar, Eigen::Dynamic,1>;
+    using RefEigenVecType = Eigen::Ref<EigenVecType>;
 
 public:
 
-    ISliceable(long numberOfEntities = 0, long entityLength = 1)
+    SliceableDataVector(long numberOfEntities = 0, long entityLength = 1)
     :
     AbstractVector(numberOfEntities, entityLength),
-    data_(VectorType::Constant(numberOfEntities, 0)),
+    data_(EigenVecType::Constant(numberOfEntities, 0)),
     resetType_(Reset::Automatic),
     sliceInterval_({0, numberOfEntities}),
     refPtr_()
@@ -32,18 +31,18 @@ public:
         resetRef();
     }
 
-    ISliceable(const ISliceable &rhs)
+    SliceableDataVector(const SliceableDataVector &rhs)
     :
     AbstractVector(rhs.numberOfEntities(), rhs.entityLength()),
     data_(rhs.asEigenVector()),
     resetType_(Reset::Automatic),
-    sliceInterval_({0, rhs.numberOfEntities()}), //TODO CAREFUL * ENTITYLENGTH?
+    sliceInterval_({0, rhs.numberOfEntities()}),
     refPtr_()
     {
         resetRef();
     }
 
-    ISliceable &operator=(const ISliceable &rhs) {
+    SliceableDataVector &operator=(const SliceableDataVector &rhs) {
         if (this == &rhs) {
             resetRef();
             return *this;
@@ -54,17 +53,6 @@ public:
         resetRef();
 
         return *this;
-    }
-
-    std::unique_ptr<RefVectorType> makeAllRefPtr(){
-        return std::make_unique<RefVectorType>(data_.segment(0,numberOfEntities()*entityLength()));
-    }
-    std::unique_ptr<RefVectorType> makeRefPtr(const Interval& interval){
-        return std::make_unique<RefVectorType>(
-                data_.segment(
-                        calculateIndex(interval.start()),
-                        interval.numberOfEntities()*entityLength())
-                );
     }
 
     void resetRef() {
@@ -86,13 +74,6 @@ public:
         return slice(Interval(i), resetType);
     }
 
-
-    void resetStrategy(const Usage &usage) {
-        if( resetType_ == Reset::Automatic
-            || (resetType_ == Reset::OnFinished && usage == Usage::Finished))
-            resetRef();
-    }
-
     void permute(const Eigen::PermutationMatrix<Eigen::Dynamic> &permutation) override {
         permuteMethod(permutation);
         resetRef();
@@ -101,6 +82,52 @@ public:
     void permute(const Eigen::PermutationMatrix<Eigen::Dynamic> &permutation, const Usage &usage) {
         permuteMethod(permutation);
         resetStrategy(usage);
+    }
+
+    const EigenVecType& asEigenVector() const {
+        return data_;
+    }
+
+    EigenVecType& asEigenVector() {
+        return data_;
+    }
+
+    RefEigenVecType dataRef(const Usage &usage = Usage::NotFinished){
+        if( resetType_ == Reset::Automatic
+            || (resetType_ == Reset::OnFinished && usage == Usage::Finished))
+            return RETURN_AND_RESET<SliceableDataVector<Scalar>,RefEigenVecType>(*this,*refPtr_).returnAndReset();
+        else
+            return *refPtr_;
+    }
+
+    //TODO make double template?
+    bool operator==(const SliceableDataVector<Scalar> &other) const {
+        return (data_ == other.data_) && (sliceInterval_ == other.getSliceInterval())
+               && (resetType_ == other.getResetType());
+    }
+
+    //TODO make double template?
+    bool operator!=(const SliceableDataVector<Scalar> &other) const {
+        return !(*this == other);
+    }
+
+protected:
+    void resetStrategy(const Usage &usage) {
+        if( resetType_ == Reset::Automatic
+            || (resetType_ == Reset::OnFinished && usage == Usage::Finished))
+            resetRef();
+    }
+
+    std::unique_ptr<RefEigenVecType> makeAllRefPtr(){
+        return std::make_unique<RefEigenVecType>(data_.segment(0,numberOfEntities()*entityLength()));
+    }
+
+    std::unique_ptr<RefEigenVecType> makeRefPtr(const Interval& interval){
+        return std::make_unique<RefEigenVecType>(
+                data_.segment(
+                        calculateIndex(interval.start()),
+                        interval.numberOfEntities()*entityLength())
+        );
     }
 
     void permuteMethod(const Eigen::PermutationMatrix<Eigen::Dynamic> &permutation) {
@@ -135,44 +162,16 @@ public:
         return Eigen::PermutationMatrix<Eigen::Dynamic>(raw);
     }
 
-    const VectorType& asEigenVector() const {
-        return data_;
-    }
-
-    VectorType& asEigenVector() {
-        return data_;
-    }
-
-    RefVectorType dataRef(const Usage &usage = Usage::NotFinished){
-        if( resetType_ == Reset::Automatic
-            || (resetType_ == Reset::OnFinished && usage == Usage::Finished))
-            return RETURN_AND_RESET<ISliceable<Scalar>,RefVectorType>(*this,*refPtr_).returnAndReset();
-        else
-            return *refPtr_;
-    }
-
-    //TODO make double template?
-    bool operator==(const ISliceable<Scalar> &other) const {
-        return (data_ == other.data_) && (sliceInterval_ == other.getSliceInterval())
-               && (resetType_ == other.getResetType());
-    }
-
-    //TODO make double template?
-    bool operator!=(const ISliceable<Scalar> &other) const {
-        return !(*this == other);
-    }
-
-protected:
     const Reset &getResetType() const { return resetType_; }
     const Interval &getSliceInterval() const { return sliceInterval_; }
 
-    VectorType data_;
+    EigenVecType data_;
     Reset resetType_;
     Interval sliceInterval_;
-    std::unique_ptr<RefVectorType> refPtr_;
+    std::unique_ptr<RefEigenVecType> refPtr_;
 };
 
 
 
 
-#endif //AMOLQCPP_ISLICEABLE_H
+#endif //AMOLQCPP_SLICEABLEDATAVECTOR_H

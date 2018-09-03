@@ -8,23 +8,23 @@
 #include "SpinType.h"
 #include "ElementType.h"
 #include "NumberedType.h"
-#include "IInsertable.h"
+#include "InsertableVector.h"
 #include <vector>
 #include <yaml-cpp/yaml.h>
 
 template <typename Type>
-class TypesVector : public IInsertable<int> {
+class TypesVector : public InsertableVector<int> {
 public:
 
     // unsigned long dummy is there to be specialized in TypesVector<Spin::SpinTypes>
     TypesVector(unsigned long size = 0, unsigned long dummy = 0)
-    : IInsertable<int>(size)
+    : InsertableVector<int>(size)
     {
         resetRef();
     }
 
     TypesVector(std::vector<Type> types)
-    : IInsertable<int>(0)
+    : InsertableVector<int>(0)
     {
         for (const auto& type : types){
             assert(int(type) >= int(Spins::first()));
@@ -35,7 +35,7 @@ public:
     }
 
     TypesVector<Type>& slice(const Interval& interval, const Reset& resetType = Reset::Automatic) {
-        ISliceable<int>::slice(interval,resetType); // template specialization necessary?
+        SliceableDataVector<int>::slice(interval,resetType); // template specialization necessary?
         return *this;
     }
     TypesVector<Type>& entity(long i, const Reset& resetType = Reset::Automatic) {
@@ -47,7 +47,15 @@ public:
     void insert(const Type& type, long i) {
         Eigen::Matrix<int,1,1>elem;
         elem << int(type);
-        IInsertable<int>::insert(elem,i);
+        InsertableVector<int>::insert(elem,i);
+    }
+
+    Type type(long i, const Usage& usage = Usage::NotFinished){
+        if( resetType_ == Reset::Automatic
+            || (resetType_ == Reset::OnFinished && usage == Usage::Finished))
+            return RETURN_AND_RESET<TypesVector<Type>,Type>(*this,dataRef().segment(calculateIndex(i),entityLength())).returnAndReset();
+        else
+            return dataRef().segment(calculateIndex(i),entityLength());
     }
 
     Type operator[](long i) const {
@@ -56,11 +64,11 @@ public:
 
     //TODO make double template?
     bool operator==(const TypesVector<Type> &other) const {
-        return ISliceable<int>::operator==(other);
+        return SliceableDataVector<int>::operator==(other);
     }
 
     bool operator!=(const TypesVector<Type> &other) const {
-        return ISliceable<int>::operator!=(other);
+        return SliceableDataVector<int>::operator!=(other);
     }
 
     friend std::ostream& operator<<(std::ostream& os, const TypesVector& tv){

@@ -5,11 +5,11 @@
 #ifndef AMOLQCPP_POSITIONSVECTOR_H
 #define AMOLQCPP_POSITIONSVECTOR_H
 
-#include "IInsertable.h"
+#include "InsertableVector.h"
 #include <Eigen/Core>
 
 
-class PositionsVector : public IInsertable<double>{
+class PositionsVector : public InsertableVector<double>{
 public:
     PositionsVector();
     explicit PositionsVector(const Eigen::VectorXd& positions);

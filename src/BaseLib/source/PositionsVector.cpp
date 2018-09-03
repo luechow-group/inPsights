@@ -11,7 +11,7 @@
 using namespace Eigen;
 
 PositionsVector::PositionsVector()
-        : IInsertable(0,3)
+        : InsertableVector(0,3)
 {
     resetRef();
 }
@@ -32,7 +32,7 @@ Eigen::Vector3d PositionsVector::operator[](long i) const {
     return data_.segment(calculateIndex(i),entityLength());
 }
 
-// TODO REPLACE?
+//TODO replace operator[] by this?
 Eigen::Vector3d PositionsVector::position(long i, const Usage& usage) {
     if( resetType_ == Reset::Automatic
     || (resetType_ == Reset::OnFinished && usage == Usage::Finished))
@@ -41,7 +41,6 @@ Eigen::Vector3d PositionsVector::position(long i, const Usage& usage) {
         return dataRef().segment(calculateIndex(i),entityLength());
 }
 
-
 void PositionsVector::prepend(const Eigen::Vector3d &position) {
     insert(position,0);
 }
@@ -49,7 +48,7 @@ void PositionsVector::append(const Eigen::Vector3d &position) {
     insert(position,AbstractVector::numberOfEntities());
 }
 void PositionsVector::insert(const Eigen::Vector3d &position, long i) {
-    IInsertable<double>::insert(position,i);
+    InsertableVector<double>::insert(position,i);
 }
 
 void PositionsVector::translate(const Eigen::Vector3d &shift, const Usage& usage) {
@@ -90,7 +89,7 @@ PositionsVector& PositionsVector::entity(long i, const Reset& resetType) {
 }
 
 PositionsVector& PositionsVector::slice(const Interval& interval, const Reset& resetType) {
-    ISliceable<double>::slice(interval,resetType);
+    SliceableDataVector<double>::slice(interval,resetType);
     return *this;
 }
 
@@ -103,7 +102,7 @@ std::ostream& operator<<(std::ostream& os, const PositionsVector& pc){
 }
 
 bool PositionsVector::operator==(const PositionsVector& other) const {
-    return ISliceable<double>::operator==(other);
+    return SliceableDataVector<double>::operator==(other);
 }
 
 bool PositionsVector::operator!=(const PositionsVector&other) const {

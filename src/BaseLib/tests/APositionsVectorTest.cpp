@@ -101,7 +101,7 @@ TEST_F(APositionsVectorTest, PermuteAll) {
     pvec << 0,2,1;
     PermutationMatrix<Dynamic> perm(pvec);
     p.permute(perm);
-
+    
     ASSERT_EQ(p[0],position0);
     ASSERT_EQ(p[1],position2);
     ASSERT_EQ(p[2],position1);
