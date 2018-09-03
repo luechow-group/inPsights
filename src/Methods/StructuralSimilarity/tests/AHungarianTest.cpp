@@ -119,11 +119,11 @@ TEST(HungarianTest, IntegrationTest_IdenticalPermutation) {
 
     // Find bestmatch permutation to permute ev to evp
     auto costMatrixAlpha = Metrics::positionalDistances(
-            PositionsVector(ev.positionsVector().slice(alphaElectrons).positionsRef()),
-            PositionsVector(evp.positionsVector().slice(alphaElectrons).positionsRef()));
+            PositionsVector(ev.positionsVector().slice(alphaElectrons).dataRef()),
+            PositionsVector(evp.positionsVector().slice(alphaElectrons).dataRef()));
     auto costMatrixBeta = Metrics::positionalDistances(
-            PositionsVector(ev.positionsVector().slice(betaElectrons).positionsRef()),
-            PositionsVector(evp.positionsVector().slice(betaElectrons).positionsRef()));
+            PositionsVector(ev.positionsVector().slice(betaElectrons).dataRef()),
+            PositionsVector(evp.positionsVector().slice(betaElectrons).dataRef()));
 
 
     auto bestMatchAlpha = Hungarian<double>::findMatching(costMatrixAlpha);

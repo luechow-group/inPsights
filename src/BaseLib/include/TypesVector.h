@@ -68,7 +68,7 @@ public:
     }
 
     bool operator!=(const TypesVector<Type> &other) const {
-        return SliceableDataVector<int>::operator!=(other);
+        return !(*this == other);
     }
 
     friend std::ostream& operator<<(std::ostream& os, const TypesVector& tv){
