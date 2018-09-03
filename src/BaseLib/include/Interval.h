@@ -5,6 +5,8 @@
 #ifndef AMOLQCPP_INTERVAL_H
 #define AMOLQCPP_INTERVAL_H
 
+#include <cassert>
+
 class Interval {
 public:
     Interval() = default;

@@ -141,6 +141,9 @@ TEST(HungarianTest, IntegrationTest_IdenticalPermutation) {
     evp.slice(betaElectrons).permute(bestMatchBeta.inverse());
     std::cout << evp << std::endl;
 
+    ev.resetSlice(); //TODO WHY DO WE NEED TO DO THIS MANUALLY?
+    evp.resetSlice();//TODO WHY DO WE NEED TO DO THIS MANUALLY?
+
     ASSERT_EQ(ev,evp);
 
 }

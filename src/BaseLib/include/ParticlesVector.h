@@ -13,28 +13,24 @@
 #include <yaml-cpp/yaml.h>
 
 template<typename Type>
-class ParticlesVector : public AbstractVector{
+class ParticlesVector : public ISliceable{
 public:
 
     ParticlesVector()
-            : AbstractVector(0),
+            : ISliceable(0),
               positionsVector_(),
-              typesVector_(0),
-              resetType_(Reset::Automatic),
-              sliceInterval_({0,numberOfEntities()})
+              typesVector_(0)
     {}
 
     ParticlesVector(const PositionsVector &positionsVector)
-            : AbstractVector(positionsVector.numberOfEntities()),
+            : ISliceable(positionsVector.numberOfEntities()),
               positionsVector_(positionsVector),
-              typesVector_(numberOfEntities()),
-              resetType_(Reset::Automatic),
-              sliceInterval_({0,numberOfEntities()})
+              typesVector_(numberOfEntities())
     {}
 
     ParticlesVector(const PositionsVector &positionsVector,
                     const TypesVector<Type> &typesVector)
-            : AbstractVector(positionsVector.numberOfEntities()),
+            : ISliceable(positionsVector.numberOfEntities()),
               positionsVector_(positionsVector),
               typesVector_(typesVector) {
         assert(numberOfEntities() == positionsVector_.numberOfEntities()
@@ -42,21 +38,18 @@ public:
                && "The number of entities in ParticlesVector, PositionsVector, and TypesVector must match.");
     }
 
-    ParticlesVector& slice(const Interval& interval, const Reset& resetType = Reset::Automatic) {
-        assert(interval.numberOfEntities() <= numberOfEntities() && "The interval is too long.");
-        resetType_ = resetType;
-        sliceInterval_ = interval;
-
+    ParticlesVector& slice(const Interval& interval, const Reset& resetType = Reset::Automatic /*TODO makes no sense here*/) {
+        setSlice(interval,resetType);
         typesVector().slice(interval,resetType);
         positionsVector().slice(interval,resetType);
 
+        //TODO CAREFUL WITH RESET
         return *this;
     }
 
     ParticlesVector& entity(long i, const Reset& resetType = Reset::Automatic) {
         return slice(Interval(i), resetType);
     }
-
 
     ParticlesVector(std::vector<Particle<Type>> particles)
             : ParticlesVector() {
@@ -124,12 +117,21 @@ public:
         return os;
     }
 
+    bool operator==(const ParticlesVector<Type> &other) const {
+        return ISliceable::operator==(other)
+                && (typesVector() == other.typesVector())
+                && (positionsVector() == other.positionsVector());
+    }
+
+    bool operator!=(const ParticlesVector<Type> &other) const {
+        return !(*this == other);
+    }
+
+
+
 protected:
     PositionsVector positionsVector_;
     TypesVector<Type> typesVector_;
-
-    Reset resetType_;
-    Interval sliceInterval_;
 };
 
 using TypedParticlesVector = ParticlesVector<int>;

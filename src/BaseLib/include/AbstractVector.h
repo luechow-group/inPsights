@@ -21,7 +21,7 @@ protected:
 
     void incrementNumberOfEntities();
 
-    void setEntityLength(long entityLength = 1);
+    void setEntityLength(long entityLength);
     void setNumberOfEntities(long numberOfEntities);
 
     virtual void permute(const Eigen::PermutationMatrix<Eigen::Dynamic>& permutation) = 0;

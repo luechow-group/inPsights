@@ -11,9 +11,47 @@
 #include <memory>
 #include <Eigen/Core>
 
+class ISliceable : public AbstractVector{
+public:
+    void resetSlice(){
+        resetType_ = Reset::Automatic;
+        sliceInterval_ = {0, numberOfEntities()};
+    }
+protected:
+    ISliceable(long numberOfEntities = 0, long entityLength = 1)
+    :
+    AbstractVector(numberOfEntities, entityLength),
+    resetType_(Reset::Automatic),
+    sliceInterval_({0, numberOfEntities})
+    {}
+
+
+
+    void setSlice(const Interval& interval, const Reset& resetType) {
+        assert(interval.numberOfEntities() <= numberOfEntities() && "The interval is too long.");
+        resetType_ = resetType;
+        sliceInterval_ = interval;
+    }
+
+    bool operator==(const ISliceable& other) const{
+        return (resetType_ == other.resetType())
+        && (sliceInterval_ == other.sliceInterval());
+    }
+
+    bool operator!=(const ISliceable& other) const{
+        return !(*this == other);
+    }
+
+    const Reset &resetType() const { return resetType_; }
+    const Interval &sliceInterval() const { return sliceInterval_; }
+
+Reset resetType_;
+Interval sliceInterval_;
+};
 
 template<typename Scalar>
-class SliceableDataVector : public AbstractVector {
+class SliceableDataVector : public ISliceable {
+
 protected:
     using EigenVecType = Eigen::Matrix<Scalar, Eigen::Dynamic,1>;
     using RefEigenVecType = Eigen::Ref<EigenVecType>;
@@ -22,10 +60,8 @@ public:
 
     SliceableDataVector(long numberOfEntities = 0, long entityLength = 1)
     :
-    AbstractVector(numberOfEntities, entityLength),
+    ISliceable(numberOfEntities,entityLength),
     data_(EigenVecType::Constant(numberOfEntities, 0)),
-    resetType_(Reset::Automatic),
-    sliceInterval_({0, numberOfEntities}),
     refPtr_()
     {
         resetRef();
@@ -33,10 +69,8 @@ public:
 
     SliceableDataVector(const SliceableDataVector &rhs)
     :
-    AbstractVector(rhs.numberOfEntities(), rhs.entityLength()),
+    ISliceable(rhs.numberOfEntities(), rhs.entityLength()),
     data_(rhs.asEigenVector()),
-    resetType_(Reset::Automatic),
-    sliceInterval_({0, rhs.numberOfEntities()}),
     refPtr_()
     {
         resetRef();
@@ -56,16 +90,13 @@ public:
     }
 
     void resetRef() {
-        resetType_ = Reset::Automatic;
-        sliceInterval_ = {0, numberOfEntities()};
+        resetSlice();
         refPtr_.reset();
         refPtr_ = makeAllRefPtr();
     }
 
     void slice(const Interval& interval, const Reset& resetType = Reset::Automatic) {
-        assert(interval.numberOfEntities() <= numberOfEntities() && "The interval is too long.");
-        resetType_ = resetType;
-        sliceInterval_ = interval;
+        setSlice(interval,resetType);
         refPtr_.reset();
         refPtr_ = makeRefPtr(interval);
     }
@@ -93,17 +124,17 @@ public:
     }
 
     RefEigenVecType dataRef(const Usage &usage = Usage::NotFinished){
-        if( resetType_ == Reset::Automatic
+        if(resetType() == Reset::Automatic
             || (resetType_ == Reset::OnFinished && usage == Usage::Finished))
             return RETURN_AND_RESET<SliceableDataVector<Scalar>,RefEigenVecType>(*this,*refPtr_).returnAndReset();
         else
             return *refPtr_;
     }
 
+protected:
     //TODO make double template?
     bool operator==(const SliceableDataVector<Scalar> &other) const {
-        return (data_ == other.data_) && (sliceInterval_ == other.getSliceInterval())
-               && (resetType_ == other.getResetType());
+        return (data_ == other.data_) && ISliceable::operator==(other);
     }
 
     //TODO make double template?
@@ -111,10 +142,9 @@ public:
         return !(*this == other);
     }
 
-protected:
     void resetStrategy(const Usage &usage) {
-        if( resetType_ == Reset::Automatic
-            || (resetType_ == Reset::OnFinished && usage == Usage::Finished))
+        if(resetType() == Reset::Automatic
+            || (resetType() == Reset::OnFinished && usage == Usage::Finished))
             resetRef();
     }
 
@@ -134,8 +164,8 @@ protected:
         assert(permutation.indices().size() == sliceInterval_.numberOfEntities()
                && "The permutation vector length must be equal to the number of entities");
 
-        auto tmp = resetType_;
-        resetType_ = Reset::OnFinished;
+        auto tmp = resetType();
+        resetType_ = Reset::OnFinished; //TODO ADD SETTER
 
         if(entityLength() > 1) {
             dataRef(Usage::NotFinished) =  adaptedToEntityLength(permutation) * dataRef(Usage::NotFinished);
@@ -143,7 +173,7 @@ protected:
         else
             dataRef(Usage::NotFinished) = permutation* dataRef(Usage::NotFinished);
 
-        resetType_ = tmp;
+        resetType_ = tmp; //TODO ADD SETTER
     }
 
     Eigen::PermutationMatrix<Eigen::Dynamic> adaptedToEntityLength(
@@ -162,16 +192,8 @@ protected:
         return Eigen::PermutationMatrix<Eigen::Dynamic>(raw);
     }
 
-    const Reset &getResetType() const { return resetType_; }
-    const Interval &getSliceInterval() const { return sliceInterval_; }
-
     EigenVecType data_;
-    Reset resetType_;
-    Interval sliceInterval_;
     std::unique_ptr<RefEigenVecType> refPtr_;
 };
-
-
-
 
 #endif //AMOLQCPP_SLICEABLEDATAVECTOR_H
