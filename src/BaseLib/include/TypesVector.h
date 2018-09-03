@@ -39,7 +39,6 @@ public:
         resetRef();
     }
 
-    // TEMPALTE IN ISLICABLE?
     TypesVector<Type>& slice(const Interval& interval, const Reset& resetType = Reset::Automatic) {
         ISliceable<int>::slice(interval,resetType); // template specialization necessary?
         return *this;
@@ -48,16 +47,16 @@ public:
         return slice(Interval(i), resetType);
     }
 
-    Type operator[](long i) const {
-        return static_cast<Type>(data_[calculateIndex(i)]);
-    }
-
     void prepend(Type type) { insert(type,0); }
     void append(Type type) { insert(type,numberOfEntities()); }
     void insert(Type type, long i) {
         Eigen::Matrix<int,1,1>elem;
         elem << int(type);
         IInsertable::insert(elem,i);
+    }
+
+    Type operator[](long i) const {
+        return static_cast<Type>(data_[calculateIndex(i)]);
     }
 
     bool operator==(const TypesVector<Type> &other) const {
