@@ -13,7 +13,7 @@ double Metrics::distance(const PositionsVector& positions1,
                          const PositionsVector& positions2){
     assert(positions1.numberOfEntities() == positions2.numberOfEntities()
            && "Both PositionVectors must have the same size.");
-    return (positions1.positionsAsEigenVector()-positions2.positionsAsEigenVector()).norm();
+    return (positions1.asEigenVector()-positions2.asEigenVector()).norm();
 }
 
 Eigen::MatrixXd Metrics::positionalDistances(const PositionsVector &positions){

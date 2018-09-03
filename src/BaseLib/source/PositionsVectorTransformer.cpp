@@ -50,7 +50,7 @@ void PositionsVectorTransformer::rotateAroundAxis(PositionsVector &p, double ang
     p.translate(-axisStart);
 
     for (unsigned i = 0; i < p.numberOfEntities(); i++)
-        p.entity(i).positionsRef() = p[i].transpose()*rotMat;
+        p.entity(i).dataRef() = p[i].transpose()*rotMat;
 
     p.translate(axisStart);
 }

@@ -8,11 +8,9 @@
 #include "SpinType.h"
 #include "ElementType.h"
 #include "NumberedType.h"
-#include "ISliceable.h"
-
+#include "IInsertable.h"
 #include <vector>
 #include <yaml-cpp/yaml.h>
-
 
 template <typename Type>
 class TypesVector : public IInsertable<int> {
@@ -21,7 +19,9 @@ public:
     // unsigned long dummy is there to be specialized in TypesVector<Spin::SpinTypes>
     TypesVector(unsigned long size = 0, unsigned long dummy = 0)
     : IInsertable<int>(size)
-    {}
+    {
+        resetRef();
+    }
 
     TypesVector(std::vector<Type> types)
     : IInsertable<int>(0)
@@ -42,25 +42,33 @@ public:
         return slice(Interval(i), resetType);
     }
 
-    void prepend(Type type) { insert(type,0); }
-    void append(Type type) { insert(type,numberOfEntities()); }
-    void insert(Type type, long i) {
+    void prepend(const Type& type) { insert(type,0); }
+    void append(const Type& type) { insert(type,numberOfEntities()); }
+    void insert(const Type& type, long i) {
         Eigen::Matrix<int,1,1>elem;
         elem << int(type);
-        IInsertable::insert(elem,i);
+        IInsertable<int>::insert(elem,i);
     }
 
     Type operator[](long i) const {
         return static_cast<Type>(data_[calculateIndex(i)]);
     }
 
+    //TODO make double template?
     bool operator==(const TypesVector<Type> &other) const {
         return ISliceable<int>::operator==(other);
     }
+
     bool operator!=(const TypesVector<Type> &other) const {
         return ISliceable<int>::operator!=(other);
     }
 
+    friend std::ostream& operator<<(std::ostream& os, const TypesVector& tv){
+        for (unsigned long i = 0; i < tv.numberOfEntities(); i++) {
+            os << tv[i] << std::endl;
+        }
+        return os;
+    }
 
     unsigned countOccurence(const Type &type) const { // cannot handle slices
         unsigned count = 0;
@@ -124,12 +132,6 @@ public:
         return typeCountsPair;
     }
 
-    friend std::ostream& operator<<(std::ostream& os, const TypesVector& tv){
-        for (unsigned long i = 0; i < tv.numberOfEntities(); i++) {
-            os << tv[i] << std::endl;
-        }
-        return os;
-    }
 };
 
 using IntegerTypesVector = TypesVector<int>;

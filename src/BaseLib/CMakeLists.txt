@@ -42,6 +42,7 @@ set(HEADER_FILES
         include/Interval.h
         include/ReturnAndReset.h
         include/ISliceable.h
+        include/IInsertable.h
         )
 
 set(SOURCE_FILES

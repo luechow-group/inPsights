@@ -5,16 +5,14 @@
 #ifndef AMOLQCPP_INTERVAL_H
 #define AMOLQCPP_INTERVAL_H
 
-#include <cassert>
-
 class Interval {
 public:
     Interval() = default;
 
     Interval(long start, long n)
             : start_(start),n_(n) {
-        assert(start_ >= 0);
-        assert(n_ >= 0);
+        assert(start_ >= 0 && "Start index must be greater non-negative.");
+        assert(n_ >= 0 && "Interval length must be non-negative");
     }
 
     bool operator==(const Interval& other)const{

@@ -2,7 +2,7 @@
 // Created by Michael Heuer on 08.05.18.
 //
 
-#include "TypesVector.h"
+#include <TypesVector.h>
 
 template<> SpinTypesVector::TypesVector(
         unsigned long numberOfAlphaElectrons,

@@ -141,22 +141,22 @@ TEST_F(APositionsVectorTest, PermuteSlice) {
 TEST_F(APositionsVectorTest, Slice) {
     PositionsVector p(positions);
 
-    ASSERT_EQ(p.entity(0).positionsRef(), positions.segment(0,3));
-    ASSERT_EQ(p.entity(1).positionsRef(), positions.segment(3,3));
-    ASSERT_EQ(p.entity(2).positionsRef(), positions.segment(6,3));
+    ASSERT_EQ(p.entity(0).dataRef(), positions.segment(0,3));
+    ASSERT_EQ(p.entity(1).dataRef(), positions.segment(3,3));
+    ASSERT_EQ(p.entity(2).dataRef(), positions.segment(6,3));
 
-    ASSERT_EQ(p.slice({0,1}).positionsRef(),p.entity(0).positionsRef());
-    ASSERT_EQ(p.slice({1,1}).positionsRef(),p.entity(1).positionsRef());
-    ASSERT_EQ(p.slice({2,1}).positionsRef(),p.entity(2).positionsRef());
+    ASSERT_EQ(p.slice({0,1}).dataRef(),p.entity(0).dataRef());
+    ASSERT_EQ(p.slice({1,1}).dataRef(),p.entity(1).dataRef());
+    ASSERT_EQ(p.slice({2,1}).dataRef(),p.entity(2).dataRef());
 
-    ASSERT_EQ(p.slice({0,2}).positionsRef(), positions.segment(0,6));
-    ASSERT_EQ(p.slice({1,2}).positionsRef(), positions.segment(3,6));
-    ASSERT_EQ(p.slice({0,3}).positionsRef(), positions.segment(0,9));
+    ASSERT_EQ(p.slice({0,2}).dataRef(), positions.segment(0,6));
+    ASSERT_EQ(p.slice({1,2}).dataRef(), positions.segment(3,6));
+    ASSERT_EQ(p.slice({0,3}).dataRef(), positions.segment(0,9));
 
-    ASSERT_EQ(p.slice({0,3}).positionsRef(),p.positionsRef());
+    ASSERT_EQ(p.slice({0,3}).dataRef(),p.dataRef());
 
-    EXPECT_DEATH(p.entity(-1).positionsRef(),"");
-    EXPECT_DEATH(p.slice({0,4}).positionsRef(),"");
+    EXPECT_DEATH(p.entity(-1).dataRef(),"");
+    EXPECT_DEATH(p.slice({0,4}).dataRef(),"");
 }
 
 TEST_F(APositionsVectorTest, Translate) {
@@ -167,10 +167,10 @@ TEST_F(APositionsVectorTest, Translate) {
     expected[1] << 1,2,3,6,7,8,8,9,10;
 
     p.entity(1).translate({1,1,1});
-    ASSERT_EQ(p.positionsAsEigenVector(),expected[0]);
+    ASSERT_EQ(p.asEigenVector(),expected[0]);
 
     p.slice({1,2}).translate({1,1,1});
-    ASSERT_EQ(p.positionsAsEigenVector(),expected[1]);
+    ASSERT_EQ(p.asEigenVector(),expected[1]);
 }
 
 
@@ -195,7 +195,7 @@ TEST_F(APositionsVectorTest, RotateAllCounterClockwise) {
     1,0,0,\
     0,1,0;
 
-    ASSERT_TRUE(p.positionsAsEigenVector().isApprox(expectedPositions));
+    ASSERT_TRUE(p.asEigenVector().isApprox(expectedPositions));
 }
 
 TEST_F(APositionsVectorTest, RotateAllClockwise) {
@@ -219,7 +219,7 @@ TEST_F(APositionsVectorTest, RotateAllClockwise) {
     0,0,1,\
     1,0,0;
 
-    ASSERT_TRUE(p.positionsAsEigenVector().isApprox(expectedPositions));
+    ASSERT_TRUE(p.asEigenVector().isApprox(expectedPositions));
 }
 
 
@@ -244,7 +244,7 @@ TEST_F(APositionsVectorTest, RotateSliceCounterClockwise) {
     1,0,0,\
     0,1,0;
 
-    ASSERT_TRUE(p.positionsAsEigenVector().isApprox(expectedPositions));
+    ASSERT_TRUE(p.asEigenVector().isApprox(expectedPositions));
 }
 
 TEST_F(APositionsVectorTest, RotateSliceClockwise) {
@@ -268,7 +268,7 @@ TEST_F(APositionsVectorTest, RotateSliceClockwise) {
     0,0,1,\
     1,0,0;
 
-    ASSERT_TRUE(p.positionsAsEigenVector().isApprox(expectedPositions));
+    ASSERT_TRUE(p.asEigenVector().isApprox(expectedPositions));
 }
 
 TEST_F(APositionsVectorTest, ResetAutomatic){
@@ -304,7 +304,7 @@ TEST_F(APositionsVectorTest, OutputStreamOperator){
     std::stringstream ss;
     ss << p.position(0).transpose()
     << std::endl
-    << p.slice({1,2}, Reset::Automatic).positionsRef().transpose()
+    << p.slice({1,2}, Reset::Automatic).dataRef().transpose()
     << std::endl
     << p.position(0).transpose();
 

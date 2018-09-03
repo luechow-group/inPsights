@@ -93,7 +93,7 @@ unsigned long ElectronicWaveFunction::getNumberOfElectrons() const {
 }
 
 void ElectronicWaveFunction::evaluate(const ParticlesVector<Spin> &electronsVector) {
-    evaluate(electronsVector.positionsVector().positionsAsEigenVector());
+    evaluate(electronsVector.positionsVector().asEigenVector()());
 }
 
 void ElectronicWaveFunction::evaluate(const Eigen::VectorXd &electronPositionsVector) {

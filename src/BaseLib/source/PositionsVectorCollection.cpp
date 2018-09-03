@@ -64,8 +64,8 @@ void PositionsVectorCollection::permute(const Eigen::PermutationMatrix<Eigen::Dy
 }
 
 double PositionsVectorCollection::norm(long i, long j) const{
-    return (positionsVectorCollection_[i].positionsAsEigenVector()
-            - positionsVectorCollection_[j].positionsAsEigenVector()).norm();
+    return (positionsVectorCollection_[i].asEigenVector()
+            - positionsVectorCollection_[j].asEigenVector()).norm();
 }
 
 const std::vector<PositionsVector>& PositionsVectorCollection::positionsVectorCollection() const {
