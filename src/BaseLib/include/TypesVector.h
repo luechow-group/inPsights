@@ -20,16 +20,16 @@
 #include "ISliceable.h"
 
 template <typename Type>
-class TypesVector : public ISliceable<int> {
+class TypesVector : public IInsertable<int> {
 public:
 
     // unsigned long dummy is there to be specialized in TypesVector<Spin::SpinTypes>
     TypesVector(unsigned long size = 0, unsigned long dummy = 0)
-    : ISliceable<int>(size)
+    : IInsertable<int>(size)
     {}
 
     TypesVector(std::vector<Type> types)
-    : ISliceable<int>(0)
+    : IInsertable<int>(0)
     {
         for (const auto& type : types){
             assert(int(type) >= int(Spins::first()));
@@ -52,27 +52,13 @@ public:
         return static_cast<Type>(data_[calculateIndex(i)]);
     }
 
-    // TODO MOVE TO ISLICEABLE
+    void prepend(Type type) { insert(type,0); }
+    void append(Type type) { insert(type,numberOfEntities()); }
     void insert(Type type, long i) {
-        assert(i >= 0 && "The index must be positive.");
-        assert(i <= numberOfEntities() && "The index must be smaller than the number of entities.");
-
-        Eigen::VectorXi before = data_.head(i);
-        Eigen::VectorXi after = data_.tail(numberOfEntities()-i);
-
-        data_.resize(numberOfEntities()+1);
-        data_ << before, int(type), after;
-
-        incrementNumberOfEntities();
-        resetRef();
+        Eigen::Matrix<int,1,1>elem;
+        elem << int(type);
+        IInsertable::insert(elem,i);
     }
-    void prepend(Type type) {
-        insert(type,0);
-    }
-    void append(Type type) {
-        insert(type,numberOfEntities());
-    }
-
 
     bool operator==(const TypesVector<Type> &other) const {
         return ISliceable<int>::operator==(other);
