@@ -7,7 +7,7 @@
 #include "Metrics.h"
 #include "TestMolecules.h"
 
-TEST(HungarianTest, OneSolution) {
+TEST(AHungarianTest, OneSolution) {
     Eigen::MatrixXd input(4,4);
     input << \
     88,83,69,92,\
@@ -22,7 +22,7 @@ TEST(HungarianTest, OneSolution) {
 }
 
 
-TEST(HungarianTest, TwoSolutions) {
+TEST(AHungarianTest, TwoSolutions) {
     Eigen::MatrixXd input(4,4);
     input <<\
     90,75,75,80,\
@@ -38,7 +38,7 @@ TEST(HungarianTest, TwoSolutions) {
 }
 
 
-TEST(HungarianTest, FlippedPositions) {
+TEST(AHungarianTest, FlippedPositions) {
     auto p1 = TestMolecules::H2::ElectronsInCores::normal.electrons().positionsVector();;
     auto p2 = TestMolecules::H2::ElectronsInCores::flippedSpins.electrons().positionsVector();
 
@@ -52,7 +52,7 @@ TEST(HungarianTest, FlippedPositions) {
 }
 
 
-TEST(HungarianTest, TranslatedPositions) {
+TEST(AHungarianTest, TranslatedPositions) {
     auto p1 = TestMolecules::H2::ElectronsInCores::normal.electrons().positionsVector();;
     auto p2 = TestMolecules::H2::ElectronsInCores::translated.electrons().positionsVector();
 
@@ -65,7 +65,7 @@ TEST(HungarianTest, TranslatedPositions) {
     ASSERT_EQ(Hungarian<double>::findMatching(input).indices(),expectedOutput);
 }
 
-TEST(HungarianTest, TranslatedAndFlippedPositions) {
+TEST(AHungarianTest, TranslatedAndFlippedPositions) {
 
     auto p1 = TestMolecules::H2::ElectronsInCores::translated.electrons().positionsVector();;
     auto p2 = TestMolecules::H2::ElectronsInCores::flippedSpins.electrons().positionsVector();
@@ -81,7 +81,7 @@ TEST(HungarianTest, TranslatedAndFlippedPositions) {
 
 #include <algorithm>
 #include <random>
-TEST(HungarianTest, IntegrationTest_IdenticalPermutation) {
+TEST(AHungarianTest, IntegrationTest_IdenticalPermutation) {
 
 
     //double start = omp_get_wtime();
