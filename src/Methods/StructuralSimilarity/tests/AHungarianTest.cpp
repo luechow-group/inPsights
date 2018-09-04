@@ -82,6 +82,9 @@ TEST(HungarianTest, TranslatedAndFlippedPositions) {
 #include <algorithm>
 #include <random>
 TEST(HungarianTest, IntegrationTest_IdenticalPermutation) {
+
+
+    //double start = omp_get_wtime();
     auto ev = TestMolecules::eightElectrons::square.electrons();
 
     auto nAlpha = ev.typesVector().countOccurence(Spin::alpha);
@@ -107,14 +110,14 @@ TEST(HungarianTest, IntegrationTest_IdenticalPermutation) {
     std::shuffle(permAlpha.indices().data(), permAlpha.indices().data()+permAlpha.indices().size(),g);
     std::shuffle(permBeta.indices().data(), permBeta.indices().data()+permBeta.indices().size(),g);
 
-    std::cout << evp << std::endl;
-    std::cout << permAlpha.indices().transpose()<< std::endl;
-    std::cout << permBeta.indices().transpose()<< std::endl;
+    //std::cout << evp << std::endl;
+    //std::cout << permAlpha.indices().transpose()<< std::endl;
+    //std::cout << permBeta.indices().transpose()<< std::endl;
 
     // Permute
     evp.slice(alphaElectrons).permute(permAlpha);
     evp.slice(betaElectrons).permute(permBeta);
-    std::cout << evp << std::endl;
+    //std::cout << evp << std::endl;
 
 
     // Find bestmatch permutation to permute ev to evp
@@ -133,13 +136,16 @@ TEST(HungarianTest, IntegrationTest_IdenticalPermutation) {
     //combinedPerm.segment(alphaElectrons.start(),alphaElectrons.numberOfEntities()) = bestMatchAlpha.indices();
     //combinedPerm.segment(betaElectrons.start(),betaElectrons.numberOfEntities()) = bestMatchBeta.indices();
 
-    std::cout << bestMatchAlpha.indices().transpose()<< std::endl;
-    std::cout << bestMatchBeta.indices().transpose()<< std::endl;
+    //std::cout << bestMatchAlpha.indices().transpose()<< std::endl;
+    //std::cout << bestMatchBeta.indices().transpose()<< std::endl;
 
     // permute evp to match original ev
     evp.slice(alphaElectrons).permute(bestMatchAlpha.inverse());
     evp.slice(betaElectrons).permute(bestMatchBeta.inverse());
-    std::cout << evp << std::endl;
+
+    //std::cout << omp_get_wtime() - start << std::endl;
+
+    //std::cout << evp << std::endl;
 
     ev.resetSlice(); //TODO WHY DO WE NEED TO DO THIS MANUALLY?
     evp.resetSlice();//TODO WHY DO WE NEED TO DO THIS MANUALLY?
