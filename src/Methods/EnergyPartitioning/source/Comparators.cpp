@@ -21,18 +21,19 @@ namespace Comparators {
             return false;
         }
         else if (deltaValue <= valueThreshold_) {
-            return identicalQ(lhs, rhs,distThreshold_);
+            return identicalQ(lhs, rhs) <= distThreshold_;
         } else
             return false;
     }
 
-    bool identicalQ(const Reference &lhs, const Reference &rhs, double distThreshold) {
+    double identicalQ(const Reference &lhs, const Reference &rhs) {
         assert(lhs.maximum_.typesVector() == rhs.maximum_.typesVector()
                && "The typesvectors must be identical as we assume ordered alpha and beta electrons.");
         assert(lhs.maximum_.positionsVector().numberOfEntities() == rhs.maximum_.positionsVector().numberOfEntities()
                && "The number of positions must be identical.");
 
-        auto lhsCopy = lhs.maximum_.positionsVector();
+        auto lhsCopy = lhs.maximum_.positionsVector();//TODO eliminate redundant copy by const_cast .slice
+        //https://stackoverflow.com/questions/5008541/how-to-call-a-non-const-function-within-a-const-function-c
         auto rhsCopy = rhs.maximum_.positionsVector();
 
         auto nAlpha = lhs.maximum_.typesVector().countOccurence(Spin::alpha);
@@ -52,11 +53,10 @@ namespace Comparators {
         rhsCopy.slice(alphaElectrons).permute(bestMatchAlpha.inverse()); //TODO INVERSE?
         rhsCopy.slice(betaElectrons).permute(bestMatchBeta.inverse());
 
-        auto distance = Metrics::distance(lhsCopy, rhsCopy);
-        return distance <= distThreshold;
+        return Metrics::positionDistancesVector(lhsCopy, rhsCopy).lpNorm<Eigen::Infinity>();
     };
 
-    bool globallySimilarQ(const Reference &lhs, const Reference &rhs, double distThreshold) {
+    double globallySimilarQ(const Reference &lhs, const Reference &rhs) {
         assert(lhs.maximum_.typesVector() == rhs.maximum_.typesVector()
                && "The typesvectors must be identical as we assume ordered alpha and beta electrons.");
         assert(lhs.maximum_.positionsVector().numberOfEntities() == rhs.maximum_.positionsVector().numberOfEntities()
@@ -68,9 +68,8 @@ namespace Comparators {
         auto rhsCopy = rhs.maximum_;
         rhsCopy.permute(bestMatch.inverse()); //TODO INVERSE?
 
-        auto distance = Metrics::distance(lhs.maximum_.positionsVector(), rhsCopy.positionsVector());
-        std::cout << distance << std::endl;
-
-        return distance <= distThreshold;
+        return Metrics::positionDistancesVector(
+                lhs.maximum_.positionsVector(),
+                rhsCopy.positionsVector()).lpNorm<Eigen::Infinity>();
     };
 }

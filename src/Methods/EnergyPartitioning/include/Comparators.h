@@ -9,8 +9,8 @@
 
 namespace Comparators {
 
-    static bool identicalQ(const Reference &lhs, const Reference &rhs, double distThreshold = 0.01);
-    static bool globallySimilarQ(const Reference &lhs, const Reference &rhs, double distThreshold = 0.01);
+    double identicalQ(const Reference &lhs, const Reference &rhs);
+    double globallySimilarQ(const Reference &lhs, const Reference &rhs);
 
     class ValueEuclideanDistanceComparator {
     public:

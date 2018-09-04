@@ -16,6 +16,18 @@ double Metrics::distance(const PositionsVector& positions1,
     return (positions1.asEigenVector()-positions2.asEigenVector()).norm();
 }
 
+Eigen::VectorXd Metrics::positionDistancesVector(const PositionsVector &positions1, const PositionsVector &positions2) {
+    assert(positions1.numberOfEntities() == positions2.numberOfEntities()
+           && "Both PositionVectors must have the same size.");
+    Eigen::VectorXd vec(positions1.numberOfEntities());
+
+    for (size_t i = 0; i < positions1.numberOfEntities(); ++i) {
+        vec[i] = (positions1[i]-positions2[i]).norm();
+    }
+    return vec;
+}
+
+
 Eigen::MatrixXd Metrics::positionalDistances(const PositionsVector &positions){
     Eigen::MatrixXd d = Eigen::MatrixXd::Zero(positions.numberOfEntities(),positions.numberOfEntities());
     for (size_t i = 0; i < d.rows(); i++)
@@ -27,7 +39,8 @@ Eigen::MatrixXd Metrics::positionalDistances(const PositionsVector &positions){
 };
 
 Eigen::MatrixXd Metrics::positionalDistances(const PositionsVector &positions1, const PositionsVector &positions2){
-    assert(positions1.numberOfEntities() == positions2.numberOfEntities());
+    assert(positions1.numberOfEntities() == positions2.numberOfEntities()
+           && "Both PositionVectors must have the same size.");
 
     Eigen::MatrixXd d = Eigen::MatrixXd::Zero(positions1.numberOfEntities(),positions1.numberOfEntities());
 

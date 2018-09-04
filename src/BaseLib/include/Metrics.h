@@ -16,6 +16,8 @@ namespace Metrics{
 
     double distance(const PositionsVector& positions1,
                     const PositionsVector& positions2);
+
+    Eigen::VectorXd positionDistancesVector(const PositionsVector &positions1, const PositionsVector &positions2);
     
     Eigen::MatrixXd positionalDistances(const PositionsVector& positions);
 
