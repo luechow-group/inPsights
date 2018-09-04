@@ -35,6 +35,8 @@ bool RawDataReader::read(const std::string &fileName){
 
         while (checkEOF(input,totalLength)) {
 
+
+
             // don't move read methods into constructor as this messes up the ifstream stride
             auto sample = readVectorXd(input, size_t(nElectrons),3);
             auto kineticEnergies = readVectorXd(input, size_t(nElectrons));
@@ -44,7 +46,8 @@ bool RawDataReader::read(const std::string &fileName){
             auto value = readDouble(input);
             auto r = Reference(ElectronsVector(PositionsVector(maximum), spins),value);
 
-            mapping_.map.insert(RefSamplePair(r,s));
+            mapping_.map.emplace(RefSamplePair(r,s));
+            //https://stackoverflow.com/questions/21215214/how-to-sort-both-key-and-value-in-a-multimap
 
         }
         return true;
