@@ -40,7 +40,10 @@ set(HEADER_FILES
         include/CoulombPotential.h
         include/BinaryFileReader.h
         include/Interval.h
-        include/ReturnAndReset.h)
+        include/ReturnAndReset.h
+        include/SliceableDataVector.h
+        include/InsertableVector.h
+        )
 
 set(SOURCE_FILES
         source/pElementInfo.cpp

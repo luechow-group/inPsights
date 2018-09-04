@@ -121,8 +121,4 @@ TEST_F(AParticlesVectorTest, IntegrationTest_PermuteAndTranslateAlphaElectrons){
     ASSERT_EQ(e[0].position(),e0.position()+Vector3d(0,0,0.5));
     ASSERT_EQ(e[1].position(),e1.position()+Vector3d(0,0,0.5));
     ASSERT_EQ(e[2].position(),e2.position());
-
-    std::cout << e << std::endl;
-
-
 }

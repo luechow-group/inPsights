@@ -48,22 +48,22 @@ TEST_F(APotentialProblemTest, Construction) {
 TEST_F(APotentialProblemTest, getAtoms) {
     PotentialProblem potentialProblem(atomsVector);
 
-    ASSERT_EQ(atomsVector.positionsVector().positionsAsEigenVector(),
-              potentialProblem.getAtoms().positionsVector().positionsAsEigenVector());
-    ASSERT_EQ(atomsVector.typesVector().typesAsEigenVector(),
-              potentialProblem.getAtoms().typesVector().typesAsEigenVector());
+    ASSERT_EQ(atomsVector.positionsVector().asEigenVector()(),
+              potentialProblem.getAtoms().positionsVector().asEigenVector()());
+    ASSERT_EQ(atomsVector.typesVector().asEigenVector()(),
+              potentialProblem.getAtoms().typesVector().asEigenVector()());
 }
 
 TEST_F(APotentialProblemTest, Value1e1c) {
     PotentialProblem potentialProblem(atomsVector2);
-    VectorXd x = electronsVector2.positionsVector().positionsAsEigenVector();
+    VectorXd x = electronsVector2.positionsVector().asEigenVector()();
 
     ASSERT_DOUBLE_EQ(potentialProblem.value(x),-0.5);
 }
 
 TEST_F(APotentialProblemTest, Gradient1e1c) {
     PotentialProblem potentialProblem(atomsVector2);
-    VectorXd x = electronsVector2.positionsVector().positionsAsEigenVector();
+    VectorXd x = electronsVector2.positionsVector().asEigenVector()();
 
     auto grad = x;
     potentialProblem.gradient(x,grad);
@@ -73,6 +73,6 @@ TEST_F(APotentialProblemTest, Gradient1e1c) {
 TEST_F(APotentialProblemTest, Value3e3c) {
     PotentialProblem potentialProblem(atomsVector);
 
-    VectorXd x = electronsVector.positionsVector().positionsAsEigenVector();
+    VectorXd x = electronsVector.positionsVector().asEigenVector()();
     ASSERT_DOUBLE_EQ(potentialProblem.value(x),-2.0005632341974531);
 }

@@ -5,8 +5,10 @@
 #include <AbstractVector.h>
 #include <assert.h>
 
-AbstractVector::AbstractVector(long numberOfEntities)
-        : numberOfEntities_(numberOfEntities){
+AbstractVector::AbstractVector(long numberOfEntities, long entityLength)
+        :
+        entityLength_(entityLength),
+        numberOfEntities_(numberOfEntities){
     assert(numberOfEntities >= 0 && "The number of Entities must be non-negative.");
 };
 
@@ -18,14 +20,23 @@ long AbstractVector::numberOfEntities() const{
     return numberOfEntities_;
 }
 
+long AbstractVector::entityLength() const{
+    return entityLength_;
+}
+
+void AbstractVector::setEntityLength(long entityLength) {
+    assert(entityLength > 0  && "The entity length must be positive.");
+    entityLength_ = entityLength;
+}
+
 void AbstractVector::setNumberOfEntities(long numberOfEntities){
-    assert(numberOfEntities >= 0  && "The number of Entities must be non-negative.");
+    assert(numberOfEntities >= 0  && "The number of entities must be non-negative.");
     numberOfEntities_ = numberOfEntities;
 }
 
 long AbstractVector::calculateIndex(long i) const {
-    assert(i < numberOfEntities() && "Index is out of bounds");
+    assert(i <= numberOfEntities() && "Index is out of bounds");// less or equal because of insert
     assert(i >= -numberOfEntities() && "Reverse index is out of bounds");
-    if (i >= 0) return i;
-    return (numberOfEntities()+i);
+    if (i >= 0) return i*entityLength_;
+    return (numberOfEntities()+i)*entityLength_;
 }

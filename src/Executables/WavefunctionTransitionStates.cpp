@@ -87,7 +87,7 @@ int main(int argc, char *argv[]) {
     pv( 9) = pcsel2[2];
     pv(14) = pcsel2[3];
 
-    Eigen::VectorXd guess = pv.positionsAsEigenVector();
+    Eigen::VectorXd guess = pv.asEigenVector()();
 
     // optimize the guess
     LocalNewtonSearch localNewton;
