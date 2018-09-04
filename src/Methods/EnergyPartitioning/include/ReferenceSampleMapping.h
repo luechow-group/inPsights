@@ -13,7 +13,7 @@ using RefSamplePair = std::pair<Reference,Sample>;//TODO used?
 
 class ReferenceSampleMapping {
 public:
-    std::multimap<Reference,Sample,ValueEuclideanDistanceComparator> map;
+    std::multimap<Reference,Sample,Comparators::ValueEuclideanDistanceComparator> map;
 };
 
 #endif //AMOLQCPP_REFERENCESAMPLEMAPPING_H
