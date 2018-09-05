@@ -49,7 +49,7 @@ bool RawDataReader::read(const std::string &fileName){
 
             auto maximum = readVectorXd(input, size_t(nElectrons),3);
             auto value = readDouble(input);
-            auto r = Reference(ElectronsVector(PositionsVector(maximum), spins), value, id);
+            auto r = Reference(value, ElectronsVector(PositionsVector(maximum), spins), id);
 
             references_.emplace(r);
             samples_.emplace_back(s);
