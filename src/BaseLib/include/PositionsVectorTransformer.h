@@ -9,28 +9,18 @@
 #include <Eigen/Eigenvalues>
 #include <vector>
 
-
-
-
-
 namespace PositionsVectorTransformer{
 
     struct AngleAxis{
-    public:
         AngleAxis(double angle,Eigen::Vector3d axis)
                 : angle_(angle), axis_(axis){};
         double angle_;
         Eigen::Vector3d axis_;
     };
 
-    enum class RotationDirection {
-        clockwise = 1,
-        counterclockwise = -1
-    };
-
     void translateCenterOfMassToOrigin(PositionsVector& positionsVector);
 
-    void rotateAroundAxis(PositionsVector &positionsVector, double angle,
+    void rotateAroundAxis(PositionsVector &p, double angle,
                           const Eigen::Vector3d &axisStart,
                           const Eigen::Vector3d &axisEnd);
     void rotateAroundAxis(PositionsVector &positionsVector, double angle,
@@ -46,10 +36,6 @@ namespace PositionsVectorTransformer{
     Eigen::Vector4d quaternionFromAngleAndAxis(double angle, const Eigen::Vector3d &axis);
 
     AngleAxis quaternionToAngleAndAxis(const Eigen::Vector4d &quaternion);
-
-    //TODO refactor
-    Eigen::VectorXd permutePositionsCyclic(const Eigen::VectorXd &x, std::vector<unsigned> order);
-
 };
 
 

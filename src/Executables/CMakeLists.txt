@@ -12,6 +12,13 @@ add_executable(BaseLib.exe BaseLib.cpp)
 target_link_libraries(BaseLib.exe
         BaseLib
         )
+
+add_executable(EnergyPartitioning.exe EnergyPartitioning.cpp)
+target_link_libraries(EnergyPartitioning.exe
+        BaseLib
+        EnergyPartitioning
+        )
+
 add_executable(StructuralSimilarity.exe StructuralSimilarityExec.cpp)
 target_link_libraries(StructuralSimilarity.exe
         AmolqcInterface

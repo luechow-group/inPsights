@@ -33,13 +33,13 @@ int main(int argc, char *argv[]) {
     //CollectionParser::writeJSON(json,"H6TS_CAS23_Ic444_GlobMax.json");
 
     auto ec = YAML::LoadFile("H6TS_CAS23_Ic444_GlobMax.json")["Electrons"].as<ElectronsVector>();
-    auto x1 = ec.positionsVector().positionsAsEigenVector();
+    auto x1 = ec.positionsVector().asEigenVector()();
 
     // cyclic permutation
     //auto x2 = PositionsVectorTransfomer::permutePositionsCyclic(x1, {0, 3, 1, 4, 2, 5});
 
     // pairwise swap
-    auto x2 = ec.positionsVector().positionsAsEigenVector();
+    auto x2 = ec.positionsVector().asEigenVector()();
     x2.segment(0*3,3) = x1.segment(3*3,3);
     x2.segment(3*3,3) = x1.segment(0*3,3);
     x2.segment(1*3,3) = x1.segment(4*3,3);
@@ -80,7 +80,7 @@ int main(int argc, char *argv[]) {
     std::cout << std::endl;
 
     // save results
-    //ElectronsVector ev(guess,ec.typesVector().typesAsEigenVector()());
+    //ElectronsVector ev(guess,ec.typesVector().asEigenVector()()());
     //nlohmann::json json = CollectionParser::atomsAndElectronsVectorToJson(av,ev);
     //json["Value"] = electronicWaveFunctionProblem.value(guess);
     //json["Gradient"] = CollectionParser::electronsVectorToJson(gradev)["ElectronsVector"];

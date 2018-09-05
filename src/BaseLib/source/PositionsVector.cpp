@@ -2,88 +2,113 @@
 // Created by Michael Heuer on 29.10.17.
 //
 
-#include "PositionsVector.h"
-#include "ToString.h"
-#include <yaml-cpp/yaml.h>
+#include <PositionsVector.h>
+#include <ToString.h>
 #include <EigenYamlConversion.h>
+#include <PositionsVectorTransformer.h>
+#include <yaml-cpp/yaml.h>
 
 using namespace Eigen;
 
 PositionsVector::PositionsVector()
-        : AbstractVector(),
-          positions_(0)
-{}
+        : InsertableVector(0,3)
+{
+    resetRef();
+}
 
-PositionsVector::PositionsVector(const VectorXd &positions) {
+PositionsVector::PositionsVector(const VectorXd &positions)
+: PositionsVector() {
     auto size = positions.size();
     assert(size >= 0 && "Vector cannot be empty");
     assert(size%3 == 0 && "Vector must be 3N-dimensional");
 
     AbstractVector::setNumberOfEntities(size/3);
-    positions_ = positions;
+    data_ = positions;
+
+    resetRef();
 }
 
 Eigen::Vector3d PositionsVector::operator[](long i) const {
-    return positions_.segment(calculateIndex(i),entityLength_);
+    return data_.segment(calculateIndex(i),entityLength());
 }
 
+//TODO replace operator[] by this?
+Eigen::Vector3d PositionsVector::position(long i, const Usage& usage) {
+    if( resetType_ == Reset::Automatic
+    || (resetType_ == Reset::OnFinished && usage == Usage::Finished))
+        return RETURN_AND_RESET<PositionsVector,Eigen::Vector3d>(*this,dataRef().segment(calculateIndex(i),entityLength())).returnAndReset();
+    else
+        return dataRef().segment(calculateIndex(i),entityLength());
+}
+
+void PositionsVector::prepend(const Eigen::Vector3d &position) {
+    insert(position,0);
+}
+void PositionsVector::append(const Eigen::Vector3d &position) {
+    insert(position,AbstractVector::numberOfEntities());
+}
 void PositionsVector::insert(const Eigen::Vector3d &position, long i) {
-    assert(i >= 0 && "The index must be positive.");
-    assert(i <= numberOfEntities() && "The index must be smaller than the number of entities.");
+    InsertableVector<double>::insert(position,i);
+}
 
-    long start = i*entityLength_;
+void PositionsVector::translate(const Eigen::Vector3d &shift, const Usage& usage) {
+    auto tmp = resetType_;
+    resetType_ = Reset::OnFinished;
 
-    VectorXd before = positions_.head(start);
-    VectorXd after = positions_.tail(numberOfEntities()*entityLength_-start);
+    for (long i = 0; i < sliceInterval_.numberOfEntities(); ++i)
+        dataRef(Usage::NotFinished).segment(calculateIndex(i),3) += shift;
 
-    positions_.resize(numberOfEntities()*entityLength_+entityLength_);
-    positions_ << before, position, after;
+    resetType_ = tmp;
+    resetStrategy(usage);
+}
 
-    incrementNumberOfEntities();
+void PositionsVector::rotateAroundOrigin(double angle, const Eigen::Vector3d &axisDirection, const Usage& usage) {
+    rotate(angle,{0,0,0},axisDirection,usage);
+}
+
+void PositionsVector::rotate(double angle,const Eigen::Vector3d &center,const Eigen::Vector3d &axisDirection, const Usage& usage) {
+    auto rotMat = PositionsVectorTransformer::rotationMatrixFromQuaternion(
+            PositionsVectorTransformer::quaternionFromAngleAndAxis(angle, axisDirection - center));
+
+    auto tmp = resetType_;
+    resetType_ = Reset::OnFinished;
+
+    this->translate(-center,Usage::NotFinished);
+
+    for (long i = 0; i < sliceInterval_.numberOfEntities(); ++i)
+        dataRef().segment(calculateIndex(i), entityLength()) = position(i,Usage::NotFinished).transpose() * rotMat;
+
+    this->translate(center,Usage::NotFinished);
+
+    resetType_ = tmp;
+    resetStrategy(usage);
+};
+
+PositionsVector& PositionsVector::entity(long i, const Reset& resetType) {
+    return slice(Interval(i), resetType);
+}
+
+PositionsVector& PositionsVector::slice(const Interval& interval, const Reset& resetType) {
+    SliceableDataVector<double>::slice(interval,resetType);
+    return *this;
 }
 
 std::ostream& operator<<(std::ostream& os, const PositionsVector& pc){
     for (long i = 0; i < pc.numberOfEntities(); i++){
         os << ToString::longToString(i + 1) << " " << ToString::vector3dToString(pc[i]) << std::endl;
     }
+    const_cast<PositionsVector &>(pc).resetRef(); //TODO refactor
     return os;
 }
 
-void PositionsVector::prepend(const Eigen::Vector3d &position) {
-    this->insert(position,0);
+bool PositionsVector::operator==(const PositionsVector& other) const {
+    return SliceableDataVector<double>::operator==(other);
 }
 
-void PositionsVector::append(const Eigen::Vector3d &position) {
-    this->insert(position,numberOfEntities());
+bool PositionsVector::operator!=(const PositionsVector&other) const {
+    return !(*this == other);
 }
 
-const Eigen::VectorXd & PositionsVector::positionsAsEigenVector() const {
-    return positions_;
-}
-
-Eigen::VectorXd & PositionsVector::positionsAsEigenVector() {
-    return positions_;
-}
-
-void PositionsVector::permute(long i, long j) {
-    if(i != j) {
-        Eigen::Vector3d temp = positions_.segment(calculateIndex(i),entityLength_);
-        positions_.segment(calculateIndex(i),entityLength_) = positions_.segment(calculateIndex(j),entityLength_);
-        positions_.segment(calculateIndex(j),entityLength_) = temp;
-    }
-}
-
-long PositionsVector::calculateIndex(long i) const {
-    return AbstractVector::calculateIndex(i)*entityLength_;
-}
-
-Eigen::Ref<Eigen::Vector3d> PositionsVector::operator()(long i){
-    return Eigen::Ref<Eigen::Vector3d>(positions_.segment(calculateIndex(i),entityLength_));
-}
-
-const Eigen::Ref<const Eigen::Vector3d>& PositionsVector::operator()(long i) const{
-    return Eigen::Ref<const Eigen::Vector3d>(positions_.segment(calculateIndex(i),entityLength_));
-}
 
 namespace YAML {
     Node convert<PositionsVector>::encode(const PositionsVector &rhs) {
@@ -96,8 +121,8 @@ namespace YAML {
         if (!node.IsSequence())
             return false;
         PositionsVector pv;
-        for (unsigned i = 0; i < node.size(); ++i)
-            pv.append(node[i].as<Eigen::Vector3d>());
+        for (const auto &i : node)
+            pv.append(i.as<Eigen::Vector3d>());
         rhs = pv;
         return true;
     }

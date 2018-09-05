@@ -5,78 +5,80 @@
 #ifndef AMOLQCPP_TYPESVECTOR_H
 #define AMOLQCPP_TYPESVECTOR_H
 
-#include <Eigen/Core>
-#include "AbstractVector.h"
 #include "SpinType.h"
 #include "ElementType.h"
-#include <vector>
 #include "NumberedType.h"
-#include "TypesVector.h"
+#include "InsertableVector.h"
+#include <vector>
 #include <yaml-cpp/yaml.h>
 
 template <typename Type>
-class TypesVector : public AbstractVector {
+class TypesVector : public InsertableVector<int> {
 public:
 
-    // unsigned long empty is there to be specialized in TypesVector<Spin::SpinTypes>
-    TypesVector(unsigned long size = 0, unsigned long empty = 0)
-            : AbstractVector(size),
-              types_(Eigen::VectorXi::Constant(size, 0))
-    {}
+    // unsigned long dummy is there to be specialized in TypesVector<Spin::SpinTypes>
+    TypesVector(unsigned long size = 0, unsigned long dummy = 0)
+    : InsertableVector<int>(size)
+    {
+        resetRef();
+    }
 
     TypesVector(std::vector<Type> types)
-            : AbstractVector(0),
-              types_(0)
+    : InsertableVector<int>(0)
     {
         for (const auto& type : types){
             assert(int(type) >= int(Spins::first()));
             assert(int(type) <= int(Elements::last()));
             this->append(type);
         }
+        resetRef();
+    }
+
+    TypesVector<Type>& slice(const Interval& interval, const Reset& resetType = Reset::Automatic) {
+        SliceableDataVector<int>::slice(interval,resetType); // template specialization necessary?
+        return *this;
+    }
+    TypesVector<Type>& entity(long i, const Reset& resetType = Reset::Automatic) {
+        return slice(Interval(i), resetType);
+    }
+
+    void prepend(const Type& type) { insert(type,0); }
+    void append(const Type& type) { insert(type,numberOfEntities()); }
+    void insert(const Type& type, long i) {
+        Eigen::Matrix<int,1,1>elem;
+        elem << int(type);
+        InsertableVector<int>::insert(elem,i);
+    }
+
+    Type type(long i, const Usage& usage = Usage::NotFinished){
+        if( resetType_ == Reset::Automatic
+            || (resetType_ == Reset::OnFinished && usage == Usage::Finished))
+            return RETURN_AND_RESET<TypesVector<Type>,Type>(*this,dataRef().segment(calculateIndex(i),entityLength())).returnAndReset();
+        else
+            return dataRef().segment(calculateIndex(i),entityLength());
     }
 
     Type operator[](long i) const {
-        return static_cast<Type>(types_[calculateIndex(i)]);
+        return static_cast<Type>(data_[calculateIndex(i)]);
     }
 
-    void insert(Type type, long i) {
-        assert(i >= 0 && "The index must be positive.");
-        assert(i <= numberOfEntities() && "The index must be smaller than the number of entities.");
-
-        Eigen::VectorXi before = types_.head(i);
-        Eigen::VectorXi after = types_.tail(numberOfEntities()-i);
-
-        types_.resize(numberOfEntities()+1);
-        types_ << before, int(type), after;
-
-        incrementNumberOfEntities();
+    //TODO make double template?
+    bool operator==(const TypesVector<Type> &other) const {
+        return SliceableDataVector<int>::operator==(other);
     }
 
-    void prepend(Type type) {
-        this->insert(type,0);
+    bool operator!=(const TypesVector<Type> &other) const {
+        return !(*this == other);
     }
 
-    void append(Type type) {
-        this->insert(type,numberOfEntities());
-    }
-
-    const Eigen::VectorXi& typesAsEigenVector() const {
-        return types_;
-    }
-
-    Eigen::VectorXi& typesAsEigenVector() {
-        return types_;
-    }
-
-    void permute(long i, long j) {
-        if(i != j) {
-            int temp = types_[calculateIndex(i)];
-            types_[calculateIndex(i)] = types_[calculateIndex(j)];
-            types_[calculateIndex(j)] = temp;
+    friend std::ostream& operator<<(std::ostream& os, const TypesVector& tv){
+        for (unsigned long i = 0; i < tv.numberOfEntities(); i++) {
+            os << tv[i] << std::endl;
         }
+        return os;
     }
 
-    unsigned countOccurence(const Type &type) const {
+    unsigned countOccurence(const Type &type) const { // cannot handle slices
         unsigned count = 0;
         for (int i = 0; i < this->numberOfEntities(); ++i) {
             if (this->operator[](i) == type)
@@ -85,7 +87,7 @@ public:
         return count;
     }
 
-    NumberedType<Type> getNumberedTypeByIndex(long i) const {
+    NumberedType<Type> getNumberedTypeByIndex(long i) const { // cannot handle slices
         auto type = this->operator[](i);
         unsigned count = 0;
 
@@ -96,7 +98,7 @@ public:
         return {type,count};
     };
 
-    std::pair<bool,long> findIndexOfNumberedType(NumberedType<Type> indexedType) const {
+    std::pair<bool,long> findIndexOfNumberedType(NumberedType<Type> indexedType) const { // cannot handle slices
         assert(indexedType.number_ < numberOfEntities() &&
                "This index is out of bounds.");
 
@@ -116,7 +118,7 @@ public:
             if(numberOfEntities() == 1) {
                 return {{this->operator[](0),1}};
             }
-            auto copy = types_;
+            auto copy = data_;
             std::sort(copy.data(), copy.data()+numberOfEntities());
 
             unsigned count = 1;
@@ -138,15 +140,6 @@ public:
         return typeCountsPair;
     }
 
-    friend std::ostream& operator<<(std::ostream& os, const TypesVector& tv){
-        for (unsigned long i = 0; i < tv.numberOfEntities(); i++) {
-            os << tv[i] << std::endl;
-        }
-        return os;
-    }
-
-protected:
-    Eigen::VectorXi types_;
 };
 
 using IntegerTypesVector = TypesVector<int>;

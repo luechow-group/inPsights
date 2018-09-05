@@ -13,29 +13,42 @@
 #include <yaml-cpp/yaml.h>
 
 template<typename Type>
-class ParticlesVector : public AbstractVector{
+class ParticlesVector : public ISliceable{
 public:
 
     ParticlesVector()
-            : AbstractVector(0),
+            : ISliceable(0),
               positionsVector_(),
               typesVector_(0)
     {}
 
     ParticlesVector(const PositionsVector &positionsVector)
-            : AbstractVector(positionsVector.numberOfEntities()),
+            : ISliceable(positionsVector.numberOfEntities()),
               positionsVector_(positionsVector),
               typesVector_(numberOfEntities())
     {}
 
     ParticlesVector(const PositionsVector &positionsVector,
                     const TypesVector<Type> &typesVector)
-            : AbstractVector(positionsVector.numberOfEntities()),
+            : ISliceable(positionsVector.numberOfEntities()),
               positionsVector_(positionsVector),
               typesVector_(typesVector) {
         assert(numberOfEntities() == positionsVector_.numberOfEntities()
                && numberOfEntities() == typesVector_.numberOfEntities()
                && "The number of entities in ParticlesVector, PositionsVector, and TypesVector must match.");
+    }
+
+    ParticlesVector& slice(const Interval& interval, const Reset& resetType = Reset::Automatic /*TODO makes no sense here*/) {
+        setSlice(interval,resetType);
+        typesVector().slice(interval,resetType);
+        positionsVector().slice(interval,resetType);
+
+        //TODO CAREFUL WITH RESET
+        return *this;
+    }
+
+    ParticlesVector& entity(long i, const Reset& resetType = Reset::Automatic) {
+        return slice(Interval(i), resetType);
     }
 
     ParticlesVector(std::vector<Particle<Type>> particles)
@@ -85,17 +98,36 @@ public:
         this->insert(particle,numberOfEntities());
     }
 
-    void permute(long i, long j) override {
-        positionsVector_.permute(i,j);
-        typesVector_.permute(i,j);
+    void permute(const Eigen::PermutationMatrix<Eigen::Dynamic> &permutation, const Usage &usage) {
+        positionsVector_.permute(permutation,usage);
+        typesVector_.permute(permutation,usage);
     }
 
+    void permute(const Eigen::PermutationMatrix<Eigen::Dynamic> &permutation) override {
+        positionsVector_.permute(permutation);
+        typesVector_.permute(permutation);
+    }
+
+
     friend std::ostream& operator<<(std::ostream& os, const ParticlesVector<Type> & pv){
+        //TODO print only slice?
         for (long i = 0; i < pv.numberOfEntities(); i++) {
             os << ToString::longToString(i + 1) << " " << pv[i] << std::endl;
         }
         return os;
     }
+
+    bool operator==(const ParticlesVector<Type> &other) const {
+        return ISliceable::operator==(other)
+                && (typesVector() == other.typesVector())
+                && (positionsVector() == other.positionsVector());
+    }
+
+    bool operator!=(const ParticlesVector<Type> &other) const {
+        return !(*this == other);
+    }
+
+
 
 protected:
     PositionsVector positionsVector_;

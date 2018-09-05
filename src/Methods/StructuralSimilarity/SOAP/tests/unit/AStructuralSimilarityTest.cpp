@@ -28,10 +28,10 @@ TEST_F(AStructuralSimilarityTest , Identity) {
     ASSERT_NEAR(StructuralSimilarity::kernel(A, A, regularizationParameter), 1.0, eps);
 }
 
-TEST_F(AStructuralSimilarityTest , nmax1) {
+TEST_F(AStructuralSimilarityTest , nmax2) {
     auto A = TestMolecules::H2::ElectronsInCores::normal;
     ExpansionSettings::defaults();
-    ExpansionSettings::Radial::nmax=1;
+    ExpansionSettings::Radial::nmax=2;
     ExpansionSettings::mode = ExpansionSettings::Mode::chemical;
     ParticleKit::create(A);
 

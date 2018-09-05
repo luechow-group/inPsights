@@ -80,8 +80,8 @@ public:
 
     void insert(const ParticlesVector<Type> &particlesVector, long i) {
         if (typesVector_.numberOfEntities() != 0) {
-            assert(typesVector_.typesAsEigenVector()
-                   == particlesVector.typesVector().typesAsEigenVector());
+            assert(typesVector_.asEigenVector()
+                   == particlesVector.typesVector().asEigenVector());
         }
         else{
             typesVector_ = particlesVector.typesVector();
@@ -98,11 +98,9 @@ public:
         insert(particlesVector,0);
     }
 
-    void permute(long i, long j) final {
-        if(i != j) {
-            positionsVectorCollection_.permute(i,j);
-            typesVector_.permute(i,j);
-        }
+    void permute(const Eigen::PermutationMatrix<Eigen::Dynamic> &permutation) override {
+        positionsVectorCollection_.permute(permutation);
+        typesVector_.permute(permutation);
     }
 
     friend std::ostream& operator<<(std::ostream& os, const ParticlesVectorCollection<Type> & pvc){

@@ -14,9 +14,15 @@ namespace Metrics{
     double distance(const Eigen::Vector3d& position1,
                     const Eigen::Vector3d& position2);
 
-    double distance(const PositionsVector& positionsVector1,
-                    const PositionsVector& positionsVector2);
+    double distance(const PositionsVector& positions1,
+                    const PositionsVector& positions2);
 
+    Eigen::VectorXd positionDistancesVector(const PositionsVector &positions1, const PositionsVector &positions2);
+    
+    Eigen::MatrixXd positionalDistances(const PositionsVector& positions);
+
+    Eigen::MatrixXd positionalDistances(const PositionsVector& positions1, 
+                                        const PositionsVector& positions2);
 }
 
 #endif //AMOLQCPP_METRICS_H
