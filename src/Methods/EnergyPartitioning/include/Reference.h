@@ -12,10 +12,10 @@
 
 class Reference{
 public:
-    Reference(ElectronsVector maximum, double negLogSqrdProbabilityDensity, size_t id)
+    Reference(double negLogSqrdProbabilityDensity, ElectronsVector maximum = {},  size_t id = 0)
     :
-    maximum_(std::move(maximum)),
     negLogSqrdProbabilityDensity_(negLogSqrdProbabilityDensity),
+    maximum_(std::move(maximum)),
     id_(id),
     associations_({}) // identity perm
     {}
@@ -37,8 +37,8 @@ public:
         return negLogSqrdProbabilityDensity_<rhs.negLogSqrdProbabilityDensity_;
     }
 
-    ElectronsVector maximum_;
     double negLogSqrdProbabilityDensity_;
+    ElectronsVector maximum_;
     size_t id_;
     std::set<size_t> associations_;
 };
