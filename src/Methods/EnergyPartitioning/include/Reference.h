@@ -20,14 +20,13 @@ public:
     associations_({}) // identity perm
     {}
 
-    bool addAssociation(const size_t& id){
+    bool addAssociation(const size_t& id) const {//TODO BE CAREFUL WITH CONST
         assert(id != id_ && "Self-associations are not allowed");
 
         if (id != id_) {
             spdlog::get(Logger::name)->warn("Self-associations are not allowed");
             return false;
         }
-
         auto addedQ = associations_.emplace(id);
         if (!addedQ.second) spdlog::get(Logger::name)->warn("Id is already present.");
         return addedQ.second;
@@ -40,7 +39,7 @@ public:
     double negLogSqrdProbabilityDensity_;
     ElectronsVector maximum_;
     size_t id_;
-    std::set<size_t> associations_;
+    mutable std::set<size_t> associations_;
 };
 
 #endif //AMOLQCPP_REFERENCE_H
