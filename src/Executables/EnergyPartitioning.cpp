@@ -3,33 +3,22 @@
 //
 
 #include <RawDataReader.h>
-#include "ReferenceSampleMapping.h"
+#include "Sample.h"
+#include "Logger.h"
 
 int main(int argc, char *argv[]) {
+    Logger::initialize();
+    auto console = spdlog::get(Logger::name);
 
-    ReferenceSampleMapping mapping;
+    std::set<Reference> references;
+    std::vector<Sample> samples;
 
-    RawDataReader reader(mapping);
+    RawDataReader reader(references,samples);
     reader.read("raw1.bin");
 
-
-    Reference r;
-    for (auto i : mapping.map){
-        r=Reference(i.first.maximum_,i.first.negLogSqrdProbabilityDensity_);
+    for (auto ref : references) { ;
+        console->info("{} {:03.6f}",ref.id_, ref.negLogSqrdProbabilityDensity_);
     }
 
-    auto res = mapping.map.find(r);
-    if(res == mapping.map.end())
-        std::cout << "END" << std::endl;
-    else{
-        std::cout << (*res).first.maximum_.typesVector() << std::endl;
-
-    }
-
-
-
-
-    //auto b = (*mapping.map.begin()).first < (*(mapping.map.begin())).first;
-    //std::cout << b << std::endl;// <mapping.map
 
 }

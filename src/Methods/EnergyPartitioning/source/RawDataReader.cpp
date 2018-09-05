@@ -6,8 +6,14 @@
 #include "Reference.h"
 #include "ParticlesVector.h"
 
-RawDataReader::RawDataReader(ReferenceSampleMapping& mapping, int recordDelimiterLength)
-        : BinaryFileReader(recordDelimiterLength), mapping_(mapping) {}
+RawDataReader::RawDataReader(
+        std::set<Reference>& references,
+        std::vector<Sample>& samples, int recordDelimiterLength)
+        :
+        BinaryFileReader(recordDelimiterLength),
+        references_(references),
+        samples_(samples)
+        {}
 
 bool RawDataReader::read(const std::string &fileName){
     // open file in binary mode
@@ -20,7 +26,7 @@ bool RawDataReader::read(const std::string &fileName){
         input.seekg (0, std::ifstream::end);
         long long int totalLength = input.tellg();
         input.seekg (0, std::ifstream::beg);
-        std::cout << totalLength << std::endl; // in byte?
+        //std::cout << totalLength << std::endl; // in byte?
 
 
         int nElectrons = readInt(input);
@@ -33,9 +39,8 @@ bool RawDataReader::read(const std::string &fileName){
         numberOfBetaElectrons = static_cast<unsigned>(nElectrons-nAlpha);
         auto spins = SpinTypesVector(numberOfAlphaElectrons,numberOfBetaElectrons);
 
+        size_t id = 0;
         while (checkEOF(input,totalLength)) {
-
-
 
             // don't move read methods into constructor as this messes up the ifstream stride
             auto sample = readVectorXd(input, size_t(nElectrons),3);
@@ -44,11 +49,11 @@ bool RawDataReader::read(const std::string &fileName){
 
             auto maximum = readVectorXd(input, size_t(nElectrons),3);
             auto value = readDouble(input);
-            auto r = Reference(ElectronsVector(PositionsVector(maximum), spins),value);
+            auto r = Reference(ElectronsVector(PositionsVector(maximum), spins), value, id);
 
-            mapping_.map.emplace(RefSamplePair(r,s));
-            //https://stackoverflow.com/questions/21215214/how-to-sort-both-key-and-value-in-a-multimap
-
+            references_.emplace(r);
+            samples_.emplace_back(s);
+            id++;
         }
         return true;
     }

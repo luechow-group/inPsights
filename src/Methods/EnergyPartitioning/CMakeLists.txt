@@ -11,10 +11,9 @@ message ( "-- ++ CREATING PROJECT OR MAKEFILE ---> ${OUTPUT_NAME}" )
 
 set(HEADER_FILES
         include/RawDataReader.h
-        include/SampleData.h
+        include/Sample.h
         include/Reference.h
         include/Comparators.h
-        include/ReferenceSampleMapping.h
         )
 
 set(SOURCE_FILES

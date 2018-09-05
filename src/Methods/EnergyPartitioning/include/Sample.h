@@ -2,8 +2,8 @@
 // Created by Michael Heuer on 28.08.18.
 //
 
-#ifndef AMOLQCPP_SAMPLEDATA_H
-#define AMOLQCPP_SAMPLEDATA_H
+#ifndef AMOLQCPP_SAMPLE_H
+#define AMOLQCPP_SAMPLE_H
 
 #include <utility>
 #include <ParticlesVector.h>
@@ -21,4 +21,4 @@ public:
 };
 
 
-#endif //AMOLQCPP_SAMPLEDATA_H
+#endif //AMOLQCPP_SAMPLE_H

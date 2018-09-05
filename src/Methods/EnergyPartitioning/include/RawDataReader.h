@@ -6,17 +6,21 @@
 #define AMOLQCPP_RAWDATAREADER_H
 
 #include <BinaryFileReader.h>
-#include "SampleData.h"
-#include "ReferenceSampleMapping.h"
+#include "Reference.h"
+#include "Sample.h"
 
 class RawDataReader : public BinaryFileReader{
 public:
-    explicit RawDataReader(ReferenceSampleMapping& mapping, int recordDelimiterLength = 4);
+    explicit RawDataReader(
+            std::set<Reference>& references,
+            std::vector<Sample>& samples,
+            int recordDelimiterLength = 4);
 
     bool read(const std::string& fileName) override;
 
 private:
-    ReferenceSampleMapping& mapping_;
+    std::set<Reference>& references_;
+    std::vector<Sample>& samples_;
 };
 
 #endif //AMOLQCPP_RAWDATAREADER_H
