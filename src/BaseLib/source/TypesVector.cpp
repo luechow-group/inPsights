@@ -2,12 +2,12 @@
 // Created by Michael Heuer on 08.05.18.
 //
 
-#include "TypesVector.h"
+#include <TypesVector.h>
 
-template<> SpinTypesVector::TypesVector(unsigned long numberOfAlphaElectrons,
-                             unsigned long numberOfBetaElectrons)
-        : AbstractVector(0),
-          types_(Eigen::VectorXi::Constant(0, 0))
+template<> SpinTypesVector::TypesVector(
+        unsigned long numberOfAlphaElectrons,
+        unsigned long numberOfBetaElectrons)
+        : InsertableVector<int>(0)
 {
     for (unsigned long i = 0; i < numberOfAlphaElectrons; ++i)
         this->append(Spin::alpha);
@@ -17,8 +17,7 @@ template<> SpinTypesVector::TypesVector(unsigned long numberOfAlphaElectrons,
 }
 
 template<> SpinTypesVector::TypesVector(std::vector<Spin> types)
-        : AbstractVector(0),
-          types_(0)
+        : InsertableVector<int>(0)
 {
     for (const auto& type : types){
         assert(int(type) >= int(Spins::first()));
@@ -28,8 +27,7 @@ template<> SpinTypesVector::TypesVector(std::vector<Spin> types)
 }
 
 template<> ElementTypesVector::TypesVector(std::vector<Element> types)
-        : AbstractVector(0),
-          types_(0)
+        : InsertableVector<int>(0)
 {
     for (const auto& type : types){
         assert(int(type) >= int(Elements::first()));

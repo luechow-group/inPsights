@@ -5,6 +5,10 @@
 #ifndef AMOLQCPP_NUMBEREDTYPE_H
 #define AMOLQCPP_NUMBEREDTYPE_H
 
+#include "ElementType.h"
+#include "SpinType.h"
+#include <iostream>
+
 template <typename Type>
 class NumberedType{
 public:

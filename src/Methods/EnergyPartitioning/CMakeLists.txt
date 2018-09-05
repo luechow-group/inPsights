@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.5)
 
-project(StructuralSimilarity C CXX Fortran)
+project(EnergyPartitioning CXX)
+set(CMAKE_CXX_STANDARD 17)
 
 set ( PROJECT_FOLDER_NAME ${PROJECT_NAME} )
 set ( PROJECT_PATH ${PROJECT_NAME})
@@ -9,15 +10,15 @@ message ( "-- ++ CREATING PROJECT OR MAKEFILE ---> ${OUTPUT_NAME}" )
 
 
 set(HEADER_FILES
-        include/QuaternionFit.h
-        include/Hungarian.h
-        include/SimpleSorter.h
+        include/RawDataReader.h
+        include/Sample.h
+        include/Reference.h
+        include/Comparators.h
         )
 
 set(SOURCE_FILES
-        source/QuaternionFit.cpp
-        #source/Hungarian.cpp
-        source/SimpleSorter.cpp
+        source/RawDataReader.cpp
+        source/Comparators.cpp
         )
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES})
@@ -28,8 +29,7 @@ target_include_directories(${PROJECT_NAME}
 
 target_link_libraries(${PROJECT_NAME}
         BaseLib
-        SOAP
+        StructuralSimilarity
         )
 
-add_subdirectory(SOAP)
 add_subdirectory(tests)

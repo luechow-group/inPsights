@@ -38,20 +38,21 @@ Eigen::Matrix3d PositionsVectorTransformer::rotationMatrixFromQuaternion(const E
 
 void PositionsVectorTransformer::translateCenterOfMassToOrigin(PositionsVector& positionsVector){
     auto center = PositionsVectorTransformer::calculateCenterOfMass(positionsVector);
-    for (unsigned i = 0; i < positionsVector.numberOfEntities(); i++)
-        positionsVector(i) -= center;
+    positionsVector.translate(-center);
 };
 
-void PositionsVectorTransformer::rotateAroundAxis(PositionsVector &positionsVector, double angle,
+void PositionsVectorTransformer::rotateAroundAxis(PositionsVector &p, double angle,
                                                   const Eigen::Vector3d &axisStart,
                                                   const Eigen::Vector3d &axisEnd){
     auto rotMat = rotationMatrixFromQuaternion(
             quaternionFromAngleAndAxis(angle, axisEnd - axisStart));
-    for (unsigned i = 0; i < positionsVector.numberOfEntities(); i++){
-        positionsVector(i) -= axisStart;
-        positionsVector(i) = positionsVector(i).transpose()*rotMat;
-        positionsVector(i) += axisStart;
-    }
+
+    p.translate(-axisStart);
+
+    for (unsigned i = 0; i < p.numberOfEntities(); i++)
+        p.entity(i).dataRef() = p[i].transpose()*rotMat;
+
+    p.translate(axisStart);
 }
 
 void PositionsVectorTransformer::rotateAroundAxis(PositionsVector &positionsVector, double angle,
@@ -71,8 +72,8 @@ Eigen::Vector3d PositionsVectorTransformer::calculateCenterOfMass(const Position
 
 Eigen::Vector3d PositionsVectorTransformer::calculateCenterOfMass(const PositionsVector& positionsVector){
     auto weights = Eigen::VectorXd::Ones(positionsVector.numberOfEntities());
-    return calculateCenterOfMass(positionsVector,weights);
 
+    return calculateCenterOfMass(positionsVector,weights);
 };
 
 Eigen::Vector4d PositionsVectorTransformer::quaternionFromAngleAndAxis(double angle, const Eigen::Vector3d &axis){
@@ -91,18 +92,3 @@ PositionsVectorTransformer::AngleAxis PositionsVectorTransformer::quaternionToAn
     return {angle,axis};
 };
 
-//TODO refactor
-Eigen::VectorXd
-PositionsVectorTransformer::permutePositionsCyclic(const Eigen::VectorXd &x, std::vector<unsigned> order){
-    assert(order.size() > 0);
-    assert(x.size()%3 == 0);
-    assert(order.size() <= x.size()/3);
-
-    auto xnew = x;
-
-    for (int i = 0; i < order.size()-1; ++i)
-        xnew.segment(order[i]*3,3) = xnew.segment(order[i+1]*3,3);
-    xnew.segment( order[order.size()-1]*3,3) = x.segment(order[0]*3,3);
-
-    return xnew;
-}
