@@ -14,14 +14,18 @@ namespace HungarianHelper{
 
     Eigen::PermutationMatrix<Eigen::Dynamic> combinePermutations(
             const Eigen::PermutationMatrix<Eigen::Dynamic>& p1,
-            const Eigen::PermutationMatrix<Eigen::Dynamic>& p2) {
+            const Eigen::PermutationMatrix<Eigen::Dynamic>& p2, bool flipSpinsQ = false) {
 
         long n1 = p1.size(), n2 = p2.size();
         Eigen::VectorXi combined(n1+n2);
 
-        combined.segment(0,n1) = p1.indices().base();
-        combined.segment(n1,n2) = (p2.indices().base().array()+n1);
-
+        if(!flipSpinsQ) { //TODO DOES THIS MAKE SENSE?
+            combined.segment(0, n1) = p1.indices().base();
+            combined.segment(n1, n2) = (p2.indices().base().array() + n1);
+        } else {
+            combined.segment(0, n1) = (p1.indices().base().array() + n1);
+            combined.segment(n1, n2) = p2.indices().base();
+        }
         return Eigen::PermutationMatrix<Eigen::Dynamic>(combined);
     };
 
@@ -45,11 +49,11 @@ namespace HungarianHelper{
         lhsAlpha{0, nAlpha}, rhsAlpha{},
         lhsBeta{nAlpha, nBeta}, rhsBeta{};
 
-
         if(!flipSpinsQ){
             rhsAlpha = lhsAlpha;
             rhsBeta = lhsBeta;
         } else {
+            assert(nAlpha == nBeta && "The number of alpha and beta electrons must match to allow for spin flips.");
             // flip slice intervals
             rhsAlpha = lhsBeta;
             rhsBeta = lhsAlpha;
@@ -65,7 +69,10 @@ namespace HungarianHelper{
         auto bestMatchAlpha = Hungarian<double>::findMatching(costMatrixAlpha);
         auto bestMatchBeta = Hungarian<double>::findMatching(costMatrixBeta);
 
-        return combinePermutations(bestMatchAlpha,bestMatchBeta);
+        if(!flipSpinsQ)
+            return combinePermutations(bestMatchAlpha, bestMatchBeta);
+        else
+            return combinePermutations(bestMatchBeta, bestMatchAlpha, true);
     };
 
     double mostDeviatingParticleDistance(const PositionsVector& ref, PositionsVector other,

@@ -61,6 +61,9 @@ int main(int argc, char *argv[]) {
             console->info("  it={}", (std::distance(references.begin(),it)) );
 
             // check hungarian
+
+            //TODO CHECK MULTIPLICITY
+
             auto bestMatch = HungarianHelper::spinSpecificHungarian((*it).maximum_,(*lit).maximum_);
             auto bestMatchFlip = HungarianHelper::spinSpecificHungarian((*it).maximum_,(*lit).maximum_,true);
 
