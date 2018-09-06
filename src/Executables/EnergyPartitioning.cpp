@@ -9,6 +9,8 @@
 #include "Hungarian.h"
 #include "Metrics.h"
 
+#define SPDLOG_DEBUG_ON
+
 namespace HungarianWrapper{
 
 
@@ -74,40 +76,47 @@ int main(int argc, char *argv[]) {
     std::vector<Sample> samples;
 
     RawDataReader reader(references,samples);
-    reader.read("raw.bin");
+    reader.read("raw1long.bin");
+
+    std::cout << "number of refs" << references.size() << std::endl;
 
     //for (auto ref : references) { ;
     //    console->info("{} {:03.6f}",ref.id_, ref.negLogSqrdProbabilityDensity_);
     //}
 
+
     double increment, distThresh = 0.01;
     if(!references.empty()) {
         increment = (*references.rbegin()).negLogSqrdProbabilityDensity_ * 1e-5;
+        console->info("increment: {}",increment);
+        if(references.size() == 1){
+            console->warn("No sorting because only one reference was found.");
+            return true; // no sorting
+        }
     } else {
         console->error("References are empty.");
         return false;
     }
-    console->info("increment: {}",increment);
-    console->flush();
 
 
-    // first range
-
-
+    // initialize
+    auto lit = references.begin();
     auto uit = references.begin();
-    auto lit = uit;
-    while (lit != references.end()){
 
-        lit = uit;
+    while (lit != references.end()){
+        console->info("lit={}",(std::distance(references.begin(),lit)));
         uit = references.upper_bound(Reference((*lit).negLogSqrdProbabilityDensity_+increment));
 
-        //TODO DOES THIS WORK FOR LIT == UIT? WHAT HAPPENS FOR UIT = LIT+1?
-
-        console->info("{} ------ {}",(*lit).id_, (*lit).negLogSqrdProbabilityDensity_);
-        console->info("{} ------ {}",(*uit).id_, (*uit).negLogSqrdProbabilityDensity_);
-
         auto it = lit;
-        while(it++ != uit){
+        it++;
+        console->info("before inner while  it={}", (std::distance(references.begin(),it)));
+        console->info("before inner while uit={}", (std::distance(references.begin(),uit)) );
+        console->flush();
+
+
+        while(it != uit) { // start with incremented iterator
+            console->info("  it={}", (std::distance(references.begin(),it)) );
+
             // check hungarian
             auto bestMatch = HungarianWrapper::spinSpecificHungarian(*lit,*it);
             auto bestMatchFlip = HungarianWrapper::spinSpecificHungarian(*lit,*it,true);
@@ -134,13 +143,16 @@ int main(int argc, char *argv[]) {
 
                 // refs are identical
                 (*lit).addAssociation((*it).id_);
-                references.erase((*it));
+                references.erase(*it);
                 uit--;
             }
-            uit++;
+            it++;
+            console->info("end  it={}", (std::distance(references.begin(),it)) );
+            console->info("end uit={}", (std::distance(references.begin(),uit)) );
         }
-
-
+        console->info("after inner while  it={}", (std::distance(references.begin(),it)));
+        console->info("after inner while uit={}", (std::distance(references.begin(),uit)) );
+        lit = uit;
     }
     console->flush();
 
