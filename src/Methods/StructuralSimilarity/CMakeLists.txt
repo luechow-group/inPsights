@@ -12,11 +12,11 @@ set(HEADER_FILES
         include/QuaternionFit.h
         include/Hungarian.h
         include/SimpleSorter.h
+        include/HungarianHelper.h
         )
 
 set(SOURCE_FILES
         source/QuaternionFit.cpp
-        #source/Hungarian.cpp
         source/SimpleSorter.cpp
         )
 

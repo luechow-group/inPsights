@@ -3,73 +3,18 @@
 //
 
 #include <RawDataReader.h>
-#include "Sample.h"
-#include "Logger.h"
+#include <Sample.h>
+#include <Logger.h>
+#include <HungarianHelper.h>
 
-#include "Hungarian.h"
-#include "Metrics.h"
+double mostDeviatingParticleDistance(const PositionsVector& ref, PositionsVector other,
+        const Eigen::PermutationMatrix<Eigen::Dynamic>& perm) {
+    assert(ref.numberOfEntities() == other.numberOfEntities());
 
-namespace HungarianWrapper{
+    other.permute(perm);
+    return Metrics::positionDistancesVector(ref,other).lpNorm<Eigen::Infinity>();
+}
 
-    Eigen::PermutationMatrix<Eigen::Dynamic> combinePermutations(
-            const Eigen::PermutationMatrix<Eigen::Dynamic>& p1,
-            const Eigen::PermutationMatrix<Eigen::Dynamic>& p2) {
-
-        long n1 = p1.size(), n2 = p2.size();
-        Eigen::VectorXi combined(n1+n2);
-
-        combined.segment(0,n1) = p1.indices().base();
-        combined.segment(n1,n2) = (p2.indices().base().array()+n1);
-
-        return Eigen::PermutationMatrix<Eigen::Dynamic>(combined);
-    };
-
-    Eigen::PermutationMatrix<Eigen::Dynamic> spinSpecificHungarian(
-            const Reference &lhs,
-            const Reference &rhs,
-            bool flipSpinsQ = false) {
-        assert(lhs.maximum_.typesVector() == rhs.maximum_.typesVector()
-               && "The typesvectors must be identical as we assume ordered alpha and beta electrons.");
-        assert(lhs.maximum_.positionsVector().numberOfEntities() == rhs.maximum_.positionsVector().numberOfEntities()
-               && "The number of positions must be identical.");
-
-        auto lhsCopy = lhs.maximum_.positionsVector();//TODO eliminate redundant copy by const_cast .slice
-        //https://stackoverflow.com/questions/5008541/how-to-call-a-non-const-function-within-a-const-function-c
-        auto rhsCopy = rhs.maximum_.positionsVector();
-
-        auto nAlpha = lhs.maximum_.typesVector().countOccurence(Spin::alpha);
-        auto nBeta = lhs.maximum_.typesVector().countOccurence(Spin::beta);
-
-        Interval alphaElectrons{},betaElectrons{};
-        if(flipSpinsQ){
-            alphaElectrons = {nAlpha, nBeta};
-            betaElectrons = {0, nAlpha};
-        } else {
-            alphaElectrons = {0, nAlpha};
-            betaElectrons = {nAlpha, nBeta};
-        }
-
-        auto costMatrixAlpha = Metrics::positionalDistances(
-                PositionsVector(lhsCopy.slice(alphaElectrons).dataRef()),
-                PositionsVector(rhsCopy.slice(alphaElectrons).dataRef()));
-        auto costMatrixBeta = Metrics::positionalDistances(
-                PositionsVector(lhsCopy.slice(betaElectrons).dataRef()),
-                PositionsVector(rhsCopy.slice(betaElectrons).dataRef()));
-
-        auto bestMatchAlpha = Hungarian<double>::findMatching(costMatrixAlpha);
-        auto bestMatchBeta = Hungarian<double>::findMatching(costMatrixBeta);
-
-        return combinePermutations(bestMatchAlpha,bestMatchBeta);
-    };
-
-    double mostDeviatingParticleDistance(const PositionsVector& ref, PositionsVector other,
-            const Eigen::PermutationMatrix<Eigen::Dynamic>& perm) {
-        assert(ref.numberOfEntities() == other.numberOfEntities());
-
-        other.permute(perm);
-        return Metrics::positionDistancesVector(ref,other).lpNorm<Eigen::Infinity>();
-    }
-};
 
 int main(int argc, char *argv[]) {
     Logger::initialize();
@@ -116,14 +61,14 @@ int main(int argc, char *argv[]) {
             console->info("  it={}", (std::distance(references.begin(),it)) );
 
             // check hungarian
-            auto bestMatch = HungarianWrapper::spinSpecificHungarian(*it,*lit);
-            auto bestMatchFlip = HungarianWrapper::spinSpecificHungarian(*it,*lit,true);
+            auto bestMatch = HungarianHelper::spinSpecificHungarian((*it).maximum_,(*lit).maximum_);
+            auto bestMatchFlip = HungarianHelper::spinSpecificHungarian((*it).maximum_,(*lit).maximum_,true);
 
-            double dist= HungarianWrapper::mostDeviatingParticleDistance(
+            double dist= mostDeviatingParticleDistance(
                     (*lit).maximum_.positionsVector(),
                     (*it).maximum_.positionsVector(),bestMatch);
 
-            double distFlip = HungarianWrapper::mostDeviatingParticleDistance(
+            double distFlip = mostDeviatingParticleDistance(
                     (*lit).maximum_.positionsVector(),
                     (*it).maximum_.positionsVector(),bestMatchFlip);
 
@@ -131,7 +76,7 @@ int main(int argc, char *argv[]) {
 
             if( (dist <= distThresh) || (distFlip <= distThresh) ){
                 // refs are identical
-                
+
                 if(dist <= distFlip)
                     samples[(*it).id_].sample_.permute(bestMatch);
                 else
@@ -149,7 +94,6 @@ int main(int argc, char *argv[]) {
             } else {
                 it++;
             }
-
 
             console->info("end  it={}", (std::distance(references.begin(),it)) );
             console->info("end uit={}", (std::distance(references.begin(),uit)) );
