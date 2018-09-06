@@ -26,7 +26,7 @@ int main(int argc, char *argv[]) {
     RawDataReader reader(references,samples);
     reader.read("raw.bin");
 
-    std::cout << "number of refs" << references.size() << std::endl;
+    console->info("number of refs {}",references.size());
 
 
     double increment, distThresh = 0.05;
