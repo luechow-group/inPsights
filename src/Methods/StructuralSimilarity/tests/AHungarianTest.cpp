@@ -3,9 +3,9 @@
 //
 
 #include <gmock/gmock.h>
-#include "Hungarian.h"
-#include "Metrics.h"
-#include "TestMolecules.h"
+#include <Hungarian.h>
+#include <Metrics.h>
+#include <TestMolecules.h>
 
 TEST(AHungarianTest, OneSolution) {
     Eigen::MatrixXd input(4,4);
