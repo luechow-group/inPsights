@@ -62,7 +62,13 @@ namespace HungarianWrapper{
         return combinePermutations(bestMatchAlpha,bestMatchBeta);
     };
 
+    double mostDeviatingParticleDistance(const PositionsVector& ref, PositionsVector other,
+            const Eigen::PermutationMatrix<Eigen::Dynamic>& perm) {
+        assert(ref.numberOfEntities() == other.numberOfEntities());
 
+        other.permute(perm);
+        return Metrics::positionDistancesVector(ref,other).lpNorm<Eigen::Infinity>();
+    }
 };
 
 int main(int argc, char *argv[]) {
@@ -105,42 +111,46 @@ int main(int argc, char *argv[]) {
         console->info("before inner while  it={}", (std::distance(references.begin(),it)));
         console->info("before inner while uit={}", (std::distance(references.begin(),uit)) );
 
-
+        // check all refs
         while(it != uit) { // start with incremented iterator
             console->info("  it={}", (std::distance(references.begin(),it)) );
 
             // check hungarian
-            auto bestMatch = HungarianWrapper::spinSpecificHungarian(*lit,*it);
-            auto bestMatchFlip = HungarianWrapper::spinSpecificHungarian(*lit,*it,true);
-            auto currentMaxCopy = (*it).maximum_;
-            currentMaxCopy.permute(bestMatch);
-            double mostDeviatingParticleDistance = Metrics::positionDistancesVector(
+            auto bestMatch = HungarianWrapper::spinSpecificHungarian(*it,*lit);
+            auto bestMatchFlip = HungarianWrapper::spinSpecificHungarian(*it,*lit,true);
+
+            double dist= HungarianWrapper::mostDeviatingParticleDistance(
                     (*lit).maximum_.positionsVector(),
-                    currentMaxCopy.positionsVector()).lpNorm<Eigen::Infinity>();
+                    (*it).maximum_.positionsVector(),bestMatch);
 
-            currentMaxCopy = (*it).maximum_;
-            currentMaxCopy.permute(bestMatch);
-            double mostDeviatingParticleDistanceFlip = Metrics::positionDistancesVector(
+            double distFlip = HungarianWrapper::mostDeviatingParticleDistance(
                     (*lit).maximum_.positionsVector(),
-                    currentMaxCopy.positionsVector()).lpNorm<Eigen::Infinity>();
+                    (*it).maximum_.positionsVector(),bestMatchFlip);
 
+            console->info("dist: {} {}",dist,distFlip);
 
-            if((mostDeviatingParticleDistance <= distThresh)
-            || (mostDeviatingParticleDistanceFlip <= distThresh) ){
-
-                if(mostDeviatingParticleDistance <= mostDeviatingParticleDistanceFlip)
+            if( (dist <= distThresh) || (distFlip <= distThresh) ){
+                // refs are identical
+                
+                if(dist <= distFlip)
                     samples[(*it).id_].sample_.permute(bestMatch);
                 else
                     samples[(*it).id_].sample_.permute(bestMatchFlip);
 
+                console->info("uit={}", (std::distance(references.begin(),uit)) );
                 console->info("MERGE {}<-{}",(*lit).id_,(*it).id_);
-                // refs are identical
+
+
                 (*lit).addAssociation((*it).id_);
                 (*lit).associations_.merge((*it).associations_);
-                references.erase(*it);
-                uit--;
+
+                it = references.erase(it); // returns the iterator of the following element
+                console->info("uit={}", (std::distance(references.begin(),uit)) );
+            } else {
+                it++;
             }
-            it++;
+
+
             console->info("end  it={}", (std::distance(references.begin(),it)) );
             console->info("end uit={}", (std::distance(references.begin(),uit)) );
         }
@@ -149,5 +159,13 @@ int main(int argc, char *argv[]) {
         lit = uit;
     }
     console->flush();
+
+    for (auto a : references){
+        std::cout << a.id_ << " {";
+        for (auto b : a.associations_){
+            std::cout << b << " ";
+        }
+        std::cout << " }" << std::endl;
+    }
 
 }
