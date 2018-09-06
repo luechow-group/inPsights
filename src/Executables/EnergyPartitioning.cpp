@@ -95,16 +95,19 @@ int main(int argc, char *argv[]) {
 
 
     auto uit = references.begin();
-    while (uit != references.end()){
+    auto lit = uit;
+    while (lit != references.end()){
 
-        auto lit = uit;
+        lit = uit;
         uit = references.upper_bound(Reference((*lit).negLogSqrdProbabilityDensity_+increment));
 
+        //TODO DOES THIS WORK FOR LIT == UIT? WHAT HAPPENS FOR UIT = LIT+1?
+
+        console->info("{} ------ {}",(*lit).id_, (*lit).negLogSqrdProbabilityDensity_);
+        console->info("{} ------ {}",(*uit).id_, (*uit).negLogSqrdProbabilityDensity_);
+
         auto it = lit;
-        it++;
-
-        while(it != uit){
-
+        while(it++ != uit){
             // check hungarian
             auto bestMatch = HungarianWrapper::spinSpecificHungarian(*lit,*it);
             auto bestMatchFlip = HungarianWrapper::spinSpecificHungarian(*lit,*it,true);
@@ -120,25 +123,23 @@ int main(int argc, char *argv[]) {
                     (*lit).maximum_.positionsVector(),
                     currentMaxCopy.positionsVector()).lpNorm<Eigen::Infinity>();
 
-            if(mostDeviatingParticleDistance <= distThresh){
+
+            if((mostDeviatingParticleDistance <= distThresh)
+            || (mostDeviatingParticleDistanceFlip <= distThresh) ){
+
+                if(mostDeviatingParticleDistance <= mostDeviatingParticleDistanceFlip)
+                    samples[(*it).id_].sample_.permute(bestMatch);
+                else
+                    samples[(*it).id_].sample_.permute(bestMatchFlip);
+
                 // refs are identical
-                samples[(*it).id_].sample_.permute(bestMatch);
                 (*lit).addAssociation((*it).id_);
                 references.erase((*it));
-            } else(mostDeviatingParticleDistanceFlip <= distThresh){
-                samples[(*it).id_].sample_.permute(bestMatchFlip);
-                (*lit).addAssociation((*it).id_);
-                references.erase((*it));
+                uit--;
             }
-            // TAKE CARE OF INDICES
-
-
+            uit++;
         }
 
-
-
-        console->info("{} ------ {}",(*lit).id_, (*lit).negLogSqrdProbabilityDensity_);
-        console->info("{} ------ {}",(*uit).id_, (*uit).negLogSqrdProbabilityDensity_);
 
     }
     console->flush();

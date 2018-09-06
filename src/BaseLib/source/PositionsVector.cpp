@@ -34,11 +34,14 @@ Eigen::Vector3d PositionsVector::operator[](long i) const {
 
 //TODO replace operator[] by this?
 Eigen::Vector3d PositionsVector::position(long i, const Usage& usage) {
-    if( resetType_ == Reset::Automatic
-    || (resetType_ == Reset::OnFinished && usage == Usage::Finished))
-        return RETURN_AND_RESET<PositionsVector,Eigen::Vector3d>(*this,dataRef().segment(calculateIndex(i),entityLength())).returnAndReset();
+    assertResetInstruction(usage);
+
+    if((resetType() == Reset::Automatic && usage == Usage::Standard)
+    || (resetType() == Reset::OnFinished && usage == Usage::Finished))
+        return RETURN_AND_RESET<PositionsVector,Eigen::Vector3d>(
+                *this,dataRef(usage).segment(calculateIndex(i),entityLength())).returnAndReset();
     else
-        return dataRef().segment(calculateIndex(i),entityLength());
+        return dataRef(usage).segment(calculateIndex(i),entityLength());
 }
 
 void PositionsVector::prepend(const Eigen::Vector3d &position) {
@@ -56,7 +59,7 @@ void PositionsVector::translate(const Eigen::Vector3d &shift, const Usage& usage
     resetType_ = Reset::OnFinished;
 
     for (long i = 0; i < sliceInterval_.numberOfEntities(); ++i)
-        dataRef(Usage::NotFinished).segment(calculateIndex(i),3) += shift;
+        dataRef(Usage::NotFinished).segment(calculateIndex(i), 3) += shift;
 
     resetType_ = tmp;
     resetStrategy(usage);
@@ -67,8 +70,9 @@ void PositionsVector::rotateAroundOrigin(double angle, const Eigen::Vector3d &ax
 }
 
 void PositionsVector::rotate(double angle,const Eigen::Vector3d &center,const Eigen::Vector3d &axisDirection, const Usage& usage) {
+
     auto rotMat = PositionsVectorTransformer::rotationMatrixFromQuaternion(
-            PositionsVectorTransformer::quaternionFromAngleAndAxis(angle, axisDirection - center));
+            PositionsVectorTransformer::quaternionFromAngleAndAxis(angle, axisDirection));
 
     auto tmp = resetType_;
     resetType_ = Reset::OnFinished;
@@ -76,7 +80,7 @@ void PositionsVector::rotate(double angle,const Eigen::Vector3d &center,const Ei
     this->translate(-center,Usage::NotFinished);
 
     for (long i = 0; i < sliceInterval_.numberOfEntities(); ++i)
-        dataRef().segment(calculateIndex(i), entityLength()) = position(i,Usage::NotFinished).transpose() * rotMat;
+        dataRef(Usage::NotFinished).segment(calculateIndex(i), entityLength()) = position(i,Usage::NotFinished).transpose() * rotMat;
 
     this->translate(center,Usage::NotFinished);
 

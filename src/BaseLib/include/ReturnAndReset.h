@@ -7,8 +7,17 @@
 
 #include <utility>
 
+
+/*
+ * Automatic: waits for the next resetStrategy() call and resets to all
+ * OnFinished: on the next resetStrategy() call, the ref is reset to all if usage is Finished
+ * Manual: the user manually needs to call resetRef()
+ */
+
+
 enum class Reset{Automatic, Manual, OnFinished};
-enum class Usage{NotFinished, Finished};
+enum class Usage{Standard, NotFinished, Finished};
+
 
 template <typename ObjectType, typename ReturnType>
 struct RETURN_AND_RESET{
