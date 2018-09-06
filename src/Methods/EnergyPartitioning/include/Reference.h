@@ -21,9 +21,10 @@ public:
     {}
 
     bool addAssociation(const size_t& id) const {//TODO BE CAREFUL WITH CONST
+        spdlog::get("console")->info("{} {}",id,id_);
         assert(id != id_ && "Self-associations are not allowed");
 
-        if (id != id_) {
+        if (id == id_) {
             spdlog::get(Logger::name)->warn("Self-associations are not allowed");
             return false;
         }

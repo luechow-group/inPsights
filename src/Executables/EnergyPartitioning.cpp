@@ -9,10 +9,7 @@
 #include "Hungarian.h"
 #include "Metrics.h"
 
-#define SPDLOG_DEBUG_ON
-
 namespace HungarianWrapper{
-
 
     Eigen::PermutationMatrix<Eigen::Dynamic> combinePermutations(
             const Eigen::PermutationMatrix<Eigen::Dynamic>& p1,
@@ -76,18 +73,14 @@ int main(int argc, char *argv[]) {
     std::vector<Sample> samples;
 
     RawDataReader reader(references,samples);
-    reader.read("raw1long.bin");
+    reader.read("raw.bin");
 
     std::cout << "number of refs" << references.size() << std::endl;
 
-    //for (auto ref : references) { ;
-    //    console->info("{} {:03.6f}",ref.id_, ref.negLogSqrdProbabilityDensity_);
-    //}
 
-
-    double increment, distThresh = 0.01;
+    double increment, distThresh = 0.05;
     if(!references.empty()) {
-        increment = (*references.rbegin()).negLogSqrdProbabilityDensity_ * 1e-5;
+        increment = (*references.rbegin()).negLogSqrdProbabilityDensity_ * 1e-4;
         console->info("increment: {}",increment);
         if(references.size() == 1){
             console->warn("No sorting because only one reference was found.");
@@ -111,7 +104,6 @@ int main(int argc, char *argv[]) {
         it++;
         console->info("before inner while  it={}", (std::distance(references.begin(),it)));
         console->info("before inner while uit={}", (std::distance(references.begin(),uit)) );
-        console->flush();
 
 
         while(it != uit) { // start with incremented iterator
@@ -141,8 +133,10 @@ int main(int argc, char *argv[]) {
                 else
                     samples[(*it).id_].sample_.permute(bestMatchFlip);
 
+                console->info("MERGE {}<-{}",(*lit).id_,(*it).id_);
                 // refs are identical
                 (*lit).addAssociation((*it).id_);
+                (*lit).associations_.merge((*it).associations_);
                 references.erase(*it);
                 uit--;
             }

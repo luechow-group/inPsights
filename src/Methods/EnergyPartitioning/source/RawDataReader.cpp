@@ -26,7 +26,7 @@ bool RawDataReader::read(const std::string &fileName){
         input.seekg (0, std::ifstream::end);
         long long int totalLength = input.tellg();
         input.seekg (0, std::ifstream::beg);
-        //std::cout << totalLength << std::endl; // in byte?
+        std::cout << totalLength << std::endl; // in byte?
 
 
         int nElectrons = readInt(input);
