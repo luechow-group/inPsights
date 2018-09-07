@@ -7,12 +7,16 @@
 #include <Logger.h>
 #include <HungarianHelper.h>
 
-double mostDeviatingParticleDistance(const PositionsVector& ref, PositionsVector other,
-        const Eigen::PermutationMatrix<Eigen::Dynamic>& perm) {
-    assert(ref.numberOfEntities() == other.numberOfEntities());
 
-    other.permute(perm);
-    return Metrics::positionDistancesVector(ref,other).lpNorm<Eigen::Infinity>();
+//TODO method header is unclear
+double mostDeviatingParticleDistance(
+        PositionsVector permutee,
+        const Eigen::PermutationMatrix<Eigen::Dynamic> &perm,
+        const PositionsVector &ref) {
+    assert(permutee.numberOfEntities() == ref.numberOfEntities());
+
+    permutee.permute(perm);
+    return Metrics::positionDistancesVector(permutee,ref).lpNorm<Eigen::Infinity>();
 }
 
 class AbstractSorter{
@@ -75,20 +79,25 @@ public:
 private:
     void subLoop(std::set<Reference>::iterator& lit, std::set<Reference>::iterator& it){
 
+        /*PUT INTO METHOD*/
         //TODO CHECK MULTIPLICITY
         auto bestMatch = HungarianHelper::spinSpecificHungarian((*it).maximum_,(*lit).maximum_);
         auto bestMatchFlip = HungarianHelper::spinSpecificHungarian((*it).maximum_,(*lit).maximum_,true);
 
         double dist= mostDeviatingParticleDistance(
-                (*lit).maximum_.positionsVector(),
-                (*it).maximum_.positionsVector(),bestMatch);
+                (*it).maximum_.positionsVector(), bestMatch,
+                (*lit).maximum_.positionsVector());
 
         double distFlip = mostDeviatingParticleDistance(
-                (*lit).maximum_.positionsVector(),
-                (*it).maximum_.positionsVector(),bestMatchFlip);
+                (*it).maximum_.positionsVector(), bestMatchFlip,
+                (*lit).maximum_.positionsVector());
+        /*PUT INTO METHOD END*/
 
+        console->info("{},{}",dist,distFlip);
         if( (dist <= distThresh_) || (distFlip <= distThresh_) ){
             // refs are identical
+
+            console->info("MERGE");
 
             if(dist <= distFlip)
                 samples_[(*it).id_].sample_.permute(bestMatch);
@@ -105,12 +114,12 @@ private:
     }
 
     double increment_,distThresh_;
-
 };
 
 int main(int argc, char *argv[]) {
     Logger::initialize();
     auto console = spdlog::get(Logger::name);
+    double distThresh = 0.01;
 
     std::set<Reference> references;
     std::vector<Sample> samples;
@@ -120,59 +129,69 @@ int main(int argc, char *argv[]) {
 
     console->info("number of refs {}",references.size());
 
-    GlobalIdentiySorter globalIdentiySorter(references,samples);
+    GlobalIdentiySorter globalIdentiySorter(references, samples, distThresh);
     globalIdentiySorter.doSort();
 
     console->flush();
 
-    for (auto a : references){
+    /*for (auto a : references){
         std::cout << a.id_ << " {";
         for (auto b : a.associations_){
             std::cout << b << " ";
         }
         std::cout << " }" << std::endl;
+    }*/
+
+
+    std::set<SimilarReferencesCollection> similarReferencesCollections;
+    // add first ref
+
+    for(auto& r : references){
+
+        // check for similarity
+
+        bool isSimilarQ = false;
+        for(auto& sr : similarReferencesCollections){
+            // check if it belongs to some
+
+
+            // calc perm r->sr so that we can store them in sr
+            auto costMatrix = Metrics::positionalDistances(
+                    r.maximum_.positionsVector(),
+                    sr.representativeReference_->maximum_.positionsVector());
+            auto bestMatch = Hungarian<double>::findMatching(costMatrix);
+            auto dist = mostDeviatingParticleDistance(
+                    r.maximum_.positionsVector(),
+                    bestMatch,
+                    sr.representativeReference_->maximum_.positionsVector());
+
+            if(dist < distThresh) {
+                auto a = SimilarReference(std::make_unique<Reference>(r),bestMatch);
+                sr.similarReferences_.emplace(a);
+                isSimilarQ = true;
+            }
+        }
+
+
+
+        if(!isSimilarQ) similarReferencesCollections.emplace(r);
     }
 
+
+
 }
-/*console->info("  it={}", (std::distance(references.begin(),it)) );
-            // check hungarian
 
-            //TODO CHECK MULTIPLICITY
+/*
+ *
+std::vector<Type> v = ....;
+std::string myString = ....;
+auto it = find_if(v.begin(), v.end(), [&myString](const Type& obj) {return obj.getName() == myString;})
 
-            auto bestMatch = HungarianHelper::spinSpecificHungarian((*it).maximum_,(*lit).maximum_);
-            auto bestMatchFlip = HungarianHelper::spinSpecificHungarian((*it).maximum_,(*lit).maximum_,true);
+if (it != v.end())
+{
+  // found element. it is an iterator to the first matching element.
+  // if you really need the index, you can also get it:
+  auto index = std::distance(v.begin(), it);
+}
 
-            double dist= mostDeviatingParticleDistance(
-                    (*lit).maximum_.positionsVector(),
-                    (*it).maximum_.positionsVector(),bestMatch);
-
-            double distFlip = mostDeviatingParticleDistance(
-                    (*lit).maximum_.positionsVector(),
-                    (*it).maximum_.positionsVector(),bestMatchFlip);
-
-            console->info("dist: {} {}",dist,distFlip);
-
-            if( (dist <= distThresh) || (distFlip <= distThresh) ){
-                // refs are identical
-
-                if(dist <= distFlip)
-                    samples[(*it).id_].sample_.permute(bestMatch);
-                else
-                    samples[(*it).id_].sample_.permute(bestMatchFlip);
-
-                console->info("uit={}", (std::distance(references.begin(),uit)) );
-                console->info("MERGE {}<-{}",(*lit).id_,(*it).id_);
-
-
-                (*lit).addAssociation((*it).id_);
-                (*lit).associations_.merge((*it).associations_);
-
-                it = references.erase(it); // returns the iterator of the following element
-                console->info("uit={}", (std::distance(references.begin(),uit)) );
-
-            } else {
-                it++;
-            }
-
-            console->info("end  it={}", (std::distance(references.begin(),it)) );
-            console->info("end uit={}", (std::distance(references.begin(),uit)) );*/
+ */

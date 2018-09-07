@@ -62,11 +62,11 @@ namespace HungarianHelper{
         auto costMatrixAlpha = Metrics::positionalDistances(
                 PositionsVector(lhsCopy.slice(lhsAlpha).dataRef()),
                 PositionsVector(rhsCopy.slice(rhsAlpha).dataRef()));
+        auto bestMatchAlpha = Hungarian<double>::findMatching(costMatrixAlpha);
+
         auto costMatrixBeta = Metrics::positionalDistances(
                 PositionsVector(lhsCopy.slice(lhsBeta).dataRef()),
                 PositionsVector(rhsCopy.slice(rhsBeta).dataRef()));
-
-        auto bestMatchAlpha = Hungarian<double>::findMatching(costMatrixAlpha);
         auto bestMatchBeta = Hungarian<double>::findMatching(costMatrixBeta);
 
         if(!flipSpinsQ)

@@ -42,4 +42,32 @@ public:
     mutable std::set<size_t> associations_;
 };
 
+
+class SimilarReference {
+public:
+    SimilarReference(std::unique_ptr<Reference> ref, Eigen::PermutationMatrix<Eigen::Dynamic> perm)
+            :
+            ref_(std::move(ref)), perm_(std::move(perm))
+    {}
+
+    std::unique_ptr<Reference> ref_;
+    Eigen::PermutationMatrix<Eigen::Dynamic> perm_; // perm to turn
+};
+
+
+class SimilarReferencesCollection {
+public:
+    /*TODO CONTINUE HERE!!!!!!!!!!!!*/
+    SimilarReferencesCollection()//std::unique_ptr<Reference> representativeReference)
+    :
+    representativeReference_(std::move(representativeReference))
+    {}
+
+    std::unique_ptr<Reference> representativeReference_; // may change over time, difficult to define for rings/clusters
+    std::set<SimilarReference> similarReferences_;
+
+};
+
+
+
 #endif //AMOLQCPP_REFERENCE_H
