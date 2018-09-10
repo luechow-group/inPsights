@@ -20,5 +20,4 @@ public:
     Eigen::VectorXd kineticEnergies_;
 };
 
-
 #endif //AMOLQCPP_SAMPLE_H

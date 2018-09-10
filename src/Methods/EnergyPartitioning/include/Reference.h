@@ -17,57 +17,50 @@ public:
     negLogSqrdProbabilityDensity_(negLogSqrdProbabilityDensity),
     maximum_(std::move(maximum)),
     id_(id),
-    associations_({}) // identity perm
+    associatedSampleIds_({})
     {}
 
-    bool addAssociation(const size_t& id) const {//TODO BE CAREFUL WITH CONST
+    void addAssociation(const size_t& id) {
         assert(id != id_ && "Self-associations are not allowed");
-
-        if (id == id_) {
-            spdlog::get(Logger::name)->warn("Self-associations are not allowed");
-            return false;
-        }
-        auto addedQ = associations_.emplace(id);
-        if (!addedQ.second) spdlog::get(Logger::name)->warn("Id is already present.");
-        return addedQ.second;
+        associatedSampleIds_.emplace_back(id);
     }
 
-    bool operator <(const Reference& rhs) const {
+    bool operator<(const Reference& rhs) const {
         return negLogSqrdProbabilityDensity_<rhs.negLogSqrdProbabilityDensity_;
     }
 
     double negLogSqrdProbabilityDensity_;
-    ElectronsVector maximum_;
+    ElectronsVector maximum_; // Individual
     size_t id_;
-    mutable std::set<size_t> associations_;
+    std::vector<size_t> associatedSampleIds_; //associated Samples id/identical Maxima
 };
 
 
 class SimilarReference {
 public:
-    SimilarReference(std::unique_ptr<Reference> ref, Eigen::PermutationMatrix<Eigen::Dynamic> perm)
-            :
-            ref_(std::move(ref)), perm_(std::move(perm))
-    {}
+    SimilarReference(std::vector<Reference>::iterator ref, const Eigen::PermutationMatrix<Eigen::Dynamic> &perm)
+    : it_(ref), perm_(perm) {}
 
-    std::unique_ptr<Reference> ref_;
+    bool operator <(const SimilarReference& rhs) const {
+        return (*it_).negLogSqrdProbabilityDensity_< (*rhs.it_).negLogSqrdProbabilityDensity_;
+    }
+
+    std::vector<Reference>::iterator it_; // association to the list of globally identical maxima
     Eigen::PermutationMatrix<Eigen::Dynamic> perm_; // perm to turn
 };
 
 
-class SimilarReferencesCollection {
+class SimilarReferencesCollection {/*Family*/
 public:
-    /*TODO CONTINUE HERE!!!!!!!!!!!!*/
-    SimilarReferencesCollection()//std::unique_ptr<Reference> representativeReference)
+    explicit SimilarReferencesCollection(std::vector<Reference>::iterator representativeReference)
     :
-    representativeReference_(std::move(representativeReference))
+    representativeReferenceIterator(representativeReference) // Type Specimen
     {}
-
-    std::unique_ptr<Reference> representativeReference_; // may change over time, difficult to define for rings/clusters
-    std::set<SimilarReference> similarReferences_;
+    //TODO REPLACE THIS BY CENTROID LIKE REF
+    std::vector<Reference>::iterator representativeReferenceIterator; // may change over time, difficult to define for rings/clusters
+    std::vector<SimilarReference> similarReferences_;
 
 };
 
-
-
 #endif //AMOLQCPP_REFERENCE_H
+

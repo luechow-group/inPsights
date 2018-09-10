@@ -6,7 +6,7 @@
 #include <Sample.h>
 #include <Logger.h>
 #include <HungarianHelper.h>
-
+#include <algorithm>
 
 //TODO method header is unclear
 double mostDeviatingParticleDistance(
@@ -21,7 +21,7 @@ double mostDeviatingParticleDistance(
 
 class AbstractSorter{
 public:
-    AbstractSorter(std::set<Reference>& references, std::vector<Sample>& samples)
+    AbstractSorter(std::vector<Reference>& references, std::vector<Sample>& samples)
     :
     references_(references),
     samples_(samples),
@@ -29,7 +29,7 @@ public:
     {}
 
 protected:
-    std::set<Reference>& references_;
+    std::vector<Reference>& references_;
     std::vector<Sample>& samples_;
     std::shared_ptr<spdlog::logger> console;
 };
@@ -37,14 +37,14 @@ protected:
 class GlobalIdentiySorter : public AbstractSorter{
 public:
 
-    GlobalIdentiySorter(std::set<Reference>& references, std::vector<Sample>& samples, double increment, double distThresh)
+    GlobalIdentiySorter(std::vector<Reference>& references, std::vector<Sample>& samples, double increment, double distThresh)
     :
     AbstractSorter(references,samples),
     increment_(increment),
     distThresh_(distThresh)
     {}
 
-    GlobalIdentiySorter(std::set<Reference>& references, std::vector<Sample>& samples, double distThresh = 0.01)
+    GlobalIdentiySorter(std::vector<Reference>& references, std::vector<Sample>& samples, double distThresh = 0.01)
     :
     GlobalIdentiySorter(references, samples, (*references.rbegin()).negLogSqrdProbabilityDensity_ * 1e-7, distThresh)
     {}
@@ -59,12 +59,14 @@ public:
             console->warn("No sorting because only one reference was found.");
             return true; // no sorting
         }
+        std::sort(references_.begin(),references_.end());
 
         auto lit = references_.begin();
         auto uit = references_.begin();
 
         while (lit != references_.end()){
-            uit = references_.upper_bound(Reference((*lit).negLogSqrdProbabilityDensity_+increment_));
+            uit = std::upper_bound(references_.begin(),references_.end(),Reference((*lit).negLogSqrdProbabilityDensity_+increment_));
+            //uit = references_.upper_bound(Reference((*lit).negLogSqrdProbabilityDensity_+increment_));
             auto it = lit;
             it++; // start with the element next to lit
 
@@ -77,10 +79,11 @@ public:
     }
 
 private:
-    void subLoop(std::set<Reference>::iterator& lit, std::set<Reference>::iterator& it){
+    void subLoop(std::vector<Reference>::iterator& lit, std::vector<Reference>::iterator& it){
 
         /*PUT INTO METHOD*/
         //TODO CHECK MULTIPLICITY
+        //TODO maybe calculate only alpha electron distance and skip beta electron hungarian if dist is too high already
         auto bestMatch = HungarianHelper::spinSpecificHungarian((*it).maximum_,(*lit).maximum_);
         auto bestMatchFlip = HungarianHelper::spinSpecificHungarian((*it).maximum_,(*lit).maximum_,true);
 
@@ -105,7 +108,12 @@ private:
                 samples_[(*it).id_].sample_.permute(bestMatchFlip);
 
             (*lit).addAssociation((*it).id_);
-            (*lit).associations_.merge((*it).associations_);
+            //(*lit).associatedSamples_.merge((*it).associatedSamples_);
+            (*lit).associatedSampleIds_.insert(
+                    (*lit).associatedSampleIds_.end(),
+                    std::make_move_iterator((*it).associatedSampleIds_.begin()),
+                    std::make_move_iterator((*it).associatedSampleIds_.end())
+                    );
 
             it = references_.erase(it); // returns the iterator of the following element
         } else {
@@ -119,79 +127,57 @@ private:
 int main(int argc, char *argv[]) {
     Logger::initialize();
     auto console = spdlog::get(Logger::name);
-    double distThresh = 0.01;
+    double identicalDistThresh = 0.01;
 
-    std::set<Reference> references;
+    std::vector<Reference> globallyIdenticalMaxima;
     std::vector<Sample> samples;
 
-    RawDataReader reader(references,samples);
+    RawDataReader reader(globallyIdenticalMaxima,samples);
     reader.read("raw.bin");
 
-    console->info("number of refs {}",references.size());
+    console->info("number of refs {}",globallyIdenticalMaxima.size());
 
-    GlobalIdentiySorter globalIdentiySorter(references, samples, distThresh);
+    GlobalIdentiySorter globalIdentiySorter(globallyIdenticalMaxima, samples, identicalDistThresh);
     globalIdentiySorter.doSort();
 
+    console->info("finished id sort");
     console->flush();
 
-    /*for (auto a : references){
-        std::cout << a.id_ << " {";
-        for (auto b : a.associations_){
-            std::cout << b << " ";
-        }
-        std::cout << " }" << std::endl;
-    }*/
 
-
-    std::set<SimilarReferencesCollection> similarReferencesCollections;
+    std::vector<SimilarReferencesCollection> similarReferencesCollections;
     // add first ref
 
-    for(auto& r : references){
+    console->info("total elems {}",std::distance(globallyIdenticalMaxima.begin(),globallyIdenticalMaxima.end()));
 
+
+
+    //TODO add DBSCAN
+    //TODO add lower + upper bound
+    for (auto it = globallyIdenticalMaxima.begin(); it != globallyIdenticalMaxima.end();  ++it ){
+        console->info("elem {}",std::distance(globallyIdenticalMaxima.begin(),it));
         // check for similarity
-
         bool isSimilarQ = false;
         for(auto& sr : similarReferencesCollections){
-            // check if it belongs to some
-
 
             // calc perm r->sr so that we can store them in sr
             auto costMatrix = Metrics::positionalDistances(
-                    r.maximum_.positionsVector(),
-                    sr.representativeReference_->maximum_.positionsVector());
+                    (*it).maximum_.positionsVector(),
+                    (*sr.representativeReferenceIterator).maximum_.positionsVector());
             auto bestMatch = Hungarian<double>::findMatching(costMatrix);
             auto dist = mostDeviatingParticleDistance(
-                    r.maximum_.positionsVector(),
+                    (*it).maximum_.positionsVector(),
                     bestMatch,
-                    sr.representativeReference_->maximum_.positionsVector());
+                    (*sr.representativeReferenceIterator).maximum_.positionsVector());
 
-            if(dist < distThresh) {
-                auto a = SimilarReference(std::make_unique<Reference>(r),bestMatch);
-                sr.similarReferences_.emplace(a);
+            console->info("{}",dist);
+            if(dist < identicalDistThresh) {
+                sr.similarReferences_.emplace_back(SimilarReference(it, bestMatch));
+
                 isSimilarQ = true;
             }
         }
-
-
-
-        if(!isSimilarQ) similarReferencesCollections.emplace(r);
+        if(!isSimilarQ) similarReferencesCollections.emplace_back(SimilarReferencesCollection(it));
     }
 
 
-
 }
-
-/*
- *
-std::vector<Type> v = ....;
-std::string myString = ....;
-auto it = find_if(v.begin(), v.end(), [&myString](const Type& obj) {return obj.getName() == myString;})
-
-if (it != v.end())
-{
-  // found element. it is an iterator to the first matching element.
-  // if you really need the index, you can also get it:
-  auto index = std::distance(v.begin(), it);
-}
-
- */

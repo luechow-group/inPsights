@@ -12,14 +12,14 @@
 class RawDataReader : public BinaryFileReader{
 public:
     explicit RawDataReader(
-            std::set<Reference>& references,
+            std::vector<Reference>& references,
             std::vector<Sample>& samples,
             int recordDelimiterLength = 4);
 
     bool read(const std::string& fileName) override;
 
 private:
-    std::set<Reference>& references_;
+    std::vector<Reference>& references_;
     std::vector<Sample>& samples_;
 };
 
