@@ -107,9 +107,7 @@ namespace Clustering {
         Scalar similarityDistance;
         Eigen::Index rootIndex_;
         Eigen::Index nextIndex_;
-        typedef std::vector<Node> TNodeList;
-
-        TNodeList nodelist_;
+        std::vector<Node> nodelist_;
 
         std::shared_ptr<Dataset<Scalar>> dataset_;
         std::vector<size_t> itemsIndex_;
