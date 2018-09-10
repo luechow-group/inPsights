@@ -82,8 +82,8 @@ int main(int argc, char *argv[]) {
 
     unsigned numberOfStates = 7;
 
-    auto xA = ecA.positionsVector().positionsAsEigenVector();
-    auto xB = ecB.positionsVector().positionsAsEigenVector();
+    auto xA = ecA.positionsVector().asEigenVector()();
+    auto xB = ecB.positionsVector().asEigenVector()();
 
     Eigen::MatrixXd initialCoordinates(ElectronicWaveFunction::getInstance().getNumberOfElectrons() * 3,
                                        numberOfStates);

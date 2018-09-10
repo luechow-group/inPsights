@@ -38,6 +38,12 @@ set(HEADER_FILES
         include/SpecialMathFunctions/ModifiedSphericalBesser1stKind.h
         include/SpecialMathFunctions/Gaussian.h
         include/CoulombPotential.h
+        include/BinaryFileReader.h
+        include/Interval.h
+        include/ReturnAndReset.h
+        include/SliceableDataVector.h
+        include/InsertableVector.h
+        include/Logger.h
         )
 
 set(SOURCE_FILES
@@ -60,6 +66,7 @@ set(SOURCE_FILES
         source/SpecialMathFunctions/BoostSphericalHarmonics.cpp
         source/SpecialMathFunctions/ModifiedSphericalBesser1stKind.cpp
         source/SpecialMathFunctions/Gaussian.cpp
+        source/Logger.cpp
         )
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES})
@@ -71,6 +78,7 @@ target_include_directories(${PROJECT_NAME}
 
 target_link_libraries(${PROJECT_NAME}
         yaml-cpp
+        spdlog
         )
 
 if (DEFINED BUILD_EIGEN AND (${BUILD_EIGEN}))

@@ -44,7 +44,7 @@ TEST_F(APositionsVectorTransformerTest, counterclockwiseRotation){
     Eigen::VectorXd expectedPositions(12);
     expectedPositions << 0,0,0, 0,0,1, 1,0,0, 0,1,0;
 
-    ASSERT_TRUE(ev.positionsVector().positionsAsEigenVector().isApprox(expectedPositions));
+    ASSERT_TRUE(ev.positionsVector().asEigenVector().isApprox(expectedPositions));
 }
 
 TEST_F(APositionsVectorTransformerTest, clockwiseRotation){
@@ -65,7 +65,7 @@ TEST_F(APositionsVectorTransformerTest, clockwiseRotation){
     Eigen::VectorXd expectedPositions(12);
     expectedPositions << 0,0,0, 0,1,0, 0,0,1, 1,0,0;
 
-    ASSERT_TRUE(ev.positionsVector().positionsAsEigenVector().isApprox(expectedPositions));
+    ASSERT_TRUE(ev.positionsVector().asEigenVector().isApprox(expectedPositions));
 }
 
 TEST_F(APositionsVectorTransformerTest, centerOfMassTranslation){
@@ -83,6 +83,6 @@ TEST_F(APositionsVectorTransformerTest, centerOfMassTranslation){
     -1./4.,3./4.,-1./4.,\
     -1./4.,-1./4.,3./4.;
 
-    ASSERT_TRUE(ev.positionsVector().positionsAsEigenVector().isApprox(expectedPositions));
+    ASSERT_TRUE(ev.positionsVector().asEigenVector().isApprox(expectedPositions));
 
 }

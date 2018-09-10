@@ -36,7 +36,7 @@ int main(int argc, char *argv[]) {
 
     double lambdaInit = 0;
 
-    Eigen::VectorXd x(electrons.positionsVector().positionsAsEigenVector());
+    Eigen::VectorXd x(electrons.positionsVector().asEigenVector()());
 
     Eigen::VectorXd y = x;
     y.conservativeResize(y.size()+1,Eigen::NoChange);

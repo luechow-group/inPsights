@@ -5,42 +5,35 @@
 #ifndef AMOLQCPP_POSITIONSVECTOR_H
 #define AMOLQCPP_POSITIONSVECTOR_H
 
+#include "InsertableVector.h"
 #include <Eigen/Core>
-#include "AbstractVector.h"
 
-class PositionsVector : public AbstractVector{
+
+class PositionsVector : public InsertableVector<double>{
 public:
     PositionsVector();
     explicit PositionsVector(const Eigen::VectorXd& positions);
 
-    Eigen::Vector3d operator[](long i) const;
+    PositionsVector& entity(long i, const Reset& resetType = Reset::Automatic);
+    PositionsVector& slice(const Interval& interval, const Reset& resetType = Reset::Automatic);
 
     void insert(const Eigen::Vector3d& position, long i);
     void append(const Eigen::Vector3d& position);
     void prepend(const Eigen::Vector3d& position);
-    void permute(long i, long j) override;
 
-    /* TODO
-    void replace(long i);
-    void remove(long i);
-    ParticlesVector part(std::vector<long> indices);
-    */
+    Eigen::Vector3d position(long i, const Usage& usage = Usage::Standard);
+    void translate(const Eigen::Vector3d& shift, const Usage& usage = Usage::Standard);
+    void rotateAroundOrigin(double angle, const Eigen::Vector3d &axisDirection, const Usage& usage = Usage::Standard);
+    void rotate(double angle, const Eigen::Vector3d &center, const Eigen::Vector3d &axisDirection, const Usage& usage = Usage::Standard);
+
+
+    Eigen::Vector3d operator[](long i) const;
+
+    bool operator==(const PositionsVector& other) const;
+
+    bool operator!=(const PositionsVector& other) const;
 
     friend std::ostream& operator<<(std::ostream& os, const PositionsVector& pc);
-
-    const Eigen::VectorXd & positionsAsEigenVector() const;
-
-    Eigen::VectorXd & positionsAsEigenVector();
-
-    Eigen::Ref<Eigen::Vector3d> operator()(long i);
-
-    const Eigen::Ref<const Eigen::Vector3d>& operator()(long i) const;
-
-private:
-    Eigen::VectorXd positions_;
-    unsigned entityLength_ = 3;
-
-    long calculateIndex(long i) const override ;
 };
 
 namespace YAML {
