@@ -7,6 +7,7 @@
 #include <Logger.h>
 #include <HungarianHelper.h>
 #include <algorithm>
+#include <DensityBasedScan.h>
 
 //TODO method header is unclear
 double mostDeviatingParticleDistance(
@@ -150,7 +151,7 @@ int main(int argc, char *argv[]) {
     console->info("total elems {}",std::distance(globallyIdenticalMaxima.begin(),globallyIdenticalMaxima.end()));
 
 
-
+/*
     //TODO add DBSCAN
     //TODO add lower + upper bound
     for (auto it = globallyIdenticalMaxima.begin(); it != globallyIdenticalMaxima.end();  ++it ){
@@ -178,6 +179,6 @@ int main(int argc, char *argv[]) {
         }
         if(!isSimilarQ) similarReferencesCollections.emplace_back(SimilarReferencesCollection(it));
     }
-
+*/
 
 }

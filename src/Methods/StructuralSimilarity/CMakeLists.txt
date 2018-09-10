@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
 
-project(StructuralSimilarity C CXX Fortran)
+project(StructuralSimilarity CXX)
 
 set ( PROJECT_FOLDER_NAME ${PROJECT_NAME} )
 set ( PROJECT_PATH ${PROJECT_NAME})
@@ -29,7 +29,9 @@ target_include_directories(${PROJECT_NAME}
 target_link_libraries(${PROJECT_NAME}
         BaseLib
         SOAP
+        DensityBasedScan
         )
 
 add_subdirectory(SOAP)
+add_subdirectory(DensityBasedScan)
 add_subdirectory(tests)
