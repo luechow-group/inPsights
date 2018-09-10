@@ -67,10 +67,10 @@ namespace Clustering {
             return std::move(r);
         }
 
-        uint32_t predict(Scalar eps, size_t min_elems){
+        Eigen::Index predict(Scalar eps, size_t min_elems){
 
-            std::unique_ptr<std::vector<uint32_t> > candidates(new std::vector<uint32_t>());
-            std::unique_ptr<std::vector<uint32_t> > new_candidates(new std::vector<uint32_t>());
+            std::unique_ptr<std::vector<Eigen::Index> > candidates(new std::vector<Eigen::Index>());
+            std::unique_ptr<std::vector<Eigen::Index> > new_candidates(new std::vector<Eigen::Index>());
 
             int32_t cluster_id = 0;
 
@@ -83,7 +83,7 @@ namespace Clustering {
             const size_t dlen = d.size();
 
             spdlog::get("console")->info("start");
-            for (uint32_t pid = 0; pid < dlen; ++pid) {
+            for (Eigen::Index pid = 0; pid < dlen; ++pid) {
                 if (pid % 10000 == 0)
                     spdlog::get("console")->info("progress: pid = {0}, {1}%", pid, (Scalar(pid) / Scalar(dlen)) * 100);
 
@@ -130,7 +130,7 @@ namespace Clustering {
                     for (size_t j = 0; j < candidates->size(); ++j) {
                         // for ( const auto& c_pid : *candidates ) {
                         std::vector<std::pair<size_t, Scalar>> c_neigh;
-                        const uint32_t c_pid = candidates->at(j);
+                        const Eigen::Index c_pid = candidates->at(j);
 
                         spdlog::get("console")->info("c_pid = {0}, {1}", c_pid,labels_[c_pid]);
 
@@ -195,7 +195,7 @@ namespace Clustering {
         }
 
     private:
-        void find_neighbors(const std::vector<VectorType> &d, Scalar eps, uint32_t pid,
+        void find_neighbors(const std::vector<VectorType> &d, Scalar eps, Eigen::Index pid,
                             std::vector<std::pair<size_t, Scalar>> &neighbors){
             neighbors.clear();
             vp_tree_->searchByDistance(d[pid], eps, neighbors);

@@ -35,10 +35,10 @@ namespace Clustering {
         };
 
     public:
-        static const uint32_t FIRTS_NODE_IDX = 1;
+        static const Eigen::Index FIRTS_NODE_IDX = 1;
 
         VantagePointTree()
-                : VantagePointTree(1e-7) {
+        : VantagePointTree(1e-7) {
         }
 
         explicit VantagePointTree(Scalar similarityDistance)
@@ -93,10 +93,10 @@ namespace Clustering {
 
     private:
         struct Node {
-            uint32_t index;
+            Eigen::Index index;
             Scalar threshold;
-            uint32_t left;
-            uint32_t right;
+            Eigen::Index left;
+            Eigen::Index right;
 
             Node() : index(0),
                      threshold(0.),
@@ -104,9 +104,9 @@ namespace Clustering {
                      right(0) {}
         };
 
-        uint32_t rootIndex_;
-        uint32_t nextIndex_;
         Scalar similarityDistance;
+        Eigen::Index rootIndex_;
+        Eigen::Index nextIndex_;
         typedef std::vector<Node> TNodeList;
 
         TNodeList nodelist_;
@@ -127,22 +127,22 @@ namespace Clustering {
             }
         };
 
-        uint32_t buildFromPoints(uint32_t lower, uint32_t upper, const std::vector<VectorType> &d) {
+        Eigen::Index buildFromPoints(Eigen::Index lower, Eigen::Index upper, const std::vector<VectorType> &d) {
             if (upper == lower) {
                 return 0;
             }
 
-            uint32_t currentNodeIndex = nextIndex_++;
+            Eigen::Index currentNodeIndex = nextIndex_++;
 
             Node &node = nodelist_[currentNodeIndex];
             node.index = lower;
 
             if (upper - lower > 1) {
 
-                int i = (int) ((Scalar) rand() / RAND_MAX * (upper - lower - 1)) + lower;
+                long i = (long) ((Scalar) rand() / RAND_MAX * (upper - lower - 1)) + lower;
                 std::swap(itemsIndex_[lower], itemsIndex_[i]);
 
-                int median = (upper + lower) / 2;
+                long median = (upper + lower) / 2;
 
                 std::nth_element(
                         itemsIndex_.begin() + lower + 1,
@@ -159,7 +159,7 @@ namespace Clustering {
             return currentNodeIndex;
         }
 
-        void searchByK(uint32_t nodeIndex,
+        void searchByK(Eigen::Index nodeIndex,
                        const VectorType &target,
                        std::vector<std::pair<size_t, Scalar>> &neighborList,
                        size_t k,
@@ -213,7 +213,7 @@ namespace Clustering {
             }
         }
 
-        void searchByDistance(uint32_t nodeIndex,
+        void searchByDistance(Eigen::Index nodeIndex,
                               const VectorType &target,
                               std::vector<std::pair<size_t, Scalar>> &neighborList,
                               Scalar t,
