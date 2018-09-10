@@ -32,7 +32,7 @@ namespace Clustering {
         void fit() {
             const auto &d = dset_->data();
 
-            const double start = omp_get_wtime();
+            const auto start = omp_get_wtime();
 
             vp_tree_ = std::make_shared<VantagePointTree<Scalar,dist >>();
             vp_tree_->create(dset_);
@@ -77,7 +77,7 @@ namespace Clustering {
             std::vector<std::pair<size_t, Scalar>> index_neigh;
             std::vector<std::pair<size_t, Scalar>> n_neigh;
 
-            const double start = omp_get_wtime();
+            const auto start = omp_get_wtime();
 
             const auto &d = dset_->data();
             const size_t dlen = d.size();
