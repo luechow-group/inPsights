@@ -42,8 +42,10 @@ namespace Clustering {
         }
 
         explicit VantagePointTree(Scalar similarityDistance)
-                : rootIndex_(FIRTS_NODE_IDX),nextIndex_(FIRTS_NODE_IDX), similarityDistance(similarityDistance) {
-        }
+        :
+        similarityDistance(similarityDistance),
+        rootIndex_(FIRTS_NODE_IDX),
+        nextIndex_(FIRTS_NODE_IDX) {}
 
         ~VantagePointTree() = default;
 
