@@ -72,7 +72,7 @@ namespace Clustering {
             searchByDistance(rootIndex_, target, nlist, t, d);
         }
 
-        void searchByK(const VectorType &target, size_t k, std::vector<std::pair<size_t, float>> &nlist,
+        void searchByK(const VectorType &target, size_t k, std::vector<std::pair<size_t, Scalar>> &nlist,
                        bool excludeExactQ = false) const {
             nlist.clear();
 
@@ -161,7 +161,7 @@ namespace Clustering {
 
         void searchByK(uint32_t nodeIndex,
                        const VectorType &target,
-                       std::vector<std::pair<size_t, float>> &neighborList,
+                       std::vector<std::pair<size_t, Scalar>> &neighborList,
                        size_t k,
                        const std::vector<VectorType> &d,
                        std::priority_queue<HeapItem> &heap,
@@ -215,7 +215,7 @@ namespace Clustering {
 
         void searchByDistance(uint32_t nodeIndex,
                               const VectorType &target,
-                              std::vector<std::pair<size_t, float>> &neighborList,
+                              std::vector<std::pair<size_t, Scalar>> &neighborList,
                               double t,
                               const std::vector<VectorType> &d) const {
             if (nodeIndex == 0)

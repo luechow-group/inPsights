@@ -40,7 +40,7 @@ namespace Clustering {
 
             std::string line;
 
-            std::vector<float> rowCache;
+            std::vector<Scalar> rowCache;
             labels_.clear();
 
             size_t label_idx = 0;

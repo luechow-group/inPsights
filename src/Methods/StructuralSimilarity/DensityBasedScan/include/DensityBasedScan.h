@@ -74,8 +74,8 @@ namespace Clustering {
 
             int32_t cluster_id = 0;
 
-            std::vector<std::pair<size_t, float>> index_neigh;
-            std::vector<std::pair<size_t, float>> n_neigh;
+            std::vector<std::pair<size_t, Scalar>> index_neigh;
+            std::vector<std::pair<size_t, Scalar>> n_neigh;
 
             const double start = omp_get_wtime();
 
@@ -85,7 +85,7 @@ namespace Clustering {
             spdlog::get("console")->info("start");
             for (uint32_t pid = 0; pid < dlen; ++pid) {
                 if (pid % 10000 == 0)
-                    spdlog::get("console")->info("progress: pid = {0}, {1}%", pid, (float(pid) / float(dlen)) * 100);
+                    spdlog::get("console")->info("progress: pid = {0}, {1}%", pid, (Scalar(pid) / Scalar(dlen)) * 100);
 
                 if (labels_[pid] >= 0)
                     continue;
@@ -124,12 +124,12 @@ namespace Clustering {
                     spdlog::get("console")->info("candidates size {}", candidates->size());
                     new_candidates->clear();
 
-                    const float csize = float(candidates->size());
+                    const Scalar csize = Scalar(candidates->size());
 
 #pragma omp parallel for ordered schedule( dynamic )
                     for (size_t j = 0; j < candidates->size(); ++j) {
                         // for ( const auto& c_pid : *candidates ) {
-                        std::vector<std::pair<size_t, float>> c_neigh;
+                        std::vector<std::pair<size_t, Scalar>> c_neigh;
                         const uint32_t c_pid = candidates->at(j);
 
                         spdlog::get("console")->info("c_pid = {0}, {1}", c_pid,labels_[c_pid]);
@@ -161,7 +161,7 @@ namespace Clustering {
                                 new_candidates->push_back(nn.first);
                             }
                             //if (j % 1000 == 0)
-                            spdlog::get("console")->info("sub progress: j = {0} {1}% {2}", j, ( float(j)/csize )*100,new_candidates->size());
+                            spdlog::get("console")->info("sub progress: j = {0} {1}% {2}", j, ( Scalar(j)/csize )*100,new_candidates->size());
                         }
                         // }
                     }
