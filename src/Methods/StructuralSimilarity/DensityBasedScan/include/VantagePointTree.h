@@ -9,7 +9,7 @@
 
 namespace Clustering {
 
-    template<typename Scalar, double ( *distance )(
+    template<typename Scalar, Scalar ( *distance )(
             const Eigen::Matrix<Scalar,Eigen::Dynamic,1> &,
             const Eigen::Matrix<Scalar,Eigen::Dynamic,1> &)>
     class VantagePointTree {
@@ -22,12 +22,12 @@ namespace Clustering {
     private:
 
         struct HeapItem {
-            HeapItem(size_t idx, double dist)
+            HeapItem(size_t idx, Scalar dist)
                     : idx(idx), dist(dist) {
             }
 
             size_t idx;
-            double dist;
+            Scalar dist;
 
             bool operator<(const HeapItem &o) const {
                 return dist < o.dist;
@@ -41,7 +41,7 @@ namespace Clustering {
                 : VantagePointTree(1e-7) {
         }
 
-        explicit VantagePointTree(double similarityDistance)
+        explicit VantagePointTree(Scalar similarityDistance)
                 : rootIndex_(FIRTS_NODE_IDX),nextIndex_(FIRTS_NODE_IDX), similarityDistance(similarityDistance) {
         }
 
@@ -64,7 +64,7 @@ namespace Clustering {
             rootIndex_ = buildFromPoints(0, d.size(), d);
         }
 
-        void searchByDistance(const VectorType &target, double t, std::vector<std::pair<size_t, float>> &nlist) const {
+        void searchByDistance(const VectorType &target, Scalar t, std::vector<std::pair<size_t, Scalar>> &nlist) const {
             nlist.clear();
 
             const auto &d = dataset_->data();
@@ -76,7 +76,7 @@ namespace Clustering {
                        bool excludeExactQ = false) const {
             nlist.clear();
 
-            double t = std::numeric_limits<double>::max();
+            Scalar t = std::numeric_limits<Scalar>::max();
 
             const auto &d = dataset_->data();
 
@@ -94,7 +94,7 @@ namespace Clustering {
     private:
         struct Node {
             uint32_t index;
-            double threshold;
+            Scalar threshold;
             uint32_t left;
             uint32_t right;
 
@@ -106,7 +106,7 @@ namespace Clustering {
 
         uint32_t rootIndex_;
         uint32_t nextIndex_;
-        double similarityDistance;
+        Scalar similarityDistance;
         typedef std::vector<Node> TNodeList;
 
         TNodeList nodelist_;
@@ -139,7 +139,7 @@ namespace Clustering {
 
             if (upper - lower > 1) {
 
-                int i = (int) ((double) rand() / RAND_MAX * (upper - lower - 1)) + lower;
+                int i = (int) ((Scalar) rand() / RAND_MAX * (upper - lower - 1)) + lower;
                 std::swap(itemsIndex_[lower], itemsIndex_[i]);
 
                 int median = (upper + lower) / 2;
@@ -165,14 +165,14 @@ namespace Clustering {
                        size_t k,
                        const std::vector<VectorType> &d,
                        std::priority_queue<HeapItem> &heap,
-                       double &t,
+                       Scalar &t,
                        bool excludeExactQ) const {
             if (nodeIndex == 0)
                 return;
 
             const Node &node = nodelist_[nodeIndex];
 
-            const double dist = distance(d[itemsIndex_[node.index]], target);
+            const Scalar dist = distance(d[itemsIndex_[node.index]], target);
 
             if (dist < t) {
 
@@ -216,7 +216,7 @@ namespace Clustering {
         void searchByDistance(uint32_t nodeIndex,
                               const VectorType &target,
                               std::vector<std::pair<size_t, Scalar>> &neighborList,
-                              double t,
+                              Scalar t,
                               const std::vector<VectorType> &d) const {
             if (nodeIndex == 0)
                 return;
@@ -224,12 +224,12 @@ namespace Clustering {
             const Node &node = nodelist_[nodeIndex];
 
             // node zero treshold hack
-            // double dist = 0.0;
+            // Scalar dist = 0.0;
             // if ( node.threshold > 0.0 ) {
             //     dist = distance( d[m_items_idx[node.index]], target );
             // }
 
-            const double dist = distance(d[itemsIndex_[node.index]], target);
+            const Scalar dist = distance(d[itemsIndex_[node.index]], target);
 
             if (dist < t) {
                 neighborList.push_back(std::make_pair(itemsIndex_[node.index], dist));

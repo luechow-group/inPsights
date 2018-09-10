@@ -21,7 +21,7 @@ namespace Clustering {
         predict_time_(.0)
         {};
 
-        static inline double dist(const VectorType &p1, const VectorType &p2) {
+        static inline Scalar dist(const VectorType &p1, const VectorType &p2) {
             return (p1 - p2).norm();
         }
 
@@ -44,10 +44,10 @@ namespace Clustering {
             fit_time_ = omp_get_wtime() - start;
         }
 
-        const std::vector<double> predictEps(size_t k) {
+        const std::vector<Scalar> predictEps(size_t k) {
             const auto &d = dset_->data();
 
-            std::vector<double> r(d.size(), 0.0);
+            std::vector<Scalar> r(d.size(), 0.0);
 
             omp_set_dynamic(1);
 
@@ -67,7 +67,7 @@ namespace Clustering {
             return std::move(r);
         }
 
-        uint32_t predict(double eps, size_t min_elems){
+        uint32_t predict(Scalar eps, size_t min_elems){
 
             std::unique_ptr<std::vector<uint32_t> > candidates(new std::vector<uint32_t>());
             std::unique_ptr<std::vector<uint32_t> > new_candidates(new std::vector<uint32_t>());
@@ -195,7 +195,7 @@ namespace Clustering {
         }
 
     private:
-        void find_neighbors(const std::vector<VectorType> &d, double eps, uint32_t pid,
+        void find_neighbors(const std::vector<VectorType> &d, Scalar eps, uint32_t pid,
                             std::vector<std::pair<size_t, Scalar>> &neighbors){
             neighbors.clear();
             vp_tree_->searchByDistance(d[pid], eps, neighbors);
