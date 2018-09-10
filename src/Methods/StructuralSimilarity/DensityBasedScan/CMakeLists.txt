@@ -14,8 +14,7 @@ set(HEADER_FILES
         )
 
 set(SOURCE_FILES
-        source/DensityBasedScan.cpp
-        source/Dataset.cpp
+        source/Helper.cpp
         )
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES})

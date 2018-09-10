@@ -9,8 +9,11 @@
 
 namespace Clustering {
 
-    template<typename T, double ( *distance )(const T &, const T &)>
+    template<typename Scalar, double ( *distance )(
+            const Eigen::Matrix<Scalar,Eigen::Dynamic,1> &,
+            const Eigen::Matrix<Scalar,Eigen::Dynamic,1> &)>
     class VantagePointTree {
+        using VectorType = Eigen::Matrix<Scalar,Eigen::Dynamic,1>;
 
     public:
         VantagePointTree(const VantagePointTree&) = delete;
@@ -44,7 +47,7 @@ namespace Clustering {
 
         ~VantagePointTree() = default;
 
-        void create(const std::shared_ptr<Dataset> dataset) {
+        void create(const std::shared_ptr<Dataset<Scalar>> dataset) {
             rootIndex_ = FIRTS_NODE_IDX;
             nextIndex_ = FIRTS_NODE_IDX;
             dataset_ = dataset;
@@ -61,7 +64,7 @@ namespace Clustering {
             rootIndex_ = buildFromPoints(0, d.size(), d);
         }
 
-        void searchByDistance(const T &target, double t, std::vector<std::pair<size_t, float>> &nlist) const {
+        void searchByDistance(const VectorType &target, double t, std::vector<std::pair<size_t, float>> &nlist) const {
             nlist.clear();
 
             const auto &d = dataset_->data();
@@ -69,7 +72,7 @@ namespace Clustering {
             searchByDistance(rootIndex_, target, nlist, t, d);
         }
 
-        void searchByK(const T &target, size_t k, std::vector<std::pair<size_t, float>> &nlist,
+        void searchByK(const VectorType &target, size_t k, std::vector<std::pair<size_t, float>> &nlist,
                        bool excludeExactQ = false) const {
             nlist.clear();
 
@@ -108,14 +111,14 @@ namespace Clustering {
 
         TNodeList nodelist_;
 
-        std::shared_ptr<Dataset> dataset_;
+        std::shared_ptr<Dataset<Scalar>> dataset_;
         std::vector<size_t> itemsIndex_;
 
         struct DistanceComparator {
             size_t itemIndex;
-            const std::vector<Eigen::VectorXf> &items;
+            const std::vector<VectorType> &items;
 
-            DistanceComparator(size_t i, const std::vector<Eigen::VectorXf> &d)
+            DistanceComparator(size_t i, const std::vector<VectorType> &d)
                     : itemIndex(i), items(d) {
             }
 
@@ -124,7 +127,7 @@ namespace Clustering {
             }
         };
 
-        uint32_t buildFromPoints(uint32_t lower, uint32_t upper, const std::vector<Eigen::VectorXf> &d) {
+        uint32_t buildFromPoints(uint32_t lower, uint32_t upper, const std::vector<VectorType> &d) {
             if (upper == lower) {
                 return 0;
             }
@@ -157,10 +160,10 @@ namespace Clustering {
         }
 
         void searchByK(uint32_t nodeIndex,
-                       const T &target,
+                       const VectorType &target,
                        std::vector<std::pair<size_t, float>> &neighborList,
                        size_t k,
-                       const std::vector<Eigen::VectorXf> &d,
+                       const std::vector<VectorType> &d,
                        std::priority_queue<HeapItem> &heap,
                        double &t,
                        bool excludeExactQ) const {
@@ -211,10 +214,10 @@ namespace Clustering {
         }
 
         void searchByDistance(uint32_t nodeIndex,
-                              const T &target,
+                              const VectorType &target,
                               std::vector<std::pair<size_t, float>> &neighborList,
                               double t,
-                              const std::vector<Eigen::VectorXf> &d) const {
+                              const std::vector<VectorType> &d) const {
             if (nodeIndex == 0)
                 return;
 
