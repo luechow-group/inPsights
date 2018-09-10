@@ -30,7 +30,7 @@ public:
     }
 
     double negLogSqrdProbabilityDensity_;
-    ElectronsVector maximum_; // Individual
+    ElectronsVector maximum_;
     size_t id_;
     std::vector<size_t> associatedSampleIds_; //associated Samples id/identical Maxima
 };
@@ -50,13 +50,12 @@ public:
 };
 
 
-class SimilarReferencesCollection {/*Family*/
+class SimilarReferencesCollection {
 public:
     explicit SimilarReferencesCollection(std::vector<Reference>::iterator representativeReference)
-    :
-    representativeReferenceIterator(representativeReference) // Type Specimen
-    {}
+    : representativeReferenceIterator(representativeReference) {}
     //TODO REPLACE THIS BY CENTROID LIKE REF
+
     std::vector<Reference>::iterator representativeReferenceIterator; // may change over time, difficult to define for rings/clusters
     std::vector<SimilarReference> similarReferences_;
 
