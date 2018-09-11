@@ -37,7 +37,6 @@ public:
 
 TEST_F(ADensityBasedScanTest, Float) {
     Clustering::DensityBasedScan<float> dbscan(dataFloat);
-    dbscan.fit();
 
     auto nClusters = dbscan.predict(0.20001,5);
     ASSERT_EQ(nClusters,5);
@@ -56,7 +55,6 @@ TEST_F(ADensityBasedScanTest, Float) {
 
 TEST_F(ADensityBasedScanTest, Double) {
     Clustering::DensityBasedScan<double> dbscan(dataDouble);
-    dbscan.fit();
 
     auto nClusters = dbscan.predict(0.20001,5);
     ASSERT_EQ(nClusters,5);
@@ -76,7 +74,6 @@ TEST_F(ADensityBasedScanTest, Double) {
 TEST_F(ADensityBasedScanTest, MinSizeTooLarge) {
     Clustering::DensityBasedScan<float> dbscan(dataFloat);
 
-    dbscan.fit();
     auto nClusters = dbscan.predict(0.20001,6);
     ASSERT_EQ(nClusters,0);
 

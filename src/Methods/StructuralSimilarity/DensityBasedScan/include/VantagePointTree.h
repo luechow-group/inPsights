@@ -45,8 +45,8 @@ namespace Clustering {
     public:
         VantagePointTree(const VantagePointTree&) = delete;
         VantagePointTree& operator=(const VantagePointTree&) = delete;
-        
-        explicit VantagePointTree(const std::vector<VectorType>& data, Scalar similarityDistance = 1e-7)
+
+        explicit VantagePointTree(const std::vector<VectorType>& data, Scalar similarityDistance)
         :
         data_(data),
         similarityDistance(similarityDistance),
@@ -54,7 +54,6 @@ namespace Clustering {
         nextIndex_(1),
         randomDevice_(),
         mersenneTwister_(randomDevice_()) {
-
             nodelist_.resize(data_.size() + 1);
             itemsIndex_.resize(data_.size());
 

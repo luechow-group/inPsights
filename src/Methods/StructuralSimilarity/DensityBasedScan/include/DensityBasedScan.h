@@ -12,29 +12,14 @@ namespace Clustering {
         DensityBasedScan &operator=(const DensityBasedScan &) = delete;
         ~DensityBasedScan() = default;
 
-        explicit DensityBasedScan(const std::vector<VectorType>& data)
+        explicit DensityBasedScan(const std::vector<VectorType>& data, Scalar similarityDistance = 1e-7)
         :
         data_(data),
-        fitTime_(.0),
-        predictTime_(.0)
-        {};
+        vpTree_(data, similarityDistance),
+        labels_(data.size(),-1) {};
 
         static inline Scalar dist(const VectorType &p1, const VectorType &p2) {
             return (p1 - p2).norm();
-        }
-
-        std::shared_ptr<VantagePointTree<Scalar, dist>> get_vp() const {
-            return vpTree_;
-        }
-
-        void fit() {
-            const auto start = omp_get_wtime();
-
-            vpTree_ = std::make_shared<VantagePointTree<Scalar,dist >>(data_);
-
-            prepareLabels();
-
-            fitTime_ = omp_get_wtime() - start;
         }
 
         const std::vector<Scalar> predictEps(size_t k) {
@@ -46,7 +31,7 @@ namespace Clustering {
             for (size_t i = 0; i < data_.size(); ++i) {
                 std::vector<std::pair<size_t, Scalar>> nlist;
 
-                vpTree_->searchByK(data_[i], k, nlist, true);
+                vpTree_.searchByK(data_[i], k, nlist, true);
 
                 if (nlist.size() >= k) {
                     r[i] = nlist[0].second;
@@ -124,8 +109,6 @@ namespace Clustering {
                 ++clusterId;
             }
 
-            predictTime_ = omp_get_wtime() - start;
-
             return clusterId;
         }
 
@@ -138,31 +121,15 @@ namespace Clustering {
             return labels_;
         }
 
-        const double getFitTime() const {
-            return fitTime_;
-        }
-
-        const double getPredictTime() const {
-            return predictTime_;
-        }
-
     private:
         void findNeighbors(Scalar eps, Eigen::Index pid, std::vector<std::pair<size_t, Scalar>> &neighbors) {
             neighbors.clear();
-            vpTree_->searchByDistance(data_[pid], eps, neighbors);
-        }
-
-        void prepareLabels() {
-            labels_.resize(data_.size());
-
-            for (auto &l : labels_) l = -1;
+            vpTree_.searchByDistance(data_[pid], eps, neighbors);
         }
 
         const std::vector<VectorType>& data_;
+        VantagePointTree<Scalar, dist > vpTree_;
         std::vector<int32_t> labels_;
-        std::shared_ptr<VantagePointTree<Scalar, dist >> vpTree_;
-        double fitTime_;
-        double predictTime_;
     };
 
 }
