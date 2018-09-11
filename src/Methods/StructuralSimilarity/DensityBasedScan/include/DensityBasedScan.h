@@ -44,7 +44,7 @@ public:
         return std::move(r);
     }
 
-    int32_t predict(Scalar eps, size_t minPts) {
+    int32_t findClusters(Scalar eps, size_t minPts) {
         std::vector<Eigen::Index> candidates, newCandidates;
         std::vector<std::pair<size_t, Scalar>> index_neigh, n_neigh;
 

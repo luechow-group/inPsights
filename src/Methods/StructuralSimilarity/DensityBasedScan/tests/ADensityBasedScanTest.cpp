@@ -38,7 +38,7 @@ public:
 TEST_F(ADensityBasedScanTest, Float) {
     DensityBasedScan<float> dbscan(dataFloat);
 
-    auto nClusters = dbscan.predict(0.20001,5);
+    auto nClusters = dbscan.findClusters(0.20001, 5);
     ASSERT_EQ(nClusters,5);
 
     auto result = dbscan.getLabels();
@@ -56,7 +56,7 @@ TEST_F(ADensityBasedScanTest, Float) {
 TEST_F(ADensityBasedScanTest, Double) {
     DensityBasedScan<double> dbscan(dataDouble);
 
-    auto nClusters = dbscan.predict(0.20001,5);
+    auto nClusters = dbscan.findClusters(0.20001, 5);
     ASSERT_EQ(nClusters,5);
 
     auto result = dbscan.getLabels();
@@ -74,7 +74,7 @@ TEST_F(ADensityBasedScanTest, Double) {
 TEST_F(ADensityBasedScanTest, MinSizeTooLarge) {
     DensityBasedScan<float> dbscan(dataFloat);
 
-    auto nClusters = dbscan.predict(0.20001,6);
+    auto nClusters = dbscan.findClusters(0.20001, 6);
     ASSERT_EQ(nClusters,0);
 
     auto result = dbscan.getLabels();
