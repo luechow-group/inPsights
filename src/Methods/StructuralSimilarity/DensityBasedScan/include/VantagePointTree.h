@@ -9,7 +9,7 @@
 #include <spdlog/spdlog.h>
 
 namespace Clustering {
-    
+
     template<typename Scalar, Scalar ( *distance )(
             const Eigen::Matrix<Scalar,Eigen::Dynamic,1> &,
             const Eigen::Matrix<Scalar,Eigen::Dynamic,1> &)>
@@ -55,24 +55,19 @@ namespace Clustering {
         rootIndex_(FIRTS_NODE_IDX),
         nextIndex_(FIRTS_NODE_IDX),
         randomDevice_(),
-        mersenneTwister_(randomDevice_()) {}
-
-        ~VantagePointTree() = default;
-
-        void create() {
-            rootIndex_ = FIRTS_NODE_IDX;
-            nextIndex_ = FIRTS_NODE_IDX;
+        mersenneTwister_(randomDevice_()) {
 
             nodelist_.resize(data_.size() + 1);
             itemsIndex_.resize(data_.size());
 
-            for (size_t i = 0; i < data_.size(); ++i) {
+            for (size_t i = 0; i < data_.size(); ++i)
                 itemsIndex_[i] = i;
-            }
 
             rootIndex_ = buildFromPoints(0, data_.size());
         }
 
+        ~VantagePointTree() = default;
+        
         void searchByDistance(const VectorType &target, Scalar t, std::vector<std::pair<size_t, Scalar>> &nlist) const {
             nlist.clear();
 

@@ -31,7 +31,6 @@ namespace Clustering {
             const auto start = omp_get_wtime();
 
             vpTree_ = std::make_shared<VantagePointTree<Scalar,dist >>(data_);
-            vpTree_->create();
 
             prepareLabels();
 
