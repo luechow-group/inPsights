@@ -40,7 +40,7 @@ TEST_F(ADensityBasedScanTest, Float) {
     Clustering::DensityBasedScan<float> dbscan(dataPtr);
     dbscan.fit();
 
-    dbscan.predict(0.20001,4);
+    dbscan.predict(0.20001,5);
     auto result = dbscan.getLabels();
 
     std::vector<int> expected{
@@ -58,7 +58,7 @@ TEST_F(ADensityBasedScanTest, Double) {
     Clustering::DensityBasedScan<float> dbscan(dataPtr);
     dbscan.fit();
 
-    dbscan.predict(0.20001,4);
+    dbscan.predict(0.20001,5);
     auto result = dbscan.getLabels();
 
     std::vector<int> expected{
@@ -67,6 +67,24 @@ TEST_F(ADensityBasedScanTest, Double) {
             2,2,2,2,2,
             3,3,3,3,3,
             4,4,4,4,4};
+
+    ASSERT_EQ(result, expected);
+}
+
+TEST_F(ADensityBasedScanTest, MinSizeTooLarge) {
+    auto dataPtr = std::make_shared<Clustering::Dataset<float>>(dataFloat);
+    Clustering::DensityBasedScan<float> dbscan(dataPtr);
+
+    dbscan.fit();
+    dbscan.predict(0.20001,6);
+    auto result = dbscan.getLabels();
+
+    std::vector<int> expected{
+            -1,-1,-1,-1,-1,
+            -1,-1,-1,-1,-1,
+            -1,-1,-1,-1,-1,
+            -1,-1,-1,-1,-1,
+            -1,-1,-1,-1,-1};
 
     ASSERT_EQ(result, expected);
 }
