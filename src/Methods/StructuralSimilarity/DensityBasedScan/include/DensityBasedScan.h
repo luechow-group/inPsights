@@ -67,7 +67,7 @@ namespace Clustering {
             return std::move(r);
         }
 
-        Eigen::Index predict(Scalar eps, size_t min_elems){
+        int32_t predict(Scalar eps, size_t min_elems){
 
             std::unique_ptr<std::vector<Eigen::Index> > candidates(new std::vector<Eigen::Index>());
             std::unique_ptr<std::vector<Eigen::Index> > new_candidates(new std::vector<Eigen::Index>());
