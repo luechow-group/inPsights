@@ -14,11 +14,11 @@ namespace Clustering {
         DensityBasedScan &operator=(const DensityBasedScan &) = delete;
         ~DensityBasedScan() = default;
 
-        explicit DensityBasedScan(const std::shared_ptr<Dataset<Scalar>>& dset)
+        explicit DensityBasedScan(const std::shared_ptr<Dataset<Scalar>>& dataset)
         :
-        dset_(dset),
-        fit_time_(.0),
-        predict_time_(.0)
+        dataset_(dataset),
+        fitTime_(.0),
+        predictTime_(.0)
         {};
 
         static inline Scalar dist(const VectorType &p1, const VectorType &p2) {
@@ -26,26 +26,26 @@ namespace Clustering {
         }
 
         std::shared_ptr<VantagePointTree<Scalar, dist>> get_vp() const {
-            return vp_tree_;
+            return vpTree_;
         }
 
         void fit() {
-            const auto &d = dset_->data();
+            const auto &d = dataset_->data();
 
             const auto start = omp_get_wtime();
 
-            vp_tree_ = std::make_shared<VantagePointTree<Scalar,dist >>();
-            vp_tree_->create(dset_);
+            vpTree_ = std::make_shared<VantagePointTree<Scalar,dist >>();
+            vpTree_->create(dataset_);
 
             const size_t dlen = d.size();
 
             prepareLabels(dlen);
 
-            fit_time_ = omp_get_wtime() - start;
+            fitTime_ = omp_get_wtime() - start;
         }
 
         const std::vector<Scalar> predictEps(size_t k) {
-            const auto &d = dset_->data();
+            const auto &d = dataset_->data();
 
             std::vector<Scalar> r(d.size(), 0.0);
 
@@ -55,7 +55,7 @@ namespace Clustering {
             for (size_t i = 0; i < d.size(); ++i) {
                 std::vector<std::pair<size_t, Scalar>> nlist;
 
-                vp_tree_->searchByK(d[i], k, nlist, true);
+                vpTree_->searchByK(d[i], k, nlist, true);
 
                 if (nlist.size() >= k) {
                     r[i] = nlist[0].second;
@@ -67,30 +67,29 @@ namespace Clustering {
             return std::move(r);
         }
 
-        int32_t predict(Scalar eps, size_t min_elems){
+        int32_t predict(Scalar eps, size_t minPts){
 
             std::unique_ptr<std::vector<Eigen::Index> > candidates(new std::vector<Eigen::Index>());
-            std::unique_ptr<std::vector<Eigen::Index> > new_candidates(new std::vector<Eigen::Index>());
+            std::unique_ptr<std::vector<Eigen::Index> > newCandidates(new std::vector<Eigen::Index>());
 
-            int32_t cluster_id = 0;
+            int32_t clusterId = 0;
 
             std::vector<std::pair<size_t, Scalar>> index_neigh;
             std::vector<std::pair<size_t, Scalar>> n_neigh;
 
             const auto start = omp_get_wtime();
-            const auto &d = dset_->data();
+            const auto &d = dataset_->data();
             const size_t dlen = d.size();
 
             for (size_t pid = 0; pid < dlen; ++pid) {
 
-                if (labels_[pid] >= 0)
-                    continue;
+                if (labels_[pid] >= 0) continue;
 
-                find_neighbors(d, eps, pid, index_neigh);
+                findNeighbors(d, eps, pid, index_neigh);
 
-                if (index_neigh.size() < min_elems) continue;
+                if (index_neigh.size() < minPts) continue;
 
-                labels_[pid] = cluster_id;
+                labels_[pid] = clusterId;
 
                 candidates->clear();
 
@@ -98,13 +97,13 @@ namespace Clustering {
 
                     if (labels_[nn.first] >= 0) continue;
 
-                    labels_[nn.first] = cluster_id;
+                    labels_[nn.first] = clusterId;
 
                     candidates->push_back(nn.first);
                 }
 
                 while (candidates->size() > 0) {
-                    new_candidates->clear();
+                    newCandidates->clear();
 
                     const Scalar csize = Scalar(candidates->size());
 
@@ -113,9 +112,9 @@ namespace Clustering {
                         std::vector<std::pair<size_t, Scalar>> c_neigh;
                         const Eigen::Index c_pid = candidates->at(j);
 
-                        find_neighbors(d, eps, c_pid, c_neigh);
+                        findNeighbors(d, eps, c_pid, c_neigh);
 
-                        if (c_neigh.size() < min_elems) continue;
+                        if (c_neigh.size() < minPts) continue;
 
 #pragma omp ordered
                         {
@@ -123,25 +122,25 @@ namespace Clustering {
 
                                 if (labels_[nn.first] >= 0) continue;
 
-                                labels_[nn.first] = cluster_id;
+                                labels_[nn.first] = clusterId;
 
-                                new_candidates->push_back(nn.first);
+                                newCandidates->push_back(nn.first);
                             }
                         }
                     }
 
-                    std::swap(candidates, new_candidates);
+                    std::swap(candidates, newCandidates);
                 }
-                ++cluster_id;
+                ++clusterId;
             }
 
-            predict_time_ = omp_get_wtime() - start;
+            predictTime_ = omp_get_wtime() - start;
 
-            return cluster_id;
+            return clusterId;
         }
 
         void reset() {
-            vp_tree_.reset();
+            vpTree_.reset();
             labels_.clear();
         }
 
@@ -150,18 +149,18 @@ namespace Clustering {
         }
 
         const double getFitTime() const {
-            return fit_time_;
+            return fitTime_;
         }
 
         const double getPredictTime() const {
-            return predict_time_;
+            return predictTime_;
         }
 
     private:
-        void find_neighbors(const std::vector<VectorType> &d, Scalar eps, Eigen::Index pid,
-                            std::vector<std::pair<size_t, Scalar>> &neighbors){
+        void findNeighbors(const std::vector<VectorType> &d, Scalar eps, Eigen::Index pid,
+                           std::vector<std::pair<size_t, Scalar>> &neighbors){
             neighbors.clear();
-            vp_tree_->searchByDistance(d[pid], eps, neighbors);
+            vpTree_->searchByDistance(d[pid], eps, neighbors);
         }
 
         void prepareLabels(size_t s) {
@@ -172,11 +171,11 @@ namespace Clustering {
             }
         }
 
-        const std::shared_ptr<Dataset<Scalar>> dset_;
+        const std::shared_ptr<Dataset<Scalar>> dataset_;
         std::vector<int32_t> labels_;
-        std::shared_ptr<VantagePointTree<Scalar, dist >> vp_tree_;
-        double fit_time_;
-        double predict_time_;
+        std::shared_ptr<VantagePointTree<Scalar, dist >> vpTree_;
+        double fitTime_;
+        double predictTime_;
     };
 
 }
