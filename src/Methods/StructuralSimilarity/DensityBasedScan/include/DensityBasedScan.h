@@ -72,7 +72,7 @@ namespace Clustering {
                     candidates.push_back(nn.first);
                 }
 
-                while (candidates.size() > 0) {
+                while (!candidates.empty()) {
                     newCandidates.clear();
 
                     const Scalar csize = Scalar(candidates.size());
@@ -85,15 +85,11 @@ namespace Clustering {
                         findNeighbors(eps, c_pid, c_neigh);
 
                         if (c_neigh.size() < minPts) continue;
-
 #pragma omp ordered
                         {
                             for (const auto &nn : c_neigh) {
-
                                 if (labels_[nn.first] >= 0) continue;
-
                                 labels_[nn.first] = clusterId;
-
                                 newCandidates.push_back(nn.first);
                             }
                         }
