@@ -65,25 +65,25 @@ public:
 
     ~VantagePointTree() = default;
 
-    void searchByDistance(const VectorType &target, Scalar t, std::vector<std::pair<size_t, Scalar>> &nlist) const {
-        nlist.clear();
-
-        searchByDistance(rootIndex_, target, nlist, t);
+    void searchByDistance(const VectorType &target, Scalar t,
+            std::vector<std::pair<size_t, Scalar>> &neighborList) const {
+        neighborList.clear();
+        searchByDistance(rootIndex_, target, neighborList, t);
     }
 
-    void searchByK(const VectorType &target, size_t k, std::vector<std::pair<size_t, Scalar>> &nlist,
+    void searchByK(const VectorType &target, size_t k, std::vector<std::pair<size_t, Scalar>> &neighborList,
                    bool excludeExactQ = false) const {
-        nlist.clear();
+        neighborList.clear();
 
         Scalar t = std::numeric_limits<Scalar>::max();
 
         std::priority_queue<HeapItem> heap;
 
-        searchByK(rootIndex_, target, nlist, k, heap, t, excludeExactQ);
+        searchByK(rootIndex_, target, neighborList, k, heap, t, excludeExactQ);
 
         while (!heap.empty()) {
             const auto &top = heap.top();
-            nlist.push_back(std::make_pair(top.idx, top.dist));
+            neighborList.push_back(std::make_pair(top.idx, top.dist));
             heap.pop();
         }
     }
