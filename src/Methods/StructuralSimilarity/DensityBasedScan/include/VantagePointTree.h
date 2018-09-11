@@ -5,6 +5,7 @@
 #include <vector>
 #include <queue>
 #include <limits>
+#include <random>
 #include <spdlog/spdlog.h>
 
 namespace Clustering {
@@ -45,7 +46,9 @@ namespace Clustering {
         :
         similarityDistance(similarityDistance),
         rootIndex_(FIRTS_NODE_IDX),
-        nextIndex_(FIRTS_NODE_IDX) {}
+        nextIndex_(FIRTS_NODE_IDX),
+        randomDevice_(),
+        mersenneTwister_(randomDevice_()) {}
 
         ~VantagePointTree() = default;
 
@@ -111,6 +114,9 @@ namespace Clustering {
         Eigen::Index nextIndex_;
         std::vector<Node> nodelist_;
 
+        std::random_device randomDevice_;
+        std::mt19937 mersenneTwister_;
+
         std::shared_ptr<Dataset<Scalar>> dataset_;
         std::vector<size_t> itemsIndex_;
 
@@ -138,8 +144,8 @@ namespace Clustering {
             node.index = lower;
 
             if (upper - lower > 1) {
+                auto i = size_t(Scalar(mersenneTwister_()) / std::mt19937::max() * (upper - lower - 1)) + lower;
 
-                long i = (long) ((Scalar) rand() / RAND_MAX * (upper - lower - 1)) + lower;
                 std::swap(itemsIndex_[lower], itemsIndex_[i]);
 
                 long median = (upper + lower) / 2;
