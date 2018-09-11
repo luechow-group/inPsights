@@ -42,15 +42,11 @@ class VantagePointTree {
     };
 
     struct Node {
-        Eigen::Index index;
+        Eigen::Index index, left, right;
         Scalar threshold;
-        Eigen::Index left;
-        Eigen::Index right;
 
-        Node() : index(0),
-                 threshold(0.),
-                 left(0),
-                 right(0) {}
+        Node()
+        : index(0), left(0), right(0), threshold(0.) {}
     };
 
 public:
@@ -77,8 +73,10 @@ public:
 
     ~VantagePointTree() = default;
 
-    void searchByDistance(const VectorType &target, Scalar tau,
+    void searchByDistance(
+            const VectorType &target, Scalar tau,
             std::vector<std::pair<size_t, Scalar>> &neighborList) const {
+
         neighborList.clear();
         searchByDistance(rootIndex_, target, neighborList, tau);
     }
@@ -149,7 +147,7 @@ private:
                    std::vector<std::pair<size_t, Scalar>> &neighborList,
                    size_t k,
                    std::priority_queue<HeapItem> &heap,
-                   Scalar &t,
+                   Scalar &tau,
                    bool excludeExactQ) const {
 
         if (nodeIndex == 0)
@@ -159,12 +157,12 @@ private:
 
         const Scalar dist = distance(data_[itemsIndex_[node.index]], target);
 
-        if (dist < t) {
+        if (dist < tau) {
             if (!(excludeExactQ && dist < similarityDistance)) {
 
                 if (heap.size() == k) heap.pop();
                 heap.push(HeapItem(itemsIndex_[node.index], dist));
-                if (heap.size() == k) t = heap.top().dist;
+                if (heap.size() == k) tau = heap.top().dist;
             }
             /** do nothing on similar points **/
         }
@@ -173,18 +171,18 @@ private:
             return;
 
         if (dist < node.threshold) {
-            if (dist - t <= node.threshold)
-                searchByK(node.left, target, neighborList, k, heap, t, excludeExactQ);
+            if (dist - tau <= node.threshold)
+                searchByK(node.left, target, neighborList, k, heap, tau, excludeExactQ);
 
-            if (dist + t >= node.threshold)
-                searchByK(node.right, target, neighborList, k, heap, t, excludeExactQ);
+            if (dist + tau >= node.threshold)
+                searchByK(node.right, target, neighborList, k, heap, tau, excludeExactQ);
 
         } else {
-            if (dist + t >= node.threshold)
-                searchByK(node.right, target, neighborList, k, heap, t, excludeExactQ);
+            if (dist + tau >= node.threshold)
+                searchByK(node.right, target, neighborList, k, heap, tau, excludeExactQ);
 
-            if (dist - t <= node.threshold)
-                searchByK(node.left, target, neighborList, k, heap, t, excludeExactQ);
+            if (dist - tau <= node.threshold)
+                searchByK(node.left, target, neighborList, k, heap, tau, excludeExactQ);
         }
     }
 
