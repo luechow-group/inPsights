@@ -187,7 +187,7 @@ namespace Clustering {
                         t = heap.top().dist;
                 }
             }
-            spdlog::get("console")->info("dist = {0}, tau = {1}, dist<t == {2}, heapsize = {3}",dist,t,(dist < t), heap.size());
+            //spdlog::get("console")->info("dist = {0}, tau = {1}, dist<t == {2}, heapsize = {3}",dist,t,(dist < t), heap.size());
 
             if (node.left == 0 && node.right == 0) {
                 return;
@@ -241,23 +241,23 @@ namespace Clustering {
 
             if (dist < node.threshold) {
                 if (dist - t <= node.threshold) {
-                    spdlog::get("console")->info("{0} {1} {2} LEFT", t,dist,node.threshold);
+                    //spdlog::get("console")->info("{0} {1} {2} LEFT", t,dist,node.threshold);
                     searchByDistance(node.left, target, neighborList, t, d);
                 }
 
                 if (dist + t >= node.threshold) {
-                    spdlog::get("console")->info("{0} {1} {2} RIGHT", t,dist,node.threshold);
+                    //spdlog::get("console")->info("{0} {1} {2} RIGHT", t,dist,node.threshold);
                     searchByDistance(node.right, target, neighborList, t, d);
                 }
 
             } else {
                 if (dist + t >= node.threshold) {
-                    spdlog::get("console")->info("{0} {1} {2} RIGHT", t,dist,node.threshold);
+                    //spdlog::get("console")->info("{0} {1} {2} RIGHT", t,dist,node.threshold);
                     searchByDistance(node.right, target, neighborList, t, d);
                 }
 
                 if (dist - t <= node.threshold) {
-                    spdlog::get("console")->info("{0} {1} {2} LEFT", t,dist,node.threshold);
+                    //spdlog::get("console")->info("{0} {1} {2} LEFT", t,dist,node.threshold);
                     searchByDistance(node.left, target, neighborList, t, d);
                 }
             }
