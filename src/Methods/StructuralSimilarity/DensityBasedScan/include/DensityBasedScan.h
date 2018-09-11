@@ -76,7 +76,7 @@ namespace Clustering {
 
                 if (labels_[pid] >= 0) continue;
 
-                findNeighbors(data_, eps, pid, index_neigh);
+                findNeighbors(eps, pid, index_neigh);
 
                 if (index_neigh.size() < minPts) continue;
 
@@ -103,7 +103,7 @@ namespace Clustering {
                         std::vector<std::pair<size_t, Scalar>> c_neigh;
                         const Eigen::Index c_pid = candidates->at(j);
 
-                        findNeighbors(data_, eps, c_pid, c_neigh);
+                        findNeighbors(eps, c_pid, c_neigh);
 
                         if (c_neigh.size() < minPts) continue;
 
@@ -148,10 +148,9 @@ namespace Clustering {
         }
 
     private:
-        void findNeighbors(const std::vector<VectorType> &d, Scalar eps, Eigen::Index pid,
-                           std::vector<std::pair<size_t, Scalar>> &neighbors){
+        void findNeighbors(Scalar eps, Eigen::Index pid, std::vector<std::pair<size_t, Scalar>> &neighbors) {
             neighbors.clear();
-            vpTree_->searchByDistance(d[pid], eps, neighbors);
+            vpTree_->searchByDistance(data_[pid], eps, neighbors);
         }
 
         void prepareLabels() {
