@@ -41,6 +41,18 @@ class VantagePointTree {
         }
     };
 
+    struct Node {
+        Eigen::Index index;
+        Scalar threshold;
+        Eigen::Index left;
+        Eigen::Index right;
+
+        Node() : index(0),
+                 threshold(0.),
+                 left(0),
+                 right(0) {}
+    };
+
 public:
     VantagePointTree(const VantagePointTree &) = delete;
 
@@ -65,21 +77,21 @@ public:
 
     ~VantagePointTree() = default;
 
-    void searchByDistance(const VectorType &target, Scalar t,
+    void searchByDistance(const VectorType &target, Scalar tau,
             std::vector<std::pair<size_t, Scalar>> &neighborList) const {
         neighborList.clear();
-        searchByDistance(rootIndex_, target, neighborList, t);
+        searchByDistance(rootIndex_, target, neighborList, tau);
     }
 
     void searchByK(const VectorType &target, size_t k, std::vector<std::pair<size_t, Scalar>> &neighborList,
                    bool excludeExactQ = false) const {
         neighborList.clear();
 
-        Scalar t = std::numeric_limits<Scalar>::max();
+        Scalar tau = std::numeric_limits<Scalar>::max();
 
         std::priority_queue<HeapItem> heap;
 
-        searchByK(rootIndex_, target, neighborList, k, heap, t, excludeExactQ);
+        searchByK(rootIndex_, target, neighborList, k, heap, tau, excludeExactQ);
 
         while (!heap.empty()) {
             const auto &top = heap.top();
@@ -89,18 +101,6 @@ public:
     }
 
 private:
-    struct Node {
-        Eigen::Index index;
-        Scalar threshold;
-        Eigen::Index left;
-        Eigen::Index right;
-
-        Node() : index(0),
-                 threshold(0.),
-                 left(0),
-                 right(0) {}
-    };
-
     const std::vector<VectorType> &data_;
     Scalar similarityDistance;
     Eigen::Index rootIndex_;

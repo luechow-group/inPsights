@@ -30,12 +30,12 @@ public:
 
 #pragma omp parallel for
         for (size_t i = 0; i < data_.size(); ++i) {
-            std::vector<std::pair<size_t, Scalar>> nlist;
+            std::vector<std::pair<size_t, Scalar>> neighborList;
 
-            vpTree_.searchByK(data_[i], k, nlist, true);
+            vpTree_.searchByK(data_[i], k, neighborList, true);
 
-            if (nlist.size() >= k) {
-                r[i] = nlist[0].second;
+            if (neighborList.size() >= k) {
+                r[i] = neighborList[0].second;
             }
         }
 
@@ -69,7 +69,6 @@ public:
                 if (labels_[nn.first] >= 0) continue;
 
                 labels_[nn.first] = clusterId;
-
                 candidates.push_back(nn.first);
             }
 
