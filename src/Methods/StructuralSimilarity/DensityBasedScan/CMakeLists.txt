@@ -10,7 +10,6 @@ message ( "-- ++ CREATING PROJECT OR MAKEFILE ---> ${OUTPUT_NAME}" )
 set(HEADER_FILES
         include/DensityBasedScan.h
         include/VantagePointTree.h
-        include/Dataset.h
         )
 
 set(SOURCE_FILES

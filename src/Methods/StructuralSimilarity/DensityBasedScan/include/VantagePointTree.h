@@ -1,7 +1,7 @@
 #ifndef VANTAGEPOINTTREE_H
 #define VANTAGEPOINTTREE_H
 
-#include "Dataset.h"
+#include <Eigen/Core>
 #include <vector>
 #include <queue>
 #include <limits>
@@ -38,12 +38,9 @@ namespace Clustering {
     public:
         static const Eigen::Index FIRTS_NODE_IDX = 1;
 
-        VantagePointTree()
-        : VantagePointTree(1e-7) {
-        }
-
-        explicit VantagePointTree(Scalar similarityDistance)
+        explicit VantagePointTree(const std::vector<VectorType>& data, Scalar similarityDistance = 1e-7)
         :
+        data_(data),
         similarityDistance(similarityDistance),
         rootIndex_(FIRTS_NODE_IDX),
         nextIndex_(FIRTS_NODE_IDX),
@@ -52,29 +49,29 @@ namespace Clustering {
 
         ~VantagePointTree() = default;
 
-        void create(const std::shared_ptr<Dataset<Scalar>> dataset) {
+        void create() {
             rootIndex_ = FIRTS_NODE_IDX;
             nextIndex_ = FIRTS_NODE_IDX;
-            dataset_ = dataset;
+            //TODO DELdataset_ = dataset;
 
-            const auto &d = dataset_->data();
+            //TODO DELconst auto &d = dataset_->data();
 
-            nodelist_.resize(d.size() + 1);
-            itemsIndex_.resize(d.size());
+            nodelist_.resize(data_.size() + 1);
+            itemsIndex_.resize(data_.size());
 
-            for (size_t i = 0; i < d.size(); ++i) {
+            for (size_t i = 0; i < data_.size(); ++i) {
                 itemsIndex_[i] = i;
             }
 
-            rootIndex_ = buildFromPoints(0, d.size(), d);
+            rootIndex_ = buildFromPoints(0, data_.size());
         }
 
         void searchByDistance(const VectorType &target, Scalar t, std::vector<std::pair<size_t, Scalar>> &nlist) const {
             nlist.clear();
 
-            const auto &d = dataset_->data();
+            //TODO DEl const auto &d = dataset_->data();
 
-            searchByDistance(rootIndex_, target, nlist, t, d);
+            searchByDistance(rootIndex_, target, nlist, t);
         }
 
         void searchByK(const VectorType &target, size_t k, std::vector<std::pair<size_t, Scalar>> &nlist,
@@ -83,11 +80,9 @@ namespace Clustering {
 
             Scalar t = std::numeric_limits<Scalar>::max();
 
-            const auto &d = dataset_->data();
-
             std::priority_queue<HeapItem> heap;
 
-            searchByK(rootIndex_, target, nlist, k, d, heap, t, excludeExactQ);
+            searchByK(rootIndex_, target, nlist, k, heap, t, excludeExactQ);
 
             while (!heap.empty()) {
                 const auto &top = heap.top();
@@ -109,6 +104,7 @@ namespace Clustering {
                      right(0) {}
         };
 
+        const std::vector<VectorType>& data_;
         Scalar similarityDistance;
         Eigen::Index rootIndex_;
         Eigen::Index nextIndex_;
@@ -117,15 +113,16 @@ namespace Clustering {
         std::random_device randomDevice_;
         std::mt19937 mersenneTwister_;
 
-        std::shared_ptr<Dataset<Scalar>> dataset_;
+        //std::shared_ptr<Dataset<Scalar>> dataset_;
+
         std::vector<size_t> itemsIndex_;
 
         struct DistanceComparator {
             size_t itemIndex;
             const std::vector<VectorType> &items;
 
-            DistanceComparator(size_t i, const std::vector<VectorType> &d)
-                    : itemIndex(i), items(d) {
+            DistanceComparator(size_t i, const std::vector<VectorType> &data)
+                    : itemIndex(i), items(data) {
             }
 
             bool operator()(size_t a, size_t b) {
@@ -133,7 +130,7 @@ namespace Clustering {
             }
         };
 
-        Eigen::Index buildFromPoints(Eigen::Index lower, Eigen::Index upper, const std::vector<VectorType> &d) {
+        Eigen::Index buildFromPoints(Eigen::Index lower, Eigen::Index upper) {
             if (upper == lower) {
                 return 0;
             }
@@ -154,12 +151,12 @@ namespace Clustering {
                         itemsIndex_.begin() + lower + 1,
                         itemsIndex_.begin() + median,
                         itemsIndex_.begin() + upper,
-                        DistanceComparator(itemsIndex_[lower], d));
-                node.threshold = distance(d[itemsIndex_[lower]], d[itemsIndex_[median]]);
+                        DistanceComparator(itemsIndex_[lower], data_));
+                node.threshold = distance(data_[itemsIndex_[lower]], data_[itemsIndex_[median]]);
 
                 node.index = lower;
-                node.left = buildFromPoints(lower + 1, median, d);
-                node.right = buildFromPoints(median, upper, d);
+                node.left = buildFromPoints(lower + 1, median);
+                node.right = buildFromPoints(median, upper);
             }
 
             return currentNodeIndex;
@@ -169,7 +166,7 @@ namespace Clustering {
                        const VectorType &target,
                        std::vector<std::pair<size_t, Scalar>> &neighborList,
                        size_t k,
-                       const std::vector<VectorType> &d,
+                       /*const std::vector<VectorType> &d,*/
                        std::priority_queue<HeapItem> &heap,
                        Scalar &t,
                        bool excludeExactQ) const {
@@ -178,7 +175,7 @@ namespace Clustering {
 
             const Node &node = nodelist_[nodeIndex];
 
-            const Scalar dist = distance(d[itemsIndex_[node.index]], target);
+            const Scalar dist = distance(data_[itemsIndex_[node.index]], target);
 
             if (dist < t) {
                 if (!(excludeExactQ && dist < similarityDistance)) {
@@ -198,20 +195,20 @@ namespace Clustering {
 
             if (dist < node.threshold) {
                 if (dist - t <= node.threshold) {
-                    searchByK(node.left, target, neighborList, k, d, heap, t, excludeExactQ);
+                    searchByK(node.left, target, neighborList, k, heap, t, excludeExactQ);
                 }
 
                 if (dist + t >= node.threshold) {
-                    searchByK(node.right, target, neighborList, k, d, heap, t, excludeExactQ);
+                    searchByK(node.right, target, neighborList, k, heap, t, excludeExactQ);
                 }
 
             } else {
                 if (dist + t >= node.threshold) {
-                    searchByK(node.right, target, neighborList, k, d, heap, t, excludeExactQ);
+                    searchByK(node.right, target, neighborList, k, heap, t, excludeExactQ);
                 }
 
                 if (dist - t <= node.threshold) {
-                    searchByK(node.left, target, neighborList, k, d, heap, t, excludeExactQ);
+                    searchByK(node.left, target, neighborList, k, heap, t, excludeExactQ);
                 }
             }
         }
@@ -219,14 +216,13 @@ namespace Clustering {
         void searchByDistance(Eigen::Index nodeIndex,
                               const VectorType &target,
                               std::vector<std::pair<size_t, Scalar>> &neighborList,
-                              Scalar t,
-                              const std::vector<VectorType> &d) const {
+                              Scalar t) const {
             if (nodeIndex == 0)
                 return;
 
             const Node &node = nodelist_[nodeIndex];
 
-            const Scalar dist = distance(d[itemsIndex_[node.index]], target);
+            const Scalar dist = distance(data_[itemsIndex_[node.index]], target);
 
             if (dist < t) {
                 neighborList.push_back(std::make_pair(itemsIndex_[node.index], dist));
@@ -238,20 +234,20 @@ namespace Clustering {
 
             if (dist < node.threshold) {
                 if (dist - t <= node.threshold) {
-                    searchByDistance(node.left, target, neighborList, t, d);
+                    searchByDistance(node.left, target, neighborList, t);
                 }
 
                 if (dist + t >= node.threshold) {
-                    searchByDistance(node.right, target, neighborList, t, d);
+                    searchByDistance(node.right, target, neighborList, t);
                 }
 
             } else {
                 if (dist + t >= node.threshold) {
-                    searchByDistance(node.right, target, neighborList, t, d);
+                    searchByDistance(node.right, target, neighborList, t);
                 }
 
                 if (dist - t <= node.threshold) {
-                    searchByDistance(node.left, target, neighborList, t, d);
+                    searchByDistance(node.left, target, neighborList, t);
                 }
             }
         }
