@@ -25,28 +25,15 @@ namespace Clustering {
         Dataset()
         : rows_(0), cols_(0) {}
 
-        Dataset(std::vector<VectorType> data)
+        explicit Dataset(std::vector<VectorType> data)
         :
         data_(data),
-        labels_(data.size(),0),
         rows_(data.size()),
         cols_(data[0].size())
         {}
 
         std::vector<VectorType>& data() {
             return data_;
-        }
-
-        const std::string get_label(size_t id) const{
-            auto r = reverse_labels_.find(labels_[id]);
-            if (r == reverse_labels_.end()) {
-                return "Unknown";
-            }
-            return r->second;
-        }
-
-        size_t num_points() const {
-            return cols_ * rows_;
         }
 
         size_t rows() const {
@@ -57,12 +44,10 @@ namespace Clustering {
             return cols_;
         }
 
-    protected:
+    private:
         std::vector<VectorType> data_;
-        std::vector<size_t> labels_;
         size_t rows_;
         size_t cols_;
-        std::unordered_map<size_t, std::string> reverse_labels_;
     };
 }
 
