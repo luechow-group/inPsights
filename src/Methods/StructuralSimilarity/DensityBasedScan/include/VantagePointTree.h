@@ -21,7 +21,6 @@ namespace Clustering {
         VantagePointTree& operator=(const VantagePointTree&) = delete;
 
     private:
-
         struct HeapItem {
             HeapItem(size_t idx, Scalar dist)
                     : idx(idx), dist(dist) {
@@ -52,9 +51,6 @@ namespace Clustering {
         void create() {
             rootIndex_ = FIRTS_NODE_IDX;
             nextIndex_ = FIRTS_NODE_IDX;
-            //TODO DELdataset_ = dataset;
-
-            //TODO DELconst auto &d = dataset_->data();
 
             nodelist_.resize(data_.size() + 1);
             itemsIndex_.resize(data_.size());
@@ -68,8 +64,6 @@ namespace Clustering {
 
         void searchByDistance(const VectorType &target, Scalar t, std::vector<std::pair<size_t, Scalar>> &nlist) const {
             nlist.clear();
-
-            //TODO DEl const auto &d = dataset_->data();
 
             searchByDistance(rootIndex_, target, nlist, t);
         }
@@ -112,9 +106,7 @@ namespace Clustering {
 
         std::random_device randomDevice_;
         std::mt19937 mersenneTwister_;
-
-        //std::shared_ptr<Dataset<Scalar>> dataset_;
-
+        
         std::vector<size_t> itemsIndex_;
 
         struct DistanceComparator {
