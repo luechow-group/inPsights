@@ -44,9 +44,7 @@ namespace Clustering {
         }
 
         int32_t predict(Scalar eps, size_t minPts){
-
-            std::unique_ptr<std::vector<Eigen::Index> > candidates(new std::vector<Eigen::Index>());
-            std::unique_ptr<std::vector<Eigen::Index> > newCandidates(new std::vector<Eigen::Index>());
+            std::vector<Eigen::Index> candidates, newCandidates;
 
             int32_t clusterId = 0;
 
@@ -66,7 +64,7 @@ namespace Clustering {
 
                 labels_[pid] = clusterId;
 
-                candidates->clear();
+                candidates.clear();
 
                 for (const auto &nn : index_neigh) {
 
@@ -74,18 +72,18 @@ namespace Clustering {
 
                     labels_[nn.first] = clusterId;
 
-                    candidates->push_back(nn.first);
+                    candidates.push_back(nn.first);
                 }
 
-                while (candidates->size() > 0) {
-                    newCandidates->clear();
+                while (candidates.size() > 0) {
+                    newCandidates.clear();
 
-                    const Scalar csize = Scalar(candidates->size());
+                    const Scalar csize = Scalar(candidates.size());
 
 #pragma omp parallel for ordered schedule( dynamic )
-                    for (size_t j = 0; j < candidates->size(); ++j) {
+                    for (size_t j = 0; j < candidates.size(); ++j) {
                         std::vector<std::pair<size_t, Scalar>> c_neigh;
-                        const Eigen::Index c_pid = candidates->at(j);
+                        const Eigen::Index c_pid = candidates.at(j);
 
                         findNeighbors(eps, c_pid, c_neigh);
 
@@ -99,7 +97,7 @@ namespace Clustering {
 
                                 labels_[nn.first] = clusterId;
 
-                                newCandidates->push_back(nn.first);
+                                newCandidates.push_back(nn.first);
                             }
                         }
                     }
