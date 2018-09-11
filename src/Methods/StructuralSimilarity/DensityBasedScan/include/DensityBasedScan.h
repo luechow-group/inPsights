@@ -33,9 +33,7 @@ namespace Clustering {
             vpTree_ = std::make_shared<VantagePointTree<Scalar,dist >>(data_);
             vpTree_->create();
 
-            const size_t dlen = data_.size();
-
-            prepareLabels(dlen);
+            prepareLabels();
 
             fitTime_ = omp_get_wtime() - start;
         }
@@ -156,15 +154,12 @@ namespace Clustering {
             vpTree_->searchByDistance(d[pid], eps, neighbors);
         }
 
-        void prepareLabels(size_t s) {
-            labels_.resize(s);
+        void prepareLabels() {
+            labels_.resize(data_.size());
 
-            for (auto &l : labels_) {
-                l = -1;
-            }
+            for (auto &l : labels_) l = -1;
         }
 
-        //const std::shared_ptr<Dataset<Scalar>> dataset_;
         const std::vector<VectorType>& data_;
         std::vector<int32_t> labels_;
         std::shared_ptr<VantagePointTree<Scalar, dist >> vpTree_;
