@@ -45,15 +45,12 @@ namespace Clustering {
 
         int32_t predict(Scalar eps, size_t minPts){
             std::vector<Eigen::Index> candidates, newCandidates;
-
-            int32_t clusterId = 0;
-
-            std::vector<std::pair<size_t, Scalar>> index_neigh;
-            std::vector<std::pair<size_t, Scalar>> n_neigh;
+            std::vector<std::pair<size_t, Scalar>> index_neigh, n_neigh;
 
             const auto start = omp_get_wtime();
             const size_t dlen = data_.size();
 
+            int32_t clusterId = 0;
             for (size_t pid = 0; pid < dlen; ++pid) {
 
                 if (labels_[pid] >= 0) continue;
