@@ -103,11 +103,6 @@ namespace Clustering {
             return clusterId;
         }
 
-        void reset() {
-            vpTree_.reset();
-            labels_.clear();
-        }
-
         const std::vector<int32_t> &getLabels() const {
             return labels_;
         }
