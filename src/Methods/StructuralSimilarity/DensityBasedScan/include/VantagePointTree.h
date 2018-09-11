@@ -45,15 +45,13 @@ namespace Clustering {
     public:
         VantagePointTree(const VantagePointTree&) = delete;
         VantagePointTree& operator=(const VantagePointTree&) = delete;
-
-        static const Eigen::Index FIRTS_NODE_IDX = 1;
-
+        
         explicit VantagePointTree(const std::vector<VectorType>& data, Scalar similarityDistance = 1e-7)
         :
         data_(data),
         similarityDistance(similarityDistance),
-        rootIndex_(FIRTS_NODE_IDX),
-        nextIndex_(FIRTS_NODE_IDX),
+        rootIndex_(1),
+        nextIndex_(1),
         randomDevice_(),
         mersenneTwister_(randomDevice_()) {
 
@@ -67,7 +65,7 @@ namespace Clustering {
         }
 
         ~VantagePointTree() = default;
-        
+
         void searchByDistance(const VectorType &target, Scalar t, std::vector<std::pair<size_t, Scalar>> &nlist) const {
             nlist.clear();
 
@@ -151,7 +149,6 @@ namespace Clustering {
                        const VectorType &target,
                        std::vector<std::pair<size_t, Scalar>> &neighborList,
                        size_t k,
-                       /*const std::vector<VectorType> &d,*/
                        std::priority_queue<HeapItem> &heap,
                        Scalar &t,
                        bool excludeExactQ) const {
