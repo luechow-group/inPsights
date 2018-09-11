@@ -83,7 +83,7 @@ namespace Clustering {
             const size_t dlen = d.size();
 
             spdlog::get("console")->info("start");
-            for (Eigen::Index pid = 0; pid < dlen; ++pid) {
+            for (size_t pid = 0; pid < dlen; ++pid) {
                 if (pid % 10000 == 0)
                     spdlog::get("console")->info("progress: pid = {0}, {1}%", pid, (Scalar(pid) / Scalar(dlen)) * 100);
 
