@@ -9,18 +9,13 @@
 #include <spdlog/spdlog.h>
 
 namespace Clustering {
-
+    
     template<typename Scalar, Scalar ( *distance )(
             const Eigen::Matrix<Scalar,Eigen::Dynamic,1> &,
             const Eigen::Matrix<Scalar,Eigen::Dynamic,1> &)>
     class VantagePointTree {
         using VectorType = Eigen::Matrix<Scalar,Eigen::Dynamic,1>;
 
-    public:
-        VantagePointTree(const VantagePointTree&) = delete;
-        VantagePointTree& operator=(const VantagePointTree&) = delete;
-
-    private:
         struct HeapItem {
             HeapItem(size_t idx, Scalar dist)
                     : idx(idx), dist(dist) {
@@ -34,7 +29,23 @@ namespace Clustering {
             }
         };
 
+        struct DistanceComparator {
+            size_t itemIndex;
+            const std::vector<VectorType> &items;
+
+            DistanceComparator(size_t i, const std::vector<VectorType> &data)
+                    : itemIndex(i), items(data) {
+            }
+
+            bool operator()(size_t a, size_t b) {
+                return distance(items[itemIndex], items[a]) < distance(items[itemIndex], items[b]);
+            }
+        };
+
     public:
+        VantagePointTree(const VantagePointTree&) = delete;
+        VantagePointTree& operator=(const VantagePointTree&) = delete;
+
         static const Eigen::Index FIRTS_NODE_IDX = 1;
 
         explicit VantagePointTree(const std::vector<VectorType>& data, Scalar similarityDistance = 1e-7)
@@ -106,26 +117,13 @@ namespace Clustering {
 
         std::random_device randomDevice_;
         std::mt19937 mersenneTwister_;
-        
+
         std::vector<size_t> itemsIndex_;
 
-        struct DistanceComparator {
-            size_t itemIndex;
-            const std::vector<VectorType> &items;
-
-            DistanceComparator(size_t i, const std::vector<VectorType> &data)
-                    : itemIndex(i), items(data) {
-            }
-
-            bool operator()(size_t a, size_t b) {
-                return distance(items[itemIndex], items[a]) < distance(items[itemIndex], items[b]);
-            }
-        };
 
         Eigen::Index buildFromPoints(Eigen::Index lower, Eigen::Index upper) {
-            if (upper == lower) {
+            if (upper == lower)
                 return 0;
-            }
 
             Eigen::Index currentNodeIndex = nextIndex_++;
 
@@ -133,11 +131,11 @@ namespace Clustering {
             node.index = lower;
 
             if (upper - lower > 1) {
-                auto i = size_t(Scalar(mersenneTwister_()) / std::mt19937::max() * (upper - lower - 1)) + lower;
+                auto i = size_t(Scalar(mersenneTwister_()) / std::mt19937::max() * (upper-lower-1)) + lower;
 
                 std::swap(itemsIndex_[lower], itemsIndex_[i]);
 
-                long median = (upper + lower) / 2;
+                Eigen::Index median = (upper+lower) /2;
 
                 std::nth_element(
                         itemsIndex_.begin() + lower + 1,
@@ -162,6 +160,7 @@ namespace Clustering {
                        std::priority_queue<HeapItem> &heap,
                        Scalar &t,
                        bool excludeExactQ) const {
+
             if (nodeIndex == 0)
                 return;
 
@@ -173,35 +172,28 @@ namespace Clustering {
                 if (!(excludeExactQ && dist < similarityDistance)) {
 
                     if (heap.size() == k) heap.pop();
-
                     heap.push(HeapItem(itemsIndex_[node.index], dist));
-
                     if (heap.size() == k) t = heap.top().dist;
                 }
                 /** do nothing on similar points **/
             }
 
-            if (node.left == 0 && node.right == 0) {
+            if (node.left == 0 && node.right == 0)
                 return;
-            }
 
             if (dist < node.threshold) {
-                if (dist - t <= node.threshold) {
+                if (dist - t <= node.threshold)
                     searchByK(node.left, target, neighborList, k, heap, t, excludeExactQ);
-                }
 
-                if (dist + t >= node.threshold) {
+                if (dist + t >= node.threshold)
                     searchByK(node.right, target, neighborList, k, heap, t, excludeExactQ);
-                }
 
             } else {
-                if (dist + t >= node.threshold) {
+                if (dist + t >= node.threshold)
                     searchByK(node.right, target, neighborList, k, heap, t, excludeExactQ);
-                }
 
-                if (dist - t <= node.threshold) {
+                if (dist - t <= node.threshold)
                     searchByK(node.left, target, neighborList, k, heap, t, excludeExactQ);
-                }
             }
         }
 
