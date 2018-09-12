@@ -17,8 +17,7 @@ class VantagePointTree {
 
     struct HeapItem {
         HeapItem(size_t idx, Scalar dist)
-                : idx(idx), dist(dist) {
-        }
+                : idx(idx), dist(dist) {}
 
         size_t idx;
         Scalar dist;
@@ -164,7 +163,7 @@ private:
                 heap.push(HeapItem(itemsIndex_[node.index], dist));
                 if (heap.size() == k) tau = heap.top().dist;
             }
-            /** do nothing on similar points **/
+            /* do nothing on similar points */
         }
 
         if (node.left == 0 && node.right == 0)
@@ -197,13 +196,11 @@ private:
 
         const Scalar dist = distance(data_[itemsIndex_[node.index]], target);
 
-        if (dist < t) {
+        if (dist < t)
             neighborList.push_back(std::make_pair(itemsIndex_[node.index], dist));
-        }
 
-        if (node.left == 0 && node.right == 0) {
+        if (node.left == 0 && node.right == 0)
             return;
-        }
 
         if (dist < node.threshold) {
             if (dist - t <= node.threshold)
