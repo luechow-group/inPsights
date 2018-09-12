@@ -47,7 +47,7 @@ public:
 
     int32_t findClusters(Scalar eps, size_t minPts) {
         std::vector<Eigen::Index> candidates, newCandidates;
-        std::vector<std::pair<size_t, Scalar>> neighborIndices, n_neigh;
+        std::vector<std::pair<size_t, Scalar>> neighborIndices;
 
         const auto start = omp_get_wtime();
 
