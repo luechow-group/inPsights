@@ -206,22 +206,17 @@ private:
         }
 
         if (dist < node.threshold) {
-            if (dist - t <= node.threshold) {
+            if (dist - t <= node.threshold)
                 searchByDistance(node.left, target, neighborList, t);
-            }
 
-            if (dist + t >= node.threshold) {
+            if (dist + t >= node.threshold)
                 searchByDistance(node.right, target, neighborList, t);
-            }
-
         } else {
-            if (dist + t >= node.threshold) {
+            if (dist + t >= node.threshold)
                 searchByDistance(node.right, target, neighborList, t);
-            }
 
-            if (dist - t <= node.threshold) {
+            if (dist - t <= node.threshold)
                 searchByDistance(node.left, target, neighborList, t);
-            }
         }
     }
 };
