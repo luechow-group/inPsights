@@ -89,22 +89,14 @@ TEST_F(ADensityBasedScanTest, MinSizeTooLarge) {
     ASSERT_EQ(result, expected);
 }
 
-/*TEST_F(ADensityBasedScanTest, NClusters) {
-    auto dataPtr = std::make_shared<Clustering::Dataset<float>>(dataFloat);
-    DensityBasedScan<float> dbscan(dataPtr);
+TEST_F(ADensityBasedScanTest, PredictEps) {
+    DensityBasedScan<float> dbscan(dataFloat);
 
-    dbscan.fit();
-    auto result = dbscan.predictEps(6);
-    //auto result = dbscan.getLabels();
+    auto result = dbscan.predictEps(4); // careful => cluster indices start with 0
 
-    for (auto i: result) std::cout << i << std::endl;
+    auto min = *std::min_element(result.begin(), result.end());
+    auto max = *std::max_element(result.begin(), result.end());
 
-    //std::vector<int> expected{
-    //        -1,-1,-1,-1,-1,
-    //        -1,-1,-1,-1,-1,
-    //        -1,-1,-1,-1,-1,
-    //        -1,-1,-1,-1,-1,
-    //        -1,-1,-1,-1,-1};
-//
-    //ASSERT_EQ(result, expected);
-}*/
+    ASSERT_GE(min,0.19999f); // ???? why
+    ASSERT_LE(max,1.1);
+}
