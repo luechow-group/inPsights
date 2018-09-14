@@ -1,0 +1,14 @@
+
+image: registry.git.rwth-aachen.de/luechow-group/amolqcpp:latest
+
+before_script:
+  - export MATHLIBS=/usr/lib
+
+compile:
+  script:
+  - ./compile.sh
+  - ./build/src/BaseLib/tests/BaseLib_RunAllTests
+  #artifacts:
+  #  paths:
+  #  - build
+
