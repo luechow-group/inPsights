@@ -211,7 +211,7 @@ std::vector<unsigned long> StringOptimizationProblem::getIndicesOfElectronsAtNuc
 
 
 Eigen::VectorXd StringOptimizationProblem::getNucleiPositions() const{
-  return wf_.getAtomsVector().positionsVector().asEigenVector()();
+  return wf_.getAtomsVector().positionsVector().asEigenVector();
 }
 
 /*
@@ -219,7 +219,7 @@ bool StringOptimizationProblem::callback(const cppoptlib::Criteria<double> &stat
   gradientResetQ = false;
   putElectronsIntoNuclei(x, grad); //gradientQ could be true now
 
-  optimizationPath_.append(ElectronsVector(x, wf_.getSpinTypesVector().asEigenVector()()()));
+  optimizationPath_.append(ElectronsVector(x, wf_.getSpinTypesVector().asEigenVector()));
 
   std::cout << "(" << std::setw(2) << state.iterations << ")"
             << " f(x) = " << std::fixed << std::setw(8) << std::setprecision(8) << value(x)

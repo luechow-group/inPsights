@@ -41,13 +41,13 @@ public:
 TEST_F(AVisualizationTest, shortenPath) {
     auto shortenedPath = Visualization::shortenPath(optimizationPath,10);
 
-    ASSERT_EQ(optimizationPath.typesVector().asEigenVector()(),
-              shortenedPath.typesVector().asEigenVector()());
-    ASSERT_EQ(optimizationPath[0].positionsVector().asEigenVector()(),
-              shortenedPath[0].positionsVector().asEigenVector()());
+    ASSERT_EQ(optimizationPath.typesVector().asEigenVector(),
+              shortenedPath.typesVector().asEigenVector());
+    ASSERT_EQ(optimizationPath[0].positionsVector().asEigenVector(),
+              shortenedPath[0].positionsVector().asEigenVector());
 
     ASSERT_EQ(10,shortenedPath.numberOfEntities());
 
-    ASSERT_EQ(optimizationPath[-1].positionsVector().asEigenVector()(),
-              shortenedPath[-1].positionsVector().asEigenVector()());
+    ASSERT_EQ(optimizationPath[-1].positionsVector().asEigenVector(),
+              shortenedPath[-1].positionsVector().asEigenVector());
 }
