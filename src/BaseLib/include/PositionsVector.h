@@ -21,10 +21,10 @@ public:
     void append(const Eigen::Vector3d& position);
     void prepend(const Eigen::Vector3d& position);
 
-    Eigen::Vector3d position(long i, const Usage& usage = Usage::NotFinished);
-    void translate(const Eigen::Vector3d& shift, const Usage& usage = Usage::NotFinished);
-    void rotateAroundOrigin(double angle, const Eigen::Vector3d &axisDirection, const Usage& usage = Usage::NotFinished);
-    void rotate(double angle, const Eigen::Vector3d &center, const Eigen::Vector3d &axisDirection, const Usage& usage = Usage::NotFinished);
+    Eigen::Vector3d position(long i, const Usage& usage = Usage::Standard);
+    void translate(const Eigen::Vector3d& shift, const Usage& usage = Usage::Standard);
+    void rotateAroundOrigin(double angle, const Eigen::Vector3d &axisDirection, const Usage& usage = Usage::Standard);
+    void rotate(double angle, const Eigen::Vector3d &center, const Eigen::Vector3d &axisDirection, const Usage& usage = Usage::Standard);
 
 
     Eigen::Vector3d operator[](long i) const;

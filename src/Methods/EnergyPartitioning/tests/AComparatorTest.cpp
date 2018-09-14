@@ -8,7 +8,7 @@
 
 TEST(AComparatorTest, Comparator) {
 
-    auto ref1 = Reference(TestMolecules::threeElectrons::normal.electrons(),1.0);
+    auto ref1 = Reference(1.0, TestMolecules::threeElectrons::normal.electrons());
     auto ref2 = ref1;
     ref2.maximum_.positionsVector().entity(0).translate({0,0, 0.1});
     ref2.maximum_.positionsVector().entity(1).translate({0,0,-0.1});

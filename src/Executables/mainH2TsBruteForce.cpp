@@ -138,7 +138,7 @@ int main(int argc, char *argv[]) {
                                                     optimizationPath.getSpinTypeCollection()));
         }
 
-        shortenedPath.append(ElectronCollection(vec, optimizationPath.getSpinTypeCollection().asEigenVector()()()));
+        shortenedPath.append(ElectronCollection(vec, optimizationPath.getSpinTypeCollection().asEigenVector()()));
 
         // Visualization
         MoleculeWidget moleculeWidget;

@@ -1,23 +1,19 @@
 cmake_minimum_required(VERSION 3.5)
 
-project(StructuralSimilarity CXX)
+project(DensityBasedScan CXX)
 
 set ( PROJECT_FOLDER_NAME ${PROJECT_NAME} )
 set ( PROJECT_PATH ${PROJECT_NAME})
 set ( OUTPUT_NAME "${PROJECT_FOLDER_NAME}" )
 message ( "-- ++ CREATING PROJECT OR MAKEFILE ---> ${OUTPUT_NAME}" )
 
-
 set(HEADER_FILES
-        include/QuaternionFit.h
-        include/Hungarian.h
-        include/SimpleSorter.h
-        include/HungarianHelper.h
+        include/DensityBasedScan.h
+        include/VantagePointTree.h
         )
 
 set(SOURCE_FILES
-        source/QuaternionFit.cpp
-        source/SimpleSorter.cpp
+        source/Helper.cpp
         )
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES})
@@ -27,11 +23,9 @@ target_include_directories(${PROJECT_NAME}
         )
 
 target_link_libraries(${PROJECT_NAME}
-        BaseLib
-        SOAP
-        DensityBasedScan
+        spdlog
         )
 
-add_subdirectory(SOAP)
-add_subdirectory(DensityBasedScan)
 add_subdirectory(tests)
+
+

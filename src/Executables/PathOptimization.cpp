@@ -32,7 +32,8 @@ bool handleCommandlineArguments(int argc, char **argv,
         electronsVectorFilename = argv[2];
         if (argc > 3) showGui = (std::string(argv[3]) == "gui");
         return true;
-    }
+    } else
+        return false;
 }
 
 int main(int argc, char *argv[]) {
@@ -53,7 +54,7 @@ int main(int argc, char *argv[]) {
     std::cout << ac << std::endl<< std::endl;
     std::cout << ec << std::endl;
 
-    Eigen::VectorXd x(ec.positionsVector().asEigenVector()());
+    Eigen::VectorXd x(ec.positionsVector().asEigenVector());
     std::cout << x.transpose() << std::endl;
     Eigen::VectorXd grad(ec.numberOfEntities());
     electronicWaveFunctionProblem.putElectronsIntoNuclei(x,grad);

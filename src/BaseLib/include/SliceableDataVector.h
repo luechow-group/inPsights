@@ -12,6 +12,7 @@
 #include <Eigen/Core>
 
 class ISliceable : public AbstractVector{
+    friend class AbstractState;
 public:
     void resetSlice(){
         resetType_ = Reset::Automatic;
@@ -24,8 +25,6 @@ protected:
     resetType_(Reset::Automatic),
     sliceInterval_({0, numberOfEntities})
     {}
-
-
 
     void setSlice(const Interval& interval, const Reset& resetType) {
         assert(interval.numberOfEntities() <= numberOfEntities() && "The interval is too long.");
@@ -89,6 +88,14 @@ public:
         return *this;
     }
 
+    void assertResetInstruction(const Usage& usage){
+        assert(
+                ((resetType() == Reset::Automatic) && (usage == Usage::Standard)) ||
+                ((resetType() == Reset::Manual) && (usage == Usage::Standard)) ||
+                ((resetType() == Reset::OnFinished) && (usage == Usage::Finished || usage == Usage::NotFinished))
+                && "You used conflicting reset instruction.");
+    }
+
     void resetRef() {
         resetSlice();
         refPtr_.reset();
@@ -102,7 +109,7 @@ public:
     }
 
     void entity(long i, const Reset& resetType = Reset::Automatic) {
-        return slice(Interval(i), resetType);
+        slice(Interval(i), resetType);
     }
 
     void permute(const Eigen::PermutationMatrix<Eigen::Dynamic> &permutation) override {
@@ -123,9 +130,11 @@ public:
         return data_;
     }
 
-    RefEigenVecType dataRef(const Usage &usage = Usage::NotFinished){
-        if(resetType() == Reset::Automatic
-            || (resetType_ == Reset::OnFinished && usage == Usage::Finished))
+    RefEigenVecType dataRef(const Usage &usage = Usage::Standard){
+        assertResetInstruction(usage);
+
+        if((resetType() == Reset::Automatic && usage == Usage::Standard)
+        || (resetType() == Reset::OnFinished && usage == Usage::Finished))
             return RETURN_AND_RESET<SliceableDataVector<Scalar>,RefEigenVecType>(*this,*refPtr_).returnAndReset();
         else
             return *refPtr_;
@@ -143,8 +152,10 @@ protected:
     }
 
     void resetStrategy(const Usage &usage) {
-        if(resetType() == Reset::Automatic
-            || (resetType() == Reset::OnFinished && usage == Usage::Finished))
+        assertResetInstruction(usage);
+
+        if((resetType() == Reset::Automatic && usage == Usage::Standard)
+        || (resetType() == Reset::OnFinished && usage == Usage::Finished))
             resetRef();
     }
 

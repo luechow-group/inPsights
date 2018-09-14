@@ -7,7 +7,7 @@
 #include "ParticlesVector.h"
 
 RawDataReader::RawDataReader(
-        std::set<Reference>& references,
+        std::vector<Reference>& references,
         std::vector<Sample>& samples, int recordDelimiterLength)
         :
         BinaryFileReader(recordDelimiterLength),
@@ -51,10 +51,11 @@ bool RawDataReader::read(const std::string &fileName){
             auto value = readDouble(input);
             auto r = Reference(value, ElectronsVector(PositionsVector(maximum), spins), id);
 
-            references_.emplace(r);
+            references_.emplace_back(r);
             samples_.emplace_back(s);
             id++;
         }
+
         return true;
     }
     else

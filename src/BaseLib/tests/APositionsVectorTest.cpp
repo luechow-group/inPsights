@@ -291,7 +291,7 @@ TEST_F(APositionsVectorTest, ResetManual){
     PositionsVector p(positions);
 
     ASSERT_EQ(p.position(0),position0);
-    ASSERT_EQ(p.slice({1,2}, Reset::Manual).position(0,Usage::Finished),position1);
+    ASSERT_EQ(p.slice({1,2}, Reset::Manual).position(0,Usage::Standard),position1);
     ASSERT_EQ(p.position(0),position1);
     p.resetRef(); // manual reset
     ASSERT_EQ(p.position(0),position0);
@@ -310,4 +310,66 @@ TEST_F(APositionsVectorTest, OutputStreamOperator){
 
     std::string expected = "1 2 3\n4 5 6 7 8 9\n1 2 3";
     ASSERT_STREQ(expected.c_str(), ss.str().c_str());
+}
+
+
+TEST_F(APositionsVectorTest, DataRef) {
+    PositionsVector p(positions);
+
+    // after construction
+    ASSERT_EQ(p.dataRef(),positions);
+
+    // Automatic
+    ASSERT_EQ(p.dataRef(Usage::Standard),positions);
+    ASSERT_EQ(p.entity(2,Reset::Automatic).dataRef(Usage::Standard),position2);
+    ASSERT_EQ(p.dataRef(Usage::Standard),positions);
+
+    // default (same as above)
+    ASSERT_EQ(p.dataRef(),positions);
+    ASSERT_EQ(p.entity(2).dataRef(),position2);
+    ASSERT_EQ(p.dataRef(),positions);
+
+    // OnFinished
+    ASSERT_EQ(p.dataRef(),positions);
+    ASSERT_EQ(p.entity(2,Reset::OnFinished).dataRef(Usage::Finished),position2);
+    ASSERT_EQ(p.dataRef(Usage::Standard),positions);
+    ASSERT_EQ(p.entity(2,Reset::OnFinished).dataRef(Usage::NotFinished),position2);
+    ASSERT_EQ(p.dataRef(Usage::Finished),position2);
+    ASSERT_EQ(p.dataRef(Usage::Standard),positions);
+
+    // Manual
+    ASSERT_EQ(p.entity(2,Reset::Manual).dataRef(Usage::Standard),position2);
+    ASSERT_EQ(p.dataRef(Usage::Standard),position2);
+    p.resetRef();
+    ASSERT_EQ(p.dataRef(Usage::Standard),positions);
+
+    //complain on conflicting reset instructions
+    ASSERT_DEATH(p.entity(0,Reset::Automatic).dataRef(Usage::NotFinished),"");
+    ASSERT_DEATH(p.entity(0,Reset::Automatic).dataRef(Usage::Finished),"");
+    ASSERT_DEATH(p.entity(0,Reset::Manual).dataRef(Usage::NotFinished),"");
+    ASSERT_DEATH(p.entity(0,Reset::Manual).dataRef(Usage::Finished),"");
+    ASSERT_DEATH(p.entity(0,Reset::OnFinished).dataRef(Usage::Standard),"");
+
+}
+
+TEST_F(APositionsVectorTest, Position) {
+
+    PositionsVector p(positions);
+
+    ASSERT_EQ(p.position(2),position2);
+    ASSERT_EQ(p.dataRef(),positions);
+
+    // Automatic
+    ASSERT_EQ(p.slice({1,2},Reset::Automatic).position(0,Usage::Standard),position1);
+    ASSERT_EQ(p.dataRef(),positions);
+
+    // OnFinished
+    ASSERT_EQ(p.slice({1,2},Reset::OnFinished).position(0,Usage::NotFinished),position1);
+    ASSERT_EQ(p.position(0,Usage::Finished),position1);
+    ASSERT_EQ(p.position(0),position0);
+
+
+    // Manual
+
+
 }

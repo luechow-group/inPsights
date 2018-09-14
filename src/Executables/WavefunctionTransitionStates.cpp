@@ -78,16 +78,16 @@ int main(int argc, char *argv[]) {
     PositionsVectorTransformer::rotateAroundAxis(pcsel2,-60.*ConversionFactors::deg2rad,
                                                  av[1].position(), av[4].position());
 
-    pv(15) = pcsel1[0];
-    pv(17) = pcsel1[1];
-    pv(18) = pcsel1[2];
-    pv( 6) = pcsel1[3];
-    pv( 4) = pcsel2[0];
-    pv( 8) = pcsel2[1];
-    pv( 9) = pcsel2[2];
-    pv(14) = pcsel2[3];
+    pv.entity(15).dataRef() = pcsel1[0];
+    pv.entity(17).dataRef() = pcsel1[1];
+    pv.entity(18).dataRef() = pcsel1[2];
+    pv.entity( 6).dataRef() = pcsel1[3];
+    pv.entity( 4).dataRef() = pcsel2[0];
+    pv.entity( 8).dataRef() = pcsel2[1];
+    pv.entity( 9).dataRef() = pcsel2[2];
+    pv.entity(14).dataRef() = pcsel2[3];
 
-    Eigen::VectorXd guess = pv.asEigenVector()();
+    Eigen::VectorXd guess = pv.asEigenVector();
 
     // optimize the guess
     LocalNewtonSearch localNewton;
