@@ -20,29 +20,16 @@ double mostDeviatingParticleDistance(
     return Metrics::positionDistancesVector(permutee,ref).lpNorm<Eigen::Infinity>();
 }
 
-class AbstractSorter{
-public:
-    AbstractSorter(std::vector<Reference>& references, std::vector<Sample>& samples)
-    :
-    references_(references),
-    samples_(samples),
-    console(spdlog::get("console"))
-    {}
-
-protected:
-    std::vector<Reference>& references_;
-    std::vector<Sample>& samples_;
-    std::shared_ptr<spdlog::logger> console;
-};
-
-class GlobalIdentiySorter : public AbstractSorter{
+class GlobalIdentiySorter{
 public:
 
     GlobalIdentiySorter(std::vector<Reference>& references, std::vector<Sample>& samples, double increment, double distThresh)
     :
-    AbstractSorter(references,samples),
+    references_(references),
+    samples_(samples),
     increment_(increment),
-    distThresh_(distThresh)
+    distThresh_(distThresh),
+    console(spdlog::get("console"))
     {}
 
     GlobalIdentiySorter(std::vector<Reference>& references, std::vector<Sample>& samples, double distThresh = 0.01)
@@ -51,7 +38,7 @@ public:
     {}
 
 
-    bool doSort(){
+    bool sort(){
         if(references_.empty()) {
             console->error("References are empty.");
             return false;
@@ -66,7 +53,7 @@ public:
         auto uit = references_.begin();
 
         while (lit != references_.end()){
-            uit = std::upper_bound(references_.begin(),references_.end(),Reference((*lit).negLogSqrdProbabilityDensity_+increment_));
+            uit = std::upper_bound(lit,references_.end(),Reference((*lit).negLogSqrdProbabilityDensity_+increment_));
             //uit = references_.upper_bound(Reference((*lit).negLogSqrdProbabilityDensity_+increment_));
             auto it = lit;
             it++; // start with the element next to lit
@@ -122,66 +109,123 @@ private:
         }
     }
 
+    std::vector<Reference>& references_;
+    std::vector<Sample>& samples_;
     double increment_,distThresh_;
+    std::shared_ptr<spdlog::logger> console;
+
 };
+
+
+class GlobalSimilaritySorter {
+public:
+
+    GlobalSimilaritySorter(
+            std::vector<Reference>& references,
+            std::vector<SimilarReferences>& similarReferencesVector,
+            double increment, double distThresh)
+    :
+    references_(references),
+    similarReferencesVector_(similarReferencesVector),
+    increment_(increment),
+    distThresh_(distThresh),
+    console(spdlog::get("console"))
+    {}
+
+    GlobalSimilaritySorter(
+            std::vector<Reference>& references,
+            std::vector<SimilarReferences>& similarReferencesVector,
+            double distThresh = 0.1)
+    :
+    GlobalSimilaritySorter(references, similarReferencesVector,
+            (*references.rbegin()).negLogSqrdProbabilityDensity_ * 1e-5, distThresh)
+    {}
+
+
+    bool sort(){
+
+        if(similarReferencesVector_.empty())
+            similarReferencesVector_.emplace_back(SimilarReferences(references_.begin()));
+
+        // for all references in range
+        // for (auto refIt = references_.begin()+1; refIt != references_.end(); ++refIt) {
+        auto lit = references_.begin();
+        auto uit = references_.begin();
+        uit = std::upper_bound(references_.begin(),references_.end(),Reference((*lit).negLogSqrdProbabilityDensity_+increment_));
+
+
+        while (lit != references_.end()) {
+            uit = std::upper_bound(lit,references_.end(),Reference((*lit).negLogSqrdProbabilityDensity_+increment_));
+
+            for (auto it = lit; it != uit;  ++it ) {
+
+                bool isSimilarQ = false;
+                for (auto &simRefs : similarReferencesVector_) {
+                    // check if refIt is similar to simRefs representative reference
+
+                    // calc perm r->sr so that we can store them in similar reference
+                    auto costMatrix = Metrics::positionalDistances(
+                            (*it).maximum_.positionsVector(),
+                            (*simRefs.representativeReferenceIterator).maximum_.positionsVector());
+                    auto bestMatch = Hungarian<double>::findMatching(costMatrix);
+                    auto dist = mostDeviatingParticleDistance(
+                            (*it).maximum_.positionsVector(),
+                            bestMatch,
+                            (*simRefs.representativeReferenceIterator).maximum_.positionsVector());
+
+                    console->info("{}", dist);
+                    if (dist < distThresh_) {
+                        simRefs.similarReferences_.emplace_back(SimilarReference(it, bestMatch));
+
+                        isSimilarQ = true;
+                    }
+                }
+                if (!isSimilarQ) similarReferencesVector_.emplace_back(SimilarReferences(it));
+            }
+            lit = uit;
+        }
+        return true;
+    }
+
+
+
+private:
+
+    std::vector<Reference>& references_;
+    std::vector<SimilarReferences>& similarReferencesVector_;
+    double increment_,distThresh_;
+    std::shared_ptr<spdlog::logger> console;
+};
+
 
 int main(int argc, char *argv[]) {
     Logger::initialize();
     auto console = spdlog::get(Logger::name);
     double identicalDistThresh = 0.01;
-
     std::vector<Reference> globallyIdenticalMaxima;
     std::vector<Sample> samples;
 
     RawDataReader reader(globallyIdenticalMaxima,samples);
     reader.read("raw.bin");
-
     console->info("number of refs {}",globallyIdenticalMaxima.size());
 
-    GlobalIdentiySorter globalIdentiySorter(globallyIdenticalMaxima, samples, identicalDistThresh);
-    globalIdentiySorter.doSort();
 
+    GlobalIdentiySorter globalIdentiySorter(globallyIdenticalMaxima, samples, identicalDistThresh);
+    globalIdentiySorter.sort();
     console->info("finished id sort");
     console->flush();
 
 
-    std::vector<SimilarReferencesCollection> similarReferencesCollections;
-    // add first ref
-
     console->info("total elems {}",std::distance(globallyIdenticalMaxima.begin(),globallyIdenticalMaxima.end()));
 
 
+    double similarDistThresh = 0.1;
+    std::vector<SimilarReferences> similarReferencesVector;
+    GlobalSimilaritySorter globalSimilaritySorter(globallyIdenticalMaxima, similarReferencesVector,similarDistThresh);
 
+    globalSimilaritySorter.sort();
 
+    console->info("total elems {}",similarReferencesVector.size());
 
-    //TODO add lower + upper bound
-    for (auto it = globallyIdenticalMaxima.begin(); it != globallyIdenticalMaxima.end();  ++it ){
-        console->info("elem {}",std::distance(globallyIdenticalMaxima.begin(),it));
-        // check for similarity
-        bool isSimilarQ = false;
-        for(auto& sr : similarReferencesCollections){
-
-            // calc perm r->sr so that we can store them in sr
-            auto costMatrix = Metrics::positionalDistances(
-                    (*it).maximum_.positionsVector(),
-                    (*sr.representativeReferenceIterator).maximum_.positionsVector());
-            auto bestMatch = Hungarian<double>::findMatching(costMatrix);
-            auto dist = mostDeviatingParticleDistance(
-                    (*it).maximum_.positionsVector(),
-                    bestMatch,
-                    (*sr.representativeReferenceIterator).maximum_.positionsVector());
-
-            console->info("{}",dist);
-            if(dist < identicalDistThresh) {
-                sr.similarReferences_.emplace_back(SimilarReference(it, bestMatch));
-
-                isSimilarQ = true;
-            }
-        }
-        if(!isSimilarQ) similarReferencesCollections.emplace_back(SimilarReferencesCollection(it));
-    }
-
-
-    //TODO add DBSCAN
 
 }

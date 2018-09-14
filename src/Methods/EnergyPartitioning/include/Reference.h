@@ -39,7 +39,10 @@ public:
 class SimilarReference {
 public:
     SimilarReference(std::vector<Reference>::iterator ref, const Eigen::PermutationMatrix<Eigen::Dynamic> &perm)
-    : it_(ref), perm_(perm) {}
+    : it_(ref), perm_(perm) {
+        assert((*ref).maximum_.numberOfEntities() == perm.size()
+        && "The permutation length must match the number of entities");
+    }
 
     bool operator <(const SimilarReference& rhs) const {
         return (*it_).negLogSqrdProbabilityDensity_< (*rhs.it_).negLogSqrdProbabilityDensity_;
@@ -50,10 +53,14 @@ public:
 };
 
 
-class SimilarReferencesCollection {
+class SimilarReferences {
 public:
-    explicit SimilarReferencesCollection(std::vector<Reference>::iterator representativeReference)
-    : representativeReferenceIterator(representativeReference) {}
+    explicit SimilarReferences(std::vector<Reference>::iterator representativeReference)
+    :
+    representativeReferenceIterator(representativeReference),
+    similarReferences_()
+    {}
+
     //TODO REPLACE THIS BY CENTROID LIKE REF
 
     std::vector<Reference>::iterator representativeReferenceIterator; // may change over time, difficult to define for rings/clusters
