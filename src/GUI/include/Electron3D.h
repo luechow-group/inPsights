@@ -19,6 +19,8 @@ namespace Spins {
                 return Qt::blue;
             case SpinType::none:
                 return Qt::darkMagenta;
+            default:
+                return Qt::darkMagenta;
         }
     }
 }
