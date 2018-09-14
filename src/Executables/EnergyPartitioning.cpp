@@ -173,7 +173,7 @@ public:
                             bestMatch,
                             (*simRefs.representativeReferenceIterator).maximum_.positionsVector());
 
-                    console->info("{}", dist);
+                    //console->info("{}", dist);
                     if (dist < distThresh_) {
                         simRefs.similarReferences_.emplace_back(SimilarReference(it, bestMatch));
 
@@ -227,5 +227,20 @@ int main(int argc, char *argv[]) {
 
     console->info("total elems {}",similarReferencesVector.size());
 
+    int tot = 0;
+    for(auto& i : similarReferencesVector){
+        console->info("contained similar refs {}",i.similarReferences_.size());
+        //console->info("representative ref has {} founds", (*i.representativeReferenceIterator).associatedSampleIds_.size());
 
+        auto subtot = int((*i.representativeReferenceIterator).associatedSampleIds_.size());
+        for(const auto& j : i.similarReferences_){
+            subtot += 1;
+            subtot += (*j.it_).associatedSampleIds_.size();
+        }
+        console->info("{}",subtot);
+        tot += subtot;
+
+
+    }
+    console->info(tot);
 }
