@@ -76,7 +76,7 @@ int main(int argc, char *argv[]) {
 
     std::cout << ecA << std::endl;
 
-    ecB.permute(0, 1);
+    ecB.positionsVector().slice({0,2}).permute(Eigen::PermutationMatrix<Eigen::Dynamic>(Eigen::VectorXi{1,0}));
     std::cout << ecB << std::endl;
     //ecB.permute(8, 17);//Ethane
 
