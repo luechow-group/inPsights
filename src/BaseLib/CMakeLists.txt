@@ -44,6 +44,7 @@ set(HEADER_FILES
         include/SliceableDataVector.h
         include/InsertableVector.h
         include/Logger.h
+        include/Statistics.h
         )
 
 set(SOURCE_FILES
