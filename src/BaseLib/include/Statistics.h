@@ -9,35 +9,38 @@
 
 namespace Statistics {
 
-    template<typename Derived>
+    template<typename Derived, typename WeightType = unsigned>
     class RunningStatistics {
 
     public:
         RunningStatistics()
-                : count_(0), X_() {}
-
-        explicit RunningStatistics(const Derived &firstSample)
-                :
-                count_(1),
-                X_(firstSample),
-                Xold_(X_),
-                M2_(),
-                M2old_(Derived::Zero(firstSample.rows(), firstSample.cols())) {};
+                : initializedQ_(false),wSum_(0),wSum2_(0),
+                X_(),Xold_(),
+                M2_(),M2old_() {}
 
         void reset() {
-            count_ = 0;
+            initializedQ_ = false;
+            wSum_ = 0;
+            wSum2_ = 0;
         }
 
-        void add(const Derived &sample) {
-            count_++;
-            if (count_ == 1) {
-                X_ = sample;
-                Xold_ = X_;
-                M2old_ = Derived::Zero(sample.rows(), sample.cols());
+        void initialize(const Derived &sample){
+            initializedQ_ = true;
+            X_ = sample;
+            Xold_ = X_;
+            M2old_ = Derived::Zero(sample.rows(), sample.cols());
+        }
+        
+        void add(const Derived &sample, WeightType w = 1) {
+            wSum_ += w;
+            wSum2_ += w*w;
+
+            if (!initializedQ_) {
+                initialize(sample);
             } else {
                 Derived delta = sample - Xold_;
-                X_ = Xold_ + (delta / count_).matrix();
-                M2_ = M2old_ + (delta.array() * (sample - X_).array()).matrix();
+                X_ = Xold_ + (delta * w/wSum_).matrix();
+                M2_ = M2old_ + w*(delta.array() * (sample - X_).array()).matrix();
 
                 Xold_ = X_;
                 M2old_ = M2_;
@@ -45,29 +48,48 @@ namespace Statistics {
         }
 
         Derived mean() {
-            assert(count_ >= 1 && "The number of samples must be at least one.");
+            assert(wSum_ >= 1 && "The number of samples must be at least one.");
             return X_.matrix();
         }
 
-        Derived variance() {
-            assert(count_ >= 2 && "The number of samples must be at least two.");
-            return (M2_ / (count_ - 1));
+        Derived variance(){
+            return  unbiasedSampleVariance();
         }
 
-        Derived sampleVariance() {
-            assert(count_ >= 2 && "The number of samples must be at least two.");
-            return (M2_ / count_);
+        Derived standardDeviation(){
+            return unbiasedSampleStandardDeviation();
         }
-
-        Derived standardDeviation() { return variance().array().sqrt(); }
-
-        Derived sampleStandardDeviation() { return sampleVariance().array().sqrt(); }
-
 
     private:
-        long count_;
+        //https://en.wikipedia.org/wiki/Variance#Population_variance_and_sample_variance
+        Derived unbiasedSampleVariance() { // includes Bessel's correction
+            assert(wSum_ >= 2 && "The number of samples must be at least two.");
+            return (M2_ / (wSum_ - 1));
+        }
+
+        Derived biasedSampleVariance() { // population variance
+            assert(wSum_ >= 2 && "The number of samples must be at least two.");
+            return (M2_ / wSum_);
+        }
+
+        Derived sampleReliabilityVariance() {
+            assert(wSum_ >= 2 && "The number of samples must be at least two.");
+            return M2_ / double(wSum_ - double(wSum2_)/wSum_);
+        }
+
+        Derived biasedStandardDeviation() { return biasedSampleVariance().array().sqrt(); }
+
+        Derived unbiasedSampleStandardDeviation() { return unbiasedSampleVariance().array().sqrt(); }
+
+
+
+        bool initializedQ_;
+        WeightType wSum_,wSum2_;
         Derived X_, Xold_, M2_, M2old_;
     };
 }
+
+
+//sample_reliability_variance = S / (wSum - wSum2/wSum)
 
 #endif //AMOLQCPP_STATISTICS_H

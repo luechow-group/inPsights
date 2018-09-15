@@ -36,15 +36,6 @@ public:
     }
 };
 
-TEST_F(AStatisticsTest, FirstSampleConstructor){
-    Statistics::RunningStatistics<Eigen::MatrixXd> meanAndVariance(mat1);
-    meanAndVariance.add(mat2);
-    meanAndVariance.add(mat3);
-
-    ASSERT_TRUE(meanAndVariance.mean().isApprox(mat2));
-    ASSERT_TRUE(meanAndVariance.standardDeviation().isApprox(mat1));
-}
-
 TEST_F(AStatisticsTest, Matrix){
     Statistics::RunningStatistics<Eigen::MatrixXd> meanAndVariance;
     meanAndVariance.add(mat1);
@@ -63,4 +54,66 @@ TEST_F(AStatisticsTest, Vector){
 
     ASSERT_TRUE(meanAndVariance.mean().isApprox(vec2));
     ASSERT_TRUE(meanAndVariance.standardDeviation().isApprox(vec1));
+}
+
+TEST_F(AStatisticsTest, UnsignedIntegerWeights){
+    // unsigned is the default template parameter
+    Statistics::RunningStatistics<Eigen::VectorXd> meanAndVariance;
+
+    Eigen::VectorXd vec1(2);
+    vec1 << -2,-4;
+    Eigen::VectorXd vec2(2);
+    vec2 << 1,2;
+
+
+    meanAndVariance.add(vec1,1);
+    meanAndVariance.add(vec2,2);
+
+    Eigen::VectorXd expectedMean(2);
+    expectedMean << 0,0;
+    Eigen::VectorXd expectedVariance(2);
+    expectedVariance << 3,12;
+
+    ASSERT_TRUE(meanAndVariance.mean().isApprox(expectedMean));
+    ASSERT_TRUE(meanAndVariance.variance().isApprox(expectedVariance));
+
+    // Reset
+    meanAndVariance.reset();
+
+    meanAndVariance.add(vec1,1);
+    meanAndVariance.add(vec2,1);
+    meanAndVariance.add(vec2,1);
+
+    ASSERT_TRUE(meanAndVariance.mean().isApprox(expectedMean));
+    ASSERT_TRUE(meanAndVariance.variance().isApprox(expectedVariance));
+}
+
+TEST_F(AStatisticsTest, DoublePrecisionWeights){
+    Statistics::RunningStatistics<Eigen::VectorXd,double> meanAndVariance;
+
+    Eigen::VectorXd vec1(2);
+    vec1 << -2,-4;
+    Eigen::VectorXd vec2(2);
+    vec2 << 1,2;
+
+    meanAndVariance.add(vec1,1.0);
+    meanAndVariance.add(vec2,2.0);
+
+    Eigen::VectorXd expectedMean(2);
+    expectedMean << 0,0;
+    Eigen::VectorXd expectedVariance(2);
+    expectedVariance << 3,12;
+
+    ASSERT_TRUE(meanAndVariance.mean().isApprox(expectedMean));
+    ASSERT_TRUE(meanAndVariance.variance().isApprox(expectedVariance));
+
+    // Reset
+    meanAndVariance.reset();
+
+    meanAndVariance.add(vec1);
+    meanAndVariance.add(vec2);
+    meanAndVariance.add(vec2);
+
+    ASSERT_TRUE(meanAndVariance.mean().isApprox(expectedMean));
+    ASSERT_TRUE(meanAndVariance.variance().isApprox(expectedVariance));
 }
