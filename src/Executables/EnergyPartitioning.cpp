@@ -11,6 +11,12 @@
 #include <CoulombPotential.h>
 #include <Statistics.h>
 
+#include <MoleculeWidget.h>
+#include <ElectronicWaveFunction.h>
+#include <AtomsVector3D.h>
+#include <ElectronsVector3D.h>
+#include <QApplication>
+
 //TODO method header is unclear
 double mostDeviatingParticleDistance(
         PositionsVector permutee,
@@ -239,10 +245,10 @@ int main(int argc, char *argv[]) {
 
     totalCount = 0;
 
+    int i=0;
     for(auto& simRefVector : similarReferencesVector){
-        console->info("contained similar refs {}",simRefVector.similarReferences_.size());
-        //console->info("representative ref has {} founds", (*i.representativeReferenceIterator).associatedSampleIds_.size());
-
+        console->info("{}: contained similar refs {}",i,simRefVector.similarReferences_.size());
+        i++;
         simCount = 0;
 
         EkinStats.reset();
@@ -292,10 +298,32 @@ int main(int argc, char *argv[]) {
     console->info("overall count {}",totalCount);
 
 
-    //TODO CHECK PERMUTATION
+    std::string wavefunctionFilename = "Ethane-em.wf";
+    auto wf = ElectronicWaveFunction::getInstance(wavefunctionFilename);
+    auto atoms = wf.getAtomsVector();
 
-    // CHECK ADDITIONAL +1
+    // Visualization
+    QApplication app(argc, argv);
+    setlocale(LC_NUMERIC,"C");
 
-    //TODO DBSCAN
+    MoleculeWidget moleculeWidget;
+    Qt3DCore::QEntity *root = moleculeWidget.createMoleculeWidget();
 
-}
+    AtomsVector3D(root, atoms);
+
+    auto ev1 = (*similarReferencesVector.at(11).representativeReferenceIterator).maximum_;
+    auto perm = similarReferencesVector.at(11).similarReferences_.at(0).perm_;
+    auto ev2 = (*similarReferencesVector.at(11).similarReferences_.at(0).it_).maximum_;
+    ev2.permute(perm);
+
+    ElectronsVector3D(root, atoms, ev1, true);
+    ElectronsVector3D(root, atoms, ev2, true);
+
+    return app.exec();
+
+
+//TODO CHECK PERMUTATION
+// CHECK ADDITIONAL +1
+//TODO DBSCAN
+
+};
