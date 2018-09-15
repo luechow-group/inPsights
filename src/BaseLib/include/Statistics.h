@@ -60,6 +60,10 @@ namespace Statistics {
             return unbiasedSampleStandardDeviation();
         }
 
+        WeightType getWeightedSum() const {
+            return wSum_;
+        }
+
     private:
         //https://en.wikipedia.org/wiki/Variance#Population_variance_and_sample_variance
         Derived unbiasedSampleVariance() { // includes Bessel's correction
