@@ -8,6 +8,8 @@
 #include <HungarianHelper.h>
 #include <algorithm>
 #include <DensityBasedScan.h>
+#include <CoulombPotential.h>
+#include <Statistics.h>
 
 //TODO method header is unclear
 double mostDeviatingParticleDistance(
@@ -186,9 +188,6 @@ public:
         }
         return true;
     }
-
-
-
 private:
 
     std::vector<Reference>& references_;
@@ -208,6 +207,7 @@ int main(int argc, char *argv[]) {
     RawDataReader reader(globallyIdenticalMaxima,samples);
     reader.read("raw.bin");
     console->info("number of refs {}",globallyIdenticalMaxima.size());
+    auto numberOfElectrons = globallyIdenticalMaxima[0].maximum_.numberOfEntities();
 
 
     GlobalIdentiySorter globalIdentiySorter(globallyIdenticalMaxima, samples, identicalDistThresh);
@@ -227,20 +227,75 @@ int main(int argc, char *argv[]) {
 
     console->info("total elems {}",similarReferencesVector.size());
 
-    int tot = 0;
-    for(auto& i : similarReferencesVector){
-        console->info("contained similar refs {}",i.similarReferences_.size());
+
+
+    Statistics::RunningStatistics<Eigen::VectorXd> EkinStats;
+    Statistics::RunningStatistics<Eigen::MatrixXd> EpotStats;
+
+
+    Eigen::VectorXd ekin;
+    Eigen::MatrixXd epot;
+    size_t sampleId, count, simCount, totalCount;
+
+    totalCount = 0;
+
+    for(auto& simRefVector : similarReferencesVector){
+        console->info("contained similar refs {}",simRefVector.similarReferences_.size());
         //console->info("representative ref has {} founds", (*i.representativeReferenceIterator).associatedSampleIds_.size());
 
-        auto subtot = int((*i.representativeReferenceIterator).associatedSampleIds_.size());
-        for(const auto& j : i.similarReferences_){
-            subtot += 1;
-            subtot += (*j.it_).associatedSampleIds_.size();
+        simCount = 0;
+
+        EkinStats.reset();
+        EpotStats.reset();
+
+        // Representative reference
+        count = 1+(*simRefVector.representativeReferenceIterator).associatedSampleIds_.size();
+        simCount += count;
+        sampleId = (*simRefVector.representativeReferenceIterator).id_;
+
+
+        ekin = samples[sampleId].kineticEnergies_;
+        epot = CoulombPotential::energies(samples[sampleId].sample_);
+
+        console->info("rep ref count {}" ,count);
+        EkinStats.add(ekin,unsigned(count));
+        EpotStats.add(epot,unsigned(count));
+
+        // Iterate over references being similar to the representative reference.
+        for(const auto& simRef : simRefVector.similarReferences_){
+
+
+            //TODO CONTINUE HERE
+            globallyIdenticalMaxima[0];
+
+            // Hier werden irgendwo maxima counts vergessen#
+            count = 1+(*simRef.it_).associatedSampleIds_.size();
+            simCount += count;
+            sampleId = (*simRef.it_).id_;
+
+            auto sampleCopy = samples[sampleId].sample_;
+            sampleCopy.permute(simRef.perm_);
+
+            ekin = simRef.perm_ * (samples[sampleId].kineticEnergies_);
+            epot = CoulombPotential::energies(sampleCopy);
+
+            EkinStats.add(ekin,unsigned(count));
+            EpotStats.add(epot,unsigned(count));
         }
-        console->info("{}",subtot);
-        tot += subtot;
+        console->info("sim ref count {}",simCount);
+        std::cout <<"mean: ("<<EkinStats.getWeightedSum()<<")\n"<< EkinStats.mean().transpose() << std::endl;
+        if(simCount >=2)
+            std::cout <<"stdv:\n"<< EkinStats.standardDeviation().transpose() << std::endl<< std::endl;
 
-
+        totalCount += simCount;
     }
-    console->info(tot);
+    console->info("overall count {}",totalCount);
+
+
+    //TODO CHECK PERMUTATION
+
+    // CHECK ADDITIONAL +1
+
+    //TODO DBSCAN
+
 }
