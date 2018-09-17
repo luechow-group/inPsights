@@ -9,8 +9,6 @@ stages:
   - test
 
 before_script:
-  #- git submodule sync --recursive
-  #- git submodule update --init --recursive
   - export CC=/usr/bin/gcc
   - export CXX=/usr/bin/g++
   - export FC=/usr/bin/gfortran
@@ -28,6 +26,4 @@ BaseLibTests:
   stage: test
   script:
     - ./build/src/BaseLib/tests/BaseLibTests.exe
-  #artifacts:
-  #  paths:
-  #  - build
+
