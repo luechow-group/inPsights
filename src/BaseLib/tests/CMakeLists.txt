@@ -6,9 +6,9 @@ FILE(GLOB TEST_SOURCE_FILES
         SpecialMathFunctions/*)
 
 
-add_executable("${PROJECT_NAME}_RunAllTests" ${TEST_SOURCE_FILES})
+add_executable("${PROJECT_NAME}Tests.exe" ${TEST_SOURCE_FILES})
 
-target_link_libraries("${PROJECT_NAME}_RunAllTests"
+target_link_libraries("${PROJECT_NAME}Tests.exe"
         ${PROJECT_NAME}
         gtest
         pthread

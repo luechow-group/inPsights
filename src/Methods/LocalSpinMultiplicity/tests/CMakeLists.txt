@@ -10,9 +10,9 @@ include_directories(
 file(GLOB_RECURSE RESOURCE_FILES resources/*.*)
 file(COPY ${RESOURCE_FILES} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
-add_executable("${PROJECT_NAME}_RunAllTests" ${TEST_SOURCE_FILES})
+add_executable("${PROJECT_NAME}Tests.exe" ${TEST_SOURCE_FILES})
 
-target_link_libraries("${PROJECT_NAME}_RunAllTests"
+target_link_libraries("${PROJECT_NAME}Tests.exe"
         ${PROJECT_NAME}
         gmock gmock_main
         gtest gtest_main
