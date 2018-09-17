@@ -4,33 +4,17 @@ image: registry.git.rwth-aachen.de/luechow-group/amolqcpp:latest
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
 
-stages:
-  - build
-  - test
-
 BaseLib:
-  stage: build
   before_script:
   - export CC=/usr/bin/gcc
   - export CXX=/usr/bin/g++
   - export FC=/usr/bin/gfortran
   - export MATHLIBS=/usr/lib/x86_64-linux-gnu
+  - export AMOLQC=/builds/luechow-group/Amolqcpp/src/AmolqcInterface/amolqc
+
   script:
     - mkdir build
     - cd build
     - cmake .. -DCMAKE_BUILD_TYPE=DEBUG -DBUILD_GUI=OFF
     - cmake --build . --target BaseLibTests.exe -- -j 2
-
-  artifacts:
-    paths:
-      - build/
-
-BaseLibTests:
-  stage: test
-  before_script:
-  - export AMOLQC=/builds/luechow-group/Amolqcpp/src/AmolqcInterface/amolqc
-  script:
-    - ./build/src/BaseLib/tests/BaseLibTests.exe
-  dependencies:
-  - BaseLib
-
+    - ./src/BaseLib/tests/BaseLibTests.exe
