@@ -1,6 +1,9 @@
 
 image: registry.git.rwth-aachen.de/luechow-group/amolqcpp:latest
 
+variables:
+  GIT_SUBMODULE_STRATEGY: recursive
+
 stages:
   - build
   - test
