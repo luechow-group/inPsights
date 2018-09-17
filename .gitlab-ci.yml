@@ -1,14 +1,28 @@
 
 image: registry.git.rwth-aachen.de/luechow-group/amolqcpp:latest
 
+stages:
+  - build
+  - test
+
 before_script:
+  - export CC=/usr/bin/gcc
+  - export CXX=/usr/bin/g++
+  - export FC=/usr/bin/gfortran
   - export MATHLIBS=/usr/lib
 
-compile:
+BaseLib:
+  stage: build
   script:
-  - ./compile.sh
-  - ./build/src/BaseLib/tests/BaseLib_RunAllTests
+    - mkdir build
+    - cd build
+    - cmake ..
+    - cmake --build . --target BaseLibTests.exe -- -j2
+
+BaseLibTests:
+  stage: test
+  script:
+    - ./build/src/BaseLib/tests/BaseLibTests.exe
   #artifacts:
   #  paths:
   #  - build
-
