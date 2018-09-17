@@ -4,7 +4,7 @@ image: registry.git.rwth-aachen.de/luechow-group/amolqcpp:latest
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
 
-BaseLib:
+AllTests:
   before_script:
   - export CC=/usr/bin/gcc
   - export CXX=/usr/bin/g++
