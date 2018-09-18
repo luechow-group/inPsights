@@ -1,0 +1,48 @@
+
+image: registry.git.rwth-aachen.de/luechow-group/amolqcpp:latest
+
+variables:
+  GIT_SUBMODULE_STRATEGY: recursive
+
+AllTests:
+  before_script:
+  - export CC=/usr/bin/gcc
+  - export CXX=/usr/bin/g++
+  - export FC=/usr/bin/gfortran
+  - export MATHLIBS=/usr/lib/x86_64-linux-gnu
+  - export AMOLQC=/builds/luechow-group/Amolqcpp/src/AmolqcInterface/amolqc
+
+  script:
+    - mkdir build
+    - cd build
+    - cmake .. -DCMAKE_BUILD_TYPE=DEBUG -DBUILD_GUI=OFF
+    # AmolqcInterface
+    - cmake --build . --target AmolqcInterfaceTests.exe -- -j 2
+    - ./src/AmolqcInterface/tests/AmolqcInterfaceTests.exe
+    # BaseLib
+    - cmake --build . --target BaseLibTests.exe -- -j 2
+    - ./src/BaseLib/tests/BaseLibTests.exe
+    # Externals
+    ## BSplines
+    - cmake --build . --target BSplinesTests.exe -- -j 2
+    - ./src/Externals/BSplines/tests/BSplinesTests.exe
+    ## Cppoptlib # FAILS
+    #- cmake --build . --target cppoptlibTests.exe -- -j 2
+    #- ./src/Externals/cppoptlib/include/tests/cppoptlibTests.exe
+    # Methods
+    ## StructuralSimilarity
+    ### General
+    - cmake --build . --target StructuralSimilarityTests.exe -- -j 2
+    - ./src/Methods/StructuralSimilarity/tests/StructuralSimilarityTests.exe
+    ### SOAP
+    - cmake --build . --target SOAPTests.exe -- -j 2
+    - ./src/Methods/StructuralSimilarity/SOAP/tests/SOAPTests.exe
+    ### DensityBasedScan
+    - cmake --build . --target DensityBasedScanTests.exe -- -j 2
+    - ./src/Methods/StructuralSimilarity/DensityBasedScan/tests/DensityBasedScanTests.exe
+    ## LocalPotentialEnergy
+    - cmake --build . --target LocalPotentialEnergyTests.exe -- -j 2
+    - ./src/Methods/LocalPotentialEnergy/tests/LocalPotentialEnergyTests.exe
+    ## EnergyPartitioning
+    - cmake --build . --target EnergyPartitioningTests.exe -- -j 2
+    - ./src/Methods/EnergyPartitioning/tests/EnergyPartitioningTests.exe
