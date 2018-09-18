@@ -1,12 +1,12 @@
 [submodule "src/AmolqcInterface/amolqc"]
 	path = src/AmolqcInterface/amolqc
-	url = git@git.rwth-aachen.de:luechow-group/Amolqc.git
+	url = ./../Amolqc.git
 [submodule "src/Externals/BSplines"]
     path = src/Externals/BSplines
-    url = git@git.rwth-aachen.de:michael.heuer/BSplines.git
+    url = ./../../michael.heuer/BSplines.git
 [submodule "src/Externals/cppoptlib"]
 	path = src/Externals/cppoptlib
-	url = git@git.rwth-aachen.de:luechow-group/CppNumericalSolvers.git
+	url = ./../CppNumericalSolvers.git
 [submodule "src/Externals/yaml-cpp"]
 	path = src/Externals/yaml-cpp
 	url = https://github.com/jbeder/yaml-cpp.git

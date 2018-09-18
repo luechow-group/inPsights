@@ -12,9 +12,9 @@ include_directories(
         ${gtest_SOURCE_DIR}
         )
 
-add_executable("${PROJECT_NAME}Tests" ${TEST_SOURCE_FILES} main.cpp)
+add_executable("${PROJECT_NAME}Tests.exe" ${TEST_SOURCE_FILES} main.cpp)
 
-target_link_libraries("${PROJECT_NAME}Tests"
+target_link_libraries("${PROJECT_NAME}Tests.exe"
         ${PROJECT_NAME}
         gmock
         gtest
