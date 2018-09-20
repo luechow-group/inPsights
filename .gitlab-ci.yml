@@ -36,7 +36,7 @@ AllTests:
     - ./src/Methods/StructuralSimilarity/tests/StructuralSimilarityTests.exe
     ### SOAP
     - cmake --build . --target SOAPTests.exe -- -j 2
-    - ./src/Methods/StructuralSimilarity/SOAP/tests/SOAPTests.exe
+    - ./src/Methods/StructuralSimilarity/SOAP/tests/unit/SOAPTests.exe
     ### DensityBasedScan
     - cmake --build . --target DensityBasedScanTests.exe -- -j 2
     - ./src/Methods/StructuralSimilarity/DensityBasedScan/tests/DensityBasedScanTests.exe
