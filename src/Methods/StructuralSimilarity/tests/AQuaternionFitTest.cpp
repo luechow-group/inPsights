@@ -36,6 +36,7 @@ TEST_F(AQuaternionFitTest, IdenticalGeometries) {
   ASSERT_TRUE( quatFit.getRotationMatrix().isApprox(Eigen::Matrix3d::Identity()) );
 }
 
+/*
 TEST_F(AQuaternionFitTest, ThreeCollinearPoints) {
   ASSERT_TRUE(false); //TODO
 }
@@ -51,6 +52,7 @@ TEST_F(AQuaternionFitTest, TwoPoints) {
 TEST_F(AQuaternionFitTest, SinglePoint) {
   ASSERT_TRUE(false); //TODO
 }
+*/
 
 TEST_F(AQuaternionFitTest, RotateIdenticalGeometriesBy90DegreeAroundZAxis) {
   MatrixXd refMat(4, 3);
