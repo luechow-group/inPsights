@@ -13,12 +13,10 @@ set(HEADER_FILES
         include/RawDataReader.h
         include/Sample.h
         include/Reference.h
-        include/Comparators.h
         )
 
 set(SOURCE_FILES
         source/RawDataReader.cpp
-        source/Comparators.cpp
         )
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES})
@@ -32,4 +30,4 @@ target_link_libraries(${PROJECT_NAME}
         StructuralSimilarity
         )
 
-add_subdirectory(tests)
+#add_subdirectory(tests)
