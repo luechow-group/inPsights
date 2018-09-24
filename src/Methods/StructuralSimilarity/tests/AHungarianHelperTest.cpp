@@ -40,3 +40,20 @@ TEST(AHungarianHelperTest, SpinSpecificHungarian){
     //ASSERT_FALSE(bestMatch.indices().base().isApprox(p.indices().base()));
 
 }
+
+
+TEST(AHungarianHelperTest, BestMatchNorm) {
+    Eigen::VectorXd v1(6),v2(6);
+    v1 << 1,2,3,4,5,6;
+    v2 << 4,5,6,1,2,3;
+    
+    Eigen::VectorXi vp(2);
+    vp << 1,0;
+    
+    PositionsVector p1(v1);
+    PositionsVector p2(v2);
+    Eigen::PermutationMatrix<Eigen::Dynamic> perm(vp);
+    auto d = Metrics::bestMatchNorm(p1,perm,p2);
+    ASSERT_EQ(d,0.0);
+
+}

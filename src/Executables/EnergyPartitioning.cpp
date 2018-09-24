@@ -17,16 +17,6 @@
 #include <ElectronsVector3D.h>
 #include <QApplication>
 
-//TODO method header is unclear
-double mostDeviatingParticleDistance(
-        PositionsVector permutee,
-        const Eigen::PermutationMatrix<Eigen::Dynamic> &perm,
-        const PositionsVector &ref) {
-    assert(permutee.numberOfEntities() == ref.numberOfEntities());
-
-    permutee.permute(perm);
-    return Metrics::positionDistancesVector(permutee,ref).lpNorm<Eigen::Infinity>();
-}
 
 class GlobalIdentiySorter{
 public:
@@ -83,11 +73,11 @@ private:
         auto bestMatch = HungarianHelper::spinSpecificHungarian((*it).maximum_,(*lit).maximum_);
         auto bestMatchFlip = HungarianHelper::spinSpecificHungarian((*it).maximum_,(*lit).maximum_,true);
 
-        double dist= mostDeviatingParticleDistance(
+        double dist= Metrics::bestMatchNorm(
                 (*it).maximum_.positionsVector(), bestMatch,
                 (*lit).maximum_.positionsVector());
 
-        double distFlip = mostDeviatingParticleDistance(
+        double distFlip = Metrics::bestMatchNorm(
                 (*it).maximum_.positionsVector(), bestMatchFlip,
                 (*lit).maximum_.positionsVector());
         /*PUT INTO METHOD END*/
@@ -176,7 +166,7 @@ public:
                             (*it).maximum_.positionsVector(),
                             (*simRefs.representativeReferenceIterator).maximum_.positionsVector());
                     auto bestMatch = Hungarian<double>::findMatching(costMatrix);
-                    auto dist = mostDeviatingParticleDistance(
+                    auto dist = Metrics::bestMatchNorm(
                             (*it).maximum_.positionsVector(),
                             bestMatch,
                             (*simRefs.representativeReferenceIterator).maximum_.positionsVector());

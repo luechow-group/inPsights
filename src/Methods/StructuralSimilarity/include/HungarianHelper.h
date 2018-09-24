@@ -84,4 +84,16 @@ namespace HungarianHelper{
     }
 };
 
+namespace Metrics{
+    double bestMatchNorm(
+            PositionsVector permutee,
+            const Eigen::PermutationMatrix<Eigen::Dynamic> &perm,
+            const PositionsVector &ref) {
+        assert(permutee.numberOfEntities() == ref.numberOfEntities());
+
+        permutee.permute(perm);
+        return Metrics::positionDistancesVector(permutee,ref).lpNorm<Eigen::Infinity>();
+    }
+}
+
 #endif //AMOLQCPP_HUNGARIANHELPER_H
