@@ -53,7 +53,7 @@ namespace Comparators {
         rhsCopy.slice(alphaElectrons).permute(bestMatchAlpha.inverse()); //TODO INVERSE?
         rhsCopy.slice(betaElectrons).permute(bestMatchBeta.inverse());
 
-        return Metrics::positionDistancesVector(lhsCopy, rhsCopy).lpNorm<Eigen::Infinity>();
+        return Metrics::positionalNormsVector(lhsCopy, rhsCopy).lpNorm<Eigen::Infinity>();
     };
 
     double globallySimilarQ(const Reference &lhs, const Reference &rhs) {
@@ -68,7 +68,7 @@ namespace Comparators {
         auto rhsCopy = rhs.maximum_;
         rhsCopy.permute(bestMatch.inverse()); //TODO INVERSE?
 
-        return Metrics::positionDistancesVector(
+        return Metrics::positionalNormsVector(
                 lhs.maximum_.positionsVector(),
                 rhsCopy.positionsVector()).lpNorm<Eigen::Infinity>();
     };

@@ -60,7 +60,6 @@ set(SOURCE_FILES
         source/ToString.cpp
         source/PositionsVectorTransformer.cpp
         source/TypesVector.cpp
-        source/Metrics.cpp
         source/MolecularGeometry.cpp
         source/Particle.cpp
         source/EigenYamlConversion.cpp

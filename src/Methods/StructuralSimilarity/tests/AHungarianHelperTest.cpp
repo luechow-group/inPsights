@@ -32,7 +32,7 @@ TEST(AHungarianHelperTest, SpinSpecificHungarian){
     eFlipped.positionsVector().permute(p);
 
     //auto bestMatch = HungarianHelper::spinSpecificHungarian(eNormal, eFlipped, false);
-    auto bestMatchFlipped = HungarianHelper::spinSpecificHungarian(eNormal, eFlipped, true);
+    auto bestMatchFlipped = HungarianHelper::spinSpecificBestMatch(eNormal, eFlipped, true);
     auto bestMatchFlippedInverse = Eigen::PermutationMatrix<Eigen::Dynamic>(bestMatchFlipped.inverse());
 
     ASSERT_TRUE(bestMatchFlippedInverse.indices().base().isApprox(p.indices().base()));
@@ -46,16 +46,12 @@ TEST(AHungarianHelperTest, BestMatchNorm) {
     v1 << 0,1,2,0,0,0;
     v2 << 0,0,0,0,4,6;
 
-    Eigen::VectorXi vp(2);
-    vp << 1,0;
-
     PositionsVector p1(v1);
     PositionsVector p2(v2);
-    Eigen::PermutationMatrix<Eigen::Dynamic> perm(vp);
 
-    auto d2 = Metrics::bestMatchNorm<2>(p1,perm,p2);
+    auto d2 = Metrics::bestMatchNorm<Eigen::Infinity, 2>(p1, p2);
     ASSERT_EQ(d2,5.0);
 
-    auto dInf = Metrics::bestMatchNorm<Eigen::Infinity>(p1,perm,p2); // Infinty: Pick the largest vector of the vector of positional distances
+    auto dInf = Metrics::bestMatchNorm<Eigen::Infinity, 2>(p1, p2);
     ASSERT_EQ(dInf,5.0);
 }

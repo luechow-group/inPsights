@@ -70,16 +70,16 @@ private:
         /*PUT INTO METHOD*/
         //TODO CHECK MULTIPLICITY
         //TODO maybe calculate only alpha electron distance and skip beta electron hungarian if dist is too high already
-        auto bestMatch = HungarianHelper::spinSpecificHungarian((*it).maximum_,(*lit).maximum_);
-        auto bestMatchFlip = HungarianHelper::spinSpecificHungarian((*it).maximum_,(*lit).maximum_,true);
+        auto bestMatch = HungarianHelper::spinSpecificBestMatch((*it).maximum_, (*lit).maximum_);
+        auto bestMatchFlip = HungarianHelper::spinSpecificBestMatch((*it).maximum_, (*lit).maximum_, true);
 
         double dist= Metrics::bestMatchNorm(
-                (*it).maximum_.positionsVector(), bestMatch,
-                (*lit).maximum_.positionsVector());
+                (*it).maximum_.positionsVector(),
+                (*lit).maximum_.positionsVector(), bestMatch);
 
         double distFlip = Metrics::bestMatchNorm(
-                (*it).maximum_.positionsVector(), bestMatchFlip,
-                (*lit).maximum_.positionsVector());
+                (*it).maximum_.positionsVector(),
+                (*lit).maximum_.positionsVector(), bestMatchFlip);
         /*PUT INTO METHOD END*/
 
         console->info("{},{}",dist,distFlip);
@@ -168,8 +168,8 @@ public:
                     auto bestMatch = Hungarian<double>::findMatching(costMatrix);
                     auto dist = Metrics::bestMatchNorm<Eigen::Infinity>(
                             (*it).maximum_.positionsVector(),
-                            bestMatch,
-                            (*simRefs.representativeReferenceIterator).maximum_.positionsVector());
+                            (*simRefs.representativeReferenceIterator).maximum_.positionsVector(),
+                            bestMatch);
 
                     //console->info("{}", dist);
                     if (dist < distThresh_) {

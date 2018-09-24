@@ -29,7 +29,7 @@ namespace HungarianHelper{
         return Eigen::PermutationMatrix<Eigen::Dynamic>(combined);
     };
 
-    Eigen::PermutationMatrix<Eigen::Dynamic> spinSpecificHungarian(
+    Eigen::PermutationMatrix<Eigen::Dynamic> spinSpecificBestMatch(
             const ElectronsVector &lhs,
             const ElectronsVector &rhs,
             bool flipSpinsQ = false) {
@@ -74,20 +74,35 @@ namespace HungarianHelper{
         else
             return combinePermutations(bestMatchBeta, bestMatchAlpha, true);
     };
-    
+
 };
 
 namespace Metrics{
     //Use the euclidean norm as default
-    template<int Norm = 2>
-    double bestMatchNorm(
-            PositionsVector permutee,
-            const Eigen::PermutationMatrix<Eigen::Dynamic> &perm,
-            const PositionsVector &ref) {
-        assert(permutee.numberOfEntities() == ref.numberOfEntities());
 
-        permutee.permute(perm);
-        return Metrics::positionDistancesVector(permutee,ref).lpNorm<Norm>();
+
+    template<int overallNorm = Eigen::Infinity, int positionalNorm = 2>
+    double bestMatchNorm(const PositionsVector& permutee,
+                         const PositionsVector& reference,
+                         const Eigen::PermutationMatrix<Eigen::Dynamic> &perm) {
+        assert(permutee.numberOfEntities() == reference.numberOfEntities());
+
+        auto copy = permutee;
+        copy.permute(perm);
+
+        Eigen::VectorXd res = Metrics::positionalNormsVector<positionalNorm>(copy, reference);
+        return res.lpNorm<overallNorm>();
+    }
+
+    template<int overallNorm = Eigen::Infinity, int positionalNorm = 2>
+    double bestMatchNorm(const PositionsVector& permutee,
+                         const PositionsVector& reference) {
+        assert(permutee.numberOfEntities() == reference.numberOfEntities());
+
+        auto costMatrix = Metrics::positionalDistances<positionalNorm>(permutee,reference);
+        Eigen::PermutationMatrix<Eigen::Dynamic> bestMatch = Hungarian<double>::findMatching(costMatrix);
+
+        return bestMatchNorm<overallNorm,positionalNorm>(permutee,reference,bestMatch);
     }
 }
 
