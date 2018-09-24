@@ -80,11 +80,11 @@ namespace HungarianHelper{
 namespace Metrics{
     //Use the euclidean norm as default
 
-
     template<int overallNorm = Eigen::Infinity, int positionalNorm = 2>
-    double bestMatchNorm(const PositionsVector& permutee,
-                         const PositionsVector& reference,
-                         const Eigen::PermutationMatrix<Eigen::Dynamic> &perm) {
+    double bestMatchNorm(
+            const PositionsVector &permutee,
+            const Eigen::PermutationMatrix<Eigen::Dynamic> &perm,
+            const PositionsVector &reference) {
         assert(permutee.numberOfEntities() == reference.numberOfEntities());
 
         auto copy = permutee;
@@ -95,14 +95,15 @@ namespace Metrics{
     }
 
     template<int overallNorm = Eigen::Infinity, int positionalNorm = 2>
-    double bestMatchNorm(const PositionsVector& permutee,
-                         const PositionsVector& reference) {
+    std::pair<double,Eigen::PermutationMatrix<Eigen::Dynamic>> bestMatchNorm(
+            const PositionsVector& permutee,
+            const PositionsVector& reference) {
         assert(permutee.numberOfEntities() == reference.numberOfEntities());
 
         auto costMatrix = Metrics::positionalDistances<positionalNorm>(permutee,reference);
         Eigen::PermutationMatrix<Eigen::Dynamic> bestMatch = Hungarian<double>::findMatching(costMatrix);
 
-        return bestMatchNorm<overallNorm,positionalNorm>(permutee,reference,bestMatch);
+        return {bestMatchNorm<overallNorm, positionalNorm>(permutee, bestMatch, reference),bestMatch};
     }
 }
 

@@ -74,12 +74,12 @@ private:
         auto bestMatchFlip = HungarianHelper::spinSpecificBestMatch((*it).maximum_, (*lit).maximum_, true);
 
         double dist= Metrics::bestMatchNorm(
-                (*it).maximum_.positionsVector(),
-                (*lit).maximum_.positionsVector(), bestMatch);
+                (*it).maximum_.positionsVector(), bestMatch,
+                (*lit).maximum_.positionsVector());
 
         double distFlip = Metrics::bestMatchNorm(
-                (*it).maximum_.positionsVector(),
-                (*lit).maximum_.positionsVector(), bestMatchFlip);
+                (*it).maximum_.positionsVector(), bestMatchFlip,
+                (*lit).maximum_.positionsVector());
         /*PUT INTO METHOD END*/
 
         console->info("{},{}",dist,distFlip);
@@ -168,8 +168,8 @@ public:
                     auto bestMatch = Hungarian<double>::findMatching(costMatrix);
                     auto dist = Metrics::bestMatchNorm<Eigen::Infinity>(
                             (*it).maximum_.positionsVector(),
-                            (*simRefs.representativeReferenceIterator).maximum_.positionsVector(),
-                            bestMatch);
+                            bestMatch,
+                            (*simRefs.representativeReferenceIterator).maximum_.positionsVector());
 
                     //console->info("{}", dist);
                     if (dist < distThresh_) {

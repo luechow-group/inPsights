@@ -36,9 +36,6 @@ TEST(AHungarianHelperTest, SpinSpecificHungarian){
     auto bestMatchFlippedInverse = Eigen::PermutationMatrix<Eigen::Dynamic>(bestMatchFlipped.inverse());
 
     ASSERT_TRUE(bestMatchFlippedInverse.indices().base().isApprox(p.indices().base()));
-    //ASSERT_FALSE(bestMatchFlipped.indices().base().isApprox(p.indices().base()));
-    //ASSERT_FALSE(bestMatch.indices().base().isApprox(p.indices().base()));
-
 }
 
 TEST(AHungarianHelperTest, BestMatchNorm) {
@@ -49,9 +46,13 @@ TEST(AHungarianHelperTest, BestMatchNorm) {
     PositionsVector p1(v1);
     PositionsVector p2(v2);
 
+    Eigen::VectorXi expectedPerm(2);
+    expectedPerm << 1,0;
+
     auto d2 = Metrics::bestMatchNorm<Eigen::Infinity, 2>(p1, p2);
-    ASSERT_EQ(d2,5.0);
+    ASSERT_EQ(d2.first,5.0);
+    ASSERT_TRUE(d2.second.indices().isApprox(expectedPerm));
 
     auto dInf = Metrics::bestMatchNorm<Eigen::Infinity, 2>(p1, p2);
-    ASSERT_EQ(dInf,5.0);
+    ASSERT_TRUE(dInf.second.indices().isApprox(expectedPerm));
 }
