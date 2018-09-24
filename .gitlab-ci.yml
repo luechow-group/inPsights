@@ -44,5 +44,5 @@ AllTests:
     - cmake --build . --target LocalPotentialEnergyTests.exe -- -j 2
     - ./src/Methods/LocalPotentialEnergy/tests/LocalPotentialEnergyTests.exe
     ## EnergyPartitioning
-    - cmake --build . --target EnergyPartitioningTests.exe -- -j 2
-    - ./src/Methods/EnergyPartitioning/tests/EnergyPartitioningTests.exe
+    #- cmake --build . --target EnergyPartitioningTests.exe -- -j 2
+    #- ./src/Methods/EnergyPartitioning/tests/EnergyPartitioningTests.exe
