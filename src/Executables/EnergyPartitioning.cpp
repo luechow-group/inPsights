@@ -66,45 +66,48 @@ public:
 
 private:
     void subLoop(std::vector<Reference>::iterator& lit, std::vector<Reference>::iterator& it){
-
-        /*PUT INTO METHOD*/
-        //TODO CHECK MULTIPLICITY
         //TODO maybe calculate only alpha electron distance and skip beta electron hungarian if dist is too high already
-        auto bestMatch = HungarianHelper::spinSpecificBestMatch((*it).maximum_, (*lit).maximum_);
-        auto bestMatchFlip = HungarianHelper::spinSpecificBestMatch((*it).maximum_, (*lit).maximum_, true);
 
-        double dist= Metrics::bestMatchNorm(
-                (*it).maximum_.positionsVector(), bestMatch,
-                (*lit).maximum_.positionsVector());
+        auto bestMatch = Metrics::spinSpecificBestMatchNorm((*it).maximum_, (*lit).maximum_);
 
-        double distFlip = Metrics::bestMatchNorm(
-                (*it).maximum_.positionsVector(), bestMatchFlip,
-                (*lit).maximum_.positionsVector());
-        /*PUT INTO METHOD END*/
 
-        console->info("{},{}",dist,distFlip);
-        if( (dist <= distThresh_) || (distFlip <= distThresh_) ){
-            // refs are identical
+        if((*lit).maximum_.typesVector().multiplicity() == 1) { // consider spin flip
+            auto bestMatchFlipped = Metrics::spinSpecificBestMatchNorm((*it).maximum_, (*lit).maximum_, true);
 
-            console->info("MERGE");
+            console->info("{},{}",bestMatch.first,bestMatchFlipped.first);
+            if( (bestMatch.first <= distThresh_) || (bestMatchFlipped.first <= distThresh_) ){
+                console->info("MERGE");
 
-            if(dist <= distFlip)
-                samples_[(*it).id_].sample_.permute(bestMatch);
-            else
-                samples_[(*it).id_].sample_.permute(bestMatchFlip);
+                if(bestMatch.first <= bestMatchFlipped.first)
+                    addReference(lit, it, bestMatch.second);
+                else
+                    addReference(lit, it, bestMatchFlipped.second);
 
-            (*lit).addAssociation((*it).id_);
-            //(*lit).associatedSamples_.merge((*it).associatedSamples_);
-            (*lit).associatedSampleIds_.insert(
-                    (*lit).associatedSampleIds_.end(),
-                    std::make_move_iterator((*it).associatedSampleIds_.begin()),
-                    std::make_move_iterator((*it).associatedSampleIds_.end())
-                    );
-
-            it = references_.erase(it); // returns the iterator of the following element
-        } else {
-            it++;
+            } else
+                it++;
         }
+        else {  // don't consider spin flip
+            if( (bestMatch.first <= distThresh_) )
+                addReference(lit, it, bestMatch.second);
+            else
+                it++;
+        }
+    }
+
+    //TODO find better name
+    void addReference(const std::vector<Reference, std::allocator<Reference>>::iterator &lit,
+                      std::vector<Reference, std::allocator<Reference>>::iterator &it,
+                      const Eigen::PermutationMatrix<Eigen::Dynamic> &bestMatch) const {
+        samples_[(*it).id_].sample_.permute(bestMatch);
+
+        (*lit).addAssociation((*it).id_);
+        (*lit).associatedSampleIds_.insert(
+                        (*lit).associatedSampleIds_.end(),
+                        make_move_iterator((*it).associatedSampleIds_.begin()),
+                        make_move_iterator((*it).associatedSampleIds_.end())
+                );
+
+        it = references_.erase(it); // returns the iterator of the following element
     }
 
     std::vector<Reference>& references_;
@@ -162,18 +165,13 @@ public:
                     // check if refIt is similar to simRefs representative reference
 
                     // calc perm r->sr so that we can store them in similar reference
-                    auto costMatrix = Metrics::positionalDistances(
+                    auto bestMatch = Metrics::bestMatchNorm<Eigen::Infinity>(
                             (*it).maximum_.positionsVector(),
-                            (*simRefs.representativeReferenceIterator).maximum_.positionsVector());
-                    auto bestMatch = Hungarian<double>::findMatching(costMatrix);
-                    auto dist = Metrics::bestMatchNorm<Eigen::Infinity>(
-                            (*it).maximum_.positionsVector(),
-                            bestMatch,
                             (*simRefs.representativeReferenceIterator).maximum_.positionsVector());
 
                     //console->info("{}", dist);
-                    if (dist < distThresh_) {
-                        simRefs.similarReferences_.emplace_back(SimilarReference(it, bestMatch));
+                    if (bestMatch.first < distThresh_) {
+                        simRefs.similarReferences_.emplace_back(SimilarReference(it, bestMatch.second));
 
                         isSimilarQ = true;
                     }
@@ -227,7 +225,6 @@ int main(int argc, char *argv[]) {
     std::vector<SimilarReference> clusteredReferences;
 
     /*Clustering*/
-
     // make data
     std::vector<Eigen::VectorXd> data;
     for(auto& simRefVector : similarReferencesVector){
@@ -238,7 +235,6 @@ int main(int argc, char *argv[]) {
     DensityBasedScan<double> dbscan(data);
 
     auto nClusters = dbscan.findClusters(0.20001, 5);
-
     auto result = dbscan.getLabels();
 
 
