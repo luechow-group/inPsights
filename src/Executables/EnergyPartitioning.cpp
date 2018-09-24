@@ -166,7 +166,7 @@ public:
                             (*it).maximum_.positionsVector(),
                             (*simRefs.representativeReferenceIterator).maximum_.positionsVector());
                     auto bestMatch = Hungarian<double>::findMatching(costMatrix);
-                    auto dist = Metrics::bestMatchNorm(
+                    auto dist = Metrics::bestMatchNorm<Eigen::Infinity>(
                             (*it).maximum_.positionsVector(),
                             bestMatch,
                             (*simRefs.representativeReferenceIterator).maximum_.positionsVector());
@@ -201,7 +201,7 @@ int main(int argc, char *argv[]) {
     std::vector<Sample> samples;
 
     RawDataReader reader(globallyIdenticalMaxima,samples);
-    reader.read("raw.bin");
+    reader.read("Ethane.bin");
     console->info("number of refs {}",globallyIdenticalMaxima.size());
     auto numberOfElectrons = globallyIdenticalMaxima[0].maximum_.numberOfEntities();
 
@@ -224,7 +224,25 @@ int main(int argc, char *argv[]) {
     console->info("total elems {}",similarReferencesVector.size());
 
 
+    std::vector<SimilarReference> clusteredReferences;
 
+    /*Clustering*/
+
+    // make data
+    std::vector<Eigen::VectorXd> data;
+    for(auto& simRefVector : similarReferencesVector){
+        data.push_back((*simRefVector.representativeReferenceIterator).maximum_.positionsVector().asEigenVector());
+    }
+
+    // needs bestMatchDistance
+    DensityBasedScan<double> dbscan(data);
+
+    auto nClusters = dbscan.findClusters(0.20001, 5);
+
+    auto result = dbscan.getLabels();
+
+
+    /*Energy Partitioning*/
     Statistics::RunningStatistics<Eigen::VectorXd> EkinStats;
     Statistics::RunningStatistics<Eigen::MatrixXd> EpotStats;
 
@@ -288,6 +306,8 @@ int main(int argc, char *argv[]) {
     console->info("overall count {}",totalCount);
 
 
+
+
     std::string wavefunctionFilename = "Ethane-em.wf";
     auto wf = ElectronicWaveFunction::getInstance(wavefunctionFilename);
     auto atoms = wf.getAtomsVector();
@@ -301,9 +321,9 @@ int main(int argc, char *argv[]) {
 
     AtomsVector3D(root, atoms);
 
-    auto ev1 = (*similarReferencesVector.at(11).representativeReferenceIterator).maximum_;
-    auto perm = similarReferencesVector.at(11).similarReferences_.at(0).perm_;
-    auto ev2 = (*similarReferencesVector.at(11).similarReferences_.at(0).it_).maximum_;
+    auto ev1 = (*similarReferencesVector.at(1).representativeReferenceIterator).maximum_;
+    auto perm = similarReferencesVector.at(1).similarReferences_.at(0).perm_;
+    auto ev2 = (*similarReferencesVector.at(1).similarReferences_.at(0).it_).maximum_;
     ev2.permute(perm);
 
     ElectronsVector3D(root, atoms, ev1, true);

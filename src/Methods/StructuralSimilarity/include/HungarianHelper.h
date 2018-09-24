@@ -74,17 +74,12 @@ namespace HungarianHelper{
         else
             return combinePermutations(bestMatchBeta, bestMatchAlpha, true);
     };
-
-    double mostDeviatingParticleDistance(const PositionsVector& ref, PositionsVector other,
-            const Eigen::PermutationMatrix<Eigen::Dynamic>& perm) {
-        assert(ref.numberOfEntities() == other.numberOfEntities());
-
-        other.permute(perm);
-        return Metrics::positionDistancesVector(ref,other).lpNorm<Eigen::Infinity>();
-    }
+    
 };
 
 namespace Metrics{
+    //Use the euclidean norm as default
+    template<int Norm = 2>
     double bestMatchNorm(
             PositionsVector permutee,
             const Eigen::PermutationMatrix<Eigen::Dynamic> &perm,
@@ -92,7 +87,7 @@ namespace Metrics{
         assert(permutee.numberOfEntities() == ref.numberOfEntities());
 
         permutee.permute(perm);
-        return Metrics::positionDistancesVector(permutee,ref).lpNorm<Eigen::Infinity>();
+        return Metrics::positionDistancesVector(permutee,ref).lpNorm<Norm>();
     }
 }
 
