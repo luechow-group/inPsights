@@ -29,6 +29,7 @@ namespace HungarianHelper{
         return Eigen::PermutationMatrix<Eigen::Dynamic>(combined);
     };
 
+    template <int positionalNorm = 2>
     Eigen::PermutationMatrix<Eigen::Dynamic> spinSpecificBestMatch(
             const ElectronsVector &lhs,
             const ElectronsVector &rhs,
@@ -59,12 +60,12 @@ namespace HungarianHelper{
             rhsBeta = lhsAlpha;
         }
 
-        auto costMatrixAlpha = Metrics::positionalDistances(
+        auto costMatrixAlpha = Metrics::positionalDistances<positionalNorm>(
                 PositionsVector(lhsCopy.slice(lhsAlpha).dataRef()),
                 PositionsVector(rhsCopy.slice(rhsAlpha).dataRef()));
         auto bestMatchAlpha = Hungarian<double>::findMatching(costMatrixAlpha);
 
-        auto costMatrixBeta = Metrics::positionalDistances(
+        auto costMatrixBeta = Metrics::positionalDistances<positionalNorm>(
                 PositionsVector(lhsCopy.slice(lhsBeta).dataRef()),
                 PositionsVector(rhsCopy.slice(rhsBeta).dataRef()));
         auto bestMatchBeta = Hungarian<double>::findMatching(costMatrixBeta);
@@ -105,6 +106,28 @@ namespace Metrics{
 
         return {bestMatchNorm<overallNorm, positionalNorm>(permutee, bestMatch, reference),bestMatch};
     }
+
+    template<int overallNorm = Eigen::Infinity, int positionalNorm = 2>
+    std::pair<double,Eigen::PermutationMatrix<Eigen::Dynamic>> bestMatchNorm(
+            const ElectronsVector& permutee,
+            const ElectronsVector& reference){
+        return bestMatchNorm<overallNorm, positionalNorm>(permutee.positionsVector(),reference.positionsVector());
+    }
+
+    template<int overallNorm = Eigen::Infinity, int positionalNorm = 2>
+    std::pair<double,Eigen::PermutationMatrix<Eigen::Dynamic>> spinSpecifcBestMatchNorm(
+            const ElectronsVector& permutee,
+            const ElectronsVector& reference,
+            bool flipSpinsQ = false){
+
+        auto spinSpecificBestMatch = HungarianHelper::spinSpecificBestMatch<positionalNorm>(permutee,reference,flipSpinsQ);
+
+        return {bestMatchNorm<overallNorm, positionalNorm>(
+                permutee.positionsVector(), spinSpecificBestMatch,
+                reference.positionsVector()),
+                spinSpecificBestMatch};
+    }
+
 }
 
 #endif //AMOLQCPP_HUNGARIANHELPER_H
