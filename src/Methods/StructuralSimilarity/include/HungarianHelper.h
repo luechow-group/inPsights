@@ -115,9 +115,9 @@ namespace Metrics{
     }
 
     template<int overallNorm = Eigen::Infinity, int positionalNorm = 2>
-    std::pair<double,Eigen::PermutationMatrix<Eigen::Dynamic>> spinSpecifcBestMatchNorm(
-            const ElectronsVector& permutee,
-            const ElectronsVector& reference,
+    std::pair<double,Eigen::PermutationMatrix<Eigen::Dynamic>> spinSpecificBestMatchNorm(
+            const ElectronsVector &permutee,
+            const ElectronsVector &reference,
             bool flipSpinsQ = false){
 
         auto spinSpecificBestMatch = HungarianHelper::spinSpecificBestMatch<positionalNorm>(permutee,reference,flipSpinsQ);
