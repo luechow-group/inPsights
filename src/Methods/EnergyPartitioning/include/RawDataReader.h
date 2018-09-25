@@ -16,7 +16,7 @@ public:
             std::vector<Sample>& samples,
             int recordDelimiterLength = 4);
 
-    bool read(const std::string& fileName) override;
+    void read(const std::string& fileName) override;
 
 private:
     std::vector<Reference>& references_;

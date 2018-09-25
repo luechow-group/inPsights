@@ -5,6 +5,7 @@
 #include <RawDataReader.h>
 #include "Reference.h"
 #include "ParticlesVector.h"
+#include <Logger.h>
 
 RawDataReader::RawDataReader(
         std::vector<Reference>& references,
@@ -15,19 +16,17 @@ RawDataReader::RawDataReader(
         samples_(samples)
         {}
 
-bool RawDataReader::read(const std::string &fileName){
+void RawDataReader::read(const std::string &fileName){
     // open file in binary mode
     std::ifstream input(fileName.c_str(), std::ios::binary);
 
-
-    if( input.good() )
-    {
+    if( input.good() ) {
         // get length of file:
         input.seekg (0, std::ifstream::end);
         long long int totalLength = input.tellg();
         input.seekg (0, std::ifstream::beg);
-        //std::cout << totalLength << std::endl; // in byte?
 
+        spdlog::get(Logger::name)->info("file length {}", totalLength);
 
         int nElectrons = readInt(input);
         int nAlpha = readInt(input);
@@ -55,16 +54,5 @@ bool RawDataReader::read(const std::string &fileName){
             samples_.emplace_back(s);
             id++;
         }
-
-        return true;
-    }
-    else
-    {
-        std::cout << "input not good"<< std::endl;
-        return false;
-    }
-
-
-
+    } else throw std::runtime_error("Could not open file '" + fileName + "'");
 }
-

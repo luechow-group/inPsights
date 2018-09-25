@@ -27,7 +27,7 @@ public:
     samples_(samples),
     increment_(increment),
     distThresh_(distThresh),
-    console(spdlog::get("console"))
+    console(spdlog::get(Logger::name))
     {}
 
     GlobalIdentiySorter(std::vector<Reference>& references, std::vector<Sample>& samples, double distThresh = 0.01)
@@ -130,7 +130,7 @@ public:
     similarReferencesVector_(similarReferencesVector),
     increment_(increment),
     distThresh_(distThresh),
-    console(spdlog::get("console"))
+    console(spdlog::get(Logger::name))
     {}
 
     GlobalSimilaritySorter(
