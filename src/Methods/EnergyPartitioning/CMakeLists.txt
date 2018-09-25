@@ -13,6 +13,8 @@ set(HEADER_FILES
         include/RawDataReader.h
         include/Sample.h
         include/Reference.h
+        include/GlobalIdentitySorter.h
+        include/GlobalSimilaritySorter.h
         )
 
 set(SOURCE_FILES

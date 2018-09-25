@@ -8,7 +8,6 @@
 #define AMOLQCPP_REFERENCE_H
 
 #include <ParticlesVector.h>
-#include <Logger.h>
 
 class Reference{
 public:
