@@ -32,4 +32,4 @@ target_link_libraries(${PROJECT_NAME}
         StructuralSimilarity
         )
 
-#add_subdirectory(tests)
+add_subdirectory(tests)

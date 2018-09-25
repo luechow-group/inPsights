@@ -50,7 +50,12 @@ public:
             auto it = lit;
             it++; // start with the element next to lit
 
-            while(it != uit) subLoop(lit,it);
+
+            std::cout << (*lit).id_ << ": "<<(*lit).maximum_ << std::endl;
+
+            while(it != uit) {
+                subLoop(lit,it,uit);
+            }
 
             lit = uit;
         }
@@ -59,14 +64,14 @@ public:
     }
 
 private:
-    void subLoop(std::vector<Reference>::iterator& lit, std::vector<Reference>::iterator& it){
+    void subLoop(std::vector<Reference>::iterator& lit, std::vector<Reference>::iterator& it, std::vector<Reference>::iterator& uit){
         //TODO maybe calculate only alpha electron distance and skip beta electron hungarian if dist is too high already
-
         auto bestMatch = Metrics::spinSpecificBestMatchNorm((*it).maximum_, (*lit).maximum_);
 
+        std::cout << "--"<< (*it).id_ << ": "<<(*it).maximum_ << std::endl;
 
         if((*lit).maximum_.typesVector().multiplicity() == 1) { // consider spin flip
-            auto bestMatchFlipped = Metrics::spinSpecificBestMatchNorm((*it).maximum_, (*lit).maximum_, true);
+            auto bestMatchFlipped = Metrics::spinSpecificBestMatchNorm<Eigen::Infinity,2>((*it).maximum_, (*lit).maximum_, true);
 
             console->info("{},{}",bestMatch.first,bestMatchFlipped.first);
             if( (bestMatch.first <= distThresh_) || (bestMatchFlipped.first <= distThresh_) ){
@@ -77,14 +82,16 @@ private:
                 else
                     addReference(lit, it, bestMatchFlipped.second);
 
-            } else
-                it++;
+                uit = std::upper_bound(lit,references_.end(),Reference((*lit).negLogSqrdProbabilityDensity_+increment_));
+            }
+            else it++;
         }
         else {  // don't consider spin flip
-            if( (bestMatch.first <= distThresh_) )
+            if( (bestMatch.first <= distThresh_) ) {
                 addReference(lit, it, bestMatch.second);
-            else
-                it++;
+                uit = std::upper_bound(lit,references_.end(),Reference((*lit).negLogSqrdProbabilityDensity_+increment_));
+            }
+            else it++;
         }
     }
 
