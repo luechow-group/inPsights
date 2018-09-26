@@ -2,7 +2,7 @@
 // Created by Michael Heuer on 25.09.18.
 //
 
-#include <gtest/gtest.h>
+#include <gmock/gmock.h>
 #include <Reference.h>
 #include <Sample.h>
 #include <GlobalIdentitySorter.h>
@@ -11,12 +11,13 @@ using namespace testing;
 
 class AGlobalIdentitySorterTest : public ::testing::Test {
 public:
-    std::vector<Reference> globallyIdenticalMaxima;
+    std::vector<Reference> system1;
     std::vector<Sample> samples;
 
     void SetUp() override {
 
-        globallyIdenticalMaxima = {
+        // multiplicity = 2, no spin flip possible
+        system1 = { 
                 {1.00,ElectronsVector({{Spin::alpha,{0,0,1.00}}}),0},
                 {1.01,ElectronsVector({{Spin::alpha,{0,0,1.01}}}),1},
                 {1.02,ElectronsVector({{Spin::alpha,{0,0,1.02}}}),2},
@@ -27,23 +28,32 @@ public:
                 {1.13,ElectronsVector({{Spin::alpha,{0,0,1.13}}}),7},
         };
 
-        for (auto& i : globallyIdenticalMaxima){
+        for (auto& i : system1){
             Sample s(ElectronsVector({{Spin::alpha,{0,0,0}}}), Eigen::VectorXd::Random(1));
-
             samples.emplace_back(std::move(s));
         }
     }
 };
 
-TEST_F(AGlobalIdentitySorterTest, sort) {
-    std::cout << globallyIdenticalMaxima.size() << std::endl;
-
-    double increment = 0.1;
-    double identicalDistThresh = 1;
-    GlobalIdentiySorter globalIdentiySorter(globallyIdenticalMaxima, samples, increment ,identicalDistThresh);
-
+TEST_F(AGlobalIdentitySorterTest, OneList) {
+    GlobalIdentiySorter globalIdentiySorter(system1, samples, 1, 2);
     globalIdentiySorter.sort();
 
-    std::cout << globallyIdenticalMaxima.size() << std::endl;
+    ASSERT_THAT(system1.at(0).associatedSampleIds_, ElementsAre(1,2,3,4,5,6,7));
+}
 
+TEST_F(AGlobalIdentitySorterTest, TwoLists) {
+    GlobalIdentiySorter globalIdentiySorter(system1, samples, 0.05, 1);
+    globalIdentiySorter.sort();
+
+    ASSERT_THAT(system1.at(0).associatedSampleIds_, ElementsAre(1,2,3));
+    ASSERT_THAT(system1.at(1).associatedSampleIds_, ElementsAre(5,6,7));
+}
+
+TEST_F(AGlobalIdentitySorterTest, TwoListsIncrementBorderCase) {
+    GlobalIdentiySorter globalIdentiySorter(system1, samples, 0.1, 1);
+    globalIdentiySorter.sort();
+
+    ASSERT_THAT(system1.at(0).associatedSampleIds_, ElementsAre(1,2,3,4));
+    ASSERT_THAT(system1.at(1).associatedSampleIds_, ElementsAre(6,7));
 }

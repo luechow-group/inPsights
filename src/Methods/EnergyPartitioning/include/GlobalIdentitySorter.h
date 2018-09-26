@@ -40,49 +40,38 @@ public:
             return true; // no sorting
         }
         std::sort(references_.begin(),references_.end());
-
         auto lit = references_.begin();
-        auto uit = references_.begin();
 
         while (lit != references_.end()){
-            uit = std::upper_bound(lit,references_.end(),Reference((*lit).negLogSqrdProbabilityDensity_+increment_));
-            //uit = references_.upper_bound(Reference((*lit).negLogSqrdProbabilityDensity_+increment_));
+            auto uit = std::upper_bound(lit,references_.end(),Reference((*lit).negLogSqrdProbabilityDensity_+increment_));
             auto it = lit;
             it++; // start with the element next to lit
 
-
-            std::cout << (*lit).id_ << ": "<<(*lit).maximum_ << std::endl;
-
-            while(it != uit) {
-                subLoop(lit,it,uit);
-            }
-
+            while(it != uit) subLoop(lit,it,uit);
             lit = uit;
         }
-
         return true;
     }
 
 private:
-    void subLoop(std::vector<Reference>::iterator& lit, std::vector<Reference>::iterator& it, std::vector<Reference>::iterator& uit){
-        //TODO maybe calculate only alpha electron distance and skip beta electron hungarian if dist is too high already
+    void subLoop(
+            std::vector<Reference>::iterator& lit,
+            std::vector<Reference>::iterator& it,
+            std::vector<Reference>::iterator& uit) {
+
+        //TODO calculate only alpha electron distances and skip beta electron hungarian if dist is too large
         auto bestMatch = Metrics::spinSpecificBestMatchNorm((*it).maximum_, (*lit).maximum_);
 
-        std::cout << "--"<< (*it).id_ << ": "<<(*it).maximum_ << std::endl;
-
         if((*lit).maximum_.typesVector().multiplicity() == 1) { // consider spin flip
+            
             auto bestMatchFlipped = Metrics::spinSpecificBestMatchNorm<Eigen::Infinity,2>((*it).maximum_, (*lit).maximum_, true);
 
-            console->info("{},{}",bestMatch.first,bestMatchFlipped.first);
             if( (bestMatch.first <= distThresh_) || (bestMatchFlipped.first <= distThresh_) ){
-                console->info("MERGE");
-
                 if(bestMatch.first <= bestMatchFlipped.first)
                     addReference(lit, it, bestMatch.second);
                 else
                     addReference(lit, it, bestMatchFlipped.second);
-
-                uit = std::upper_bound(lit,references_.end(),Reference((*lit).negLogSqrdProbabilityDensity_+increment_));
+                uit = std::upper_bound(lit, references_.end(), Reference((*lit).negLogSqrdProbabilityDensity_+increment_));
             }
             else it++;
         }
