@@ -29,7 +29,6 @@ public:
             GlobalIdentiySorter(references, samples, (*references.rbegin()).negLogSqrdProbabilityDensity_ * 1e-7, distThresh)
     {}
 
-
     bool sort(){
         if(references_.empty()) {
             console->error("References are empty.");
@@ -84,7 +83,6 @@ private:
         }
     }
 
-    //TODO find better name
     void addReference(const std::vector<Reference, std::allocator<Reference>>::iterator &lit,
             std::vector<Reference, std::allocator<Reference>>::iterator &it,
     const Eigen::PermutationMatrix<Eigen::Dynamic> &bestMatch) const {
@@ -97,7 +95,7 @@ private:
                 make_move_iterator((*it).associatedSampleIds_.end())
         );
 
-        it = references_.erase(it); // returns the iterator of the following element
+        it = references_.erase(it); // erase returns the iterator of the following element
     }
 
     std::vector<Reference>& references_;
