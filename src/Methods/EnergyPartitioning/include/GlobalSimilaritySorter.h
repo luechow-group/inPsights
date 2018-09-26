@@ -56,7 +56,7 @@ public:
 
                 bool isSimilarQ = false;
                 for (auto &simRefs : similarReferencesVector_) {
-                    // check if refIt is similar to simRefs representative reference
+                    // check if it is similar to simRefs representative reference
 
                     // calc perm r->sr so that we can store them in similar reference
                     auto bestMatch = Metrics::bestMatchNorm<Eigen::Infinity>(
@@ -77,7 +77,7 @@ public:
         }
         return true;
     }
-    
+
 private:
     std::vector<Reference>& references_;
     std::vector<SimilarReferences>& similarReferencesVector_;
