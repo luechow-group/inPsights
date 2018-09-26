@@ -45,58 +45,60 @@ public:
             return true; // no sorting
         }
         std::sort(references_.begin(),references_.end());
-        auto lit = references_.begin();
+        auto beginIt = references_.begin();
 
-        while (lit != references_.end()){
-            auto uit = std::upper_bound(lit,references_.end(),Reference((*lit).negLogSqrdProbabilityDensity_+increment_));
-            auto it = lit;
-            it++; // start with the element next to lit
+        while (beginIt != references_.end()){
+            auto endIt = std::upper_bound(beginIt,references_.end(),Reference((*beginIt).negLogSqrdProbabilityDensity_+increment_));
+            auto it = beginIt;
+            it++; // start with the element next to beginIt
 
-            while(it != uit) subLoop(lit,it,uit);
-            lit = uit;
+            while(it != endIt) subLoop(beginIt,it,endIt);
+            beginIt = endIt;
         }
         return true;
     }
 
 private:
     void subLoop(
-            std::vector<Reference>::iterator& lit,
+            std::vector<Reference>::iterator& beginIt,
             std::vector<Reference>::iterator& it,
-            std::vector<Reference>::iterator& uit) {
+            std::vector<Reference>::iterator& endIt) {
 
         //TODO calculate only alpha electron distances and skip beta electron hungarian if dist is too large
-        auto bestMatch = Metrics::spinSpecificBestMatchNorm((*it).maximum_, (*lit).maximum_);
+        auto bestMatch = Metrics::spinSpecificBestMatchNorm((*it).maximum_, (*beginIt).maximum_);
 
-        if((*lit).maximum_.typesVector().multiplicity() == 1) { // consider spin flip
+        if((*beginIt).maximum_.typesVector().multiplicity() == 1) { // consider spin flip
 
-            auto bestMatchFlipped = Metrics::spinSpecificBestMatchNorm<Eigen::Infinity,2>((*it).maximum_, (*lit).maximum_, true);
+            auto bestMatchFlipped = Metrics::spinSpecificBestMatchNorm<Eigen::Infinity,2>((*it).maximum_, (*beginIt).maximum_, true);
 
             if( (bestMatch.first <= distThresh_) || (bestMatchFlipped.first <= distThresh_) ){
                 if(bestMatch.first <= bestMatchFlipped.first)
-                    addReference(lit, it, bestMatch.second);
+                    addReference(beginIt, it, bestMatch.second);
                 else
-                    addReference(lit, it, bestMatchFlipped.second);
-                uit = std::upper_bound(lit, references_.end(), Reference((*lit).negLogSqrdProbabilityDensity_+increment_));
+                    addReference(beginIt, it, bestMatchFlipped.second);
+                endIt = std::upper_bound(beginIt, references_.end(), Reference((*beginIt).negLogSqrdProbabilityDensity_+increment_));
             }
             else it++;
         }
         else {  // don't consider spin flip
             if( (bestMatch.first <= distThresh_) ) {
-                addReference(lit, it, bestMatch.second);
-                uit = std::upper_bound(lit,references_.end(),Reference((*lit).negLogSqrdProbabilityDensity_+increment_));
+                addReference(beginIt, it, bestMatch.second);
+                endIt = std::upper_bound(beginIt,references_.end(),Reference((*beginIt).negLogSqrdProbabilityDensity_+increment_));
             }
             else it++;
         }
     }
 
-    void addReference(const std::vector<Reference, std::allocator<Reference>>::iterator &lit,
+    void addReference(
+            const std::vector<Reference, std::allocator<Reference>>::iterator &beginIt,
             std::vector<Reference, std::allocator<Reference>>::iterator &it,
-    const Eigen::PermutationMatrix<Eigen::Dynamic> &bestMatch) const {
+            const Eigen::PermutationMatrix<Eigen::Dynamic> &bestMatch) const {
+
         samples_[(*it).id_].sample_.permute(bestMatch);
 
-        (*lit).addAssociation((*it).id_);
-        (*lit).associatedSampleIds_.insert(
-                (*lit).associatedSampleIds_.end(),
+        (*beginIt).addAssociation((*it).id_);
+        (*beginIt).associatedSampleIds_.insert(
+                (*beginIt).associatedSampleIds_.end(),
                 make_move_iterator((*it).associatedSampleIds_.begin()),
                 make_move_iterator((*it).associatedSampleIds_.end())
         );

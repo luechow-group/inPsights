@@ -47,12 +47,12 @@ public:
         if(similarReferencesVector_.empty())
             similarReferencesVector_.emplace_back(SimilarReferences(references_.begin()));
 
-        auto lit = references_.begin();
+        auto beginIt = references_.begin();
 
-        while (lit != references_.end()) {
-            auto uit = std::upper_bound(lit,references_.end(), Reference((*lit).negLogSqrdProbabilityDensity_+increment_));
+        while (beginIt != references_.end()) {
+            auto endIt = std::upper_bound(beginIt,references_.end(), Reference((*beginIt).negLogSqrdProbabilityDensity_+increment_));
 
-            for (auto it = lit; it != uit;  ++it ) {
+            for (auto it = beginIt; it != endIt;  ++it ) {
 
                 bool isSimilarQ = false;
                 for (auto &simRefs : similarReferencesVector_) {
@@ -73,12 +73,12 @@ public:
                 }
                 if (!isSimilarQ) similarReferencesVector_.emplace_back(SimilarReferences(it));
             }
-            lit = uit;
+            beginIt = endIt;
         }
         return true;
     }
+    
 private:
-
     std::vector<Reference>& references_;
     std::vector<SimilarReferences>& similarReferencesVector_;
     double increment_,distThresh_;
