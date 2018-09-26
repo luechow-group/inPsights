@@ -6,6 +6,7 @@
 #include "Reference.h"
 #include "ParticlesVector.h"
 #include <Logger.h>
+#include <spdlog/spdlog.h>
 
 RawDataReader::RawDataReader(
         std::vector<Reference>& references,

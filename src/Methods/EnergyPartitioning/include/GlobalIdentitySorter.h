@@ -10,6 +10,7 @@
 #include "Sample.h"
 #include <Logger.h>
 #include <HungarianHelper.h>
+#include <spdlog/spdlog.h>
 #include <vector>
 
 class GlobalIdentiySorter{
@@ -22,7 +23,12 @@ public:
             increment_(increment),
             distThresh_(distThresh),
             console(spdlog::get(Logger::name))
-    {}
+    {
+        if(!console){
+            Logger::initialize();
+            console = spdlog::get(Logger::name);
+        };
+    }
 
     GlobalIdentiySorter(std::vector<Reference>& references, std::vector<Sample>& samples, double distThresh = 0.01)
             :

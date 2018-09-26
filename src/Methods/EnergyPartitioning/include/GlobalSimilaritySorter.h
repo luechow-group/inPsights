@@ -5,6 +5,12 @@
 #ifndef AMOLQCPP_GLOBALSIMILARITYSORTER_H
 #define AMOLQCPP_GLOBALSIMILARITYSORTER_H
 
+#include "Reference.h"
+#include "Sample.h"
+#include <Logger.h>
+#include <HungarianHelper.h>
+#include <spdlog/spdlog.h>
+#include <vector>
 
 class GlobalSimilaritySorter {
 public:
@@ -19,7 +25,12 @@ public:
             increment_(increment),
             distThresh_(distThresh),
             console(spdlog::get(Logger::name))
-    {}
+    {
+        if(!console){
+            Logger::initialize();
+            console = spdlog::get(Logger::name);
+        };
+    }
 
     GlobalSimilaritySorter(
             std::vector<Reference>& references,
@@ -36,13 +47,10 @@ public:
         if(similarReferencesVector_.empty())
             similarReferencesVector_.emplace_back(SimilarReferences(references_.begin()));
 
-        // for all references in range
-        // for (auto refIt = references_.begin()+1; refIt != references_.end(); ++refIt) {
         auto lit = references_.begin();
-        auto uit = references_.begin();
 
         while (lit != references_.end()) {
-            uit = std::upper_bound(lit,references_.end(), Reference((*lit).negLogSqrdProbabilityDensity_+increment_));
+            auto uit = std::upper_bound(lit,references_.end(), Reference((*lit).negLogSqrdProbabilityDensity_+increment_));
 
             for (auto it = lit; it != uit;  ++it ) {
 
