@@ -63,7 +63,7 @@ private:
         auto bestMatch = Metrics::spinSpecificBestMatchNorm((*it).maximum_, (*lit).maximum_);
 
         if((*lit).maximum_.typesVector().multiplicity() == 1) { // consider spin flip
-            
+
             auto bestMatchFlipped = Metrics::spinSpecificBestMatchNorm<Eigen::Infinity,2>((*it).maximum_, (*lit).maximum_, true);
 
             if( (bestMatch.first <= distThresh_) || (bestMatchFlipped.first <= distThresh_) ){
