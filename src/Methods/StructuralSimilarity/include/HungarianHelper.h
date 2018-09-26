@@ -14,20 +14,7 @@ namespace HungarianHelper{
 
     Eigen::PermutationMatrix<Eigen::Dynamic> combinePermutations(
             const Eigen::PermutationMatrix<Eigen::Dynamic>& p1,
-            const Eigen::PermutationMatrix<Eigen::Dynamic>& p2, bool flipSpinsQ = false) {
-
-        long n1 = p1.size(), n2 = p2.size();
-        Eigen::VectorXi combined(n1+n2);
-
-        if(!flipSpinsQ) { //TODO DOES THIS MAKE SENSE?
-            combined.segment(0, n1) = p1.indices().base();
-            combined.segment(n1, n2) = (p2.indices().base().array() + n1);
-        } else {
-            combined.segment(0, n1) = (p1.indices().base().array() + n1);
-            combined.segment(n1, n2) = p2.indices().base();
-        }
-        return Eigen::PermutationMatrix<Eigen::Dynamic>(combined);
-    };
+            const Eigen::PermutationMatrix<Eigen::Dynamic>& p2, bool flipSpinsQ = false);
 
     template <int positionalNorm = 2>
     Eigen::PermutationMatrix<Eigen::Dynamic> spinSpecificBestMatch(

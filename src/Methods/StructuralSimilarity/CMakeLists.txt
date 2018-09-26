@@ -18,6 +18,7 @@ set(HEADER_FILES
 set(SOURCE_FILES
         source/QuaternionFit.cpp
         source/SimpleSorter.cpp
+        source/HungarianHelper.cpp
         )
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES})
