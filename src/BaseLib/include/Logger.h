@@ -5,8 +5,7 @@
 #ifndef AMOLQCPP_LOGGER_H
 #define AMOLQCPP_LOGGER_H
 
-#include "spdlog/spdlog.h"
-#include "spdlog/sinks/stdout_color_sinks.h"
+#include <string>
 
 namespace Logger{
 
