@@ -63,6 +63,12 @@ if (DEFINED BUILD_GUI AND ON)
             AmolqcInterface
             )
 
+    add_executable(ShowPath.exe ShowPath.cpp)
+    target_link_libraries(ShowPath.exe
+            GUI
+            AmolqcInterface
+            )
+
     add_executable(H6TSsearch.exe H6TSsearch.cpp)
     target_link_libraries(H6TSsearch.exe
             GUI
