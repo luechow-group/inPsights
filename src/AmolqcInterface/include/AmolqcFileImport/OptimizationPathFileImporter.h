@@ -22,6 +22,8 @@ public:
 
     ElectronsVectorCollection getPath(unsigned long k) const;
 
+    AtomsVector getAtomsVector() const;
+
     PositionsVector getPositionsVector(unsigned long k, unsigned long m) const;
 
     unsigned long getNumberOfPaths() const;
@@ -29,7 +31,8 @@ public:
 private:
     unsigned long calculateLine(unsigned long k, unsigned long m) const;
 
-    unsigned long numberOfElectrons_,
+    AtomsVector atoms_;
+    unsigned long numberOfNuclei_,beginOfElectronPositionBlocks_, numberOfElectrons_,
             numberOfAlphaElectrons_,
             numberOfBetaElectrons_,
             numberOfPaths_;

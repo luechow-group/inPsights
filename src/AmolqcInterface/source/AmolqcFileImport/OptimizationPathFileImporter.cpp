@@ -4,12 +4,26 @@
 
 #include "AmolqcFileImport/OptimizationPathFileImporter.h"
 #include <ParticlesVectorCollection.h>
+#include <ElementInfo.h>
 
 OptimizationPathFileImporter::OptimizationPathFileImporter(const std::string &filename,
                                                            unsigned long multiplicity)
-        : AmolqcImporter(filename) {
+        : AmolqcImporter(filename),atoms_() {
 
-    numberOfElectrons_= std::stoul(split(getLine(1))[0]);
+    numberOfNuclei_ = std::stoul(split(getLine(0))[0]);
+    beginOfElectronPositionBlocks_ = numberOfNuclei_+2;
+
+    for (unsigned i = 1; i <= numberOfNuclei_; ++i) {
+        std::vector<std::string> lineElements = split(getLine(i));
+        Element elementType = Elements::ElementInfo::elementTypeFromSymbol(lineElements[1]);
+        double x = std::stod(lineElements[2]);
+        double y = std::stod(lineElements[3]);
+        double z = std::stod(lineElements[4]);
+
+        atoms_.append({elementType,{x,y,z}});
+    }
+
+    numberOfElectrons_= std::stoul(split(getLine(beginOfElectronPositionBlocks_+1))[0]);
     assert((numberOfElectrons_+(multiplicity-1))%2 == 0
            && "Even and oddness of the number of electrons must match to the specified multiplicity.");
 
@@ -17,7 +31,7 @@ OptimizationPathFileImporter::OptimizationPathFileImporter(const std::string &fi
     numberOfBetaElectrons_ = numberOfElectrons_-numberOfAlphaElectrons_;
 
     unsigned long blockLength = numberOfElectrons_+2;
-    substructuresData_ = countSubstructures(0,blockLength);
+    substructuresData_ = countSubstructures(beginOfElectronPositionBlocks_,blockLength);
     numberOfPaths_ = substructuresData_.size();
 }
 
@@ -49,4 +63,8 @@ ElectronsVectorCollection OptimizationPathFileImporter::getPath(unsigned long k)
 
 unsigned long OptimizationPathFileImporter::getNumberOfPaths() const {
     return numberOfPaths_;
+}
+
+AtomsVector OptimizationPathFileImporter::getAtomsVector() const {
+    return atoms_;
 }

@@ -8,44 +8,50 @@
 #include <Visualization.h>
 
 bool handleCommandlineArguments(int argc, char **argv,
-                                std::string &wavefunctionFilename,
                                 std::string &pathFilename,
-                                int & pathId) {
-    if (argc < 3) {
+                                unsigned & pathId) {
+    if (argc < 2) {
         std::cout << "Usage: \n"
-                  << "Argument 1: wavefunction filename (.wf)\n"
-                  << "Argument 2: path filename (.300)\n"
-                  << "Argument 3: path id"
+                  << "Argument 1: path filename (.300)\n"
+                  << "Argument 2: path id"
                   << std::endl;
-        std::cout << "Ethane.wf Ethane.300 " << std::endl;
+        std::cout << "Ethane.300 1" << std::endl;
         return false;
-    } else if (argc >= 3) {
-        wavefunctionFilename = argv[1];
-        pathFilename = argv[2];
-        pathId = std::atoi(argv[3]);
+    } else if (argc == 3) {
+        pathFilename = argv[1];
+        int kint = std::atoi(argv[2]);
+        try {
+            if (".300" != pathFilename .substr( pathFilename .length() - 4 ))
+                throw std::invalid_argument("Invalid path file type '" + pathFilename  + "'.");
+            if (kint < 1)
+                throw std::invalid_argument("The path index must be a positive integer but is " + std::string(argv[2]));
+        }
+        catch (std::invalid_argument &e){
+            std::cout << e.what() << std::endl;
+            abort();
+        }
+
+        pathId = unsigned(kint);
         return true;
-    } else
-        return false;
-}
+    } else {
+        throw std::invalid_argument("Too many arguments");
+    }
+};
 
 int main(int argc, char *argv[]) {
-    std::string wavefunctionFilename;
     std::string pathFilename;
-    int pathId;
+    unsigned pathId;
 
-    if (wavefunctionFilename.empty() && pathFilename.empty()) {
+    if (pathFilename.empty()) {
         bool inputArgumentsFoundQ =
-                handleCommandlineArguments(argc, argv, wavefunctionFilename, pathFilename, pathId);
+                handleCommandlineArguments(argc, argv, pathFilename, pathId);
         if (!inputArgumentsFoundQ) return 0;
     }
 
-    WfFileImporter wfFileImporter(wavefunctionFilename);
-    auto atoms = wfFileImporter.getAtomsVector();
 
-    auto multiplicity = wfFileImporter.getMultiplicity();
-
-    OptimizationPathFileImporter optimizationPathFileImporter(pathFilename,multiplicity);
+    OptimizationPathFileImporter optimizationPathFileImporter(pathFilename,1);//TODO REMOVE MULTIPLICITY
     auto path = optimizationPathFileImporter.getPath(pathId);
+    auto atoms = optimizationPathFileImporter.getAtomsVector();
 
     return Visualization::visualizeOptPath(argc, argv, atoms, path);
 }
