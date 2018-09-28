@@ -21,24 +21,24 @@ int main(int argc, char *argv[]) {
 
     Logger::initialize();
     auto console = spdlog::get(Logger::name);
-    double identicalDistThresh = 0.01;
+    double identicalDistThresh = 0.1;
     std::vector<Reference> globallyIdenticalMaxima;
     std::vector<Sample> samples;
     RawDataReader reader(globallyIdenticalMaxima,samples);
     reader.read("Ethane.bin");
     console->info("number of refs {}",globallyIdenticalMaxima.size());
-    auto numberOfElectrons = globallyIdenticalMaxima[0].maximum_.numberOfEntities();
-
 
     GlobalIdentiySorter globalIdentiySorter(globallyIdenticalMaxima, samples, identicalDistThresh);
     globalIdentiySorter.sort();
     console->info("finished id sort");
     console->flush();
 
+    console->info("after identical sort {}",globallyIdenticalMaxima.size());
+
 
     console->info("total elems {}",std::distance(globallyIdenticalMaxima.begin(),globallyIdenticalMaxima.end()));
 
-
+/*
     double similarDistThresh = 0.1;
     std::vector<SimilarReferences> similarReferencesVector;
     GlobalSimilaritySorter globalSimilaritySorter(globallyIdenticalMaxima, similarReferencesVector,similarDistThresh);
@@ -50,21 +50,22 @@ int main(int argc, char *argv[]) {
 
     //std::vector<SimilarReference> clusteredReferences;
 
-    /*Clustering*/
+    //Clustering
     // make data
-    /*std::vector<Eigen::VectorXd> data;
+    std::vector<Eigen::VectorXd> data;
     for(auto& simRefVector : similarReferencesVector){
-        data.push_back((*simRefVector.representativeReferenceIterator).maximum_.positionsVector().asEigenVector());
+        data.push_back((*simRefVector.repRefIt_).maximum_.positionsVector().asEigenVector());
     }
 
     // needs bestMatchDistance
     DensityBasedScan<double> dbscan(data);
 
     auto nClusters = dbscan.findClusters(0.20001, 5);
-    auto result = dbscan.getLabels();*/
+    auto result = dbscan.getLabels();
 
 
-    /*Energy Partitioning*/
+
+    //Energy Partitioning
     Statistics::RunningStatistics<Eigen::VectorXd> EkinStats;
     Statistics::RunningStatistics<Eigen::MatrixXd> EpotStats;
 
@@ -151,7 +152,7 @@ int main(int argc, char *argv[]) {
     ElectronsVector3D(root, atoms, ev2, true);
 
     return app.exec();
-
+*/
 
 //TODO CHECK PERMUTATION
 // CHECK ADDITIONAL +1

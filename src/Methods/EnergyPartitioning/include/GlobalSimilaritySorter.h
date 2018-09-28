@@ -42,6 +42,7 @@ public:
 
         for (auto it = beginIt; it !=references_.end(); ++it) {
             bool isSimilarQ = false;
+            //console->info("{}",(*it).id_);
 
             for (auto &simRefs : similarReferencesVector_) {
 
@@ -49,13 +50,16 @@ public:
                         (*it).maximum_.positionsVector(),
                         (*simRefs.repRefIt_).maximum_.positionsVector());
 
+                console->info("{}",bestMatch.first);
                 if (bestMatch.first < distThresh_) {
                     simRefs.similarReferences_.emplace_back(SimilarReference(it, bestMatch.second));
                     isSimilarQ = true;
+                    console->info("merge");
                 }
             }
             if (!isSimilarQ) {
                 similarReferencesVector_.emplace_back(SimilarReferences(it));
+                console->info("make new");
             }
         }
         return true;
