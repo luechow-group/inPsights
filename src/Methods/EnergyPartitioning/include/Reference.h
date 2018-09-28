@@ -56,13 +56,13 @@ class SimilarReferences {
 public:
     explicit SimilarReferences(std::vector<Reference>::iterator representativeReference)
     :
-    representativeReferenceIterator(representativeReference),
+    repRefIt_(representativeReference),
     similarReferences_()
     {}
 
     //TODO REPLACE THIS BY CENTROID LIKE REF
 
-    std::vector<Reference>::iterator representativeReferenceIterator; // may change over time, difficult to define for rings/clusters
+    std::vector<Reference>::iterator repRefIt_; // may change over time, difficult to define for rings/clusters
     std::vector<SimilarReference> similarReferences_;
 
 };

@@ -18,11 +18,10 @@ public:
     GlobalSimilaritySorter(
             std::vector<Reference>& references,
             std::vector<SimilarReferences>& similarReferencesVector,
-            double increment, double distThresh)
+            double distThresh = 0.1)
             :
             references_(references),
             similarReferencesVector_(similarReferencesVector),
-            increment_(increment),
             distThresh_(distThresh),
             console(spdlog::get(Logger::name))
     {
@@ -32,56 +31,41 @@ public:
         };
     }
 
-    GlobalSimilaritySorter(
-            std::vector<Reference>& references,
-            std::vector<SimilarReferences>& similarReferencesVector,
-            double distThresh = 0.1)
-            :
-            GlobalSimilaritySorter(references, similarReferencesVector,
-                                   (*references.rbegin()).negLogSqrdProbabilityDensity_ * 1e-5, distThresh)
-    {}
-
-
     bool sort(){
-
-        if(similarReferencesVector_.empty())
-            similarReferencesVector_.emplace_back(SimilarReferences(references_.begin()));
 
         auto beginIt = references_.begin();
 
-        while (beginIt != references_.end()) {
-            auto endIt = std::upper_bound(beginIt,references_.end(), Reference((*beginIt).negLogSqrdProbabilityDensity_+increment_));
+        if(similarReferencesVector_.empty()) {
+            similarReferencesVector_.emplace_back(SimilarReferences(references_.begin()));
+            beginIt++;
+        }
 
-            for (auto it = beginIt; it != endIt;  ++it ) {
+        for (auto it = beginIt; it !=references_.end(); ++it) {
+            bool isSimilarQ = false;
 
-                bool isSimilarQ = false;
-                for (auto &simRefs : similarReferencesVector_) {
-                    // check if it is similar to simRefs representative reference
+            for (auto &simRefs : similarReferencesVector_) {
 
-                    // calc perm r->sr so that we can store them in similar reference
-                    auto bestMatch = Metrics::bestMatchNorm<Eigen::Infinity>(
-                            (*it).maximum_.positionsVector(),
-                            (*simRefs.representativeReferenceIterator).maximum_.positionsVector());
+                auto bestMatch = Metrics::bestMatchNorm<Eigen::Infinity,2>(
+                        (*it).maximum_.positionsVector(),
+                        (*simRefs.repRefIt_).maximum_.positionsVector());
 
-                    console->info("{}", bestMatch.first);
-                    if (bestMatch.first < distThresh_) {
-                        simRefs.similarReferences_.emplace_back(SimilarReference(it, bestMatch.second));
-
-                        console->info("merged");
-                        isSimilarQ = true;
-                    }
+                if (bestMatch.first < distThresh_) {
+                    simRefs.similarReferences_.emplace_back(SimilarReference(it, bestMatch.second));
+                    isSimilarQ = true;
                 }
-                if (!isSimilarQ) similarReferencesVector_.emplace_back(SimilarReferences(it));
             }
-            beginIt = endIt;
+            if (!isSimilarQ) {
+                similarReferencesVector_.emplace_back(SimilarReferences(it));
+            }
         }
         return true;
     }
 
+
 private:
     std::vector<Reference>& references_;
     std::vector<SimilarReferences>& similarReferencesVector_;
-    double increment_,distThresh_;
+    double distThresh_;
     std::shared_ptr<spdlog::logger> console;
 };
 

@@ -85,9 +85,9 @@ int main(int argc, char *argv[]) {
         EpotStats.reset();
 
         // Representative reference
-        count = 1+(*simRefVector.representativeReferenceIterator).associatedSampleIds_.size();
+        count = 1+(*simRefVector.repRefIt_).associatedSampleIds_.size();
         simCount += count;
-        sampleId = (*simRefVector.representativeReferenceIterator).id_;
+        sampleId = (*simRefVector.repRefIt_).id_;
 
 
         ekin = samples[sampleId].kineticEnergies_;
@@ -142,7 +142,7 @@ int main(int argc, char *argv[]) {
 
     AtomsVector3D(root, atoms);
 
-    auto ev1 = (*similarReferencesVector.at(1).representativeReferenceIterator).maximum_;
+    auto ev1 = (*similarReferencesVector.at(1).repRefIt_).maximum_;
     auto perm = similarReferencesVector.at(1).similarReferences_.at(0).perm_;
     auto ev2 = (*similarReferencesVector.at(1).similarReferences_.at(0).it_).maximum_;
     ev2.permute(perm);
