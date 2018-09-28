@@ -9,7 +9,6 @@
 namespace Logger{
     void initialize(){
         auto console = spdlog::stdout_color_st(name);
-        console->info("Welcome to spdlog!");
     };
 
 }
