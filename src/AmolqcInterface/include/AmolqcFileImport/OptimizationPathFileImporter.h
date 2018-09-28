@@ -18,7 +18,7 @@ public:
 
 class OptimizationPathFileImporter : public AmolqcImporter{
 public:
-    OptimizationPathFileImporter(const std::string& filename, unsigned long  multiplicity);
+    OptimizationPathFileImporter(const std::string& filename);
 
     ElectronsVectorCollection getPath(unsigned long k) const;
 

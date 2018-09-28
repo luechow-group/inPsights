@@ -49,7 +49,7 @@ int main(int argc, char *argv[]) {
     }
 
 
-    OptimizationPathFileImporter optimizationPathFileImporter(pathFilename,1);//TODO REMOVE MULTIPLICITY
+    OptimizationPathFileImporter optimizationPathFileImporter(pathFilename);
     auto path = optimizationPathFileImporter.getPath(pathId);
     auto atoms = optimizationPathFileImporter.getAtomsVector();
 

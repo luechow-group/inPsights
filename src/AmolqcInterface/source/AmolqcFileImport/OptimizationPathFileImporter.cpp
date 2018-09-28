@@ -6,12 +6,17 @@
 #include <ParticlesVectorCollection.h>
 #include <ElementInfo.h>
 
-OptimizationPathFileImporter::OptimizationPathFileImporter(const std::string &filename,
-                                                           unsigned long multiplicity)
+OptimizationPathFileImporter::OptimizationPathFileImporter(const std::string &filename)
         : AmolqcImporter(filename),atoms_() {
 
     numberOfNuclei_ = std::stoul(split(getLine(0))[0]);
+
     beginOfElectronPositionBlocks_ = numberOfNuclei_+2;
+
+    numberOfAlphaElectrons_ = std::stoul(split(getLine(beginOfElectronPositionBlocks_-1))[5]);
+    numberOfBetaElectrons_ = std::stoul(split(getLine(beginOfElectronPositionBlocks_-1))[7]);
+    numberOfElectrons_= numberOfAlphaElectrons_+numberOfBetaElectrons_;
+
 
     for (unsigned i = 1; i <= numberOfNuclei_; ++i) {
         std::vector<std::string> lineElements = split(getLine(i));
@@ -22,13 +27,6 @@ OptimizationPathFileImporter::OptimizationPathFileImporter(const std::string &fi
 
         atoms_.append({elementType,{x,y,z}});
     }
-
-    numberOfElectrons_= std::stoul(split(getLine(beginOfElectronPositionBlocks_+1))[0]);
-    assert((numberOfElectrons_+(multiplicity-1))%2 == 0
-           && "Even and oddness of the number of electrons must match to the specified multiplicity.");
-
-    numberOfAlphaElectrons_ = (numberOfElectrons_+(multiplicity-1))/2;
-    numberOfBetaElectrons_ = numberOfElectrons_-numberOfAlphaElectrons_;
 
     unsigned long blockLength = numberOfElectrons_+2;
     substructuresData_ = countSubstructures(beginOfElectronPositionBlocks_,blockLength);
