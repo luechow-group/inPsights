@@ -118,3 +118,53 @@ TEST(AHungarianHelperTest, SpinSpecificBestMatchNormDifferentSpin) {
     ASSERT_EQ(dInfInf.first,6);
     ASSERT_TRUE(dInfInf.second.indices().isApprox(expectedPerm));
 }
+
+TEST(AHungarianHelperTest, RealMaxima){
+    ElectronsVector v1({
+    {Spin::alpha,{-1.924799,-0.000888,-2.199093}},
+    {Spin::alpha,{-0.425365,-0.687079, 1.739155}},
+    {Spin::alpha,{ 0.807722, 0.024079, 1.739155}},
+    {Spin::alpha,{ 0.000000, 0.000000,-1.446226}},
+    {Spin::alpha,{ 0.397920,-0.688486,-1.772321}},
+    {Spin::alpha,{-0.961644, 1.667362, 2.199093}},
+    {Spin::alpha,{-0.019931, 0.034495,-0.660905}},
+    {Spin::alpha,{ 0.000000, 0.000000, 1.446226}},
+    {Spin::alpha,{ 0.961644, 1.667362,-2.199093}},
+    {Spin::beta ,{ 0.000000, 0.000000,-1.446226}},
+    {Spin::beta ,{ 0.000000, 0.000000, 1.446226}},
+    {Spin::beta ,{-0.963174,-1.666493, 2.199093}},
+    {Spin::beta ,{-0.397172, 0.688642, 1.772829}},
+    {Spin::beta ,{ 0.963174,-1.666493,-2.199093}},
+    {Spin::beta ,{-0.807693,-0.025002,-1.739139}},
+    {Spin::beta ,{ 1.924799,-0.000888, 2.199093}},
+    {Spin::beta ,{ 0.424858, 0.687373,-1.739140}},
+    {Spin::beta ,{ 0.020247,-0.035100, 0.660925}}});
+
+    ElectronsVector v2({
+    {Spin::alpha,{ 0.019994, 0.034636, 0.660859}},
+    {Spin::alpha,{ 0.000000, 0.000000, 1.446226}},
+    {Spin::alpha,{-0.397902,-0.688437, 1.772419}},
+    {Spin::alpha,{ 0.000000, 0.000000,-1.446226}},
+    {Spin::alpha,{ 0.961644, 1.667362,-2.199093}},
+    {Spin::alpha,{-0.961644, 1.667362, 2.199093}},
+    {Spin::alpha,{ 0.425527,-0.687038,-1.739081}},
+    {Spin::alpha,{-0.807764, 0.024240,-1.739086}},
+    {Spin::alpha,{ 1.924799,-0.000888, 2.199093}},
+    {Spin::beta ,{-0.963174,-1.666493, 2.199093}},
+    {Spin::beta ,{ 0.000000, 0.000000, 1.446226}},
+    {Spin::beta ,{-0.424878, 0.687387, 1.739079}},
+    {Spin::beta ,{ 0.397266, 0.688792,-1.772418}},
+    {Spin::beta ,{ 0.000000, 0.000000,-1.446226}},
+    {Spin::beta ,{ 0.963174,-1.666493,-2.199093}},
+    {Spin::beta ,{ 0.807718,-0.025010, 1.739076}},
+    {Spin::beta ,{-1.924799,-0.000888,-2.199093}},
+    {Spin::beta ,{-0.019967,-0.034674,-0.660818}}});
+
+    auto res = Metrics::bestMatchNorm<Eigen::Infinity, 2>(v1, v2);
+    
+    Eigen::VectorXi expectedPerm(v1.numberOfEntities());
+    expectedPerm << 16,2,15,3,6,5,17,1,4,13,10,9,11,14,7,8,12,0;
+
+    ASSERT_LT(res.first, 0.1);
+    ASSERT_TRUE(res.second.indices().isApprox(expectedPerm));
+}
