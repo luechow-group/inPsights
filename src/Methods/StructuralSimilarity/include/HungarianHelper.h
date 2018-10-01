@@ -66,8 +66,6 @@ namespace HungarianHelper{
 };
 
 namespace Metrics{
-    //Use the euclidean norm as default
-
     template<int overallNorm = Eigen::Infinity, int positionalNorm = 2>
     double bestMatchNorm(
             const PositionsVector &permutee,
@@ -83,26 +81,36 @@ namespace Metrics{
     }
 
     template<int overallNorm = Eigen::Infinity, int positionalNorm = 2>
-    std::pair<double,Eigen::PermutationMatrix<Eigen::Dynamic>> bestMatchNorm(
-            const PositionsVector& permutee,
-            const PositionsVector& reference) {
+    std::pair<double,Eigen::PermutationMatrix<Eigen::Dynamic>> bestMatch(
+            const PositionsVector &permutee,
+            const PositionsVector &reference) {
         assert(permutee.numberOfEntities() == reference.numberOfEntities());
 
         auto costMatrix = Metrics::positionalDistances<positionalNorm>(permutee,reference);
         Eigen::PermutationMatrix<Eigen::Dynamic> bestMatch = Hungarian<double>::findMatching(costMatrix);
 
-        return {bestMatchNorm<overallNorm, positionalNorm>(permutee, bestMatch, reference),bestMatch};
+        return {bestMatchNorm<overallNorm, positionalNorm>(permutee, bestMatch, reference), bestMatch};
     }
 
     template<int overallNorm = Eigen::Infinity, int positionalNorm = 2>
-    std::pair<double,Eigen::PermutationMatrix<Eigen::Dynamic>> bestMatchNorm(
-            const ElectronsVector& permutee,
-            const ElectronsVector& reference){
-        return bestMatchNorm<overallNorm, positionalNorm>(permutee.positionsVector(),reference.positionsVector());
+    double bestMatchNorm(const PositionsVector &permutee, const PositionsVector &reference) {
+        return bestMatch<overallNorm,positionalNorm>(permutee,reference).first;
     }
 
     template<int overallNorm = Eigen::Infinity, int positionalNorm = 2>
-    std::pair<double,Eigen::PermutationMatrix<Eigen::Dynamic>> spinSpecificBestMatchNorm(
+    std::pair<double,Eigen::PermutationMatrix<Eigen::Dynamic>> bestMatch(
+            const ElectronsVector &permutee,
+            const ElectronsVector &reference){
+        return bestMatch<overallNorm, positionalNorm>(permutee.positionsVector(), reference.positionsVector());
+    }
+
+    template<int overallNorm = Eigen::Infinity, int positionalNorm = 2>
+    double bestMatchNorm(const ElectronsVector &permutee, const ElectronsVector &reference){
+        return bestMatch<overallNorm,positionalNorm>(permutee,reference).first;
+    }
+
+    template<int overallNorm = Eigen::Infinity, int positionalNorm = 2>
+    std::pair<double,Eigen::PermutationMatrix<Eigen::Dynamic>> spinSpecificBestMatch(
             const ElectronsVector &permutee,
             const ElectronsVector &reference,
             bool flipSpinsQ = false){
@@ -115,6 +123,11 @@ namespace Metrics{
                 spinSpecificBestMatch};
     }
 
+    template<int overallNorm = Eigen::Infinity, int positionalNorm = 2>
+    double spinSpecificBestMatchNorm(
+            const ElectronsVector &permutee, const ElectronsVector &reference, bool flipSpinsQ = false){
+        return spinSpecificBestMatch<overallNorm,positionalNorm>(permutee,reference,flipSpinsQ).first;
+    }
 }
 
 #endif //AMOLQCPP_HUNGARIANHELPER_H

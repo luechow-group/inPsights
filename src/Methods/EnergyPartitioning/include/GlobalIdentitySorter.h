@@ -65,11 +65,12 @@ private:
             std::vector<Reference>::iterator& endIt) {
 
         //TODO calculate only alpha electron distances and skip beta electron hungarian if dist is too large
-        auto bestMatch = Metrics::spinSpecificBestMatchNorm((*it).maximum_, (*beginIt).maximum_);
+        auto bestMatch = Metrics::spinSpecificBestMatch((*it).maximum_, (*beginIt).maximum_);
 
         if((*beginIt).maximum_.typesVector().multiplicity() == 1) { // consider spin flip
 
-            auto bestMatchFlipped = Metrics::spinSpecificBestMatchNorm<Eigen::Infinity,2>((*it).maximum_, (*beginIt).maximum_, true);
+            auto bestMatchFlipped = Metrics::spinSpecificBestMatch<Eigen::Infinity, 2>((*it).maximum_,
+                                                                                       (*beginIt).maximum_, true);
 
             if( (bestMatch.first <= distThresh_) || (bestMatchFlipped.first <= distThresh_) ){
                 if(bestMatch.first <= bestMatchFlipped.first)

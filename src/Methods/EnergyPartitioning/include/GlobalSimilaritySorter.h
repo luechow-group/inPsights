@@ -52,7 +52,7 @@ public:
 
             for (auto &simRefs : similarReferencesVector_) {
 
-                auto bestMatch = Metrics::bestMatchNorm<Eigen::Infinity,2>(
+                auto bestMatch = Metrics::bestMatch<Eigen::Infinity, 2>(
                         (*it).maximum_,
                         (*simRefs.repRefIt_).maximum_);
 
