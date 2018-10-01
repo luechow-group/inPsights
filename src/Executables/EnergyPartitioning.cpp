@@ -25,41 +25,33 @@ int main(int argc, char *argv[]) {
     std::vector<Reference> globallyIdenticalMaxima;
     std::vector<Sample> samples;
     RawDataReader reader(globallyIdenticalMaxima,samples);
-    reader.read("raw.bin");
-    console->info("number of refs {}",globallyIdenticalMaxima.size());
+    reader.read("Acetone.bin");
+    console->info("number of inital refs {}",globallyIdenticalMaxima.size());
 
     double identicalDistThresh = 0.01;
     GlobalIdentiySorter globalIdentiySorter(globallyIdenticalMaxima, samples, identicalDistThresh);
     globalIdentiySorter.sort();
-    console->info("finished id sort");
-    console->info("after identical sort {}",globallyIdenticalMaxima.size());
-    console->info("total elems {}",std::distance(globallyIdenticalMaxima.begin(),globallyIdenticalMaxima.end()));
-
+    console->info("number of elements after identity sort {}",globallyIdenticalMaxima.size());
 
     double similarDistThresh = 0.2;
-    std::vector<SimilarReferences> similarReferencesVector;
-    GlobalSimilaritySorter globalSimilaritySorter(globallyIdenticalMaxima, similarReferencesVector,similarDistThresh);
-
+    std::vector<SimilarReferences> globallySimilarMaxima;
+    GlobalSimilaritySorter globalSimilaritySorter(globallyIdenticalMaxima, globallySimilarMaxima,similarDistThresh);
     globalSimilaritySorter.sort();
-    console->info("total elems {}",similarReferencesVector.size());
+    console->info("number of elements after similarity sort {}",globallySimilarMaxima.size());
 
-
-    //std::vector<SimilarReference> clusteredReferences;
 
     //Clustering
-    // make data
-    std::vector<Eigen::VectorXd> data;
-    for(auto& simRefVector : similarReferencesVector){
-        data.push_back((*simRefVector.repRefIt_).maximum_.positionsVector().asEigenVector());
-    }
+    std::vector<ElectronsVector > data;
+    for(auto& simRefVector : globallySimilarMaxima) data.push_back((*simRefVector.repRefIt_).maximum_);
 
-    // needs bestMatchDistance
-    DensityBasedScan<double, Eigen::VectorXd, Metrics::euclideanDistance<double, Eigen::VectorXd>> dbscan(data);
+    DensityBasedScan<double, ElectronsVector, Metrics::bestMatchNorm<Eigen::Infinity,2>> dbscan(data);
 
-    auto nClusters = dbscan.findClusters(0.20001, 5);
+    auto nClusters = dbscan.findClusters(similarDistThresh*2+0.01, 1); // why multiplication by 2 is needed?
     auto result = dbscan.getLabels();
 
+    console->info("number of clusters {}",nClusters);
 
+    for(auto& c : result) console->info("{}",c);
 
 /*
     //Energy Partitioning
@@ -74,7 +66,7 @@ int main(int argc, char *argv[]) {
     totalCount = 0;
 
     int i=0;
-    for(auto& simRefVector : similarReferencesVector){
+    for(auto& simRefVector : globallySimilarMaxima){
         console->info("{}: contained similar refs {}",i,simRefVector.similarReferences_.size());
         i++;
         simCount = 0;
@@ -140,9 +132,9 @@ int main(int argc, char *argv[]) {
 
     AtomsVector3D(root, atoms);
 
-    auto ev1 = (*similarReferencesVector.at(1).repRefIt_).maximum_;
-    auto perm = similarReferencesVector.at(1).similarReferences_.at(0).perm_;
-    auto ev2 = (*similarReferencesVector.at(1).similarReferences_.at(0).it_).maximum_;
+    auto ev1 = (*globallySimilarMaxima.at(1).repRefIt_).maximum_;
+    auto perm = globallySimilarMaxima.at(1).similarReferences_.at(0).perm_;
+    auto ev2 = (*globallySimilarMaxima.at(1).similarReferences_.at(0).it_).maximum_;
     ev2.permute(perm);
 
     ElectronsVector3D(root, atoms, ev1, true);
