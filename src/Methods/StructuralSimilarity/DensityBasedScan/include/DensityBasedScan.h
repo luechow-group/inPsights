@@ -2,6 +2,17 @@
 #define DENSITYBASEDSCAN_H
 
 #include "VantagePointTree.h"
+#include <HungarianHelper.h>
+
+//template<typename Scalar, typename VectorType, auto Func = >
+
+namespace Metrics {
+    template <typename Scalar, typename VectorType>
+    Scalar euclideanDistance(const VectorType &p1, const VectorType &p2) {
+        return (p1 - p2).norm();
+    }
+}
+
 
 template<typename Scalar>
 class DensityBasedScan {
@@ -18,10 +29,6 @@ public:
             data_(data),
             vpTree_(data, similarityDistance),
             labels_(data.size(), -1) {};
-
-    static inline Scalar euclideanDistance(const VectorType &p1, const VectorType &p2) {
-        return (p1 - p2).norm();
-    }
 
     // predict eps for a fixed number of clusters
     const std::vector<Scalar> predictEps(size_t k) {
@@ -112,7 +119,7 @@ private:
     }
 
     const std::vector<VectorType> &data_;
-    VantagePointTree<Scalar, euclideanDistance> vpTree_;
+    VantagePointTree<Scalar, Metrics::euclideanDistance<Scalar,VectorType>> vpTree_;
     std::vector<int32_t> labels_;
 };
 
