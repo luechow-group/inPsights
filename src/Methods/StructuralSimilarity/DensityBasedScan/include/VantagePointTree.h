@@ -9,11 +9,10 @@
 #include <spdlog/spdlog.h>
 
 
-template<typename Scalar, Scalar ( *distance )(
-        const Eigen::Matrix<Scalar, Eigen::Dynamic, 1> &,
-        const Eigen::Matrix<Scalar, Eigen::Dynamic, 1> &)>
+template<typename Scalar,
+        typename VectorType,
+        Scalar (*distance)(const VectorType &,const VectorType &)>
 class VantagePointTree {
-    using VectorType = Eigen::Matrix<Scalar, Eigen::Dynamic, 1>;
 
     struct HeapItem {
         HeapItem(size_t idx, Scalar dist)

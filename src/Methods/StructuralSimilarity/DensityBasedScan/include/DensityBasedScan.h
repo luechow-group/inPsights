@@ -4,8 +4,6 @@
 #include "VantagePointTree.h"
 #include <HungarianHelper.h>
 
-//template<typename Scalar, typename VectorType, auto Func = >
-
 namespace Metrics {
     template <typename Scalar, typename VectorType>
     Scalar euclideanDistance(const VectorType &p1, const VectorType &p2) {
@@ -13,8 +11,9 @@ namespace Metrics {
     }
 }
 
-
-template<typename Scalar, typename VectorType>
+template<typename Scalar,
+        typename VectorType,
+        Scalar (*distance)(const VectorType &,const VectorType &)>
 class DensityBasedScan {
 public:
     DensityBasedScan(const DensityBasedScan &) = delete;
@@ -118,7 +117,7 @@ private:
     }
 
     const std::vector<VectorType> &data_;
-    VantagePointTree<Scalar, Metrics::euclideanDistance<Scalar,VectorType>> vpTree_;
+    VantagePointTree<Scalar,VectorType,distance> vpTree_;
     std::vector<int32_t> labels_;
 };
 

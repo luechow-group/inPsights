@@ -54,7 +54,7 @@ int main(int argc, char *argv[]) {
     }
 
     // needs bestMatchDistance
-    DensityBasedScan<double,Eigen::VectorXd> dbscan(data);
+    DensityBasedScan<double, Eigen::VectorXd, Metrics::euclideanDistance<double, Eigen::VectorXd>> dbscan(data);
 
     auto nClusters = dbscan.findClusters(0.20001, 5);
     auto result = dbscan.getLabels();
