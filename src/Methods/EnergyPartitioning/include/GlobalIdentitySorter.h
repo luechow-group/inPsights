@@ -39,11 +39,11 @@ public:
         if(references_.empty()) {
             console->error("References are empty.");
             return false;
-        }
-        else if (references_.size() == 1) {
+        } else if (references_.size() == 1) {
             console->warn("No sorting because only one reference was found.");
-            return true; // no sorting
+            return true;
         }
+
         std::sort(references_.begin(),references_.end());
         auto beginIt = references_.begin();
 
