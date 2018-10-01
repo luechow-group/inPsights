@@ -32,6 +32,13 @@ public:
     }
 
     bool sort(){
+        if(references_.empty()) {
+            console->error("References are empty.");
+            return false;
+        } else if (references_.size() == 1) {
+            console->warn("No sorting because only one reference was found.");
+            return true;
+        }
 
         auto beginIt = references_.begin();
 
@@ -40,31 +47,24 @@ public:
             beginIt++;
         }
 
-        for (auto it = beginIt; it !=references_.end(); ++it) {
+        for (auto it = beginIt; it != references_.end(); ++it) {
             bool isSimilarQ = false;
-            //console->info("{}",(*it).id_);
 
             for (auto &simRefs : similarReferencesVector_) {
 
                 auto bestMatch = Metrics::bestMatchNorm<Eigen::Infinity,2>(
-                        (*it).maximum_.positionsVector(),
-                        (*simRefs.repRefIt_).maximum_.positionsVector());
+                        (*it).maximum_,
+                        (*simRefs.repRefIt_).maximum_);
 
-                console->info("{}",bestMatch.first);
                 if (bestMatch.first < distThresh_) {
                     simRefs.similarReferences_.emplace_back(SimilarReference(it, bestMatch.second));
                     isSimilarQ = true;
-                    console->info("merge");
                 }
             }
-            if (!isSimilarQ) {
-                similarReferencesVector_.emplace_back(SimilarReferences(it));
-                console->info("make new");
-            }
+            if (!isSimilarQ) similarReferencesVector_.emplace_back(SimilarReferences(it));
         }
         return true;
     }
-
 
 private:
     std::vector<Reference>& references_;
