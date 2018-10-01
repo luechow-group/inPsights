@@ -50,10 +50,13 @@ public:
         while (beginIt != references_.end()){
             auto endIt = std::upper_bound(beginIt,references_.end(),Reference((*beginIt).negLogSqrdProbabilityDensity_+increment_));
             auto it = beginIt;
-            it++; // start with the element next to beginIt
 
-            while(it != endIt) subLoop(beginIt,it,endIt);
-            beginIt = endIt;
+            if(beginIt != endIt){
+                it++; // start with the element next to beginIt
+                while(it != endIt) subLoop(beginIt,it,endIt);
+                beginIt = endIt;
+            }
+            else ++beginIt; // range is zero
         }
         return true;
     }
@@ -69,8 +72,8 @@ private:
 
         if((*beginIt).maximum_.typesVector().multiplicity() == 1) { // consider spin flip
 
-            auto bestMatchFlipped = Metrics::spinSpecificBestMatch<Eigen::Infinity, 2>((*it).maximum_,
-                                                                                       (*beginIt).maximum_, true);
+            auto bestMatchFlipped =
+                    Metrics::spinSpecificBestMatch<Eigen::Infinity, 2>((*it).maximum_, (*beginIt).maximum_, true);
 
             if( (bestMatch.first <= distThresh_) || (bestMatchFlipped.first <= distThresh_) ){
                 if(bestMatch.first <= bestMatchFlipped.first)
