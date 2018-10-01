@@ -102,7 +102,7 @@ TEST_F(ADensityBasedScanTest, PredictEps) {
     ASSERT_LE(max,1.1);
 }
 
-TEST_F(ADensityBasedScanTest, ElectronsVector) {
+TEST_F(ADensityBasedScanTest, BestMatchNormDistanceFunction) {
     std::vector<ElectronsVector> data(
             {ElectronsVector({{ Spin::alpha, {0, 1, 2}},
                               { Spin::alpha, {0, 0, 0}}}),
@@ -111,7 +111,11 @@ TEST_F(ADensityBasedScanTest, ElectronsVector) {
             });
 
     DensityBasedScan<double, ElectronsVector, Metrics::bestMatchNorm<Eigen::Infinity,2>>  dbscan(data);
-    auto nClusters = dbscan.findClusters(5.00001, 1); // TODO WHY?
+
     std::vector<int32_t> expected{0,0};
+
+    auto nClusters = dbscan.findClusters(5.00001, 1); // TODO WHY?
+
+    ASSERT_EQ(nClusters,1);
     ASSERT_EQ(dbscan.getLabels(),expected);
 }
