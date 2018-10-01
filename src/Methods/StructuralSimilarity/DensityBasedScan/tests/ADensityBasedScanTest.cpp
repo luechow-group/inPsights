@@ -36,7 +36,7 @@ public:
 };
 
 TEST_F(ADensityBasedScanTest, Float) {
-    DensityBasedScan<float> dbscan(dataFloat);
+    DensityBasedScan<float, Eigen::VectorXf> dbscan(dataFloat);
 
     auto nClusters = dbscan.findClusters(0.20001, 5);
     ASSERT_EQ(nClusters,5);
@@ -54,7 +54,7 @@ TEST_F(ADensityBasedScanTest, Float) {
 }
 
 TEST_F(ADensityBasedScanTest, Double) {
-    DensityBasedScan<double> dbscan(dataDouble);
+    DensityBasedScan<double, Eigen::VectorXd> dbscan(dataDouble);
 
     auto nClusters = dbscan.findClusters(0.20001, 5);
     ASSERT_EQ(nClusters,5);
@@ -72,7 +72,7 @@ TEST_F(ADensityBasedScanTest, Double) {
 }
 
 TEST_F(ADensityBasedScanTest, MinSizeTooLarge) {
-    DensityBasedScan<float> dbscan(dataFloat);
+    DensityBasedScan<float, Eigen::VectorXf> dbscan(dataFloat);
 
     auto nClusters = dbscan.findClusters(0.20001, 6);
     ASSERT_EQ(nClusters,0);
@@ -90,7 +90,7 @@ TEST_F(ADensityBasedScanTest, MinSizeTooLarge) {
 }
 
 TEST_F(ADensityBasedScanTest, PredictEps) {
-    DensityBasedScan<float> dbscan(dataFloat);
+    DensityBasedScan<float, Eigen::VectorXf> dbscan(dataFloat);
 
     auto result = dbscan.predictEps(4); // careful => cluster indices start with 0
 

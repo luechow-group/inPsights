@@ -14,9 +14,8 @@ namespace Metrics {
 }
 
 
-template<typename Scalar>
+template<typename Scalar, typename VectorType>
 class DensityBasedScan {
-    using VectorType = Eigen::Matrix<Scalar, Eigen::Dynamic, 1>;
 public:
     DensityBasedScan(const DensityBasedScan &) = delete;
 
