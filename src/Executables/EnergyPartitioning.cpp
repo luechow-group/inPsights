@@ -21,30 +21,26 @@ int main(int argc, char *argv[]) {
 
     Logger::initialize();
     auto console = spdlog::get(Logger::name);
-    double identicalDistThresh = 0.1;
+
     std::vector<Reference> globallyIdenticalMaxima;
     std::vector<Sample> samples;
     RawDataReader reader(globallyIdenticalMaxima,samples);
-    reader.read("Ethane.bin");
+    reader.read("raw.bin");
     console->info("number of refs {}",globallyIdenticalMaxima.size());
 
+    double identicalDistThresh = 0.01;
     GlobalIdentiySorter globalIdentiySorter(globallyIdenticalMaxima, samples, identicalDistThresh);
     globalIdentiySorter.sort();
     console->info("finished id sort");
-    console->flush();
-
     console->info("after identical sort {}",globallyIdenticalMaxima.size());
-
-
     console->info("total elems {}",std::distance(globallyIdenticalMaxima.begin(),globallyIdenticalMaxima.end()));
 
-/*
-    double similarDistThresh = 0.1;
+
+    double similarDistThresh = 0.2;
     std::vector<SimilarReferences> similarReferencesVector;
     GlobalSimilaritySorter globalSimilaritySorter(globallyIdenticalMaxima, similarReferencesVector,similarDistThresh);
 
     globalSimilaritySorter.sort();
-
     console->info("total elems {}",similarReferencesVector.size());
 
 
@@ -65,6 +61,7 @@ int main(int argc, char *argv[]) {
 
 
 
+/*
     //Energy Partitioning
     Statistics::RunningStatistics<Eigen::VectorXd> EkinStats;
     Statistics::RunningStatistics<Eigen::MatrixXd> EpotStats;
