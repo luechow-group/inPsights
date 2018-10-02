@@ -36,8 +36,8 @@ int main(int argc, char *argv[]) {
     EnergyCalculator energyCalculator(samples,atoms);
     auto totalEnergies = energyCalculator.calculateTotalEnergies();
 
-    console->info("T= {}, Vee = {}, Ven = {},Vnn = {}, Eges = {}",
-            totalEnergies.T,
+    console->info("Te= {}, Vee = {}, Ven = {}, Vnn = {}, Eges = {}",
+            totalEnergies.Te,
             totalEnergies.Vee,
             totalEnergies.Ven,
             totalEnergies.Vnn,
@@ -81,11 +81,6 @@ int main(int argc, char *argv[]) {
 
 
     // Visuals
-    /*std::string wavefunctionFilename = "Acetone-em.wf";
-    auto wf = ElectronicWaveFunction::getInstance(wavefunctionFilename);
-    auto atoms = wf.getAtomsVector();
-
-    // Visualization
     QApplication app(argc, argv);
     setlocale(LC_NUMERIC,"C");
 
@@ -93,18 +88,15 @@ int main(int argc, char *argv[]) {
     Qt3DCore::QEntity *root = moleculeWidget.createMoleculeWidget();
     AtomsVector3D(root, atoms);
 
-    auto ev1 = (*globallySimilarMaxima.at(1).repRefIt_).maximum_;
-    auto perm = globallySimilarMaxima.at(1).similarReferences_.at(0).perm_;
-    auto ev2 = (*globallySimilarMaxima.at(1).similarReferences_.at(0).it_).maximum_;
-    ev2.permute(perm);
+    auto ev1 = (*clusteredGloballySimilarMaxima[0].at(0).repRefIt_).maximum_;
+    auto ev2 = samples[(*clusteredGloballySimilarMaxima[0].at(0).repRefIt_).associatedSampleIds_[0]].sample_;
+
+    //auto perm = globallySimilarMaxima.at(1).similarReferences_.at(0).perm_;
+    //auto ev2 = (*clusteredGloballySimilarMaxima[0].at(0).similarReferences_.at(0).it_).maximum_;
+    //ev2.permute(perm);
     ElectronsVector3D(root, atoms, ev1, true);
     ElectronsVector3D(root, atoms, ev2, true);
 
-    return app.exec();*/
-
-
-//TODO CHECK PERMUTATION
-// CHECK ADDITIONAL +1
-//TODO DBSCAN
+    return app.exec();
 
 };

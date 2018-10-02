@@ -20,17 +20,18 @@ public:
 
     struct Energies{
         Energies()
-        : T(0),Vee(0),Ven(0),Vnn(0){};
+        : Te(0),Vee(0),Ven(0),Vnn(0){};
 
         double totalEnergy() const {
-            return T + Vee + Ven + Vnn;
+            return Te + Vee + Ven + Vnn;
         };
 
-        double T, Vee, Ven, Vnn;
+        double Te, Vee, Ven, Vnn;
     };
 
     EnergyCalculator(const std::vector<Sample>& samples, const AtomsVector& atoms)
     :
+    atoms_(atoms),
     samples_(samples),
     console(spdlog::get(Logger::name)){
         if(!console){
@@ -42,29 +43,26 @@ public:
     Energies calculateTotalEnergies() {
         Energies energies;
         for (auto& sample : samples_) {
-            energies.T += sample.kineticEnergies_.sum();
+            energies.Te += sample.kineticEnergies_.sum();
 
             auto Veemat = CoulombPotential::energies(sample.sample_);
-            for (int i = 0; i < sample.sample_.numberOfEntities(); ++i) {
-                for (int j = i + 1; j < sample.sample_.numberOfEntities(); ++j) {
+            for (int i = 0; i < sample.sample_.numberOfEntities(); ++i)
+                for (int j = i + 1; j < sample.sample_.numberOfEntities(); ++j)
                     energies.Vee += Veemat(i, j);
-                }
-            }
 
             auto Venmat = CoulombPotential::energies(sample.sample_, atoms_);
             energies.Ven += Venmat.sum();
 
-            auto Vnnmat = CoulombPotential::energies(atoms_);
-            for (int i = 0; i < atoms_.numberOfEntities(); ++i) {
-                for (int j = i + 1; j < atoms_.numberOfEntities(); ++j) {
-                    energies.Vnn += Vnnmat(i, j);
-                }
-            }
         }
-        energies.T /= samples_.size();
+
+        auto Vnnmat = CoulombPotential::energies(atoms_);
+        for (int i = 0; i < atoms_.numberOfEntities(); ++i)
+            for (int j = i + 1; j < atoms_.numberOfEntities(); ++j)
+                energies.Vnn += Vnnmat(i, j);
+
+        energies.Te /= samples_.size();
         energies.Vee /= samples_.size();
         energies.Ven /= samples_.size();
-        energies.Vnn /= samples_.size();
 
         return energies;
     }
@@ -81,7 +79,7 @@ public:
         return count;
     }
 
-    unsigned long addEnergies(const Reference &reference, const Eigen::PermutationMatrix<Eigen::Dynamic>& perm,const Reference &other){
+    unsigned long addEnergies(const Reference &reference, const Eigen::PermutationMatrix<Eigen::Dynamic>& perm){
         unsigned long count = reference.count();
 
         auto sampleCopy = samples_[reference.id_].sample_;
@@ -114,7 +112,7 @@ public:
                 size_t simRefCount = 0;
                 // Iterate over references being similar to the representative reference.
                 for (const auto &simRef : simRefVector.similarReferences_) {
-                    simRefCount += addEnergies(*simRef.it_, simRef.perm_,*simRefVector.repRefIt_);
+                    simRefCount += addEnergies(*simRef.it_, simRef.perm_);
             }
 
                 std::cout << "mean: (" << EkinStats.getTotalWeight() << ")\n" << EkinStats.mean().transpose() << std::endl;
@@ -125,8 +123,6 @@ public:
             }
         }
         console->info("overall count {}",totalCount);
-
-
     }
 
 private:
