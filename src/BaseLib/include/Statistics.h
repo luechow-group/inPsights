@@ -14,14 +14,14 @@ namespace Statistics {
 
     public:
         RunningStatistics()
-                : initializedQ_(false),wSum_(0),wSum2_(0),
+                : initializedQ_(false),totalWeight_(0),squaredTotalWeight_(0),
                 X_(),Xold_(),
                 M2_(),M2old_() {}
 
         void reset() {
             initializedQ_ = false;
-            wSum_ = 0;
-            wSum2_ = 0;
+            totalWeight_ = 0;
+            squaredTotalWeight_ = 0;
         }
 
         void initialize(const Derived &sample){
@@ -32,14 +32,14 @@ namespace Statistics {
         }
         
         void add(const Derived &sample, WeightType w = 1) {
-            wSum_ += w;
-            wSum2_ += w*w;
+            totalWeight_ += w;
+            squaredTotalWeight_ += w*w;
 
             if (!initializedQ_) {
                 initialize(sample);
             } else {
                 Derived delta = sample - Xold_;
-                X_ = Xold_ + (delta * w/wSum_).matrix();
+                X_ = Xold_ + (delta * w/totalWeight_).matrix();
                 M2_ = M2old_ + w*(delta.array() * (sample - X_).array()).matrix();
 
                 Xold_ = X_;
@@ -48,7 +48,7 @@ namespace Statistics {
         }
 
         Derived mean() {
-            assert(wSum_ >= 1 && "The number of samples must be at least one.");
+            assert(totalWeight_ >= 1 && "The number of samples must be at least one.");
             return X_.matrix();
         }
 
@@ -60,25 +60,25 @@ namespace Statistics {
             return unbiasedSampleStandardDeviation();
         }
 
-        WeightType getWeightedSum() const {
-            return wSum_;
+        WeightType getTotalWeight() const {
+            return totalWeight_;
         }
 
     private:
         //https://en.wikipedia.org/wiki/Variance#Population_variance_and_sample_variance
         Derived unbiasedSampleVariance() { // includes Bessel's correction
-            assert(wSum_ >= 2 && "The number of samples must be at least two.");
-            return (M2_ / (wSum_ - 1));
+            assert(totalWeight_ >= 2 && "The number of samples must be at least two.");
+            return (M2_ / (totalWeight_ - 1));
         }
 
         Derived biasedSampleVariance() { // population variance
-            assert(wSum_ >= 2 && "The number of samples must be at least two.");
-            return (M2_ / wSum_);
+            assert(totalWeight_ >= 2 && "The number of samples must be at least two.");
+            return (M2_ / totalWeight_);
         }
 
         Derived sampleReliabilityVariance() {
-            assert(wSum_ >= 2 && "The number of samples must be at least two.");
-            return M2_ / double(wSum_ - double(wSum2_)/wSum_);
+            assert(totalWeight_ >= 2 && "The number of samples must be at least two.");
+            return M2_ / double(totalWeight_ - double(squaredTotalWeight_)/totalWeight_);
         }
 
         Derived biasedStandardDeviation() { return biasedSampleVariance().array().sqrt(); }
@@ -88,7 +88,7 @@ namespace Statistics {
 
 
         bool initializedQ_;
-        WeightType wSum_,wSum2_;
+        WeightType totalWeight_,squaredTotalWeight_;
         Derived X_, Xold_, M2_, M2old_;
     };
 }
