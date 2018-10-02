@@ -28,7 +28,7 @@ public:
         return negLogSqrdProbabilityDensity_<rhs.negLogSqrdProbabilityDensity_;
     }
 
-    unsigned long count(){
+    unsigned long count() const {
         return 1+associatedSampleIds_.size();
     }
 
