@@ -72,10 +72,10 @@ public:
         unsigned long count = reference.count();
 
         ekin = samples_[reference.id_].kineticEnergies_;
-
         epot = CoulombPotential::energies(samples_[reference.id_].sample_);
-        EkinStats.add(ekin, unsigned(count));
-        EpotStats.add(epot, unsigned(count));
+
+        TeStats.add(ekin, unsigned(count));
+        VeeStats.add(epot, unsigned(count));
         return count;
     }
 
@@ -88,8 +88,8 @@ public:
         ekin = perm* (samples_[reference.id_].kineticEnergies_);
         epot = CoulombPotential::energies(sampleCopy);
 
-        EkinStats.add(ekin, unsigned(count));
-        EpotStats.add(epot, unsigned(count));
+        TeStats.add(ekin, unsigned(count));
+        VeeStats.add(epot, unsigned(count));
         return count;
     }
 
@@ -103,8 +103,8 @@ public:
             for (auto &simRefVector : cluster) {
                 i++;
 
-                EkinStats.reset();
-                EpotStats.reset();
+                TeStats.reset();
+                VeeStats.reset();
 
                 // Representative reference
                 size_t repRefCount = addEnergies(*simRefVector.repRefIt_);
@@ -115,9 +115,14 @@ public:
                     simRefCount += addEnergies(*simRef.it_, simRef.perm_);
             }
 
-                std::cout << "mean: (" << EkinStats.getTotalWeight() << ")\n" << EkinStats.mean().transpose() << std::endl;
+                std::cout << "Te  mean: (" << TeStats.getTotalWeight() << ")\n" << TeStats.mean().transpose() << std::endl;
                 if (simRefCount >= 2)
-                    std::cout << "stdv: (" << EkinStats.getTotalWeight() << ")\n"  << EkinStats.standardDeviation().transpose() << std::endl << std::endl;
+                    std::cout << "Te  stdv: (" << TeStats.getTotalWeight() << ")\n"  << TeStats.standardDeviation().transpose() << std::endl << std::endl;
+
+                std::cout << "Vee mean: (" << VeeStats.getTotalWeight() << ")\n" << VeeStats.mean().transpose() << std::endl;
+                if (simRefCount >= 2)
+                    std::cout << "Vee stdv: (" << VeeStats.getTotalWeight() << ")\n"  << VeeStats.standardDeviation().transpose() << std::endl << std::endl;
+
 
                 totalCount += repRefCount + simRefCount;
             }
@@ -129,11 +134,12 @@ private:
     const std::vector<Sample>& samples_;
     AtomsVector atoms_;
 
-    Statistics::RunningStatistics<Eigen::VectorXd> EkinStats;
-    Statistics::RunningStatistics<Eigen::MatrixXd> EpotStats;
+    Statistics::RunningStatistics<Eigen::VectorXd> TeStats;
+    Statistics::RunningStatistics<Eigen::MatrixXd> VeeStats;// TODO add Ven and Vnn
 
     Eigen::VectorXd ekin;
     Eigen::MatrixXd epot;
+
     std::shared_ptr<spdlog::logger> console;
 };
 
