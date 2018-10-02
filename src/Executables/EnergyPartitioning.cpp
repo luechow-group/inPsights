@@ -6,8 +6,8 @@
 #include <GlobalIdentitySorter.h>
 #include <GlobalSimilaritySorter.h>
 #include <DensityBasedScan.h>
-#include <CoulombPotential.h>
-#include <Statistics.h>
+#include <EnergyCalculator.h>
+
 #include <MoleculeWidget.h>
 #include <ElectronicWaveFunction.h>
 #include <AtomsVector3D.h>
@@ -59,12 +59,6 @@ int main(int argc, char *argv[]) {
     auto labels = dbscan.getLabels();
     console->info("number of clusters {}",nClusters);
 
-
-    //unify similar refs in the same cluster
-
-    // for all similar refs
-
-
     std::vector<std::vector<SimilarReferences>> clusteredGloballySimilarMaxima(nClusters);
 
     for (int i = 0; i < nClusters; ++i) {
@@ -80,76 +74,11 @@ int main(int argc, char *argv[]) {
         }
     }
 
-    for (auto it = clusteredGloballySimilarMaxima.begin(); it != clusteredGloballySimilarMaxima.end(); ++it) {
-        int count = 0;
-        for (auto & simRef : (*it)) count += simRef.similarReferences_.size()+1;
-        console->info("cluster: {}, count: {}",std::distance(clusteredGloballySimilarMaxima.begin(),it),count);
-    }
+    //Statistics
 
-/*
-    //Energy Partitioning
-    Statistics::RunningStatistics<Eigen::VectorXd> EkinStats;
-    Statistics::RunningStatistics<Eigen::MatrixXd> EpotStats;
+    EnergyCalculator energyCalculator(samples);
+    energyCalculator.calculateStatistics(clusteredGloballySimilarMaxima);
 
-
-    Eigen::VectorXd ekin;
-    Eigen::MatrixXd epot;
-    size_t sampleId, count, simCount, totalCount;
-
-    totalCount = 0;
-
-    int i=0;
-    for(auto& simRefVector : globallySimilarMaxima){
-        console->info("{}: contained similar refs {}",i,simRefVector.similarReferences_.size());
-        i++;
-        simCount = 0;
-
-        EkinStats.reset();
-        EpotStats.reset();
-
-        // Representative reference
-        count = 1+(*simRefVector.repRefIt_).associatedSampleIds_.size();
-        simCount += count;
-        sampleId = (*simRefVector.repRefIt_).id_;
-
-
-        ekin = samples[sampleId].kineticEnergies_;
-        epot = CoulombPotential::energies(samples[sampleId].sample_);
-
-        console->info("rep ref count {}" ,count);
-        EkinStats.add(ekin,unsigned(count));
-        EpotStats.add(epot,unsigned(count));
-
-        // Iterate over references being similar to the representative reference.
-        for(const auto& simRef : simRefVector.similarReferences_){
-
-
-            //TODO CONTINUE HERE
-            globallyIdenticalMaxima[0];
-
-            // Hier werden irgendwo maxima counts vergessen#
-            count = 1+(*simRef.it_).associatedSampleIds_.size();
-            simCount += count;
-            sampleId = (*simRef.it_).id_;
-
-            auto sampleCopy = samples[sampleId].sample_;
-            sampleCopy.permute(simRef.perm_);
-
-            ekin = simRef.perm_ * (samples[sampleId].kineticEnergies_);
-            epot = CoulombPotential::energies(sampleCopy);
-
-            EkinStats.add(ekin,unsigned(count));
-            EpotStats.add(epot,unsigned(count));
-        }
-        console->info("sim ref count {}",simCount);
-        std::cout <<"mean: ("<<EkinStats.getWeightedSum()<<")\n"<< EkinStats.mean().transpose() << std::endl;
-        if(simCount >=2)
-            std::cout <<"stdv:\n"<< EkinStats.standardDeviation().transpose() << std::endl<< std::endl;
-
-        totalCount += simCount;
-    }
-    console->info("overall count {}",totalCount);
-*/
 
     // Visuals
     /*std::string wavefunctionFilename = "Acetone-em.wf";

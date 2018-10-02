@@ -15,6 +15,7 @@ set(HEADER_FILES
         include/Reference.h
         include/GlobalIdentitySorter.h
         include/GlobalSimilaritySorter.h
+        include/EnergyCalculator.h
         )
 
 set(SOURCE_FILES
