@@ -45,7 +45,7 @@ public:
         sampleCopy.permute(perm);
         ekin = perm * (samples_[reference.id_].kineticEnergies_);
         epot = CoulombPotential::energies(sampleCopy);
-        
+
         EkinStats.add(ekin, unsigned(count));
         EpotStats.add(epot, unsigned(count));
         return count;
@@ -73,10 +73,9 @@ public:
                     simRefCount += addEnergies(*simRef.it_, simRef.perm_);
                 }
 
-                console->info("rep ref + sim ref count {}", repRefCount + simRefCount);
                 std::cout << "mean: (" << EkinStats.getTotalWeight() << ")\n" << EkinStats.mean().transpose() << std::endl;
                 if (simRefCount >= 2)
-                    std::cout << "stdv:\n" << EkinStats.standardDeviation().transpose() << std::endl << std::endl;
+                    std::cout << "stdv: (" << EkinStats.getTotalWeight() << ")\n"  << EkinStats.standardDeviation().transpose() << std::endl << std::endl;
 
                 totalCount += repRefCount + simRefCount;
             }
