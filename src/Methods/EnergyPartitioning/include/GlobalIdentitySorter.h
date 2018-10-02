@@ -99,6 +99,7 @@ private:
             const Eigen::PermutationMatrix<Eigen::Dynamic> &bestMatch) const {
 
         samples_[(*it).id_].sample_.permute(bestMatch);
+        samples_[(*it).id_].kineticEnergies_ = bestMatch * samples_[(*it).id_].kineticEnergies_;
 
         (*beginIt).addAssociation((*it).id_);
         (*beginIt).associatedSampleIds_.insert(
