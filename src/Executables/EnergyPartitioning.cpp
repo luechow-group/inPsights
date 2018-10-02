@@ -21,31 +21,33 @@ double wrapper(const SimilarReferences& s1, const SimilarReferences& s2) {
 };
 
 int main(int argc, char *argv[]) {
-
     Logger::initialize();
     auto console = spdlog::get(Logger::name);
 
     std::vector<Reference> globallyIdenticalMaxima;
     std::vector<Sample> samples;
+    auto atoms = ElectronicWaveFunction::getInstance(std::string("Ethane-em.wf")).getAtomsVector();
     RawDataReader reader(globallyIdenticalMaxima,samples);
     reader.read("Ethane.bin");
+
+
     console->info("number of inital refs {}",globallyIdenticalMaxima.size());
+
+    EnergyCalculator energyCalculator(samples,atoms);
+    auto totalEnergies = energyCalculator.calculateTotalEnergies();
+
+    console->info("T= {}, Vee = {}, Ven = {},Vnn = {}, Eges = {}",
+            totalEnergies.T,
+            totalEnergies.Vee,
+            totalEnergies.Ven,
+            totalEnergies.Vnn,
+            totalEnergies.totalEnergy());
+
 
     double identicalDistThresh = 0.01;
     GlobalIdentiySorter globalIdentiySorter(globallyIdenticalMaxima, samples, identicalDistThresh);
     globalIdentiySorter.sort();
     console->info("number of elements after identity sort {}",globallyIdenticalMaxima.size());
-
-
-    //Clustering
-    /*DensityBasedScan<double, Reference, wrapper2> dbscan(globallyIdenticalMaxima);
-    auto nClusters = dbscan.findClusters(0.1*2+0.01, 1); // why multiplication by 2 is needed?
-    auto labels = dbscan.getLabels();
-    console->info("number of clusters {}",nClusters);
-
-    for (int label : labels) {
-        std::cout << label << std::endl;
-    }*/
 
     double similarDistThresh = 0.2;
     std::vector<SimilarReferences> globallySimilarMaxima;
@@ -75,8 +77,6 @@ int main(int argc, char *argv[]) {
     }
 
     //Statistics
-
-    EnergyCalculator energyCalculator(samples);
     energyCalculator.calculateStatistics(clusteredGloballySimilarMaxima);
 
 
