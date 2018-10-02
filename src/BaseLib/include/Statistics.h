@@ -91,7 +91,4 @@ namespace Statistics {
     };
 }
 
-
-//sample_reliability_variance = S / (wSum - wSum2/wSum)
-
 #endif //AMOLQCPP_STATISTICS_H
