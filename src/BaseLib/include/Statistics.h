@@ -28,7 +28,8 @@ namespace Statistics {
             initializedQ_ = true;
             mean_ = sample;
             lastMean_ = mean_;
-            lastUnnormalisedVariance_ = Derived::Zero(sample.rows(), sample.cols());
+            unnormalisedVariance_ = Derived::Zero(sample.rows(), sample.cols());
+            lastUnnormalisedVariance_ = unnormalisedVariance_;
         }
         
         void add(const Derived &sample, WeightType w = 1) {
