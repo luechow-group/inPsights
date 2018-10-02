@@ -28,6 +28,10 @@ public:
         return negLogSqrdProbabilityDensity_<rhs.negLogSqrdProbabilityDensity_;
     }
 
+    unsigned long count(){
+        return 1+associatedSampleIds_.size();
+    }
+
     double negLogSqrdProbabilityDensity_;
     ElectronsVector maximum_;
     size_t id_;
