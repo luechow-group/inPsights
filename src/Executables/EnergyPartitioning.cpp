@@ -16,6 +16,9 @@
 #include <algorithm>
 
 
+double wrapper(const SimilarReferences& s1, const SimilarReferences& s2) {
+    return Metrics::bestMatchNorm<Eigen::Infinity,2>((*s1.repRefIt_).maximum_, (*s2.repRefIt_).maximum_);
+};
 
 int main(int argc, char *argv[]) {
 
@@ -25,7 +28,7 @@ int main(int argc, char *argv[]) {
     std::vector<Reference> globallyIdenticalMaxima;
     std::vector<Sample> samples;
     RawDataReader reader(globallyIdenticalMaxima,samples);
-    reader.read("Acetone.bin");
+    reader.read("Ethane.bin");
     console->info("number of inital refs {}",globallyIdenticalMaxima.size());
 
     double identicalDistThresh = 0.01;
@@ -33,25 +36,55 @@ int main(int argc, char *argv[]) {
     globalIdentiySorter.sort();
     console->info("number of elements after identity sort {}",globallyIdenticalMaxima.size());
 
+
+    //Clustering
+    /*DensityBasedScan<double, Reference, wrapper2> dbscan(globallyIdenticalMaxima);
+    auto nClusters = dbscan.findClusters(0.1*2+0.01, 1); // why multiplication by 2 is needed?
+    auto labels = dbscan.getLabels();
+    console->info("number of clusters {}",nClusters);
+
+    for (int label : labels) {
+        std::cout << label << std::endl;
+    }*/
+
     double similarDistThresh = 0.2;
     std::vector<SimilarReferences> globallySimilarMaxima;
     GlobalSimilaritySorter globalSimilaritySorter(globallyIdenticalMaxima, globallySimilarMaxima,similarDistThresh);
     globalSimilaritySorter.sort();
     console->info("number of elements after similarity sort {}",globallySimilarMaxima.size());
 
-
     //Clustering
-    std::vector<ElectronsVector > data;
-    for(auto& simRefVector : globallySimilarMaxima) data.push_back((*simRefVector.repRefIt_).maximum_);
-
-    DensityBasedScan<double, ElectronsVector, Metrics::bestMatchNorm<Eigen::Infinity,2>> dbscan(data);
-
+    DensityBasedScan<double, SimilarReferences, wrapper> dbscan(globallySimilarMaxima);
     auto nClusters = dbscan.findClusters(similarDistThresh*2+0.01, 1); // why multiplication by 2 is needed?
-    auto result = dbscan.getLabels();
-
+    auto labels = dbscan.getLabels();
     console->info("number of clusters {}",nClusters);
 
-    for(auto& c : result) console->info("{}",c);
+
+    //unify similar refs in the same cluster
+
+    // for all similar refs
+
+
+    std::vector<std::vector<SimilarReferences>> clusteredGloballySimilarMaxima(nClusters);
+
+    for (int i = 0; i < nClusters; ++i) {
+        auto labelCount = std::count(labels.begin(), labels.end(), i);
+
+        int foundCount = 0;
+
+        for (auto it = globallySimilarMaxima.begin(); it != globallySimilarMaxima.end(); ++it) {
+            auto label = labels[std::distance(globallySimilarMaxima.begin(),it)];
+            if (label == i) {
+                clusteredGloballySimilarMaxima[i].emplace_back(std::move(*it));
+            }
+        }
+    }
+
+    for (auto it = clusteredGloballySimilarMaxima.begin(); it != clusteredGloballySimilarMaxima.end(); ++it) {
+        int count = 0;
+        for (auto & simRef : (*it)) count += simRef.similarReferences_.size()+1;
+        console->info("cluster: {}, count: {}",std::distance(clusteredGloballySimilarMaxima.begin(),it),count);
+    }
 
 /*
     //Energy Partitioning
@@ -116,10 +149,10 @@ int main(int argc, char *argv[]) {
         totalCount += simCount;
     }
     console->info("overall count {}",totalCount);
-
+*/
 
     // Visuals
-    std::string wavefunctionFilename = "Ethane-em.wf";
+    /*std::string wavefunctionFilename = "Acetone-em.wf";
     auto wf = ElectronicWaveFunction::getInstance(wavefunctionFilename);
     auto atoms = wf.getAtomsVector();
 
@@ -129,19 +162,17 @@ int main(int argc, char *argv[]) {
 
     MoleculeWidget moleculeWidget;
     Qt3DCore::QEntity *root = moleculeWidget.createMoleculeWidget();
-
     AtomsVector3D(root, atoms);
 
     auto ev1 = (*globallySimilarMaxima.at(1).repRefIt_).maximum_;
     auto perm = globallySimilarMaxima.at(1).similarReferences_.at(0).perm_;
     auto ev2 = (*globallySimilarMaxima.at(1).similarReferences_.at(0).it_).maximum_;
     ev2.permute(perm);
-
     ElectronsVector3D(root, atoms, ev1, true);
     ElectronsVector3D(root, atoms, ev2, true);
 
-    return app.exec();
-*/
+    return app.exec();*/
+
 
 //TODO CHECK PERMUTATION
 // CHECK ADDITIONAL +1
