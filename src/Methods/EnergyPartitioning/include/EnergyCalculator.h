@@ -97,11 +97,9 @@ public:
             const std::vector<std::vector<SimilarReferences>>& clusteredGloballySimilarMaxima){
 
         size_t totalCount = 0;
-        int i=0;
 
         for (auto& cluster : clusteredGloballySimilarMaxima) {
             for (auto &simRefVector : cluster) {
-                i++;
 
                 TeStats.reset();
                 VeeStats.reset();
@@ -110,24 +108,23 @@ public:
                 size_t repRefCount = addEnergies(*simRefVector.repRefIt_);
 
                 size_t simRefCount = 0;
+
                 // Iterate over references being similar to the representative reference.
-                for (const auto &simRef : simRefVector.similarReferences_) {
+                for (const auto &simRef : simRefVector.similarReferences_)
                     simRefCount += addEnergies(*simRef.it_, simRef.perm_);
-            }
 
                 std::cout << "Te  mean: (" << TeStats.getTotalWeight() << ")\n" << TeStats.mean().transpose() << std::endl;
-                if (simRefCount >= 2)
-                    std::cout << "Te  stdv: (" << TeStats.getTotalWeight() << ")\n"  << TeStats.standardDeviation().transpose() << std::endl << std::endl;
+                std::cout << "Te sterr: (" << TeStats.getTotalWeight() << ")\n"  << TeStats.standardError().transpose() << std::endl << std::endl;
 
-                std::cout << "Vee mean: (" << VeeStats.getTotalWeight() << ")\n" << VeeStats.mean().transpose() << std::endl;
-                if (simRefCount >= 2)
-                    std::cout << "Vee stdv: (" << VeeStats.getTotalWeight() << ")\n"  << VeeStats.standardDeviation().transpose() << std::endl << std::endl;
+                //std::cout << "Vee mean: (" << VeeStats.getTotalWeight() << ")\n" << VeeStats.mean().transpose() << std::endl;
+                //if (VeeStats.getTotalWeight() >= 2)
+                //    std::cout << "Vee stdv: (" << VeeStats.getTotalWeight() << ")\n"  << VeeStats.standardDeviation().transpose() << std::endl << std::endl;
 
 
                 totalCount += repRefCount + simRefCount;
             }
         }
-        console->info("overall count {}",totalCount);
+        console->info("overall count {}", totalCount);
     }
 
 private:
