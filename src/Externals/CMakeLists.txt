@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.5)
 
 add_subdirectory(BSplines)
+add_dependencies(AmolqcppTests BSplines_tests.exe)
+
 add_subdirectory(cppoptlib)
 
 option(YAML_CPP_BUILD_TESTS "Don't build the YAML tests." OFF)
