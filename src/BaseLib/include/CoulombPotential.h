@@ -44,34 +44,6 @@ namespace CoulombPotential {
 
         return V;
     };
-
-    template<typename Type>
-    void yamlFormattedEnergies(YAML::Emitter & out, const ParticlesVector<Type> &pv) {
-
-        out << YAML::BeginSeq;
-
-        Eigen::MatrixXd V = CoulombPotential::energies(pv);
-
-        for (int i = 0; i < V.rows()-1; ++i)
-            out << YAML::Value << Eigen::VectorXd(V.row(i).segment(i+1,V.cols()-(i+1)));
-
-        out << YAML::EndSeq;
-    }
-
-    void yamlFormattedEnergies(YAML::Emitter & out, const Eigen::MatrixXd& V, bool noSelfInteractionsQ = false) {
-        out << YAML::BeginSeq;
-
-        for (Eigen::Index i = 0; i < V.rows()- (noSelfInteractionsQ? 1 : 0); ++i) {
-            if(noSelfInteractionsQ)
-                out << YAML::Value << Eigen::VectorXd(V.row(i).segment(i + 1, V.cols() - (i + 1)))
-                    << YAML::Comment(std::to_string(i) + "," + std::to_string(i+1) + ":" + std::to_string(V.cols()-1));
-            else
-                out << YAML::Value << Eigen::VectorXd(V.row(i))
-                    << YAML::Comment(std::to_string(i) + "," + std::to_string(0) + ":" + std::to_string(V.cols()-1));
-        }
-        out << YAML::EndSeq;
-    }
-
 };
 
 #endif //AMOLQCPP_COULOMBPOTENTIAL_H

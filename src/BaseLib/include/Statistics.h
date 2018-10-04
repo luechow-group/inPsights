@@ -6,6 +6,7 @@
 #define AMOLQCPP_STATISTICS_H
 
 #include <Eigen/Core>
+#include <yaml-cpp/yaml.h>
 
 namespace Statistics {
 
@@ -63,6 +64,33 @@ namespace Statistics {
         WeightType getTotalWeight() const {
             return totalWeight_;
         }
+
+        void toYaml(YAML::Emitter &out, bool excludeSelfinteractionQ = false) const {
+            using namespace YAML;
+
+            out << BeginMap;
+            for (Eigen::Index i = 0; i < mean_.rows()- (excludeSelfinteractionQ? 1 : 0); ++i) {
+                out << Key << i << Value;
+
+                if (mean_.cols() > 1) { // Matrix
+                    out << BeginMap;
+                    for (Eigen::Index j = (excludeSelfinteractionQ ? i+1 : 0); j < mean_.cols(); ++j) {
+                        out << Key << j << Value
+                            << Flow << BeginSeq
+                            << mean()(i, j);
+                        if(getTotalWeight() >1) out << standardError()(i, j);
+                        out << EndSeq;
+                    }
+                    out << EndMap;
+                } else { // ColumnVector
+                    out << Flow << BeginSeq
+                        << mean()(i) << standardError()(i)
+                        << EndSeq;
+                }
+            }
+            out << EndMap;
+        }
+
 
     private:
         void initialize(const Derived &sample){
