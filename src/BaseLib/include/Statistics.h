@@ -27,14 +27,6 @@ namespace Statistics {
             unnormalisedVariance_.setZero();
             lastUnnormalisedVariance_.setZero();
         }
-
-        void initialize(const Derived &sample){
-            initializedQ_ = true;
-            mean_ = sample;
-            lastMean_ = mean_;
-            unnormalisedVariance_ = Derived::Zero(sample.rows(), sample.cols());
-            lastUnnormalisedVariance_ = unnormalisedVariance_;
-        }
         
         void add(const Derived &sample, WeightType w = 1) {
             totalWeight_ += w;
@@ -52,19 +44,19 @@ namespace Statistics {
             }
         }
 
-        Derived mean() {
+        Derived mean() const {
             return mean_.matrix();
         }
 
-        Derived variance(){
+        Derived variance() const {
             return  unbiasedSampleVariance();
         }
 
-        Derived standardDeviation(){
+        Derived standardDeviation() const {
             return unbiasedSampleStandardDeviation();
         }
 
-        Derived standardError(){
+        Derived standardError() const {
             return standardDeviation() / std::sqrt(getTotalWeight());
         }
 
@@ -73,31 +65,39 @@ namespace Statistics {
         }
 
     private:
+        void initialize(const Derived &sample){
+            initializedQ_ = true;
+            mean_ = sample;
+            lastMean_ = mean_;
+            unnormalisedVariance_ = Derived::Zero(sample.rows(), sample.cols());
+            lastUnnormalisedVariance_ = unnormalisedVariance_;
+        }
+
         //https://en.wikipedia.org/wiki/Variance#Population_variance_and_sample_variance
-        Derived unbiasedSampleVariance() { // includes Bessel's correction
+        Derived unbiasedSampleVariance() const { // includes Bessel's correction
             if(totalWeight_ <= 1)
-                return unnormalisedVariance_.setZero();
+                return Derived::Zero(unnormalisedVariance_.rows(),unnormalisedVariance_.cols());
             else
                 return (unnormalisedVariance_ / (totalWeight_ - 1));
         }
 
-        Derived biasedSampleVariance() { // population variance
+        Derived biasedSampleVariance() const { // population variance
             if(totalWeight_ <= 0)
-                return unnormalisedVariance_.setZero();
+                return Derived::Zero(unnormalisedVariance_.rows(),unnormalisedVariance_.cols());
             else
                 return (unnormalisedVariance_ / totalWeight_);
         }
 
-        Derived sampleReliabilityVariance() {
+        Derived sampleReliabilityVariance() const {
             if(totalWeight_ <= 1)
-                return unnormalisedVariance_.setZero();
+                return Derived::Zero(unnormalisedVariance_.rows(),unnormalisedVariance_.cols());
             else
                 return unnormalisedVariance_ / double(totalWeight_ - double(squaredTotalWeight_)/totalWeight_);
         }
 
-        Derived biasedStandardDeviation() { return biasedSampleVariance().array().sqrt(); }
+        Derived biasedStandardDeviation() const { return biasedSampleVariance().array().sqrt(); }
 
-        Derived unbiasedSampleStandardDeviation() { return unbiasedSampleVariance().array().sqrt(); }
+        Derived unbiasedSampleStandardDeviation() const { return unbiasedSampleVariance().array().sqrt(); }
 
         bool initializedQ_;
         WeightType totalWeight_,squaredTotalWeight_;
