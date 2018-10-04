@@ -17,4 +17,4 @@ AllTests:
     - cd build
     - cmake .. -DCMAKE_BUILD_TYPE=DEBUG -DBUILD_GUI=OFF
     - cmake --build . --target AmolqcppTests -- -j 2
-    - ctest -LE "(amolqc|GUI)" -E "(example|spdlog-utests)"
+    - ctest -LE "(amolqc|GUI|cppoptlib)" -E "(example|spdlog-utests)" --verbose
