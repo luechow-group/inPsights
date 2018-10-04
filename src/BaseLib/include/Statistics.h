@@ -22,6 +22,10 @@ namespace Statistics {
             initializedQ_ = false;
             totalWeight_ = 0;
             squaredTotalWeight_ = 0;
+            mean_.setZero();
+            lastMean_.setZero();
+            unnormalisedVariance_.setZero();
+            lastUnnormalisedVariance_.setZero();
         }
 
         void initialize(const Derived &sample){
@@ -49,7 +53,6 @@ namespace Statistics {
         }
 
         Derived mean() {
-            assert(totalWeight_ >= 1 && "The number of samples must be at least one.");
             return mean_.matrix();
         }
 
@@ -61,6 +64,10 @@ namespace Statistics {
             return unbiasedSampleStandardDeviation();
         }
 
+        Derived standardError(){
+            return standardDeviation() / std::sqrt(getTotalWeight());
+        }
+
         WeightType getTotalWeight() const {
             return totalWeight_;
         }
@@ -68,18 +75,24 @@ namespace Statistics {
     private:
         //https://en.wikipedia.org/wiki/Variance#Population_variance_and_sample_variance
         Derived unbiasedSampleVariance() { // includes Bessel's correction
-            assert(totalWeight_ >= 2 && "The number of samples must be at least two.");
-            return (unnormalisedVariance_ / (totalWeight_ - 1));
+            if(totalWeight_ <= 1)
+                return unnormalisedVariance_.setZero();
+            else
+                return (unnormalisedVariance_ / (totalWeight_ - 1));
         }
 
         Derived biasedSampleVariance() { // population variance
-            assert(totalWeight_ >= 2 && "The number of samples must be at least two.");
-            return (unnormalisedVariance_ / totalWeight_);
+            if(totalWeight_ <= 0)
+                return unnormalisedVariance_.setZero();
+            else
+                return (unnormalisedVariance_ / totalWeight_);
         }
 
         Derived sampleReliabilityVariance() {
-            assert(totalWeight_ >= 2 && "The number of samples must be at least two.");
-            return unnormalisedVariance_ / double(totalWeight_ - double(squaredTotalWeight_)/totalWeight_);
+            if(totalWeight_ <= 1)
+                return unnormalisedVariance_.setZero();
+            else
+                return unnormalisedVariance_ / double(totalWeight_ - double(squaredTotalWeight_)/totalWeight_);
         }
 
         Derived biasedStandardDeviation() { return biasedSampleVariance().array().sqrt(); }
