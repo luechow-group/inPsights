@@ -58,16 +58,13 @@ int main(int argc, char *argv[]) {
     //Clustering
     DensityBasedScan<double, SimilarReferences, wrapper> dbscan(globallySimilarMaxima);
     auto nClusters = dbscan.findClusters(similarDistThresh*2+0.01, 1); // why multiplication by 2 is needed?
+    //TODO Permutations must be stored! Own DBSCAN implementation?
     auto labels = dbscan.getLabels();
     console->info("number of clusters {}",nClusters);
 
     std::vector<std::vector<SimilarReferences>> clusteredGloballySimilarMaxima(nClusters);
 
     for (int i = 0; i < nClusters; ++i) {
-        auto labelCount = std::count(labels.begin(), labels.end(), i);
-
-        int foundCount = 0;
-
         for (auto it = globallySimilarMaxima.begin(); it != globallySimilarMaxima.end(); ++it) {
             auto label = labels[std::distance(globallySimilarMaxima.begin(),it)];
             if (label == i) {
