@@ -17,6 +17,14 @@ namespace YAML {
         static bool decode(const Node& node, Eigen::Vector3d& rhs);
     };
     Emitter& operator<< (Emitter& out, const Eigen::Vector3d& p);
+
+    template<>
+    struct convert<Eigen::VectorXd> {
+        static Node encode(const Eigen::VectorXd& rhs);
+        static bool decode(const Node& node, Eigen::VectorXd& rhs);
+    };
+    Emitter& operator<< (Emitter& out, const Eigen::VectorXd& p);
+
 }
 
 #endif //AMOLQCPP_EIGENYAMLCONVERSION_H

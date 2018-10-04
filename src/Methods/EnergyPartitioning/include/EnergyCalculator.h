@@ -71,30 +71,44 @@ public:
     unsigned long addEnergies(const Reference &reference) {
         unsigned long count = reference.count();
 
-        ekin = samples_[reference.id_].kineticEnergies_;
-        epot = CoulombPotential::energies(samples_[reference.id_].sample_);
+        Te_ = samples_[reference.id_].kineticEnergies_;
+        Vee_ = CoulombPotential::energies(samples_[reference.id_].sample_);
+        Ven_ = CoulombPotential::energies(samples_[reference.id_].sample_,atoms_);
 
-        TeStats.add(ekin, unsigned(count));
-        VeeStats.add(epot, unsigned(count));
+        TeStats.add(Te_, unsigned(count));
+        VeeStats.add(Vee_, unsigned(count));
+        VenStats.add(Ven_, unsigned(count));
+
         return count;
     }
 
+    //TODO eliminate by permuting the samples
     unsigned long addEnergies(const Reference &reference, const Eigen::PermutationMatrix<Eigen::Dynamic>& perm){
         unsigned long count = reference.count();
 
         auto sampleCopy = samples_[reference.id_].sample_;
         sampleCopy.permute(perm);
 
-        ekin = perm* (samples_[reference.id_].kineticEnergies_);
-        epot = CoulombPotential::energies(sampleCopy);
+        Te_ = perm* (samples_[reference.id_].kineticEnergies_);
+        Vee_ = CoulombPotential::energies(sampleCopy);
+        Ven_ = CoulombPotential::energies(sampleCopy,atoms_);
 
-        TeStats.add(ekin, unsigned(count));
-        VeeStats.add(epot, unsigned(count));
+        TeStats.add(Te_, unsigned(count));
+        VeeStats.add(Vee_, unsigned(count));
+        VenStats.add(Ven_, unsigned(count));
+
         return count;
     }
 
-    void calculateStatistics(
-            const std::vector<std::vector<SimilarReferences>>& clusteredGloballySimilarMaxima){
+    void calculateStatistics(const std::vector<std::vector<SimilarReferences>>& clusteredGloballySimilarMaxima){
+
+        yamlDoc_
+                << YAML::BeginDoc /*Atoms + VNN*/
+                << YAML::BeginMap; /*ADD representative maximum*/
+        yamlDoc_
+            << YAML::Key << "Atoms" << YAML::Value << atoms_
+            << YAML::Key << "Vnn";
+        printVnn();
 
         size_t totalCount = 0;
 
@@ -103,6 +117,7 @@ public:
 
                 TeStats.reset();
                 VeeStats.reset();
+                VenStats.reset();
 
                 // Representative reference
                 size_t repRefCount = addEnergies(*simRefVector.repRefIt_);
@@ -113,18 +128,102 @@ public:
                 for (const auto &simRef : simRefVector.similarReferences_)
                     simRefCount += addEnergies(*simRef.it_, simRef.perm_);
 
-                std::cout << "Te  mean: (" << TeStats.getTotalWeight() << ")\n" << TeStats.mean().transpose() << std::endl;
-                std::cout << "Te sterr: (" << TeStats.getTotalWeight() << ")\n"  << TeStats.standardError().transpose() << std::endl << std::endl;
 
-                //std::cout << "Vee mean: (" << VeeStats.getTotalWeight() << ")\n" << VeeStats.mean().transpose() << std::endl;
-                //if (VeeStats.getTotalWeight() >= 2)
-                //    std::cout << "Vee stdv: (" << VeeStats.getTotalWeight() << ")\n"  << VeeStats.standardDeviation().transpose() << std::endl << std::endl;
-
-
+                printCluster();
                 totalCount += repRefCount + simRefCount;
             }
         }
         console->info("overall count {}", totalCount);
+
+        yamlDoc_ << YAML::EndMap
+                 << YAML::EndDoc;
+        std::cout << yamlDoc_.c_str() << std::endl;
+
+
+    }
+
+    void printTe(){
+        yamlDoc_
+        << YAML::BeginMap
+        << YAML::Key << "mean" << YAML::Newline << YAML::Value << TeStats.mean()
+        << YAML::Key << "error"<< YAML::Newline << YAML::Value << TeStats.standardError()
+        << YAML::EndMap;
+    }
+
+    void printVee(){
+        yamlDoc_
+        << YAML::BeginMap
+        << YAML::Key << "mean" << YAML::Newline
+        << YAML::BeginSeq;
+
+        for (int i = 0; i < VeeStats.mean().rows(); ++i) {
+            Eigen::VectorXd temp = VeeStats.mean().row(i).segment(i+1,Vee_.cols()-(i+1));
+            yamlDoc_ << YAML::Value << temp ;
+        }
+        yamlDoc_
+        << YAML::EndSeq
+
+        << YAML::Key << "error" << YAML::Newline
+        << YAML::BeginSeq;
+        for (int i = 0; i < VeeStats.standardError().rows(); ++i) {
+            Eigen::VectorXd temp = VeeStats.standardError().row(i).segment(i+1,Vee_.cols()-(i+1));
+            yamlDoc_ << YAML::Value << temp ;
+        }
+        yamlDoc_
+        << YAML::EndSeq
+        << YAML::EndMap;
+    }
+
+    void printVen(){
+        yamlDoc_
+                << YAML::BeginMap
+                << YAML::Key << "mean" << YAML::Newline
+                << YAML::BeginSeq;
+
+        for (int i = 0; i < VenStats.mean().rows(); ++i) {
+            Eigen::VectorXd temp = VenStats.mean().row(i);
+            yamlDoc_ << YAML::Value << temp ;
+        }
+        yamlDoc_
+        << YAML::EndSeq
+        << YAML::Key << "error" << YAML::Newline
+        << YAML::BeginSeq;
+
+        for (int i = 0; i < VenStats.standardError().rows(); ++i) {
+            Eigen::VectorXd temp = VenStats.standardError().row(i);
+            yamlDoc_ << YAML::Value << temp ;
+        }
+        yamlDoc_
+        << YAML::EndSeq
+        << YAML::EndMap;
+    }
+
+    void printVnn(){
+        yamlDoc_ << YAML::BeginSeq;
+
+        Eigen::MatrixXd Vnn = CoulombPotential::energies(atoms_);
+
+        for (int i = 0; i < Vnn.rows(); ++i) {
+            Eigen::VectorXd temp = Vnn.row(i).segment(i+1,Vnn.cols()-(i+1));
+            yamlDoc_ << YAML::Value << temp ;
+        }
+        yamlDoc_ << YAML::EndSeq;
+    }
+
+    void printCluster(){
+
+        yamlDoc_
+        << YAML::Key << "numberOfSamples" << YAML::Value << TeStats.getTotalWeight()
+        << YAML::Key << "Te";
+        printTe();
+
+        yamlDoc_
+        << YAML::Key << "Vee";
+        printVee();
+
+        yamlDoc_
+        << YAML::Key << "Ven";
+        printVen();
     }
 
 private:
@@ -132,12 +231,15 @@ private:
     AtomsVector atoms_;
 
     Statistics::RunningStatistics<Eigen::VectorXd> TeStats;
-    Statistics::RunningStatistics<Eigen::MatrixXd> VeeStats;// TODO add Ven and Vnn
+    Statistics::RunningStatistics<Eigen::MatrixXd> VeeStats, VenStats;
 
-    Eigen::VectorXd ekin;
-    Eigen::MatrixXd epot;
 
+    Eigen::VectorXd Te_;
+    Eigen::MatrixXd Vee_, Ven_;
+
+    YAML::Emitter yamlDoc_;
     std::shared_ptr<spdlog::logger> console;
 };
+
 
 #endif //AMOLQCPP_ENERGYCALCULATOR_H

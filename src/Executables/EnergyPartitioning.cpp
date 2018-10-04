@@ -78,7 +78,7 @@ int main(int argc, char *argv[]) {
 
 
     // Visuals
-    QApplication app(argc, argv);
+    /*QApplication app(argc, argv);
     setlocale(LC_NUMERIC,"C");
 
     MoleculeWidget moleculeWidget;
@@ -94,6 +94,6 @@ int main(int argc, char *argv[]) {
     ElectronsVector3D(root, atoms, ev1, true);
     ElectronsVector3D(root, atoms, ev2, true);
 
-    return app.exec();
+    return app.exec();*/
 
 };
