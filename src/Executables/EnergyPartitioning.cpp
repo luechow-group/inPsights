@@ -75,8 +75,9 @@ int main(int argc, char *argv[]) {
 
     //Statistics
     energyCalculator.calculateStatistics(clusteredGloballySimilarMaxima);
-
-
+    std::ofstream yamlFile("energies.yml");
+    yamlFile << energyCalculator.getYamlDocumentString();
+    
     // Visuals
     /*QApplication app(argc, argv);
     setlocale(LC_NUMERIC,"C");

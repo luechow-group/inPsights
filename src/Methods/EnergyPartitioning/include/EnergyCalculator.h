@@ -106,11 +106,11 @@ public:
 
     void calculateStatistics(const std::vector<std::vector<SimilarReferences>>& clusteredGloballySimilarMaxima){
 
-        yamlDoc_ << BeginDoc << BeginMap
+        yamlDocument_ << BeginDoc << BeginMap
         << Key << "Atoms" << Value << atoms_
         << Key << "Vnn" << Value;
-        CoulombPotential::yamlFormattedEnergies<Element>(yamlDoc_,atoms_);
-        yamlDoc_
+        CoulombPotential::yamlFormattedEnergies<Element>(yamlDocument_,atoms_);
+        yamlDocument_
         << Key << "NSamples" << Value << samples_.size()
         << Key << "Clusters" << Value << BeginSeq;
 
@@ -139,42 +139,47 @@ public:
         console->info("overall count {}", totalCount);
         assert(totalCount == samples_.size() && "The total count must match the sample size.");
 
-        yamlDoc_ << EndSeq << EndMap << EndDoc;
-        std::cout << yamlDoc_.c_str() << std::endl;
+        yamlDocument_ << EndSeq << EndMap << EndDoc;
+        assert(yamlDocument_.good());
     }
 
     void printStats(const Statistics::RunningStatistics<Eigen::VectorXd>& stats) {
-        yamlDoc_
-                << BeginMap
-                << Key << "Mean" << Value << stats.mean()
-                << Key << "Error"<< Value << stats.standardError()
-                << EndMap;
+        yamlDocument_ << BeginMap
+        << Key << "Mean" << Value << stats.mean()
+        << YAML::Comment(std::to_string(0) + ":" + std::to_string(stats.mean().size()-1))
+        << Key << "Error"<< Value << stats.standardError()
+        << YAML::Comment(std::to_string(0) + ":" + std::to_string(stats.mean().size()-1))
+        << EndMap;
     }
     void printStats(const Statistics::RunningStatistics<Eigen::MatrixXd>& stats, bool selfInteractionsQ = false){
-        yamlDoc_ << BeginMap << Key << "Mean" << Value;
-        CoulombPotential::yamlFormattedEnergies(yamlDoc_,stats.mean(), selfInteractionsQ);
+        yamlDocument_ << BeginMap << Key << "Mean" << Value;
+        CoulombPotential::yamlFormattedEnergies(yamlDocument_,stats.mean(), selfInteractionsQ);
 
-        yamlDoc_ << Key << "Error" << Value;
-        CoulombPotential::yamlFormattedEnergies(yamlDoc_,stats.standardError(), selfInteractionsQ);
-        yamlDoc_ << EndMap;
+        yamlDocument_ << Key << "Error" << Value;
+        CoulombPotential::yamlFormattedEnergies(yamlDocument_,stats.standardError(), selfInteractionsQ);
+        yamlDocument_ << EndMap;
     }
 
     void printCluster(){
-        yamlDoc_
+        yamlDocument_
         << BeginMap
         << Key << "N" << Value << TeStats_.getTotalWeight()
         << Key << "Te";
         printStats(TeStats_);
 
-        yamlDoc_
+        yamlDocument_
         << Key << "Vee";
         printStats(VeeStats_,true);
 
-        yamlDoc_
+        yamlDocument_
         << Key << "Ven";
         printStats(VenStats);
-        yamlDoc_ << EndMap;
+        yamlDocument_ << EndMap;
     }
+
+    Node getYamlNode(){ return Load(yamlDocument_.c_str()); }
+
+    std::string getYamlDocumentString(){ return std::string(yamlDocument_.c_str()); }
 
 private:
     const std::vector<Sample>& samples_;
@@ -187,7 +192,7 @@ private:
     Eigen::VectorXd Te_;
     Eigen::MatrixXd Vee_, Ven_;
 
-    Emitter yamlDoc_;
+    Emitter yamlDocument_;
     std::shared_ptr<spdlog::logger> console;
 };
 

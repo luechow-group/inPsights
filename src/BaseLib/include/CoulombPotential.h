@@ -63,9 +63,11 @@ namespace CoulombPotential {
 
         for (Eigen::Index i = 0; i < V.rows()- (noSelfInteractionsQ? 1 : 0); ++i) {
             if(noSelfInteractionsQ)
-                out << YAML::Value << Eigen::VectorXd(V.row(i).segment(i+1,V.cols()-(i+1)));
+                out << YAML::Value << Eigen::VectorXd(V.row(i).segment(i + 1, V.cols() - (i + 1)))
+                    << YAML::Comment(std::to_string(i) + "," + std::to_string(i+1) + ":" + std::to_string(V.cols()-1));
             else
-                out << YAML::Value << Eigen::VectorXd(V.row(i));
+                out << YAML::Value << Eigen::VectorXd(V.row(i))
+                    << YAML::Comment(std::to_string(i) + "," + std::to_string(0) + ":" + std::to_string(V.cols()-1));
         }
         out << YAML::EndSeq;
     }
