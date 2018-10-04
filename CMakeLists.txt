@@ -13,7 +13,7 @@ set(CMAKE_MACOSX_RPATH 1)
 message("${CMAKE_MODULE_PATH}")
 
 include(cmake/FindSharedMemoryParallelismLibraries.cmake)
-include(cmake/add_gtests.cmake)
+
 include(cmake/DownloadGoogleTest.cmake)
 
 if(DEFINED ENV{BOOST_ROOT})
@@ -34,7 +34,8 @@ else()
     include_directories(${EIGEN3_INCLUDE_DIR})
 endif()
 
+# Ctest related
 enable_testing()
 add_custom_target(AmolqcppTests COMMAND "")
-
+include(cmake/add_gtest_subdirectory_with_dependency.cmake)
 add_subdirectory(src)

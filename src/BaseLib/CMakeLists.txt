@@ -94,4 +94,4 @@ target_include_directories(${PROJECT_NAME}
                 source
         )
 
-add_subdirectory(tests)
+add_gtest_subdirectory_with_dependency(tests "gtest;pthread")

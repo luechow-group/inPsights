@@ -2,21 +2,14 @@
 // Created by Michael Heuer on 09.01.17.
 //
 
-#include <gtest/gtest.h>
+#include <gmock/gmock.h>
 #include <Eigen/Core>
 #include <QuaternionFit.h>
 
 using namespace testing;
 using namespace Eigen;
 
-class AQuaternionFitTest : public Test {
-public:
-  void SetUp() override {
-
-  }
-};
-
-TEST_F(AQuaternionFitTest, IdenticalGeometries) {
+TEST(AQuaternionFitTest, IdenticalGeometries) {
   MatrixXd refMat(4,3);
   MatrixXd fitMat(4,3);
 
@@ -36,25 +29,23 @@ TEST_F(AQuaternionFitTest, IdenticalGeometries) {
   ASSERT_TRUE( quatFit.getRotationMatrix().isApprox(Eigen::Matrix3d::Identity()) );
 }
 
-/*
-TEST_F(AQuaternionFitTest, ThreeCollinearPoints) {
+TEST(AQuaternionFitTest, DISABLED_ThreeCollinearPoints) {
   ASSERT_TRUE(false); //TODO
 }
 
-TEST_F(AQuaternionFitTest, CoplanarPoints) {
+TEST(AQuaternionFitTest, DISABLED_CoplanarPoints) {
   ASSERT_TRUE(false); //TODO
 }
 
-TEST_F(AQuaternionFitTest, TwoPoints) {
+TEST(AQuaternionFitTest, DISABLED_TwoPoints) {
   ASSERT_TRUE(false); //TODO
 }
 
-TEST_F(AQuaternionFitTest, SinglePoint) {
+TEST(AQuaternionFitTest, DISABLED_SinglePoint) {
   ASSERT_TRUE(false); //TODO
 }
-*/
 
-TEST_F(AQuaternionFitTest, RotateIdenticalGeometriesBy90DegreeAroundZAxis) {
+TEST(AQuaternionFitTest, RotateIdenticalGeometriesBy90DegreeAroundZAxis) {
   MatrixXd refMat(4, 3);
   MatrixXd fitMat(4, 3);
 
@@ -80,7 +71,7 @@ TEST_F(AQuaternionFitTest, RotateIdenticalGeometriesBy90DegreeAroundZAxis) {
   ASSERT_TRUE(quatFit.getRotationMatrix().isApprox(refRotMat));
 }
 
-TEST_F(AQuaternionFitTest, DifferentGeometriesRMSD) {
+TEST(AQuaternionFitTest, DifferentGeometriesRMSD) {
   // Acetylacetone geometry
 
   MatrixXd refMat(15,3);

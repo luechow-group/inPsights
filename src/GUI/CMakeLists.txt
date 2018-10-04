@@ -75,4 +75,4 @@ target_link_libraries(${PROJECT_NAME}
         Qt5::Charts
         )
 
-add_subdirectory(tests)
+add_gtest_subdirectory_with_dependency(tests "gtest;pthread")
