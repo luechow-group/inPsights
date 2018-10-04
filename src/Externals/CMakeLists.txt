@@ -6,4 +6,5 @@ add_subdirectory(cppoptlib)
 option(YAML_CPP_BUILD_TESTS "Don't build the YAML tests." OFF)
 option(YAML_CPP_BUILD_CONTRIB "Don't build YAML contributions." OFF)
 add_subdirectory(yaml-cpp)
+
 add_subdirectory(spdlog)

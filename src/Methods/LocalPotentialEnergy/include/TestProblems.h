@@ -8,7 +8,7 @@
 #include <problem.h>
 
 namespace TestProblems{
-    class testProblem: public cppoptlib::Problem<double,Eigen::Dynamic>{
+    class TestProblem: public cppoptlib::Problem<double,Eigen::Dynamic>{
     public:
         double value(const Eigen::VectorXd & x) override {
             double value = 0.0;
@@ -33,17 +33,17 @@ namespace TestProblems{
         };
 
         bool callback(const cppoptlib::Criteria<double> &state, Eigen::VectorXd &x, Eigen::VectorXd& grad) override{
-            std::cout << "(" << std::setw(2) << state.iterations << ")"
+            /*std::cout << "(" << std::setw(2) << state.iterations << ")"
                       << " f(x) = " << std::fixed << std::setw(8) << std::setprecision(8) << value(x)
                       << " xDelta = " << std::setw(8) << state.xDelta
                       << " gradInfNorm = " << std::setw(8) << state.gradNorm
                       << "   " << x.transpose()
-                      << std::endl;
+                      << std::endl;*/
             return true;
         };
     };
 
-    class testConstraint : public cppoptlib::Problem<double,Eigen::Dynamic>{
+    class TestConstraint : public cppoptlib::Problem<double,Eigen::Dynamic>{
     public:
         double value(const Eigen::VectorXd & x) override {
             double value = 0.0;
@@ -73,12 +73,12 @@ namespace TestProblems{
         };
 
         bool callback(const cppoptlib::Criteria<double> &state, Eigen::VectorXd &x, Eigen::VectorXd& grad) override{
-            std::cout << "(" << std::setw(2) << state.iterations << ")"
+            /*std::cout << "(" << std::setw(2) << state.iterations << ")"
                       << " f(x) = " << std::fixed << std::setw(8) << std::setprecision(8) << value(x)
                       << " xDelta = " << std::setw(8) << state.xDelta
                       << " gradInfNorm = " << std::setw(8) << state.gradNorm
                       << "   " << x.transpose()
-                      << std::endl;
+                      << std::endl;*/
             return true;
         };
     };

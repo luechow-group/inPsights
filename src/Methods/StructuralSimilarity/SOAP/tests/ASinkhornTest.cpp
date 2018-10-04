@@ -156,7 +156,6 @@ TEST_F(ASinkhornTest, DoublyStochasticCheck_2x2) {
     C << 0.6,0.5,0.5,0.2;
     compareWithReferenceImplementations(C);
     doublyStochasticCheck(Sinkhorn::Pgamma(C,1), eps);
-    std::cout << Sinkhorn::Pgamma(C, 1) << std::endl;
 }
 
 TEST_F(ASinkhornTest, DoublyStochasticCheck_20x20RandomMatrix) {

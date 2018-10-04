@@ -50,6 +50,4 @@ target_link_libraries(${PROJECT_NAME}
         BaseLib
         )
 
-add_subdirectory(tests/unit)
-add_subdirectory(tests/integration)
-
+add_subdirectory(tests)

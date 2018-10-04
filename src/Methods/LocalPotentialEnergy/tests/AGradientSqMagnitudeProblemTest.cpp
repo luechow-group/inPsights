@@ -18,14 +18,14 @@ TEST_F(AGradientSqMagnitudeProblemTest, empty) {
 }
 
 TEST_F(AGradientSqMagnitudeProblemTest, Construction) {
-    testConstraint problem;
-    GradientSqMagnitudeProblem<testConstraint> gradientSqMagnitudeProblem(problem);
+    TestConstraint problem;
+    GradientSqMagnitudeProblem<TestConstraint> gradientSqMagnitudeProblem(problem);
 }
 
 TEST_F(AGradientSqMagnitudeProblemTest, value) {
-    testConstraint problem;
+    TestConstraint problem;
 
-    GradientSqMagnitudeProblem<testConstraint> gradientSqMagnitudeProblem(problem);
+    GradientSqMagnitudeProblem<TestConstraint> gradientSqMagnitudeProblem(problem);
 
     Eigen::VectorXd z(2);
     z << -2,3;
@@ -34,9 +34,9 @@ TEST_F(AGradientSqMagnitudeProblemTest, value) {
 }
 
 TEST_F(AGradientSqMagnitudeProblemTest, gradient) {
-    testConstraint problem;
+    TestConstraint problem;
 
-    GradientSqMagnitudeProblem<testConstraint> gradientSqMagnitudeProblem(problem);
+    GradientSqMagnitudeProblem<TestConstraint> gradientSqMagnitudeProblem(problem);
 
     Eigen::VectorXd z(2);
     z << -2,3;
@@ -51,9 +51,9 @@ TEST_F(AGradientSqMagnitudeProblemTest, gradient) {
 }
 
 TEST_F(AGradientSqMagnitudeProblemTest, GradientDescentSimple) {
-    testConstraint problem;
+    TestConstraint problem;
 
-    GradientSqMagnitudeProblem<testConstraint> gradientSqMagnitudeProblem(problem);
+    GradientSqMagnitudeProblem<TestConstraint> gradientSqMagnitudeProblem(problem);
 
     Eigen::VectorXd z(2);
     z << -2,3;
@@ -61,8 +61,8 @@ TEST_F(AGradientSqMagnitudeProblemTest, GradientDescentSimple) {
     cppoptlib::Criteria<double> crit = cppoptlib::Criteria<double>::defaults();
     crit.gradNorm = 1e-3;
 
-    cppoptlib::GradientDescentSimpleSolver<GradientSqMagnitudeProblem<testConstraint>> solver;
-    solver.setDebug(cppoptlib::DebugLevel::High);
+    cppoptlib::GradientDescentSimpleSolver<GradientSqMagnitudeProblem<TestConstraint>> solver;
+    solver.setDebug(cppoptlib::DebugLevel::None);
     solver.setStopCriteria(crit);
 
     solver.minimize(gradientSqMagnitudeProblem, z);

@@ -18,7 +18,7 @@ public:
     }
 };
 
-TEST_F(ASOAPPerformanceTest, SingleGlobalSimTiming) {
+TEST_F(ASOAPPerformanceTest, DISABLED_SingleGlobalSimTiming) {
 
     unsigned nmax = 8;
     unsigned lmax = nmax;
@@ -54,7 +54,7 @@ TEST_F(ASOAPPerformanceTest, SingleGlobalSimTiming) {
 }
 
 
-TEST_F(ASOAPPerformanceTest, GlobalSimPerformance){
+TEST_F(ASOAPPerformanceTest, DISABLED_GlobalSimPerformance){
 
     printf("{\n");
     for (unsigned nmax = 2; nmax <= 10; nmax=nmax+2) {
@@ -112,7 +112,7 @@ TEST_F(ASOAPPerformanceTest, GlobalSimPerformance){
     EXPECT_TRUE(false);
 }
 
-TEST_F(ASOAPPerformanceTest, LocalSimPerformance){
+TEST_F(ASOAPPerformanceTest, DISABLED_LocalSimPerformance){
 
     printf("{\n");
     for (unsigned nmax = 2; nmax <= 10; nmax=nmax+2) {

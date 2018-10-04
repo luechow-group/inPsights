@@ -39,7 +39,3 @@ target_link_libraries(${PROJECT_NAME}_main
         ${LAPACK_LINKER_FLAGS}
         ${BLAS_LINKER_FLAGS}
         )
-
-#add_subdirectory(tests) # currently empty
-
-

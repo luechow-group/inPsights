@@ -16,7 +16,7 @@ using namespace TestProblems;
 class ATestProblemsTest : public Test {};
 
 TEST_F(ATestProblemsTest, testProblemValue) {
-    testProblem problem;
+    TestProblem problem;
 
     Eigen::VectorXd z(2);
     z << -2,3;
@@ -25,7 +25,7 @@ TEST_F(ATestProblemsTest, testProblemValue) {
 }
 
 TEST_F(ATestProblemsTest, testConstraintValue) {
-    testConstraint constraint;
+    TestConstraint constraint;
 
     Eigen::VectorXd z(2);
     z << -2,3;
@@ -34,7 +34,7 @@ TEST_F(ATestProblemsTest, testConstraintValue) {
 }
 
 TEST_F(ATestProblemsTest, testProblemGradient) {
-    testProblem problem;
+    TestProblem problem;
 
     Eigen::VectorXd z(2);
     z << -2,3;
@@ -49,7 +49,7 @@ TEST_F(ATestProblemsTest, testProblemGradient) {
 }
 
 TEST_F(ATestProblemsTest, testConstraintGradient) {
-    testConstraint constraint;
+    TestConstraint constraint;
 
     Eigen::VectorXd z(2);
     z << -2,3;
@@ -66,7 +66,7 @@ TEST_F(ATestProblemsTest, testConstraintGradient) {
 }
 
 TEST_F(ATestProblemsTest, testProblemHessian) {
-    testProblem problem;
+    TestProblem problem;
 
     Eigen::VectorXd z(2);
     z << -2,3;
@@ -85,7 +85,7 @@ TEST_F(ATestProblemsTest, testProblemHessian) {
 }
 
 TEST_F(ATestProblemsTest, testConstraintHessian) {
-    testConstraint constraint;
+    TestConstraint constraint;
 
     Eigen::VectorXd z(2);
     z << -2,3;
@@ -104,15 +104,15 @@ TEST_F(ATestProblemsTest, testConstraintHessian) {
 }
 
 TEST_F(ATestProblemsTest, GradientDescent) {
-    testConstraint constraint;
+    TestConstraint constraint;
 
     Eigen::VectorXd z(2);
     z << -2,3;
 
     cppoptlib::Criteria<double> crit = cppoptlib::Criteria<double>::defaults();
 
-    cppoptlib::GradientDescentSolver<testConstraint> solver;
-    solver.setDebug(cppoptlib::DebugLevel::High);
+    cppoptlib::GradientDescentSolver<TestConstraint> solver;
+    solver.setDebug(cppoptlib::DebugLevel::None);
     solver.setStopCriteria(crit);
 
     solver.minimize(constraint, z);
@@ -124,7 +124,7 @@ TEST_F(ATestProblemsTest, GradientDescent) {
 }
 
 TEST_F(ATestProblemsTest, GradientDescentSimple) {
-    testConstraint constraint;
+    TestConstraint constraint;
 
     Eigen::VectorXd z(2);
     z << -2,3;
@@ -132,8 +132,8 @@ TEST_F(ATestProblemsTest, GradientDescentSimple) {
     cppoptlib::Criteria<double> crit = cppoptlib::Criteria<double>::defaults();
     crit.gradNorm = 1e-3;
 
-    cppoptlib::GradientDescentSimpleSolver<testConstraint> solver;
-    solver.setDebug(cppoptlib::DebugLevel::High);
+    cppoptlib::GradientDescentSimpleSolver<TestConstraint> solver;
+    solver.setDebug(cppoptlib::DebugLevel::None);
     solver.setStopCriteria(crit);
 
     solver.minimize(constraint, z);
@@ -145,15 +145,15 @@ TEST_F(ATestProblemsTest, GradientDescentSimple) {
 }
 
 TEST_F(ATestProblemsTest, Bfgs) {
-    testConstraint constraint;
+    TestConstraint constraint;
 
     Eigen::VectorXd z(2);
     z << -2,3;
 
     cppoptlib::Criteria<double> crit = cppoptlib::Criteria<double>::defaults();
 
-    cppoptlib::BfgsSolver<testConstraint> solver;
-    solver.setDebug(cppoptlib::DebugLevel::High);
+    cppoptlib::BfgsSolver<TestConstraint> solver;
+    solver.setDebug(cppoptlib::DebugLevel::None);
     solver.setStopCriteria(crit);
 
     solver.minimize(constraint, z);
