@@ -140,6 +140,8 @@ public:
         return typeCountsPair;
     }
 
+    unsigned multiplicity() = delete;
+
 };
 
 using IntegerTypesVector = TypesVector<int>;
@@ -153,6 +155,10 @@ SpinTypesVector::TypesVector(unsigned long numberOfAlphaElectrons,
 
 template<>
 SpinTypesVector::TypesVector(std::vector<Spin> types);
+
+template<>
+unsigned SpinTypesVector::multiplicity();
+
 
 template<>
 ElementTypesVector::TypesVector(std::vector<Element> types);

@@ -15,6 +15,8 @@ target_link_libraries(BaseLib.exe
 
 add_executable(EnergyPartitioning.exe EnergyPartitioning.cpp)
 target_link_libraries(EnergyPartitioning.exe
+        GUI
+        AmolqcInterface
         BaseLib
         EnergyPartitioning
         )
@@ -57,6 +59,12 @@ if (DEFINED BUILD_GUI AND ON)
 
     add_executable(ShowMaxima.exe ShowMaxima.cpp)
     target_link_libraries(ShowMaxima.exe
+            GUI
+            AmolqcInterface
+            )
+
+    add_executable(ShowPath.exe ShowPath.cpp)
+    target_link_libraries(ShowPath.exe
             GUI
             AmolqcInterface
             )

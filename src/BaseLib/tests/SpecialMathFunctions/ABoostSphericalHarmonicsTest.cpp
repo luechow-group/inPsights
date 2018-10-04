@@ -3,8 +3,8 @@
 //
 
 #include <gtest/gtest.h>
-#include "../include/SpecialMathFunctions/BoostSphericalHarmonics.h"
-#include "iostream"
+#include <SpecialMathFunctions/BoostSphericalHarmonics.h>
+
 using namespace testing;
 
 class ABoostSphericalHarmonicsTest : public ::testing::Test {

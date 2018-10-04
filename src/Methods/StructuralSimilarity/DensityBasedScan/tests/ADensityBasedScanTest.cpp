@@ -6,6 +6,7 @@
 #include <gtest/gtest.h>
 #include <DensityBasedScan.h>
 #include <sstream>
+#include <HungarianHelper.h>
 
 using namespace testing;
 using namespace Eigen;
@@ -36,9 +37,9 @@ public:
 };
 
 TEST_F(ADensityBasedScanTest, Float) {
-    DensityBasedScan<float> dbscan(dataFloat);
+    DensityBasedScan<float, Eigen::VectorXf, Metrics::euclideanDistance<float, Eigen::VectorXf>>  dbscan(dataFloat);
 
-    auto nClusters = dbscan.findClusters(0.20001, 5);
+    auto nClusters = dbscan.findClusters(0.20001, 5);// TODO WHY?
     ASSERT_EQ(nClusters,5);
 
     auto result = dbscan.getLabels();
@@ -54,9 +55,9 @@ TEST_F(ADensityBasedScanTest, Float) {
 }
 
 TEST_F(ADensityBasedScanTest, Double) {
-    DensityBasedScan<double> dbscan(dataDouble);
+    DensityBasedScan<double, Eigen::VectorXd, Metrics::euclideanDistance<double, Eigen::VectorXd>>  dbscan(dataDouble);
 
-    auto nClusters = dbscan.findClusters(0.20001, 5);
+    auto nClusters = dbscan.findClusters(0.20001, 5);// TODO WHY?
     ASSERT_EQ(nClusters,5);
 
     auto result = dbscan.getLabels();
@@ -72,9 +73,9 @@ TEST_F(ADensityBasedScanTest, Double) {
 }
 
 TEST_F(ADensityBasedScanTest, MinSizeTooLarge) {
-    DensityBasedScan<float> dbscan(dataFloat);
+    DensityBasedScan<float, Eigen::VectorXf, Metrics::euclideanDistance<float, Eigen::VectorXf>> dbscan(dataFloat);
 
-    auto nClusters = dbscan.findClusters(0.20001, 6);
+    auto nClusters = dbscan.findClusters(0.20001, 6);// TODO WHY?
     ASSERT_EQ(nClusters,0);
 
     auto result = dbscan.getLabels();
@@ -90,13 +91,31 @@ TEST_F(ADensityBasedScanTest, MinSizeTooLarge) {
 }
 
 TEST_F(ADensityBasedScanTest, PredictEps) {
-    DensityBasedScan<float> dbscan(dataFloat);
+    DensityBasedScan<float, Eigen::VectorXf, Metrics::euclideanDistance<float, Eigen::VectorXf>>  dbscan(dataFloat);
 
     auto result = dbscan.predictEps(4); // careful => cluster indices start with 0
 
     auto min = *std::min_element(result.begin(), result.end());
     auto max = *std::max_element(result.begin(), result.end());
 
-    ASSERT_GE(min,0.19999f); // ???? why
+    ASSERT_GE(min,0.19999f);// TODO WHY?
     ASSERT_LE(max,1.1);
+}
+
+TEST_F(ADensityBasedScanTest, BestMatchNormDistanceFunction) {
+    std::vector<ElectronsVector> data(
+            {ElectronsVector({{ Spin::alpha, {0, 1, 2}},
+                              { Spin::alpha, {0, 0, 0}}}),
+             ElectronsVector({{ Spin::alpha, {0, 0, 0}},
+                              { Spin::alpha, {0, 4, 6}}})
+            });
+
+    DensityBasedScan<double, ElectronsVector, Metrics::bestMatchNorm<Eigen::Infinity,2>>  dbscan(data);
+
+    std::vector<int32_t> expected{0,0};
+
+    auto nClusters = dbscan.findClusters(5.00001, 1); // TODO WHY?
+
+    ASSERT_EQ(nClusters,1);
+    ASSERT_EQ(dbscan.getLabels(),expected);
 }

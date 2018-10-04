@@ -8,7 +8,6 @@
 #define AMOLQCPP_REFERENCE_H
 
 #include <ParticlesVector.h>
-#include <Logger.h>
 
 class Reference{
 public:
@@ -27,6 +26,10 @@ public:
 
     bool operator<(const Reference& rhs) const {
         return negLogSqrdProbabilityDensity_<rhs.negLogSqrdProbabilityDensity_;
+    }
+
+    unsigned long count() const {
+        return 1+associatedSampleIds_.size();
     }
 
     double negLogSqrdProbabilityDensity_;
@@ -57,13 +60,13 @@ class SimilarReferences {
 public:
     explicit SimilarReferences(std::vector<Reference>::iterator representativeReference)
     :
-    representativeReferenceIterator(representativeReference),
+    repRefIt_(representativeReference),
     similarReferences_()
     {}
 
     //TODO REPLACE THIS BY CENTROID LIKE REF
 
-    std::vector<Reference>::iterator representativeReferenceIterator; // may change over time, difficult to define for rings/clusters
+    std::vector<Reference>::iterator repRefIt_; // may change over time, difficult to define for rings/clusters
     std::vector<SimilarReference> similarReferences_;
 
 };

@@ -44,7 +44,8 @@ public:
     }
     ParticlesVectorCollection(const PositionsVectorCollection &positionsVectorCollection,
                               const TypesVector<Type> &typesVector)
-            : positionsVectorCollection_(positionsVectorCollection),
+            : AbstractVector(positionsVectorCollection.numberOfEntities()),
+              positionsVectorCollection_(positionsVectorCollection),
               typesVector_(typesVector) {
 
         assert(numberOfEntities() == positionsVectorCollection_.numberOfEntities()

@@ -3,229 +3,97 @@
 //
 
 #include <RawDataReader.h>
-#include <Sample.h>
-#include <Logger.h>
-#include <HungarianHelper.h>
-#include <algorithm>
+#include <GlobalIdentitySorter.h>
+#include <GlobalSimilaritySorter.h>
 #include <DensityBasedScan.h>
+#include <EnergyCalculator.h>
 
-//TODO method header is unclear
-double mostDeviatingParticleDistance(
-        PositionsVector permutee,
-        const Eigen::PermutationMatrix<Eigen::Dynamic> &perm,
-        const PositionsVector &ref) {
-    assert(permutee.numberOfEntities() == ref.numberOfEntities());
-
-    permutee.permute(perm);
-    return Metrics::positionDistancesVector(permutee,ref).lpNorm<Eigen::Infinity>();
-}
-
-class GlobalIdentiySorter{
-public:
-
-    GlobalIdentiySorter(std::vector<Reference>& references, std::vector<Sample>& samples, double increment, double distThresh)
-    :
-    references_(references),
-    samples_(samples),
-    increment_(increment),
-    distThresh_(distThresh),
-    console(spdlog::get("console"))
-    {}
-
-    GlobalIdentiySorter(std::vector<Reference>& references, std::vector<Sample>& samples, double distThresh = 0.01)
-    :
-    GlobalIdentiySorter(references, samples, (*references.rbegin()).negLogSqrdProbabilityDensity_ * 1e-7, distThresh)
-    {}
+#include <MoleculeWidget.h>
+#include <ElectronicWaveFunction.h>
+#include <AtomsVector3D.h>
+#include <ElectronsVector3D.h>
+#include <QApplication>
+#include <algorithm>
 
 
-    bool sort(){
-        if(references_.empty()) {
-            console->error("References are empty.");
-            return false;
-        }
-        else if (references_.size() == 1) {
-            console->warn("No sorting because only one reference was found.");
-            return true; // no sorting
-        }
-        std::sort(references_.begin(),references_.end());
-
-        auto lit = references_.begin();
-        auto uit = references_.begin();
-
-        while (lit != references_.end()){
-            uit = std::upper_bound(lit,references_.end(),Reference((*lit).negLogSqrdProbabilityDensity_+increment_));
-            //uit = references_.upper_bound(Reference((*lit).negLogSqrdProbabilityDensity_+increment_));
-            auto it = lit;
-            it++; // start with the element next to lit
-
-            while(it != uit) subLoop(lit,it);
-
-            lit = uit;
-        }
-
-        return true;
-    }
-
-private:
-    void subLoop(std::vector<Reference>::iterator& lit, std::vector<Reference>::iterator& it){
-
-        /*PUT INTO METHOD*/
-        //TODO CHECK MULTIPLICITY
-        //TODO maybe calculate only alpha electron distance and skip beta electron hungarian if dist is too high already
-        auto bestMatch = HungarianHelper::spinSpecificHungarian((*it).maximum_,(*lit).maximum_);
-        auto bestMatchFlip = HungarianHelper::spinSpecificHungarian((*it).maximum_,(*lit).maximum_,true);
-
-        double dist= mostDeviatingParticleDistance(
-                (*it).maximum_.positionsVector(), bestMatch,
-                (*lit).maximum_.positionsVector());
-
-        double distFlip = mostDeviatingParticleDistance(
-                (*it).maximum_.positionsVector(), bestMatchFlip,
-                (*lit).maximum_.positionsVector());
-        /*PUT INTO METHOD END*/
-
-        console->info("{},{}",dist,distFlip);
-        if( (dist <= distThresh_) || (distFlip <= distThresh_) ){
-            // refs are identical
-
-            console->info("MERGE");
-
-            if(dist <= distFlip)
-                samples_[(*it).id_].sample_.permute(bestMatch);
-            else
-                samples_[(*it).id_].sample_.permute(bestMatchFlip);
-
-            (*lit).addAssociation((*it).id_);
-            //(*lit).associatedSamples_.merge((*it).associatedSamples_);
-            (*lit).associatedSampleIds_.insert(
-                    (*lit).associatedSampleIds_.end(),
-                    std::make_move_iterator((*it).associatedSampleIds_.begin()),
-                    std::make_move_iterator((*it).associatedSampleIds_.end())
-                    );
-
-            it = references_.erase(it); // returns the iterator of the following element
-        } else {
-            it++;
-        }
-    }
-
-    std::vector<Reference>& references_;
-    std::vector<Sample>& samples_;
-    double increment_,distThresh_;
-    std::shared_ptr<spdlog::logger> console;
-
+double wrapper(const SimilarReferences& s1, const SimilarReferences& s2) {
+    return Metrics::bestMatchNorm<Eigen::Infinity,2>((*s1.repRefIt_).maximum_, (*s2.repRefIt_).maximum_);
 };
-
-
-class GlobalSimilaritySorter {
-public:
-
-    GlobalSimilaritySorter(
-            std::vector<Reference>& references,
-            std::vector<SimilarReferences>& similarReferencesVector,
-            double increment, double distThresh)
-    :
-    references_(references),
-    similarReferencesVector_(similarReferencesVector),
-    increment_(increment),
-    distThresh_(distThresh),
-    console(spdlog::get("console"))
-    {}
-
-    GlobalSimilaritySorter(
-            std::vector<Reference>& references,
-            std::vector<SimilarReferences>& similarReferencesVector,
-            double distThresh = 0.1)
-    :
-    GlobalSimilaritySorter(references, similarReferencesVector,
-            (*references.rbegin()).negLogSqrdProbabilityDensity_ * 1e-5, distThresh)
-    {}
-
-
-    bool sort(){
-
-        if(similarReferencesVector_.empty())
-            similarReferencesVector_.emplace_back(SimilarReferences(references_.begin()));
-
-        // for all references in range
-        // for (auto refIt = references_.begin()+1; refIt != references_.end(); ++refIt) {
-        auto lit = references_.begin();
-        auto uit = references_.begin();
-        uit = std::upper_bound(references_.begin(),references_.end(),Reference((*lit).negLogSqrdProbabilityDensity_+increment_));
-
-
-        while (lit != references_.end()) {
-            uit = std::upper_bound(lit,references_.end(),Reference((*lit).negLogSqrdProbabilityDensity_+increment_));
-
-            for (auto it = lit; it != uit;  ++it ) {
-
-                bool isSimilarQ = false;
-                for (auto &simRefs : similarReferencesVector_) {
-                    // check if refIt is similar to simRefs representative reference
-
-                    // calc perm r->sr so that we can store them in similar reference
-                    auto costMatrix = Metrics::positionalDistances(
-                            (*it).maximum_.positionsVector(),
-                            (*simRefs.representativeReferenceIterator).maximum_.positionsVector());
-                    auto bestMatch = Hungarian<double>::findMatching(costMatrix);
-                    auto dist = mostDeviatingParticleDistance(
-                            (*it).maximum_.positionsVector(),
-                            bestMatch,
-                            (*simRefs.representativeReferenceIterator).maximum_.positionsVector());
-
-                    console->info("{}", dist);
-                    if (dist < distThresh_) {
-                        simRefs.similarReferences_.emplace_back(SimilarReference(it, bestMatch));
-
-                        isSimilarQ = true;
-                    }
-                }
-                if (!isSimilarQ) similarReferencesVector_.emplace_back(SimilarReferences(it));
-            }
-            lit = uit;
-        }
-        return true;
-    }
-
-
-
-private:
-
-    std::vector<Reference>& references_;
-    std::vector<SimilarReferences>& similarReferencesVector_;
-    double increment_,distThresh_;
-    std::shared_ptr<spdlog::logger> console;
-};
-
 
 int main(int argc, char *argv[]) {
     Logger::initialize();
     auto console = spdlog::get(Logger::name);
-    double identicalDistThresh = 0.01;
+
     std::vector<Reference> globallyIdenticalMaxima;
     std::vector<Sample> samples;
-
+    auto atoms = ElectronicWaveFunction::getInstance(std::string("Ethane-em.wf")).getAtomsVector();
     RawDataReader reader(globallyIdenticalMaxima,samples);
-    reader.read("raw.bin");
-    console->info("number of refs {}",globallyIdenticalMaxima.size());
+    reader.read("Ethane.bin");
 
 
+    console->info("number of inital refs {}",globallyIdenticalMaxima.size());
+
+    EnergyCalculator energyCalculator(samples,atoms);
+    auto totalEnergies = energyCalculator.calculateTotalEnergies();
+
+    console->info("Te= {}, Vee = {}, Ven = {}, Vnn = {}, Eges = {}",
+            totalEnergies.Te,
+            totalEnergies.Vee,
+            totalEnergies.Ven,
+            totalEnergies.Vnn,
+            totalEnergies.totalEnergy());
+
+
+    double identicalDistThresh = 0.01;
     GlobalIdentiySorter globalIdentiySorter(globallyIdenticalMaxima, samples, identicalDistThresh);
     globalIdentiySorter.sort();
-    console->info("finished id sort");
-    console->flush();
+    console->info("number of elements after identity sort {}",globallyIdenticalMaxima.size());
 
-
-    console->info("total elems {}",std::distance(globallyIdenticalMaxima.begin(),globallyIdenticalMaxima.end()));
-
-
-    double similarDistThresh = 0.1;
-    std::vector<SimilarReferences> similarReferencesVector;
-    GlobalSimilaritySorter globalSimilaritySorter(globallyIdenticalMaxima, similarReferencesVector,similarDistThresh);
-
+    double similarDistThresh = 0.2;
+    std::vector<SimilarReferences> globallySimilarMaxima;
+    GlobalSimilaritySorter globalSimilaritySorter(globallyIdenticalMaxima, globallySimilarMaxima,similarDistThresh);
     globalSimilaritySorter.sort();
+    console->info("number of elements after similarity sort {}",globallySimilarMaxima.size());
 
-    console->info("total elems {}",similarReferencesVector.size());
+    //Clustering
+    DensityBasedScan<double, SimilarReferences, wrapper> dbscan(globallySimilarMaxima);
+    auto nClusters = dbscan.findClusters(similarDistThresh*2+0.01, 1); // why multiplication by 2 is needed?
+    //TODO Permutations must be stored! Own DBSCAN implementation?
+    auto labels = dbscan.getLabels();
+    console->info("number of clusters {}",nClusters);
+
+    std::vector<std::vector<SimilarReferences>> clusteredGloballySimilarMaxima(nClusters);
+
+    for (int i = 0; i < nClusters; ++i) {
+        for (auto it = globallySimilarMaxima.begin(); it != globallySimilarMaxima.end(); ++it) {
+            auto label = labels[std::distance(globallySimilarMaxima.begin(),it)];
+            if (label == i) {
+                clusteredGloballySimilarMaxima[i].emplace_back(std::move(*it));
+            }
+        }
+    }
+
+    //Statistics
+    energyCalculator.calculateStatistics(clusteredGloballySimilarMaxima);
 
 
-}
+    // Visuals
+    QApplication app(argc, argv);
+    setlocale(LC_NUMERIC,"C");
+
+    MoleculeWidget moleculeWidget;
+    Qt3DCore::QEntity *root = moleculeWidget.createMoleculeWidget();
+    AtomsVector3D(root, atoms);
+
+    auto ev1 = (*clusteredGloballySimilarMaxima[0].at(0).repRefIt_).maximum_;
+    auto ev2 = samples[(*clusteredGloballySimilarMaxima[0].at(0).repRefIt_).associatedSampleIds_[0]].sample_;
+
+    //auto perm = globallySimilarMaxima.at(1).similarReferences_.at(0).perm_;
+    //auto ev2 = (*clusteredGloballySimilarMaxima[0].at(0).similarReferences_.at(0).it_).maximum_;
+    //ev2.permute(perm);
+    ElectronsVector3D(root, atoms, ev1, true);
+    ElectronsVector3D(root, atoms, ev2, true);
+
+    return app.exec();
+
+};

@@ -26,6 +26,14 @@ template<> SpinTypesVector::TypesVector(std::vector<Spin> types)
     }
 }
 
+template<>
+unsigned SpinTypesVector::multiplicity() {
+    auto numberOfUnpairedElectrons = unsigned(std::abs(
+            int(countOccurence(Spin::alpha)) - int(countOccurence(Spin::beta))
+            ));
+    return numberOfUnpairedElectrons + 1;
+}
+
 template<> ElementTypesVector::TypesVector(std::vector<Element> types)
         : InsertableVector<int>(0)
 {

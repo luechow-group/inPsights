@@ -18,7 +18,7 @@ public:
     : recordDelimiterLength_(recordDelimiterLength){};
 
 
-    virtual bool read(const std::string& fileName) = 0;
+    virtual void read(const std::string& fileName) = 0;
 
     bool checkEOF(std::ifstream &input, long long int totalLength){
         return (totalLength-input.tellg()) >= recordDelimiterLength_;

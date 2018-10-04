@@ -44,6 +44,7 @@ set(HEADER_FILES
         include/SliceableDataVector.h
         include/InsertableVector.h
         include/Logger.h
+        include/Statistics.h
         )
 
 set(SOURCE_FILES
@@ -59,7 +60,6 @@ set(SOURCE_FILES
         source/ToString.cpp
         source/PositionsVectorTransformer.cpp
         source/TypesVector.cpp
-        source/Metrics.cpp
         source/MolecularGeometry.cpp
         source/Particle.cpp
         source/EigenYamlConversion.cpp

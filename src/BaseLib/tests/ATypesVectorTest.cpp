@@ -180,3 +180,8 @@ TEST_F(ATypesVectorTest, EqualityOperator) {
     //equality means that not only the slice but also the underlying data is identical
     ASSERT_FALSE(s1.slice({1, 2}) == s3.slice({1, 2}));
 }
+
+TEST_F(ATypesVectorTest, Multiplicity) {
+    ASSERT_EQ(stv.multiplicity(),1);
+    ASSERT_EQ(stvsmall.multiplicity(),2);
+}
