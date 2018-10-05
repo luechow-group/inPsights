@@ -19,16 +19,15 @@ public:
     associatedSampleIds_({})
     {}
 
-    void addAssociation(const size_t& id) {
-        assert(id != id_ && "Self-associations are not allowed");
-        associatedSampleIds_.emplace_back(id);
-    }
+    void addAssociations(std::vector<Reference>::iterator& it) {
+        assert((*it).id_ != id_ && "Self-associations are not allowed");
 
-    void addAssociations(std::vector<size_t>& associations) {
+        associatedSampleIds_.emplace_back((*it).id_);
+
         associatedSampleIds_.insert(
                 associatedSampleIds_.end(),
-                make_move_iterator(associations.begin()),
-                make_move_iterator(associations.end()));
+                make_move_iterator((*it).associatedSampleIds_.begin()),
+                make_move_iterator((*it).associatedSampleIds_.end()));
     }
 
     bool operator<(const Reference& rhs) const {

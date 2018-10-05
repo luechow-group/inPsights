@@ -93,16 +93,16 @@ private:
         }
     }
 
+    // TODO This method should be located inside of a reference container class
     void addReference(
-            const std::vector<Reference, std::allocator<Reference>>::iterator &beginIt,
-            std::vector<Reference, std::allocator<Reference>>::iterator &it,
+            const std::vector<Reference>::iterator &beginIt,
+            std::vector<Reference>::iterator &it,
             const Eigen::PermutationMatrix<Eigen::Dynamic> &bestMatch) const {
 
         samples_[(*it).id_].sample_.permute(bestMatch);
         samples_[(*it).id_].kineticEnergies_ = bestMatch * samples_[(*it).id_].kineticEnergies_;
 
-        (*beginIt).addAssociation((*it).id_);
-        (*beginIt).addAssociations((*it).associatedSampleIds_);
+        (*beginIt).addAssociations(it);
 
         it = references_.erase(it); // erase returns the iterator of the following element
     }
