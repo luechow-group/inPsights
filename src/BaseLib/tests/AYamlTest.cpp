@@ -11,11 +11,7 @@
 
 using namespace testing;
 
-class AYamlTest : public Test {
-public:
-};
-
-TEST_F(AYamlTest, JsonCompatibility){
+TEST(AYamlTest, JsonCompatibility){
 
     MolecularGeometry mol = TestMolecules::HeH::ElectronsInCores::normal;
 
@@ -27,6 +23,6 @@ TEST_F(AYamlTest, JsonCompatibility){
     out << YAML::EndMap;
 
     std::string outstring = out.c_str();
-    std::string expected = "{\"Molecule\": {\"Atoms\": {\"Types\": [\"He\", \"H\"],\n  \"Positions\": [[0, 0, 0.37], [0, 0, -0.37]]},\n\"Electrons\": {\"Types\": [\"a\", \"a\", \"b\"],\n  \"Positions\": [[0, 0, 0.37], [0, 0, 0.37], [0, 0, -0.37]]}}}";
+    std::string expected ="{\"Molecule\": {\"Atoms\": {\"Types\": [\"He\", \"H\"],\n  \"Positions\": [\n      [0, 0, 0.37],\n      [0, 0, -0.37],\n      ]}\n\"Electrons\": {\"Types\": [\"a\", \"a\", \"b\"],\n  \"Positions\": [\n      [0, 0, 0.37],\n      [0, 0, 0.37],\n      [0, 0, -0.37],\n      ]}}}";
     ASSERT_EQ(outstring,expected);
 }
