@@ -78,14 +78,15 @@ namespace Statistics {
                         out << Key << j << Value
                             << Flow << BeginSeq
                             << mean()(i, j);
-                        if(getTotalWeight() >1) out << standardError()(i, j);
+                        if(getTotalWeight() > 1) out << standardError()(i, j);
                         out << EndSeq;
                     }
                     out << EndMap;
                 } else { // ColumnVector
                     out << Flow << BeginSeq
-                        << mean()(i) << standardError()(i)
-                        << EndSeq;
+                        << mean()(i);
+                    if(getTotalWeight() > 1) out << standardError()(i);
+                    out << EndSeq;
                 }
             }
             out << EndMap;
