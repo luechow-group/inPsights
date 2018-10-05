@@ -132,10 +132,10 @@ namespace YAML {
     }
 
     Emitter &operator<<(Emitter &out, const PositionsVector &p) {
-        out << Flow << BeginSeq;
+        out << Flow << BeginSeq << Newline;
         for (unsigned i = 0; i < p.numberOfEntities(); ++i)
-            out << p[i];
-        out << EndSeq;
+            out << p[i] << Newline;
+        out << EndSeq << Auto;
         return out;
     }
 }

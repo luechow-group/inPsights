@@ -107,9 +107,8 @@ public:
         using namespace YAML;
 
         yamlDocument_ << BeginDoc << BeginMap
-        << Key << "Atoms" << Value << atoms_
-        << Key << "Vnn" << Value << Comment("[Eh]");
-
+        << Key << "Atoms" << Value << atoms_ << Comment("[a0]")
+        << Key << "Vnn" << Comment("[Eh]") << Value;
         VnnStats_.toYaml(yamlDocument_, true);
 
         yamlDocument_
