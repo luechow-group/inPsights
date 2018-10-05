@@ -102,11 +102,7 @@ private:
         samples_[(*it).id_].kineticEnergies_ = bestMatch * samples_[(*it).id_].kineticEnergies_;
 
         (*beginIt).addAssociation((*it).id_);
-        (*beginIt).associatedSampleIds_.insert(
-                (*beginIt).associatedSampleIds_.end(),
-                make_move_iterator((*it).associatedSampleIds_.begin()),
-                make_move_iterator((*it).associatedSampleIds_.end())
-        );
+        (*beginIt).addAssociations((*it).associatedSampleIds_);
 
         it = references_.erase(it); // erase returns the iterator of the following element
     }

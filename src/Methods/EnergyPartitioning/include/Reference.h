@@ -24,6 +24,13 @@ public:
         associatedSampleIds_.emplace_back(id);
     }
 
+    void addAssociations(std::vector<size_t>& associations) {
+        associatedSampleIds_.insert(
+                associatedSampleIds_.end(),
+                make_move_iterator(associations.begin()),
+                make_move_iterator(associations.end()));
+    }
+
     bool operator<(const Reference& rhs) const {
         return negLogSqrdProbabilityDensity_<rhs.negLogSqrdProbabilityDensity_;
     }
