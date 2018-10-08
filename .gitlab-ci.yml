@@ -13,20 +13,20 @@ build:
   - export FC=/usr/bin/gfortran
 
   script:
-    - mkdir -p build
-    - cd build
+    - mkdir -p cmake-build-debug-gnu
+    - cd cmake-build-debug-gnu
     - cmake .. -DCMAKE_BUILD_TYPE=DEBUG -DBUILD_GUI=OFF
     - cmake --build . --target AmolqcppTests -- -j 2
 
   cache:
     key: "$CI_COMMIT_REF_SLUG" # enable per-branch caching
     paths:
-    - build/
+    - cmake-build-debug-gnu/
 
 test:
   stage: test
   dependencies:
-  - build
+  - build #
 
   script:
     - export AMOLQC=/builds/luechow-group/Amolqcpp/src/AmolqcInterface/amolqc
