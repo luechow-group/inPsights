@@ -14,8 +14,6 @@ message("${CMAKE_MODULE_PATH}")
 
 include(cmake/FindSharedMemoryParallelismLibraries.cmake)
 
-include(cmake/DownloadGoogleTest.cmake)
-
 if(DEFINED ENV{BOOST_ROOT})
     set(BOOST_ROOT "$ENV{BOOST_ROOT}")
     message("-- BOOST_ROOT is set: ${BOOST_ROOT}")
