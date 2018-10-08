@@ -4,17 +4,26 @@ image: registry.git.rwth-aachen.de/luechow-group/amolqcpp:latest
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
 
-AllTests:
-  before_script:
-  - export CC=/usr/bin/gcc
-  - export CXX=/usr/bin/g++
-  - export FC=/usr/bin/gfortran
-  - export MATHLIBS=/usr/lib/x86_64-linux-gnu
-  - export AMOLQC=/builds/luechow-group/Amolqcpp/src/AmolqcInterface/amolqc
+before_script:
+- export CC=/usr/bin/gcc
+- export CXX=/usr/bin/g++
+- export FC=/usr/bin/gfortran
+- export MATHLIBS=/usr/lib/x86_64-linux-gnu
+- export AMOLQC=/builds/luechow-group/Amolqcpp/src/AmolqcInterface/amolqc
 
+
+build:
+  stage: build
   script:
     - mkdir build
     - cd build
     - cmake .. -DCMAKE_BUILD_TYPE=DEBUG -DBUILD_GUI=OFF
     - cmake --build . --target AmolqcppTests -- -j 2
+  cache:
+    paths:
+    - "*.o"
+
+test:
+  stage: test
+  script:
     - ctest -LE "(amolqc|GUI|cppoptlib)" -E "(example|spdlog-utests)" --verbose
