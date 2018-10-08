@@ -20,8 +20,9 @@ build:
     - cmake .. -DCMAKE_BUILD_TYPE=DEBUG -DBUILD_GUI=OFF
     - cmake --build . --target AmolqcppTests -- -j 2
   cache:
+    key: "$CI_COMMIT_REF_SLUG" # enable per-branch caching
     paths:
-    - "*.o"
+    - build/
 
 test:
   stage: test
