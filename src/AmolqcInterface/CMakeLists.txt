@@ -26,6 +26,7 @@ set(SOURCE_FILES
         )
 
 set(NORULES YES)
+set(PFUNIT OFF)
 add_subdirectory(amolqc)
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES})
