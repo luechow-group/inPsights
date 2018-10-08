@@ -1,19 +1,17 @@
 
 image: registry.git.rwth-aachen.de/luechow-group/amolqcpp:latest
 
-variables:
-  GIT_SUBMODULE_STRATEGY: recursive
-
-before_script:
-- export CC=/usr/bin/gcc
-- export CXX=/usr/bin/g++
-- export FC=/usr/bin/gfortran
-- export MATHLIBS=/usr/lib/x86_64-linux-gnu
-- export AMOLQC=/builds/luechow-group/Amolqcpp/src/AmolqcInterface/amolqc
-
-
 build:
   stage: build
+
+  variables:
+    GIT_SUBMODULE_STRATEGY: recursive
+
+  before_script:
+  - export CC=/usr/bin/gcc
+  - export CXX=/usr/bin/g++
+  - export FC=/usr/bin/gfortran
+
   script:
     - mkdir -p build
     - cd build
@@ -27,4 +25,5 @@ build:
 test:
   stage: test
   script:
+    - export AMOLQC=/builds/luechow-group/Amolqcpp/src/AmolqcInterface/amolqc
     - ctest -LE "(amolqc|GUI|cppoptlib)" -E "(example|spdlog-utests)" --verbose
