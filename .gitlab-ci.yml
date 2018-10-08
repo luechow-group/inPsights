@@ -15,7 +15,7 @@ before_script:
 build:
   stage: build
   script:
-    - mkdir build
+    - mkdir -p build
     - cd build
     - cmake .. -DCMAKE_BUILD_TYPE=DEBUG -DBUILD_GUI=OFF
     - cmake --build . --target AmolqcppTests -- -j 2
