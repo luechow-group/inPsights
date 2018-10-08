@@ -3,7 +3,7 @@
 
 namespace Elements {
 
-    ElementType ElementInfo::elementTypeForSymbol(std::string symbol) {
+    ElementType ElementInfo::elementTypeFromSymbol(std::string symbol) {
         return internal::pElementInfo::instance()[symbol].first;
     }
 

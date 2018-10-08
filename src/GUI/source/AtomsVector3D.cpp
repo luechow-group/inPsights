@@ -17,7 +17,7 @@ AtomsVector3D::AtomsVector3D(Qt3DCore::QEntity *root, const AtomsVector &atomsVe
     Eigen::Vector3d vec= atomsVector[i].position();
     atoms3D.emplace_back(Atom3D(root,
                                 QVector3D(float(vec[0]),float(vec[1]),float(vec[2])),
-                                atomsVector.elementTypesVector()[i]));
+                                atomsVector.typesVector()[i]));
   }
 
   // Draw bonds

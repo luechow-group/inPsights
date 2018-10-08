@@ -17,16 +17,16 @@ using namespace TestProblems;
 class ALagrangeProblemTest : public Test {};
 
 TEST_F(ALagrangeProblemTest, Construction) {
-    testProblem problem;
-    testConstraint constraint;
-    LagrangeProblem<testProblem,testConstraint> lagrangeProblem(problem,constraint,1);
+    TestProblem problem;
+    TestConstraint constraint;
+    LagrangeProblem<TestProblem,TestConstraint> lagrangeProblem(problem,constraint,1);
 }
 
 //took test functions from wikipedia
 TEST_F(ALagrangeProblemTest, Value) {
-    testProblem problem;
-    testConstraint constraint;
-    LagrangeProblem<testProblem,testConstraint> lagrangeProblem(problem,constraint,1);
+    TestProblem problem;
+    TestConstraint constraint;
+    LagrangeProblem<TestProblem,TestConstraint> lagrangeProblem(problem,constraint,1);
 
     Eigen::VectorXd y(3);
     y << -2,-2,2;
@@ -40,9 +40,9 @@ TEST_F(ALagrangeProblemTest, Value) {
 }
 
 TEST_F(ALagrangeProblemTest, Gradient) {
-    testProblem problem;
-    testConstraint constraint;
-    LagrangeProblem<testProblem,testConstraint> lagrangeProblem(problem,constraint,1);
+    TestProblem problem;
+    TestConstraint constraint;
+    LagrangeProblem<TestProblem,TestConstraint> lagrangeProblem(problem,constraint,1);
 
     Eigen::VectorXd y(3);
     y << -2,-2,2;
@@ -56,9 +56,9 @@ TEST_F(ALagrangeProblemTest, Gradient) {
 }
 
 TEST_F(ALagrangeProblemTest, GradientDescentSolver) {
-    testProblem problem;
-    testConstraint constraint;
-    LagrangeProblem<testProblem,testConstraint> lagrangeProblem(problem,constraint,1);
+    TestProblem problem;
+    TestConstraint constraint;
+    LagrangeProblem<TestProblem,TestConstraint> lagrangeProblem(problem,constraint,1);
 
     Eigen::VectorXd y(3);
     y << -2,-2,2;
@@ -68,8 +68,8 @@ TEST_F(ALagrangeProblemTest, GradientDescentSolver) {
 
     cppoptlib::Criteria<double> crit = cppoptlib::Criteria<double>::defaults();
 
-    cppoptlib::GradientDescentSolver<LagrangeProblem<testProblem,testConstraint>> solver;
-    solver.setDebug(cppoptlib::DebugLevel::High);
+    cppoptlib::GradientDescentSolver<LagrangeProblem<TestProblem,TestConstraint>> solver;
+    solver.setDebug(cppoptlib::DebugLevel::None);
     solver.setStopCriteria(crit);
 
     solver.minimize(lagrangeProblem, y);
@@ -81,9 +81,9 @@ TEST_F(ALagrangeProblemTest, GradientDescentSolver) {
 }
 
 TEST_F(ALagrangeProblemTest, GradientDescentSimpleSolver) {
-    testProblem problem;
-    testConstraint constraint;
-    LagrangeProblem<testProblem,testConstraint> lagrangeProblem(problem,constraint,1);
+    TestProblem problem;
+    TestConstraint constraint;
+    LagrangeProblem<TestProblem,TestConstraint> lagrangeProblem(problem,constraint,1);
 
     Eigen::VectorXd y(3);
     y << -2,-2,2;
@@ -94,8 +94,8 @@ TEST_F(ALagrangeProblemTest, GradientDescentSimpleSolver) {
     cppoptlib::Criteria<double> crit = cppoptlib::Criteria<double>::defaults();
     crit.gradNorm = 1e-3;
 
-    cppoptlib::GradientDescentSimpleSolver<LagrangeProblem<testProblem,testConstraint>> solver;
-    solver.setDebug(cppoptlib::DebugLevel::High);
+    cppoptlib::GradientDescentSimpleSolver<LagrangeProblem<TestProblem,TestConstraint>> solver;
+    solver.setDebug(cppoptlib::DebugLevel::None);
     solver.setStopCriteria(crit);
 
     solver.minimize(lagrangeProblem, y);
@@ -108,9 +108,9 @@ TEST_F(ALagrangeProblemTest, GradientDescentSimpleSolver) {
 
 
 TEST_F(ALagrangeProblemTest, BfgsSolver) {
-    testProblem problem;
-    testConstraint constraint;
-    LagrangeProblem<testProblem,testConstraint> lagrangeProblem(problem,constraint,1);
+    TestProblem problem;
+    TestConstraint constraint;
+    LagrangeProblem<TestProblem,TestConstraint> lagrangeProblem(problem,constraint,1);
 
     Eigen::VectorXd y(3);
     y << -0.7,-0.7,0.7;
@@ -121,7 +121,7 @@ TEST_F(ALagrangeProblemTest, BfgsSolver) {
     cppoptlib::Criteria<double> crit = cppoptlib::Criteria<double>::defaults();
     crit.gradNorm = 1e-9;
 
-    cppoptlib::BfgsSolver<LagrangeProblem<testProblem,testConstraint>> solver;
+    cppoptlib::BfgsSolver<LagrangeProblem<TestProblem,TestConstraint>> solver;
     solver.setDebug(cppoptlib::DebugLevel::High);
     solver.setStopCriteria(crit);
 
@@ -134,9 +134,9 @@ TEST_F(ALagrangeProblemTest, BfgsSolver) {
 }
 
 TEST_F(ALagrangeProblemTest, getProblem) {
-    testProblem problem;
-    testConstraint constraint;
-    LagrangeProblem<testProblem,testConstraint> lagrangeProblem(problem,constraint,1);
+    TestProblem problem;
+    TestConstraint constraint;
+    LagrangeProblem<TestProblem,TestConstraint> lagrangeProblem(problem,constraint,1);
 
     Eigen::VectorXd y(3);
     y << -2,-2,2;
@@ -148,9 +148,9 @@ TEST_F(ALagrangeProblemTest, getProblem) {
 }
 
 TEST_F(ALagrangeProblemTest, getConstraint) {
-    testProblem problem;
-    testConstraint constraint;
-    LagrangeProblem<testProblem,testConstraint> lagrangeProblem(problem,constraint,1);
+    TestProblem problem;
+    TestConstraint constraint;
+    LagrangeProblem<TestProblem,TestConstraint> lagrangeProblem(problem,constraint,1);
 
     Eigen::VectorXd y(3);
     y << -2,-2,2;

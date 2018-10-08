@@ -50,7 +50,7 @@ void StringMethod::minimizeOrthogonalToString() {
     cppoptlib::TimeIntegrationSolver<StringOptimizationProblem> solver;
     //cppoptlib::BfgsnsSolver<StringOptimizationProblem> solver;
     auto crit = cppoptlib::Criteria<double>::nonsmoothDefaults();
-    crit.gradNorm = 1e-5;
+    crit.gradNorm = 1e-2;
     crit.iterations = 10;
     solver.setStopCriteria(crit);
 

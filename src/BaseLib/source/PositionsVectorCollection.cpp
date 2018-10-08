@@ -2,8 +2,9 @@
 // Created by Michael Heuer on 30.10.17.
 //
 
-#include <ElectronsVector.h>
-#include "PositionsVectorCollection.h"
+#include <PositionsVectorCollection.h>
+#include <yaml-cpp/yaml.h>
+
 
 PositionsVectorCollection::PositionsVectorCollection()
         : AbstractVector(0),
@@ -56,24 +57,16 @@ void PositionsVectorCollection::prepend(const PositionsVector &positionsVector) 
     insert(positionsVector,0);
 }
 
-void PositionsVectorCollection::permute(long i, long j) {
-    if(i != j) {
-        PositionsVector tempi =positionsVectorCollection_[calculateIndex(i)];
-        PositionsVector tempj =positionsVectorCollection_[calculateIndex(j)];
-
-        positionsVectorCollection_.at(calculateIndex(i)) = tempj;
-        positionsVectorCollection_.at(calculateIndex(j)) = tempi;
-
-        //positionsVectorCollection_.( static_cast<unsigned long>(calculateIndex(i)) )
-        //        = positionsVectorCollection_.at( static_cast<unsigned long>(calculateIndex(j)) );
-        //positionsVectorCollection_.at( static_cast<unsigned long>(calculateIndex(j)) ) = temp;
+void PositionsVectorCollection::permute(const Eigen::PermutationMatrix<Eigen::Dynamic> &permutation) {
+    for(auto & pv : positionsVectorCollection_){
+        pv.permute(permutation);
     }
 }
 
 double PositionsVectorCollection::norm(long i, long j) const{
-    return (positionsVectorCollection_[i].positionsAsEigenVector()
-            - positionsVectorCollection_[j].positionsAsEigenVector()).norm();
-};
+    return (positionsVectorCollection_[i].asEigenVector()
+            - positionsVectorCollection_[j].asEigenVector()).norm();
+}
 
 const std::vector<PositionsVector>& PositionsVectorCollection::positionsVectorCollection() const {
     return positionsVectorCollection_;
@@ -81,4 +74,31 @@ const std::vector<PositionsVector>& PositionsVectorCollection::positionsVectorCo
 
 std::vector<PositionsVector>& PositionsVectorCollection::positionsVectorCollection() {
     return positionsVectorCollection_;
+}
+
+
+namespace YAML {
+    Node convert<PositionsVectorCollection>::encode(const PositionsVectorCollection &rhs) {
+        Node node;
+        for (unsigned i = 0; i < rhs.numberOfEntities(); ++i)
+            node.push_back(rhs[i]);
+        return node;
+    }
+    bool convert<PositionsVectorCollection>::decode(const Node &node, PositionsVectorCollection &rhs) {
+        if (!node.IsScalar())
+            return false;
+        PositionsVectorCollection pvc;
+        for (unsigned i = 0; i < node.size(); ++i)
+            pvc[i] = node[i].as<PositionsVector>();
+        rhs = pvc;
+        return true;
+    }
+
+    Emitter &operator<<(Emitter &out, const PositionsVectorCollection &pvc) {
+        out << Flow << BeginSeq << Newline;
+        for (unsigned i = 0; i < pvc.numberOfEntities(); ++i)
+            out << pvc[i] << Newline;
+        out << EndSeq;
+        return out;
+    }
 }

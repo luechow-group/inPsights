@@ -1,39 +1,91 @@
 //
-// Created by Michael Heuer on 29.10.17.
+// Created by Michael Heuer on 08.05.18.
 //
 
 #include "Particle.h"
-#include "ToString.h"
+#include "ElementInfo.h"
+#include <yaml-cpp/yaml.h>
 
-using namespace Eigen;
+template<> std::string Electron::toString() const {
+    std::string typeString = "";
+    typeString += "e" + Spins::toString(Spins::spinFromInt(type_));
+    typeString += ToString::vector3dToString(position_);
 
-Particle::Particle(const Vector3d & position)
-        : position_(position) {}
-
-Particle::Particle(double x, double y, double z)
-        : position_(x,y,z) {}
-
-Vector3d Particle::position() const {
-    return position_;
+    return typeString;
 }
 
-void Particle::position(const Vector3d &position) {
-    position_ = position;
+template<> std::string Atom::toString() const {
+    std::string typeString = "";
+    typeString += Elements::ElementInfo::symbol(Elements::elementFromInt(type_));
+    if(typeString.length() == 1)
+        typeString += " ";
+    typeString += ToString::vector3dToString(position_);
+
+    return typeString;
 }
 
-double Particle::distance(const Particle &p1, const Particle &p2) {
-    return (p1.position()-p2.position()).norm();
+template<>
+int Electron::charge() const{
+    return -1;
+}
+template<>
+int Atom::charge() const{
+    return Elements::ElementInfo::Z(Elements::elementFromInt(type_));
 }
 
-std::ostream& operator<< (std::ostream& os, const Particle& p) {
-    os << p.toString();
-    return os;
-}
 
-int Particle::charge() const{
-    return 0;
-}
+namespace YAML {
+    Node convert<TypedParticle>::encode(const TypedParticle& rhs) {
+        Node node;
+        node.push_back(rhs.type());
+        node.push_back(rhs.position());
+        return node;
+    }
+    Node convert<Atom>::encode(const Atom& rhs) {
+        Node node;
+        node.push_back(Elements::ElementInfo::symbol(rhs.type()));
+        node.push_back(rhs.position());
+        return node;
+    }
+    Node convert<Electron>::encode(const Electron& rhs) {
+        Node node;
+        node.push_back(Spins::toString(rhs.type()));
+        node.push_back(rhs.position());
+        return node;
+    }
 
-std::string Particle::toString() const{
-    return "  " + ToString::vector3dToString(position_);
+    bool convert<TypedParticle>::decode(const Node& node, TypedParticle& rhs) {
+        if(!node.IsSequence() || node.size() != 2) {
+            return false;
+        }
+        rhs = {node[0].as<int>(),node[0].as<Eigen::Vector3d>()};
+        return true;
+    }
+    bool convert<Atom>::decode(const Node& node, Atom& rhs) {
+        if(!node.IsSequence() || node.size() != 2) {
+            return false;
+        }
+        rhs = {node[0].as<Element>(),node[0].as<Eigen::Vector3d>()};
+        return true;
+    }
+    bool convert<Electron>::decode(const Node& node, Electron& rhs) {
+        if(!node.IsSequence() || node.size() != 2) {
+            return false;
+        }
+        rhs = {node[0].as<Spin>(),node[0].as<Eigen::Vector3d>()};
+        return true;
+    }
+
+    Emitter& operator<< (Emitter& out, const TypedParticle & p) {
+        out << Flow << BeginSeq << p.type() << p.position() << EndSeq;
+        return out;
+    }
+    Emitter& operator<< (Emitter& out, const Atom& p) {
+        out << Flow << BeginSeq << p.type() << p.position() << EndSeq;
+        return out;
+    }
+    Emitter& operator<< (Emitter& out, const Electron & p) {
+        out << Flow << BeginSeq << p.type() << p.position() << EndSeq;
+        return out;
+    }
 }

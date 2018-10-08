@@ -2,63 +2,77 @@ cmake_minimum_required(VERSION 3.5)
 
 project(Executables C CXX Fortran)
 
-
 set ( PROJECT_FOLDER_NAME ${PROJECT_NAME} )
 
 set ( PROJECT_PATH ${PROJECT_NAME})
 set ( OUTPUT_NAME "${PROJECT_FOLDER_NAME}" )
 message ( "-- ++ CREATING PROJECT OR MAKEFILE ---> ${OUTPUT_NAME}" )
 
-include_directories(
-        resources
-        )
-
-file(GLOB_RECURSE RESOURCE_FILES resources/*.*)
-file(COPY ${RESOURCE_FILES} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-
-add_executable("StringMethodGUI.exe" ${SOURCE_FILES} ${HEADER_FILES} StringMethodGUI.cpp)
-add_executable("PathOptimization.exe" ${SOURCE_FILES} ${HEADER_FILES} PathOptimization.cpp)
-add_executable("HessianTesting.exe" ${SOURCE_FILES} ${HEADER_FILES} HessianTesting.cpp)
-add_executable("LocalPotentialEnergy.exe" ${SOURCE_FILES} ${HEADER_FILES} LocalPotentialEnergy.cpp)
-
-add_library(Resources INTERFACE
-        )
-
-target_include_directories(Resources INTERFACE
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/resources>
-        )
-
-# links the libraries to the executable
-target_link_libraries("StringMethodGUI.exe"
-        Resources
-        GUI
+add_executable(BaseLib.exe BaseLib.cpp)
+target_link_libraries(BaseLib.exe
         BaseLib
-        BSplines
-        TransitionStateSearch
         )
 
-target_link_libraries("PathOptimization.exe"
-        Resources
+add_executable(EnergyPartitioning.exe EnergyPartitioning.cpp)
+target_link_libraries(EnergyPartitioning.exe
         GUI
-        BaseLib
-        BSplines
-        TransitionStateSearch
-        )
-
-target_link_libraries("HessianTesting.exe"
-        Resources
-        GUI
-        BaseLib
-        BSplines
-        TransitionStateSearch
-        )
-
-target_link_libraries("LocalPotentialEnergy.exe"
-        Resources
-        GUI
-        LocalPotentialEnergy
         AmolqcInterface
+        BaseLib
+        EnergyPartitioning
         )
 
+add_executable(StructuralSimilarity.exe StructuralSimilarityExec.cpp)
+target_link_libraries(StructuralSimilarity.exe
+        AmolqcInterface
+        BaseLib
+        StructuralSimilarity
+        )
 
+if (DEFINED BUILD_GUI AND ON)
+    add_executable(StringMethodGUI.exe StringMethodGUI.cpp)
+    target_link_libraries(StringMethodGUI.exe
+            GUI
+            BaseLib
+            TransitionStateSearch
+            )
 
+    add_executable(PathOptimization.exe PathOptimization.cpp)
+    target_link_libraries(PathOptimization.exe
+            GUI
+            BaseLib
+            TransitionStateSearch
+            )
+
+    add_executable(WavefunctionTransitionStates.exe WavefunctionTransitionStates.cpp)
+    target_link_libraries(WavefunctionTransitionStates.exe
+            GUI
+            BaseLib
+            TransitionStateSearch
+            )
+
+    add_executable(LocalPotentialEnergy.exe LocalPotentialEnergy.cpp)
+    target_link_libraries(LocalPotentialEnergy.exe
+            GUI
+            LocalPotentialEnergy
+            AmolqcInterface
+            )
+
+    add_executable(ShowMaxima.exe ShowMaxima.cpp)
+    target_link_libraries(ShowMaxima.exe
+            GUI
+            AmolqcInterface
+            )
+
+    add_executable(ShowPath.exe ShowPath.cpp)
+    target_link_libraries(ShowPath.exe
+            GUI
+            AmolqcInterface
+            )
+
+    add_executable(H6TSsearch.exe H6TSsearch.cpp)
+    target_link_libraries(H6TSsearch.exe
+            GUI
+            BaseLib
+            TransitionStateSearch
+            )
+endif()

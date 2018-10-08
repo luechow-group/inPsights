@@ -2,7 +2,7 @@
 // Created by Leonard Reuter on 07.03.18.
 //
 
-#include "CollectionParser.h"
+#include "Serialization.h"
 
 #include "solver/gradientdescentsolver.h"
 
@@ -24,8 +24,8 @@ int main(int argc, char *argv[]) {
 
     PotentialProblem potentialProblem(nuclei);
 
-    CollectionParser collectionParser;
-    ElectronsVector electrons = collectionParser.electronsVectorFromJson("LR_H2_artificial_start.json");
+
+    ElectronsVector electrons = YAML::LoadFile("LR_H2_artificial_start.json")["Electrons"].as<ElectronsVector>();
 
     double energy = -1.1745;
 
@@ -36,7 +36,7 @@ int main(int argc, char *argv[]) {
 
     double lambdaInit = 0;
 
-    Eigen::VectorXd x(electrons.positionsVector().positionsAsEigenVector());
+    Eigen::VectorXd x(electrons.positionsVector().asEigenVector());
 
     Eigen::VectorXd y = x;
     y.conservativeResize(y.size()+1,Eigen::NoChange);
@@ -60,7 +60,7 @@ int main(int argc, char *argv[]) {
 
         //append end position
         optimizationPath.append(ElectronsVector(PositionsVector(y.head(y.size() - 1)),
-                                                optimizationPath.spinTypesVector()));
+                                                optimizationPath.typesVector()));
 
         return Visualization::visualizeOptPath(argc, argv, nuclei, optimizationPath);
     }

@@ -8,21 +8,41 @@
 #include <string>
 #include <cassert>
 
-namespace Spin {
-    enum class SpinType { alpha=1, none=0, beta=-1};
+namespace Spins {
+    enum class SpinType {
+        alpha=-2, beta=-1,none=0
+    };
+
+    SpinType first();
+
+    SpinType last();
+
+    SpinType spinFromInt(int type);
+
+    int spinToInt(SpinType spinType);
 
     std::string toString(const SpinType& s);
 
-    static double magneticQuantumNumber(SpinType spinType){
-        assert(spinType != SpinType::none && "The SpinType cannot be 'none'.");
-        return double(spinType)/2.0;
-    };
+    Spins::SpinType fromString(const std::string& s);
 
-    static double quantumNumber(){
-        return 1/2.0;
-    };
+    double magneticQuantumNumber(SpinType spinType);
+
+    double quantumNumber();
 }
 
-std::ostream& operator<<(std::ostream& os, const Spin::SpinType& s);
+using Spin = Spins::SpinType;
+
+std::ostream& operator<<(std::ostream& os, const Spins::SpinType& s);
+
+namespace YAML {
+    class Node; class Emitter;
+    template <typename Type> struct convert;
+
+    template<> struct convert<Spin> {
+        static Node encode(const Spin &rhs);
+        static bool decode(const Node &node, Spin &rhs);
+    };
+    Emitter &operator<<(Emitter &out, const Spin &e);
+}
 
 #endif //AMOLQCPP_SPINTYPE_H

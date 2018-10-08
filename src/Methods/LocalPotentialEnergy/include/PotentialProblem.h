@@ -6,7 +6,7 @@
 #define AMOLQCPP_POTENTIALPROBLEM_H
 
 #include <problem.h>
-#include "AtomsVector.h"
+#include <ParticlesVector.h>
 
 class PotentialProblem: public cppoptlib::Problem<double,Eigen::Dynamic>{
 public:

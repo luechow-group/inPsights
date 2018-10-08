@@ -1,12 +1,11 @@
 #ifndef NATURALCONSTANTS_H
 #define NATURALCONSTANTS_H
 
-/*! \file DelibConstants.h
- * This header file defines constants commonly used in computational chemistry.
+/* This header file defines constants commonly used in computational chemistry.
  * Source: http://physics.nist.gov/cuu/Constants/Table/allascii.txt, 03.11.2015.
  */
 
-#include <math.h>
+#include <cmath>
 
 namespace Constant {
     // values from https://physics.nist.gov, accessed on march 01, 2018
@@ -19,7 +18,7 @@ namespace Constant {
     const double speedOfLight = 299792458; // c0 [m/s] (exact)
     const double electricConstant = 8.854187817E-12; // epsilon_0 [A*s/(V*m)] (exact)
     const double magneticConstant = 12.566370614E-7; // mu_0 [N/A^2] (exact)
-    //const double speedOfLight = sqrt(1./(electricConstant*magneticConstant)); // c0 [m/s]
+    //const double speedOfLight = std::sqrt(1./(electricConstant*magneticConstant)); // c0 [m/s]
 
     // derived
     const double universalGasConstant = boltzmann*avogadro; // R [J/(mol*K)]
@@ -72,6 +71,9 @@ namespace ConversionFactors {
     const double ev2joule = 1. / joule2ev;
     const double hartree2ev = AU::electricPotential;
     const double ev2hartree = 1. / hartree2ev;
+
+    const double deg2rad = 2.*M_PI/360.;
+    const double rad2deg = 1./rad2deg;
 }
 
 #endif // NATURALCONSTANTS_H

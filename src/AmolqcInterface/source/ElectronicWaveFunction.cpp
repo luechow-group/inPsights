@@ -4,7 +4,7 @@
 
 #include <iostream>
 #include "ElectronicWaveFunction.h"
-#include "WfFileImporter.h"
+#include "AmolqcFileImport/WfFileImporter.h"
 
 ElectronicWaveFunction &ElectronicWaveFunction::getInstance(const std::string& fileName) {
 
@@ -81,7 +81,7 @@ void ElectronicWaveFunction::initialize(const std::string& fileName) {
   numberOfBetaElectrons_ = wfFileImporter.getNumberOfBetaElectrons();
   numberOfAlphaElectrons_ = wfFileImporter.getNumberOfAlphaElectrons();
   atomsVector_ = wfFileImporter.getAtomsVector();
-  spinTypesVector_  = SpinTypesVector(numberOfAlphaElectrons_,numberOfBetaElectrons_);
+  spinTypesVector_  = createAmolqcSpinTypeVector(numberOfAlphaElectrons_,numberOfBetaElectrons_);
 }
 
 unsigned long ElectronicWaveFunction::getNumberOfNuclei() const {
@@ -92,8 +92,8 @@ unsigned long ElectronicWaveFunction::getNumberOfElectrons() const {
   return numberOfElectrons_;
 }
 
-void ElectronicWaveFunction::evaluate(const ElectronsVector &electronsVector) {
-    evaluate(electronsVector.positionsVector().positionsAsEigenVector());
+void ElectronicWaveFunction::evaluate(const ParticlesVector<Spin> &electronsVector) {
+    evaluate(electronsVector.positionsVector().asEigenVector());
 }
 
 void ElectronicWaveFunction::evaluate(const Eigen::VectorXd &electronPositionsVector) {
@@ -145,9 +145,8 @@ double ElectronicWaveFunction::getInverseNegativeLogarithmizedProbabilityDensity
   return -1.0/std::log(pow(getProbabilityAmplitude(),2));
 }
 
-ElectronsVector ElectronicWaveFunction::getElectronPositionsVector(){
-  return ElectronsVector(electronPositionsVectorAsEigenVector_,
-                            getSpinTypesVector().spinTypesAsEigenVector());
+ParticlesVector<Spin> ElectronicWaveFunction::getElectronsVector(){
+  return {PositionsVector(electronPositionsVectorAsEigenVector_), getSpinTypesVector()};
 };
 
 Eigen::VectorXd ElectronicWaveFunction::getElectronDriftCollection(){
@@ -178,11 +177,26 @@ Eigen::VectorXd ElectronicWaveFunction::getInverseNegativeLogarithmizedProbabili
   //return 0.5*getProbabilityAmplitude()*getProbabilityAmplitudeGradientCollection().cwiseInverse();
 }
 
-AtomsVector ElectronicWaveFunction::getAtomsVector() const {
+ParticlesVector<Element> ElectronicWaveFunction::getAtomsVector() const {
     return atomsVector_;
 }
 
-SpinTypesVector ElectronicWaveFunction::getSpinTypesVector() const {
+TypesVector<Spin > ElectronicWaveFunction::getSpinTypesVector() const {
   return spinTypesVector_;
 }
 
+TypesVector<Spin>
+ElectronicWaveFunction::createAmolqcSpinTypeVector(unsigned long numberOfAlphaElectrons, 
+                                                   unsigned long numberOfBetaElectrons) {
+  TypesVector<Spin> spinTypesVector(0);
+
+  for (unsigned long i = 0; i < numberOfAlphaElectrons+numberOfBetaElectrons; ++i) {
+    Spin spinType;
+    if (i < numberOfAlphaElectrons) spinType = Spin::alpha;
+    else spinType = Spin::beta;
+
+    spinTypesVector.append(spinType);
+  }
+
+  return spinTypesVector;
+}

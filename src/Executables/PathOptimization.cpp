@@ -2,7 +2,8 @@
 // Created by Michael Heuer on 07.11.17.
 //
 
-#include "CollectionParser.h"
+#include "Serialization.h"
+
 #include "ElectronicWaveFunctionProblem.h"
 #include "solver/bfgsnssolver.h"
 #include "solver/bfgssolver.h"
@@ -31,12 +32,13 @@ bool handleCommandlineArguments(int argc, char **argv,
         electronsVectorFilename = argv[2];
         if (argc > 3) showGui = (std::string(argv[3]) == "gui");
         return true;
-    }
+    } else
+        return false;
 }
 
 int main(int argc, char *argv[]) {
-    std::string wavefunctionFilename; //= "H2sm444.wf"; // overwrite command line
-    std::string electronsVectorFilename; //= "H2sm444_TS_ev.json"; // overwrite command line
+    std::string wavefunctionFilename; //= "BH3_Exp-em.wf"; // overwrite command line
+    std::string electronsVectorFilename; //= "BH3_Max0.json"; // overwrite command line
     bool showGui = true;
 
     if( wavefunctionFilename.empty() && electronsVectorFilename.empty()) {
@@ -46,13 +48,13 @@ int main(int argc, char *argv[]) {
     }
 
     ElectronicWaveFunctionProblem electronicWaveFunctionProblem(wavefunctionFilename);
-    CollectionParser collectionParser;
+
     auto ac = electronicWaveFunctionProblem.getAtomsVector();
-    auto ec = collectionParser.electronsVectorFromJson(electronsVectorFilename);
-    std::cout << ac << std::endl;
+    auto ec = YAML::LoadFile(electronsVectorFilename)["Electrons"].as<ElectronsVector>();
+    std::cout << ac << std::endl<< std::endl;
     std::cout << ec << std::endl;
 
-    Eigen::VectorXd x(ec.positionsVector().positionsAsEigenVector());
+    Eigen::VectorXd x(ec.positionsVector().asEigenVector());
     std::cout << x.transpose() << std::endl;
     Eigen::VectorXd grad(ec.numberOfEntities());
     electronicWaveFunctionProblem.putElectronsIntoNuclei(x,grad);
@@ -70,7 +72,7 @@ int main(int argc, char *argv[]) {
     //solver.setDistanceCriteriaUmrigar(0.1);
 
     solver.minimize(electronicWaveFunctionProblem, x);
-    std::cout << ElectronsVector(x,ec.spinTypesVector().spinTypesAsEigenVector())<<std::endl;
+    std::cout << ElectronsVector(PositionsVector(x),ec.typesVector())<<std::endl;
 
 
     if(showGui) {
@@ -80,7 +82,7 @@ int main(int argc, char *argv[]) {
         optimizationPath.prepend(ec);
 
         //append end point
-        optimizationPath.append(ElectronsVector(PositionsVector(x), optimizationPath.spinTypesVector()));
+        optimizationPath.append(ElectronsVector(PositionsVector(x), optimizationPath.typesVector()));
 
         return Visualization::visualizeOptPath(argc, argv, ac, optimizationPath);
     }

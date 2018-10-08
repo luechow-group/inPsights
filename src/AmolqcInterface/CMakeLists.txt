@@ -2,51 +2,48 @@ cmake_minimum_required(VERSION 3.5)
 
 project(AmolqcInterface C CXX Fortran)
 
-set(Amolqcpp_BUILD TRUE)
-
 set ( PROJECT_FOLDER_NAME ${PROJECT_NAME})
 set ( PROJECT_PATH ${PROJECT_NAME})
 set ( OUTPUT_NAME "${PROJECT_FOLDER_NAME}" )
 message ( "-- ++ CREATING PROJECT OR MAKEFILE ---> ${OUTPUT_NAME}" )
 
-include_directories(
-        include
-        source
-        )
-
 set(HEADER_FILES
         include/ElectronicWaveFunction.h
         include/ElectronicWaveFunctionProblem.h
-        include/WfFileImporter.h
-        include/RefFileImporter.h
-        include/OptimizationPathFileImporter.h
-        include/AmolqcImporter.h
+        include/AmolqcFileImport/WfFileImporter.h
+        include/AmolqcFileImport/RefFileImporter.h
+        include/AmolqcFileImport/OptimizationPathFileImporter.h
+        include/AmolqcFileImport/AmolqcImporter.h
         )
 
 set(SOURCE_FILES
         source/ElectronicWaveFunction.cpp
         source/ElectronicWaveFunctionProblem.cpp
-        source/RefFileImporter.cpp
-        source/WfFileImporter.cpp
-        source/OptimizationPathFileImporter.cpp
-        source/AmolqcImporter.cpp
+        source/AmolqcFileImport/RefFileImporter.cpp
+        source/AmolqcFileImport/WfFileImporter.cpp
+        source/AmolqcFileImport/OptimizationPathFileImporter.cpp
+        source/AmolqcFileImport/AmolqcImporter.cpp
         )
 
+set(NORULES YES)
+set(PFUNIT OFF)
 add_subdirectory(amolqc)
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES})
+
+target_include_directories(${PROJECT_NAME}
+        PUBLIC
+            include
+            include/AmolqcFileImport
+        PRIVATE
+            source
+            source/AmolqcFileImport
+        )
+
 target_link_libraries(${PROJECT_NAME}
         BaseLib
         cppoptlib
         AmolqcppInterface
         )
-target_include_directories(${PROJECT_NAME} PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-        )
 
-add_executable(${PROJECT_NAME}_main main.cpp)
-target_link_libraries(${PROJECT_NAME}_main
-        ${PROJECT_NAME}
-        )
-
-add_subdirectory(tests)
+add_gtest_subdirectory_with_dependency(tests "gtest;pthread")

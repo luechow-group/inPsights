@@ -18,15 +18,13 @@
 #include "AtomsVector3D.h"
 #include "ElectronsVector3D.h"
 
-#include "ElementInfo.h"
-#include "ElementType.h"
+#include <TypesVector.h>
 #include "Sphere.h"
 #include "Bond3D.h"
 #include "Electron3D.h"
 #include "Polyline.h"
 
-#include "WfFileImporter.h"
-#include "Atom.h"
+#include "AmolqcFileImport/WfFileImporter.h"
 
 #include "ArcLengthParametrizedBSpline.h"
 #include "StringMethodCoordinatesPlotter.h"
@@ -39,7 +37,7 @@
 #include <QtCharts/QScatterSeries>
 
 #include "solver/bfgsnssolver.h"
-#include "CollectionParser.h"
+#include "Serialization.h"
 
 int main(int argc, char *argv[]) {
 
@@ -68,23 +66,24 @@ int main(int argc, char *argv[]) {
 
 
 
-    //collectionParser.writeJSON(collectionParser.electronsVectorToJson(ec),"Ethylene-glob-max.json");
-    CollectionParser collectionParser;
-    //auto ecA = collectionParser.electronsVectorFromJson("Ethane-glob-max.json");
-    auto ecA = ElectronsVector(x0, Eigen::Vector2i(1,-1));
+    //CollectionParser::writeJSON(CollectionParser::electronsVectorToJson(ec),"Ethylene-glob-max.json");
+
+    //auto ecA = CollectionParser::electronsVectorFromJson(CollectionParser::readJSON("Ethane-glob-max.json"));
+    auto ecA = ElectronsVector(PositionsVector(x0),
+                               SpinTypesVector({Spin::alpha,Spin::beta}));
     auto ecB = ecA;
 
 
     std::cout << ecA << std::endl;
 
-    ecB.permute(0, 1);
+    ecB.positionsVector().slice({0,2}).permute(Eigen::PermutationMatrix<Eigen::Dynamic>(Eigen::VectorXi{1,0}));
     std::cout << ecB << std::endl;
     //ecB.permute(8, 17);//Ethane
 
     unsigned numberOfStates = 7;
 
-    auto xA = ecA.positionsVector().positionsAsEigenVector();
-    auto xB = ecB.positionsVector().positionsAsEigenVector();
+    auto xA = ecA.positionsVector().asEigenVector();
+    auto xB = ecB.positionsVector().asEigenVector();
 
     Eigen::MatrixXd initialCoordinates(ElectronicWaveFunction::getInstance().getNumberOfElectrons() * 3,
                                        numberOfStates);
@@ -193,7 +192,7 @@ initialCoordinates.row((18 - 1) * 3 + 2) -= 0.05 * bend;//z bend
     WfFileImporter waveFunctionParser(ElectronicWaveFunction::getInstance().getFileName());
 
     AtomsVector3D molecularGeometry3D(root, waveFunctionParser.getAtomsVector());
-    ElectronsVector3D(root, ElectronicWaveFunction::getInstance().getElectronPositionsVector(), true);
+    ElectronsVector3D(root, ElectronicWaveFunction::getInstance().getElectronsVector(), true);
 
 
     //Draw tsguess

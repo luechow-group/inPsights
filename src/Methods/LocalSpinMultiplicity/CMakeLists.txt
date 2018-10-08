@@ -11,12 +11,6 @@ message ( "-- ++ CREATING PROJECT OR MAKEFILE ---> ${OUTPUT_NAME}" )
 find_package(Eigen3 REQUIRED)
 include_directories( ${EIGEN3_INCLUDE_DIR} )
 
-include_directories(
-        include
-        source
-        tests/resources
-)
-
 set(HEADER_FILES
         include/pse.h
         include/Particle.h
@@ -27,7 +21,6 @@ set(HEADER_FILES
         include/Molecule.h
         include/Assignment.h
         include/HungarianElectronAssigner.h
-        include/Hungarian.h
         include/SpinDeterminer.h
         include/SpinProjectionQuantumNumberCounter.h
         )
@@ -41,22 +34,20 @@ set(SOURCE_FILES
         src/Molecule.cpp
         src/pse.cpp
         src/HungarianElectronAssigner.cpp
-        src/Hungarian.cpp
         src/SpinDeterminer.cpp
         src/SpinProjectionQuantumNumberCounter.cpp
         )
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES})
 target_link_libraries(${PROJECT_NAME}
-        BaseLib
+        BaseLib #includes eigen already
         )
 
 target_include_directories(${PROJECT_NAME} PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        PUBLIC
+            include
+        PRIVATE
+            source
         )
-
-#target_link_libraries(${PROJECT_NAME}_main
-#        ${PROJECT_NAME}
-#        )
 
 add_subdirectory(tests)

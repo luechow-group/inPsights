@@ -1,94 +1,39 @@
 cmake_minimum_required(VERSION 3.5)
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake/Modules")
 
-if(EXISTS $ENV{CC})
-    message("Using specified C Compiler")
-    set(CMAKE_C_COMPILER $ENV{CC})
-else()
-    message("Using default C Compiler")
-endif()
+include(cmake/SetCompilers.cmake)
 
-if(EXISTS $ENV{CXX})
-    message("Using specified C++ Compiler")
-    set(CMAKE_CXX_COMPILER $ENV{CXX})
-else()
-    message("Using default CXX Compiler")
-endif()
-
-if(EXISTS $ENV{FC})
-    message("Using specified Fortran Compiler")
-    set(CMAKE_Fortran_COMPILER $ENV{FC})
-else()
-    message("Using default Fortran Compiler")
-endif()
-
-
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 
 project(Amolqcpp)
-
-message("C compiler: ${CMAKE_C_COMPILER}")
-message("CXX compiler: ${CMAKE_CXX_COMPILER}")
-message("Fortran compiler: ${CMAKE_Fortran_COMPILER}")
-
-find_package(OpenMP REQUIRED)
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
-set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} ${OpenMP_Fortran_FLAGS}")
-
 
 # Prevent error from policy CMP0042. See >>> cmake  --help-policy CMP0042
 set(CMAKE_MACOSX_RPATH 1)
 
-#set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
+message("${CMAKE_MODULE_PATH}")
 
+include(cmake/FindSharedMemoryParallelismLibraries.cmake)
 
-#------------------------------------------------#
-# Download and unpack googletest at configure time
-configure_file(cmake/DownloadGoogleTest.in
-        googletest-download/CMakeLists.txt)
-execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
-        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/googletest-download )
-execute_process(COMMAND ${CMAKE_COMMAND} --build .
-        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/googletest-download )
+if(DEFINED ENV{BOOST_ROOT})
+    set(BOOST_ROOT "$ENV{BOOST_ROOT}")
+    message("-- BOOST_ROOT is set: ${BOOST_ROOT}")
+else(DEFINED ENV{BOOST_ROOT})
+    message("-- Note: BOOST_ROOT not set. Let's see whether we can find BOOST anyway.")
+endif(DEFINED ENV{BOOST_ROOT})
+find_package(Boost)
+include_directories(${Boost_INCLUDE_DIRS})
 
-# Prevent GoogleTest from overriding our compiler/linker options
-# when building with Visual Studio
-set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-
-# Add googletest directly to our build. This adds
-# the following targets: gtest, gtest_main, gmock
-# and gmock_main
-
-add_subdirectory(${CMAKE_BINARY_DIR}/googletest-src
-        ${CMAKE_BINARY_DIR}/googletest-build)
-
-# The gtest/gmock targets carry header search path
-# dependencies automatically when using CMake 2.8.11 or
-# later. Otherwise we have to add them here ourselves.
-if (CMAKE_VERSION VERSION_LESS 2.8.11)
-    include_directories(
-            "${gtest_SOURCE_DIR}/include"
-            "${gmock_SOURCE_DIR}/include")
+if (DEFINED BUILD_EIGEN AND (${BUILD_EIGEN}))
+    message("BUILD_EIGEN build eigen is ON. Building Eigen3...")
+    include(cmake/DownloadEigen.cmake)
+else()
+    message("BUILD_EIGEN build eigen is undefined or OFF. Trying to find Eigen3...")
+    find_package(Eigen3 REQUIRED)
+    include_directories(${EIGEN3_INCLUDE_DIR})
 endif()
 
-
-##---------------------------------------------------#
-## Download and unpack Eigen Library at configure time
-#configure_file(DownloadEigen.in
-#        eigen-download/CMakeLists.txt)
-#execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
-#        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/eigen-download )
-#execute_process(COMMAND ${CMAKE_COMMAND} --build .
-#        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/eigen-download )
-#
-## Add Eigen library directly to our build. This adds
-## the following targets: eigen
-#
-#add_subdirectory(
-#        ${CMAKE_BINARY_DIR}/eigen-src
-#        ${CMAKE_BINARY_DIR}/eigen-build
-#        )
-find_package(Eigen3 REQUIRED)
-include_directories( ${EIGEN3_INCLUDE_DIR} )
-
+# Ctest related
+enable_testing()
+add_custom_target(AmolqcppTests COMMAND "")
+include(cmake/add_gtest_subdirectory_with_dependency.cmake)
 add_subdirectory(src)
