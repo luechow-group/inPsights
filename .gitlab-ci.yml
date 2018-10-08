@@ -1,37 +1,24 @@
 
 image: registry.git.rwth-aachen.de/luechow-group/amolqcpp:latest
 
-build:
-  stage: build
+variables:
+  GIT_SUBMODULE_STRATEGY: recursive
 
-  variables:
-    GIT_STRATEGY: clone
-    GIT_SUBMODULE_STRATEGY: recursive
-
-  before_script:
+before_script:
   - export CC=/usr/bin/gcc
   - export CXX=/usr/bin/g++
   - export FC=/usr/bin/gfortran
+  - export AMOLQC=/builds/luechow-group/Amolqcpp/src/AmolqcInterface/amolqc
 
+All tests:
   script:
     - mkdir -p cmake-build-debug-gnu
     - cd cmake-build-debug-gnu
     - cmake .. -DCMAKE_BUILD_TYPE=DEBUG -DBUILD_GUI=OFF
     - cmake --build . --target AmolqcppTests -- -j 2
+    - ctest -LE "(amolqc|GUI|cppoptlib)" -E "(example|spdlog-utests)" --verbose
 
   cache:
     key: "$CI_COMMIT_REF_SLUG" # enable per-branch caching
     paths:
     - cmake-build-debug-gnu/
-
-test:
-  stage: test
-  dependencies:
-  - build
-
-  variables:
-    GIT_STRATEGY: none
-
-  script:
-    - export AMOLQC=/builds/luechow-group/Amolqcpp/src/AmolqcInterface/amolqc
-    - ctest -LE "(amolqc|GUI|cppoptlib)" -E "(example|spdlog-utests)" --verbose
