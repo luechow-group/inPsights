@@ -1,5 +1,5 @@
-[submodule "src/AmolqcInterface/amolqc"]
-	path = src/AmolqcInterface/amolqc
+[submodule "src/AmolqcInterface/Amolqc"]
+	path = src/AmolqcInterface/Amolqc
 	url = ./../Amolqc.git
 [submodule "src/Externals/BSplines"]
     path = src/Externals/BSplines
