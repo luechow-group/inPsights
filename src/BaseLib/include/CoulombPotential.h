@@ -9,6 +9,7 @@
 #include "ParticlesVector.h"
 #include "Metrics.h"
 #include "NaturalConstants.h"
+#include "EigenYamlConversion.h"
 
 namespace CoulombPotential {
 
@@ -43,7 +44,6 @@ namespace CoulombPotential {
 
         return V;
     };
-
 };
 
 #endif //AMOLQCPP_COULOMBPOTENTIAL_H

@@ -1,3 +1,5 @@
+#include <utility>
+
 //
 // Created by Michael Heuer on 02.10.18.
 //
@@ -11,9 +13,6 @@
 #include <Logger.h>
 #include <spdlog/spdlog.h>
 #include <CoulombPotential.h>
-
-//Remove
-#include <HungarianHelper.h>
 
 class EnergyCalculator{
 public:
@@ -29,15 +28,19 @@ public:
         double Te, Vee, Ven, Vnn;
     };
 
-    EnergyCalculator(const std::vector<Sample>& samples, const AtomsVector& atoms)
+    EnergyCalculator(const std::vector<Sample>& samples, AtomsVector atoms)
     :
-    atoms_(atoms),
     samples_(samples),
-    console(spdlog::get(Logger::name)){
+    atoms_(std::move(atoms)),
+    Vnn_(CoulombPotential::energies<Element>(atoms_)),
+    console(spdlog::get(Logger::name))
+    {
         if(!console){
             Logger::initialize();
             console = spdlog::get(Logger::name);
         };
+
+        VnnStats_.add(Vnn_);
     }
 
     Energies calculateTotalEnergies() {
@@ -71,38 +74,54 @@ public:
     unsigned long addEnergies(const Reference &reference) {
         unsigned long count = reference.count();
 
-        ekin = samples_[reference.id_].kineticEnergies_;
-        epot = CoulombPotential::energies(samples_[reference.id_].sample_);
+        Te_ = samples_[reference.id_].kineticEnergies_;
+        Vee_ = CoulombPotential::energies(samples_[reference.id_].sample_);
+        Ven_ = CoulombPotential::energies(samples_[reference.id_].sample_,atoms_);
 
-        TeStats.add(ekin, unsigned(count));
-        VeeStats.add(epot, unsigned(count));
+        TeStats_.add(Te_, unsigned(count));
+        VeeStats_.add(Vee_, unsigned(count));
+        VenStats_.add(Ven_, unsigned(count));
+
         return count;
     }
 
+    //TODO eliminate by permuting the samples
     unsigned long addEnergies(const Reference &reference, const Eigen::PermutationMatrix<Eigen::Dynamic>& perm){
         unsigned long count = reference.count();
 
         auto sampleCopy = samples_[reference.id_].sample_;
         sampleCopy.permute(perm);
 
-        ekin = perm* (samples_[reference.id_].kineticEnergies_);
-        epot = CoulombPotential::energies(sampleCopy);
+        Te_ = perm* (samples_[reference.id_].kineticEnergies_);
+        Vee_ = CoulombPotential::energies<Spin>(sampleCopy);
+        Ven_ = CoulombPotential::energies<Spin,Element>(sampleCopy, atoms_);
 
-        TeStats.add(ekin, unsigned(count));
-        VeeStats.add(epot, unsigned(count));
+        TeStats_.add(Te_, unsigned(count));
+        VeeStats_.add(Vee_, unsigned(count));
+        VenStats_.add(Ven_, unsigned(count));
+
         return count;
     }
 
-    void calculateStatistics(
-            const std::vector<std::vector<SimilarReferences>>& clusteredGloballySimilarMaxima){
+    void calculateStatistics(const std::vector<std::vector<SimilarReferences>>& clusteredGloballySimilarMaxima){
+        using namespace YAML;
+
+        yamlDocument_ << BeginDoc << BeginMap
+        << Key << "Atoms" << Value << atoms_ << Comment("[a0]")
+        << Key << "Vnn" << Comment("[Eh]") << Value;
+        VnnStats_.toYaml(yamlDocument_, true);
+
+        yamlDocument_
+        << Key << "NSamples" << Value << samples_.size()
+        << Key << "Clusters" << Value << BeginSeq;
 
         size_t totalCount = 0;
-
         for (auto& cluster : clusteredGloballySimilarMaxima) {
             for (auto &simRefVector : cluster) {
 
-                TeStats.reset();
-                VeeStats.reset();
+                TeStats_.reset();
+                VeeStats_.reset();
+                VenStats_.reset();
 
                 // Representative reference
                 size_t repRefCount = addEnergies(*simRefVector.repRefIt_);
@@ -113,31 +132,55 @@ public:
                 for (const auto &simRef : simRefVector.similarReferences_)
                     simRefCount += addEnergies(*simRef.it_, simRef.perm_);
 
-                std::cout << "Te  mean: (" << TeStats.getTotalWeight() << ")\n" << TeStats.mean().transpose() << std::endl;
-                std::cout << "Te sterr: (" << TeStats.getTotalWeight() << ")\n"  << TeStats.standardError().transpose() << std::endl << std::endl;
 
-                //std::cout << "Vee mean: (" << VeeStats.getTotalWeight() << ")\n" << VeeStats.mean().transpose() << std::endl;
-                //if (VeeStats.getTotalWeight() >= 2)
-                //    std::cout << "Vee stdv: (" << VeeStats.getTotalWeight() << ")\n"  << VeeStats.standardDeviation().transpose() << std::endl << std::endl;
-
-
+                printCluster();
                 totalCount += repRefCount + simRefCount;
             }
         }
         console->info("overall count {}", totalCount);
+        assert(totalCount == samples_.size() && "The total count must match the sample size.");
+
+        yamlDocument_ << EndSeq << EndMap << EndDoc;
+        assert(yamlDocument_.good());
     }
+
+
+    void printCluster(){
+        using namespace YAML;
+
+        yamlDocument_
+        << BeginMap
+        << Key << "N" << Value << TeStats_.getTotalWeight()
+        << Key << "Te" << Comment("[Eh]");
+        TeStats_.toYaml(yamlDocument_);
+
+        yamlDocument_
+        << Key << "Vee" << Comment("[Eh]");
+        VeeStats_.toYaml(yamlDocument_,true);
+
+        yamlDocument_
+        << Key << "Ven" << Comment("[Eh]");
+        VenStats_.toYaml(yamlDocument_);
+        yamlDocument_ << EndMap;
+    }
+
+    YAML::Node getYamlNode(){ return YAML::Load(yamlDocument_.c_str()); }
+
+    std::string getYamlDocumentString(){ return std::string(yamlDocument_.c_str()); }
 
 private:
     const std::vector<Sample>& samples_;
     AtomsVector atoms_;
 
-    Statistics::RunningStatistics<Eigen::VectorXd> TeStats;
-    Statistics::RunningStatistics<Eigen::MatrixXd> VeeStats;// TODO add Ven and Vnn
+    Statistics::RunningStatistics<Eigen::VectorXd> TeStats_;
+    Statistics::RunningStatistics<Eigen::MatrixXd> VeeStats_, VenStats_, VnnStats_;
 
-    Eigen::VectorXd ekin;
-    Eigen::MatrixXd epot;
+    Eigen::VectorXd Te_;
+    Eigen::MatrixXd Vee_, Ven_, Vnn_;
 
+    YAML::Emitter yamlDocument_;
     std::shared_ptr<spdlog::logger> console;
 };
+
 
 #endif //AMOLQCPP_ENERGYCALCULATOR_H
