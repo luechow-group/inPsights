@@ -16,7 +16,7 @@ All tests:
     - cd cmake-build-debug-gnu
     - cmake .. -DCMAKE_BUILD_TYPE=DEBUG -DBUILD_GUI=OFF
     - cmake --build . --target AmolqcppTests -- -j 2
-    - ctest -LE "(amolqc|GUI|cppoptlib)" -E "(example|spdlog-utests)" --verbose
+    - ctest -LE "(amolqc|GUI|cppoptlib)" -E "(example|spdlog-utests)" --output-on-failure"
 
   cache:
     key: "$CI_COMMIT_REF_SLUG" # enable per-branch caching
