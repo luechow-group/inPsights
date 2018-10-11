@@ -1,11 +1,10 @@
 cmake_minimum_required(VERSION 3.5)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake/Modules")
 
-include(cmake/SetCompilers.cmake)
-
 set(CMAKE_CXX_STANDARD 14)
 
 project(Amolqcpp)
+include(cmake/SetCompilers.cmake)
 
 # Prevent error from policy CMP0042. See >>> cmake  --help-policy CMP0042
 set(CMAKE_MACOSX_RPATH 1)
