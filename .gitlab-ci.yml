@@ -4,14 +4,12 @@ image: registry.git.rwth-aachen.de/luechow-group/amolqcpp:combined
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
 
-before_script:
-- export AMOLQC=/builds/luechow-group/Amolqcpp/src/AmolqcInterface/amolqc
-
 GNU tests:
   before_script:
   - export CC=/usr/bin/gcc
   - export CXX=/usr/bin/g++
   - export FC=/usr/bin/gfortran
+  - export AMOLQC=/builds/luechow-group/Amolqcpp/src/AmolqcInterface/amolqc
   script:
   - git submodule sync
   - git submodule update --init --recursive
@@ -31,6 +29,7 @@ Intel tests:
   - export CXX=/opt/intel/bin/icpc
   - export FC=/opt/intel/bin/ifort
   - export MKLROOT=/opt/intel/mkl
+  - export AMOLQC=/builds/luechow-group/Amolqcpp/src/AmolqcInterface/amolqc
   script:
   - mkdir -p cmake-build-debug-intel
   - cd cmake-build-debug-intel
