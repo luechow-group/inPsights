@@ -1,11 +1,11 @@
 
-image: registry.git.rwth-aachen.de/luechow-group/amolqcpp:gnu
+image: registry.git.rwth-aachen.de/luechow-group/amolqcpp:combined
 
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
 
 before_script:
-  - export AMOLQC=/builds/luechow-group/Amolqcpp/src/AmolqcInterface/amolqc
+- export AMOLQC=/builds/luechow-group/Amolqcpp/src/AmolqcInterface/amolqc
 
 GNU tests:
   before_script:
@@ -13,33 +13,32 @@ GNU tests:
   - export CXX=/usr/bin/g++
   - export FC=/usr/bin/gfortran
   script:
-    - git submodule sync
-    - git submodule update --init --recursive
-    - mkdir -p cmake-build-debug-gnu
-    - cd cmake-build-debug-gnu
-    - cmake .. -DCMAKE_BUILD_TYPE=DEBUG -DBUILD_GUI=OFF
-    - cmake --build . --target AmolqcppTests --
-    - ctest -LE "(amolqc|GUI|cppoptlib)" -E "(example|spdlog-utests)" --output-on-failure"
-
+  - git submodule sync
+  - git submodule update --init --recursive
+  - mkdir -p cmake-build-debug-gnu
+  - cd cmake-build-debug-gnu
+  - cmake .. -DCMAKE_BUILD_TYPE=DEBUG -DBUILD_GUI=OFF
+  - cmake --build . --target AmolqcppTests --
+  - ctest -LE "(amolqc|GUI|cppoptlib)" -E "(example|spdlog-utests)" --output-on-failure"
   cache:
     key: "$CI_COMMIT_REF_SLUG" # enable per-branch caching
     paths:
     - cmake-build-debug-gnu/
 
-#Intel tests:
-#  before_script:
-#  - export CC=/opt/intel/bin/icc
-#  - export CXX=/opt/intel/bin/icpc
-#  - export FC=/opt/intel/bin/ifort
-#  - export MKLROOT=/opt/intel/mkl
-#  script:
-#  - mkdir -p cmake-build-debug-intel
-#  - cd cmake-build-debug-intel
-#  - cmake .. -DCMAKE_BUILD_TYPE=DEBUG -DBUILD_GUI=OFF
-#  - cmake --build . --target AmolqcppTests --
-#  - ctest -LE "(amolqc|GUI|cppoptlib)" -E "(example|spdlog-utests)" --output-on-failure"
-
-# cache:
-#   key: "$CI_COMMIT_REF_SLUG" # enable per-branch caching
-#   paths:
-#   - cmake-build-debug-intel/
+Intel tests:
+  before_script:
+  - export CC=/opt/intel/bin/icc
+  - export CXX=/opt/intel/bin/icpc
+  - export FC=/opt/intel/bin/ifort
+  - export MKLROOT=/opt/intel/mkl
+  script:
+  - mkdir -p cmake-build-debug-intel
+  - cd cmake-build-debug-intel
+  - cmake .. -DCMAKE_BUILD_TYPE=DEBUG -DBUILD_GUI=OFF
+  - cmake --build . --target AmolqcppTests --
+  - ctest -LE "(amolqc|GUI|cppoptlib)" -E "(example|spdlog-utests)" --output-on-failure"
+  cache:
+    key: "$CI_COMMIT_REF_SLUG" # enable per-branch caching
+    paths:
+    - cmake-build-debug-gnu/
+    
