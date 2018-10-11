@@ -21,23 +21,48 @@ else()
     message("Using default Fortran Compiler     ${CMAKE_Fortran_COMPILER}")
 endif()
 
-
-# General settings
-if(CMAKE_BUILD_TYPE STREQUAL "Release")
-    add_definitions(-O3 -Wall)
-endif()
-
 # Compiler specific optimization settings
-if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
-    # using Clang
-elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-    # using GCC
-    add_definitions(-ftracer -floop-optimize -funroll-loops -mtune=native -mmmx -msse2 -mfpmath=sse -g)
-elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
-    # using Intel C++
-    add_definitions(-ipo -inline-forceinline)
-elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
+if (${CMAKE_CXX_COMPILER_ID} MATCHES "Clang")
+
+    if(${CMAKE_BUILD_TYPE} MATCHES "Release")
+        add_definitions(-O3 -Wall)
+    else()
+        add_definitions(-Wall -g)
+    endif()
+
+elseif ("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU")
+
+    if(${CMAKE_BUILD_TYPE} MATCHES "Release")
+        add_definitions(-O3 -Wall -ftracer -floop-optimize -funroll-loops -mtune=native -mmmx -msse2 -mfpmath=sse)
+    else()
+        add_definitions(-Wall -g)
+    endif()
+
+elseif (${CMAKE_CXX_COMPILER_ID} MATCHES "PGI")
+
+    if(${CMAKE_BUILD_TYPE} MATCHES "Release")
+        add_definitions(-O3)
+    else()
+        add_definitions()
+    endif()
+
+elseif (${CMAKE_CXX_COMPILER_ID} MATCHES "Intel")
+
+    if(${CMAKE_BUILD_TYPE} MATCHES "Release")
+        add_definitions(-O3 -Wall -ipo -inline-forceinline)
+    else()
+        add_definitions(-g -traceback -check all -Wall -g)
+    endif()
+
+elseif (${CMAKE_CXX_COMPILER_ID} MATCHES "MSVC")
+
     # using Visual Studio C++
     message(" ## WARNING ##: Amolqcpp was not tested with the Microsoft Visual Studio compiler.
     Consider switching to the Intel or GNU compiler collection ")
+
+    if(${CMAKE_BUILD_TYPE} MATCHES "Release")
+        add_definitions(-O3)
+    else()
+        add_definitions()
+    endif()
 endif()

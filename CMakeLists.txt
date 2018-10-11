@@ -9,8 +9,6 @@ include(cmake/SetCompilers.cmake)
 # Prevent error from policy CMP0042. See >>> cmake  --help-policy CMP0042
 set(CMAKE_MACOSX_RPATH 1)
 
-message("${CMAKE_MODULE_PATH}")
-
 include(cmake/FindSharedMemoryParallelismLibraries.cmake)
 
 if(DEFINED ENV{BOOST_ROOT})
