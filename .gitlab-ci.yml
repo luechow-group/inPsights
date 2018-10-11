@@ -17,7 +17,7 @@ GNU tests:
   - cmake --build . --target AmolqcppTests --
   - ctest -LE "(amolqc|GUI|cppoptlib)" -E "(example|spdlog-utests)" --output-on-failure
   cache:
-    key: "$CI_COMMIT_REF_SLUG" # enable per-branch caching
+    key: "$CI_COMMIT_REF_SLUG-GNU"
     paths:
     - cmake-build-debug-gnu/
 
@@ -35,7 +35,7 @@ Intel tests:
   - cmake --build . --target AmolqcppTests --
   - ctest -LE "(amolqc|GUI|cppoptlib)" -E "(example|spdlog-utests)" --output-on-failure
   cache:
-    key: "$CI_COMMIT_REF_SLUG" # enable per-branch caching
+    key: "$CI_COMMIT_REF_SLUG-Intel"
     paths:
     - cmake-build-debug-intel/
     
