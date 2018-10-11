@@ -11,8 +11,6 @@ GNU tests:
   - export FC=/usr/bin/gfortran
   - export AMOLQC=/builds/luechow-group/Amolqcpp/src/AmolqcInterface/amolqc
   script:
-  - git submodule sync
-  - git submodule update --init --recursive
   - mkdir -p cmake-build-debug-gnu
   - cd cmake-build-debug-gnu
   - cmake .. -DCMAKE_BUILD_TYPE=DEBUG -DBUILD_GUI=OFF
@@ -39,5 +37,5 @@ Intel tests:
   cache:
     key: "$CI_COMMIT_REF_SLUG" # enable per-branch caching
     paths:
-    - cmake-build-debug-gnu/
+    - cmake-build-debug-intel/
     

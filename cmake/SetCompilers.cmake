@@ -51,7 +51,7 @@ elseif (${CMAKE_CXX_COMPILER_ID} MATCHES "Intel")
     if(${CMAKE_BUILD_TYPE} MATCHES "Release")
         add_definitions(-O3 -Wall -ipo -inline-forceinline)
     else()
-        add_definitions(-g -traceback -check all -Wall -g)
+        add_definitions(-traceback -Wall -g)
     endif()
 
 elseif (${CMAKE_CXX_COMPILER_ID} MATCHES "MSVC")
