@@ -1,5 +1,5 @@
 
-image: registry.git.rwth-aachen.de/luechow-group/amolqcpp:latest
+image: registry.git.rwth-aachen.de/luechow-group/amolqcpp:gnu
 
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
@@ -13,31 +13,33 @@ GNU tests:
   - export CXX=/usr/bin/g++
   - export FC=/usr/bin/gfortran
   script:
+    - git submodule sync
+    - git submodule update --init --recursive
     - mkdir -p cmake-build-debug-gnu
     - cd cmake-build-debug-gnu
     - cmake .. -DCMAKE_BUILD_TYPE=DEBUG -DBUILD_GUI=OFF
     - cmake --build . --target AmolqcppTests --
     - ctest -LE "(amolqc|GUI|cppoptlib)" -E "(example|spdlog-utests)" --output-on-failure"
 
-  #cache:
-  #  key: "$CI_COMMIT_REF_SLUG" # enable per-branch caching
-  #  paths:
-  #  - cmake-build-debug-gnu/
+  cache:
+    key: "$CI_COMMIT_REF_SLUG" # enable per-branch caching
+    paths:
+    - cmake-build-debug-gnu/
 
-Intel tests:
-  before_script:
-  - export CC=/opt/intel/bin/icc
-  - export CXX=/opt/intel/bin/icpc
-  - export FC=/opt/intel/bin/ifort
-  - export MKLROOT=/opt/intel/mkl
-  script:
-  - mkdir -p cmake-build-debug-intel
-  - cd cmake-build-debug-intel
-  - cmake .. -DCMAKE_BUILD_TYPE=DEBUG -DBUILD_GUI=OFF
-  - cmake --build . --target AmolqcppTests --
-  - ctest -LE "(amolqc|GUI|cppoptlib)" -E "(example|spdlog-utests)" --output-on-failure"
+#Intel tests:
+#  before_script:
+#  - export CC=/opt/intel/bin/icc
+#  - export CXX=/opt/intel/bin/icpc
+#  - export FC=/opt/intel/bin/ifort
+#  - export MKLROOT=/opt/intel/mkl
+#  script:
+#  - mkdir -p cmake-build-debug-intel
+#  - cd cmake-build-debug-intel
+#  - cmake .. -DCMAKE_BUILD_TYPE=DEBUG -DBUILD_GUI=OFF
+#  - cmake --build . --target AmolqcppTests --
+#  - ctest -LE "(amolqc|GUI|cppoptlib)" -E "(example|spdlog-utests)" --output-on-failure"
 
-  #cache:
-  #  key: "$CI_COMMIT_REF_SLUG" # enable per-branch caching
-  #  paths:
-  #  - cmake-build-debug-intel/
+# cache:
+#   key: "$CI_COMMIT_REF_SLUG" # enable per-branch caching
+#   paths:
+#   - cmake-build-debug-intel/
