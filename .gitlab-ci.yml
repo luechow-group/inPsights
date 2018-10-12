@@ -68,6 +68,7 @@ GNU test:
     key: "$CI_COMMIT_REF_SLUG-GNU"
     paths:
     - cmake-build-debug-gnu/
+    policy: pull
 
 
 Intel test:
@@ -82,3 +83,4 @@ Intel test:
     key: "$CI_COMMIT_REF_SLUG-Intel"
     paths:
     - cmake-build-debug-intel/
+    policy: pull
