@@ -49,23 +49,23 @@ public:
             beginIt++;
         }
 
-        for (auto it = beginIt; it != references_.end(); ++it) {
+        for (auto ref = beginIt; ref != references_.end(); ++ref) {
             bool isSimilarQ = false;
 
             for (auto &simRefs : similarReferencesVector_) {
 
                 auto bestMatch = Metrics::bestMatch<Eigen::Infinity, 2>(
-                        (*it).maximum_,
+                        (*ref).maximum_,
                         (*simRefs.repRefIt_).maximum_);
 
                 if (bestMatch.first < distThresh_) {
                     //TODO permute the sample + maximum + kinetic_energies
-                    (*it).permute(bestMatch.second,samples_);
-                    simRefs.similarReferences_.emplace_back(it);
+                    (*ref).permute(bestMatch.second, samples_);
+                    simRefs.add(ref);
                     isSimilarQ = true;
                 }
             }
-            if (!isSimilarQ) similarReferencesVector_.emplace_back(SimilarReferences(it));
+            if (!isSimilarQ) similarReferencesVector_.emplace_back(SimilarReferences(ref));
         }
         return true;
     }

@@ -53,19 +53,6 @@ public:
 };
 
 
-class SimilarReference { //TODO delete class.
-public:
-    SimilarReference(std::vector<Reference>::iterator ref)
-    : it_(ref) {}
-
-    bool operator <(const SimilarReference& rhs) const {
-        return (*it_).negLogSqrdProbabilityDensity_< (*rhs.it_).negLogSqrdProbabilityDensity_;
-    }
-
-    std::vector<Reference>::iterator it_; // association to the list of globally identical maxima
-};
-
-
 class SimilarReferences {
 public:
     explicit SimilarReferences(std::vector<Reference>::iterator representativeReference)
@@ -74,9 +61,21 @@ public:
     similarReferences_()
     {}
 
+    void add(std::vector<Reference>::iterator& ref){
+        similarReferences_.emplace_back(ref);
+    }
+
+
+    void permuteAll(const Eigen::PermutationMatrix<Eigen::Dynamic>& perm, std::vector<Sample>& samples) {
+        (*repRefIt_).permute(perm,samples);
+        for (auto& ref : similarReferences_){
+            (*ref).permute(perm,samples);
+        }
+    }
+
     //TODO REPLACE THIS BY CENTROID LIKE REF
     std::vector<Reference>::iterator repRefIt_; // may change over time, difficult to define for rings/clusters
-    std::vector<SimilarReference> similarReferences_;
+    std::vector<std::vector<Reference>::iterator> similarReferences_;
 
 };
 
