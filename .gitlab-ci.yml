@@ -3,7 +3,12 @@ image: registry.git.rwth-aachen.de/luechow-group/amolqcpp:combined
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
 
-GNU tests:
+stages:
+- build
+- tests
+
+GNU build:
+  stage: build
   before_script:
   - export CC=/usr/bin/gcc
   - export CXX=/usr/bin/g++
@@ -11,16 +16,21 @@ GNU tests:
   - export AMOLQC=/builds/luechow-group/Amolqcpp/src/AmolqcInterface/amolqc
   script:
   - mkdir -p cmake-build-debug-gnu
-  - cd cmake-build-debug-gnu
-  - cmake .. -DCMAKE_BUILD_TYPE=DEBUG -DBUILD_GUI=OFF
-  - cmake --build . --target AmolqcppTests --
-  - ctest -LE "(AmolqcInterface|amolqc|GUI|cppoptlib)" -E "(example|spdlog-utests)" --output-on-failure
+  - cmake -H. -Bcmake-build-debug-gnu -DCMAKE_BUILD_TYPE=DEBUG -DBUILD_GUI=OFF
+  - cmake --build ./build --target AmolqcppTests --
   cache:
     key: "$CI_COMMIT_REF_SLUG-GNU"
     paths:
     - cmake-build-debug-gnu/
 
-Intel tests:
+GNU tests:
+  stage: tests
+  script:
+  - ctest -LE "(AmolqcInterface|amolqc|GUI|cppoptlib)" -E "(example|spdlog-utests)" --output-on-failure
+
+
+Intel build:
+  stage: build
   before_script:
   - source /opt/intel/parallel_studio_xe_2019/compilers_and_libraries_2019/linux/bin/compilervars.sh intel64
   - source /opt/intel/parallel_studio_xe_2019/compilers_and_libraries_2019/linux/mkl/bin/mklvars.sh intel64
@@ -31,12 +41,14 @@ Intel tests:
   - export AMOLQC=/builds/luechow-group/Amolqcpp/src/AmolqcInterface/amolqc
   script:
   - mkdir -p cmake-build-debug-intel
-  - cd cmake-build-debug-intel
-  - cmake .. -DCMAKE_BUILD_TYPE=DEBUG -DBUILD_GUI=OFF
-  - cmake --build . --target AmolqcppTests --
-  - ctest -LE "(AmolqcInterface|amolqc|GUI|cppoptlib)" -E "(example|spdlog-utests)" --output-on-failure
+  - cmake -H. -Bcmake-build-debug-gnu -DCMAKE_BUILD_TYPE=DEBUG -DBUILD_GUI=OFF
+  - cmake --build ./build --target AmolqcppTests --
   cache:
     key: "$CI_COMMIT_REF_SLUG-Intel"
     paths:
     - cmake-build-debug-intel/
-    
+
+Intel tests:
+  stage: tests
+  script:
+  - ctest -LE "(AmolqcInterface|amolqc|GUI|cppoptlib)" -E "(example|spdlog-utests)" --output-on-failure
