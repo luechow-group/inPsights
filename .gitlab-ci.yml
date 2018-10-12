@@ -4,18 +4,10 @@ variables:
   GIT_SUBMODULE_STRATEGY: recursive
 
 stages:
-- clone
 - build
 - test
 
-clone:
-  stage: clone
-  script:
-  - git status
-
 GNU build:
-  variables:
-    GIT_STRATEGY: none
   stage: build
   before_script:
   - export CC=/usr/bin/gcc
@@ -26,16 +18,12 @@ GNU build:
   - mkdir -p cmake-build-debug-gnu
   - cmake -H. -Bcmake-build-debug-gnu -DCMAKE_BUILD_TYPE=DEBUG -DBUILD_GUI=OFF  -DPFUNIT=OFF
   - cmake --build ./cmake-build-debug-gnu --target AmolqcppTests --
-  dependencies:
-  - clone
   cache:
     key: "$CI_COMMIT_REF_SLUG-GNU"
     paths:
     - cmake-build-debug-gnu/
 
 Intel build:
-  variables:
-    GIT_STRATEGY: none
   stage: build
   before_script:
   - source /opt/intel/parallel_studio_xe_2019/compilers_and_libraries_2019/linux/bin/compilervars.sh intel64
@@ -49,8 +37,6 @@ Intel build:
   - mkdir -p cmake-build-debug-intel
   - cmake -H. -Bcmake-build-debug-intel -DCMAKE_BUILD_TYPE=DEBUG -DBUILD_GUI=OFF -DPFUNIT=OFF
   - cmake --build ./cmake-build-debug-intel --target AmolqcppTests --
-  dependencies:
-  - clone
   cache:
     key: "$CI_COMMIT_REF_SLUG-Intel"
     paths:
@@ -66,8 +52,6 @@ GNU test:
   - GNU build
   cache:
     key: "$CI_COMMIT_REF_SLUG-GNU"
-    paths:
-    - cmake-build-debug-gnu/
     policy: pull
 
 
@@ -81,6 +65,4 @@ Intel test:
   - Intel build
   cache:
     key: "$CI_COMMIT_REF_SLUG-Intel"
-    paths:
-    - cmake-build-debug-intel/
     policy: pull
