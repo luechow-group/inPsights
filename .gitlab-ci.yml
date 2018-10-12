@@ -60,8 +60,6 @@ GNU test:
   dependencies:
   - GNU build
 
-
-
 Intel test:
   stage: test
   cache:
