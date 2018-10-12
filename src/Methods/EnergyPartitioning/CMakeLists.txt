@@ -1,7 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
 
 project(EnergyPartitioning CXX)
-set(CMAKE_CXX_STANDARD 17)
 
 set ( PROJECT_FOLDER_NAME ${PROJECT_NAME} )
 set ( PROJECT_PATH ${PROJECT_NAME})

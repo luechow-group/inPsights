@@ -89,10 +89,10 @@ public:
     }
 
     void assertResetInstruction(const Usage& usage){
-        assert(
-                ((resetType() == Reset::Automatic) && (usage == Usage::Standard)) ||
+        assert((((resetType() == Reset::Automatic) && (usage == Usage::Standard)) ||
                 ((resetType() == Reset::Manual) && (usage == Usage::Standard)) ||
                 ((resetType() == Reset::OnFinished) && (usage == Usage::Finished || usage == Usage::NotFinished))
+                )
                 && "You used conflicting reset instruction.");
     }
 
