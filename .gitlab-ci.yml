@@ -1,7 +1,6 @@
 image: registry.git.rwth-aachen.de/luechow-group/amolqcpp:combined
 
 variables:
-  GIT_STRATEGY: fetch
   GIT_SUBMODULE_STRATEGY: recursive
 
 stages:
@@ -9,6 +8,8 @@ stages:
 - test
 
 GNU build:
+  variables:
+    GIT_STRATEGY: none
   stage: build
   before_script:
   - export CC=/usr/bin/gcc
@@ -24,18 +25,9 @@ GNU build:
     paths:
     - cmake-build-debug-gnu/
 
-GNU test:
-  stage: test
-  script:
-  - ctest -LE "(AmolqcInterface|amolqc|GUI|cppoptlib)" -E "(example|spdlog-utests)" --output-on-failure
-  dependencies:
-  - GNU build
-  cache:
-    key: "$CI_COMMIT_REF_SLUG-GNU"
-    paths:
-    - cmake-build-debug-gnu/
-
 Intel build:
+  variables:
+    GIT_STRATEGY: none
   stage: build
   before_script:
   - source /opt/intel/parallel_studio_xe_2019/compilers_and_libraries_2019/linux/bin/compilervars.sh intel64
@@ -54,7 +46,23 @@ Intel build:
     paths:
     - cmake-build-debug-intel/
 
+GNU test:
+  variables:
+    GIT_STRATEGY: none
+  stage: test
+  script:
+  - ctest -LE "(AmolqcInterface|amolqc|GUI|cppoptlib)" -E "(example|spdlog-utests)" --output-on-failure
+  dependencies:
+  - GNU build
+  cache:
+    key: "$CI_COMMIT_REF_SLUG-GNU"
+    paths:
+    - cmake-build-debug-gnu/
+
+
 Intel test:
+  variables:
+    GIT_STRATEGY: none
   stage: test
   script:
   - ctest -LE "(AmolqcInterface|amolqc|GUI|cppoptlib)" -E "(example|spdlog-utests)" --output-on-failure
