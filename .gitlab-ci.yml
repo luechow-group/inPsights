@@ -5,7 +5,7 @@ variables:
 
 stages:
 - build
-- tests
+- test
 
 GNU build:
   stage: build
@@ -16,18 +16,23 @@ GNU build:
   - export AMOLQC=/builds/luechow-group/Amolqcpp/src/AmolqcInterface/amolqc
   script:
   - mkdir -p cmake-build-debug-gnu
-  - cmake -H. -Bcmake-build-debug-gnu -DCMAKE_BUILD_TYPE=DEBUG -DBUILD_GUI=OFF
-  - cmake --build ./build --target AmolqcppTests --
+  - cmake -H. -Bcmake-build-debug-gnu -DCMAKE_BUILD_TYPE=DEBUG -DBUILD_GUI=OFF  -DPFUNIT=OFF
+  - cmake --build ./cmake-build-debug-gnu --target AmolqcppTests --
   cache:
     key: "$CI_COMMIT_REF_SLUG-GNU"
     paths:
     - cmake-build-debug-gnu/
+  artifacts:
+    paths:
+    - cmake-build-debug-gnu/
+    expire_in: 1 hour
 
-GNU tests:
-  stage: tests
+GNU test:
+  stage: test
   script:
   - ctest -LE "(AmolqcInterface|amolqc|GUI|cppoptlib)" -E "(example|spdlog-utests)" --output-on-failure
-
+  dependencies:
+  - GNU build
 
 Intel build:
   stage: build
@@ -41,14 +46,20 @@ Intel build:
   - export AMOLQC=/builds/luechow-group/Amolqcpp/src/AmolqcInterface/amolqc
   script:
   - mkdir -p cmake-build-debug-intel
-  - cmake -H. -Bcmake-build-debug-gnu -DCMAKE_BUILD_TYPE=DEBUG -DBUILD_GUI=OFF
-  - cmake --build ./build --target AmolqcppTests --
+  - cmake -H. -Bcmake-build-debug-intel -DCMAKE_BUILD_TYPE=DEBUG -DBUILD_GUI=OFF -DPFUNIT=OFF
+  - cmake --build ./cmake-build-debug-intel --target AmolqcppTests --
   cache:
     key: "$CI_COMMIT_REF_SLUG-Intel"
     paths:
     - cmake-build-debug-intel/
-
-Intel tests:
-  stage: tests
+  artifacts:
+    paths:
+    - cmake-build-debug-intel/
+    expire_in: 1 hour
+    
+Intel test:
+  stage: test
   script:
   - ctest -LE "(AmolqcInterface|amolqc|GUI|cppoptlib)" -E "(example|spdlog-utests)" --output-on-failure
+  dependencies:
+  - Intel build
