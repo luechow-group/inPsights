@@ -27,7 +27,7 @@ set(SOURCE_FILES
 
 set(NORULES YES)
 set(PFUNIT OFF)
-add_subdirectory(amolqc)
+add_subdirectory(Amolqc)
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES})
 
@@ -46,4 +46,4 @@ target_link_libraries(${PROJECT_NAME}
         AmolqcppInterface
         )
 
-add_gtest_subdirectory_with_dependency(tests "gtest;pthread")
+#add_gtest_subdirectory_with_dependency(tests "gtest;pthread")

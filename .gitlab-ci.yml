@@ -1,24 +1,78 @@
-
-image: registry.git.rwth-aachen.de/luechow-group/amolqcpp:latest
+image: registry.git.rwth-aachen.de/luechow-group/amolqcpp:combined
 
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
 
-before_script:
+stages:
+- build
+- test
+
+GNU build:
+  stage: build
+  before_script:
   - export CC=/usr/bin/gcc
   - export CXX=/usr/bin/g++
   - export FC=/usr/bin/gfortran
   - export AMOLQC=/builds/luechow-group/Amolqcpp/src/AmolqcInterface/amolqc
-
-All tests:
   script:
-    - mkdir -p cmake-build-debug-gnu
-    - cd cmake-build-debug-gnu
-    - cmake .. -DCMAKE_BUILD_TYPE=DEBUG -DBUILD_GUI=OFF
-    - cmake --build . --target AmolqcppTests -- -j 2
-    - ctest -LE "(amolqc|GUI|cppoptlib)" -E "(example|spdlog-utests)" --verbose
-
+  - mkdir -p cmake-build-debug-gnu
+  - cd cmake-build-debug-gnu
+  - cmake .. -DCMAKE_BUILD_TYPE=DEBUG -DBUILD_GUI=OFF  -DPFUNIT=OFF
+  - cmake --build . --target AmolqcppTests --
   cache:
-    key: "$CI_COMMIT_REF_SLUG" # enable per-branch caching
+    key: "$CI_COMMIT_REF_SLUG-GNU"
     paths:
     - cmake-build-debug-gnu/
+    policy: pull-push
+
+Intel build:
+  stage: build
+  before_script:
+  - source /opt/intel/bin/compilervars.sh intel64
+  - source /opt/intel/parallel_studio_xe_2019/compilers_and_libraries_2019/linux/mkl/bin/mklvars.sh intel64
+  - export CC=/opt/intel/bin/icc
+  - export CXX=/opt/intel/bin/icpc
+  - export FC=/opt/intel/bin/ifort
+  - export MKLROOT=/opt/intel/mkl
+  - export AMOLQC=/builds/luechow-group/Amolqcpp/src/AmolqcInterface/amolqc
+  script:
+  - mkdir -p cmake-build-debug-intel
+  - cd cmake-build-debug-intel
+  - cmake .. -DCMAKE_BUILD_TYPE=DEBUG -DBUILD_GUI=OFF -DPFUNIT=OFF
+  - cmake --build . --target AmolqcppTests --
+  cache:
+    key: "$CI_COMMIT_REF_SLUG-Intel"
+    paths:
+    - cmake-build-debug-intel/
+    policy: pull-push
+
+GNU test:
+  stage: test
+  cache:
+    key: "$CI_COMMIT_REF_SLUG-GNU"
+    paths:
+    - cmake-build-debug-gnu/
+    policy: pull
+
+  script:
+  - cd cmake-build-debug-gnu
+  - ctest -LE "(AmolqcInterface|amolqc|GUI|cppoptlib)" -E "(example|spdlog-utests)" --output-on-failure
+  dependencies:
+  - GNU build
+
+Intel test:
+  stage: test
+  cache:
+    key: "$CI_COMMIT_REF_SLUG-Intel"
+    paths:
+    - cmake-build-debug-intel/
+    policy: pull
+
+  before_script:
+  -  source /opt/intel/bin/compilervars.sh intel64 # exports OpenMP libraries into LD_LIBRARY_PATH
+  script:
+  - cd cmake-build-debug-intel
+  - ctest -LE "(AmolqcInterface|amolqc|GUI|cppoptlib)" -E "(example|spdlog-utests)" --output-on-failure
+  dependencies:
+  - Intel build
+
