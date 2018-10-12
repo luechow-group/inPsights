@@ -75,7 +75,7 @@ int main(int argc, char *argv[]) {
 
     //Statistics
     energyCalculator.calculateStatistics(clusteredGloballySimilarMaxima);
-    std::ofstream yamlFile("energies2.yml");
+    std::ofstream yamlFile("energies.yml");
     yamlFile << energyCalculator.getYamlDocumentString();
     yamlFile.close();
 

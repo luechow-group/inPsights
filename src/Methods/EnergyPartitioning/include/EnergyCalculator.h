@@ -112,8 +112,9 @@ public:
                 size_t simRefCount = 0;
 
                 // Iterate over references being similar to the representative reference.
-                for (const auto &simRef : simRefVector.similarReferences_)
-                    simRefCount += addEnergies(*simRef.it_);
+                for (const auto &ref : simRefVector.similarReferences_)
+                    simRefCount += addEnergies(*ref);
+
 
                 printCluster();
                 totalCount += repRefCount + simRefCount;
