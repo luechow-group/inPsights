@@ -26,6 +26,8 @@ GNU build:
   - mkdir -p cmake-build-debug-gnu
   - cmake -H. -Bcmake-build-debug-gnu -DCMAKE_BUILD_TYPE=DEBUG -DBUILD_GUI=OFF  -DPFUNIT=OFF
   - cmake --build ./cmake-build-debug-gnu --target AmolqcppTests --
+  dependencies:
+  - clone
   cache:
     key: "$CI_COMMIT_REF_SLUG-GNU"
     paths:
@@ -47,6 +49,8 @@ Intel build:
   - mkdir -p cmake-build-debug-intel
   - cmake -H. -Bcmake-build-debug-intel -DCMAKE_BUILD_TYPE=DEBUG -DBUILD_GUI=OFF -DPFUNIT=OFF
   - cmake --build ./cmake-build-debug-intel --target AmolqcppTests --
+  dependencies:
+  - clone
   cache:
     key: "$CI_COMMIT_REF_SLUG-Intel"
     paths:
