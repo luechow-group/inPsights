@@ -51,7 +51,7 @@ int main(int argc, char *argv[]) {
 
     double similarDistThresh = 0.2;
     std::vector<SimilarReferences> globallySimilarMaxima;
-    GlobalSimilaritySorter globalSimilaritySorter(globallyIdenticalMaxima, globallySimilarMaxima,similarDistThresh);
+    GlobalSimilaritySorter globalSimilaritySorter(samples,globallyIdenticalMaxima, globallySimilarMaxima,similarDistThresh);
     globalSimilaritySorter.sort();
     console->info("number of elements after similarity sort {}",globallySimilarMaxima.size());
 
@@ -75,8 +75,9 @@ int main(int argc, char *argv[]) {
 
     //Statistics
     energyCalculator.calculateStatistics(clusteredGloballySimilarMaxima);
-    std::ofstream yamlFile("energies.yml");
+    std::ofstream yamlFile("energies2.yml");
     yamlFile << energyCalculator.getYamlDocumentString();
+    yamlFile.close();
 
     // Visuals
     /*QApplication app(argc, argv);

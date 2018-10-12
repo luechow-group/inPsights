@@ -85,24 +85,6 @@ public:
         return count;
     }
 
-    //TODO eliminate by permuting the samples
-    unsigned long addEnergies(const Reference &reference, const Eigen::PermutationMatrix<Eigen::Dynamic>& perm){
-        unsigned long count = reference.count();
-
-        auto sampleCopy = samples_[reference.id_].sample_;
-        sampleCopy.permute(perm);
-
-        Te_ = perm* (samples_[reference.id_].kineticEnergies_);
-        Vee_ = CoulombPotential::energies<Spin>(sampleCopy);
-        Ven_ = CoulombPotential::energies<Spin,Element>(sampleCopy, atoms_);
-
-        TeStats_.add(Te_, unsigned(count));
-        VeeStats_.add(Vee_, unsigned(count));
-        VenStats_.add(Ven_, unsigned(count));
-
-        return count;
-    }
-
     void calculateStatistics(const std::vector<std::vector<SimilarReferences>>& clusteredGloballySimilarMaxima){
         using namespace YAML;
 
@@ -118,7 +100,8 @@ public:
         size_t totalCount = 0;
         for (auto& cluster : clusteredGloballySimilarMaxima) {
             for (auto &simRefVector : cluster) {
-
+                //CAREFUL: this works only for ethane right now, where clusters have size 1 only
+                //TODO permute all cluster elements to match each other (difficult, because order has to be kept)
                 TeStats_.reset();
                 VeeStats_.reset();
                 VenStats_.reset();
@@ -130,8 +113,7 @@ public:
 
                 // Iterate over references being similar to the representative reference.
                 for (const auto &simRef : simRefVector.similarReferences_)
-                    simRefCount += addEnergies(*simRef.it_, simRef.perm_);
-
+                    simRefCount += addEnergies(*simRef.it_);
 
                 printCluster();
                 totalCount += repRefCount + simRefCount;

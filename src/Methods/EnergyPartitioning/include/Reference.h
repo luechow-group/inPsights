@@ -8,6 +8,7 @@
 #define AMOLQCPP_REFERENCE_H
 
 #include <ParticlesVector.h>
+#include <Sample.h>
 
 class Reference{
 public:
@@ -30,6 +31,13 @@ public:
                 make_move_iterator((*it).associatedSampleIds_.end()));
     }
 
+    void permute(const Eigen::PermutationMatrix<Eigen::Dynamic>& perm, std::vector<Sample>& samples){
+        maximum_.permute(perm);
+        for(const auto & i : associatedSampleIds_){
+            samples[i].permute(perm);
+        }
+    }
+
     bool operator<(const Reference& rhs) const {
         return negLogSqrdProbabilityDensity_<rhs.negLogSqrdProbabilityDensity_;
     }
@@ -45,20 +53,16 @@ public:
 };
 
 
-class SimilarReference {
+class SimilarReference { //TODO delete class.
 public:
-    SimilarReference(std::vector<Reference>::iterator ref, const Eigen::PermutationMatrix<Eigen::Dynamic> &perm)
-    : it_(ref), perm_(perm) {
-        assert((*ref).maximum_.numberOfEntities() == perm.size()
-        && "The permutation length must match the number of entities");
-    }
+    SimilarReference(std::vector<Reference>::iterator ref)
+    : it_(ref) {}
 
     bool operator <(const SimilarReference& rhs) const {
         return (*it_).negLogSqrdProbabilityDensity_< (*rhs.it_).negLogSqrdProbabilityDensity_;
     }
 
     std::vector<Reference>::iterator it_; // association to the list of globally identical maxima
-    Eigen::PermutationMatrix<Eigen::Dynamic> perm_; // perm to turn
 };
 
 
@@ -71,7 +75,6 @@ public:
     {}
 
     //TODO REPLACE THIS BY CENTROID LIKE REF
-
     std::vector<Reference>::iterator repRefIt_; // may change over time, difficult to define for rings/clusters
     std::vector<SimilarReference> similarReferences_;
 

@@ -16,10 +16,12 @@ class GlobalSimilaritySorter {
 public:
 
     GlobalSimilaritySorter(
+            std::vector<Sample>& samples,
             std::vector<Reference>& references,
             std::vector<SimilarReferences>& similarReferencesVector,
             double distThresh = 0.1)
             :
+            samples_(samples),
             references_(references),
             similarReferencesVector_(similarReferencesVector),
             distThresh_(distThresh),
@@ -58,7 +60,8 @@ public:
 
                 if (bestMatch.first < distThresh_) {
                     //TODO permute the sample + maximum + kinetic_energies
-                    simRefs.similarReferences_.emplace_back(SimilarReference(it, bestMatch.second));
+                    (*it).permute(bestMatch.second,samples_);
+                    simRefs.similarReferences_.emplace_back(it);
                     isSimilarQ = true;
                 }
             }
@@ -68,6 +71,7 @@ public:
     }
 
 private:
+    std::vector<Sample>& samples_;
     std::vector<Reference>& references_;
     std::vector<SimilarReferences>& similarReferencesVector_;
     double distThresh_;

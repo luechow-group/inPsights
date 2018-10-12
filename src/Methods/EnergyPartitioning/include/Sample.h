@@ -15,6 +15,13 @@ public:
         assert(sample.numberOfEntities() == kineticEnergies_.size());
     }
 
+    void permute(const Eigen::PermutationMatrix<Eigen::Dynamic>& perm) {
+        assert(perm.indices().size() == sample_.numberOfEntities()
+        && "Permutation vector size must match with the number of entities");
+        sample_.permute(perm);
+        kineticEnergies_ = perm*kineticEnergies_;
+    }
+
 public:
     ElectronsVector sample_;
     Eigen::VectorXd kineticEnergies_;
