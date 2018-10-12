@@ -4,8 +4,14 @@ variables:
   GIT_SUBMODULE_STRATEGY: recursive
 
 stages:
+- clone
 - build
 - test
+
+clone:
+  stage: clone
+  script:
+  - git status
 
 GNU build:
   variables:
