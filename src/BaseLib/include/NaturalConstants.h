@@ -73,7 +73,7 @@ namespace ConversionFactors {
     const double ev2hartree = 1. / hartree2ev;
 
     const double deg2rad = 2.*M_PI/360.;
-    const double rad2deg = 1./rad2deg;
+    const double rad2deg = 1./deg2rad;
 }
 
 #endif // NATURALCONSTANTS_H
