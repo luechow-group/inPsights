@@ -21,16 +21,18 @@ GNU build:
   cache:
     key: "$CI_COMMIT_REF_SLUG-GNU"
     paths:
-    - cmake-build-debug-gnu/
+    - cmake-build-debug-gnu
 
 GNU test:
   stage: test
-  cache:
-    key: "$CI_COMMIT_REF_SLUG-GNU"
   script:
   - ctest -LE "(AmolqcInterface|amolqc|GUI|cppoptlib)" -E "(example|spdlog-utests)" --output-on-failure
   dependencies:
   - GNU build
+  cache:
+    key: "$CI_COMMIT_REF_SLUG-GNU"
+    paths:
+    - cmake-build-debug-gnu
 
 Intel build:
   stage: build
@@ -49,14 +51,15 @@ Intel build:
   cache:
     key: "$CI_COMMIT_REF_SLUG-Intel"
     paths:
-    - cmake-build-debug-intel/
+    - cmake-build-debug-intel
 
 Intel test:
   stage: test
-  cache:
-    key: "$CI_COMMIT_REF_SLUG-Intel"
   script:
   - ctest -LE "(AmolqcInterface|amolqc|GUI|cppoptlib)" -E "(example|spdlog-utests)" --output-on-failure
   dependencies:
   - Intel build
-
+  cache:
+    key: "$CI_COMMIT_REF_SLUG-Intel"
+    paths:
+    - cmake-build-debug-intel
