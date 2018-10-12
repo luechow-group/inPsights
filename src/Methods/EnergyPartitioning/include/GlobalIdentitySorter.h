@@ -99,8 +99,7 @@ private:
             std::vector<Reference>::iterator &it,
             const Eigen::PermutationMatrix<Eigen::Dynamic> &bestMatch) const {
 
-        samples_[(*it).id_].sample_.permute(bestMatch);
-        samples_[(*it).id_].kineticEnergies_ = bestMatch * samples_[(*it).id_].kineticEnergies_;
+        samples_[(*it).id_].permute(bestMatch);
 
         (*beginIt).addAssociations(it);
 
