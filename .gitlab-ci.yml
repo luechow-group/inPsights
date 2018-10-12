@@ -1,8 +1,6 @@
-
-
+image: registry.git.rwth-aachen.de/luechow-group/amolqcpp:combined
 
 variables:
-  image: registry.git.rwth-aachen.de/luechow-group/amolqcpp:gnu
   GIT_SUBMODULE_STRATEGY: recursive
 
 GNU tests:
@@ -23,7 +21,6 @@ GNU tests:
     - cmake-build-debug-gnu/
 
 Intel tests:
-  image: registry.git.rwth-aachen.de/luechow-group/amolqcpp:intel
   before_script:
   - source /opt/intel/parallel_studio_xe_2019/compilers_and_libraries_2019/linux/bin/compilervars.sh intel64
   - source /opt/intel/parallel_studio_xe_2019/compilers_and_libraries_2019/linux/mkl/bin/mklvars.sh intel64
