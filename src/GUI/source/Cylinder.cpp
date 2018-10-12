@@ -22,8 +22,8 @@ Cylinder::Cylinder(Qt3DCore::QEntity *root,
   mesh_ = new Qt3DExtras::QCylinderMesh;
   mesh_->setRadius(radius);
   mesh_->setLength(length_);
-  mesh_->setRings(100);
-  mesh_->setSlices(10);
+  mesh_->setRings(10);
+  mesh_->setSlices(20);
   material->setAlpha(alpha);
 
   rotateToOrientation(difference_);
