@@ -1,6 +1,7 @@
 image: registry.git.rwth-aachen.de/luechow-group/amolqcpp:combined
 
 variables:
+  GIT_STRATEGY: fetch
   GIT_SUBMODULE_STRATEGY: recursive
 
 stages:
