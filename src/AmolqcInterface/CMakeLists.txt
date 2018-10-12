@@ -46,4 +46,4 @@ target_link_libraries(${PROJECT_NAME}
         AmolqcppInterface
         )
 
-add_gtest_subdirectory_with_dependency(tests "gtest;pthread")
+#add_gtest_subdirectory_with_dependency(tests "gtest;pthread")
