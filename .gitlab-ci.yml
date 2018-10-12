@@ -21,7 +21,7 @@ GNU build:
   cache:
     key: "$CI_COMMIT_REF_SLUG-GNU"
     paths:
-    - cmake-build-debug-gnu
+    - cmake-build-debug-gnu/
 
 GNU test:
   stage: test
@@ -32,7 +32,7 @@ GNU test:
   cache:
     key: "$CI_COMMIT_REF_SLUG-GNU"
     paths:
-    - cmake-build-debug-gnu
+    - cmake-build-debug-gnu/
 
 Intel build:
   stage: build
@@ -51,7 +51,7 @@ Intel build:
   cache:
     key: "$CI_COMMIT_REF_SLUG-Intel"
     paths:
-    - cmake-build-debug-intel
+    - cmake-build-debug-intel/
 
 Intel test:
   stage: test
@@ -62,4 +62,4 @@ Intel test:
   cache:
     key: "$CI_COMMIT_REF_SLUG-Intel"
     paths:
-    - cmake-build-debug-intel
+    - cmake-build-debug-intel/
