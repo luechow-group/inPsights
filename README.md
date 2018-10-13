@@ -1,5 +1,4 @@
-
-# Amolqc++
+# Amolqc++ [![master status](https://git.rwth-aachen.de/luechow-group/Amolqcpp/badges/master/pipeline.svg)](https://git.rwth-aachen.de/luechow-group/Amolqcpp/commits/master)
 Amolqc++ or Amolqcpp is a toolset for wave function analysis and visualization written in C++. It contains and interfaces the QMC program Amolqc (written in Fortran) as an independent submodule.
 
 ## Purpose
