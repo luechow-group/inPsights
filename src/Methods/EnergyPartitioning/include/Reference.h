@@ -33,6 +33,8 @@ public:
 
     void permute(const Eigen::PermutationMatrix<Eigen::Dynamic>& perm, std::vector<Sample>& samples){
         maximum_.permute(perm);
+        samples[id_].permute(perm);
+
         for(const auto & i : associatedSampleIds_){
             samples[i].permute(perm);
         }
