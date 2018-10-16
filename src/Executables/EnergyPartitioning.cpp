@@ -88,11 +88,7 @@ int main(int argc, char *argv[]) {
     AtomsVector3D(root, atoms);
 
     auto ev1 = (*clusteredGloballySimilarMaxima[0].at(0).repRefIt_).maximum_;
-    auto ev2 = samples[(*clusteredGloballySimilarMaxima[0].at(0).repRefIt_).associatedSampleIds_[0]].sample_;
-
-    //auto perm = globallySimilarMaxima.at(1).similarReferences_.at(0).perm_;
-    //auto ev2 = (*clusteredGloballySimilarMaxima[0].at(0).similarReferences_.at(0).it_).maximum_;
-    //ev2.permute(perm);
+    auto ev2 = (*clusteredGloballySimilarMaxima[0].at(0).similarReferences_.at(0)).maximum_;
     ElectronsVector3D(root, atoms, ev1, true);
     ElectronsVector3D(root, atoms, ev2, true);
 
