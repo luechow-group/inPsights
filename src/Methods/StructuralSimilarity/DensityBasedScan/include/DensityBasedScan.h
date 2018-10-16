@@ -54,8 +54,6 @@ public:
         std::vector<Eigen::Index> candidates, newCandidates;
         std::vector<std::pair<size_t, Scalar>> neighborIndices;
 
-        const auto start = omp_get_wtime();
-
         int32_t clusterId = 0;
         for (size_t pointIndex = 0; pointIndex < data_.size(); ++pointIndex) {
 

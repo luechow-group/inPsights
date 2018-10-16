@@ -31,7 +31,7 @@ namespace Metrics{
                && "Both PositionVectors must have the same size.");
         Eigen::VectorXd vec(positions1.numberOfEntities());
 
-        for (size_t i = 0; i < positions1.numberOfEntities(); ++i) {
+        for (Eigen::Index  i = 0; i < positions1.numberOfEntities(); ++i) {
             vec[i] = (positions1[i]-positions2[i]).lpNorm<Norm>();
         }
         return vec;
@@ -40,8 +40,8 @@ namespace Metrics{
     template <int Norm = 2>
     Eigen::MatrixXd positionalDistances(const PositionsVector &positions){
         Eigen::MatrixXd d = Eigen::MatrixXd::Zero(positions.numberOfEntities(),positions.numberOfEntities());
-        for (size_t i = 0; i < d.rows(); i++)
-            for (size_t j = i + 1; j < d.cols(); j++)
+        for (Eigen::Index  i = 0; i < d.rows(); i++)
+            for (Eigen::Index  j = i + 1; j < d.cols(); j++)
                 d(i,j) = distance<Norm>(positions[i], positions[j]);
 
         // symmetrization
@@ -55,8 +55,8 @@ namespace Metrics{
 
         Eigen::MatrixXd d = Eigen::MatrixXd::Zero(positions1.numberOfEntities(),positions1.numberOfEntities());
 
-        for (size_t i = 0; i < d.rows(); i++)
-            for (size_t j = 0; j < d.cols(); j++)
+        for (Eigen::Index  i = 0; i < d.rows(); i++)
+            for (Eigen::Index j = 0; j < d.cols(); j++)
                 d(i,j) = distance<Norm>(positions1[i], positions2[j]);
 
         return d;
