@@ -59,7 +59,6 @@ public:
                         (*simRefs.repRefIt_).maximum_);
 
                 if (bestMatch.first < distThresh_) {
-                    //TODO permute the sample + maximum + kinetic_energies
                     (*ref).permute(bestMatch.second, samples_);
                     simRefs.add(ref);
                     isSimilarQ = true;
