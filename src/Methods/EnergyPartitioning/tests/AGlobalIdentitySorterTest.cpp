@@ -63,44 +63,44 @@ TEST_F(AGlobalIdentitySorterTest, OneListTriplet) {
     GlobalIdentiySorter globalIdentiySorter(tripletMaxima, tripletSamples, 1, 2);
     globalIdentiySorter.sort();
 
-    ASSERT_THAT(tripletMaxima.at(0).associatedSampleIds_, ElementsAre(1,2,3,4,5,6,7));
+    ASSERT_THAT(tripletMaxima.at(0).ids_, ElementsAre(1,2,3,4,5,6,7));
 }
 
 TEST_F(AGlobalIdentitySorterTest, OneListSinglet) {
     GlobalIdentiySorter globalIdentiySorter(singletMaxima, singletSamples, 1, 2);
     globalIdentiySorter.sort();
 
-    ASSERT_THAT(singletMaxima.at(0).associatedSampleIds_, ElementsAre(1,2,3,4,5,6,7));
+    ASSERT_THAT(singletMaxima.at(0).ids_, ElementsAre(1,2,3,4,5,6,7));
 }
 
 TEST_F(AGlobalIdentitySorterTest, TwoListsTriplet) {
     GlobalIdentiySorter globalIdentiySorter(tripletMaxima, tripletSamples, 0.05, 1);
     globalIdentiySorter.sort();
 
-    ASSERT_THAT(tripletMaxima.at(0).associatedSampleIds_, ElementsAre(1,2,3));
-    ASSERT_THAT(tripletMaxima.at(1).associatedSampleIds_, ElementsAre(5,6,7));
+    ASSERT_THAT(tripletMaxima.at(0).ids_, ElementsAre(1,2,3));
+    ASSERT_THAT(tripletMaxima.at(1).ids_, ElementsAre(5,6,7));
 }
 
 TEST_F(AGlobalIdentitySorterTest, TwoListsSinglet) {
     GlobalIdentiySorter globalIdentiySorter(singletMaxima, singletSamples, 0.05, 1);
     globalIdentiySorter.sort();
 
-    ASSERT_THAT(singletMaxima.at(0).associatedSampleIds_, ElementsAre(1,2,3));
-    ASSERT_THAT(singletMaxima.at(1).associatedSampleIds_, ElementsAre(5,6,7));
+    ASSERT_THAT(singletMaxima.at(0).ids_, ElementsAre(1,2,3));
+    ASSERT_THAT(singletMaxima.at(1).ids_, ElementsAre(5,6,7));
 }
 
 TEST_F(AGlobalIdentitySorterTest, TwoListsIncrementBorderCaseTriplet) {
     GlobalIdentiySorter globalIdentiySorter(tripletMaxima, tripletSamples, 0.1, 1);
     globalIdentiySorter.sort();
 
-    ASSERT_THAT(tripletMaxima.at(0).associatedSampleIds_, ElementsAre(1,2,3,4));
-    ASSERT_THAT(tripletMaxima.at(1).associatedSampleIds_, ElementsAre(6,7));
+    ASSERT_THAT(tripletMaxima.at(0).ids_, ElementsAre(1,2,3,4));
+    ASSERT_THAT(tripletMaxima.at(1).ids_, ElementsAre(6,7));
 }
 
 TEST_F(AGlobalIdentitySorterTest, TwoListsIncrementBorderCaseSinglet) {
     GlobalIdentiySorter globalIdentiySorter(singletMaxima, singletSamples, 0.1, 1);
     globalIdentiySorter.sort();
 
-    ASSERT_THAT(singletMaxima.at(0).associatedSampleIds_, ElementsAre(1,2,3,4));
-    ASSERT_THAT(singletMaxima.at(1).associatedSampleIds_, ElementsAre(6,7));
+    ASSERT_THAT(singletMaxima.at(0).ids_, ElementsAre(1,2,3,4));
+    ASSERT_THAT(singletMaxima.at(1).ids_, ElementsAre(6,7));
 }

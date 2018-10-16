@@ -74,9 +74,9 @@ public:
     unsigned long addEnergies(const Reference &reference) {
         unsigned long count = reference.count();
 
-        Te_ = samples_[reference.id_].kineticEnergies_;
-        Vee_ = CoulombPotential::energies(samples_[reference.id_].sample_);
-        Ven_ = CoulombPotential::energies(samples_[reference.id_].sample_,atoms_);
+        Te_ = samples_[reference.ownId()].kineticEnergies_;
+        Vee_ = CoulombPotential::energies(samples_[reference.ownId()].sample_);
+        Ven_ = CoulombPotential::energies(samples_[reference.ownId()].sample_,atoms_);
 
         TeStats_.add(Te_, unsigned(count));
         VeeStats_.add(Vee_, unsigned(count));

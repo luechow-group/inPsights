@@ -16,26 +16,26 @@ public:
     :
     negLogSqrdProbabilityDensity_(negLogSqrdProbabilityDensity),
     maximum_(std::move(maximum)),
-    id_(id),
-    associatedSampleIds_({})
+    ids_({id})
     {}
 
-    void addAssociations(std::vector<Reference>::iterator& it) {
-        assert((*it).id_ != id_ && "Self-associations are not allowed");
+    size_t ownId() const {
+        return ids_[0];
+    }
 
-        associatedSampleIds_.emplace_back((*it).id_);
+    void addSampleIds(std::vector<Reference>::iterator &it) {
+        assert((*it).ownId() != ownId() && "Self-associations are not allowed");
 
-        associatedSampleIds_.insert(
-                associatedSampleIds_.end(),
-                make_move_iterator((*it).associatedSampleIds_.begin()),
-                make_move_iterator((*it).associatedSampleIds_.end()));
+        ids_.insert(
+                ids_.end(),
+                make_move_iterator((*it).ids_.begin()),
+                make_move_iterator((*it).ids_.end()));
     }
 
     void permute(const Eigen::PermutationMatrix<Eigen::Dynamic>& perm, std::vector<Sample>& samples){
         maximum_.permute(perm);
-        samples[id_].permute(perm);
 
-        for(const auto & i : associatedSampleIds_){
+        for(const auto & i : ids_){
             samples[i].permute(perm);
         }
     }
@@ -45,13 +45,12 @@ public:
     }
 
     unsigned long count() const {
-        return 1+associatedSampleIds_.size();
+        return ids_.size();
     }
 
     double negLogSqrdProbabilityDensity_;
     ElectronsVector maximum_;
-    size_t id_;
-    std::vector<size_t> associatedSampleIds_; //associated Samples id/identical Maxima
+    std::vector<size_t> ids_;
 };
 
 
