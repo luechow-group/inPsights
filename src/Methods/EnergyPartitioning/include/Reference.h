@@ -9,6 +9,7 @@
 
 #include <ParticlesVector.h>
 #include <Sample.h>
+#include <Statistics.h>
 
 class Reference{
 public:
@@ -49,9 +50,19 @@ public:
         return sampleIds_.size();
     }
 
+    double value() const {
+        return negLogSqrdProbabilityDensity_;
+    }
+
+    ElectronsVector maximum() const {
+        return maximum_;
+    }
+
+
+private:
     double negLogSqrdProbabilityDensity_;
     ElectronsVector maximum_;
-    std::vector<size_t> sampleIds_;
+    std::vector<size_t> sampleIds_; // contain samples instead?
 };
 
 
@@ -59,13 +70,19 @@ class SimilarReferences {
 public:
     explicit SimilarReferences(std::vector<Reference>::iterator representativeReference)
     :
-    similarReferences_({representativeReference})
-    {}
-
-
+    similarReferences_({representativeReference}),
+    valueStats_()
+    {
+        Eigen::Matrix<double,1,1> v(1);
+        v << (*representativeReference).value();
+        valueStats_.add(v);
+    }
 
     void add(std::vector<Reference>::iterator& ref){
         similarReferences_.emplace_back(ref);
+        Eigen::Matrix<double,1,1> v(1);
+        v << (*ref).value();
+        valueStats_.add(v);
     }
 
     const Reference& representativeReference() const {
@@ -93,9 +110,15 @@ public:
     const std::vector<std::vector<Reference>::iterator>& similarReferencesIterators() const {
         return similarReferences_;
     }
+
+    const Statistics::RunningStatistics<Eigen::Matrix<double,1,1>>& valueStats() const {
+        return valueStats_;
+    }
+
     //TODO REPLACE THIS BY CENTROID LIKE REF
 private:
     std::vector<std::vector<Reference>::iterator> similarReferences_;
+    Statistics::RunningStatistics<Eigen::Matrix<double,1,1>> valueStats_;
 };
 
 #endif //AMOLQCPP_REFERENCE_H
