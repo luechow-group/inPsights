@@ -59,24 +59,34 @@ class SimilarReferences {
 public:
     explicit SimilarReferences(std::vector<Reference>::iterator representativeReference)
     :
-    repRefIt_(representativeReference),
-    similarReferences_()
+    similarReferences_({representativeReference})
     {}
+
+
 
     void add(std::vector<Reference>::iterator& ref){
         similarReferences_.emplace_back(ref);
     }
 
+    const Reference& representativeReference() const {
+        return *similarReferences_[0];
+    }
+
+    Reference& representativeReference(){
+        return *similarReferences_[0];
+    }
+
+    std::vector<Reference>::iterator representativeReferenceIterator(){
+        return similarReferences_[0];
+    }
 
     void permuteAll(const Eigen::PermutationMatrix<Eigen::Dynamic>& perm, std::vector<Sample>& samples) {
-        (*repRefIt_).permute(perm,samples);
         for (auto& ref : similarReferences_){
             (*ref).permute(perm,samples);
         }
     }
 
     //TODO REPLACE THIS BY CENTROID LIKE REF
-    std::vector<Reference>::iterator repRefIt_; // may change over time, difficult to define for rings/clusters
     std::vector<std::vector<Reference>::iterator> similarReferences_;
 };
 

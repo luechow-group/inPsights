@@ -17,7 +17,9 @@
 
 
 double wrapper(const SimilarReferences& s1, const SimilarReferences& s2) {
-    return Metrics::bestMatchNorm<Eigen::Infinity,2>((*s1.repRefIt_).maximum_, (*s2.repRefIt_).maximum_);
+    return Metrics::bestMatchNorm<Eigen::Infinity,2>(
+            s1.representativeReference().maximum_,
+            s2.representativeReference().maximum_);
 };
 
 int main(int argc, char *argv[]) {

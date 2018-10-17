@@ -106,18 +106,11 @@ public:
                 VeeStats_.reset();
                 VenStats_.reset();
 
-                // Representative reference
-                size_t repRefCount = addEnergies(*simRefVector.repRefIt_);
-
-                size_t simRefCount = 0;
-
                 // Iterate over references being similar to the representative reference.
                 for (const auto &ref : simRefVector.similarReferences_)
-                    simRefCount += addEnergies(*ref);
-
+                    totalCount += addEnergies(*ref);
 
                 printCluster();
-                totalCount += repRefCount + simRefCount;
             }
         }
         console->info("overall count {}", totalCount);
@@ -157,13 +150,11 @@ private:
 
     Statistics::RunningStatistics<Eigen::VectorXd> TeStats_;
     Statistics::RunningStatistics<Eigen::MatrixXd> VeeStats_, VenStats_, VnnStats_;
-
     Eigen::VectorXd Te_;
     Eigen::MatrixXd Vee_, Ven_, Vnn_;
 
     YAML::Emitter yamlDocument_;
     std::shared_ptr<spdlog::logger> console;
 };
-
 
 #endif //AMOLQCPP_ENERGYCALCULATOR_H

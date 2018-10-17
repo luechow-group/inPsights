@@ -49,14 +49,14 @@ TEST_F(AGlobalSimilaritySorterTest, OneList) {
     GlobalSimilaritySorter globalSimilaritySorter(samples, maxima, similarReferencesVector, 1);
     globalSimilaritySorter.sort();
 
-    ASSERT_EQ((*similarReferencesVector.at(0).repRefIt_).ownId(),0);
-    ASSERT_EQ((*similarReferencesVector.at(0).similarReferences_.at(0)).ownId(),1);
-    ASSERT_EQ((*similarReferencesVector.at(0).similarReferences_.at(1)).ownId(),2);
-    ASSERT_EQ((*similarReferencesVector.at(0).similarReferences_.at(2)).ownId(),3);
-    ASSERT_EQ((*similarReferencesVector.at(0).similarReferences_.at(3)).ownId(),4);
-    ASSERT_EQ((*similarReferencesVector.at(0).similarReferences_.at(4)).ownId(),5);
-    ASSERT_EQ((*similarReferencesVector.at(0).similarReferences_.at(5)).ownId(),6);
-    ASSERT_EQ((*similarReferencesVector.at(0).similarReferences_.at(6)).ownId(),7);
+    ASSERT_EQ(similarReferencesVector.at(0).representativeReference().ownId(),0);
+    ASSERT_EQ((*similarReferencesVector.at(0).similarReferences_.at(1)).ownId(),1);
+    ASSERT_EQ((*similarReferencesVector.at(0).similarReferences_.at(2)).ownId(),2);
+    ASSERT_EQ((*similarReferencesVector.at(0).similarReferences_.at(3)).ownId(),3);
+    ASSERT_EQ((*similarReferencesVector.at(0).similarReferences_.at(4)).ownId(),4);
+    ASSERT_EQ((*similarReferencesVector.at(0).similarReferences_.at(5)).ownId(),5);
+    ASSERT_EQ((*similarReferencesVector.at(0).similarReferences_.at(6)).ownId(),6);
+    ASSERT_EQ((*similarReferencesVector.at(0).similarReferences_.at(7)).ownId(),7);
 }
 
 
@@ -64,16 +64,16 @@ TEST_F(AGlobalSimilaritySorterTest, TwoLists) {
     std::vector<SimilarReferences> similarReferencesVector;
     GlobalSimilaritySorter globalSimilaritySorter(samples, maxima, similarReferencesVector, 0.1);
     globalSimilaritySorter.sort();
+    
+    ASSERT_EQ(similarReferencesVector.at(0).representativeReference().ownId(),0);
+    ASSERT_EQ((*similarReferencesVector.at(0).similarReferences_.at(1)).ownId(),1);
+    ASSERT_EQ((*similarReferencesVector.at(0).similarReferences_.at(2)).ownId(),2);
+    ASSERT_EQ((*similarReferencesVector.at(0).similarReferences_.at(3)).ownId(),3);
 
-    ASSERT_EQ((*similarReferencesVector.at(0).repRefIt_).ownId(),0);
-    ASSERT_EQ((*similarReferencesVector.at(0).similarReferences_.at(0)).ownId(),1);
-    ASSERT_EQ((*similarReferencesVector.at(0).similarReferences_.at(1)).ownId(),2);
-    ASSERT_EQ((*similarReferencesVector.at(0).similarReferences_.at(2)).ownId(),3);
-
-    ASSERT_EQ((*similarReferencesVector.at(1).repRefIt_).ownId(),4);
-    ASSERT_EQ((*similarReferencesVector.at(1).similarReferences_.at(0)).ownId(),5);
-    ASSERT_EQ((*similarReferencesVector.at(1).similarReferences_.at(1)).ownId(),6);
-    ASSERT_EQ((*similarReferencesVector.at(1).similarReferences_.at(2)).ownId(),7);
+    ASSERT_EQ(similarReferencesVector.at(1).representativeReference().ownId(),4);
+    ASSERT_EQ((*similarReferencesVector.at(1).similarReferences_.at(1)).ownId(),5);
+    ASSERT_EQ((*similarReferencesVector.at(1).similarReferences_.at(2)).ownId(),6);
+    ASSERT_EQ((*similarReferencesVector.at(1).similarReferences_.at(3)).ownId(),7);
 }
 
 TEST_F(AGlobalSimilaritySorterTest, TwoListsIncrementBorderCase) {
@@ -81,15 +81,15 @@ TEST_F(AGlobalSimilaritySorterTest, TwoListsIncrementBorderCase) {
     GlobalSimilaritySorter globalSimilaritySorter(samples, maxima, similarReferencesVector, 0.02);
     globalSimilaritySorter.sort();
 
-    ASSERT_EQ((*similarReferencesVector.at(0).repRefIt_).ownId(),0);
-    ASSERT_EQ((*similarReferencesVector.at(0).similarReferences_.at(0)).ownId(),1);
+    ASSERT_EQ(similarReferencesVector.at(0).representativeReference().ownId(),0);
+    ASSERT_EQ((*similarReferencesVector.at(0).similarReferences_.at(1)).ownId(),1);
 
-    ASSERT_EQ((*similarReferencesVector.at(1).repRefIt_).ownId(),2);
-    ASSERT_EQ((*similarReferencesVector.at(1).similarReferences_.at(0)).ownId(),3);
+    ASSERT_EQ(similarReferencesVector.at(1).representativeReference().ownId(),2);
+    ASSERT_EQ((*similarReferencesVector.at(1).similarReferences_.at(1)).ownId(),3);
 
-    ASSERT_EQ((*similarReferencesVector.at(2).repRefIt_).ownId(),4);
-    ASSERT_EQ((*similarReferencesVector.at(2).similarReferences_.at(0)).ownId(),5);
+    ASSERT_EQ(similarReferencesVector.at(2).representativeReference().ownId(),4);
+    ASSERT_EQ((*similarReferencesVector.at(2).similarReferences_.at(1)).ownId(),5);
 
-    ASSERT_EQ((*similarReferencesVector.at(3).repRefIt_).ownId(),6);
-    ASSERT_EQ((*similarReferencesVector.at(3).similarReferences_.at(0)).ownId(),7);
+    ASSERT_EQ(similarReferencesVector.at(3).representativeReference().ownId(),6);
+    ASSERT_EQ((*similarReferencesVector.at(3).similarReferences_.at(1)).ownId(),7);
 }
