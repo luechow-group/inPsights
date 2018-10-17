@@ -55,8 +55,8 @@ public:
             for (auto &simRefs : similarReferencesVector_) {
 
                 auto bestMatch = Metrics::bestMatch<Eigen::Infinity, 2>(
-                        (*ref).maximum_,
-                        simRefs.representativeReference().maximum_);
+                        (*ref).maximum(),
+                        simRefs.representativeReference().maximum());
 
                 if (bestMatch.first < distThresh_) {
                     (*ref).permute(bestMatch.second, samples_);

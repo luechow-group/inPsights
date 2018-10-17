@@ -107,7 +107,7 @@ public:
                 VenStats_.reset();
 
                 // Iterate over references being similar to the representative reference.
-                for (const auto &ref : simRefVector.similarReferences_)
+                for (const auto &ref : simRefVector.similarReferencesIterators())
                     totalCount += addEnergies(*ref);
 
                 printCluster();

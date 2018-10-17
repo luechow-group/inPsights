@@ -86,7 +86,15 @@ public:
         }
     }
 
+    std::vector<std::vector<Reference>::iterator>& similarReferencesIterators(){
+        return similarReferences_;
+    }
+
+    const std::vector<std::vector<Reference>::iterator>& similarReferencesIterators() const {
+        return similarReferences_;
+    }
     //TODO REPLACE THIS BY CENTROID LIKE REF
+private:
     std::vector<std::vector<Reference>::iterator> similarReferences_;
 };
 
