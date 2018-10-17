@@ -99,10 +99,8 @@ private:
             std::vector<Reference>::iterator &it,
             const Eigen::PermutationMatrix<Eigen::Dynamic> &bestMatch) const {
 
-        samples_[(*it).ownId()].permute(bestMatch);
-
-        (*beginIt).addSampleIds(it);
-
+        (*it).permute(bestMatch,samples_);
+        (*beginIt).mergeReference(it);
         it = references_.erase(it); // erase returns the iterator of the following element
     }
 

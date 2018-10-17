@@ -12,30 +12,31 @@
 
 class Reference{
 public:
-    Reference(double negLogSqrdProbabilityDensity, ElectronsVector maximum = {},  size_t id = 0)
+    Reference(double negLogSqrdProbabilityDensity, ElectronsVector maximum = {}, size_t id = 0)
     :
     negLogSqrdProbabilityDensity_(negLogSqrdProbabilityDensity),
     maximum_(std::move(maximum)),
-    ids_({id})
+    sampleIds_({id})
     {}
 
     size_t ownId() const {
-        return ids_[0];
+        return sampleIds_[0];
     }
 
-    void addSampleIds(std::vector<Reference>::iterator &it) {
+    //TODO is this the task of a container?
+    void mergeReference(std::vector<Reference>::iterator &it) {
         assert((*it).ownId() != ownId() && "Self-associations are not allowed");
 
-        ids_.insert(
-                ids_.end(),
-                make_move_iterator((*it).ids_.begin()),
-                make_move_iterator((*it).ids_.end()));
+        sampleIds_.insert(
+                sampleIds_.end(),
+                make_move_iterator((*it).sampleIds_.begin()),
+                make_move_iterator((*it).sampleIds_.end()));
     }
 
     void permute(const Eigen::PermutationMatrix<Eigen::Dynamic>& perm, std::vector<Sample>& samples){
         maximum_.permute(perm);
 
-        for(const auto & i : ids_){
+        for(const auto & i : sampleIds_){
             samples[i].permute(perm);
         }
     }
@@ -45,12 +46,12 @@ public:
     }
 
     unsigned long count() const {
-        return ids_.size();
+        return sampleIds_.size();
     }
 
     double negLogSqrdProbabilityDensity_;
     ElectronsVector maximum_;
-    std::vector<size_t> ids_;
+    std::vector<size_t> sampleIds_;
 };
 
 
@@ -77,7 +78,6 @@ public:
     //TODO REPLACE THIS BY CENTROID LIKE REF
     std::vector<Reference>::iterator repRefIt_; // may change over time, difficult to define for rings/clusters
     std::vector<std::vector<Reference>::iterator> similarReferences_;
-
 };
 
 #endif //AMOLQCPP_REFERENCE_H
