@@ -115,6 +115,10 @@ public:
         return valueStats_;
     }
 
+    bool operator<(const SimilarReferences& rhs) const {
+        return valueStats_.cwiseMin()[0] < rhs.valueStats().cwiseMin()[0];
+    }
+
     //TODO REPLACE THIS BY CENTROID LIKE REF
 private:
     std::vector<std::vector<Reference>::iterator> similarReferences_;

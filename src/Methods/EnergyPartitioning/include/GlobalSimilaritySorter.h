@@ -25,6 +25,7 @@ public:
             references_(references),
             similarReferencesVector_(similarReferencesVector),
             distThresh_(distThresh),
+            increment_((*references.rbegin()).value() * 1e-4),
             console(spdlog::get(Logger::name))
     {
         if(!console){
@@ -49,22 +50,36 @@ public:
             beginIt++;
         }
 
+
         for (auto ref = beginIt; ref != references_.end(); ++ref) {
             bool isSimilarQ = false;
 
-            for (auto &simRefs : similarReferencesVector_) {
+            auto simRefsBeginIt = similarReferencesVector_.begin();
+            auto simRefsEndIt = similarReferencesVector_.end();
+            while (simRefsBeginIt != simRefsEndIt){
+                // get bound
+                std::vector<Reference> fakeRef = {Reference((*simRefsBeginIt).valueStats().cwiseMax()[0] + increment_)};
+                auto simRefUpperBoundIt = std::upper_bound(
+                        simRefsBeginIt,similarReferencesVector_.end(),
+                        SimilarReferences(fakeRef.begin()));
+                //std::cout << std::distance(simRefsBeginIt,simRefUpperBoundIt) << std::endl;
 
-                auto bestMatch = Metrics::bestMatch<Eigen::Infinity, 2>(
-                        (*ref).maximum(),
-                        simRefs.representativeReference().maximum());
+                for (auto simRefs = simRefsBeginIt; simRefs != simRefUpperBoundIt; ++simRefs) {
 
-                if (bestMatch.first < distThresh_) {
-                    (*ref).permute(bestMatch.second, samples_);
-                    simRefs.add(ref);
-                    isSimilarQ = true;
+                    auto bestMatch = Metrics::bestMatch<Eigen::Infinity, 2>(
+                            (*ref).maximum(),
+                            (*simRefs).representativeReference().maximum());
+
+                    if (bestMatch.first < distThresh_) {
+                        (*ref).permute(bestMatch.second, samples_);
+                        (*simRefs).add(ref);
+                        isSimilarQ = true;
+                    }
                 }
+                if (!isSimilarQ) similarReferencesVector_.emplace_back(SimilarReferences(ref));
+                simRefsBeginIt = simRefUpperBoundIt;
             }
-            if (!isSimilarQ) similarReferencesVector_.emplace_back(SimilarReferences(ref));
+
         }
         return true;
     }
@@ -73,7 +88,7 @@ private:
     std::vector<Sample>& samples_;
     std::vector<Reference>& references_;
     std::vector<SimilarReferences>& similarReferencesVector_;
-    double distThresh_;
+    double distThresh_, increment_;
     std::shared_ptr<spdlog::logger> console;
 };
 

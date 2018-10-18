@@ -17,6 +17,7 @@
 
 
 double wrapper(const SimilarReferences& s1, const SimilarReferences& s2) {
+    //TODO add value to the metric
     return Metrics::bestMatchNorm<Eigen::Infinity,2>(
             s1.representativeReference().maximum(),
             s2.representativeReference().maximum());
@@ -74,6 +75,13 @@ int main(int argc, char *argv[]) {
             }
         }
     }
+
+    // orderd clusters
+    for (auto& cluster : clusteredGloballySimilarMaxima) {
+        // sort
+
+    }
+
 
     //Statistics
     energyCalculator.calculateStatistics(clusteredGloballySimilarMaxima);
