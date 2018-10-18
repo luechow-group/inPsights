@@ -116,7 +116,9 @@ public:
     }
 
     bool operator<(const SimilarReferences& rhs) const {
-        return valueStats_.cwiseMin()[0] < rhs.valueStats().cwiseMin()[0];
+        //std::cout << valueStats_.cwiseMin()[0] << ", " << rhs.valueStats().cwiseMin()[0] << std::endl;
+        return representativeReference().value() < rhs.representativeReference().value();
+        //return valueStats_.cwiseMin()[0] < rhs.valueStats().cwiseMin()[0];
     }
 
     //TODO REPLACE THIS BY CENTROID LIKE REF

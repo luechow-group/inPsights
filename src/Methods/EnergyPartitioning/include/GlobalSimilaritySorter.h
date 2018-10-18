@@ -25,7 +25,7 @@ public:
             references_(references),
             similarReferencesVector_(similarReferencesVector),
             distThresh_(distThresh),
-            increment_((*references.rbegin()).value() * 1e-4),
+            increment_(std::abs((*references.rbegin()).value() * 1e-4)), //TODO appropriate range from stats
             console(spdlog::get(Logger::name))
     {
         if(!console){
@@ -50,38 +50,88 @@ public:
             beginIt++;
         }
 
-
         for (auto ref = beginIt; ref != references_.end(); ++ref) {
             bool isSimilarQ = false;
 
-            auto simRefsBeginIt = similarReferencesVector_.begin();
-            auto simRefsEndIt = similarReferencesVector_.end();
-            while (simRefsBeginIt != simRefsEndIt){
-                // get bound
-                std::vector<Reference> fakeRef = {Reference((*simRefsBeginIt).valueStats().cwiseMax()[0] + increment_)};
-                auto simRefUpperBoundIt = std::upper_bound(
-                        simRefsBeginIt,similarReferencesVector_.end(),
-                        SimilarReferences(fakeRef.begin()));
-                //std::cout << std::distance(simRefsBeginIt,simRefUpperBoundIt) << std::endl;
+            std::vector<Reference> lowerRef = {Reference((*ref).value() - increment_)};
+            std::vector<Reference> upperRef = {Reference((*ref).value() + increment_)};
 
-                for (auto simRefs = simRefsBeginIt; simRefs != simRefUpperBoundIt; ++simRefs) {
+            auto simRefLowerBoundIt = std::lower_bound(
+                    similarReferencesVector_.begin(),
+                    similarReferencesVector_.end(),
+                    SimilarReferences(lowerRef.begin())); // return the first element that is < val
+            auto simRefUpperBoundIt = std::upper_bound(
+                    similarReferencesVector_.begin(),
+                    similarReferencesVector_.end(),
+                    SimilarReferences(upperRef.begin())); // return the first element that is > val
 
-                    auto bestMatch = Metrics::bestMatch<Eigen::Infinity, 2>(
-                            (*ref).maximum(),
-                            (*simRefs).representativeReference().maximum());
+            auto totalLength = std::distance(similarReferencesVector_.begin(),similarReferencesVector_.end());
+            auto lowerBoundDist = std::distance(similarReferencesVector_.begin(),simRefLowerBoundIt);
+            auto upperBoundDist = std::distance(similarReferencesVector_.begin(),simRefUpperBoundIt);
 
-                    if (bestMatch.first < distThresh_) {
-                        (*ref).permute(bestMatch.second, samples_);
-                        (*simRefs).add(ref);
-                        isSimilarQ = true;
-                    }
+            std::cout
+            << std::distance(references_.begin(),ref) << "; "
+            << "total length "
+            << totalLength << " ["
+            << (*similarReferencesVector_.begin()).representativeReference().value() << ","
+            << (*similarReferencesVector_.rbegin()).representativeReference().value() << "], "
+            << std::endl;
+            std::cout << "lower bound dist: " << lowerBoundDist<< ", "
+            << "upper bound dist: " << upperBoundDist<< ", "
+            << std::endl;
+
+            for (auto simRefs = simRefLowerBoundIt; simRefs != simRefUpperBoundIt; ++simRefs) {
+                std::cout << (*simRefs).representativeReference().value() << std::endl;
+                auto bestMatch = Metrics::bestMatch<Eigen::Infinity, 2>(
+                        (*ref).maximum(),
+                        (*simRefs).representativeReference().maximum());
+
+                if (bestMatch.first < distThresh_) {
+                    (*ref).permute(bestMatch.second, samples_);
+                    (*simRefs).add(ref);
+                    isSimilarQ = true;
+                    break;
                 }
-                if (!isSimilarQ) similarReferencesVector_.emplace_back(SimilarReferences(ref));
-                simRefsBeginIt = simRefUpperBoundIt;
             }
-
+            if (!isSimilarQ) {
+                similarReferencesVector_.emplace_back(SimilarReferences(ref));
+            }
+            std::sort(similarReferencesVector_.begin(),similarReferencesVector_.end());
         }
         return true;
+
+        /*for (auto ref = beginIt; ref != references_.end(); ++ref) {
+            bool isSimilarQ = false;
+
+            auto simRefsEndIt = similarReferencesVector_.end();
+            std::cout << std::distance(simRefsBeginIt,simRefsEndIt) << std::endl;
+
+            // get bound
+            std::vector<Reference> fakeRef = {Reference((*simRefsBeginIt).valueStats().cwiseMax()[0] + increment_)};
+            auto fakeSimRef = SimilarReferences(fakeRef.begin());
+            double val = fakeRef[0].value();
+            std::cout << val << std::endl;
+            auto simRefUpperBoundIt = std::upper_bound(
+                    simRefsBeginIt,simRefsEndIt, fakeSimRef);
+
+            for (auto simRefs = simRefsBeginIt; simRefs != simRefUpperBoundIt; ++simRefs) {
+                std::cout << "best matching..." << std::endl;
+                auto bestMatch = Metrics::bestMatch<Eigen::Infinity, 2>(
+                        (*ref).maximum(),
+                        (*simRefs).representativeReference().maximum());
+
+                if (bestMatch.first < distThresh_) {
+                    (*ref).permute(bestMatch.second, samples_);
+                    (*simRefs).add(ref);
+                    isSimilarQ = true;
+                }
+            }
+            if (!isSimilarQ){
+                std::cout << "emplace ref into new simrefs" << std::endl;
+                similarReferencesVector_.emplace_back(SimilarReferences(ref));
+            }
+        }
+        return true;*/
     }
 
 private:
