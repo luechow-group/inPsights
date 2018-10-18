@@ -131,7 +131,7 @@ TEST_F(AStatisticsTest, DoublePrecisionWeights){
 }
 
 TEST_F(AStatisticsTest, MinMax){
-    Statistics::RunningStatistics<Eigen::VectorXd,double> meanAndVariance;
+    Statistics::RunningStatistics<Eigen::VectorXd> meanAndVariance;
     
     Eigen::VectorXd v1(2),v2(2);
     v1 << -1, 2;
@@ -147,4 +147,23 @@ TEST_F(AStatisticsTest, MinMax){
     ASSERT_TRUE(meanAndVariance.cwiseMin().isApprox(min));
     ASSERT_TRUE(meanAndVariance.cwiseMax().isApprox(max));
     
+}
+
+TEST_F(AStatisticsTest, SingleValue){
+    Statistics::RunningStatistics<Eigen::Matrix<double,1,1>> meanAndVariance;
+
+    Eigen::VectorXd v1(1),v2(1);
+    v1 << -1;
+    v2 << 1;
+
+    meanAndVariance.add(v1);
+    meanAndVariance.add(v2);
+
+    Eigen::VectorXd min(1),max(1);
+    min << -1;
+    max <<  1;
+
+    ASSERT_TRUE(meanAndVariance.cwiseMin().isApprox(min));
+    ASSERT_TRUE(meanAndVariance.cwiseMax().isApprox(max));
+
 }
