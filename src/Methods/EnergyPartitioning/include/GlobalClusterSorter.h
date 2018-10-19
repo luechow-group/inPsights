@@ -36,10 +36,12 @@ class GlobalClusterSorter{
 public:
 
     GlobalClusterSorter(
+            std::vector<Sample> &samples,
             std::vector<SimilarReferences>& globallySimilarMaxima,
             std::vector<std::vector<SimilarReferences>>& globallyClusteredMaxima,
             double similarDistThresh )
     :
+    samples_(samples),
     globallySimilarMaxima_(globallySimilarMaxima),
     globallyClusteredMaxima_(globallyClusteredMaxima),
     similarDistThresh_(similarDistThresh),
@@ -54,10 +56,8 @@ public:
     void sort(){
         DensityBasedScan<double, SimilarReferences, wrapper> dbscan(globallySimilarMaxima_);
         auto nClusters = dbscan.findClusters(similarDistThresh_*2+0.01, 1); // why multiplication by 2 is needed?
-        //TODO Permutations must be stored! Own DBSCAN implementation?
-        auto labels = dbscan.getLabels();
-        console->info("number of clusters {}",nClusters);
 
+        auto labels = dbscan.getLabels();
         globallyClusteredMaxima_.resize(nClusters);
 
         for (int i = 0; i < nClusters; ++i) {
@@ -88,15 +88,20 @@ public:
                     // find the SimilarReferences object whose representativeReference is closest to the i
                     auto minIt = std::min_element(bestMatchDistances.begin(), bestMatchDistances.end());
                     // permute and swap
-                    if (i + 1 != minIt.base()->it_)
+                    // TODO CHECK FOR ERRORS HERE!
+                    minIt.base()->it_.base()->permuteAll(minIt.base()->bestMatch_.second,samples_);
+                    if (i + 1 != minIt.base()->it_) {
                         std::iter_swap(i + 1, minIt.base()->it_);
+                    }
+                } else {
+                    (i+1).base()->permuteAll(bestMatchDistances[0].bestMatch_.second,samples_);
                 }
             }
         }
     }
 
-
 private:
+    std::vector<Sample> &samples_;
     std::vector<SimilarReferences>& globallySimilarMaxima_;
     std::vector<std::vector<SimilarReferences>>& globallyClusteredMaxima_;
     double similarDistThresh_;

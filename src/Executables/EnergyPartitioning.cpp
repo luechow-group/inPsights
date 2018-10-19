@@ -53,7 +53,7 @@ int main(int argc, char *argv[]) {
     console->info("number of elements after similarity sort {}",globallySimilarMaxima.size());
 
     std::vector<std::vector<SimilarReferences>> globallyClusteredMaxima;
-    GlobalClusterSorter globalClusterSorter(globallySimilarMaxima, globallyClusteredMaxima, similarDistThresh);
+    GlobalClusterSorter globalClusterSorter(samples, globallySimilarMaxima, globallyClusteredMaxima, similarDistThresh);
     globalClusterSorter.sort();
     console->info("number of elements after cluster sort {}", globallyClusteredMaxima.size());
 
