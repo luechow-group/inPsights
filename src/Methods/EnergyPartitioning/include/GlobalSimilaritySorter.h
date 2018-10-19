@@ -19,13 +19,14 @@ public:
             std::vector<Sample>& samples,
             std::vector<Reference>& references,
             std::vector<SimilarReferences>& similarReferencesVector,
-            double distThresh = 0.1)
+            double increment,
+            double distThresh)
             :
             samples_(samples),
             references_(references),
             similarReferencesVector_(similarReferencesVector),
             distThresh_(distThresh),
-            increment_(std::abs((*references.rbegin()).value() * 1e-4)), //TODO appropriate range from stats
+            increment_(increment),
             console(spdlog::get(Logger::name))
     {
         if(!console){
@@ -33,6 +34,15 @@ public:
             console = spdlog::get(Logger::name);
         };
     }
+
+    GlobalSimilaritySorter(
+            std::vector<Sample>& samples,
+            std::vector<Reference>& references,
+            std::vector<SimilarReferences>& similarReferencesVector,
+            double distThresh = 0.1)
+            :
+            GlobalSimilaritySorter(samples,references,similarReferencesVector, std::abs((*references.rbegin()).value() * 1e-4),distThresh)
+            {}
 
     bool sort(){
         if(references_.empty()) {
