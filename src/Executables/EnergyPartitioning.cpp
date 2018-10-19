@@ -1,3 +1,5 @@
+#include <utility>
+
 //
 // Created by Michael Heuer on 28.08.18.
 //
@@ -23,15 +25,30 @@ double wrapper(const SimilarReferences& s1, const SimilarReferences& s2) {
             s2.representativeReference().maximum());
 };
 
+struct SortElement{
+    SortElement(
+            std::pair<double,Eigen::PermutationMatrix<Eigen::Dynamic>> bm,
+            std::vector<SimilarReferences>::iterator it)
+            : bm_(std::move(bm)), it_(it)
+    {}
+
+    bool operator < (const SortElement& rhs) const {
+        return bm_.first < rhs.bm_.first;
+    }
+
+    std::pair<double,Eigen::PermutationMatrix<Eigen::Dynamic>> bm_;
+    std::vector<SimilarReferences>::iterator it_;
+};
+
 int main(int argc, char *argv[]) {
     Logger::initialize();
     auto console = spdlog::get(Logger::name);
 
     std::vector<Reference> globallyIdenticalMaxima;
     std::vector<Sample> samples;
-    auto atoms = ElectronicWaveFunction::getInstance(std::string("Ethane-em.wf")).getAtomsVector();
+    auto atoms = ElectronicWaveFunction::getInstance(std::string("Acetone-em.wf")).getAtomsVector();
     RawDataReader reader(globallyIdenticalMaxima,samples);
-    reader.read("Ethane.bin");
+    reader.read("Acetone.bin");
 
 
     console->info("number of inital refs {}",globallyIdenticalMaxima.size());
@@ -77,11 +94,41 @@ int main(int argc, char *argv[]) {
     }
 
     // orderd clusters
+    int count = 0;
     for (auto& cluster : clusteredGloballySimilarMaxima) {
-        // sort
+        // check range
 
+        // for the fist structure
+        // do bestMatch for all remaining structures and swap the closest at the second place
+        // for the second structure
+        std::sort(cluster.begin(), cluster.end());
+
+        std::cout
+        << "i:" << count << ", "
+        << std::distance(cluster.begin(), cluster.end()) << std::endl;
+        count++;
+        for (auto i = cluster.begin(); i != cluster.end(); ++i) {
+            std::vector<SortElement> bestMatchDistances;
+
+            for (auto j = i + 1; j != cluster.end(); ++j) {
+                bestMatchDistances.emplace_back(
+                        SortElement(Metrics::bestMatch<Eigen::Infinity, 2>(
+                                j.base()->representativeReference().maximum(),
+                                i.base()->representativeReference().maximum()), j)
+                );
+            }
+
+            if (bestMatchDistances.size() > 1) {
+                // permute and swap
+                auto minIt = std::min_element(bestMatchDistances.begin(), bestMatchDistances.end());
+                std::cout << " " << std::distance(bestMatchDistances.begin(), minIt) << std::endl;
+                for (auto b : bestMatchDistances)
+                    std::cout << "  "<< b.bm_.first << std::endl;
+                if (i + 1 != minIt.base()->it_)
+                    std::iter_swap(i + 1, minIt.base()->it_);
+            }
+        }
     }
-
 
     //Statistics
     energyCalculator.calculateStatistics(clusteredGloballySimilarMaxima);
@@ -90,18 +137,16 @@ int main(int argc, char *argv[]) {
     yamlFile.close();
 
     // Visuals
-    /*QApplication app(argc, argv);
+    QApplication app(argc, argv);
     setlocale(LC_NUMERIC,"C");
 
     MoleculeWidget moleculeWidget;
     Qt3DCore::QEntity *root = moleculeWidget.createMoleculeWidget();
     AtomsVector3D(root, atoms);
 
-    auto ev1 = (*clusteredGloballySimilarMaxima[0].at(0).repRefIt_).maximum_;
-    auto ev2 = (*clusteredGloballySimilarMaxima[0].at(0).similarReferences_.at(0)).maximum_;
-    ElectronsVector3D(root, atoms, ev1, true);
-    ElectronsVector3D(root, atoms, ev2, true);
-
-    return app.exec();*/
+    for (auto i : clusteredGloballySimilarMaxima[35]){
+        ElectronsVector3D(root, atoms, i.representativeReference().maximum(), true);
+    }
+    return QApplication::exec();
 
 };
