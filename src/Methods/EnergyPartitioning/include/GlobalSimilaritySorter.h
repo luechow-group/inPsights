@@ -59,29 +59,13 @@ public:
             auto simRefLowerBoundIt = std::lower_bound(
                     similarReferencesVector_.begin(),
                     similarReferencesVector_.end(),
-                    SimilarReferences(lowerRef.begin())); // return the first element that is < val
+                    SimilarReferences(lowerRef.begin()));
             auto simRefUpperBoundIt = std::upper_bound(
                     similarReferencesVector_.begin(),
                     similarReferencesVector_.end(),
-                    SimilarReferences(upperRef.begin())); // return the first element that is > val
-
-            auto totalLength = std::distance(similarReferencesVector_.begin(),similarReferencesVector_.end());
-            auto lowerBoundDist = std::distance(similarReferencesVector_.begin(),simRefLowerBoundIt);
-            auto upperBoundDist = std::distance(similarReferencesVector_.begin(),simRefUpperBoundIt);
-
-            std::cout
-            << std::distance(references_.begin(),ref) << "; "
-            << "total length "
-            << totalLength << " ["
-            << (*similarReferencesVector_.begin()).representativeReference().value() << ","
-            << (*similarReferencesVector_.rbegin()).representativeReference().value() << "], "
-            << std::endl;
-            std::cout << "lower bound dist: " << lowerBoundDist<< ", "
-            << "upper bound dist: " << upperBoundDist<< ", "
-            << std::endl;
+                    SimilarReferences(upperRef.begin()));
 
             for (auto simRefs = simRefLowerBoundIt; simRefs != simRefUpperBoundIt; ++simRefs) {
-                std::cout << (*simRefs).representativeReference().value() << std::endl;
                 auto bestMatch = Metrics::bestMatch<Eigen::Infinity, 2>(
                         (*ref).maximum(),
                         (*simRefs).representativeReference().maximum());

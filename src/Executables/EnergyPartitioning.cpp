@@ -27,16 +27,16 @@ double wrapper(const SimilarReferences& s1, const SimilarReferences& s2) {
 
 struct SortElement{
     SortElement(
-            std::pair<double,Eigen::PermutationMatrix<Eigen::Dynamic>> bm,
+            std::pair<double,Eigen::PermutationMatrix<Eigen::Dynamic>> bestMatch,
             std::vector<SimilarReferences>::iterator it)
-            : bm_(std::move(bm)), it_(it)
+            : bestMatch_(std::move(bestMatch)), it_(it)
     {}
 
     bool operator < (const SortElement& rhs) const {
-        return bm_.first < rhs.bm_.first;
+        return bestMatch_.first < rhs.bestMatch_.first;
     }
 
-    std::pair<double,Eigen::PermutationMatrix<Eigen::Dynamic>> bm_;
+    std::pair<double,Eigen::PermutationMatrix<Eigen::Dynamic>> bestMatch_;
     std::vector<SimilarReferences>::iterator it_;
 };
 
@@ -94,19 +94,9 @@ int main(int argc, char *argv[]) {
     }
 
     // orderd clusters
-    int count = 0;
     for (auto& cluster : clusteredGloballySimilarMaxima) {
-        // check range
-
-        // for the fist structure
-        // do bestMatch for all remaining structures and swap the closest at the second place
-        // for the second structure
         std::sort(cluster.begin(), cluster.end());
 
-        std::cout
-        << "i:" << count << ", "
-        << std::distance(cluster.begin(), cluster.end()) << std::endl;
-        count++;
         for (auto i = cluster.begin(); i != cluster.end(); ++i) {
             std::vector<SortElement> bestMatchDistances;
 
@@ -121,9 +111,6 @@ int main(int argc, char *argv[]) {
             if (bestMatchDistances.size() > 1) {
                 // permute and swap
                 auto minIt = std::min_element(bestMatchDistances.begin(), bestMatchDistances.end());
-                std::cout << " " << std::distance(bestMatchDistances.begin(), minIt) << std::endl;
-                for (auto b : bestMatchDistances)
-                    std::cout << "  "<< b.bm_.first << std::endl;
                 if (i + 1 != minIt.base()->it_)
                     std::iter_swap(i + 1, minIt.base()->it_);
             }
@@ -145,7 +132,7 @@ int main(int argc, char *argv[]) {
     AtomsVector3D(root, atoms);
 
     for (auto i : clusteredGloballySimilarMaxima[35]){
-        ElectronsVector3D(root, atoms, i.representativeReference().maximum(), true);
+        ElectronsVector3D(root, atoms, i.representativeReference().maximum(), false);
     }
     return QApplication::exec();
 
