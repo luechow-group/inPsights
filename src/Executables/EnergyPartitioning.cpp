@@ -1,5 +1,3 @@
-#include <utility>
-
 //
 // Created by Michael Heuer on 28.08.18.
 //
@@ -16,6 +14,7 @@
 #include <ElectronsVector3D.h>
 #include <QApplication>
 #include <algorithm>
+#include <utility>
 
 int main(int argc, char *argv[]) {
     Logger::initialize();

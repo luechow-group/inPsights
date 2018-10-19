@@ -16,6 +16,7 @@ set(HEADER_FILES
         include/GlobalSimilaritySorter.h
         include/GlobalClusterSorter.h
         include/EnergyCalculator.h
+        include/SimilarReferences.h
         )
 
 set(SOURCE_FILES

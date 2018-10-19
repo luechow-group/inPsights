@@ -2,15 +2,11 @@
 // Created by heuer on 19.10.18.
 //
 
-
 #include <gmock/gmock.h>
-#include <Reference.h>
-#include <Sample.h>
+#include <SimilarReferences.h>
 #include <GlobalClusterSorter.h>
-#include <algorithm>
 #include <random>
 #include <TestMolecules.h>
-#include <PositionsVectorTransformer.h>
 
 using namespace testing;
 
@@ -38,8 +34,7 @@ TEST(AGlobalClusterSorterTest, TwoRotatedAndOneStationaryElectrons){
     unsigned n = 20;
     // start with second element
     for (unsigned i = 1; i < n-1; ++i) {
-        double angle = 0.5*M_PI*double(i)/double(n-1); // 180°
-        std::cout << angle << std::endl;
+        double angle = 1*M_PI*double(i)/double(n-1); // 180°
         Eigen::Vector3d xAxis = {1,0,0};
         auto evCopy = ev;
         evCopy.positionsVector().rotateAroundOrigin(angle, xAxis);
@@ -73,10 +68,6 @@ TEST(AGlobalClusterSorterTest, TwoRotatedAndOneStationaryElectrons){
     ASSERT_EQ(globallyClusteredMaxima[0].size(),expected.size());
 
     for (size_t i = 0; i < globallyClusteredMaxima[0].size(); ++i) {
-        std::cout << i << std::endl;
-        std::cout << globallyClusteredMaxima[0][i].representativeReference().maximum();
-        std::cout << expected[i].maximum() << std::endl;
-
         ASSERT_TRUE(globallyClusteredMaxima[0][i].representativeReference().maximum()
         == expected[i].maximum());
 

@@ -5,8 +5,7 @@
 #ifndef AMOLQCPP_GLOBALSIMILARITYSORTER_H
 #define AMOLQCPP_GLOBALSIMILARITYSORTER_H
 
-#include "Reference.h"
-#include "Sample.h"
+#include "SimilarReferences.h"
 #include <Logger.h>
 #include <HungarianHelper.h>
 #include <spdlog/spdlog.h>

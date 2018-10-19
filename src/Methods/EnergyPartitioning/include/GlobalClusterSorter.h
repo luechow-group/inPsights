@@ -5,7 +5,7 @@
 #ifndef AMOLQCPP_GLOBALCLUSTERSORTER_H
 #define AMOLQCPP_GLOBALCLUSTERSORTER_H
 
-#include "Reference.h"
+#include "SimilarReferences.h"
 #include <DensityBasedScan.h>
 #include <Logger.h>
 
