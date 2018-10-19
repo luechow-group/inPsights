@@ -58,6 +58,10 @@ public:
         return maximum_;
     }
 
+    std::vector<size_t> sampleIds() const {
+        return sampleIds_;
+    }
+
 
 private:
     double negLogSqrdProbabilityDensity_;
