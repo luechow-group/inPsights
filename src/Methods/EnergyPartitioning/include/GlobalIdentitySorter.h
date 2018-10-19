@@ -16,7 +16,8 @@
 class GlobalIdentiySorter{
 public:
 
-    GlobalIdentiySorter(std::vector<Reference>& references, std::vector<Sample>& samples, double increment, double distThresh)
+    GlobalIdentiySorter(std::vector<Reference> &references, std::vector<Sample> &samples,
+            double distThresh, double increment)
             :
             references_(references),
             samples_(samples),
@@ -32,7 +33,7 @@ public:
 
     GlobalIdentiySorter(std::vector<Reference>& references, std::vector<Sample>& samples, double distThresh = 0.01)
             :
-            GlobalIdentiySorter(references, samples, (*references.rbegin()).value() * 1e-7, distThresh)
+            GlobalIdentiySorter(references, samples, distThresh, (*references.rbegin()).value() * 1e-7)
     {}
 
     bool sort(){

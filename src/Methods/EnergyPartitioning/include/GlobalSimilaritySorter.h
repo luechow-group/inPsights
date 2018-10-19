@@ -15,12 +15,9 @@
 class GlobalSimilaritySorter {
 public:
 
-    GlobalSimilaritySorter(
-            std::vector<Sample>& samples,
-            std::vector<Reference>& references,
-            std::vector<SimilarReferences>& similarReferencesVector,
-            double increment,
-            double distThresh)
+    GlobalSimilaritySorter(std::vector<Sample> &samples, std::vector<Reference> &references,
+                               std::vector<SimilarReferences> &similarReferencesVector,
+                               double distThresh, double increment)
             :
             samples_(samples),
             references_(references),
@@ -41,7 +38,8 @@ public:
             std::vector<SimilarReferences>& similarReferencesVector,
             double distThresh = 0.1)
             :
-            GlobalSimilaritySorter(samples,references,similarReferencesVector, std::abs((*references.rbegin()).value() * 1e-4),distThresh)
+            GlobalSimilaritySorter(samples, references, similarReferencesVector, distThresh,
+                                   std::abs((*references.rbegin()).value() * 1e-4))
             {}
 
     bool sort(){
