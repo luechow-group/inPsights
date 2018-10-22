@@ -39,9 +39,8 @@ public:
     }
 
     void permuteAll(const Eigen::PermutationMatrix<Eigen::Dynamic>& perm, std::vector<Sample>& samples) {
-        for (auto& ref : similarReferences_){
-            (*ref).permute(perm,samples);
-        }
+        for (auto ref : similarReferences_)
+            ref.base()->permute(perm,samples);
     }
 
     std::vector<std::vector<Reference>::iterator>& similarReferencesIterators(){

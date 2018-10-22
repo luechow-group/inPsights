@@ -73,9 +73,11 @@ public:
         for (auto& cluster : globallyClusteredMaxima_) {
             std::sort(cluster.begin(), cluster.end());
 
+            // iterate over all similarReferences in the cluster
             for (auto i = cluster.begin(); i != cluster.end(); ++i) {
                 std::vector<SortElement> bestMatchDistances;
 
+                // make a list of best match distances and permutations starting with the next similarReferences object
                 for (auto j = i + 1; j != cluster.end(); ++j) {
                     bestMatchDistances.emplace_back(
                             SortElement(Metrics::bestMatch<Eigen::Infinity, 2>(
@@ -84,16 +86,17 @@ public:
                     );
                 }
 
+                // check if the list contains more than one element
                 if (bestMatchDistances.size() > 1) {
                     // find the SimilarReferences object whose representativeReference is closest to the i
                     auto minIt = std::min_element(bestMatchDistances.begin(), bestMatchDistances.end());
+
                     // permute and swap
-                    // TODO CHECK FOR ERRORS HERE!
                     minIt.base()->it_.base()->permuteAll(minIt.base()->bestMatch_.second,samples_);
                     if (i + 1 != minIt.base()->it_) {
-                        std::iter_swap(i + 1, minIt.base()->it_);
+                        std::iter_swap(i+1, minIt.base()->it_);
                     }
-                } else {
+                } else if ( bestMatchDistances.size() == 1) { // only one element left
                     (i+1).base()->permuteAll(bestMatchDistances[0].bestMatch_.second,samples_);
                 }
             }
