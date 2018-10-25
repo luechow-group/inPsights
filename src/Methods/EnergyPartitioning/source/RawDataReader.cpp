@@ -35,14 +35,14 @@ void RawDataReader::readAtoms(std::ifstream &input) {
     atomCoords = readVectorXd(input, size_t(nAtoms),3);
 
     std::vector<Element> elementTypes(numberOfAtoms);
-    for (int i = 0; i < numberOfAtoms; ++i) {
+    for (size_t i = 0; i < numberOfAtoms; ++i) {
         elementTypes[i] = Elements::elementFromInt(atomicNumbers[i]);
     }
 
     atoms_ = AtomsVector(PositionsVector(atomCoords), elementTypes);
 }
 
-void RawDataReader::readElectrons(std::ifstream &input, int totalLength) {
+void RawDataReader::readElectrons(std::ifstream &input, int totalLength, size_t numberOfSamples) {
     int nElectrons = readInt(input);
     int nAlpha = readInt(input);
 
@@ -55,7 +55,7 @@ void RawDataReader::readElectrons(std::ifstream &input, int totalLength) {
 
     size_t id = 0;
 
-    while (checkEOF(input, totalLength)) {
+    while (checkEOF(input, totalLength) && id < numberOfSamples) {
 
         // don't move read methods into constructor as this messes up the ifstream stride
         auto sample = readVectorXd(input, size_t(nElectrons),3);
@@ -85,10 +85,8 @@ void RawDataReader::read(const std::string &fileName, size_t numberOfSamples){
 
         readAtoms(input);
 
-        size_t id = 0;
-        while (checkEOF(input, totalLength) && id < numberOfSamples) {
-            readElectrons(input, totalLength);
-        }
+        readElectrons(input, totalLength, numberOfSamples);
+
     }
     else
         throw std::runtime_error("Could not open file '" + fileName + "'");

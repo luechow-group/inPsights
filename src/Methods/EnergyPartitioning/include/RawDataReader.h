@@ -24,7 +24,7 @@ public:
     
 private:
     void readAtoms(std::ifstream& input);
-    void readElectrons(std::ifstream& input, int totalLength);
+    void readElectrons(std::ifstream& input, int totalLength, size_t numberOfSamples);
 
     AtomsVector atoms_;
     std::vector<Reference>& references_;
