@@ -17,10 +17,16 @@ public:
             int recordDelimiterLength = 4);
 
     void read(const std::string& fileName) override;
-
+    
     void read(const std::string& fileName, size_t numberOfSamples = std::numeric_limits<size_t>::max());
 
+    AtomsVector getAtoms() const;
+    
 private:
+    void readAtoms(std::ifstream& input);
+    void readElectrons(std::ifstream& input, int totalLength);
+
+    AtomsVector atoms_;
     std::vector<Reference>& references_;
     std::vector<Sample>& samples_;
 };

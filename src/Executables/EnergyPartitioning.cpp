@@ -22,10 +22,10 @@ int main(int argc, char *argv[]) {
 
     std::vector<Reference> globallyIdenticalMaxima;
     std::vector<Sample> samples;
-    auto atoms = ElectronicWaveFunction::getInstance(std::string("Acetone-em.wf")).getAtomsVector();
+    //auto atoms = ElectronicWaveFunction::getInstance(std::string("Acetone-em.wf")).getAtomsVector();
     RawDataReader reader(globallyIdenticalMaxima,samples);
     reader.read("Acetone.bin",100);
-
+    auto atoms = reader.getAtoms();
 
     console->info("number of inital refs {}",globallyIdenticalMaxima.size());
 
