@@ -138,7 +138,7 @@ public:
         yamlDocument_
         << BeginMap
         << Key << "N" << Value << TeStats_.getTotalWeight()
-        << Key << "ValueRange" << Value << Flow << BeginSeq
+        << Key << "ValueRange" << Value << Comment("[]") << Flow << BeginSeq
         << valueStats_.cwiseMin()[0]
         << valueStats_.cwiseMax()[0] << EndSeq
         << Key << "Structures" << Comment("[a0]") << Value << BeginSeq;
