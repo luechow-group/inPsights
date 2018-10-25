@@ -100,17 +100,21 @@ public:
         size_t totalCount = 0;
         for (auto& cluster : clusteredGloballySimilarMaxima) {
             for (auto &simRefVector : cluster) {
-                //CAREFUL: this works only for ethane right now, where clusters have size 1 only
-                //TODO permute all cluster elements to match each other (difficult, because order has to be kept)
                 TeStats_.reset();
                 VeeStats_.reset();
                 VenStats_.reset();
 
                 // Iterate over references being similar to the representative reference.
-                for (const auto &ref : simRefVector.similarReferencesIterators())
+                std::vector<ElectronsVector> structures;
+                for (const auto &ref : simRefVector.similarReferencesIterators()){
                     totalCount += addEnergies(*ref);
+                    structures.push_back(ref->maximum());
+                }
 
-                printCluster();
+                printCluster(structures);
+                //TODO print value range
+
+
             }
         }
         console->info("overall count {}", totalCount);
@@ -121,11 +125,17 @@ public:
     }
 
 
-    void printCluster(){
+    void printCluster(std::vector<ElectronsVector>& structures){
         using namespace YAML;
 
         yamlDocument_
         << BeginMap
+        << Key << "Structures" << Value << BeginSeq;
+        for (auto& i : structures) {
+            yamlDocument_ << i;
+        }
+        yamlDocument_
+        << EndSeq << Comment("[a0]")
         << Key << "N" << Value << TeStats_.getTotalWeight()
         << Key << "Te" << Comment("[Eh]");
         TeStats_.toYaml(yamlDocument_);
