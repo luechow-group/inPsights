@@ -73,17 +73,19 @@ public:
 
 
     unsigned long addReference(const Reference &reference) {
-        unsigned long count = reference.count();
+        auto count = unsigned(reference.count());
 
-        spinCorrelations_ = SpinCorrelation::spinCorrelations(reference.maximum().typesVector()).cast<double>();
-        Te_ = samples_[reference.ownId()].kineticEnergies_;
-        Vee_ = CoulombPotential::energies(samples_[reference.ownId()].sample_);
-        Ven_ = CoulombPotential::energies(samples_[reference.ownId()].sample_,atoms_);
+        Eigen::VectorXd value(1); value[0] = reference.value();
+        Eigen::MatrixXd spinCorrelations_ = SpinCorrelation::spinCorrelations(reference.maximum().typesVector()).cast<double>();
+        Eigen::VectorXd Te_ = samples_[reference.ownId()].kineticEnergies_;
+        Eigen::MatrixXd Vee_ = CoulombPotential::energies(samples_[reference.ownId()].sample_);
+        Eigen::MatrixXd Ven_ = CoulombPotential::energies(samples_[reference.ownId()].sample_,atoms_);
 
-        spinCorrelationsStats_.add(spinCorrelations_, unsigned(count));
-        TeStats_.add(Te_, unsigned(count));
-        VeeStats_.add(Vee_, unsigned(count));
-        VenStats_.add(Ven_, unsigned(count));
+        valueStats_.add(value, count);
+        spinCorrelationsStats_.add(spinCorrelations_, count);
+        TeStats_.add(Te_, count);
+        VeeStats_.add(Vee_, count);
+        VenStats_.add(Ven_, count);
 
         return count;
     }
@@ -106,6 +108,7 @@ public:
             auto types = cluster[0].representativeReference().maximum().typesVector().asEigenVector();
 
             for (auto &simRefVector : cluster) {
+                valueStats_.reset();
                 spinCorrelationsStats_.reset();
                 TeStats_.reset();
                 VeeStats_.reset();
@@ -119,7 +122,6 @@ public:
                 }
 
                 printCluster(structures);
-                //TODO print value range
             }
         }
         console->info("overall count {}", totalCount);
@@ -136,6 +138,9 @@ public:
         yamlDocument_
         << BeginMap
         << Key << "N" << Value << TeStats_.getTotalWeight()
+        << Key << "ValueRange" << Value << Flow << BeginSeq
+        << valueStats_.cwiseMin()[0]
+        << valueStats_.cwiseMax()[0] << EndSeq
         << Key << "Structures" << Comment("[a0]") << Value << BeginSeq;
         for (auto& i : structures) {
             yamlDocument_ << i;
@@ -169,11 +174,10 @@ private:
     AtomsVector atoms_;
 
     Statistics::RunningStatistics<Eigen::MatrixXd> spinCorrelationsStats_;
-    Statistics::RunningStatistics<Eigen::VectorXd> TeStats_;
+    Statistics::RunningStatistics<Eigen::VectorXd> TeStats_, valueStats_;
     Statistics::RunningStatistics<Eigen::MatrixXd> VeeStats_, VenStats_, VnnStats_;
 
-    Eigen::VectorXd Te_;
-    Eigen::MatrixXd spinCorrelations_,Vee_, Ven_, Vnn_;
+    Eigen::MatrixXd Vnn_;
 
     YAML::Emitter yamlDocument_;
     std::shared_ptr<spdlog::logger> console;
