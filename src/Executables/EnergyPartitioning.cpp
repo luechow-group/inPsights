@@ -24,7 +24,7 @@ int main(int argc, char *argv[]) {
     std::vector<Sample> samples;
     auto atoms = ElectronicWaveFunction::getInstance(std::string("Acetone-em.wf")).getAtomsVector();
     RawDataReader reader(globallyIdenticalMaxima,samples);
-    reader.read("Acetone.bin");
+    reader.read("Acetone.bin",100);
 
 
     console->info("number of inital refs {}",globallyIdenticalMaxima.size());
@@ -70,7 +70,7 @@ int main(int argc, char *argv[]) {
     Qt3DCore::QEntity *root = moleculeWidget.createMoleculeWidget();
     AtomsVector3D(root, atoms);
 
-    for (auto i : globallyClusteredMaxima[35]){
+    for (auto i : globallyClusteredMaxima[0]){
         ElectronsVector3D(root, atoms, i.representativeReference().maximum(), false);
     }
     return QApplication::exec();

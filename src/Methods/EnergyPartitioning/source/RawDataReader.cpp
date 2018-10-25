@@ -17,7 +17,12 @@ RawDataReader::RawDataReader(
         samples_(samples)
         {}
 
-void RawDataReader::read(const std::string &fileName){
+
+void RawDataReader::read(const std::string &fileName) {
+    read(fileName, std::numeric_limits<size_t>::max()); // read all samples
+}
+
+void RawDataReader::read(const std::string &fileName, size_t numberOfSamples){
     // open file in binary mode
     std::ifstream input(fileName.c_str(), std::ios::binary);
 
@@ -40,7 +45,7 @@ void RawDataReader::read(const std::string &fileName){
         auto spins = SpinTypesVector(numberOfAlphaElectrons,numberOfBetaElectrons);
 
         size_t id = 0;
-        while (checkEOF(input,totalLength)) {
+        while (checkEOF(input,totalLength) && id < numberOfSamples) {
 
             // don't move read methods into constructor as this messes up the ifstream stride
             auto sample = readVectorXd(input, size_t(nElectrons),3);

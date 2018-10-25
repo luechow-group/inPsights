@@ -18,6 +18,8 @@ public:
 
     void read(const std::string& fileName) override;
 
+    void read(const std::string& fileName, size_t numberOfSamples = std::numeric_limits<size_t>::max());
+
 private:
     std::vector<Reference>& references_;
     std::vector<Sample>& samples_;
