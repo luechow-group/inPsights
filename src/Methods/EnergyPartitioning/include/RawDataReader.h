@@ -18,7 +18,13 @@ public:
 
     void read(const std::string& fileName) override;
 
+    AtomsVector getAtoms() const;
+
 private:
+    void readAtoms(std::ifstream& input);
+    void readElectrons(std::ifstream& input, int totalLength);
+
+    AtomsVector atoms_;
     std::vector<Reference>& references_;
     std::vector<Sample>& samples_;
 };
