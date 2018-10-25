@@ -13,6 +13,7 @@
 #include <Logger.h>
 #include <spdlog/spdlog.h>
 #include <CoulombPotential.h>
+#include <SpinCorrelation.h>
 
 class EnergyCalculator{
 public:
@@ -71,13 +72,15 @@ public:
     }
 
 
-    unsigned long addEnergies(const Reference &reference) {
+    unsigned long addReference(const Reference &reference) {
         unsigned long count = reference.count();
 
+        spinCorrelations_ = SpinCorrelation::spinCorrelations(reference.maximum().typesVector()).cast<double>();
         Te_ = samples_[reference.ownId()].kineticEnergies_;
         Vee_ = CoulombPotential::energies(samples_[reference.ownId()].sample_);
         Ven_ = CoulombPotential::energies(samples_[reference.ownId()].sample_,atoms_);
 
+        spinCorrelationsStats_.add(spinCorrelations_, unsigned(count));
         TeStats_.add(Te_, unsigned(count));
         VeeStats_.add(Vee_, unsigned(count));
         VenStats_.add(Ven_, unsigned(count));
@@ -99,7 +102,11 @@ public:
 
         size_t totalCount = 0;
         for (auto& cluster : clusteredGloballySimilarMaxima) {
+
+            auto types = cluster[0].representativeReference().maximum().typesVector().asEigenVector();
+
             for (auto &simRefVector : cluster) {
+                spinCorrelationsStats_.reset();
                 TeStats_.reset();
                 VeeStats_.reset();
                 VenStats_.reset();
@@ -107,14 +114,12 @@ public:
                 // Iterate over references being similar to the representative reference.
                 std::vector<ElectronsVector> structures;
                 for (const auto &ref : simRefVector.similarReferencesIterators()){
-                    totalCount += addEnergies(*ref);
+                    totalCount += addReference(*ref);
                     structures.push_back(ref->maximum());
                 }
 
                 printCluster(structures);
                 //TODO print value range
-
-
             }
         }
         console->info("overall count {}", totalCount);
@@ -130,13 +135,18 @@ public:
 
         yamlDocument_
         << BeginMap
-        << Key << "Structures" << Value << BeginSeq;
+        << Key << "N" << Value << TeStats_.getTotalWeight()
+        << Key << "Structures" << Comment("[a0]") << Value << BeginSeq;
         for (auto& i : structures) {
             yamlDocument_ << i;
         }
+
         yamlDocument_
-        << EndSeq << Comment("[a0]")
-        << Key << "N" << Value << TeStats_.getTotalWeight()
+        << EndSeq << Newline
+        << Key << "SpinCorrelations" << Comment("[]");
+        spinCorrelationsStats_.toYaml(yamlDocument_, true, false);
+
+        yamlDocument_
         << Key << "Te" << Comment("[Eh]");
         TeStats_.toYaml(yamlDocument_);
 
@@ -158,10 +168,12 @@ private:
     const std::vector<Sample>& samples_;
     AtomsVector atoms_;
 
+    Statistics::RunningStatistics<Eigen::MatrixXd> spinCorrelationsStats_;
     Statistics::RunningStatistics<Eigen::VectorXd> TeStats_;
     Statistics::RunningStatistics<Eigen::MatrixXd> VeeStats_, VenStats_, VnnStats_;
+
     Eigen::VectorXd Te_;
-    Eigen::MatrixXd Vee_, Ven_, Vnn_;
+    Eigen::MatrixXd spinCorrelations_,Vee_, Ven_, Vnn_;
 
     YAML::Emitter yamlDocument_;
     std::shared_ptr<spdlog::logger> console;

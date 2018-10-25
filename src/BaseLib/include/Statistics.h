@@ -77,7 +77,7 @@ namespace Statistics {
             return totalWeight_;
         }
 
-        void toYaml(YAML::Emitter &out, bool excludeSelfinteractionQ = false) const {
+        void toYaml(YAML::Emitter &out, bool excludeSelfinteractionQ = false, bool printStandardDeviationQ = true) const {
             using namespace YAML;
 
             out << BeginMap;
@@ -90,7 +90,7 @@ namespace Statistics {
                         out << Key << j << Value
                             << Flow << BeginSeq
                             << mean()(i, j);
-                        if(getTotalWeight() > 1) out << standardError()(i, j);
+                        if(getTotalWeight() > 1 && printStandardDeviationQ) out << standardError()(i, j);
                         out << EndSeq;
                     }
                     out << EndMap;
