@@ -18,7 +18,7 @@ public:
 
     void read(const std::string& fileName) override;
     
-    void read(const std::string& fileName, size_t numberOfSamples = std::numeric_limits<size_t>::max());
+    void read(const std::string& fileName, size_t numberOfSamples);
 
     AtomsVector getAtoms() const;
     
