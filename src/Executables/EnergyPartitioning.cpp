@@ -16,18 +16,50 @@
 #include <algorithm>
 #include <utility>
 
+bool handleCommandlineArguments(int argc, char **argv,
+                                std::string &pathFilename) {
+    if (argc < 1) {
+        std::cout << "Usage: \n"
+                  << "Argument 1: path filename (.bin)\n"
+                  << std::endl;
+        std::cout << "Ethane.bin" << std::endl;
+        return false;
+    } else if (argc == 2) {
+        pathFilename = argv[1];
+        try {
+            if (".bin" != pathFilename .substr( pathFilename .length() - 4 ))
+                throw std::invalid_argument("Invalid path file type '" + pathFilename  + "'.");
+        }
+        catch (std::invalid_argument &e){
+            std::cout << e.what() << std::endl;
+            abort();
+        }
+        return true;
+    } else {
+        throw std::invalid_argument("Too many arguments");
+    }
+};
+
+
 int main(int argc, char *argv[]) {
+    std::string pathFilename;
+
+    if (pathFilename.empty()) {
+        bool inputArgumentsFoundQ =
+                handleCommandlineArguments(argc, argv, pathFilename);
+        if (!inputArgumentsFoundQ) return 1;
+    }
+
     Logger::initialize();
     auto console = spdlog::get(Logger::name);
 
     std::vector<Reference> globallyIdenticalMaxima;
     std::vector<Sample> samples;
-    //auto atoms = ElectronicWaveFunction::getInstance(std::string("Acetone-em.wf")).getAtomsVector();
     RawDataReader reader(globallyIdenticalMaxima,samples);
-    reader.read("Acetone.bin",100);
+    reader.read(pathFilename, 100);
     auto atoms = reader.getAtoms();
 
-    console->info("number of inital refs {}",globallyIdenticalMaxima.size());
+    console->info("number of inital refs {}", globallyIdenticalMaxima.size());
 
     EnergyCalculator energyCalculator(samples,atoms);
     auto totalEnergies = energyCalculator.calculateTotalEnergies();
@@ -58,7 +90,7 @@ int main(int argc, char *argv[]) {
 
     //Statistics
     energyCalculator.calculateStatistics(globallyClusteredMaxima);
-    std::ofstream yamlFile("energies.yml");
+    std::ofstream yamlFile(pathFilename + ".yml");
     yamlFile << energyCalculator.getYamlDocumentString();
     yamlFile.close();
 
