@@ -56,15 +56,17 @@ void RawDataReader::readElectrons(std::ifstream &input, int totalLength, size_t 
     size_t id = 0;
 
     while (checkEOF(input, totalLength) && id < numberOfSamples) {
+        auto serializedData = readVectorXd(input, size_t(nElectrons)*7+1, 1);
 
-        // don't move read methods into constructor as this messes up the ifstream stride
-        auto sample = readVectorXd(input, size_t(nElectrons),3);
-        auto kineticEnergies = readVectorXd(input, size_t(nElectrons));
+        // create sample
+        auto sample = serializedData.segment(0,3*nElectrons);
+        auto kineticEnergies = serializedData.segment(3*nElectrons, nElectrons);
         auto s = Sample(ElectronsVector(PositionsVector(sample), spins),kineticEnergies);
         samples_.emplace_back(s);
 
-        auto maximum = readVectorXd(input, size_t(nElectrons),3);
-        auto value = readDouble(input);
+        // create reference
+        auto maximum =  serializedData.segment(4*nElectrons, 3*nElectrons);
+        auto value = serializedData[7*nElectrons];
         auto r = Reference(value, ElectronsVector(PositionsVector(maximum), spins), id);
         references_.emplace_back(r);
 
