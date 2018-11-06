@@ -17,18 +17,19 @@
 #include <utility>
 
 bool handleCommandlineArguments(int argc, char **argv,
-                                std::string &pathFilename) {
+                                std::string &basename) {
     if (argc < 1) {
         std::cout << "Usage: \n"
-                  << "Argument 1: path filename (.bin)\n"
+                  << "Argument 1: basename\n"
                   << std::endl;
-        std::cout << "Ethane.bin" << std::endl;
+        std::cout << "raw" << std::endl;
         return false;
     } else if (argc == 2) {
-        pathFilename = argv[1];
+        basename = argv[1];
         try {
-            if (".bin" != pathFilename .substr( pathFilename .length() - 4 ))
-                throw std::invalid_argument("Invalid path file type '" + pathFilename  + "'.");
+            //TODO test for all files in current path that start with basename
+            if (basename.find('.') != std::string::npos)
+                throw std::invalid_argument("Basename '" + basename + "'should not have a file ending.");
         }
         catch (std::invalid_argument &e){
             std::cout << e.what() << std::endl;
@@ -56,7 +57,7 @@ int main(int argc, char *argv[]) {
     std::vector<Reference> globallyIdenticalMaxima;
     std::vector<Sample> samples;
     RawDataReader reader(globallyIdenticalMaxima,samples);
-    reader.read(pathFilename, 100);
+    reader.read(pathFilename);
     auto atoms = reader.getAtoms();
 
     console->info("number of inital refs {}", globallyIdenticalMaxima.size());
