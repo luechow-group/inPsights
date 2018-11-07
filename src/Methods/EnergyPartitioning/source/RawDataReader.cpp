@@ -78,18 +78,16 @@ void RawDataReader::read(const std::string &basename, size_t numberOfSamples){
     int fileLength;
 
     auto filename = getFilename(basename, fileCounter);
-    if( fs::exists(fs::current_path()/filename) ) {
+    if( fs::exists(filename) ) {
         input = std::ifstream(filename.c_str(), std::ios::binary);
         fileLength = static_cast<int>(getFileLength(input));
-    } else {
-        std::cout << "File '" << fs::current_path().string()+filename << "' not found. Stopped reading rawdata.";
-        return;
     }
+    else throw std::runtime_error("Could not open file '" + basename + "'");
 
     if( input.good() ) readHeader(input);
     else throw std::runtime_error("Could not open file '" + basename + "'");
 
-    while(fs::exists(fs::current_path()/filename) ) {
+    while(fs::exists(filename) ) {
         if( input.good() ) {
             readSamplesAndMaxima(input, fileLength, numberOfSamples);
 

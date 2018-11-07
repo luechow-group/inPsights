@@ -48,8 +48,16 @@ public:
         std::sort(references_.begin(),references_.end());
         auto beginIt = references_.begin();
 
+
         while (beginIt != references_.end()){
+            auto total = std::distance(references_.begin(), references_.end());
             auto endIt = std::upper_bound(beginIt,references_.end(),Reference((*beginIt).value()+increment_));
+
+            console->info("Global identiy search in interval {} to {}, total: {}",
+                          total-std::distance(beginIt, references_.end()),
+                          total-std::distance(endIt, references_.end()),
+                          std::distance(references_.begin(), references_.end()));
+
             auto it = beginIt;
 
             if(beginIt != endIt){

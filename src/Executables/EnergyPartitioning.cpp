@@ -8,11 +8,6 @@
 #include <GlobalClusterSorter.h>
 #include <EnergyCalculator.h>
 
-#include <MoleculeWidget.h>
-#include <ElectronicWaveFunction.h>
-#include <AtomsVector3D.h>
-#include <ElectronsVector3D.h>
-#include <QApplication>
 #include <algorithm>
 #include <utility>
 
@@ -96,6 +91,11 @@ int main(int argc, char *argv[]) {
     yamlFile.close();
 
     // Visuals
+    /*
+    #include <MoleculeWidget.h>
+    #include <AtomsVector3D.h>
+    #include <ElectronsVector3D.h>
+    #include <QApplication>
     QApplication app(argc, argv);
     setlocale(LC_NUMERIC,"C");
 
@@ -107,5 +107,5 @@ int main(int argc, char *argv[]) {
         ElectronsVector3D(root, atoms, i.representativeReference().maximum(), false);
     }
     return QApplication::exec();
-
+    */
 };
