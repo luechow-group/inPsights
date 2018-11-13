@@ -1,4 +1,4 @@
-# inPsights{:red} [![master status](https://git.rwth-aachen.de/luechow-group/inPsights/badges/master/pipeline.svg)](https://git.rwth-aachen.de/luechow-group/inPsights/commits/master)
+# inPsights [![master status](https://git.rwth-aachen.de/luechow-group/inPsights/badges/master/pipeline.svg)](https://git.rwth-aachen.de/luechow-group/inPsights/commits/master)
 inPsights is a toolset for wave function analysis and visualization written in C++. It contains and interfaces the QMC program Amolqc (written in Fortran) as an independent submodule.
 
 ## Purpose
