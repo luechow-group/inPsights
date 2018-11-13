@@ -13,12 +13,12 @@ GNU build:
   - export CC=/usr/bin/gcc
   - export CXX=/usr/bin/g++
   - export FC=/usr/bin/gfortran
-  - export AMOLQC=/builds/luechow-group/Amolqcpp/src/AmolqcInterface/amolqc
+  - export AMOLQC=/builds/luechow-group/inPsights/src/AmolqcInterface/amolqc
   script:
   - mkdir -p cmake-build-debug-gnu
   - cd cmake-build-debug-gnu
   - cmake .. -DCMAKE_BUILD_TYPE=DEBUG -DBUILD_GUI=OFF  -DPFUNIT=OFF
-  - cmake --build . --target AmolqcppTests --
+  - cmake --build . --target inPsightsTests --
   cache:
     key: "$CI_COMMIT_REF_SLUG-GNU"
     paths:
@@ -33,12 +33,12 @@ Intel build:
   - export CXX=/opt/intel/bin/icpc
   - export FC=/opt/intel/bin/ifort
   - export MKLROOT=/opt/intel/mkl
-  - export AMOLQC=/builds/luechow-group/Amolqcpp/src/AmolqcInterface/amolqc
+  - export AMOLQC=/builds/luechow-group/inPsights/src/AmolqcInterface/amolqc
   script:
   - mkdir -p cmake-build-debug-intel
   - cd cmake-build-debug-intel
   - cmake .. -DCMAKE_BUILD_TYPE=DEBUG -DBUILD_GUI=OFF -DPFUNIT=OFF
-  - cmake --build . --target AmolqcppTests --
+  - cmake --build . --target inPsightsTests --
   cache:
     key: "$CI_COMMIT_REF_SLUG-Intel"
     paths:

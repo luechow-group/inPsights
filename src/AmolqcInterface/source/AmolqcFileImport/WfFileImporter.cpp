@@ -52,7 +52,7 @@ AtomsVector WfFileImporter::getAtomsVector() {
       double y = std::stod(lineElements[2]);
       double z = std::stod(lineElements[3]);
 
-      // The internal amolqc and Amolqcpp default is bohr, if not bohr, convert to bohr
+      // The internal amolqc and inPsights default is bohr, if not bohr, convert to bohr
       if(!bohrQ_){
         x *= ConversionFactors::angstrom2bohr;
         y *= ConversionFactors::angstrom2bohr;

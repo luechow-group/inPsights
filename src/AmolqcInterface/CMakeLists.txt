@@ -43,7 +43,7 @@ target_include_directories(${PROJECT_NAME}
 target_link_libraries(${PROJECT_NAME}
         BaseLib
         cppoptlib
-        AmolqcppInterface
+        inPsightsInterface
         )
 
 #add_gtest_subdirectory_with_dependency(tests "gtest;pthread")

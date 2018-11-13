@@ -2,9 +2,8 @@ cmake_minimum_required(VERSION 3.5)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake/Modules")
 
 set(CMAKE_CXX_STANDARD 14)
-set(CMAKE_CXX_STANDARD_REQUIRED YES)
 
-project(Amolqcpp)
+project(inPsights)
 include(cmake/SetCompilers.cmake)
 
 # Prevent error from policy CMP0042. See >>> cmake  --help-policy CMP0042
@@ -32,6 +31,6 @@ endif()
 
 # Ctest related
 enable_testing()
-add_custom_target(AmolqcppTests COMMAND "")
+add_custom_target(inPsightsTests COMMAND "")
 include(cmake/add_gtest_subdirectory_with_dependency.cmake)
 add_subdirectory(src)

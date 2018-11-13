@@ -3,7 +3,7 @@ function(add_gtest_subdirectory_with_dependency directoryName libraries)
 
     add_executable(${PROJECT_NAME}_${directoryName}.exe ${TEST_SOURCE_FILES})
 
-    add_dependencies(AmolqcppTests ${PROJECT_NAME}_${directoryName}.exe)
+    add_dependencies(inPsightsTests ${PROJECT_NAME}_${directoryName}.exe)
 
     target_link_libraries(${PROJECT_NAME}_${directoryName}.exe
             ${PROJECT_NAME}
