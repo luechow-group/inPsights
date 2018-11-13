@@ -16,9 +16,23 @@ public:
             std::vector<Sample>& samples,
             int recordDelimiterLength = 4);
 
-    void read(const std::string& fileName) override;
+    void read(const std::string& basename) override;
+    
+    void read(const std::string& basename, size_t numberOfSamples);
 
+    AtomsVector getAtoms() const;
+    
 private:
+    void readHeader(std::ifstream& input);
+    void readAtomsHeader(std::ifstream &input);
+    void readElectronsHeader(std::ifstream &input);
+    void readSamplesAndMaxima(std::ifstream &input, int fileLength, size_t numberOfSamples);
+    std::string zeroPadNumber(int num);
+    long long int getFileLength(std::ifstream &input) const;
+    std::string getFilename(const std::string &basename, unsigned fileCounter);
+    
+    AtomsVector atoms_;
+    SpinTypesVector spins_;
     std::vector<Reference>& references_;
     std::vector<Sample>& samples_;
 };

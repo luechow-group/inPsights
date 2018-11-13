@@ -17,8 +17,8 @@ namespace CoulombPotential {
     Eigen::MatrixXd energies(const ParticlesVector<Type> &pv, bool atomicUnits = true){
         Eigen::MatrixXd V = Eigen::MatrixXd::Zero(pv.numberOfEntities(),pv.numberOfEntities());
 
-        for (size_t i = 0; i < V.rows(); i++)
-            for (size_t j = i + 1; j < V.cols(); j++)
+        for (Eigen::Index i = 0; i < V.rows(); i++)
+            for (Eigen::Index j = i + 1; j < V.cols(); j++)
                 V(i,j) = pv[i].charge() * pv[j].charge() / Metrics::distance(pv[i].position(), pv[j].position());
 
         // symmetrization
@@ -35,8 +35,8 @@ namespace CoulombPotential {
                              const ParticlesVector<Type2> &pv2, bool atomicUnits = true){
         Eigen::MatrixXd V(pv1.numberOfEntities(),pv2.numberOfEntities());
 
-        for (size_t i = 0; i < V.rows(); i++)
-            for (size_t j = 0; j < V.cols(); j++)
+        for (Eigen::Index i = 0; i < V.rows(); i++)
+            for (Eigen::Index j = 0; j < V.cols(); j++)
                 V(i,j) = pv1[i].charge() * pv2[j].charge() / Metrics::distance(pv1[i].position(), pv2[j].position());
 
         // optionally calculate in SI units

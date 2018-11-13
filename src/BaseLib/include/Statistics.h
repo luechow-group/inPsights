@@ -27,6 +27,8 @@ namespace Statistics {
             lastMean_.setZero();
             unnormalisedVariance_.setZero();
             lastUnnormalisedVariance_.setZero();
+            cwiseMin_.setZero();
+            cwiseMax_.setZero();
         }
         
         void add(const Derived &sample, WeightType w = 1) {
@@ -42,11 +44,21 @@ namespace Statistics {
 
                 lastMean_ = mean_;
                 lastUnnormalisedVariance_ = unnormalisedVariance_;
+                cwiseMin_ = cwiseMin_.cwiseMin(sample);
+                cwiseMax_ = cwiseMax_.cwiseMax(sample);
             }
         }
 
         Derived mean() const {
-            return mean_.matrix();
+            return mean_;
+        }
+
+        Derived cwiseMin() const {
+            return cwiseMin_;
+        }
+
+        Derived cwiseMax() const {
+            return cwiseMax_;
         }
 
         Derived variance() const {
@@ -65,7 +77,7 @@ namespace Statistics {
             return totalWeight_;
         }
 
-        void toYaml(YAML::Emitter &out, bool excludeSelfinteractionQ = false) const {
+        void toYaml(YAML::Emitter &out, bool excludeSelfinteractionQ = false, bool printStandardDeviationQ = true) const {
             using namespace YAML;
 
             out << BeginMap;
@@ -78,7 +90,7 @@ namespace Statistics {
                         out << Key << j << Value
                             << Flow << BeginSeq
                             << mean()(i, j);
-                        if(getTotalWeight() > 1) out << standardError()(i, j);
+                        if(getTotalWeight() > 1 && printStandardDeviationQ) out << standardError()(i, j);
                         out << EndSeq;
                     }
                     out << EndMap;
@@ -100,6 +112,9 @@ namespace Statistics {
             lastMean_ = mean_;
             unnormalisedVariance_ = Derived::Zero(sample.rows(), sample.cols());
             lastUnnormalisedVariance_ = unnormalisedVariance_;
+
+            cwiseMin_ = sample;
+            cwiseMax_ = sample;
         }
 
         //https://en.wikipedia.org/wiki/Variance#Population_variance_and_sample_variance
@@ -130,7 +145,7 @@ namespace Statistics {
 
         bool initializedQ_;
         WeightType totalWeight_,squaredTotalWeight_;
-        Derived mean_, lastMean_, unnormalisedVariance_, lastUnnormalisedVariance_;
+        Derived mean_, lastMean_, unnormalisedVariance_, lastUnnormalisedVariance_, cwiseMin_, cwiseMax_;
     };
 }
 

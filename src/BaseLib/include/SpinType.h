@@ -10,7 +10,7 @@
 
 namespace Spins {
     enum class SpinType {
-        alpha=-2, beta=-1,none=0
+        alpha=-2, beta=-1,none=0 // use negative numbers to avoid clash with elments
     };
 
     SpinType first();

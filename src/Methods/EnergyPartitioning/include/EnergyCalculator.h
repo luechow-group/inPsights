@@ -13,6 +13,7 @@
 #include <Logger.h>
 #include <spdlog/spdlog.h>
 #include <CoulombPotential.h>
+#include <SpinCorrelation.h>
 
 class EnergyCalculator{
 public:
@@ -71,34 +72,20 @@ public:
     }
 
 
-    unsigned long addEnergies(const Reference &reference) {
-        unsigned long count = reference.count();
+    unsigned long addReference(const Reference &reference) {
+        auto count = unsigned(reference.count());
 
-        Te_ = samples_[reference.id_].kineticEnergies_;
-        Vee_ = CoulombPotential::energies(samples_[reference.id_].sample_);
-        Ven_ = CoulombPotential::energies(samples_[reference.id_].sample_,atoms_);
+        Eigen::VectorXd value(1); value[0] = reference.value();
+        Eigen::MatrixXd spinCorrelations_ = SpinCorrelation::spinCorrelations(reference.maximum().typesVector()).cast<double>();
+        Eigen::VectorXd Te_ = samples_[reference.ownId()].kineticEnergies_;
+        Eigen::MatrixXd Vee_ = CoulombPotential::energies(samples_[reference.ownId()].sample_);
+        Eigen::MatrixXd Ven_ = CoulombPotential::energies(samples_[reference.ownId()].sample_,atoms_);
 
-        TeStats_.add(Te_, unsigned(count));
-        VeeStats_.add(Vee_, unsigned(count));
-        VenStats_.add(Ven_, unsigned(count));
-
-        return count;
-    }
-
-    //TODO eliminate by permuting the samples
-    unsigned long addEnergies(const Reference &reference, const Eigen::PermutationMatrix<Eigen::Dynamic>& perm){
-        unsigned long count = reference.count();
-
-        auto sampleCopy = samples_[reference.id_].sample_;
-        sampleCopy.permute(perm);
-
-        Te_ = perm* (samples_[reference.id_].kineticEnergies_);
-        Vee_ = CoulombPotential::energies<Spin>(sampleCopy);
-        Ven_ = CoulombPotential::energies<Spin,Element>(sampleCopy, atoms_);
-
-        TeStats_.add(Te_, unsigned(count));
-        VeeStats_.add(Vee_, unsigned(count));
-        VenStats_.add(Ven_, unsigned(count));
+        valueStats_.add(value, count);
+        spinCorrelationsStats_.add(spinCorrelations_, count);
+        TeStats_.add(Te_, count);
+        VeeStats_.add(Vee_, count);
+        VenStats_.add(Ven_, count);
 
         return count;
     }
@@ -117,24 +104,24 @@ public:
 
         size_t totalCount = 0;
         for (auto& cluster : clusteredGloballySimilarMaxima) {
-            for (auto &simRefVector : cluster) {
 
+            auto types = cluster[0].representativeReference().maximum().typesVector().asEigenVector();
+
+            for (auto &simRefVector : cluster) {
+                valueStats_.reset();
+                spinCorrelationsStats_.reset();
                 TeStats_.reset();
                 VeeStats_.reset();
                 VenStats_.reset();
 
-                // Representative reference
-                size_t repRefCount = addEnergies(*simRefVector.repRefIt_);
-
-                size_t simRefCount = 0;
-
                 // Iterate over references being similar to the representative reference.
-                for (const auto &simRef : simRefVector.similarReferences_)
-                    simRefCount += addEnergies(*simRef.it_, simRef.perm_);
+                std::vector<ElectronsVector> structures;
+                for (const auto &ref : simRefVector.similarReferencesIterators()){
+                    totalCount += addReference(*ref);
+                    structures.push_back(ref->maximum());
+                }
 
-
-                printCluster();
-                totalCount += repRefCount + simRefCount;
+                printCluster(structures);
             }
         }
         console->info("overall count {}", totalCount);
@@ -145,12 +132,26 @@ public:
     }
 
 
-    void printCluster(){
+    void printCluster(std::vector<ElectronsVector>& structures){
         using namespace YAML;
 
         yamlDocument_
         << BeginMap
         << Key << "N" << Value << TeStats_.getTotalWeight()
+        << Key << "ValueRange" << Value << Comment("[]") << Flow << BeginSeq
+        << valueStats_.cwiseMin()[0]
+        << valueStats_.cwiseMax()[0] << EndSeq
+        << Key << "Structures" << Comment("[a0]") << Value << BeginSeq;
+        for (auto& i : structures) {
+            yamlDocument_ << i;
+        }
+
+        yamlDocument_
+        << EndSeq << Newline
+        << Key << "SpinCorrelations" << Comment("[]");
+        spinCorrelationsStats_.toYaml(yamlDocument_, true, false);
+
+        yamlDocument_
         << Key << "Te" << Comment("[Eh]");
         TeStats_.toYaml(yamlDocument_);
 
@@ -172,15 +173,14 @@ private:
     const std::vector<Sample>& samples_;
     AtomsVector atoms_;
 
-    Statistics::RunningStatistics<Eigen::VectorXd> TeStats_;
+    Statistics::RunningStatistics<Eigen::MatrixXd> spinCorrelationsStats_;
+    Statistics::RunningStatistics<Eigen::VectorXd> TeStats_, valueStats_;
     Statistics::RunningStatistics<Eigen::MatrixXd> VeeStats_, VenStats_, VnnStats_;
 
-    Eigen::VectorXd Te_;
-    Eigen::MatrixXd Vee_, Ven_, Vnn_;
+    Eigen::MatrixXd Vnn_;
 
     YAML::Emitter yamlDocument_;
     std::shared_ptr<spdlog::logger> console;
 };
-
 
 #endif //AMOLQCPP_ENERGYCALCULATOR_H

@@ -16,7 +16,8 @@
 class GlobalIdentiySorter{
 public:
 
-    GlobalIdentiySorter(std::vector<Reference>& references, std::vector<Sample>& samples, double increment, double distThresh)
+    GlobalIdentiySorter(std::vector<Reference> &references, std::vector<Sample> &samples,
+            double distThresh, double increment)
             :
             references_(references),
             samples_(samples),
@@ -32,7 +33,7 @@ public:
 
     GlobalIdentiySorter(std::vector<Reference>& references, std::vector<Sample>& samples, double distThresh = 0.01)
             :
-            GlobalIdentiySorter(references, samples, (*references.rbegin()).negLogSqrdProbabilityDensity_ * 1e-7, distThresh)
+            GlobalIdentiySorter(references, samples, distThresh, (*references.rbegin()).value() * 1e-7)
     {}
 
     bool sort(){
@@ -47,8 +48,16 @@ public:
         std::sort(references_.begin(),references_.end());
         auto beginIt = references_.begin();
 
+
         while (beginIt != references_.end()){
-            auto endIt = std::upper_bound(beginIt,references_.end(),Reference((*beginIt).negLogSqrdProbabilityDensity_+increment_));
+            auto total = std::distance(references_.begin(), references_.end());
+            auto endIt = std::upper_bound(beginIt,references_.end(),Reference((*beginIt).value()+increment_));
+
+            console->info("Global identiy search in interval {} to {}, total: {}",
+                          total-std::distance(beginIt, references_.end()),
+                          total-std::distance(endIt, references_.end()),
+                          std::distance(references_.begin(), references_.end()));
+
             auto it = beginIt;
 
             if(beginIt != endIt){
@@ -68,26 +77,26 @@ private:
             std::vector<Reference>::iterator& endIt) {
 
         //TODO calculate only alpha electron distances and skip beta electron hungarian if dist is too large
-        auto bestMatch = Metrics::spinSpecificBestMatch((*it).maximum_, (*beginIt).maximum_);
+        auto bestMatch = Metrics::spinSpecificBestMatch((*it).maximum(), (*beginIt).maximum());
 
-        if((*beginIt).maximum_.typesVector().multiplicity() == 1) { // consider spin flip
+        if((*beginIt).maximum().typesVector().multiplicity() == 1) { // consider spin flip
 
             auto bestMatchFlipped =
-                    Metrics::spinSpecificBestMatch<Eigen::Infinity, 2>((*it).maximum_, (*beginIt).maximum_, true);
+                    Metrics::spinSpecificBestMatch<Eigen::Infinity, 2>((*it).maximum(), (*beginIt).maximum(), true);
 
             if( (bestMatch.first <= distThresh_) || (bestMatchFlipped.first <= distThresh_) ){
                 if(bestMatch.first <= bestMatchFlipped.first)
                     addReference(beginIt, it, bestMatch.second);
                 else
                     addReference(beginIt, it, bestMatchFlipped.second);
-                endIt = std::upper_bound(beginIt, references_.end(), Reference((*beginIt).negLogSqrdProbabilityDensity_+increment_));
+                endIt = std::upper_bound(beginIt, references_.end(), Reference((*beginIt).value()+increment_));
             }
             else it++;
         }
         else {  // don't consider spin flip
             if( (bestMatch.first <= distThresh_) ) {
                 addReference(beginIt, it, bestMatch.second);
-                endIt = std::upper_bound(beginIt,references_.end(),Reference((*beginIt).negLogSqrdProbabilityDensity_+increment_));
+                endIt = std::upper_bound(beginIt,references_.end(),Reference((*beginIt).value()+increment_));
             }
             else it++;
         }
@@ -99,11 +108,8 @@ private:
             std::vector<Reference>::iterator &it,
             const Eigen::PermutationMatrix<Eigen::Dynamic> &bestMatch) const {
 
-        samples_[(*it).id_].sample_.permute(bestMatch);
-        samples_[(*it).id_].kineticEnergies_ = bestMatch * samples_[(*it).id_].kineticEnergies_;
-
-        (*beginIt).addAssociations(it);
-
+        (*it).permute(bestMatch,samples_);
+        (*beginIt).mergeReference(it);
         it = references_.erase(it); // erase returns the iterator of the following element
     }
 

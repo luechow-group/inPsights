@@ -37,28 +37,32 @@ public:
 };
 
 TEST_F(AStatisticsTest, Matrix){
-    Statistics::RunningStatistics<Eigen::MatrixXd> meanAndVariance;
-    meanAndVariance.add(mat1);
-    meanAndVariance.add(mat2);
-    meanAndVariance.add(mat3);
+    Statistics::RunningStatistics<Eigen::MatrixXd> stats;
+    stats.add(mat1);
+    stats.add(mat2);
+    stats.add(mat3);
 
-    ASSERT_TRUE(meanAndVariance.mean().isApprox(mat2));
-    ASSERT_TRUE(meanAndVariance.standardDeviation().isApprox(mat1));
+    ASSERT_TRUE(stats.mean().isApprox(mat2));
+    ASSERT_TRUE(stats.standardDeviation().isApprox(mat1));
+    ASSERT_TRUE(stats.cwiseMin().isApprox(mat1));
+    ASSERT_TRUE(stats.cwiseMax().isApprox(mat3));
 }
 
 TEST_F(AStatisticsTest, Vector){
-    Statistics::RunningStatistics<Eigen::VectorXd> meanAndVariance;
-    meanAndVariance.add(vec1);
-    meanAndVariance.add(vec2);
-    meanAndVariance.add(vec3);
+    Statistics::RunningStatistics<Eigen::VectorXd> stats;
+    stats.add(vec1);
+    stats.add(vec2);
+    stats.add(vec3);
 
-    ASSERT_TRUE(meanAndVariance.mean().isApprox(vec2));
-    ASSERT_TRUE(meanAndVariance.standardDeviation().isApprox(vec1));
+    ASSERT_TRUE(stats.mean().isApprox(vec2));
+    ASSERT_TRUE(stats.standardDeviation().isApprox(vec1));
+    ASSERT_TRUE(stats.cwiseMin().isApprox(vec1));
+    ASSERT_TRUE(stats.cwiseMax().isApprox(vec3));
 }
 
 TEST_F(AStatisticsTest, UnsignedIntegerWeights){
     // unsigned is the default template parameter
-    Statistics::RunningStatistics<Eigen::VectorXd> meanAndVariance;
+    Statistics::RunningStatistics<Eigen::VectorXd> stats;
 
     Eigen::VectorXd vec1(2);
     vec1 << -2,-4;
@@ -66,54 +70,100 @@ TEST_F(AStatisticsTest, UnsignedIntegerWeights){
     vec2 << 1,2;
 
 
-    meanAndVariance.add(vec1,1);
-    meanAndVariance.add(vec2,2);
+    stats.add(vec1,1);
+    stats.add(vec2,2);
 
     Eigen::VectorXd expectedMean(2);
     expectedMean << 0,0;
     Eigen::VectorXd expectedVariance(2);
     expectedVariance << 3,12;
 
-    ASSERT_TRUE(meanAndVariance.mean().isApprox(expectedMean));
-    ASSERT_TRUE(meanAndVariance.variance().isApprox(expectedVariance));
-
+    ASSERT_TRUE(stats.mean().isApprox(expectedMean));
+    ASSERT_TRUE(stats.variance().isApprox(expectedVariance));
+    ASSERT_TRUE(stats.cwiseMin().isApprox(vec1));
+    ASSERT_TRUE(stats.cwiseMax().isApprox(vec2));
+    
     // Reset
-    meanAndVariance.reset();
+    stats.reset();
 
-    meanAndVariance.add(vec1,1);
-    meanAndVariance.add(vec2,1);
-    meanAndVariance.add(vec2,1);
+    stats.add(vec1,1);
+    stats.add(vec2,1);
+    stats.add(vec2,1);
 
-    ASSERT_TRUE(meanAndVariance.mean().isApprox(expectedMean));
-    ASSERT_TRUE(meanAndVariance.variance().isApprox(expectedVariance));
+    ASSERT_TRUE(stats.mean().isApprox(expectedMean));
+    ASSERT_TRUE(stats.variance().isApprox(expectedVariance));
+    ASSERT_TRUE(stats.cwiseMin().isApprox(vec1));
+    ASSERT_TRUE(stats.cwiseMax().isApprox(vec2));
 }
 
 TEST_F(AStatisticsTest, DoublePrecisionWeights){
-    Statistics::RunningStatistics<Eigen::VectorXd,double> meanAndVariance;
+    Statistics::RunningStatistics<Eigen::VectorXd,double> stats;
 
     Eigen::VectorXd vec1(2);
     vec1 << -2,-4;
     Eigen::VectorXd vec2(2);
     vec2 << 1,2;
 
-    meanAndVariance.add(vec1,1.0);
-    meanAndVariance.add(vec2,2.0);
+    stats.add(vec1,1.0);
+    stats.add(vec2,2.0);
 
     Eigen::VectorXd expectedMean(2);
     expectedMean << 0,0;
     Eigen::VectorXd expectedVariance(2);
     expectedVariance << 3,12;
 
-    ASSERT_TRUE(meanAndVariance.mean().isApprox(expectedMean));
-    ASSERT_TRUE(meanAndVariance.variance().isApprox(expectedVariance));
+    ASSERT_TRUE(stats.mean().isApprox(expectedMean));
+    ASSERT_TRUE(stats.variance().isApprox(expectedVariance));
+    ASSERT_TRUE(stats.cwiseMin().isApprox(vec1));
+    ASSERT_TRUE(stats.cwiseMax().isApprox(vec2));
 
     // Reset
-    meanAndVariance.reset();
+    stats.reset();
 
-    meanAndVariance.add(vec1);
-    meanAndVariance.add(vec2);
-    meanAndVariance.add(vec2);
+    stats.add(vec1);
+    stats.add(vec2);
+    stats.add(vec2);
 
-    ASSERT_TRUE(meanAndVariance.mean().isApprox(expectedMean));
-    ASSERT_TRUE(meanAndVariance.variance().isApprox(expectedVariance));
+    ASSERT_TRUE(stats.mean().isApprox(expectedMean));
+    ASSERT_TRUE(stats.variance().isApprox(expectedVariance));
+    ASSERT_TRUE(stats.cwiseMin().isApprox(vec1));
+    ASSERT_TRUE(stats.cwiseMax().isApprox(vec2));
+}
+
+TEST_F(AStatisticsTest, MinMax){
+    Statistics::RunningStatistics<Eigen::VectorXd> stats;
+    
+    Eigen::VectorXd v1(2),v2(2);
+    v1 << -1, 2;
+    v2 << 1,-2;
+    
+    stats.add(v1);
+    stats.add(v2);
+
+    Eigen::VectorXd min(2),max(2);
+    min << -1,-2;
+    max <<  1, 2;
+    
+    ASSERT_TRUE(stats.cwiseMin().isApprox(min));
+    ASSERT_TRUE(stats.cwiseMax().isApprox(max));
+    
+}
+
+TEST_F(AStatisticsTest, SingleValue){
+    Statistics::RunningStatistics<Eigen::Matrix<double,1,1>> stats;
+
+    Eigen::VectorXd v1(1),v2(1);
+    v1 << -1;
+    v2 << 1;
+
+    stats.add(v1);
+    stats.add(v2);
+
+    Eigen::VectorXd min(1),max(1);
+    min << -1;
+    max <<  1;
+
+    ASSERT_TRUE(stats.cwiseMin().isApprox(min));
+    ASSERT_TRUE(stats.cwiseMax().isApprox(max));
+
 }

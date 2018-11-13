@@ -9,7 +9,7 @@ Spin Spins::first() {
 };
 
 Spin Spins::last(){
-return Spin::beta;
+    return Spin::beta;
 };
 
 Spin Spins::spinFromInt(int type){

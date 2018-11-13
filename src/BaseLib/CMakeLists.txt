@@ -45,6 +45,7 @@ set(HEADER_FILES
         include/InsertableVector.h
         include/Logger.h
         include/Statistics.h
+        include/SpinCorrelation.h
         )
 
 set(SOURCE_FILES

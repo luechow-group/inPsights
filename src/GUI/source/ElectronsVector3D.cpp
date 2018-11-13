@@ -73,7 +73,7 @@ void ElectronsVector3D::drawConnections(Qt3DCore::QEntity *root,
 
     for (long i = 0; i < electronsVector.numberOfEntities(); ++i) {
         bool notAtNuclei = true;
-        for (int k = 0; k < atomsVector.numberOfEntities(); ++k) {
+        for (long k = 0; k < atomsVector.numberOfEntities(); ++k) {
             if (Metrics::distance(electronsVector[i].position(), atomsVector[k].position()) < 0.1) {
                 notAtNuclei *= false;
             }
@@ -82,8 +82,8 @@ void ElectronsVector3D::drawConnections(Qt3DCore::QEntity *root,
     }
 
 
-    for (long i = 0; i < electronsNotInNuclei.size(); ++i) {
-        for (long j = i+1; j < electronsNotInNuclei.size(); ++j) {
+    for (size_t i = 0; i < electronsNotInNuclei.size(); ++i) {
+        for (size_t j = i+1; j < electronsNotInNuclei.size(); ++j) {
 
             auto e1 = electronsVector[electronsNotInNuclei[i]];
             auto e2 = electronsVector[electronsNotInNuclei[j]];

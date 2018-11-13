@@ -49,6 +49,14 @@ public:
         return Eigen::Map<Eigen::VectorXd>(coords, entityLength*numberOfEntities);
     }
 
+    Eigen::VectorXi readVectorXi(std::ifstream &input,  size_t numberOfEntities, size_t entityLength = 1) const {
+        int coords[entityLength*numberOfEntities];
+        input.seekg(recordDelimiterLength_, std::ios_base::cur);
+        input.read((char*) &coords, entityLength*numberOfEntities*sizeof(int) );
+        input.seekg(recordDelimiterLength_, std::ios_base::cur);
+        return Eigen::Map<Eigen::VectorXi>(coords, entityLength*numberOfEntities);
+    }
+
 private:
     int recordDelimiterLength_ = 4;
 };

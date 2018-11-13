@@ -5,8 +5,7 @@
 #ifndef AMOLQCPP_GLOBALSIMILARITYSORTER_H
 #define AMOLQCPP_GLOBALSIMILARITYSORTER_H
 
-#include "Reference.h"
-#include "Sample.h"
+#include "SimilarReferences.h"
 #include <Logger.h>
 #include <HungarianHelper.h>
 #include <spdlog/spdlog.h>
@@ -15,14 +14,15 @@
 class GlobalSimilaritySorter {
 public:
 
-    GlobalSimilaritySorter(
-            std::vector<Reference>& references,
-            std::vector<SimilarReferences>& similarReferencesVector,
-            double distThresh = 0.1)
+    GlobalSimilaritySorter(std::vector<Sample> &samples, std::vector<Reference> &references,
+                               std::vector<SimilarReferences> &similarReferencesVector,
+                               double distThresh, double increment)
             :
+            samples_(samples),
             references_(references),
             similarReferencesVector_(similarReferencesVector),
             distThresh_(distThresh),
+            increment_(increment),
             console(spdlog::get(Logger::name))
     {
         if(!console){
@@ -30,6 +30,16 @@ public:
             console = spdlog::get(Logger::name);
         };
     }
+
+    GlobalSimilaritySorter(
+            std::vector<Sample>& samples,
+            std::vector<Reference>& references,
+            std::vector<SimilarReferences>& similarReferencesVector,
+            double distThresh = 0.1)
+            :
+            GlobalSimilaritySorter(samples, references, similarReferencesVector, distThresh,
+                                   std::abs((*references.rbegin()).value() * 1e-4))
+            {}
 
     bool sort(){
         if(references_.empty()) {
@@ -47,30 +57,46 @@ public:
             beginIt++;
         }
 
-        for (auto it = beginIt; it != references_.end(); ++it) {
+        for (auto ref = beginIt; ref != references_.end(); ++ref) {
             bool isSimilarQ = false;
 
-            for (auto &simRefs : similarReferencesVector_) {
+            std::vector<Reference> lowerRef = {Reference((*ref).value() - increment_)};
+            std::vector<Reference> upperRef = {Reference((*ref).value() + increment_)};
 
+            auto simRefLowerBoundIt = std::lower_bound(
+                    similarReferencesVector_.begin(),
+                    similarReferencesVector_.end(),
+                    SimilarReferences(lowerRef.begin()));
+            auto simRefUpperBoundIt = std::upper_bound(
+                    similarReferencesVector_.begin(),
+                    similarReferencesVector_.end(),
+                    SimilarReferences(upperRef.begin()));
+
+            for (auto simRefs = simRefLowerBoundIt; simRefs != simRefUpperBoundIt; ++simRefs) {
                 auto bestMatch = Metrics::bestMatch<Eigen::Infinity, 2>(
-                        (*it).maximum_,
-                        (*simRefs.repRefIt_).maximum_);
+                        (*ref).maximum(),
+                        (*simRefs).representativeReference().maximum());
 
                 if (bestMatch.first < distThresh_) {
-                    //TODO permute the sample + maximum + kinetic_energies
-                    simRefs.similarReferences_.emplace_back(SimilarReference(it, bestMatch.second));
+                    (*ref).permute(bestMatch.second, samples_);
+                    (*simRefs).add(ref);
                     isSimilarQ = true;
+                    break;
                 }
             }
-            if (!isSimilarQ) similarReferencesVector_.emplace_back(SimilarReferences(it));
+            if (!isSimilarQ) {
+                similarReferencesVector_.emplace_back(SimilarReferences(ref));
+            }
+            std::sort(similarReferencesVector_.begin(),similarReferencesVector_.end());
         }
         return true;
     }
 
 private:
+    std::vector<Sample>& samples_;
     std::vector<Reference>& references_;
     std::vector<SimilarReferences>& similarReferencesVector_;
-    double distThresh_;
+    double distThresh_, increment_;
     std::shared_ptr<spdlog::logger> console;
 };
 
