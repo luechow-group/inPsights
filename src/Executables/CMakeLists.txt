@@ -15,7 +15,7 @@ target_link_libraries(BaseLib.exe
 
 add_executable(EnergyPartitioning.exe EnergyPartitioning.cpp)
 target_link_libraries(EnergyPartitioning.exe
-        #GUI
+        GUI
         AmolqcInterface
         BaseLib
         EnergyPartitioning
