@@ -63,12 +63,12 @@ bool handleCommandlineArguments(int argc, char *const *argv,
 
 
 int main(int argc, char *argv[]) {
-    std::string pathFilename;
+    std::string basename;
     int numberOfSamples = std::numeric_limits<int>::max();
 
-    if (pathFilename.empty()) {
+    if (basename.empty()) {
         bool inputArgumentsFoundQ =
-                handleCommandlineArguments(argc, argv, pathFilename, numberOfSamples);
+                handleCommandlineArguments(argc, argv, basename, numberOfSamples);
         if (!inputArgumentsFoundQ) return 1;
     }
 
@@ -78,7 +78,7 @@ int main(int argc, char *argv[]) {
     std::vector<Reference> globallyIdenticalMaxima;
     std::vector<Sample> samples;
     RawDataReader reader(globallyIdenticalMaxima,samples);
-    reader.read(pathFilename, size_t(numberOfSamples));
+    reader.read(basename, size_t(numberOfSamples));
     auto atoms = reader.getAtoms();
 
     console->info("number of inital refs {}", globallyIdenticalMaxima.size());
@@ -112,11 +112,13 @@ int main(int argc, char *argv[]) {
 
     //Statistics
     energyCalculator.calculateStatistics(globallyClusteredMaxima);
-    std::ofstream yamlFile(pathFilename + ".yml");
+    std::ofstream yamlFile(basename + ".yml");
     yamlFile << energyCalculator.getYamlDocumentString();
     yamlFile.close();
 
+
     // Visuals
+    /*
     QApplication app(argc, argv);
     setlocale(LC_NUMERIC,"C");
 
@@ -124,9 +126,14 @@ int main(int argc, char *argv[]) {
     Qt3DCore::QEntity *root = moleculeWidget.createMoleculeWidget();
     AtomsVector3D(root, atoms);
 
-    for (auto i : globallyClusteredMaxima[0]){
+    for (const auto &i : globallyClusteredMaxima[1]) {
         ElectronsVector3D(root, atoms, i.representativeReference().maximum(), false);
-    }
-    return QApplication::exec();
+        //for (const auto &j : i.similarReferencesIterators())
+        //    ElectronsVector3D(root, atoms, j->maximum(), false);
 
+    }
+    */
+
+
+    return QApplication::exec();
 };

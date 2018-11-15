@@ -13,6 +13,13 @@ target_link_libraries(BaseLib.exe
         BaseLib
         )
 
+add_executable(inPsights.exe inPsights.cpp)
+target_link_libraries(inPsights.exe
+        GUI
+        AmolqcInterface
+        EnergyPartitioning
+        )
+
 add_executable(EnergyPartitioning.exe EnergyPartitioning.cpp)
 target_link_libraries(EnergyPartitioning.exe
         GUI

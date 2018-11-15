@@ -18,8 +18,8 @@
 class EnergyCalculator{
 public:
 
-    struct Energies{
-        Energies()
+    struct TotalEnergies{
+        TotalEnergies()
         : Te(0),Vee(0),Ven(0),Vnn(0){};
 
         double totalEnergy() const {
@@ -44,8 +44,8 @@ public:
         VnnStats_.add(Vnn_);
     }
 
-    Energies calculateTotalEnergies() {
-        Energies energies;
+    TotalEnergies calculateTotalEnergies() {
+        TotalEnergies energies;
         for (auto& sample : samples_) {
             energies.Te += sample.kineticEnergies_.sum();
 
@@ -140,10 +140,18 @@ public:
         << Key << "N" << Value << TeStats_.getTotalWeight()
         << Key << "ValueRange" << Value << Comment("[]") << Flow << BeginSeq
         << valueStats_.cwiseMin()[0]
-        << valueStats_.cwiseMax()[0] << EndSeq
-        << Key << "Structures" << Comment("[a0]") << Value << BeginSeq;
-        for (auto& i : structures) {
-            yamlDocument_ << i;
+        << valueStats_.cwiseMax()[0] << EndSeq;
+
+        yamlDocument_ << Key << "Structures" << Comment("[a0]") << Value << BeginSeq;
+
+        size_t nWanted = 16;
+        if(structures.size() < nWanted){
+            for (auto& i : structures) yamlDocument_ << i;
+        } else {
+            size_t skipLength = (structures.size()-1) / (nWanted-1);
+            for (size_t i = 0; i < nWanted; ++i) {
+                yamlDocument_ << structures[i*skipLength];
+            }
         }
 
         yamlDocument_
