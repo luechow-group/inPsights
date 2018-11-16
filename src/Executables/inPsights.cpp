@@ -9,6 +9,7 @@
 #include <QApplication>
 #include <yaml-cpp/yaml.h>
 #include <ParticlesVector.h>
+#include <Statistics.h>
 
 bool handleCommandlineArguments(int argc, char *const *argv,
                                 std::string &resultFilename,
@@ -70,15 +71,19 @@ int main(int argc, char *argv[]) {
         Ve[i] = Te[i][0].as<double>();
         VeErr[i] = Te[i][1].as<double>();
 
-        for (int k = 0; k < atoms.numberOfEntities(); ++k)
+        for (int k = 0; k < atoms.numberOfEntities(); ++k){
             Ve[i] += Ven[i][k][0].as<double>();
+            VeErr[i] += Ven[i][k][1].as<double>();
+        }
 
-        for (int j = i+1; j < nElectrons; ++j)
+        for (int j = i+1; j < nElectrons; ++j){
             Ve[i] += 0.5*Vee[i][j][0].as<double>();
-
+            VeErr[i] += 0.5*Vee[i][j][1].as<double>();
+        }
+        //TODO FEHLERADDITION
+        std::cout << "Ee = "<<Ve[i] << "+/-" << VeErr[i] <<"  (ERROR is wrong -> add error propagation)"<< std::endl;
     }
-    for (auto e : Ve)
-        std::cout << e << std::endl;
+
 
     return QApplication::exec();
 
