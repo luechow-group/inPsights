@@ -77,7 +77,7 @@ namespace Statistics {
             return totalWeight_;
         }
 
-        void toYaml(YAML::Emitter &out, bool excludeSelfinteractionQ = false, bool printStandardDeviationQ = true) const {
+        void toYaml(YAML::Emitter &out, bool excludeSelfinteractionQ = false) const {
             using namespace YAML;
 
             out << BeginMap;

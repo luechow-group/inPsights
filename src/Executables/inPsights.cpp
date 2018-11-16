@@ -74,7 +74,7 @@ int main(int argc, char *argv[]) {
             Ve[i] += Ven[i][k][0].as<double>();
 
         for (int j = i+1; j < nElectrons; ++j)
-            Ve[i] += Vee[i][j][0].as<double>();
+            Ve[i] += 0.5*Vee[i][j][0].as<double>();
 
     }
     for (auto e : Ve)
