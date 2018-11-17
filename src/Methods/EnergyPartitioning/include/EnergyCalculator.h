@@ -157,7 +157,7 @@ public:
         yamlDocument_
         << EndSeq << Newline
         << Key << "SpinCorrelations" << Comment("[]");
-        spinCorrelationsStats_.toYaml(yamlDocument_, true, false);
+        spinCorrelationsStats_.toYaml(yamlDocument_, true);
 
         yamlDocument_
         << Key << "Te" << Comment("[Eh]");
