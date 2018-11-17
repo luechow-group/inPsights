@@ -11,6 +11,8 @@
 #include <ParticlesVector.h>
 #include <Statistics.h>
 
+#include <InPsightsSplashScreen.h>
+
 bool handleCommandlineArguments(int argc, char *const *argv,
                                 std::string &resultFilename,
                                 size_t &clusterId) {
@@ -29,7 +31,18 @@ bool handleCommandlineArguments(int argc, char *const *argv,
     }
 }
 
+
 int main(int argc, char *argv[]) {
+    Q_INIT_RESOURCE(myresources);
+    QApplication app(argc, argv);
+
+    setlocale(LC_NUMERIC,"C");
+    QWidget* window = new QWidget();
+    auto splash = InPsightsSplashScreen::getInPsightsSplashScreen();
+
+    QTimer::singleShot(4000, splash, SLOT(close()));
+    QTimer::singleShot(4000, window, SLOT(show()));
+
     std::string resultFilename;
     size_t clusterId = 0;
 
@@ -53,8 +66,7 @@ int main(int argc, char *argv[]) {
     auto Vee = cluster["Vee"];
     auto Ven = cluster["Ven"];
 
-    QApplication app(argc, argv);
-    setlocale(LC_NUMERIC,"C");
+
 
     Qt3DCore::QEntity *root = MoleculeWidget::createMoleculeWidget();
     AtomsVector3D(root, atoms);
@@ -82,7 +94,6 @@ int main(int argc, char *argv[]) {
         //TODO FEHLERADDITION
         std::cout << "Ee = "<<Ve[i] << "+/-" << VeErr[i] <<"  (ERROR is wrong -> add error propagation)"<< std::endl;
     }
-
 
     return QApplication::exec();
 
