@@ -7,13 +7,8 @@
 
 #include <Qt3DCore>
 
-class MoleculeWidget{
-public:
-
-    //MoleculeWidget();
-
+namespace MoleculeWidget{
     Qt3DCore::QEntity* createMoleculeWidget();
-
 };
 
 #endif //AMOLQCPP_MOLECULEWIDGET_H

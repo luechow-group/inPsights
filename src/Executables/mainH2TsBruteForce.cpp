@@ -141,8 +141,7 @@ int main(int argc, char *argv[]) {
         shortenedPath.append(ElectronCollection(vec, optimizationPath.getSpinTypeCollection().asEigenVector()()));
 
         // Visualization
-        MoleculeWidget moleculeWidget;
-        Qt3DCore::QEntity *root = moleculeWidget.createMoleculeWidget();
+        Qt3DCore::QEntity *root = MoleculeWidget ::createMoleculeWidget();
 
         AtomCollection3D(root, ElectronicWaveFunction::getInstance().getAtomCollection());
 

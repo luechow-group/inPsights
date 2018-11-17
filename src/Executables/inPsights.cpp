@@ -56,8 +56,7 @@ int main(int argc, char *argv[]) {
     QApplication app(argc, argv);
     setlocale(LC_NUMERIC,"C");
 
-    MoleculeWidget moleculeWidget;
-    Qt3DCore::QEntity *root = moleculeWidget.createMoleculeWidget();
+    Qt3DCore::QEntity *root = MoleculeWidget::createMoleculeWidget();
     AtomsVector3D(root, atoms);
     ElectronsVector3D(root, electronsVectorCollection[0]);
     //for (const auto & i : electronsVectorCollection)

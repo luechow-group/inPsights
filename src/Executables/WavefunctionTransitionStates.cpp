@@ -143,8 +143,7 @@ int main(int argc, char *argv[]) {
         setlocale(LC_NUMERIC, "C");
 
         // Visualization
-        MoleculeWidget moleculeWidget;
-        Qt3DCore::QEntity *root = moleculeWidget.createMoleculeWidget();
+        Qt3DCore::QEntity *root = MoleculeWidget ::createMoleculeWidget();
 
         // Plot atoms
         AtomsVector3D(root, av);

@@ -118,12 +118,11 @@ int main(int argc, char *argv[]) {
 
 
     // Visuals
-    /*
+
     QApplication app(argc, argv);
     setlocale(LC_NUMERIC,"C");
 
-    MoleculeWidget moleculeWidget;
-    Qt3DCore::QEntity *root = moleculeWidget.createMoleculeWidget();
+    Qt3DCore::QEntity *root = MoleculeWidget::createMoleculeWidget();
     AtomsVector3D(root, atoms);
 
     for (const auto &i : globallyClusteredMaxima[1]) {
@@ -132,7 +131,7 @@ int main(int argc, char *argv[]) {
         //    ElectronsVector3D(root, atoms, j->maximum(), false);
 
     }
-    */
+
 
 
     return QApplication::exec();

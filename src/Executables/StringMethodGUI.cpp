@@ -184,8 +184,7 @@ initialCoordinates.row((18 - 1) * 3 + 2) -= 0.05 * bend;//z bend
 
 
     //visualization
-    MoleculeWidget moleculeWidget;
-    Qt3DCore::QEntity *root = moleculeWidget.createMoleculeWidget();
+    Qt3DCore::QEntity *root = MoleculeWidget::createMoleculeWidget();
 
     // draw molecular geometry
     std::cout << "wf:" << ElectronicWaveFunction::getInstance().getFileName() << std::endl;
