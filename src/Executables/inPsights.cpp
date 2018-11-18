@@ -12,6 +12,8 @@
 #include <Statistics.h>
 
 #include <InPsightsSplashScreen.h>
+#include <QHBoxLayout>
+#include <QRadioButton>
 
 bool handleCommandlineArguments(int argc, char *const *argv,
                                 std::string &resultFilename,
@@ -38,6 +40,16 @@ int main(int argc, char *argv[]) {
 
     setlocale(LC_NUMERIC,"C");
     QWidget* window = new QWidget();
+
+    auto moleculeWidget = new MoleculeWidget();
+    auto layout = new QHBoxLayout();
+    auto radioButton = new QRadioButton();
+
+    layout->addWidget(moleculeWidget->getWidget(),Qt::AlignLeft);
+    layout->addWidget(radioButton);
+    window->setLayout(layout);
+    window->resize(800,800);
+
     auto splash = InPsightsSplashScreen::getInPsightsSplashScreen();
 
     QTimer::singleShot(4000, splash, SLOT(close()));
@@ -67,12 +79,11 @@ int main(int argc, char *argv[]) {
     auto Ven = cluster["Ven"];
 
 
-
-    Qt3DCore::QEntity *root = MoleculeWidget::createMoleculeWidget();
-    AtomsVector3D(root, atoms);
-    ElectronsVector3D(root, electronsVectorCollection[0]);
+    AtomsVector3D(moleculeWidget->getRoot(), atoms);
+    ElectronsVector3D(moleculeWidget->getRoot(), electronsVectorCollection[0]);
     //for (const auto & i : electronsVectorCollection)
     //    ElectronsVector3D(root, i);
+
 
     auto nElectrons = Te.size();
     std::vector<double> Ve(nElectrons);

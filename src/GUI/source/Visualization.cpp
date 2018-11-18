@@ -51,7 +51,8 @@ namespace Visualization {
         }
 
         // Visualization
-        Qt3DCore::QEntity *root = MoleculeWidget::createMoleculeWidget();
+        auto moleculeWidget = new MoleculeWidget();
+        Qt3DCore::QEntity *root = moleculeWidget->getRoot();
 
         AtomsVector3D(root, atoms);
 

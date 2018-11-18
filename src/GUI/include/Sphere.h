@@ -9,17 +9,16 @@
 #include "Abstract3dObject.h"
 
 class Sphere : public Abstract3dObject{
-  //Q_OBJECT
 public:
     Sphere(Qt3DCore::QEntity *root, QColor color, const QVector3D location, const float radius);
     ~Sphere(){};
 
-  float getRadius() const { return radius_;};
+    float getRadius() const { return radius_;};
 
-  void setRadius(const float radius) {
-    radius_ = radius;
-    mesh_->setRadius(radius);
-  };
+    void setRadius(const float radius) {
+        radius_ = radius;
+        mesh_->setRadius(radius);
+    };
 
 private:
     float radius_;

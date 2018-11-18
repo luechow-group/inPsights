@@ -184,7 +184,8 @@ initialCoordinates.row((18 - 1) * 3 + 2) -= 0.05 * bend;//z bend
 
 
     //visualization
-    Qt3DCore::QEntity *root = MoleculeWidget::createMoleculeWidget();
+    auto moleculeWidget = new MoleculeWidget();
+    auto root = moleculeWidget->getRoot();
 
     // draw molecular geometry
     std::cout << "wf:" << ElectronicWaveFunction::getInstance().getFileName() << std::endl;
@@ -206,25 +207,6 @@ initialCoordinates.row((18 - 1) * 3 + 2) -= 0.05 * bend;//z bend
 
     BSplines::ArcLengthParametrizedBSpline bs = stringMethod.getArcLengthParametrizedBSpline();
     StringMethodCoordinatesPlotter bSplinePlotter(root, bs, 100, 0.01f);
-
-    Qt3DExtras::Qt3DWindow *view = new Qt3DExtras::Qt3DWindow();
-    view->defaultFrameGraph()->setClearColor(Qt::white);
-
-    QWidget *moleculeView = QWidget::createWindowContainer(view);
-
-    // camera
-    Qt3DRender::QCamera *camera = view->camera();
-    camera->lens()->setPerspectiveProjection(45.0f, 16.0f / 9.0f, 0.1f, 100.0f);
-    camera->setPosition(QVector3D(2.5, -5.00, 0.0)); // ethane
-    camera->setViewCenter(QVector3D(0, 0, 0));
-
-    // manipulator
-    Qt3DExtras::QOrbitCameraController *manipulator = new Qt3DExtras::QOrbitCameraController(root);
-    manipulator->setLinearSpeed(50.f);
-    manipulator->setLookSpeed(180.f);
-    manipulator->setCamera(camera);
-
-    view->setRootEntity(root);
 
     StringMethodValuesPlotter stringMethodValuesPlotter;
     QtCharts::QLineSeries *lineSeries = stringMethodValuesPlotter.getLineSeries(bs, 200);

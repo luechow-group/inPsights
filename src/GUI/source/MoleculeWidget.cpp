@@ -2,40 +2,35 @@
 // Created by Michael Heuer on 12.11.17.
 //
 
-#include <Qt3DRender>
-#include <Qt3DExtras>
-#include <QtWidgets/QApplication>
-#include <QtWidgets>
+#include <QWidget>
+#include <MoleculeWidget.h>
 
-#include "MoleculeWidget.h"
-
-
-Qt3DCore::QEntity* MoleculeWidget::createMoleculeWidget() {
-
-    auto *root = new Qt3DCore::QEntity();
-
-    auto *view = new Qt3DExtras::Qt3DWindow();
-    view->defaultFrameGraph()->setClearColor(Qt::white);
-
-    QWidget *moleculeView = QWidget::createWindowContainer(view);
+MoleculeWidget::MoleculeWidget()
+    :
+    root_(new Qt3DCore::QEntity()),
+    qt3DWindow_(new Qt3DExtras::Qt3DWindow()),
+    windowContainer_(QWidget::createWindowContainer(qt3DWindow_)),
+    cameraController_(new Qt3DExtras::QOrbitCameraController(root_))
+{
+    qt3DWindow_->setRootEntity(root_);
 
     // camera
-    view->camera()->lens()->setPerspectiveProjection(45.0f, 16.0f / 9.0f, 0.1f, 100.0f);
-    view->camera()->setPosition(QVector3D(2.5, -8, 0.0));
-    view->camera()->setViewCenter(QVector3D(0, 0, 0));
+    qt3DWindow_->camera()->lens()->setPerspectiveProjection(45.0f, 16.0f / 9.0f, 0.1f, 100.0f);
+    qt3DWindow_->camera()->setPosition(QVector3D(2.5, -8, 0.0));
+    qt3DWindow_->camera()->setViewCenter(QVector3D(0, 0, 0));
 
-    // manipulator
-    auto *manipulator = new Qt3DExtras::QOrbitCameraController(root);
-    manipulator->setLinearSpeed(50.f);
-    manipulator->setLookSpeed(180.f);
-    manipulator->setCamera(view->camera());
+    cameraController_->setLinearSpeed(50.f);
+    cameraController_->setLookSpeed(180.f);
+    cameraController_->setCamera(qt3DWindow_->camera());
 
-    view->setRootEntity(root);
+    //windowContainer_->resize(800, 800);
+    //windowContainer_->show();
+}
 
+Qt3DCore::QEntity* MoleculeWidget::getRoot() {
+    return root_;
+}
 
-    moleculeView->resize(800, 800);
-    moleculeView->show();
-
-
-    return root;
+QWidget *MoleculeWidget::getWidget() {
+    return windowContainer_;
 }

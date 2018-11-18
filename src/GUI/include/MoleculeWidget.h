@@ -6,9 +6,19 @@
 #define AMOLQCPP_MOLECULEWIDGET_H
 
 #include <Qt3DCore>
+#include <Qt3DExtras>
 
-namespace MoleculeWidget{
-    Qt3DCore::QEntity* createMoleculeWidget();
+class MoleculeWidget{
+public:
+    MoleculeWidget();
+    Qt3DCore::QEntity* getRoot();
+    QWidget* getWidget();
+
+private:
+    Qt3DCore::QEntity* root_;
+    Qt3DExtras::Qt3DWindow* qt3DWindow_;
+    QWidget* windowContainer_;
+    Qt3DExtras::QOrbitCameraController* cameraController_;
 };
 
 #endif //AMOLQCPP_MOLECULEWIDGET_H
