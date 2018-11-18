@@ -15,6 +15,33 @@
 #include <QHBoxLayout>
 #include <QRadioButton>
 
+void singleElectronEnergies(const YAML::Node &cluster) {
+    auto Te = cluster["Te"];
+    auto Vee = cluster["Vee"];
+    auto Ven = cluster["Ven"];
+    auto nElectrons = Te.size();
+    auto nAtoms = Ven.begin()->second.size();
+    std::vector<double> Ve(nElectrons);
+    std::vector<double> VeErr(nElectrons);
+
+    for (int i = 0; i < nElectrons; ++i) {
+        Ve[i] = Te[i][0].as<double>();
+        VeErr[i] = Te[i][1].as<double>();
+
+        for (int k = 0; k < nAtoms; ++k){
+            Ve[i] += Ven[i][k][0].as<double>();
+            VeErr[i] += Ven[i][k][1].as<double>();
+        }
+
+        for (int j = i+1; j < nElectrons; ++j){
+            Ve[i] += 0.5*Vee[i][j][0].as<double>();
+            VeErr[i] += 0.5*Vee[i][j][1].as<double>();
+        }
+        //TODO FEHLERADDITION
+        std::cout << "Ee = " << Ve[i] << "+/-" << VeErr[i] << "  (ERROR is wrong -> add error propagation)" << std::endl;
+    }
+};
+
 bool handleCommandlineArguments(int argc, char *const *argv,
                                 std::string &resultFilename,
                                 size_t &clusterId) {
@@ -52,8 +79,8 @@ int main(int argc, char *argv[]) {
 
     auto splash = InPsightsSplashScreen::getInPsightsSplashScreen();
 
-    QTimer::singleShot(4000, splash, SLOT(close()));
-    QTimer::singleShot(4000, window, SLOT(show()));
+    QTimer::singleShot(2000, splash, SLOT(close()));
+    QTimer::singleShot(2000, window, SLOT(show()));
 
     std::string resultFilename;
     size_t clusterId = 0;
@@ -67,44 +94,22 @@ int main(int argc, char *argv[]) {
     auto atoms = doc["Atoms"].as<AtomsVector>();
     auto Vnn = doc["Vnn"];
 
+
     auto nClusters =doc["Clusters"].size();
     assert(clusterId < nClusters && "The cluster id must be smaller than the total number of clusters.");
     std::cout << "analyzing cluster with id " << clusterId << " out of [0," << nClusters-1 << "]" << std::endl;
 
     auto cluster = doc["Clusters"][clusterId];
+
+    singleElectronEnergies(cluster);
+
     auto electronsVectorCollection = cluster["Structures"].as<std::vector<ElectronsVector>>();
     auto spinCorrelations = cluster["SpinCorrelations"];
-    auto Te = cluster["Te"];
-    auto Vee = cluster["Vee"];
-    auto Ven = cluster["Ven"];
-
-
     AtomsVector3D(moleculeWidget->getRoot(), atoms);
     ElectronsVector3D(moleculeWidget->getRoot(), electronsVectorCollection[0]);
     //for (const auto & i : electronsVectorCollection)
     //    ElectronsVector3D(root, i);
 
-
-    auto nElectrons = Te.size();
-    std::vector<double> Ve(nElectrons);
-    std::vector<double> VeErr(nElectrons);
-
-    for (int i = 0; i < nElectrons; ++i) {
-        Ve[i] = Te[i][0].as<double>();
-        VeErr[i] = Te[i][1].as<double>();
-
-        for (int k = 0; k < atoms.numberOfEntities(); ++k){
-            Ve[i] += Ven[i][k][0].as<double>();
-            VeErr[i] += Ven[i][k][1].as<double>();
-        }
-
-        for (int j = i+1; j < nElectrons; ++j){
-            Ve[i] += 0.5*Vee[i][j][0].as<double>();
-            VeErr[i] += 0.5*Vee[i][j][1].as<double>();
-        }
-        //TODO FEHLERADDITION
-        std::cout << "Ee = "<<Ve[i] << "+/-" << VeErr[i] <<"  (ERROR is wrong -> add error propagation)"<< std::endl;
-    }
 
     return QApplication::exec();
 
@@ -123,4 +128,4 @@ int main(int argc, char *argv[]) {
      * - show energies
      * - show eigenvectors (.wf needed)
      */
-};
+}
