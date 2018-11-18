@@ -14,6 +14,9 @@
 #include <InPsightsSplashScreen.h>
 #include <QHBoxLayout>
 #include <QRadioButton>
+#include <QGroupBox>
+#include <QSpinBox>
+#include <QLabel>
 
 void singleElectronEnergies(const YAML::Node &cluster) {
     auto Te = cluster["Te"];
@@ -64,48 +67,55 @@ bool handleCommandlineArguments(int argc, char *const *argv,
 int main(int argc, char *argv[]) {
     Q_INIT_RESOURCE(myresources);
     QApplication app(argc, argv);
-
     setlocale(LC_NUMERIC,"C");
-    QWidget* window = new QWidget();
+
+    QWidget* inPsightsWidget = new QWidget();
 
     auto moleculeWidget = new MoleculeWidget();
     auto layout = new QHBoxLayout();
-    auto radioButton = new QRadioButton();
+    QSpinBox *integerSpinBox = new QSpinBox;
 
-    layout->addWidget(moleculeWidget->getWidget(),Qt::AlignLeft);
-    layout->addWidget(radioButton);
-    window->setLayout(layout);
-    window->resize(800,800);
+    layout->addWidget(moleculeWidget, Qt::AlignLeft);
+    layout->addWidget(integerSpinBox);
+
+    inPsightsWidget->setLayout(layout);
+    inPsightsWidget->resize(800,800);
 
     auto splash = InPsightsSplashScreen::getInPsightsSplashScreen();
 
+    YAML::Node doc = YAML::LoadFile("raw.yml");
+
+    auto nClusters =doc["Clusters"].size();
+
+    auto spinBoxesGroup = new QGroupBox();
+    QLabel *integerLabel = new QLabel("Cluster Id:");
+    integerSpinBox->setRange(0, nClusters-1);
+    integerSpinBox->setSingleStep(1);
+    integerSpinBox->setValue(0);
+
+    size_t clusterId = 0;
+    auto cluster = doc["Clusters"][clusterId];
+
+
     QTimer::singleShot(2000, splash, SLOT(close()));
-    QTimer::singleShot(2000, window, SLOT(show()));
+    QTimer::singleShot(2000, inPsightsWidget, SLOT(show()));
+    moleculeWidget->show();
 
     std::string resultFilename;
-    size_t clusterId = 0;
 
     if (resultFilename.empty()) {
         bool inputArgumentsFoundQ = handleCommandlineArguments(argc, argv, resultFilename, clusterId);
         if (!inputArgumentsFoundQ) return 1;
     }
 
-    YAML::Node doc = YAML::LoadFile("raw.yml");
-    auto atoms = doc["Atoms"].as<AtomsVector>();
-    auto Vnn = doc["Vnn"];
 
-
-    auto nClusters =doc["Clusters"].size();
-    assert(clusterId < nClusters && "The cluster id must be smaller than the total number of clusters.");
-    std::cout << "analyzing cluster with id " << clusterId << " out of [0," << nClusters-1 << "]" << std::endl;
-
-    auto cluster = doc["Clusters"][clusterId];
 
     singleElectronEnergies(cluster);
 
     auto electronsVectorCollection = cluster["Structures"].as<std::vector<ElectronsVector>>();
     auto spinCorrelations = cluster["SpinCorrelations"];
-    AtomsVector3D(moleculeWidget->getRoot(), atoms);
+
+    AtomsVector3D(moleculeWidget->getRoot(), doc["Atoms"].as<AtomsVector>());
     ElectronsVector3D(moleculeWidget->getRoot(), electronsVectorCollection[0]);
     //for (const auto & i : electronsVectorCollection)
     //    ElectronsVector3D(root, i);

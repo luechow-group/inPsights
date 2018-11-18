@@ -5,20 +5,24 @@
 #ifndef AMOLQCPP_MOLECULEWIDGET_H
 #define AMOLQCPP_MOLECULEWIDGET_H
 
+#include <QWidget>
 #include <Qt3DCore>
 #include <Qt3DExtras>
+#include <QVBoxLayout>
+#include <QLabel>
 
-class MoleculeWidget{
+class MoleculeWidget : public QWidget{
+    Q_OBJECT
 public:
-    MoleculeWidget();
+    explicit MoleculeWidget(QWidget *parent = nullptr);
     Qt3DCore::QEntity* getRoot();
-    QWidget* getWidget();
 
 private:
-    Qt3DCore::QEntity* root_;
-    Qt3DExtras::Qt3DWindow* qt3DWindow_;
-    QWidget* windowContainer_;
-    Qt3DExtras::QOrbitCameraController* cameraController_;
+    QVBoxLayout *layout_;
+    Qt3DExtras::Qt3DWindow *qt3DWindow_;
+    Qt3DCore::QEntity *root_;
+    Qt3DExtras::QOrbitCameraController *cameraController_;
+    QLabel* infoText_;
 };
 
 #endif //AMOLQCPP_MOLECULEWIDGET_H
