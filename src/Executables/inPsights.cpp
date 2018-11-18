@@ -10,13 +10,8 @@
 #include <yaml-cpp/yaml.h>
 #include <ParticlesVector.h>
 #include <Statistics.h>
+#include <InPsightsWidget.h>
 
-#include <InPsightsSplashScreen.h>
-#include <QHBoxLayout>
-#include <QRadioButton>
-#include <QGroupBox>
-#include <QSpinBox>
-#include <QLabel>
 
 void singleElectronEnergies(const YAML::Node &cluster) {
     auto Te = cluster["Te"];
@@ -69,37 +64,12 @@ int main(int argc, char *argv[]) {
     QApplication app(argc, argv);
     setlocale(LC_NUMERIC,"C");
 
-    QWidget* inPsightsWidget = new QWidget();
+    auto inPsightsWidget = new InPsightsWidget();
 
-    auto moleculeWidget = new MoleculeWidget();
-    auto layout = new QHBoxLayout();
-    QSpinBox *integerSpinBox = new QSpinBox;
-
-    layout->addWidget(moleculeWidget, Qt::AlignLeft);
-    layout->addWidget(integerSpinBox);
-
-    inPsightsWidget->setLayout(layout);
-    inPsightsWidget->resize(800,800);
-
-    auto splash = InPsightsSplashScreen::getInPsightsSplashScreen();
 
     YAML::Node doc = YAML::LoadFile("raw.yml");
-
-    auto nClusters =doc["Clusters"].size();
-
-    auto spinBoxesGroup = new QGroupBox();
-    QLabel *integerLabel = new QLabel("Cluster Id:");
-    integerSpinBox->setRange(0, nClusters-1);
-    integerSpinBox->setSingleStep(1);
-    integerSpinBox->setValue(0);
-
     size_t clusterId = 0;
     auto cluster = doc["Clusters"][clusterId];
-
-
-    QTimer::singleShot(2000, splash, SLOT(close()));
-    QTimer::singleShot(2000, inPsightsWidget, SLOT(show()));
-    moleculeWidget->show();
 
     std::string resultFilename;
 
@@ -108,15 +78,13 @@ int main(int argc, char *argv[]) {
         if (!inputArgumentsFoundQ) return 1;
     }
 
-
-
     singleElectronEnergies(cluster);
 
     auto electronsVectorCollection = cluster["Structures"].as<std::vector<ElectronsVector>>();
     auto spinCorrelations = cluster["SpinCorrelations"];
 
-    AtomsVector3D(moleculeWidget->getRoot(), doc["Atoms"].as<AtomsVector>());
-    ElectronsVector3D(moleculeWidget->getRoot(), electronsVectorCollection[0]);
+    AtomsVector3D(inPsightsWidget->moleculeWidget_->getRoot(), doc["Atoms"].as<AtomsVector>());
+    ElectronsVector3D(inPsightsWidget->moleculeWidget_->getRoot(), electronsVectorCollection[0]);
     //for (const auto & i : electronsVectorCollection)
     //    ElectronsVector3D(root, i);
 

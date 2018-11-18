@@ -43,7 +43,7 @@ set(HEADER_FILES
         include/MoleculeWidget.h
         include/ParticlesVectorPath3D.h
         include/Visualization.h
-        include/InPsightsSplashScreen.h
+        include/InPsightsWidget.h
         )
 
 set(SOURCE_FILES
