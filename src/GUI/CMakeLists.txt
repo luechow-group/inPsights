@@ -44,6 +44,7 @@ set(HEADER_FILES
         include/ParticlesVectorPath3D.h
         include/Visualization.h
         include/InPsightsWidget.h
+        include/Line3D.h
         )
 
 set(SOURCE_FILES
