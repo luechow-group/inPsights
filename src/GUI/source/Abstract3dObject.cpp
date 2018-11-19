@@ -6,7 +6,7 @@
 
 #include <iostream>
 
-Abstract3dObject::Abstract3dObject(Qt3DCore::QEntity *root, QColor color, const QVector3D location)
+Abstract3dObject::Abstract3dObject(Qt3DCore::QEntity *root, QColor color, const QVector3D& location)
   : QEntity(root),
     color_(color),
     alpha_(1.0f),
