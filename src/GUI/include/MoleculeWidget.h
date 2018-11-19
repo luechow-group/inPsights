@@ -20,21 +20,25 @@ public:
     explicit MoleculeWidget(QWidget *parent = nullptr);
     Qt3DCore::QEntity* getRoot();
 
-    void setMolecule(const AtomsVector& atoms, const ElectronsVector& electrons){
+    void setMolecule(const AtomsVector& atoms, const ElectronsVector& electrons, bool drawConnections = false){
 
-        root_->deleteLater();
+        moleculeEntity_->deleteLater();
+        moleculeEntity_ = new Qt3DCore::QEntity(root_);
 
-        root_ = new Qt3DCore::QEntity();
+        atomsVector3D_ = new AtomsVector3D(moleculeEntity_, atoms);
+        if(drawConnections)
+            electronsVector3D_ = new ElectronsVector3D(moleculeEntity_, atoms, electrons);
+        else
+            electronsVector3D_ = new ElectronsVector3D(moleculeEntity_, electrons);
 
-        atomsVector3D_ = new AtomsVector3D(root_, atoms);
-        electronsVector3D_ = new ElectronsVector3D(root_, electrons);
+        //cameraController_->
         qt3DWindow_->setRootEntity(root_);
     }
 
 private:
     QVBoxLayout *layout_;
     Qt3DExtras::Qt3DWindow *qt3DWindow_;
-    Qt3DCore::QEntity *root_;
+    Qt3DCore::QEntity *root_, *moleculeEntity_;
     Qt3DExtras::QOrbitCameraController *cameraController_;
     QLabel* infoText_;
 

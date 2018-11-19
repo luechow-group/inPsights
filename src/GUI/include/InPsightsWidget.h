@@ -14,6 +14,7 @@
 #include <MoleculeWidget.h>
 #include <QTimer>
 #include <QSplashScreen>
+#include <QCheckBox>
 
 class InPsightsWidget : public QWidget{
     Q_OBJECT
@@ -26,28 +27,37 @@ public:
             )
     :
     QWidget(parent),
-    layout_(new QHBoxLayout(this)),
     moleculeWidget_(new MoleculeWidget(this)),
-    integerSpinBox_(new QSpinBox(this)),
+    idSpinBox_(new QSpinBox(this)),
+    spinConnectionsCheckBox_(new QCheckBox("Spin Connections",this)),
     atomsVector_(std::move(atomsVector)),
     electronsVectorCollection_(std::move(electronsVectorCollection))
     {
         auto splashScreen = createSplashScreen();
 
+        auto hbox = new QHBoxLayout(this);
+        auto vbox = new QVBoxLayout(this);
+        auto gbox = new QGroupBox("Settings:",this);
+
+        setLayout(hbox);
+        resize(800,800);
+        hbox->addWidget(moleculeWidget_, Qt::AlignLeft);
+        hbox->addWidget(gbox);
+        gbox->setLayout(vbox);
+        vbox->addWidget(idSpinBox_);
+        vbox->addWidget(spinConnectionsCheckBox_);
+
+
         moleculeWidget_->setMolecule(atomsVector_,electronsVectorCollection_[0]);
 
-        layout_->addWidget(moleculeWidget_, Qt::AlignLeft);
-        layout_->addWidget(integerSpinBox_);
-
-        QObject::connect(integerSpinBox_, SIGNAL(valueChanged(int)),
+        QObject::connect(idSpinBox_, SIGNAL(valueChanged(int)),
                          this, SLOT(redrawMolecule(int)));
+        QObject::connect(spinConnectionsCheckBox_, SIGNAL(stateChanged(int)),
+                         this, SLOT(onConnectionsStateChanged(int)));
 
-        integerSpinBox_->setRange(0, int(electronsVectorCollection_.size()-1));
-        integerSpinBox_->setSingleStep(1);
-        integerSpinBox_->setValue(0);
-
-        setLayout(layout_);
-        resize(800,800);
+        idSpinBox_->setRange(0, int(electronsVectorCollection_.size()-1));
+        idSpinBox_->setSingleStep(1);
+        idSpinBox_->setValue(0);
 
         QTimer::singleShot(2000, splashScreen, SLOT(close()));
         QTimer::singleShot(2000, this, SLOT(show()));
@@ -55,13 +65,20 @@ public:
 
 public slots:
     void redrawMolecule(int id){
-        moleculeWidget_->setMolecule(atomsVector_, electronsVectorCollection_[id]);
+        moleculeWidget_->setMolecule(atomsVector_, electronsVectorCollection_[id],
+                                     spinConnectionsCheckBox_->checkState() == Qt::CheckState::Checked);
     };
 
+    void onConnectionsStateChanged(int state){
+        moleculeWidget_->setMolecule(atomsVector_, electronsVectorCollection_[idSpinBox_->value()],
+                                     spinConnectionsCheckBox_->checkState() == Qt::CheckState::Checked);
+    };
+
+
 private:
-    QHBoxLayout *layout_;
     MoleculeWidget *moleculeWidget_;
-    QSpinBox *integerSpinBox_;
+    QSpinBox *idSpinBox_;
+    QCheckBox *spinConnectionsCheckBox_;
 
     AtomsVector atomsVector_;
     std::vector<ElectronsVector> electronsVectorCollection_;
