@@ -40,18 +40,15 @@ void singleElectronEnergies(const YAML::Node &cluster) {
     }
 };
 
-bool handleCommandlineArguments(int argc, char *const *argv,
-                                std::string &resultFilename,
-                                size_t &clusterId) {
-    if (argc < 3) {
+bool handleCommandlineArguments(int argc, char *const *argv, std::string &resultFilename) {
+    if (argc < 2) {
         std::cout << "Usage: \n"
                   << "Argument 1: result file\n"
-                  << "Argument 2: cluster id"
                   << std::endl;
-        std::cout << "raw.yml 100" << std::endl;
+        std::cout << "raw.yml" << std::endl;
         return false;
-    } else if (argc == 3) {
-        clusterId = std::atol(argv[2]);
+    } else if (argc == 2) {
+        resultFilename = argv[1];
         return true;
     } else {
         throw std::invalid_argument("Too many arguments");
@@ -60,41 +57,32 @@ bool handleCommandlineArguments(int argc, char *const *argv,
 
 
 int main(int argc, char *argv[]) {
+    std::string resultFilename;
+    if (resultFilename.empty()) {
+        bool inputArgumentsFoundQ = handleCommandlineArguments(argc, argv, resultFilename);
+        if (!inputArgumentsFoundQ) return 1;
+    }
+
     Q_INIT_RESOURCE(myresources);
     QApplication app(argc, argv);
     setlocale(LC_NUMERIC,"C");
-
-    auto inPsightsWidget = new InPsightsWidget();
-
 
     YAML::Node doc = YAML::LoadFile("raw.yml");
     size_t clusterId = 0;
     auto cluster = doc["Clusters"][clusterId];
 
-    std::string resultFilename;
-
-    if (resultFilename.empty()) {
-        bool inputArgumentsFoundQ = handleCommandlineArguments(argc, argv, resultFilename, clusterId);
-        if (!inputArgumentsFoundQ) return 1;
-    }
-
-    singleElectronEnergies(cluster);
-
+    auto atoms = doc["Atoms"].as<AtomsVector>();
     auto electronsVectorCollection = cluster["Structures"].as<std::vector<ElectronsVector>>();
     auto spinCorrelations = cluster["SpinCorrelations"];
 
-    AtomsVector3D(inPsightsWidget->moleculeWidget_->getRoot(), doc["Atoms"].as<AtomsVector>());
-    ElectronsVector3D(inPsightsWidget->moleculeWidget_->getRoot(), electronsVectorCollection[0]);
-    //for (const auto & i : electronsVectorCollection)
-    //    ElectronsVector3D(root, i);
+    auto inPsightsWidget = new InPsightsWidget(atoms,electronsVectorCollection);
 
+
+    singleElectronEnergies(cluster);
 
     return QApplication::exec();
 
     /* TODO
-     * YAML
-     * proper conversion of statistic nodes (templatized)
-     *
      * METHOD
      * - spatial permutations (by value range or struct sim)
      *

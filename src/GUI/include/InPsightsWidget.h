@@ -1,3 +1,5 @@
+#include <utility>
+
 //
 // Created by Michael Heuer on 18.11.18.
 //
@@ -17,20 +19,31 @@ class InPsightsWidget : public QWidget{
     Q_OBJECT
 public:
 
-    explicit InPsightsWidget(QWidget *parent = nullptr)
+    explicit InPsightsWidget(
+            AtomsVector atomsVector,
+            std::vector<ElectronsVector> electronsVectorCollection,
+            QWidget *parent = nullptr
+            )
     :
     QWidget(parent),
     layout_(new QHBoxLayout(this)),
-    moleculeWidget_(new MoleculeWidget()),
-    integerSpinBox_(new QSpinBox())
+    moleculeWidget_(new MoleculeWidget(this)),
+    integerSpinBox_(new QSpinBox(this)),
+    atomsVector_(std::move(atomsVector)),
+    electronsVectorCollection_(std::move(electronsVectorCollection))
     {
-
         auto splashScreen = createSplashScreen();
+
+        moleculeWidget_->setAtoms(atomsVector);
+        moleculeWidget_->setElectrons(electronsVectorCollection_[0]);
 
         layout_->addWidget(moleculeWidget_, Qt::AlignLeft);
         layout_->addWidget(integerSpinBox_);
 
-        integerSpinBox_->setRange(0, 0);
+        QObject::connect(integerSpinBox_, SIGNAL(valueChanged(int)),
+                         this, SLOT(setElectronsVector(int)));
+
+        integerSpinBox_->setRange(0, int(electronsVectorCollection_.size()-1));
         integerSpinBox_->setSingleStep(1);
         integerSpinBox_->setValue(0);
 
@@ -41,12 +54,21 @@ public:
         QTimer::singleShot(2000, this, SLOT(show()));
     }
 
+public slots:
+    void setElectronsVector(int id){
+        moleculeWidget_->setElectrons(electronsVectorCollection_[id]);
+    };
+
+private:
     QHBoxLayout *layout_;
     MoleculeWidget *moleculeWidget_;
     QSpinBox *integerSpinBox_;
 
+    AtomsVector atomsVector_;
+    std::vector<ElectronsVector> electronsVectorCollection_;
 
-private:
+
+
     QSplashScreen* createSplashScreen(){
         auto splashScreen = new QSplashScreen();
 
