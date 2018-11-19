@@ -4,9 +4,7 @@
 
 #include <Qt3DRender>
 #include <QtWidgets>
-
 #include <MoleculeWidget.h>
-
 
 MoleculeWidget::MoleculeWidget(QWidget *parent)
     :

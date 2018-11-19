@@ -21,7 +21,4 @@ static QVector3D MidPointVector(std::pair<QVector3D,QVector3D> qVector3Dpair){
   return qVector3Dpair.first + (qVector3Dpair.second - qVector3Dpair.first) / 2.0;
 }
 
-
-
-
 #endif //AMOLQCPP_HELPER_H

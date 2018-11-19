@@ -13,26 +13,57 @@
 
 #include <AtomsVector3D.h>
 #include <ElectronsVector3D.h>
-
+#include <Line3D.h>
 class MoleculeWidget : public QWidget{
     Q_OBJECT
 public:
     explicit MoleculeWidget(QWidget *parent = nullptr);
     Qt3DCore::QEntity* getRoot();
 
-    void setMolecule(const AtomsVector& atoms, const ElectronsVector& electrons, bool drawConnections = false){
+    void setMolecule(
+            const AtomsVector& atoms,
+            const std::pair<std::vector<ElectronsVector>,YAML::Node>& clusterData,
+            bool drawConnections,
+            bool drawSpinCorrelations,
+            double spinCorrelationThreshold){
 
         moleculeEntity_->deleteLater();
         moleculeEntity_ = new Qt3DCore::QEntity(root_);
 
         atomsVector3D_ = new AtomsVector3D(moleculeEntity_, atoms);
+
+        auto electrons = clusterData.first[0]; // Plot all?
+
         if(drawConnections)
             electronsVector3D_ = new ElectronsVector3D(moleculeEntity_, atoms, electrons);
         else
             electronsVector3D_ = new ElectronsVector3D(moleculeEntity_, electrons);
 
-        //cameraController_->
-        qt3DWindow_->setRootEntity(root_);
+        if(drawSpinCorrelations) {
+            for (int i = 0; i < electrons.numberOfEntities(); ++i) {
+                for (int j = i + 1; j < electrons.numberOfEntities(); ++j) {
+
+                    auto corr = clusterData.second[i][j][0].as<double>();
+                    if (std::abs(corr) >= spinCorrelationThreshold) {
+                        auto color = QColor::fromRgb(
+                                int((0.5 + 0.5 * corr) * 255),
+                                int((0.5 - 0.5 * corr) * 255),
+                                int((0.5 + 0.5 * corr) * 255),
+                                int(std::abs(corr) * 255));
+
+                        QVector3D start, end;
+                        start.setX(electrons.positionsVector()[i].x()); //TODO use helper
+                        start.setY(electrons.positionsVector()[i].y());
+                        start.setZ(electrons.positionsVector()[i].z());
+                        end.setX(electrons.positionsVector()[j].x());
+                        end.setY(electrons.positionsVector()[j].y());
+                        end.setZ(electrons.positionsVector()[j].z());
+
+                        new Line3D(moleculeEntity_, color, {start, end});
+                    }
+                }
+            }
+        }
     }
 
 private:

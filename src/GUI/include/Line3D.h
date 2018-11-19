@@ -16,82 +16,90 @@
 class Line3D : public Abstract3dObject {
 
 public:
-  Line3D(Qt3DCore::QEntity *root, QColor color,
-          const std::pair<QVector3D, QVector3D>& pair,
-          const float alpha = 1.0f)
-          :
-          Abstract3dObject(root, QColor(), MidPointVector(pair)),
-          start_(pair.first),
-          end_(pair.second)
-          {
+    Line3D(Qt3DCore::QEntity *root, QColor color,
+           const std::pair<QVector3D, QVector3D> &pair
+    )
+            :
+            Abstract3dObject(root, QColor(), MidPointVector(pair)),
+            start_(pair.first),
+            end_(pair.second) {
 
-      auto *geometry = new Qt3DRender::QGeometry(root);
 
-      // position vertices (start and end)
-      QByteArray bufferBytes;
-      bufferBytes.resize(3 * 2 * sizeof(float)); // start.x, start.y, start.end + end.x, end.y, end.z
-      float *positions = reinterpret_cast<float*>(bufferBytes.data());
+        // mesh
+        auto *line = new Qt3DRender::QGeometryRenderer(root);
+        line->setGeometry(getGeometry(root, pair));
+        line->setPrimitiveType(Qt3DRender::QGeometryRenderer::Lines);
 
-      *positions++ = pair.first.x();
-      *positions++ = pair.first.y();
-      *positions++ = pair.first.z();
-      *positions++ = pair.second.x();
-      *positions++ = pair.second.y();
-      *positions++ = pair.second.z();
+        auto *material = new Qt3DExtras::QPhongMaterial(root);
+        material->setAmbient(color);
 
-      auto *buf = new Qt3DRender::QBuffer(Qt3DRender::QBuffer::BufferType::VertexBuffer, geometry);
-      buf->setData(bufferBytes);
+        // entity
+        auto *lineEntity = new Qt3DCore::QEntity(root);
+        lineEntity->addComponent(line);
+        lineEntity->addComponent(material);
+    }
 
-      auto *positionAttribute = new Qt3DRender::QAttribute(geometry);
-      positionAttribute->setName(Qt3DRender::QAttribute::defaultPositionAttributeName());
-      positionAttribute->setVertexBaseType(Qt3DRender::QAttribute::Float);
-      positionAttribute->setVertexSize(3);
-      positionAttribute->setAttributeType(Qt3DRender::QAttribute::VertexAttribute);
-      positionAttribute->setBuffer(buf);
-      positionAttribute->setByteStride(3 * sizeof(float));
-      positionAttribute->setCount(2);
-      geometry->addAttribute(positionAttribute); // We add the vertices in the geometry
+    Qt3DRender::QGeometry *getGeometry(QEntity *root, const std::pair<QVector3D, QVector3D> &pair) const {
+        auto *geometry = new Qt3DRender::QGeometry(root);
 
-      // connectivity between vertices
-      QByteArray indexBytes;
-      indexBytes.resize(2 * sizeof(unsigned int)); // start to end
-      unsigned int *indices = reinterpret_cast<unsigned int*>(indexBytes.data());
-      *indices++ = 0;
-      *indices++ = 1;
+        // position vertices (start and end)
+        QByteArray bufferBytes;
+        bufferBytes.resize(3 * 2 * sizeof(float)); // start.x, start.y, start.end + end.x, end.y, end.z
+        float *positions = reinterpret_cast<float *>(bufferBytes.data());
 
-      auto *indexBuffer = new Qt3DRender::QBuffer(Qt3DRender::QBuffer::BufferType::IndexBuffer,geometry);
-      indexBuffer->setData(indexBytes);
+        *positions++ = pair.first.x();
+        *positions++ = pair.first.y();
+        *positions++ = pair.first.z();
+        *positions++ = pair.second.x();
+        *positions++ = pair.second.y();
+        *positions++ = pair.second.z();
 
-      auto *indexAttribute = new Qt3DRender::QAttribute(geometry);
-      indexAttribute->setVertexBaseType(Qt3DRender::QAttribute::UnsignedInt);
-      indexAttribute->setAttributeType(Qt3DRender::QAttribute::IndexAttribute);
-      indexAttribute->setBuffer(indexBuffer);
-      indexAttribute->setCount(2);
-      geometry->addAttribute(indexAttribute); // We add the indices linking the points in the geometry
+        auto *buf = new Qt3DRender::QBuffer(Qt3DRender::QBuffer::VertexBuffer, geometry);
+        buf->setData(bufferBytes);
 
-      // mesh
-      auto *line = new Qt3DRender::QGeometryRenderer(root);
-      line->setGeometry(geometry);
-      line->setPrimitiveType(Qt3DRender::QGeometryRenderer::Lines);
-      auto *material = new Qt3DExtras::QPhongMaterial(root);
-      material->setAmbient(color);
+        auto *positionAttribute = new Qt3DRender::QAttribute(geometry);
+        positionAttribute->setName(Qt3DRender::QAttribute::defaultPositionAttributeName());
+        positionAttribute->setVertexBaseType(Qt3DRender::QAttribute::Float);
+        positionAttribute->setVertexSize(3);
+        positionAttribute->setAttributeType(Qt3DRender::QAttribute::VertexAttribute);
+        positionAttribute->setBuffer(buf);
+        positionAttribute->setByteStride(3 * sizeof(float));
+        positionAttribute->setCount(2);
+        geometry->addAttribute(positionAttribute); // We add the vertices in the geometry
 
-      // entity
-      auto *lineEntity = new Qt3DCore::QEntity(root);
-      lineEntity->addComponent(line);
-      lineEntity->addComponent(material);
-  };
+        // connectivity between vertices
+        QByteArray indexBytes;
+        indexBytes.resize(2 * sizeof(unsigned int)); // start to end
+        unsigned int *indices = reinterpret_cast<unsigned int *>(indexBytes.data());
+        *indices++ = 0;
+        *indices++ = 1;
 
-  ~Line3D() {};
+        auto *indexBuffer = new Qt3DRender::QBuffer(Qt3DRender::QBuffer::IndexBuffer, geometry);
+        indexBuffer->setData(indexBytes);
 
-  float length() const { return difference().length(); };
-  QVector3D start() const{ return start_; };
-  QVector3D end() const{ return end_; };
-  QVector3D difference() const{ return end_-start_; };
+        auto *indexAttribute = new Qt3DRender::QAttribute(geometry);
+        indexAttribute->setVertexBaseType(Qt3DRender::QAttribute::UnsignedInt);
+        indexAttribute->setAttributeType(Qt3DRender::QAttribute::IndexAttribute);
+        indexAttribute->setBuffer(indexBuffer);
+        indexAttribute->setCount(2);
+        geometry->addAttribute(indexAttribute); // We add the indices linking the points in the geometry
+
+        return geometry;
+    };
+
+    ~Line3D() {};
+
+    float length() const { return difference().length(); };
+
+    QVector3D start() const { return start_; };
+
+    QVector3D end() const { return end_; };
+
+    QVector3D difference() const { return end_ - start_; };
 
 private:
-  QVector3D start_, end_;
-  //Qt3DExtras::QCylinderMesh *mesh_;
+    QVector3D start_, end_;
+    //Qt3DExtras::QCylinderMesh *mesh_;
 };
 
 #endif //INPSIGHTS_LINE3D_H

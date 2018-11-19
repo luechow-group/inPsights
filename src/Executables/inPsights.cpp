@@ -68,21 +68,29 @@ int main(int argc, char *argv[]) {
     setlocale(LC_NUMERIC,"C");
 
     YAML::Node doc = YAML::LoadFile("raw.yml");
-    size_t clusterId = 0;
-    auto cluster = doc["Clusters"][clusterId];
+
+    std::vector<std::pair<std::vector<ElectronsVector>,YAML::Node>> clusterCollection;
+
+    for(YAML::const_iterator it = doc["Clusters"].begin(); it != doc["Clusters"].end();++it) {
+        //auto pair = std::make_pair<std::vector<ElectronsVector>,YAML::Node>({});
+        clusterCollection.emplace_back((*it)["Structures"].as<std::vector<ElectronsVector>>(),
+                                        (*it)["SpinCorrelations"]);
+    }
 
     auto atoms = doc["Atoms"].as<AtomsVector>();
-    auto electronsVectorCollection = cluster["Structures"].as<std::vector<ElectronsVector>>();
-    auto spinCorrelations = cluster["SpinCorrelations"];
-
-    auto inPsightsWidget = new InPsightsWidget(atoms,electronsVectorCollection);
+    //auto electronsVectorCollection = cluster["Structures"].as<std::vector<ElectronsVector>>();
 
 
-    singleElectronEnergies(cluster);
+    new InPsightsWidget(atoms, clusterCollection);
+
+    //singleElectronEnergies(cluster);
 
     return QApplication::exec();
 
     /* TODO
+     * YAML
+     * - don't save spin correlations with error
+     *
      * METHOD
      * - spatial permutations (by value range or struct sim)
      *
