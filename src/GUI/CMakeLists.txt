@@ -63,7 +63,10 @@ set(SOURCE_FILES
         source/Visualization.cpp
         )
 
-add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES} ${QT_RESOURCES}
+add_library(${PROJECT_NAME} STATIC
+        ${SOURCE_FILES}
+        ${HEADER_FILES}
+        ${QT_RESOURCES}
         )
 target_include_directories(${PROJECT_NAME}
         PUBLIC include
@@ -80,8 +83,5 @@ target_link_libraries(${PROJECT_NAME}
         Qt5::3DRender
         Qt5::Charts
         )
-
-add_executable(QTRESTEST main.cpp ${QT_RESOURCES})
-target_link_libraries(QTRESTEST ${PROJECT_NAME})
 
 add_gtest_subdirectory_with_dependency(tests "gtest;pthread")
