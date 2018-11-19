@@ -13,8 +13,8 @@ class Cylinder : public Abstract3dObject {
 public:
   Cylinder(Qt3DCore::QEntity *root, QColor color,
            const std::pair<QVector3D, QVector3D>& pair,
-           const float radius,
-           const float alpha = 1.0f);
+           float radius,
+           float alpha = 1.0f);
 
   ~Cylinder() {};
 

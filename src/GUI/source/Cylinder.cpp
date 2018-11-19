@@ -9,14 +9,14 @@
 Cylinder::Cylinder(Qt3DCore::QEntity *root,
                    QColor color,
                    const std::pair<QVector3D, QVector3D>& pair,
-                   const float radius,
-                   const float alpha)
+                   float radius,
+                   float alpha)
   : Abstract3dObject(root, QColor(), MidPointVector(pair)),
     radius_(radius),
     start_(pair.first),
-    end_(pair.second) {
+    end_(pair.second),
+    mesh_(new Qt3DExtras::QCylinderMesh(root)) {
 
-    mesh_ = new Qt3DExtras::QCylinderMesh;
     mesh_->setRadius(radius);
     mesh_->setLength(length());
     mesh_->setRings(8);
