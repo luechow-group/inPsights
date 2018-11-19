@@ -34,14 +34,13 @@ public:
     {
         auto splashScreen = createSplashScreen();
 
-        moleculeWidget_->setAtoms(atomsVector);
-        moleculeWidget_->setElectrons(electronsVectorCollection_[0]);
+        moleculeWidget_->setMolecule(atomsVector_,electronsVectorCollection_[0]);
 
         layout_->addWidget(moleculeWidget_, Qt::AlignLeft);
         layout_->addWidget(integerSpinBox_);
 
         QObject::connect(integerSpinBox_, SIGNAL(valueChanged(int)),
-                         this, SLOT(setElectronsVector(int)));
+                         this, SLOT(redrawMolecule(int)));
 
         integerSpinBox_->setRange(0, int(electronsVectorCollection_.size()-1));
         integerSpinBox_->setSingleStep(1);
@@ -55,8 +54,8 @@ public:
     }
 
 public slots:
-    void setElectronsVector(int id){
-        moleculeWidget_->setElectrons(electronsVectorCollection_[id]);
+    void redrawMolecule(int id){
+        moleculeWidget_->setMolecule(atomsVector_, electronsVectorCollection_[id]);
     };
 
 private:

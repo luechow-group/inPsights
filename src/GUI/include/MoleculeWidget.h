@@ -20,14 +20,15 @@ public:
     explicit MoleculeWidget(QWidget *parent = nullptr);
     Qt3DCore::QEntity* getRoot();
 
-    void setElectrons(const ElectronsVector& electrons){
-        //TODO delete old electronsVector3D_;
-        electronsVector3D_ = new ElectronsVector3D(root_, electrons);
-    }
+    void setMolecule(const AtomsVector& atoms, const ElectronsVector& electrons){
 
-    void setAtoms(const AtomsVector& atoms){
-        //delete atomsVector3D_;
-        atomsVector3D_ = new AtomsVector3D(root_,atoms);
+        root_->deleteLater();
+
+        root_ = new Qt3DCore::QEntity();
+
+        atomsVector3D_ = new AtomsVector3D(root_, atoms);
+        electronsVector3D_ = new ElectronsVector3D(root_, electrons);
+        qt3DWindow_->setRootEntity(root_);
     }
 
 private:
