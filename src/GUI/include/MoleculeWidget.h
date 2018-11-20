@@ -45,11 +45,12 @@ public:
 
                     auto corr = clusterData.second[i][j][0].as<double>();
                     if (std::abs(corr) >= spinCorrelationThreshold) {
-                        auto color = QColor::fromRgb(
-                                int((0.5 + 0.5 * corr) * 255),
-                                int((0.5 - 0.5 * corr) * 255),
-                                int((0.5 + 0.5 * corr) * 255),
-                                int(std::abs(corr) * 255));
+
+                        QColor color;
+                        if(corr > 0)
+                            color = QColor::fromRgb(255,0,255);
+                        else
+                            color = QColor::fromRgb(0,255,0);
 
                         QVector3D start, end;
                         start.setX(electrons.positionsVector()[i].x()); //TODO use helper
@@ -59,7 +60,7 @@ public:
                         end.setY(electrons.positionsVector()[j].y());
                         end.setZ(electrons.positionsVector()[j].z());
 
-                        new Line3D(moleculeEntity_, color, {start, end});
+                        new Line3D(moleculeEntity_, color, {start, end}, std::abs(corr));
                     }
                 }
             }

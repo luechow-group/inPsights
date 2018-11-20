@@ -9,7 +9,6 @@
 #include <Qt3DRender/QAttribute>
 #include <Qt3DRender/QBuffer>
 #include <Qt3DRender/QGeometry>
-#include <Qt3DExtras/QPhongMaterial>
 #include "Helper.h"
 
 
@@ -17,8 +16,8 @@ class Line3D : public Abstract3dObject {
 
 public:
     Line3D(Qt3DCore::QEntity *root, QColor color,
-           const std::pair<QVector3D, QVector3D> &pair
-    )
+           const std::pair<QVector3D, QVector3D> &pair,
+           float alpha = 1.0f)
             :
             Abstract3dObject(root, QColor(), MidPointVector(pair)),
             start_(pair.first),
@@ -30,8 +29,9 @@ public:
         line->setGeometry(getGeometry(root, pair));
         line->setPrimitiveType(Qt3DRender::QGeometryRenderer::Lines);
 
-        auto *material = new Qt3DExtras::QPhongMaterial(root);
+        auto *material = new Qt3DExtras::QPhongAlphaMaterial(root);
         material->setAmbient(color);
+        material->setAlpha(alpha);
 
         // entity
         auto *lineEntity = new Qt3DCore::QEntity(root);
