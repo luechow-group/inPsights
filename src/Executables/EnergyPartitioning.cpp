@@ -10,11 +10,6 @@
 #include <algorithm>
 #include <utility>
 
-#include <MoleculeWidget.h>
-#include <AtomsVector3D.h>
-#include <ElectronsVector3D.h>
-#include <QApplication>
-
 void checkBasename(char *arg, std::string &basename) {
     basename = arg;
     try {
@@ -115,26 +110,6 @@ int main(int argc, char *argv[]) {
     std::ofstream yamlFile(basename + ".yml");
     yamlFile << energyCalculator.getYamlDocumentString();
     yamlFile.close();
-
-
-    // Visuals
-
-    QApplication app(argc, argv);
-    setlocale(LC_NUMERIC,"C");
-
-    auto moleculeWidget = new MoleculeWidget();
-    auto root = moleculeWidget->getRoot();
-
-    AtomsVector3D(root, atoms);
-
-    for (const auto &i : globallyClusteredMaxima[1]) {
-        ElectronsVector3D(root, atoms, i.representativeReference().maximum(), false);
-        //for (const auto &j : i.similarReferencesIterators())
-        //    ElectronsVector3D(root, atoms, j->maximum(), false);
-
-    }
-
-
-
-    return QApplication::exec();
+    
+    return 0;
 };
