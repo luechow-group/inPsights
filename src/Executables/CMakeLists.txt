@@ -8,10 +8,6 @@ set ( PROJECT_PATH ${PROJECT_NAME})
 set ( OUTPUT_NAME "${PROJECT_FOLDER_NAME}" )
 message ( "-- ++ CREATING PROJECT OR MAKEFILE ---> ${OUTPUT_NAME}" )
 
-add_executable(BaseLib.exe BaseLib.cpp)
-target_link_libraries(BaseLib.exe
-        BaseLib
-        )
 
 add_executable(EnergyPartitioning.exe EnergyPartitioning.cpp)
 target_link_libraries(EnergyPartitioning.exe
@@ -73,10 +69,4 @@ if (DEFINED BUILD_GUI AND ON)
             AmolqcFileImport
             )
 
-    add_executable(H6TSsearch.exe H6TSsearch.cpp)
-    target_link_libraries(H6TSsearch.exe
-            GUI
-            BaseLib
-            TransitionStateSearch
-            )
 endif()

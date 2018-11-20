@@ -14,7 +14,7 @@
 #include "AtomsVector3D.h"
 #include "LocalNewtonSearch.h"
 #include "Visualization.h"
-#include "../AmolqcInterface/AmolqcFileImport/include/RefFileImporter.h"
+#include "RefFileImporter.h"
 #include "PositionsVectorTransformer.h"
 #include <NaturalConstants.h>
 
