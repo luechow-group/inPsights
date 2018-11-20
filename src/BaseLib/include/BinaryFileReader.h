@@ -6,56 +6,24 @@
 #define INPSIGHTS_BINARYFILEREADER_H
 
 #include <ParticlesVector.h>
-#include <vector>
-#include <iostream>
 #include <fstream>
 
-
-class BinaryFileReader{
+class BinaryFileReader {
 public:
 
-    explicit BinaryFileReader(int recordDelimiterLength = 4)
-    : recordDelimiterLength_(recordDelimiterLength){};
+    explicit BinaryFileReader(int recordDelimiterLength = 4);
 
+    virtual void read(const std::string &fileName) = 0;
 
-    virtual void read(const std::string& fileName) = 0;
+    bool checkEOF(std::ifstream &input, long long int totalLength) const;
 
-    bool checkEOF(std::ifstream &input, long long int totalLength){
-        return (totalLength-input.tellg()) >= recordDelimiterLength_;
-    }
+    int readInt(std::ifstream &input) const;
 
+    double readDouble(std::ifstream &input) const;
 
-    int readInt(std::ifstream &input) const {
-        int value;
-        input.seekg(recordDelimiterLength_, std::ios::cur);
-        input.read((char*) &value, sizeof(int));
-        input.seekg(recordDelimiterLength_, std::ios::cur);
-        return value;
-    }
+    Eigen::VectorXd readVectorXd(std::ifstream &input, size_t numberOfEntities, size_t entityLength = 1) const;
 
-    double readDouble(std::ifstream &input) const {
-        double value;
-        input.seekg(recordDelimiterLength_, std::ios_base::cur);
-        input.read((char*) &value, sizeof(double) );
-        input.seekg(recordDelimiterLength_, std::ios_base::cur);
-        return value;
-    }
-
-    Eigen::VectorXd readVectorXd(std::ifstream &input,  size_t numberOfEntities, size_t entityLength = 1) const {
-        double coords[entityLength*numberOfEntities];
-        input.seekg(recordDelimiterLength_, std::ios_base::cur);
-        input.read((char*) &coords, entityLength*numberOfEntities*sizeof(double) );
-        input.seekg(recordDelimiterLength_, std::ios_base::cur);
-        return Eigen::Map<Eigen::VectorXd>(coords, entityLength*numberOfEntities);
-    }
-
-    Eigen::VectorXi readVectorXi(std::ifstream &input,  size_t numberOfEntities, size_t entityLength = 1) const {
-        int coords[entityLength*numberOfEntities];
-        input.seekg(recordDelimiterLength_, std::ios_base::cur);
-        input.read((char*) &coords, entityLength*numberOfEntities*sizeof(int) );
-        input.seekg(recordDelimiterLength_, std::ios_base::cur);
-        return Eigen::Map<Eigen::VectorXi>(coords, entityLength*numberOfEntities);
-    }
+    Eigen::VectorXi readVectorXi(std::ifstream &input, size_t numberOfEntities, size_t entityLength = 1) const;
 
 private:
     int recordDelimiterLength_ = 4;

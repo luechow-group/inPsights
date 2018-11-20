@@ -68,6 +68,7 @@ set(SOURCE_FILES
         source/SpecialMathFunctions/ModifiedSphericalBesser1stKind.cpp
         source/SpecialMathFunctions/Gaussian.cpp
         source/Logger.cpp
+        source/BinaryFileReader.cpp
         )
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES})
