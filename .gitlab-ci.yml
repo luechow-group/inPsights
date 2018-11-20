@@ -1,4 +1,4 @@
-image: registry.git.rwth-aachen.de/luechow-group/inpsights:combined
+
 
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
@@ -8,6 +8,7 @@ stages:
 - test
 
 GNU build:
+  image: registry.git.rwth-aachen.de/luechow-group/inpsights:gnu
   stage: build
   before_script:
   - export CC=/usr/bin/gcc
@@ -26,6 +27,7 @@ GNU build:
     policy: pull-push
 
 Intel build:
+  image: registry.git.rwth-aachen.de/luechow-group/inpsights:intel
   stage: build
   before_script:
   - source /opt/intel/parallel_studio_xe_2019/psxevars.sh intel64
@@ -46,6 +48,7 @@ Intel build:
     policy: pull-push
 
 GNU test:
+  image: registry.git.rwth-aachen.de/luechow-group/inpsights:gnu
   stage: test
   cache:
     key: "$CI_COMMIT_REF_SLUG-GNU"
@@ -60,6 +63,7 @@ GNU test:
   - GNU build
 
 Intel test:
+  image: registry.git.rwth-aachen.de/luechow-group/inpsights:intel
   stage: test
   cache:
     key: "$CI_COMMIT_REF_SLUG-Intel"
