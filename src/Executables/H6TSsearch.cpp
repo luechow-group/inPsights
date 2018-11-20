@@ -9,7 +9,7 @@
 #include <QtWidgets>
 
 #include "ElectronicWaveFunctionProblem.h"
-#include "AmolqcFileImport/RefFileImporter.h"
+#include "RefFileImporter.h"
 #include "Serialization.h"
 #include "PositionsVectorTransformer.h"
 #include "MoleculeWidget.h"
@@ -17,8 +17,6 @@
 #include "AtomsVector3D.h"
 #include "Visualization.h"
 #include "LocalNewtonSearch.h"
-
-
 
 
 int main(int argc, char *argv[]) {

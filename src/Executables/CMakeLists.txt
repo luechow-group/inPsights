@@ -21,16 +21,15 @@ target_link_libraries(EnergyPartitioning.exe
 
 add_executable(StructuralSimilarity.exe StructuralSimilarityExec.cpp)
 target_link_libraries(StructuralSimilarity.exe
-        AmolqcInterface
         BaseLib
         StructuralSimilarity
+        AmolqcFileImport
         )
 
 if (DEFINED BUILD_GUI AND ON)
     add_executable(inPsights.exe inPsights.cpp)
     target_link_libraries(inPsights.exe
             GUI
-            AmolqcInterface
             EnergyPartitioning
             )
 
@@ -59,19 +58,19 @@ if (DEFINED BUILD_GUI AND ON)
     target_link_libraries(LocalPotentialEnergy.exe
             GUI
             LocalPotentialEnergy
-            AmolqcInterface
+            AmolqcElocInterface
             )
 
     add_executable(ShowMaxima.exe ShowMaxima.cpp)
     target_link_libraries(ShowMaxima.exe
             GUI
-            AmolqcInterface
+            AmolqcFileImport
             )
 
     add_executable(ShowPath.exe ShowPath.cpp)
     target_link_libraries(ShowPath.exe
             GUI
-            AmolqcInterface
+            AmolqcFileImport
             )
 
     add_executable(H6TSsearch.exe H6TSsearch.cpp)

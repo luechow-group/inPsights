@@ -3,8 +3,8 @@
 //
 
 #include <iostream>
-#include <AmolqcFileImport/WfFileImporter.h>
-#include <AmolqcFileImport/OptimizationPathFileImporter.h>
+#include "../AmolqcInterface/AmolqcFileImport/include/WfFileImporter.h"
+#include "../AmolqcInterface/AmolqcFileImport/include/OptimizationPathFileImporter.h"
 #include <Visualization.h>
 
 bool handleCommandlineArguments(int argc, char **argv,

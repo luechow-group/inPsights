@@ -2,10 +2,10 @@
 // Created by Michael Heuer on 25.05.18.
 //
 #include <omp.h>
-#include <AmolqcFileImport/RefFileImporter.h>
+#include <RefFileImporter.h>
 #include <StructuralSimilarity.h>
-#include "SimpleSorter.h"
-#include "Serialization.h"
+#include <SimpleSorter.h>
+#include <Serialization.h>
 
 int main(int argc, char *argv[]) {
 

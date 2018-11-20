@@ -24,7 +24,7 @@
 #include "Electron3D.h"
 #include "Polyline.h"
 
-#include "AmolqcFileImport/WfFileImporter.h"
+#include "WfFileImporter.h"
 
 #include "ArcLengthParametrizedBSpline.h"
 #include "StringMethodCoordinatesPlotter.h"
@@ -248,7 +248,7 @@ initialCoordinates.row((18 - 1) * 3 + 2) -= 0.05 * bend;//z bend
 
     QWidget *widget = new QWidget;
     QVBoxLayout *vLayout = new QVBoxLayout(widget);
-    vLayout->addWidget(moleculeView, 2);
+    vLayout->addWidget(moleculeWidget, 2);
     vLayout->addWidget(chartView, 1);
 
     widget->setWindowTitle(QStringLiteral("Amolqc++"));

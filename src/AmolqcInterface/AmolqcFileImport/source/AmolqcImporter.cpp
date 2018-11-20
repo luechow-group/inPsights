@@ -2,8 +2,7 @@
 // Created by Michael Heuer on 06.11.17.
 //
 
-#include "AmolqcFileImport/AmolqcImporter.h"
-#include "ElectronicWaveFunction.h"
+#include <AmolqcImporter.h>
 
 AmolqcImporter::AmolqcImporter(const std::string &filename)
         : Importer(filename) {}

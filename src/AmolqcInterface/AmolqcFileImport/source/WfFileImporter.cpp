@@ -1,5 +1,5 @@
 
-#include "AmolqcFileImport/WfFileImporter.h"
+#include <WfFileImporter.h>
 #include <ElementInfo.h>
 #include <TypesVector.h>
 

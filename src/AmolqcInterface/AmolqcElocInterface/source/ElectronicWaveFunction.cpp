@@ -4,7 +4,7 @@
 
 #include <iostream>
 #include "ElectronicWaveFunction.h"
-#include "AmolqcFileImport/WfFileImporter.h"
+#include "WfFileImporter.h"
 
 ElectronicWaveFunction &ElectronicWaveFunction::getInstance(const std::string& fileName) {
 

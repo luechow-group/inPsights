@@ -2,7 +2,7 @@
 // Created by heuer on 06.04.17.
 //
 
-#include "ElectronicWaveFunctionProblem.h"
+#include "../include/ElectronicWaveFunctionProblem.h"
 #include <iomanip>
 
 ElectronicWaveFunctionProblem::ElectronicWaveFunctionProblem()

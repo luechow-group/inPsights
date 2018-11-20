@@ -12,9 +12,9 @@
 
 
 static QColor QColorFromElementType(const Element& elementType){
-  return QColor(Elements::ElementInfo::color(elementType).R,
-                Elements::ElementInfo::color(elementType).G,
-                Elements::ElementInfo::color(elementType).B);
+  return {int(Elements::ElementInfo::color(elementType).R),
+          int(Elements::ElementInfo::color(elementType).G),
+          int(Elements::ElementInfo::color(elementType).B)};
 }
 
 static QVector3D MidPointVector(std::pair<QVector3D,QVector3D> qVector3Dpair){
