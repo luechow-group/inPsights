@@ -2,8 +2,8 @@
 // Created by Michael Heuer on 06.11.17.
 //
 
-#ifndef AMOLQCPP_AMOLQCIMPORTER_H
-#define AMOLQCPP_AMOLQCIMPORTER_H
+#ifndef INPSIGHTS_AMOLQCIMPORTER_H
+#define INPSIGHTS_AMOLQCIMPORTER_H
 
 #include "Importer.h"
 #include <PositionsVector.h>
@@ -27,4 +27,4 @@ protected:
     
 };
 
-#endif //AMOLQCPP_AMOLQCIMPORTER_H
+#endif //INPSIGHTS_AMOLQCIMPORTER_H

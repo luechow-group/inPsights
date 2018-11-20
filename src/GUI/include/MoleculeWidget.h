@@ -2,8 +2,8 @@
 // Created by Michael Heuer on 12.11.17.
 //
 
-#ifndef AMOLQCPP_MOLECULEWIDGET_H
-#define AMOLQCPP_MOLECULEWIDGET_H
+#ifndef INPSIGHTS_MOLECULEWIDGET_H
+#define INPSIGHTS_MOLECULEWIDGET_H
 
 #include <QWidget>
 #include <Qt3DCore>
@@ -78,4 +78,4 @@ private:
     ElectronsVector3D* electronsVector3D_;
 };
 
-#endif //AMOLQCPP_MOLECULEWIDGET_H
+#endif //INPSIGHTS_MOLECULEWIDGET_H

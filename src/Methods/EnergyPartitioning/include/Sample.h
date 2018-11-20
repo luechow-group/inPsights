@@ -2,8 +2,8 @@
 // Created by Michael Heuer on 28.08.18.
 //
 
-#ifndef AMOLQCPP_SAMPLE_H
-#define AMOLQCPP_SAMPLE_H
+#ifndef INPSIGHTS_SAMPLE_H
+#define INPSIGHTS_SAMPLE_H
 
 #include <utility>
 #include <ParticlesVector.h>
@@ -27,4 +27,4 @@ public:
     Eigen::VectorXd kineticEnergies_;
 };
 
-#endif //AMOLQCPP_SAMPLE_H
+#endif //INPSIGHTS_SAMPLE_H

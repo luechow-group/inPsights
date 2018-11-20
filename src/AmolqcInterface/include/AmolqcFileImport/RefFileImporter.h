@@ -2,8 +2,8 @@
 // Created by Michael Heuer on 06.11.17.
 //
 
-#ifndef AMOLQCPP_REFFILEIMPORTER_H
-#define AMOLQCPP_REFFILEIMPORTER_H
+#ifndef INPSIGHTS_REFFILEIMPORTER_H
+#define INPSIGHTS_REFFILEIMPORTER_H
 
 #include "AmolqcImporter.h"
 #include <ParticlesVectorCollection.h>
@@ -39,4 +39,4 @@ private:
     std::vector<SubstructureDataEntry> substructuresData_;
 };
 
-#endif //AMOLQCPP_REFFILEIMPORTER_H
+#endif //INPSIGHTS_REFFILEIMPORTER_H

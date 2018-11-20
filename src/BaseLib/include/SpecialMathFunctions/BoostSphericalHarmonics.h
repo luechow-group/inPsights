@@ -2,8 +2,8 @@
 // Created by Michael Heuer on 20.03.18.
 //
 
-#ifndef AMOLQCPP_BOOSTSPHERICALHARMONICS_H
-#define AMOLQCPP_BOOSTSPHERICALHARMONICS_H
+#ifndef INPSIGHTS_BOOSTSPHERICALHARMONICS_H
+#define INPSIGHTS_BOOSTSPHERICALHARMONICS_H
 
 #include <Eigen/Core>
 
@@ -28,4 +28,4 @@ namespace BoostSphericalHarmonics{
 
 } // namespace BoostSphericalHarmonics
 
-#endif //AMOLQCPP_BOOSTSPHERICALHARMONICS_H
+#endif //INPSIGHTS_BOOSTSPHERICALHARMONICS_H

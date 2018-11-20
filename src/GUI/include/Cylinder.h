@@ -2,8 +2,8 @@
 // Created by heuer on 06.12.16.
 //
 
-#ifndef AMOLQCPP_CYLINDER_H
-#define AMOLQCPP_CYLINDER_H
+#ifndef INPSIGHTS_CYLINDER_H
+#define INPSIGHTS_CYLINDER_H
 
 #include <Qt3DExtras/QCylinderMesh>
 #include "Abstract3dObject.h"
@@ -38,4 +38,4 @@ private:
   Qt3DExtras::QCylinderMesh *mesh_;
 };
 
-#endif //AMOLQCPP_CYLINDER_H
+#endif //INPSIGHTS_CYLINDER_H

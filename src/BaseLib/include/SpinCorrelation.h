@@ -2,8 +2,8 @@
 // Created by heuer on 25.10.18.
 //
 
-#ifndef AMOLQCPP_ELECTRONPAIRANALYSIS_H
-#define AMOLQCPP_ELECTRONPAIRANALYSIS_H
+#ifndef INPSIGHTS_ELECTRONPAIRANALYSIS_H
+#define INPSIGHTS_ELECTRONPAIRANALYSIS_H
 
 #include <Eigen/Core>
 #include <ParticlesVector.h>
@@ -25,4 +25,4 @@ namespace SpinCorrelation{
 
 }
 
-#endif //AMOLQCPP_ELECTRONPAIRANALYSIS_H
+#endif //INPSIGHTS_ELECTRONPAIRANALYSIS_H

@@ -2,8 +2,8 @@
 // Created by Michael Heuer on 30.05.18.
 //
 
-#ifndef AMOLQCPP_TESTMOLECULES_H
-#define AMOLQCPP_TESTMOLECULES_H
+#ifndef INPSIGHTS_TESTMOLECULES_H
+#define INPSIGHTS_TESTMOLECULES_H
 
 #include <MolecularGeometry.h>
 
@@ -132,4 +132,4 @@ namespace TestMolecules {
     }
 }
 
-#endif //AMOLQCPP_TESTMOLECULES_H
+#endif //INPSIGHTS_TESTMOLECULES_H

@@ -2,8 +2,8 @@
 // Created by Michael Heuer on 29.10.17.
 //
 
-#ifndef AMOLQCPP_PARTICLESVECTOR_H
-#define AMOLQCPP_PARTICLESVECTOR_H
+#ifndef INPSIGHTS_PARTICLESVECTOR_H
+#define INPSIGHTS_PARTICLESVECTOR_H
 
 #include "AbstractVector.h"
 #include "Particle.h"
@@ -168,4 +168,4 @@ namespace YAML {
     };
 }
 
-#endif //AMOLQCPP_PARTICLESVECTOR_H
+#endif //INPSIGHTS_PARTICLESVECTOR_H

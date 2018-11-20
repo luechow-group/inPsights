@@ -2,8 +2,8 @@
 // Created by Michael Heuer on 30.08.18.
 //
 
-#ifndef AMOLQCPP_RETURNANDRESET_H
-#define AMOLQCPP_RETURNANDRESET_H
+#ifndef INPSIGHTS_RETURNANDRESET_H
+#define INPSIGHTS_RETURNANDRESET_H
 
 #include <utility>
 
@@ -32,4 +32,4 @@ struct RETURN_AND_RESET{
     ReturnType vec_;
 };
 
-#endif //AMOLQCPP_RETURNANDRESET_H
+#endif //INPSIGHTS_RETURNANDRESET_H

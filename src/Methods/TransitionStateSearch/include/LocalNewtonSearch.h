@@ -2,8 +2,8 @@
 // Created by Michael Heuer on 06.04.18.
 //
 
-#ifndef AMOLQCPP_LOCALNEWTONSEARCH_H
-#define AMOLQCPP_LOCALNEWTONSEARCH_H
+#ifndef INPSIGHTS_LOCALNEWTONSEARCH_H
+#define INPSIGHTS_LOCALNEWTONSEARCH_H
 
 #include <solver/newtonraphsonsolver.h>
 #include <ElectronicWaveFunctionProblem.h>
@@ -30,4 +30,4 @@ public:
 
 };
 
-#endif //AMOLQCPP_LOCALNEWTONSEARCH_H
+#endif //INPSIGHTS_LOCALNEWTONSEARCH_H

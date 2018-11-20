@@ -2,8 +2,8 @@
 // Created by Michael Heuer on 23.12.16.
 //
 
-#ifndef AMOLQCPP_BOND3D_H
-#define AMOLQCPP_BOND3D_H
+#ifndef INPSIGHTS_BOND3D_H
+#define INPSIGHTS_BOND3D_H
 
 #include "DividedCylinder.h"
 #include "Atom3D.h"
@@ -26,4 +26,4 @@ public:
   Bond3D(Qt3DCore::QEntity* root,const Atom& src, const Atom& dest);
 };*/
 
-#endif //AMOLQCPP_BOND3D_H
+#endif //INPSIGHTS_BOND3D_H

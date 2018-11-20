@@ -2,8 +2,8 @@
 // Created by Leonard Reuter on 09.03.18.
 //
 
-#ifndef AMOLQCPP_TOSTRING_H
-#define AMOLQCPP_TOSTRING_H
+#ifndef INPSIGHTS_TOSTRING_H
+#define INPSIGHTS_TOSTRING_H
 
 #include <string>
 #include <Eigen/Core>
@@ -25,4 +25,4 @@ namespace ToString {
                                  unsigned leadingSpaces = 1);
 }
 
-#endif //AMOLQCPP_TOSTRING_H
+#endif //INPSIGHTS_TOSTRING_H

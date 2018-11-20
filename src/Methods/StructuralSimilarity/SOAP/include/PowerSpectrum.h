@@ -2,8 +2,8 @@
 // Created by Michael Heuer on 10.05.18.
 //
 
-#ifndef AMOLQCPP_POWERSPECTRUM_H
-#define AMOLQCPP_POWERSPECTRUM_H
+#ifndef INPSIGHTS_POWERSPECTRUM_H
+#define INPSIGHTS_POWERSPECTRUM_H
 
 #include <Eigen/Core>
 #include "ExpansionSettings.h"
@@ -28,4 +28,4 @@ namespace PowerSpectrum {
 };
 
 
-#endif //AMOLQCPP_POWERSPECTRUM_H
+#endif //INPSIGHTS_POWERSPECTRUM_H

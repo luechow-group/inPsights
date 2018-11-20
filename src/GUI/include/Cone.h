@@ -2,8 +2,8 @@
 // Created by heuer on 03.08.17.
 //
 
-#ifndef AMOLQCPP_CONE_H
-#define AMOLQCPP_CONE_H
+#ifndef INPSIGHTS_CONE_H
+#define INPSIGHTS_CONE_H
 
 #include <Qt3DExtras/QConeMesh>
 #include "Abstract3dObject.h"
@@ -44,4 +44,4 @@ private:
     Qt3DExtras::QConeMesh *mesh_;
 };
 
-#endif //AMOLQCPP_CONE_H
+#endif //INPSIGHTS_CONE_H

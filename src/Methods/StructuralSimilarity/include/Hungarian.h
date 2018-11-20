@@ -37,8 +37,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 
 
-#ifndef AMOLQCPP_HUNGARIAN_H
-#define AMOLQCPP_HUNGARIAN_H
+#ifndef INPSIGHTS_HUNGARIAN_H
+#define INPSIGHTS_HUNGARIAN_H
 
 #include <Eigen/Dense>
 #include <limits>
@@ -236,4 +236,4 @@ private:
     };
 };
 
-#endif //AMOLQCPP_HUNGARIAN_H
+#endif //INPSIGHTS_HUNGARIAN_H

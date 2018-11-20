@@ -2,8 +2,8 @@
 // Created by Michael Heuer on 08.12.17.
 //
 
-#ifndef AMOLQCPP_COLLECTIONPARSER_H
-#define AMOLQCPP_COLLECTIONPARSER_H
+#ifndef INPSIGHTS_COLLECTIONPARSER_H
+#define INPSIGHTS_COLLECTIONPARSER_H
 
 #include <yaml-cpp/yaml.h>
 #include <fstream>
@@ -55,4 +55,4 @@ namespace Serialization{
 };
 
 
-#endif //AMOLQCPP_COLLECTIONPARSER_H
+#endif //INPSIGHTS_COLLECTIONPARSER_H

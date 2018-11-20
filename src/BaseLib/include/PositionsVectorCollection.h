@@ -2,8 +2,8 @@
 // Created by Michael Heuer on 08.03.17.
 //
 
-#ifndef AMOLQCPP_POSITIONSVECTORCOLLECTION_H
-#define AMOLQCPP_POSITIONSVECTORCOLLECTION_H
+#ifndef INPSIGHTS_POSITIONSVECTORCOLLECTION_H
+#define INPSIGHTS_POSITIONSVECTORCOLLECTION_H
 
 #include <vector>
 #include "PositionsVector.h"
@@ -44,4 +44,4 @@ namespace YAML {
     Emitter &operator<<(Emitter &out, const PositionsVectorCollection &p) ;
 }
 
-#endif //AMOLQCPP_POSITIONSVECTORCOLLECTION_H
+#endif //INPSIGHTS_POSITIONSVECTORCOLLECTION_H

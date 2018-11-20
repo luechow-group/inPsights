@@ -2,8 +2,8 @@
 // Created by Michael Heuer on 27.08.18.
 //
 
-#ifndef AMOLQCPP_BINARYFILEREADER_H
-#define AMOLQCPP_BINARYFILEREADER_H
+#ifndef INPSIGHTS_BINARYFILEREADER_H
+#define INPSIGHTS_BINARYFILEREADER_H
 
 #include <ParticlesVector.h>
 #include <vector>
@@ -61,4 +61,4 @@ private:
     int recordDelimiterLength_ = 4;
 };
 
-#endif //AMOLQCPP_BINARYFILEREADER_H
+#endif //INPSIGHTS_BINARYFILEREADER_H

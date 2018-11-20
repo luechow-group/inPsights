@@ -4,8 +4,8 @@
 // Created by Michael Heuer on 02.10.18.
 //
 
-#ifndef AMOLQCPP_ENERGYCALCULATOR_H
-#define AMOLQCPP_ENERGYCALCULATOR_H
+#ifndef INPSIGHTS_ENERGYCALCULATOR_H
+#define INPSIGHTS_ENERGYCALCULATOR_H
 
 #include <Statistics.h>
 #include <Reference.h>
@@ -191,4 +191,4 @@ private:
     std::shared_ptr<spdlog::logger> console;
 };
 
-#endif //AMOLQCPP_ENERGYCALCULATOR_H
+#endif //INPSIGHTS_ENERGYCALCULATOR_H

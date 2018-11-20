@@ -2,8 +2,8 @@
 // Created by Michael Heuer on 03.05.18.
 //
 
-#ifndef AMOLQCPP_ENVIRONMENT_H
-#define AMOLQCPP_ENVIRONMENT_H
+#ifndef INPSIGHTS_ENVIRONMENT_H
+#define INPSIGHTS_ENVIRONMENT_H
 
 #include <Eigen/Core>
 #include <utility>
@@ -25,4 +25,4 @@ public:
     Eigen::Vector3d center_; //TODO be careful with many particles located at the same center => getCenterWeight?
 };
 
-#endif //AMOLQCPP_ENVIRONMENT_H
+#endif //INPSIGHTS_ENVIRONMENT_H

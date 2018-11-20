@@ -2,8 +2,8 @@
 // Created by Michael Heuer on 28.03.18.
 //
 
-#ifndef AMOLQCPP_RADIALGAUSSIAN_H
-#define AMOLQCPP_RADIALGAUSSIAN_H
+#ifndef INPSIGHTS_RADIALGAUSSIAN_H
+#define INPSIGHTS_RADIALGAUSSIAN_H
 
 #include <Eigen/Core>
 #include <utility>
@@ -71,4 +71,4 @@ private:
     Eigen::Vector3d rCenter_;
 };
 
-#endif //AMOLQCPP_RADIALGAUSSIAN_H
+#endif //INPSIGHTS_RADIALGAUSSIAN_H

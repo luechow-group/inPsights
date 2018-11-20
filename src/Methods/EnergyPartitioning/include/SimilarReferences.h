@@ -2,8 +2,8 @@
 // Created by heuer on 19.10.18.
 //
 
-#ifndef AMOLQCPP_SIMILARREFERENCES_H
-#define AMOLQCPP_SIMILARREFERENCES_H
+#ifndef INPSIGHTS_SIMILARREFERENCES_H
+#define INPSIGHTS_SIMILARREFERENCES_H
 
 #include "Reference.h"
 
@@ -67,4 +67,4 @@ private:
     Statistics::RunningStatistics<Eigen::Matrix<double,1,1>> valueStats_;
 };
 
-#endif //AMOLQCPP_SIMILARREFERENCES_H
+#endif //INPSIGHTS_SIMILARREFERENCES_H

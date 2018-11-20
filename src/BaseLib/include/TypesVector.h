@@ -2,8 +2,8 @@
 // Created by Michael Heuer on 22.04.18.
 //
 
-#ifndef AMOLQCPP_TYPESVECTOR_H
-#define AMOLQCPP_TYPESVECTOR_H
+#ifndef INPSIGHTS_TYPESVECTOR_H
+#define INPSIGHTS_TYPESVECTOR_H
 
 #include "SpinType.h"
 #include "ElementType.h"
@@ -200,4 +200,4 @@ Emitter& operator<< (Emitter& out, const TypesVector<Type>& tv){
 
 
 
-#endif //AMOLQCPP_TYPESVECTOR_H
+#endif //INPSIGHTS_TYPESVECTOR_H

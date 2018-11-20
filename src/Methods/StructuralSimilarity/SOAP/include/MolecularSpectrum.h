@@ -2,8 +2,8 @@
 // Created by Michael Heuer on 25.05.18.
 //
 
-#ifndef AMOLQCPP_MOLECULARSPECTRUM_H
-#define AMOLQCPP_MOLECULARSPECTRUM_H
+#ifndef INPSIGHTS_MOLECULARSPECTRUM_H
+#define INPSIGHTS_MOLECULARSPECTRUM_H
 
 #include "NeighborhoodExpansion.h"
 #include "MolecularGeometry.h"
@@ -20,4 +20,4 @@ public:
     MolecularCenters molecularCenters_;
 };
 
-#endif //AMOLQCPP_MOLECULARSPECTRUM_H
+#endif //INPSIGHTS_MOLECULARSPECTRUM_H

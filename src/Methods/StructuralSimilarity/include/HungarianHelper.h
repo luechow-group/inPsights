@@ -2,8 +2,8 @@
 // Created by Michael Heuer on 06.09.18.
 //
 
-#ifndef AMOLQCPP_HUNGARIANHELPER_H
-#define AMOLQCPP_HUNGARIANHELPER_H
+#ifndef INPSIGHTS_HUNGARIANHELPER_H
+#define INPSIGHTS_HUNGARIANHELPER_H
 
 
 #include "Hungarian.h"
@@ -130,4 +130,4 @@ namespace Metrics{
     }
 }
 
-#endif //AMOLQCPP_HUNGARIANHELPER_H
+#endif //INPSIGHTS_HUNGARIANHELPER_H

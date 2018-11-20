@@ -2,8 +2,8 @@
 // Created by Michael Heuer on 14.09.18.
 //
 
-#ifndef AMOLQCPP_STATISTICS_H
-#define AMOLQCPP_STATISTICS_H
+#ifndef INPSIGHTS_STATISTICS_H
+#define INPSIGHTS_STATISTICS_H
 
 #include <Eigen/Core>
 #include <yaml-cpp/yaml.h>
@@ -227,4 +227,4 @@ namespace Statistics {
     };
 }
 
-#endif //AMOLQCPP_STATISTICS_H
+#endif //INPSIGHTS_STATISTICS_H

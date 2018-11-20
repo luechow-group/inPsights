@@ -2,8 +2,8 @@
 // Created by Michael Heuer on 28.08.18.
 //
 
-#ifndef AMOLQCPP_RAWDATAREADER_H
-#define AMOLQCPP_RAWDATAREADER_H
+#ifndef INPSIGHTS_RAWDATAREADER_H
+#define INPSIGHTS_RAWDATAREADER_H
 
 #include <BinaryFileReader.h>
 #include "Reference.h"
@@ -37,4 +37,4 @@ private:
     std::vector<Sample>& samples_;
 };
 
-#endif //AMOLQCPP_RAWDATAREADER_H
+#endif //INPSIGHTS_RAWDATAREADER_H

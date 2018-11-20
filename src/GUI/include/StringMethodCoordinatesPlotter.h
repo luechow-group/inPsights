@@ -2,8 +2,8 @@
 // Created by heuer on 12.05.17.
 //
 
-#ifndef AMOLQCPP_BSPLINEPLOTTER_H
-#define AMOLQCPP_BSPLINEPLOTTER_H
+#ifndef INPSIGHTS_BSPLINEPLOTTER_H
+#define INPSIGHTS_BSPLINEPLOTTER_H
 
 #include "Polyline.h"
 #include "Sphere.h"
@@ -66,4 +66,4 @@ private:
 
 };
 
-#endif //AMOLQCPP_BSPLINEPLOTTER_H
+#endif //INPSIGHTS_BSPLINEPLOTTER_H

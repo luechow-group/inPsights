@@ -2,8 +2,8 @@
 // Created by Michael Heuer on 09.05.18.
 //
 
-#ifndef AMOLQCPP_STRUCTURALSIMILARITY_H
-#define AMOLQCPP_STRUCTURALSIMILARITY_H
+#ifndef INPSIGHTS_STRUCTURALSIMILARITY_H
+#define INPSIGHTS_STRUCTURALSIMILARITY_H
 
 #include <Eigen/Core>
 #include "ParticleKit.h"
@@ -35,4 +35,4 @@ namespace StructuralSimilarity{
                           const MolecularSpectrum &spectrumB, double gamma = ExpansionSettings::gamma);
 };
 
-#endif //AMOLQCPP_STRUCTURALSIMILARITY_H
+#endif //INPSIGHTS_STRUCTURALSIMILARITY_H

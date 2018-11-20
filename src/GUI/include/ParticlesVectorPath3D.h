@@ -2,8 +2,8 @@
 // Created by Michael Heuer on 12.11.17.
 //
 
-#ifndef AMOLQCPP_PARTICLECOLLECTIONPATH3D_H
-#define AMOLQCPP_PARTICLECOLLECTIONPATH3D_H
+#ifndef INPSIGHTS_PARTICLECOLLECTIONPATH3D_H
+#define INPSIGHTS_PARTICLECOLLECTIONPATH3D_H
 
 #include <ParticlesVectorCollection.h>
 
@@ -15,4 +15,4 @@ public:
                              float radius = 0.01f);
 };
 
-#endif //AMOLQCPP_PARTICLECOLLECTIONPATH3D_H
+#endif //INPSIGHTS_PARTICLECOLLECTIONPATH3D_H

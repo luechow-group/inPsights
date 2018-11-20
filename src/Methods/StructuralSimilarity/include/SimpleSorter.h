@@ -2,8 +2,8 @@
 // Created by Michael Heuer on 19.06.18.
 //
 
-#ifndef AMOLQCPP_SIMPLESORTER_H
-#define AMOLQCPP_SIMPLESORTER_H
+#ifndef INPSIGHTS_SIMPLESORTER_H
+#define INPSIGHTS_SIMPLESORTER_H
 
 #include <vector>
 
@@ -18,4 +18,4 @@ public:
 
 
 
-#endif //AMOLQCPP_SIMPLESORTER_H
+#endif //INPSIGHTS_SIMPLESORTER_H

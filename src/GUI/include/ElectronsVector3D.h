@@ -2,8 +2,8 @@
 // Created by Michael Heuer on 12.11.17.
 //
 
-#ifndef AMOLQCPP_ELECTRONCOLLECTION3D_H
-#define AMOLQCPP_ELECTRONCOLLECTION3D_H
+#ifndef INPSIGHTS_ELECTRONCOLLECTION3D_H
+#define INPSIGHTS_ELECTRONCOLLECTION3D_H
 
 #include "Abstract3dObject.h"
 #include <ParticlesVector.h>
@@ -26,4 +26,4 @@ public:
 
 };
 
-#endif //AMOLQCPP_ELECTRONCOLLECTION3D_H
+#endif //INPSIGHTS_ELECTRONCOLLECTION3D_H

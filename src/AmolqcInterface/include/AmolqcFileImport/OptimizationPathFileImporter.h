@@ -2,8 +2,8 @@
 // Created by Michael Heuer on 07.11.17.
 //
 
-#ifndef AMOLQCPP_OPTIMIZATIONPATHFILEIMPORTER_H
-#define AMOLQCPP_OPTIMIZATIONPATHFILEIMPORTER_H
+#ifndef INPSIGHTS_OPTIMIZATIONPATHFILEIMPORTER_H
+#define INPSIGHTS_OPTIMIZATIONPATHFILEIMPORTER_H
 
 #include "AmolqcImporter.h"
 #include <ParticlesVectorCollection.h>
@@ -39,4 +39,4 @@ private:
     std::vector<SubstructureDataEntry> substructuresData_;
 };
 
-#endif //AMOLQCPP_OPTIMIZATIONPATHFILEIMPORTER_H
+#endif //INPSIGHTS_OPTIMIZATIONPATHFILEIMPORTER_H

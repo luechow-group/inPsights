@@ -2,8 +2,8 @@
 // Created by Michael Heuer on 03.09.18.
 //
 
-#ifndef AMOLQCPP_INSERTABLEVECTOR_H
-#define AMOLQCPP_INSERTABLEVECTOR_H
+#ifndef INPSIGHTS_INSERTABLEVECTOR_H
+#define INPSIGHTS_INSERTABLEVECTOR_H
 
 #include "SliceableDataVector.h"
 
@@ -33,4 +33,4 @@ protected:
     }
 };
 
-#endif //AMOLQCPP_INSERTABLEVECTOR_H
+#endif //INPSIGHTS_INSERTABLEVECTOR_H

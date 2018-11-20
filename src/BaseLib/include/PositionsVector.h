@@ -2,8 +2,8 @@
 // Created by Michael Heuer on 29.10.17.
 //
 
-#ifndef AMOLQCPP_POSITIONSVECTOR_H
-#define AMOLQCPP_POSITIONSVECTOR_H
+#ifndef INPSIGHTS_POSITIONSVECTOR_H
+#define INPSIGHTS_POSITIONSVECTOR_H
 
 #include "InsertableVector.h"
 #include <Eigen/Core>
@@ -48,4 +48,4 @@ namespace YAML {
 }
 
 
-#endif //AMOLQCPP_POSITIONSVECTOR_H
+#endif //INPSIGHTS_POSITIONSVECTOR_H

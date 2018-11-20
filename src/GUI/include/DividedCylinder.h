@@ -2,8 +2,8 @@
 // Created by Michael Heuer on 24.12.16.
 //
 
-#ifndef AMOLQCPP_DIVIDEDCYLINDER_H
-#define AMOLQCPP_DIVIDEDCYLINDER_H
+#ifndef INPSIGHTS_DIVIDEDCYLINDER_H
+#define INPSIGHTS_DIVIDEDCYLINDER_H
 
 #include "Cylinder.h"
 
@@ -22,4 +22,4 @@ private:
   Cylinder srcCylinder_,destCylinder_;
 };
 
-#endif //AMOLQCPP_DIVIDEDCYLINDER_H
+#endif //INPSIGHTS_DIVIDEDCYLINDER_H

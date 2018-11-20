@@ -2,8 +2,8 @@
 // Created by Michael Heuer on 04.06.18.
 //
 
-#ifndef AMOLQCPP_NUMBEREDTYPE_H
-#define AMOLQCPP_NUMBEREDTYPE_H
+#ifndef INPSIGHTS_NUMBEREDTYPE_H
+#define INPSIGHTS_NUMBEREDTYPE_H
 
 #include "ElementType.h"
 #include "SpinType.h"
@@ -45,4 +45,4 @@ public:
 using NumberedElement = NumberedType<Element >;
 using NumberedSpin = NumberedType<Spin>;
 
-#endif //AMOLQCPP_NUMBEREDTYPE_H
+#endif //INPSIGHTS_NUMBEREDTYPE_H

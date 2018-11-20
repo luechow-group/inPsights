@@ -2,8 +2,8 @@
 // Created by Michael Heuer on 03.05.18.
 //
 
-#ifndef AMOLQCPP_EXPANSIONSETTINGS_H
-#define AMOLQCPP_EXPANSIONSETTINGS_H
+#ifndef INPSIGHTS_EXPANSIONSETTINGS_H
+#define INPSIGHTS_EXPANSIONSETTINGS_H
 
 #include <cassert>
 #include <ElementType.h>
@@ -79,4 +79,4 @@ namespace ExpansionSettings{
     std::string toString();
 };
 
-#endif //AMOLQCPP_EXPANSIONSETTINGS_H
+#endif //INPSIGHTS_EXPANSIONSETTINGS_H

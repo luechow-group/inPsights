@@ -2,8 +2,8 @@
 // Created by heuer on 19.10.18.
 //
 
-#ifndef AMOLQCPP_GLOBALCLUSTERSORTER_H
-#define AMOLQCPP_GLOBALCLUSTERSORTER_H
+#ifndef INPSIGHTS_GLOBALCLUSTERSORTER_H
+#define INPSIGHTS_GLOBALCLUSTERSORTER_H
 
 #include "SimilarReferences.h"
 #include <DensityBasedScan.h>
@@ -111,4 +111,4 @@ private:
     std::shared_ptr<spdlog::logger> console;
 };
 
-#endif //AMOLQCPP_GLOBALCLUSTERSORTER_H
+#endif //INPSIGHTS_GLOBALCLUSTERSORTER_H

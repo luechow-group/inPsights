@@ -1,5 +1,5 @@
-#ifndef AMOLQCPP_ELEMENTINFO_H
-#define AMOLQCPP_ELEMENTINFO_H
+#ifndef INPSIGHTS_ELEMENTINFO_H
+#define INPSIGHTS_ELEMENTINFO_H
 
 #include "ElementType.h"
 #include "pElementInfo.h"
@@ -43,4 +43,4 @@ namespace Elements {
 
 } // namespace Elements
 
-#endif // AMOLQCPP_ELEMENTINFO_H
+#endif // INPSIGHTS_ELEMENTINFO_H
