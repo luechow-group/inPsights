@@ -1,4 +1,4 @@
-image: registry.git.rwth-aachen.de/luechow-group/inPsights:combined
+image: registry.git.rwth-aachen.de/luechow-group/inpsights:combined
 
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
