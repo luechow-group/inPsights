@@ -8,27 +8,27 @@ set ( PROJECT_PATH ${PROJECT_NAME})
 set ( OUTPUT_NAME "${PROJECT_FOLDER_NAME}" )
 message ( "-- ++ CREATING PROJECT OR MAKEFILE ---> ${OUTPUT_NAME}" )
 
-add_executable(BaseLib.exe BaseLib.cpp)
-target_link_libraries(BaseLib.exe
-        BaseLib
-        )
 
 add_executable(EnergyPartitioning.exe EnergyPartitioning.cpp)
 target_link_libraries(EnergyPartitioning.exe
-        #GUI
-        AmolqcInterface
         BaseLib
         EnergyPartitioning
         )
 
 add_executable(StructuralSimilarity.exe StructuralSimilarityExec.cpp)
 target_link_libraries(StructuralSimilarity.exe
-        AmolqcInterface
         BaseLib
         StructuralSimilarity
+        AmolqcFileImport
         )
 
 if (DEFINED BUILD_GUI AND ON)
+    add_executable(inPsights.exe inPsights.cpp)
+    target_link_libraries(inPsights.exe
+            GUI
+            EnergyPartitioning
+            )
+
     add_executable(StringMethodGUI.exe StringMethodGUI.cpp)
     target_link_libraries(StringMethodGUI.exe
             GUI
@@ -54,25 +54,19 @@ if (DEFINED BUILD_GUI AND ON)
     target_link_libraries(LocalPotentialEnergy.exe
             GUI
             LocalPotentialEnergy
-            AmolqcInterface
+            AmolqcElocInterface
             )
 
     add_executable(ShowMaxima.exe ShowMaxima.cpp)
     target_link_libraries(ShowMaxima.exe
             GUI
-            AmolqcInterface
+            AmolqcFileImport
             )
 
     add_executable(ShowPath.exe ShowPath.cpp)
     target_link_libraries(ShowPath.exe
             GUI
-            AmolqcInterface
+            AmolqcFileImport
             )
 
-    add_executable(H6TSsearch.exe H6TSsearch.cpp)
-    target_link_libraries(H6TSsearch.exe
-            GUI
-            BaseLib
-            TransitionStateSearch
-            )
 endif()

@@ -1,5 +1,5 @@
-#ifndef AMOLQCPP_PELEMENTINFO_H
-#define AMOLQCPP_PELEMENTINFO_H
+#ifndef INPSIGHTS_PELEMENTINFO_H
+#define INPSIGHTS_PELEMENTINFO_H
 
 #include "NaturalConstants.h"
 #include "ElementType.h"
@@ -156,4 +156,4 @@ namespace Elements {
 
 } // namespace Elements
 
-#endif // AMOLQCPP_PELEMENTINFO_H
+#endif // INPSIGHTS_PELEMENTINFO_H

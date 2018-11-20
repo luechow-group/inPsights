@@ -1,5 +1,5 @@
-#ifndef AMOLQCPP_ELEMENTTYPE_H
-#define AMOLQCPP_ELEMENTTYPE_H
+#ifndef INPSIGHTS_ELEMENTTYPE_H
+#define INPSIGHTS_ELEMENTTYPE_H
 
 #include <utility>
 #include <map>
@@ -41,4 +41,4 @@ namespace YAML {
     Emitter &operator<<(Emitter &out, const Element &e);
 }
 
-#endif // AMOLQCPP_ELEMENTTYPE_H
+#endif // INPSIGHTS_ELEMENTTYPE_H

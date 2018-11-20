@@ -2,8 +2,8 @@
 // Created by Leonard Reuter on 14.03.18.
 //
 
-#ifndef AMOLQCPP_VISUALIZATION_H
-#define AMOLQCPP_VISUALIZATION_H
+#ifndef INPSIGHTS_VISUALIZATION_H
+#define INPSIGHTS_VISUALIZATION_H
 
 
 #include <Qt3DCore>
@@ -37,4 +37,4 @@ namespace Visualization{
 
 }
 
-#endif //AMOLQCPP_VISUALIZATION_H
+#endif //INPSIGHTS_VISUALIZATION_H

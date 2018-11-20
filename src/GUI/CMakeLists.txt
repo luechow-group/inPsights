@@ -7,8 +7,6 @@ set ( PROJECT_PATH ${PROJECT_NAME})
 set ( OUTPUT_NAME "${PROJECT_FOLDER_NAME}" )
 message ( "-- ++ CREATING PROJECT OR MAKEFILE ---> ${OUTPUT_NAME}" )
 
-# Instruct CMake to run moc automatically when needed. Required for Qt to detect Q_OBJECT
-set(CMAKE_AUTOMOC ON)
 
 find_package(Qt5 REQUIRED COMPONENTS
         Core
@@ -19,6 +17,13 @@ find_package(Qt5 REQUIRED COMPONENTS
         3DRender
         Charts
         )
+
+qt5_add_resources(QT_RESOURCES myresources.qrc)
+
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
+set(CMAKE_AUTOUIC ON)
+
 
 set(HEADER_FILES
         include/Abstract3dObject.h
@@ -38,6 +43,8 @@ set(HEADER_FILES
         include/MoleculeWidget.h
         include/ParticlesVectorPath3D.h
         include/Visualization.h
+        include/InPsightsWidget.h
+        include/Line3D.h
         )
 
 set(SOURCE_FILES
@@ -57,7 +64,10 @@ set(SOURCE_FILES
         source/Visualization.cpp
         )
 
-add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES}
+add_library(${PROJECT_NAME} STATIC
+        ${SOURCE_FILES}
+        ${HEADER_FILES}
+        ${QT_RESOURCES}
         )
 target_include_directories(${PROJECT_NAME}
         PUBLIC include

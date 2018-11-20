@@ -2,8 +2,8 @@
 // Created by Michael Heuer on 06.11.17.
 //
 
-#include "AmolqcFileImport/RefFileImporter.h"
-#include "ElementInfo.h"
+#include <RefFileImporter.h>
+#include <ElementInfo.h>
 
 RefFileImporter::RefFileImporter(const std::string &filename)
         : AmolqcImporter(filename) {
@@ -67,7 +67,7 @@ double RefFileImporter::getNegativeLogarithmizedProbabilityDensity(unsigned long
 }
 
 SpinTypesVector RefFileImporter::getSpinTypesVector() const {
-    return AmolqcImporter::getSpinTypesVector(numberOfAlphaElectrons_, numberOfBetaElectrons_);
+    return SpinTypesVector(numberOfAlphaElectrons_, numberOfBetaElectrons_);
 }
 
 ElectronsVector RefFileImporter::getMaximaStructure(unsigned long k, unsigned long m) const {
@@ -81,7 +81,7 @@ ElectronsVectorCollection RefFileImporter::getAllSubstructures(unsigned long k) 
     for (unsigned long m = 1; m <= numberOfSubstructures; ++m) {
         positionsVectorCollection.append(this->getPositionsVector(k,m));
     }
-    return ElectronsVectorCollection(positionsVectorCollection,this->getSpinTypesVector());
+    return ElectronsVectorCollection(positionsVectorCollection, getSpinTypesVector());
 }
 
 unsigned long RefFileImporter::numberOfSuperstructures() {

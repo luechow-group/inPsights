@@ -2,8 +2,8 @@
 // Created by Michael Heuer on 05.02.18.
 //
 
-#ifndef AMOLQCPP_ABSTRACTVECTOR_H
-#define AMOLQCPP_ABSTRACTVECTOR_H
+#ifndef INPSIGHTS_ABSTRACTVECTOR_H
+#define INPSIGHTS_ABSTRACTVECTOR_H
 
 #include <iostream>
 #include <Eigen/Core>
@@ -33,4 +33,4 @@ private:
     long numberOfEntities_;
 };
 
-#endif //AMOLQCPP_ABSTRACTVECTOR_H
+#endif //INPSIGHTS_ABSTRACTVECTOR_H

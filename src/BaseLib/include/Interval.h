@@ -2,8 +2,8 @@
 // Created by Michael Heuer on 29.08.18.
 //
 
-#ifndef AMOLQCPP_INTERVAL_H
-#define AMOLQCPP_INTERVAL_H
+#ifndef INPSIGHTS_INTERVAL_H
+#define INPSIGHTS_INTERVAL_H
 
 #include <cassert>
 
@@ -32,4 +32,4 @@ private:
     long start_,n_;
 };
 
-#endif //AMOLQCPP_INTERVAL_H
+#endif //INPSIGHTS_INTERVAL_H

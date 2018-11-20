@@ -2,8 +2,8 @@
 // Created by Michael Heuer on 06.11.17.
 //
 
-#ifndef AMOLQCPP_AMOLQCIMPORTER_H
-#define AMOLQCPP_AMOLQCIMPORTER_H
+#ifndef INPSIGHTS_AMOLQCIMPORTER_H
+#define INPSIGHTS_AMOLQCIMPORTER_H
 
 #include "Importer.h"
 #include <PositionsVector.h>
@@ -20,11 +20,6 @@ public:
     
     std::vector<SubstructureDataEntry> countSubstructures(unsigned long startLineIdx,
                                                           unsigned long blockLength) const;
-
-protected:
-    SpinTypesVector getSpinTypesVector(unsigned long numberOfAlphaElectrons,
-                                       unsigned long numberOfBetaElectrons) const;
-    
 };
 
-#endif //AMOLQCPP_AMOLQCIMPORTER_H
+#endif //INPSIGHTS_AMOLQCIMPORTER_H

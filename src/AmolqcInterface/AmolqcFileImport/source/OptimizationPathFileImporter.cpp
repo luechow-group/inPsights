@@ -2,7 +2,7 @@
 // Created by Michael Heuer on 07.11.17.
 //
 
-#include "AmolqcFileImport/OptimizationPathFileImporter.h"
+#include <OptimizationPathFileImporter.h>
 #include <ParticlesVectorCollection.h>
 #include <ElementInfo.h>
 
@@ -56,7 +56,7 @@ ElectronsVectorCollection OptimizationPathFileImporter::getPath(unsigned long k)
         positionsVectorCollection.append(this->getPositionsVector(k, m));
     }
     return ElectronsVectorCollection(positionsVectorCollection,
-                               this->getSpinTypesVector(numberOfAlphaElectrons_, numberOfBetaElectrons_));
+                               SpinTypesVector(numberOfAlphaElectrons_, numberOfBetaElectrons_));
 }
 
 unsigned long OptimizationPathFileImporter::getNumberOfPaths() const {

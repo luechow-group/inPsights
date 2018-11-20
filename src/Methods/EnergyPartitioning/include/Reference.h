@@ -4,8 +4,8 @@
 // Created by Michael Heuer on 28.08.18.
 //
 
-#ifndef AMOLQCPP_REFERENCE_H
-#define AMOLQCPP_REFERENCE_H
+#ifndef INPSIGHTS_REFERENCE_H
+#define INPSIGHTS_REFERENCE_H
 
 #include <ParticlesVector.h>
 #include <Sample.h>
@@ -71,5 +71,5 @@ private:
 
 
 
-#endif //AMOLQCPP_REFERENCE_H
+#endif //INPSIGHTS_REFERENCE_H
 

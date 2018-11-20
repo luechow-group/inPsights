@@ -3,8 +3,7 @@
 //
 
 #include <Serialization.h>
-#include <AmolqcFileImport/RefFileImporter.h>
-#include <ElectronicWaveFunctionProblem.h>
+#include "RefFileImporter.h"
 #include <MoleculeWidget.h>
 #include <AtomsVector3D.h>
 #include <ElectronsVector3D.h>
@@ -42,7 +41,8 @@ bool handleCommandlineArguments(int argc, char **argv,
         k = unsigned(kint);
         m = unsigned(mint);
         return true;
-    }
+    } else
+        return false;
 }
 
 int main(int argc, char *argv[]) {
@@ -59,8 +59,8 @@ int main(int argc, char *argv[]) {
     QApplication app(argc, argv);
     setlocale(LC_NUMERIC,"C");
 
-    MoleculeWidget moleculeWidget;
-    Qt3DCore::QEntity *root = moleculeWidget.createMoleculeWidget();
+    auto moleculeWidget = new MoleculeWidget();
+    auto root = moleculeWidget->getRoot();
 
     AtomsVector3D(root, atoms);
     ElectronsVector3D(root, atoms, electrons, false);

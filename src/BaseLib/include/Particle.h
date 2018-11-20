@@ -2,8 +2,8 @@
 // Created by Michael Heuer on 29.10.17.
 //
 
-#ifndef AMOLQCPP_PARTICLE_H
-#define AMOLQCPP_PARTICLE_H
+#ifndef INPSIGHTS_PARTICLE_H
+#define INPSIGHTS_PARTICLE_H
 
 #include <Eigen/Core>
 #include <iostream>
@@ -103,4 +103,4 @@ namespace YAML {
     Emitter& operator<< (Emitter& out, const Electron& p);
 }
 
-#endif //AMOLQCPP_PARTICLE_H
+#endif //INPSIGHTS_PARTICLE_H

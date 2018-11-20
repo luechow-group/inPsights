@@ -14,7 +14,7 @@
 #include "AtomsVector3D.h"
 #include "LocalNewtonSearch.h"
 #include "Visualization.h"
-#include "AmolqcFileImport/RefFileImporter.h"
+#include "RefFileImporter.h"
 #include "PositionsVectorTransformer.h"
 #include <NaturalConstants.h>
 
@@ -143,8 +143,8 @@ int main(int argc, char *argv[]) {
         setlocale(LC_NUMERIC, "C");
 
         // Visualization
-        MoleculeWidget moleculeWidget;
-        Qt3DCore::QEntity *root = moleculeWidget.createMoleculeWidget();
+        auto moleculeWidget = new MoleculeWidget();
+        auto root = moleculeWidget->getRoot();
 
         // Plot atoms
         AtomsVector3D(root, av);

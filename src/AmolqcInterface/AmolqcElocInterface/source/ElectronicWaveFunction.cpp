@@ -4,7 +4,7 @@
 
 #include <iostream>
 #include "ElectronicWaveFunction.h"
-#include "AmolqcFileImport/WfFileImporter.h"
+#include "WfFileImporter.h"
 
 ElectronicWaveFunction &ElectronicWaveFunction::getInstance(const std::string& fileName) {
 
@@ -81,7 +81,7 @@ void ElectronicWaveFunction::initialize(const std::string& fileName) {
   numberOfBetaElectrons_ = wfFileImporter.getNumberOfBetaElectrons();
   numberOfAlphaElectrons_ = wfFileImporter.getNumberOfAlphaElectrons();
   atomsVector_ = wfFileImporter.getAtomsVector();
-  spinTypesVector_  = createAmolqcSpinTypeVector(numberOfAlphaElectrons_,numberOfBetaElectrons_);
+  spinTypesVector_  = SpinTypesVector(numberOfAlphaElectrons_,numberOfBetaElectrons_);
 }
 
 unsigned long ElectronicWaveFunction::getNumberOfNuclei() const {
@@ -99,9 +99,8 @@ void ElectronicWaveFunction::evaluate(const ParticlesVector<Spin> &electronsVect
 void ElectronicWaveFunction::evaluate(const Eigen::VectorXd &electronPositionsVector) {
   assert(electronPositionsVector.rows() > 0);
   assert(electronPositionsVector.rows() % 3 == 0);
-  //std::cout << "pos " << electronPositionsVector.transpose() << std::endl;
   electronPositionsVectorAsEigenVector_ = electronPositionsVector;
-  double *electronDriftCollectionArray = new double[electronPositionsVector.rows()];
+  auto *electronDriftCollectionArray = new double[electronPositionsVector.rows()];
 
   Eigen::VectorXd copy = electronPositionsVector; // TODO ugly - redesign
 
@@ -110,8 +109,7 @@ void ElectronicWaveFunction::evaluate(const Eigen::VectorXd &electronPositionsVe
 
   electronDriftCollection_ = Eigen::Map<Eigen::VectorXd>( electronDriftCollectionArray,
                                                           electronPositionsVector.rows(), 1);
-  //std::cout << "drift " <<electronDriftCollection_.transpose() << std::endl;
-  delete electronDriftCollectionArray;
+  delete[] electronDriftCollectionArray;
 }
 
 double ElectronicWaveFunction::getLocalEnergy(){
@@ -185,18 +183,3 @@ TypesVector<Spin > ElectronicWaveFunction::getSpinTypesVector() const {
   return spinTypesVector_;
 }
 
-TypesVector<Spin>
-ElectronicWaveFunction::createAmolqcSpinTypeVector(unsigned long numberOfAlphaElectrons, 
-                                                   unsigned long numberOfBetaElectrons) {
-  TypesVector<Spin> spinTypesVector(0);
-
-  for (unsigned long i = 0; i < numberOfAlphaElectrons+numberOfBetaElectrons; ++i) {
-    Spin spinType;
-    if (i < numberOfAlphaElectrons) spinType = Spin::alpha;
-    else spinType = Spin::beta;
-
-    spinTypesVector.append(spinType);
-  }
-
-  return spinTypesVector;
-}

@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="">
+        <file alias="inPsights.png">inPsights.png</file>
+    </qresource>
+</RCC>

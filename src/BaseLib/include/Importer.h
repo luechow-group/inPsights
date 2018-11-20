@@ -2,8 +2,8 @@
 // Created by Michael Heuer on 02.11.17.
 //
 
-#ifndef AMOLQCPP_IMPORTER_H
-#define AMOLQCPP_IMPORTER_H
+#ifndef INPSIGHTS_IMPORTER_H
+#define INPSIGHTS_IMPORTER_H
 
 #include <string>
 #include <fstream>
@@ -56,4 +56,4 @@ public:
     unsigned long startingLine_, numberOfSubstructures_, totalNumberOfMaxima_;
 };
 
-#endif //AMOLQCPP_IMPORTER_H
+#endif //INPSIGHTS_IMPORTER_H

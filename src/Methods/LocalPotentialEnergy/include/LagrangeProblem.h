@@ -2,8 +2,8 @@
 // Created by leonard on 22.02.18.
 //
 
-#ifndef AMOLQCPP_LAGRANGEPROBLEM_H
-#define AMOLQCPP_LAGRANGEPROBLEM_H
+#ifndef INPSIGHTS_LAGRANGEPROBLEM_H
+#define INPSIGHTS_LAGRANGEPROBLEM_H
 
 #include <problem.h>
 #include <iomanip>
@@ -88,4 +88,4 @@ private:
     double equality_;
 };
 
-#endif //AMOLQCPP_LAGRANGEPROBLEM_H
+#endif //INPSIGHTS_LAGRANGEPROBLEM_H

@@ -2,13 +2,22 @@
 // Created by Michael Heuer on 14.09.18.
 //
 
-#ifndef AMOLQCPP_STATISTICS_H
-#define AMOLQCPP_STATISTICS_H
+#ifndef INPSIGHTS_STATISTICS_H
+#define INPSIGHTS_STATISTICS_H
 
 #include <Eigen/Core>
 #include <yaml-cpp/yaml.h>
 
 namespace Statistics {
+
+    template<typename Derived>
+    class MeanErrorPair{
+    public:
+        MeanErrorPair(Derived mean, Derived error)
+        : mean_(std::move(mean)), error_(std::move(error)) {};
+
+        Derived mean_, error_;
+    };
 
     template<typename Derived, typename WeightType = unsigned>
     class RunningStatistics {
@@ -77,7 +86,7 @@ namespace Statistics {
             return totalWeight_;
         }
 
-        void toYaml(YAML::Emitter &out, bool excludeSelfinteractionQ = false, bool printStandardDeviationQ = true) const {
+        void toYaml(YAML::Emitter &out, bool excludeSelfinteractionQ = false) const {
             using namespace YAML;
 
             out << BeginMap;
@@ -89,21 +98,90 @@ namespace Statistics {
                     for (Eigen::Index j = (excludeSelfinteractionQ ? i+1 : 0); j < mean_.cols(); ++j) {
                         out << Key << j << Value
                             << Flow << BeginSeq
-                            << mean()(i, j);
-                        if(getTotalWeight() > 1 && printStandardDeviationQ) out << standardError()(i, j);
-                        out << EndSeq;
+                            << mean()(i, j)
+                            << standardError()(i, j)
+                            << EndSeq;
                     }
                     out << EndMap;
                 } else { // ColumnVector
                     out << Flow << BeginSeq
-                        << mean()(i);
-                    if(getTotalWeight() > 1) out << standardError()(i);
-                    out << EndSeq;
+                        << mean()(i)
+                        << standardError()(i)
+                        << EndSeq;
                 }
             }
             out << EndMap;
         }
 
+        static bool getYAMLMatrixDimensions(const YAML::Node &node, size_t &rows, size_t &cols){
+            if (node.Type() == YAML::NodeType::Map &&
+                node.begin()->second.Type() == YAML::NodeType::Map &&
+                node.begin()->second.begin()->second.Type() == YAML::NodeType::Sequence) { // Matrix
+                rows = node.size();
+                cols = node.begin()->second.size();
+                return true;
+            }
+            else if (node.Type() == YAML::NodeType::Map &&
+                     node.begin()->second.Type() == YAML::NodeType::Sequence) { // Vector
+                rows  = rows = node.size();
+                cols = 1;
+                return true;
+            }
+            else
+                return false;
+        }
+
+        static MeanErrorPair<Derived> fromYaml(const YAML::Node& node, bool excludeSelfinteractionQ = false){
+            Derived mean, error;
+            size_t rows,cols;
+
+            if (!getYAMLMatrixDimensions(node, rows, cols)) throw std::runtime_error("Wrong type for MeanErrorPair.");
+
+            if(excludeSelfinteractionQ) {
+
+                mean.resize(rows+1, cols+1);
+                error.resize(rows+1, cols+1);
+                mean.setZero();
+                error.setZero();
+
+                for (int i = 0; i < rows; ++i) {
+                    for (int j = i+1; j < cols+1; ++j) {
+                        assert(j < cols+1 && "To many elements in row.");
+                        mean(i, j) = node[i][j][0].as<double>();
+                        error(i, j) = node[i][j][1].as<double>();
+                    }
+                }
+
+            } else {
+//TODO also print with self interactions as upper triangular matrix?
+
+                if(cols > 1) {
+                    mean.resize(rows, cols);
+                    error.resize(rows, cols);
+                    mean.setZero();
+                    error.setZero();
+
+                    for (int i = 0; i < rows; ++i) {
+                        for (int j = 0; j < node[i].size(); ++j) {
+                            assert(j < cols && "To many elements in row.");
+                            mean(i, j) = node[i][j][0].as<double>();
+                            error(i, j) = node[i][j][1].as<double>();
+                        }
+                    }
+                } else {
+                    mean.resize(rows,1);
+                    error.resize(rows,1);
+                    mean.setZero();
+                    error.setZero();
+                    for (int i = 0; i < rows; ++i) {
+                        mean(i, 0) = node[i][0].as<double>();
+                        error(i, 0) = node[i][1].as<double>();
+                    }
+                }
+            }
+
+            return MeanErrorPair<Derived>(mean,error);
+        };
 
     private:
         void initialize(const Derived &sample){
@@ -149,4 +227,4 @@ namespace Statistics {
     };
 }
 
-#endif //AMOLQCPP_STATISTICS_H
+#endif //INPSIGHTS_STATISTICS_H

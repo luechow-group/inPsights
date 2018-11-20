@@ -2,8 +2,8 @@
 // Created by Michael Heuer on 05.09.18.
 //
 
-#ifndef AMOLQCPP_LOGGER_H
-#define AMOLQCPP_LOGGER_H
+#ifndef INPSIGHTS_LOGGER_H
+#define INPSIGHTS_LOGGER_H
 
 #include <string>
 
@@ -14,4 +14,4 @@ namespace Logger{
     void initialize();
 }
 
-#endif //AMOLQCPP_LOGGER_H
+#endif //INPSIGHTS_LOGGER_H

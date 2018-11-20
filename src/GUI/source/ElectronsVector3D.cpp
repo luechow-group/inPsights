@@ -5,6 +5,7 @@
 #include "ElectronsVector3D.h"
 #include "Electron3D.h"
 #include "Bond3D.h"
+#include <Line3D.h>
 
 #include <QPhongMaterial>
 #include <QExtrudedTextMesh>
@@ -102,10 +103,8 @@ void ElectronsVector3D::drawConnections(Qt3DCore::QEntity *root,
                         Cylinder(root,Spins::QColorFromSpinType(Spin::beta), {q1,q2}, 0.015,0.5);
                     else
                         Cylinder(root,Spins::QColorFromSpinType(Spin::none), {q1,q2}, 0.015,0.5);
-                else if (e1.type() != e2.type())
-                    Cylinder(root, Qt::magenta, {q1,q2}, 0.005,0.25);
                 else
-                    Cylinder(root, Qt::cyan, {q1,q2}, 0.005, 0.25);
+                    Line3D(root, Qt::black, {q1,q2}, 0.25);
             }
         }
     }

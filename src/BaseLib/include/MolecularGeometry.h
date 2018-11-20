@@ -2,8 +2,8 @@
 // Created by Michael Heuer on 08.05.18.
 //
 
-#ifndef AMOLQCPP_MOLECULARGEOMETRY_H
-#define AMOLQCPP_MOLECULARGEOMETRY_H
+#ifndef INPSIGHTS_MOLECULARGEOMETRY_H
+#define INPSIGHTS_MOLECULARGEOMETRY_H
 
 #include "ParticlesVector.h"
 
@@ -50,4 +50,4 @@ namespace YAML {
 }
 
 
-#endif //AMOLQCPP_MOLECULARGEOMETRY_H
+#endif //INPSIGHTS_MOLECULARGEOMETRY_H

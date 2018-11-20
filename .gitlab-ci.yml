@@ -1,4 +1,4 @@
-image: registry.git.rwth-aachen.de/luechow-group/amolqcpp:combined
+image: registry.git.rwth-aachen.de/luechow-group/inpsights:combined
 
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
@@ -55,7 +55,7 @@ GNU test:
 
   script:
   - cd cmake-build-debug-gnu
-  - ctest -LE "(AmolqcInterface|amolqc|GUI|cppoptlib)" -E "(example|spdlog-utests)" --output-on-failure
+  - ctest -LE "(AmolqcElocInterface|amolqc|GUI|cppoptlib)" -E "(example|spdlog-utests)" --output-on-failure
   dependencies:
   - GNU build
 
@@ -71,7 +71,7 @@ Intel test:
   - source /opt/intel/parallel_studio_xe_2019/psxevars.sh intel64
   script:
   - cd cmake-build-debug-intel
-  - ctest -LE "(AmolqcInterface|amolqc|GUI|cppoptlib)" -E "(example|spdlog-utests)" --output-on-failure
+  - ctest -LE "(AmolqcElocInterface|amolqc|GUI|cppoptlib)" -E "(example|spdlog-utests)" --output-on-failure
   dependencies:
   - Intel build
 

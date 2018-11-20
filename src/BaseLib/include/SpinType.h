@@ -2,8 +2,8 @@
 // Created by Michael Heuer on 29.10.17.
 //
 
-#ifndef AMOLQCPP_SPINTYPE_H
-#define AMOLQCPP_SPINTYPE_H
+#ifndef INPSIGHTS_SPINTYPE_H
+#define INPSIGHTS_SPINTYPE_H
 
 #include <string>
 #include <cassert>
@@ -45,4 +45,4 @@ namespace YAML {
     Emitter &operator<<(Emitter &out, const Spin &e);
 }
 
-#endif //AMOLQCPP_SPINTYPE_H
+#endif //INPSIGHTS_SPINTYPE_H

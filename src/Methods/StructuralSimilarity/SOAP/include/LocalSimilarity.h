@@ -2,8 +2,8 @@
 // Created by Michael Heuer on 09.05.18.
 //
 
-#ifndef AMOLQCPP_LOCALSIMILARITY_H
-#define AMOLQCPP_LOCALSIMILARITY_H
+#ifndef INPSIGHTS_LOCALSIMILARITY_H
+#define INPSIGHTS_LOCALSIMILARITY_H
 
 #include <complex>
 #include "NeighborhoodExpander.h"
@@ -47,4 +47,4 @@ namespace LocalSimilarity {
     }
 };
 
-#endif //AMOLQCPP_LOCALSIMILARITY_H
+#endif //INPSIGHTS_LOCALSIMILARITY_H

@@ -2,8 +2,8 @@
 // Created by heuer on 09.12.16.
 //
 
-#ifndef AMOLQCPP_ATOM3D_H
-#define AMOLQCPP_ATOM3D_H
+#ifndef INPSIGHTS_ATOM3D_H
+#define INPSIGHTS_ATOM3D_H
 
 #include "Sphere.h"
 #include "ElementInfo.h"
@@ -27,4 +27,4 @@ private:
   const Element elementType_;
 };
 
-#endif //AMOLQCPP_ATOM3D_H
+#endif //INPSIGHTS_ATOM3D_H

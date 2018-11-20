@@ -2,8 +2,7 @@
 // Created by Michael Heuer on 06.11.17.
 //
 
-#include "AmolqcFileImport/AmolqcImporter.h"
-#include "ElectronicWaveFunction.h"
+#include <AmolqcImporter.h>
 
 AmolqcImporter::AmolqcImporter(const std::string &filename)
         : Importer(filename) {}
@@ -21,13 +20,6 @@ PositionsVector AmolqcImporter::importPositionsVectorBlock(unsigned long startLi
         positionsVector.append(Eigen::Vector3d(x,y,z));
     }
     return positionsVector;
-}
-
-//TODO Necessary?
-SpinTypesVector
-AmolqcImporter::getSpinTypesVector(unsigned long numberOfAlphaElectrons,
-                                   unsigned long numberOfBetaElectrons) const {
-    return ElectronicWaveFunction::createAmolqcSpinTypeVector(numberOfAlphaElectrons,numberOfBetaElectrons);
 }
 
 std::vector<SubstructureDataEntry>
@@ -77,7 +69,7 @@ AmolqcImporter::countSubstructures(unsigned long startLineIdx, unsigned long blo
     }
     // add last superstructure
     if (k > 0){
-        m_last;
+        m_last; //TODO why is this expression empty?
         substructuresData.emplace_back(
                 SubstructureDataEntry(firstLineOfSuperstructure, m_last, sumOfMaximaNumbersTillCurrent));
     }

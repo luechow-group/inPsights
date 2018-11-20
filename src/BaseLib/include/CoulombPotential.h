@@ -2,8 +2,8 @@
 // Created by Michael Heuer on 17.08.18.
 //
 
-#ifndef AMOLQCPP_COULOMBPOTENTIAL_H
-#define AMOLQCPP_COULOMBPOTENTIAL_H
+#ifndef INPSIGHTS_COULOMBPOTENTIAL_H
+#define INPSIGHTS_COULOMBPOTENTIAL_H
 
 #include <Eigen/Core>
 #include "ParticlesVector.h"
@@ -46,4 +46,4 @@ namespace CoulombPotential {
     };
 };
 
-#endif //AMOLQCPP_COULOMBPOTENTIAL_H
+#endif //INPSIGHTS_COULOMBPOTENTIAL_H

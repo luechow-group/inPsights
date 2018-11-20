@@ -2,8 +2,8 @@
 // Created by Michael Heuer on 08.05.18.
 //
 
-#ifndef AMOLQCPP_PARTICLEKIT_H
-#define AMOLQCPP_PARTICLEKIT_H
+#ifndef INPSIGHTS_PARTICLEKIT_H
+#define INPSIGHTS_PARTICLEKIT_H
 
 #include <vector>
 #include <ParticlesVector.h>
@@ -66,4 +66,4 @@ namespace ParticleKit{
     extern TypeKit kit;
 };
 
-#endif //AMOLQCPP_PARTICLEKIT_H
+#endif //INPSIGHTS_PARTICLEKIT_H

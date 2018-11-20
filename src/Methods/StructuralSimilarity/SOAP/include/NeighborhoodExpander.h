@@ -2,8 +2,8 @@
 // Created by Michael Heuer on 20.04.18.
 //
 
-#ifndef AMOLQCPP_ENVIRONMENTEXPANDER_H
-#define AMOLQCPP_ENVIRONMENTEXPANDER_H
+#ifndef INPSIGHTS_ENVIRONMENTEXPANDER_H
+#define INPSIGHTS_ENVIRONMENTEXPANDER_H
 
 #include "RadialBasis.h"
 #include "NeighborhoodExpansion.h"
@@ -27,4 +27,4 @@ private:
     RadialBasis radialGaussianBasis_;
 };
 
-#endif //AMOLQCPP_ENVIRONMENTEXPANDER_H
+#endif //INPSIGHTS_ENVIRONMENTEXPANDER_H

@@ -2,8 +2,8 @@
 // Created by Michael Heuer on 22.03.18.
 //
 
-#ifndef AMOLQCPP_RADIALGAUSSIANBASIS_H
-#define AMOLQCPP_RADIALGAUSSIANBASIS_H
+#ifndef INPSIGHTS_RADIALGAUSSIANBASIS_H
+#define INPSIGHTS_RADIALGAUSSIANBASIS_H
 
 #include "SpecialMathFunctions/Gaussian.h"
 #include <Eigen/Core>
@@ -38,4 +38,4 @@ private:
     Eigen::MatrixXd Sab_, radialTransform_;
 };
 
-#endif //AMOLQCPP_RADIALGAUSSIANBASIS_H
+#endif //INPSIGHTS_RADIALGAUSSIANBASIS_H

@@ -2,8 +2,8 @@
 // Created by Michael Heuer on 31.08.18.
 //
 
-#ifndef AMOLQCPP_SLICEABLEDATAVECTOR_H
-#define AMOLQCPP_SLICEABLEDATAVECTOR_H
+#ifndef INPSIGHTS_SLICEABLEDATAVECTOR_H
+#define INPSIGHTS_SLICEABLEDATAVECTOR_H
 
 #include "AbstractVector.h"
 #include "ReturnAndReset.h"
@@ -207,4 +207,4 @@ protected:
     std::unique_ptr<RefEigenVecType> refPtr_;
 };
 
-#endif //AMOLQCPP_SLICEABLEDATAVECTOR_H
+#endif //INPSIGHTS_SLICEABLEDATAVECTOR_H

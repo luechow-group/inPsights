@@ -2,8 +2,8 @@
 // Created by Michael Heuer on 09.05.18.
 //
 
-#ifndef AMOLQCPP_NEIGHBORHOODEXPANSION_H
-#define AMOLQCPP_NEIGHBORHOODEXPANSION_H
+#ifndef INPSIGHTS_NEIGHBORHOODEXPANSION_H
+#define INPSIGHTS_NEIGHBORHOODEXPANSION_H
 
 #include <Eigen/Core>
 
@@ -36,4 +36,4 @@ private:
     Eigen::VectorXcd coefficients_;
 };
 
-#endif //AMOLQCPP_NEIGHBORHOODEXPANSION_H
+#endif //INPSIGHTS_NEIGHBORHOODEXPANSION_H

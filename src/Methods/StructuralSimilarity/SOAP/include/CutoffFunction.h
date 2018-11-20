@@ -2,8 +2,8 @@
 // Created by Michael Heuer on 02.05.18.
 //
 
-#ifndef AMOLQCPP_CUTOFF_H
-#define AMOLQCPP_CUTOFF_H
+#ifndef INPSIGHTS_CUTOFF_H
+#define INPSIGHTS_CUTOFF_H
 
 
 #include <Eigen/Core>
@@ -25,4 +25,4 @@ namespace CutoffFunction{
                     const Eigen::Vector3d &expansionCenter = Eigen::Vector3d::Zero());
 };
 
-#endif //AMOLQCPP_CUTOFF_H
+#endif //INPSIGHTS_CUTOFF_H

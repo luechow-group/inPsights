@@ -52,7 +52,6 @@ void RawDataReader::readSamplesAndMaxima(std::ifstream &input, int fileLength, s
     size_t id = 0;
 
     while (checkEOF(input, fileLength) && id < numberOfSamples) {
-
         auto serializedData = readVectorXd(input, size_t(ne)*7+1, 1);
 
         // create sample
@@ -87,7 +86,7 @@ void RawDataReader::read(const std::string &basename, size_t numberOfSamples){
     if( input.good() ) readHeader(input);
     else throw std::runtime_error("Could not open file '" + basename + "'");
 
-    while(fs::exists(filename) ) {
+    while(fs::exists(filename) && references_.size() < numberOfSamples) {
         if( input.good() ) {
             readSamplesAndMaxima(input, fileLength, numberOfSamples);
 
@@ -119,7 +118,7 @@ void RawDataReader::readHeader(std::ifstream &input){
 void RawDataReader::readElectronsHeader(std::ifstream &input) {// electrons header
     int nElectrons = readInt(input);
     int nAlpha = readInt(input);
-    assert(nAlpha >=0 && nElectrons > 0);
+    assert(nAlpha >= 0 && nElectrons > 0);
     spins_ = SpinTypesVector(static_cast<unsigned>(nAlpha), static_cast<unsigned>(nElectrons - nAlpha));
 }
 

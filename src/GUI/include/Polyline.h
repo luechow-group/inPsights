@@ -5,8 +5,8 @@
 #include "Cylinder.h"
 #include "Cone.h"
 
-#ifndef AMOLQCPP_POLYLINE_H
-#define AMOLQCPP_POLYLINE_H
+#ifndef INPSIGHTS_POLYLINE_H
+#define INPSIGHTS_POLYLINE_H
 
 class Polyline : public Abstract3dObject{
 
@@ -24,4 +24,4 @@ private:
     Cone* arrowTip_;
 };
 
-#endif //AMOLQCPP_POLYLINE_H
+#endif //INPSIGHTS_POLYLINE_H

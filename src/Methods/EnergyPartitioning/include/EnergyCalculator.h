@@ -4,8 +4,8 @@
 // Created by Michael Heuer on 02.10.18.
 //
 
-#ifndef AMOLQCPP_ENERGYCALCULATOR_H
-#define AMOLQCPP_ENERGYCALCULATOR_H
+#ifndef INPSIGHTS_ENERGYCALCULATOR_H
+#define INPSIGHTS_ENERGYCALCULATOR_H
 
 #include <Statistics.h>
 #include <Reference.h>
@@ -18,8 +18,8 @@
 class EnergyCalculator{
 public:
 
-    struct Energies{
-        Energies()
+    struct TotalEnergies{
+        TotalEnergies()
         : Te(0),Vee(0),Ven(0),Vnn(0){};
 
         double totalEnergy() const {
@@ -44,8 +44,8 @@ public:
         VnnStats_.add(Vnn_);
     }
 
-    Energies calculateTotalEnergies() {
-        Energies energies;
+    TotalEnergies calculateTotalEnergies() {
+        TotalEnergies energies;
         for (auto& sample : samples_) {
             energies.Te += sample.kineticEnergies_.sum();
 
@@ -140,16 +140,24 @@ public:
         << Key << "N" << Value << TeStats_.getTotalWeight()
         << Key << "ValueRange" << Value << Comment("[]") << Flow << BeginSeq
         << valueStats_.cwiseMin()[0]
-        << valueStats_.cwiseMax()[0] << EndSeq
-        << Key << "Structures" << Comment("[a0]") << Value << BeginSeq;
-        for (auto& i : structures) {
-            yamlDocument_ << i;
+        << valueStats_.cwiseMax()[0] << EndSeq;
+
+        yamlDocument_ << Key << "Structures" << Comment("[a0]") << Value << BeginSeq;
+
+        size_t nWanted = 16;
+        if(structures.size() < nWanted){
+            for (auto& i : structures) yamlDocument_ << i;
+        } else {
+            size_t skipLength = (structures.size()-1) / (nWanted-1);
+            for (size_t i = 0; i < nWanted; ++i) {
+                yamlDocument_ << structures[i*skipLength];
+            }
         }
 
         yamlDocument_
         << EndSeq << Newline
         << Key << "SpinCorrelations" << Comment("[]");
-        spinCorrelationsStats_.toYaml(yamlDocument_, true, false);
+        spinCorrelationsStats_.toYaml(yamlDocument_, true);
 
         yamlDocument_
         << Key << "Te" << Comment("[Eh]");
@@ -183,4 +191,4 @@ private:
     std::shared_ptr<spdlog::logger> console;
 };
 
-#endif //AMOLQCPP_ENERGYCALCULATOR_H
+#endif //INPSIGHTS_ENERGYCALCULATOR_H

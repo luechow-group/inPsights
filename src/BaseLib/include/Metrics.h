@@ -2,8 +2,8 @@
 // Created by Michael Heuer on 25.04.18.
 //
 
-#ifndef AMOLQCPP_METRICS_H
-#define AMOLQCPP_METRICS_H
+#ifndef INPSIGHTS_METRICS_H
+#define INPSIGHTS_METRICS_H
 
 
 #include <Eigen/Core>
@@ -63,4 +63,4 @@ namespace Metrics{
     };
 }
 
-#endif //AMOLQCPP_METRICS_H
+#endif //INPSIGHTS_METRICS_H
