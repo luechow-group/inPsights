@@ -1,7 +1,7 @@
 
 #include "AmolqcFileImport/WfFileImporter.h"
-#include "ElectronicWaveFunction.h"
 #include <ElementInfo.h>
+#include <TypesVector.h>
 
 WfFileImporter::WfFileImporter(const std::string &filename)
         : AmolqcImporter(filename)
@@ -82,8 +82,4 @@ unsigned long WfFileImporter::getNumberOfAlphaElectrons() {
 
 unsigned long WfFileImporter::getNumberOfBetaElectrons() {
   return getNumberOfElectrons()-getNumberOfAlphaElectrons();
-}
-
-SpinTypesVector WfFileImporter::getSpinTypesVector() {
-  return ElectronicWaveFunction::createAmolqcSpinTypeVector(getNumberOfAlphaElectrons(),getNumberOfBetaElectrons());
 }

@@ -23,13 +23,6 @@ PositionsVector AmolqcImporter::importPositionsVectorBlock(unsigned long startLi
     return positionsVector;
 }
 
-//TODO Necessary?
-SpinTypesVector
-AmolqcImporter::getSpinTypesVector(unsigned long numberOfAlphaElectrons,
-                                   unsigned long numberOfBetaElectrons) const {
-    return ElectronicWaveFunction::createAmolqcSpinTypeVector(numberOfAlphaElectrons,numberOfBetaElectrons);
-}
-
 std::vector<SubstructureDataEntry>
 AmolqcImporter::countSubstructures(unsigned long startLineIdx, unsigned long blockLength) const {
 
@@ -77,7 +70,7 @@ AmolqcImporter::countSubstructures(unsigned long startLineIdx, unsigned long blo
     }
     // add last superstructure
     if (k > 0){
-        m_last;
+        m_last; //TODO why is this expression empty?
         substructuresData.emplace_back(
                 SubstructureDataEntry(firstLineOfSuperstructure, m_last, sumOfMaximaNumbersTillCurrent));
     }

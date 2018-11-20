@@ -20,11 +20,6 @@ public:
     
     std::vector<SubstructureDataEntry> countSubstructures(unsigned long startLineIdx,
                                                           unsigned long blockLength) const;
-
-protected:
-    SpinTypesVector getSpinTypesVector(unsigned long numberOfAlphaElectrons,
-                                       unsigned long numberOfBetaElectrons) const;
-    
 };
 
 #endif //INPSIGHTS_AMOLQCIMPORTER_H

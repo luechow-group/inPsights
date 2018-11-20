@@ -11,14 +11,14 @@
 #include <ParticlesVectorCollection.h>
 
 namespace ElectronPositioningMode {
-  typedef enum {
-    GAUSSIAN, DENSITY, LMO
-  } electronPositioningModeType;
+    typedef enum {
+        GAUSSIAN, DENSITY, LMO
+    } electronPositioningModeType;
 }
 
 extern "C" {
 void amolqc_init();
-void amolqc_set_wf(int *nElecs, int *nAtoms, const char* fileName);
+void amolqc_set_wf(int *nElecs, int *nAtoms, const char *fileName);
 void amolqc_initial_positions(ElectronPositioningMode::electronPositioningModeType mode, int nElecs, double x[]);
 void amolqc_eloc(double x[], int n, double *phi, double *u, double grad[], double *elocal);
 }
@@ -26,18 +26,18 @@ void amolqc_eloc(double x[], int n, double *phi, double *u, double grad[], doubl
 class ElectronicWaveFunction {
 
 public:
-    static ElectronicWaveFunction& getEmpty();
+    static ElectronicWaveFunction &getEmpty();
 
-    static ElectronicWaveFunction& getInstance(const std::string& fileName = "");
+    static ElectronicWaveFunction &getInstance(const std::string &fileName = "");
 
-    const std::string& getFileName();
+    const std::string &getFileName();
 
-    void initialize(const std::string& fileName);
+    void initialize(const std::string &fileName);
 
-    void setRandomElectronPositionsVector(unsigned electronNumber,
-                                           ElectronPositioningMode::electronPositioningModeType);
+    void
+    setRandomElectronPositionsVector(unsigned electronNumber, ElectronPositioningMode::electronPositioningModeType);
 
-    void evaluate(const ElectronsVector & electronsVector);
+    void evaluate(const ElectronsVector &electronsVector);
 
     void evaluate(const Eigen::VectorXd &electronPositionsVector);
 
@@ -75,11 +75,11 @@ public:
 
     SpinTypesVector getSpinTypesVector() const;
 
-    static SpinTypesVector createAmolqcSpinTypeVector(unsigned long numberOfAlphaElectrons,
-                                                      unsigned long numberOfBetaElectrons);
 private:
     explicit ElectronicWaveFunction();
-    explicit ElectronicWaveFunction(const std::string& fileName);
+
+    explicit ElectronicWaveFunction(const std::string &fileName);
+
     const std::string fileName_;
     unsigned long numberOfNuclei_, numberOfElectrons_, numberOfAlphaElectrons_, numberOfBetaElectrons_;
     double determinantProbabilityAmplitude_, jastrowFactor_, localEnergy_;

@@ -22,7 +22,6 @@ public:
                                            unsigned long startLine = 0);
 
     AtomsVector getAtomsVector();
-    SpinTypesVector getSpinTypesVector();
     unsigned long getNumberOfElectrons();
     unsigned long getNumberOfAlphaElectrons();
     unsigned long getNumberOfBetaElectrons();
