@@ -27,7 +27,7 @@ namespace ParticleKit{
 
     void create(const MolecularGeometry& molecularGeometry);
 
-    namespace {
+    namespace internal {
         void createAtomKitFromAtomsVector(const AtomsVector& atoms);
 
         void createElectronKitFromAtomKit(const AtomKit &atomKit, int charge, unsigned multiplicity);

@@ -41,8 +41,8 @@ namespace LocalSimilarity {
         auto selfSimilarity2 = unnormalizedSelfKernel(expansions2);
 
         auto eps = std::numeric_limits<double>::epsilon();
-        if(selfSimilarity1 <= eps  || selfSimilarity2 <= eps) {
-            if (selfSimilarity1 <= eps && selfSimilarity2 <= eps){
+        if (selfSimilarity1 <= eps || selfSimilarity2 <= eps) {
+            if (selfSimilarity1 <= eps && selfSimilarity2 <= eps) {
                 //printf("\nLocalSelfSimilarity: Warning: The analyzed structure contains two isolated environments.\n");
                 return 1;
             } else {
@@ -51,7 +51,7 @@ namespace LocalSimilarity {
             }
         }
         auto similarityValue = unnormalizedKernel(expansions1, expansions2);
-        return pow(similarityValue/sqrt(selfSimilarity1*selfSimilarity2), zeta);
+        return pow(similarityValue / sqrt(selfSimilarity1 * selfSimilarity2), zeta);
     }
 
     double unnormalizedKernel(
@@ -61,15 +61,15 @@ namespace LocalSimilarity {
         double similarityValue = 0;
         switch (ExpansionSettings::mode) {
             case ExpansionSettings::Mode::typeAgnostic: {
-                similarityValue = typeAgnostic(expansions1, expansions2);
+                similarityValue = internal::typeAgnostic(expansions1, expansions2);
                 break;
             }
             case ExpansionSettings::Mode::chemical: {
-                similarityValue = chemical(expansions1, expansions2);
+                similarityValue = internal::chemical(expansions1, expansions2);
                 break;
             }
             case ExpansionSettings::Mode::alchemical: {
-                similarityValue = alchemical(expansions1,expansions2);
+                similarityValue = internal::alchemical(expansions1, expansions2);
                 break;
             }
         }
@@ -82,15 +82,15 @@ namespace LocalSimilarity {
         double similarityValue = 0;
         switch (ExpansionSettings::mode) {
             case ExpansionSettings::Mode::typeAgnostic: {
-                similarityValue = typeAgnostic(expansions);
+                similarityValue = internal::typeAgnostic(expansions);
                 break;
             }
             case ExpansionSettings::Mode::chemical: {
-                similarityValue = chemical(expansions);
+                similarityValue = internal::chemical(expansions);
                 break;
             }
             case ExpansionSettings::Mode::alchemical: {
-                similarityValue = alchemical(expansions,expansions);
+                similarityValue = internal::alchemical(expansions, expansions);
                 // a dedicated self-similarity method for the alchemical expansion does not increase efficiency here
                 break;
             }
@@ -103,113 +103,112 @@ namespace LocalSimilarity {
     double kernelDistance(const TypeSpecificNeighborhoodsAtOneCenter &expansions1,
                           const TypeSpecificNeighborhoodsAtOneCenter &expansions2, double zeta) {
 
-        return sqrt(2.0-2.0* kernel(expansions1, expansions1, zeta));
+        return sqrt(2.0 - 2.0 * kernel(expansions1, expansions1, zeta));
     }
 
-    namespace {
-        double typeAgnostic(const TypeSpecificNeighborhoodsAtOneCenter &expansions) {
-            int noneType = 0;
-            const auto &exp = expansions.find(noneType)->second;
 
-            auto ps = PowerSpectrum::partialPowerSpectrum(exp, exp).normalized(); // TODO CHECK THIS!
-            return std::norm(ps.dot(ps)); // TODO NORM HERE OR LATER?
-        }
+    double internal::typeAgnostic(const TypeSpecificNeighborhoodsAtOneCenter &expansions) {
+        int noneType = 0;
+        const auto &exp = expansions.find(noneType)->second;
 
-        double typeAgnostic(const TypeSpecificNeighborhoodsAtOneCenter &expansions1,
-                            const TypeSpecificNeighborhoodsAtOneCenter &expansions2) {
+        auto ps = PowerSpectrum::partialPowerSpectrum(exp, exp).normalized(); // TODO CHECK THIS!
+        return std::norm(ps.dot(ps)); // TODO NORM HERE OR LATER?
+    }
 
-            int noneType = 0;
-            const auto &exp1 = expansions1.find(noneType)->second;
-            const auto &exp2 = expansions2.find(noneType)->second;
+    double internal::typeAgnostic(const TypeSpecificNeighborhoodsAtOneCenter &expansions1,
+                                  const TypeSpecificNeighborhoodsAtOneCenter &expansions2) {
 
-            auto ps1 = PowerSpectrum::partialPowerSpectrum(exp1, exp1).normalized();
-            auto ps2 = PowerSpectrum::partialPowerSpectrum(exp2, exp2).normalized();
-            return std::norm(ps1.dot(ps2));
-        }
+        int noneType = 0;
+        const auto &exp1 = expansions1.find(noneType)->second;
+        const auto &exp2 = expansions2.find(noneType)->second;
 
-        double chemical(const TypeSpecificNeighborhoodsAtOneCenter &expansions) {
-            std::complex<double> sum = {0,0};
+        auto ps1 = PowerSpectrum::partialPowerSpectrum(exp1, exp1).normalized();
+        auto ps2 = PowerSpectrum::partialPowerSpectrum(exp2, exp2).normalized();
+        return std::norm(ps1.dot(ps2));
+    }
 
-            for (auto &alpha : ParticleKit::kit) {
-                const auto &alphaExpansion = expansions.find(alpha.first)->second;
+    double internal::chemical(const TypeSpecificNeighborhoodsAtOneCenter &expansions) {
+        std::complex<double> sum = {0, 0};
 
-                for (auto &beta : ParticleKit::kit) {
-                    const auto &betaExpansion = expansions.find(beta.first)->second;
+        for (auto &alpha : ParticleKit::kit) {
+            const auto &alphaExpansion = expansions.find(alpha.first)->second;
 
-                    auto ps = PowerSpectrum::partialPowerSpectrum(alphaExpansion, betaExpansion);
-                    sum += ps.dot(ps);// TODO NORM HERE?
-                }
+            for (auto &beta : ParticleKit::kit) {
+                const auto &betaExpansion = expansions.find(beta.first)->second;
+
+                auto ps = PowerSpectrum::partialPowerSpectrum(alphaExpansion, betaExpansion);
+                sum += ps.dot(ps);// TODO NORM HERE?
             }
-            return std::norm(sum);// TODO NORM HERE?
         }
+        return std::norm(sum);// TODO NORM HERE?
+    }
 
-        double chemical(const TypeSpecificNeighborhoodsAtOneCenter &expansions1,
-                        const TypeSpecificNeighborhoodsAtOneCenter &expansions2) {
-            std::complex<double> sum = 0;
-            for (auto &alpha : ParticleKit::kit) {
-                const auto &alphaExpansion1 = expansions1.find(alpha.first)->second;
-                const auto &alphaExpansion2 = expansions2.find(alpha.first)->second;
+    double internal::chemical(const TypeSpecificNeighborhoodsAtOneCenter &expansions1,
+                    const TypeSpecificNeighborhoodsAtOneCenter &expansions2) {
+        std::complex<double> sum = 0;
+        for (auto &alpha : ParticleKit::kit) {
+            const auto &alphaExpansion1 = expansions1.find(alpha.first)->second;
+            const auto &alphaExpansion2 = expansions2.find(alpha.first)->second;
 
-                for (auto &beta : ParticleKit::kit) {
-                    const auto &betaExpansion1 = expansions1.find(beta.first)->second;
-                    const auto &betaExpansion2 = expansions2.find(beta.first)->second;
+            for (auto &beta : ParticleKit::kit) {
+                const auto &betaExpansion1 = expansions1.find(beta.first)->second;
+                const auto &betaExpansion2 = expansions2.find(beta.first)->second;
 
-                    auto ps1 = PowerSpectrum::partialPowerSpectrum(alphaExpansion1, betaExpansion1);
-                    auto ps2 = PowerSpectrum::partialPowerSpectrum(alphaExpansion2, betaExpansion2);
-                    sum += ps1.dot(ps2);
-                }
+                auto ps1 = PowerSpectrum::partialPowerSpectrum(alphaExpansion1, betaExpansion1);
+                auto ps2 = PowerSpectrum::partialPowerSpectrum(alphaExpansion2, betaExpansion2);
+                sum += ps1.dot(ps2);
             }
-            return std::norm(sum);
         }
+        return std::norm(sum);
+    }
 
-        double kroneckerDelta(int typeA, int typeB) {
-            std::map<std::pair<int, int>, double>::const_iterator it;
+    double internal::kroneckerDelta(int typeA, int typeB) {
+        std::map<std::pair<int, int>, double>::const_iterator it;
 
-            if (typeA == typeB)
-                return 1.0;
-            else if (typeA < typeB)
-                it = ExpansionSettings::Alchemical::pairSimilarities.find({typeA, typeB});
-            else
-                it = ExpansionSettings::Alchemical::pairSimilarities.find({typeB, typeA});
+        if (typeA == typeB)
+            return 1.0;
+        else if (typeA < typeB)
+            it = ExpansionSettings::Alchemical::pairSimilarities.find({typeA, typeB});
+        else
+            it = ExpansionSettings::Alchemical::pairSimilarities.find({typeB, typeA});
 
 
-            if (it != ExpansionSettings::Alchemical::pairSimilarities.end())
-                return (*it).second;
-            else
-                return 0.0;
-        }
+        if (it != ExpansionSettings::Alchemical::pairSimilarities.end())
+            return (*it).second;
+        else
+            return 0.0;
+    }
 
-        double alchemical(const TypeSpecificNeighborhoodsAtOneCenter &expansions1,
-                          const TypeSpecificNeighborhoodsAtOneCenter &expansions2) {
-            std::complex<double> sum = 0;
-            for (auto &alpha : ParticleKit::kit) {
-                for (auto &alphaPrimed : ParticleKit::kit) {
+    double internal::alchemical(const TypeSpecificNeighborhoodsAtOneCenter &expansions1,
+                      const TypeSpecificNeighborhoodsAtOneCenter &expansions2) {
+        std::complex<double> sum = 0;
+        for (auto &alpha : ParticleKit::kit) {
+            for (auto &alphaPrimed : ParticleKit::kit) {
 
-                    double k_aap = kroneckerDelta(alpha.first, alphaPrimed.first);
-                    if (k_aap > 0.0) {
-                        const auto &alphaExpansion1 = expansions1.find(alpha.first)->second;
-                        const auto &alphaPrimedExpansion2 = expansions2.find(alphaPrimed.first)->second;
+                double k_aap = internal::kroneckerDelta(alpha.first, alphaPrimed.first);
+                if (k_aap > 0.0) {
+                    const auto &alphaExpansion1 = expansions1.find(alpha.first)->second;
+                    const auto &alphaPrimedExpansion2 = expansions2.find(alphaPrimed.first)->second;
 
-                        for (auto &beta : ParticleKit::kit) {
-                            for (auto &betaPrimed : ParticleKit::kit) {
+                    for (auto &beta : ParticleKit::kit) {
+                        for (auto &betaPrimed : ParticleKit::kit) {
 
-                                double k_bbp = kroneckerDelta(beta.first, betaPrimed.first);
-                                if (k_bbp > 0.0) {
-                                    const auto &betaExpansion1 = expansions1.find(beta.first)->second;
-                                    const auto &betaPrimedExpansion2 = expansions2.find(betaPrimed.first)->second;
+                            double k_bbp = internal::kroneckerDelta(beta.first, betaPrimed.first);
+                            if (k_bbp > 0.0) {
+                                const auto &betaExpansion1 = expansions1.find(beta.first)->second;
+                                const auto &betaPrimedExpansion2 = expansions2.find(betaPrimed.first)->second;
 
-                                    auto ps1 = PowerSpectrum::partialPowerSpectrum(alphaExpansion1, betaExpansion1);
-                                    auto ps2 = PowerSpectrum::partialPowerSpectrum(alphaPrimedExpansion2, betaPrimedExpansion2);
+                                auto ps1 = PowerSpectrum::partialPowerSpectrum(alphaExpansion1, betaExpansion1);
+                                auto ps2 = PowerSpectrum::partialPowerSpectrum(alphaPrimedExpansion2,
+                                                                               betaPrimedExpansion2);
 
-                                    sum += ps1.dot(ps2) * k_aap*k_bbp;
-                                }
+                                sum += ps1.dot(ps2) * k_aap * k_bbp;
                             }
                         }
                     }
                 }
             }
-            return std::norm(sum);
         }
+        return std::norm(sum);
     }
 }
-

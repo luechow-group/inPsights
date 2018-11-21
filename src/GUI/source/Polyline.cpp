@@ -15,7 +15,7 @@ Polyline::Polyline(Qt3DCore::QEntity *root, QColor color, const std::vector<QVec
 {
 
   totalArcLength_ = 0;
-  for (int i = 1; i < points.size(); ++i) {
+  for (size_t i = 1; i < points.size(); ++i) {
     totalArcLength_ += (points[i]-points[i-1]).length();
     cylinders_.emplace_back(new Cylinder(root,color,std::make_pair(points[i-1],points[i]),radius));
   }

@@ -32,7 +32,7 @@ namespace LocalSimilarity {
                           const TypeSpecificNeighborhoodsAtOneCenter &expansions2,
                           double zeta = ExpansionSettings::zeta);
 
-    namespace {
+    namespace internal {
         double typeAgnostic(const TypeSpecificNeighborhoodsAtOneCenter &expansions);
         double typeAgnostic(const TypeSpecificNeighborhoodsAtOneCenter &expansions1,
                             const TypeSpecificNeighborhoodsAtOneCenter &expansions2);
