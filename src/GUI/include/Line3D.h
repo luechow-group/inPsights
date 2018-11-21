@@ -9,7 +9,7 @@
 #include <Qt3DRender/QAttribute>
 #include <Qt3DRender/QBuffer>
 #include <Qt3DRender/QGeometry>
-#include "Helper.h"
+#include "GuiHelper.h"
 
 
 class Line3D : public Abstract3dObject {
@@ -19,7 +19,7 @@ public:
            const std::pair<QVector3D, QVector3D> &pair,
            float alpha = 1.0f)
             :
-            Abstract3dObject(root, QColor(), MidPointVector(pair)),
+            Abstract3dObject(root, QColor(), GuiHelper::midPointVector(pair)),
             start_(pair.first),
             end_(pair.second) {
 

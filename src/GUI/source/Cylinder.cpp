@@ -4,14 +4,14 @@
 
 #include <cmath>
 #include "Cylinder.h"
-#include "Helper.h"
+#include "GuiHelper.h"
 
 Cylinder::Cylinder(Qt3DCore::QEntity *root,
                    QColor color,
                    const std::pair<QVector3D, QVector3D>& pair,
                    float radius,
                    float alpha)
-  : Abstract3dObject(root, QColor(), MidPointVector(pair)),
+  : Abstract3dObject(root, QColor(), GuiHelper::midPointVector(pair)),
     radius_(radius),
     start_(pair.first),
     end_(pair.second),

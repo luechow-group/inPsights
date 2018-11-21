@@ -3,11 +3,11 @@
 //
 
 #include "Polyline.h"
-#include "Helper.h"
+#include "GuiHelper.h"
 
 Polyline::Polyline(Qt3DCore::QEntity *root, QColor color, const std::vector<QVector3D> points, const float radius,
                    bool arrowTipQ)
-        : Abstract3dObject(root,color,MidPointVector(std::make_pair(*points.begin(),*points.end()))),
+        : Abstract3dObject(root,color, GuiHelper::midPointVector(std::make_pair(*points.begin(), *points.end()))),
           points_(points),
           cylinders_(0),
           radius_(radius),

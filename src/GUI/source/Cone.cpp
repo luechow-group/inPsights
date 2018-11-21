@@ -1,7 +1,7 @@
 
 #include <cmath>
 #include "Cone.h"
-#include "Helper.h"
+#include "GuiHelper.h"
 
 Cone::Cone(Qt3DCore::QEntity *root,
            QColor color,
@@ -9,7 +9,7 @@ Cone::Cone(Qt3DCore::QEntity *root,
            float bottomRadius,
            float topRadius,
            float alpha)
-        : Abstract3dObject(root, QColor(), MidPointVector(pair)),
+        : Abstract3dObject(root, QColor(), GuiHelper::midPointVector(pair)),
           topRadius_(topRadius),
           bottomRadius_(bottomRadius),
           start_(pair.first),

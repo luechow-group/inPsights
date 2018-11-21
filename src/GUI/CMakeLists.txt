@@ -34,7 +34,7 @@ set(HEADER_FILES
         include/Cone.h
         include/Atom3D.h
         include/Bond3D.h
-        include/Helper.h
+        include/GuiHelper.h
         include/Electron3D.h
         include/StringMethodCoordinatesPlotter.h
         include/StringMethodValuePlotter.h
@@ -56,6 +56,7 @@ set(SOURCE_FILES
         source/Cone.cpp
         source/Atom3D.cpp
         source/Bond3D.cpp
+        source/GuiHelper.cpp
         source/Electron3D.cpp
         source/AtomsVector3D.cpp
         source/ElectronsVector3D.cpp
