@@ -3,15 +3,12 @@
 //
 
 #include <iostream>
-#include <MoleculeWidget.h>
+#include <ParticlesVector.h>
 #include <AtomsVector3D.h>
 #include <ElectronsVector3D.h>
+#include <InPsightsWidget.h>
 #include <QApplication>
 #include <yaml-cpp/yaml.h>
-#include <ParticlesVector.h>
-#include <Statistics.h>
-#include <InPsightsWidget.h>
-
 
 void singleElectronEnergies(const YAML::Node &cluster) {
     auto Te = cluster["Te"];
@@ -22,16 +19,16 @@ void singleElectronEnergies(const YAML::Node &cluster) {
     std::vector<double> Ve(nElectrons);
     std::vector<double> VeErr(nElectrons);
 
-    for (int i = 0; i < nElectrons; ++i) {
+    for (unsigned long i = 0; i < nElectrons; ++i) {
         Ve[i] = Te[i][0].as<double>();
         VeErr[i] = Te[i][1].as<double>();
 
-        for (int k = 0; k < nAtoms; ++k){
+        for (unsigned long  k = 0; k < nAtoms; ++k){
             Ve[i] += Ven[i][k][0].as<double>();
             VeErr[i] += Ven[i][k][1].as<double>();
         }
 
-        for (int j = i+1; j < nElectrons; ++j){
+        for (unsigned long  j = i+1; j < nElectrons; ++j){
             Ve[i] += 0.5*Vee[i][j][0].as<double>();
             VeErr[i] += 0.5*Vee[i][j][1].as<double>();
         }
@@ -40,46 +37,14 @@ void singleElectronEnergies(const YAML::Node &cluster) {
     }
 };
 
-bool handleCommandlineArguments(int argc, char *const *argv, std::string &resultFilename) {
-    if (argc < 2) {
-        std::cout << "Usage: \n"
-                  << "Argument 1: result file\n"
-                  << std::endl;
-        std::cout << "raw.yml" << std::endl;
-        return false;
-    } else if (argc == 2) {
-        resultFilename = argv[1];
-        return true;
-    } else {
-        throw std::invalid_argument("Too many arguments");
-    }
-}
-
 
 int main(int argc, char *argv[]) {
-    std::string resultFilename;
-    if (resultFilename.empty()) {
-        bool inputArgumentsFoundQ = handleCommandlineArguments(argc, argv, resultFilename);
-        if (!inputArgumentsFoundQ) return 1;
-    }
 
     Q_INIT_RESOURCE(myresources);
     QApplication app(argc, argv);
     setlocale(LC_NUMERIC,"C");
 
-    YAML::Node doc = YAML::LoadFile("raw.yml");
-
-    std::vector<std::pair<std::vector<ElectronsVector>,YAML::Node>> clusterCollection;
-
-    for(YAML::const_iterator it = doc["Clusters"].begin(); it != doc["Clusters"].end();++it) {
-        clusterCollection.emplace_back(
-                (*it)["Structures"].as<std::vector<ElectronsVector>>(),
-                (*it)["SpinCorrelations"]);
-    }
-
-    auto atoms = doc["Atoms"].as<AtomsVector>();
-
-    new InPsightsWidget(atoms, clusterCollection);
+    new InPsightsWidget();
 
     //singleElectronEnergies(cluster);
 

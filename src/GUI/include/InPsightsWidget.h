@@ -16,15 +16,13 @@
 #include <QSplashScreen>
 #include <QCheckBox>
 #include <QSlider>
+#include <QFileDialog>
 
 class InPsightsWidget : public QWidget {
 Q_OBJECT
 public:
 
-    explicit InPsightsWidget(
-            AtomsVector atomsVector,
-            std::vector<std::pair<std::vector<ElectronsVector>, YAML::Node>> clusterCollection,
-            QWidget *parent = nullptr)
+    explicit InPsightsWidget(QWidget *parent = nullptr)
             :
             QWidget(parent),
             moleculeWidget_(new MoleculeWidget(this)),
@@ -32,10 +30,10 @@ public:
             spinConnectionsCheckBox_(new QCheckBox("Spin Connections", this)),
             spinCorrelationsCheckBox_(new QCheckBox("Spin Correlations", this)),
             spinCorrelationSlider_(new QSlider(Qt::Orientation::Horizontal, this)),
-            spinCorrelationSliderLabel_(new QLabel(this)),
-            atomsVector_(std::move(atomsVector)),
-            clusterCollection_(std::move(clusterCollection)) {
+            spinCorrelationSliderLabel_(new QLabel(this)) {
         auto splashScreen = createSplashScreen();
+
+        loadData();
 
         auto hbox = new QHBoxLayout(this);
         auto gbox = new QGroupBox("Settings:");
@@ -72,8 +70,8 @@ public:
 
         spinCorrelationSliderLabel_->setFixedHeight(14);
 
-        QTimer::singleShot(2000, splashScreen, SLOT(close()));
-        QTimer::singleShot(2000, this, SLOT(show()));
+        QTimer::singleShot(1000, splashScreen, SLOT(close()));
+        QTimer::singleShot(1000, this, SLOT(show()));
 
         update();
     }
@@ -117,6 +115,25 @@ private:
         splashScreen->showMessage("Version 1.0.0", Qt::AlignRight, Qt::lightGray);
 
         return splashScreen;
+    }
+
+    void loadData(){
+
+        auto dialog = new QFileDialog(this);
+        dialog->setWindowTitle("Open results file");
+        dialog->setFileMode(QFileDialog::FileMode::ExistingFile);
+        dialog->setViewMode(QFileDialog::ViewMode::Detail);
+
+        YAML::Node doc = YAML::LoadFile(dialog->getOpenFileName().toStdString());
+
+        for(YAML::const_iterator it = doc["Clusters"].begin(); it != doc["Clusters"].end();++it) {
+            clusterCollection_.emplace_back(
+                    (*it)["Structures"].as<std::vector<ElectronsVector>>(),
+                    (*it)["SpinCorrelations"]);
+        }
+
+        atomsVector_ = doc["Atoms"].as<AtomsVector>();
+
     }
 };
 
