@@ -28,7 +28,7 @@ std::vector<Gaussian> RadialBasis::createBasis() {
 
     switch (ExpansionSettings::Radial::basisType){
         case ExpansionSettings::Radial::BasisType::equispaced : {
-            for (int i = 0; i < nmax; ++i) {
+            for (unsigned i = 0; i < nmax; ++i) {
                 basisFunctionCenter = (ExpansionSettings::Cutoff::radius*double(i)) /double(nmax-1);
                 basis.emplace_back(basisFunctionCenter, sigmaAtom);
             }
@@ -38,7 +38,7 @@ std::vector<Gaussian> RadialBasis::createBasis() {
             basisFunctionCenter = 0;
             double sigmaStride = 1/2.;
             
-            for (int i = 0; i < nmax; ++i) {
+            for (unsigned i = 0; i < nmax; ++i) {
                 double sigmaAdaptive = std::sqrt( 4./(2.*lmax + 1) * pow(basisFunctionCenter,2)+ pow(sigmaAtom,2) );
                 basis.emplace_back(basisFunctionCenter, sigmaAdaptive);
                 basisFunctionCenter += sigmaStride*sigmaAdaptive;
@@ -65,7 +65,7 @@ double RadialBasis::operator()(double r, unsigned n) const{
 
     Eigen::VectorXd hvec(nmax);
 
-    for (int i = 0; i < nmax; ++i) {
+    for (unsigned i = 0; i < nmax; ++i) {
         hvec(i) = basis_[i].g2_r2_normalizedValue(r); //TODO store this?
     }
     return radialTransform_.col(n-1).dot(hvec);
@@ -82,8 +82,8 @@ Eigen::MatrixXd RadialBasis::radialTransform() const{
 Eigen::MatrixXd RadialBasis::Sab(unsigned nmax) const{
     Eigen::MatrixXd S(nmax,nmax);
 
-    for (int i = 0; i < nmax; ++i) {
-        for (int j = 0; j < nmax; ++j) { // skip iterations
+    for (unsigned i = 0; i < nmax; ++i) {
+        for (unsigned j = 0; j < nmax; ++j) { // skip iterations
             double a = basis_[i].alpha();
             double b = basis_[j].alpha();
             double rCenterA = basis_[i].center();
@@ -147,7 +147,7 @@ std::vector<double> RadialBasis::calculateIntegrals(double ai, double ri, double
 
     // ... integrate (à la Simpson)
     std::vector<double> ints(lmax+1);
-    for (int s = 0; s < n_steps; ++s) {
+    for (unsigned s = 0; s < n_steps; ++s) {
         for (unsigned l = 0; l  != lmax+1; ++l ) {
             ints[l] += delta_r_step/6.*(
                     integrand_l_at_r(l, 2*s)+

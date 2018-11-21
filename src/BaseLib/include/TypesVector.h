@@ -169,7 +169,7 @@ namespace YAML {
     template<typename Type> struct convert<TypesVector<Type>> {
     static Node encode(const TypesVector<Type> & tv){
         Node node;
-        for (unsigned long i = 0; i < tv.numberOfEntities(); i++) {
+        for (long i = 0; i < tv.numberOfEntities(); i++) {
             node.push_back(tv[i]);
         }
         return node;
