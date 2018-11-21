@@ -72,14 +72,12 @@ int main(int argc, char *argv[]) {
     std::vector<std::pair<std::vector<ElectronsVector>,YAML::Node>> clusterCollection;
 
     for(YAML::const_iterator it = doc["Clusters"].begin(); it != doc["Clusters"].end();++it) {
-        //auto pair = std::make_pair<std::vector<ElectronsVector>,YAML::Node>({});
-        clusterCollection.emplace_back((*it)["Structures"].as<std::vector<ElectronsVector>>(),
-                                        (*it)["SpinCorrelations"]);
+        clusterCollection.emplace_back(
+                (*it)["Structures"].as<std::vector<ElectronsVector>>(),
+                (*it)["SpinCorrelations"]);
     }
 
     auto atoms = doc["Atoms"].as<AtomsVector>();
-    //auto electronsVectorCollection = cluster["Structures"].as<std::vector<ElectronsVector>>();
-
 
     new InPsightsWidget(atoms, clusterCollection);
 
@@ -88,16 +86,11 @@ int main(int argc, char *argv[]) {
     return QApplication::exec();
 
     /* TODO
-     * YAML
-     * - don't save spin correlations with error
-     *
      * METHOD
      * - spatial permutations (by value range or struct sim)
      *
      * GUI
-     * - correlation in plots via button
      *  - dotted and dashed lines
-     * - same spin connections via button
      * - select clusters
      * - show energies
      * - show eigenvectors (.wf needed)
