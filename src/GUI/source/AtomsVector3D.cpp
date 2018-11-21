@@ -21,7 +21,7 @@ AtomsVector3D::AtomsVector3D(Qt3DCore::QEntity *root, const AtomsVector &atomsVe
   }
 
   // Draw bonds
-  auto bondDrawingLimit = float(1.60*1e-10/AU::length);
+  auto bondDrawingLimit = float(1.50*1e-10/AU::length);
   for(std::vector<Atom3D>::const_iterator it1 = atoms3D.begin(); it1 != atoms3D.end(); ++ it1){
     for(auto it2 = it1+1; it2 != atoms3D.end(); ++ it2){
       if( ((*it1).getLocation()-(*it2).getLocation()).length() < bondDrawingLimit) {
