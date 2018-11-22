@@ -1,12 +1,9 @@
-#include <utility>
-
 //
 // Created by Michael Heuer on 18.11.18.
 //
 
 #ifndef INPSIGHTS_INPSIGHTSWIDGET_H
 #define INPSIGHTS_INPSIGHTSWIDGET_H
-
 
 #include <Statistics.h>
 #include <MoleculeWidget.h>
@@ -19,7 +16,8 @@
 #include <QCheckBox>
 #include <QSlider>
 #include <QFileDialog>
-
+#include <QListWidget>
+#include <QString>
 #include <OneParticleEnergies.h>
 
 class InPsightsWidget : public QWidget {
@@ -30,43 +28,46 @@ public:
             :
             QWidget(parent),
             moleculeWidget_(new MoleculeWidget(this)),
-            idSpinBox_(new QSpinBox(this)),
             spinConnectionsCheckBox_(new QCheckBox("Spin Connections", this)),
             spinCorrelationsCheckBox_(new QCheckBox("Spin Correlations", this)),
             spinCorrelationSlider_(new QSlider(Qt::Orientation::Horizontal, this)),
-            spinCorrelationSliderLabel_(new QLabel(this)) {
+            spinCorrelationSliderLabel_(new QLabel(this)),
+            maximaList_(new QListWidget(this))
+            {
         auto splashScreen = createSplashScreen();
 
         loadData();
 
-        auto hbox = new QHBoxLayout(this);
         auto gbox = new QGroupBox("Settings:");
-        auto vbox = new QVBoxLayout(gbox);
+        auto hbox = new QHBoxLayout(this);
+        auto vboxOuter = new QVBoxLayout();
+        auto vboxInner = new QVBoxLayout();
+
 
         setLayout(hbox);
-        resize(800, 800);
+        resize(1024, 768);
         hbox->addWidget(moleculeWidget_, Qt::AlignLeft);
-        hbox->addWidget(gbox);
-        gbox->setLayout(vbox);
-        vbox->addWidget(idSpinBox_);
-        vbox->addWidget(spinConnectionsCheckBox_);
-        vbox->addWidget(spinCorrelationsCheckBox_);
-        vbox->addWidget(spinCorrelationSlider_);
-        vbox->addWidget(spinCorrelationSliderLabel_);
+        hbox->addLayout(vboxOuter);
+
+        vboxOuter->addWidget(maximaList_);
+        vboxOuter->addWidget(gbox);
+        gbox->setLayout(vboxInner);
+
+        vboxInner->addWidget(spinConnectionsCheckBox_);
+        vboxInner->addWidget(spinCorrelationsCheckBox_);
+        vboxInner->addWidget(spinCorrelationSlider_);
+        vboxInner->addWidget(spinCorrelationSliderLabel_);
 
 
-        QObject::connect(idSpinBox_, SIGNAL(valueChanged(int)),
-                         this, SLOT(updateMoleculeWidget()));
+
+        QObject::connect(maximaList_, SIGNAL(itemChanged(QListWidgetItem*)),
+                         this, SLOT(updateMoleculeWidget(QListWidgetItem*)));
         QObject::connect(spinConnectionsCheckBox_, SIGNAL(stateChanged(int)),
                          this, SLOT(updateMoleculeWidget()));
         QObject::connect(spinCorrelationsCheckBox_, SIGNAL(stateChanged(int)),
                          this, SLOT(updateMoleculeWidget()));
         QObject::connect(spinCorrelationSlider_, SIGNAL(valueChanged(int)),
                          this, SLOT(updateMoleculeWidget()));
-
-        idSpinBox_->setRange(0, int(clusterCollection_.size() - 1));
-        idSpinBox_->setSingleStep(1);
-        idSpinBox_->setValue(0);
 
         spinCorrelationSlider_->setRange(0, 255);
         spinCorrelationSlider_->setSingleStep(1);
@@ -81,13 +82,24 @@ public:
     }
 
 public slots:
+    void updateMoleculeWidget(QListWidgetItem* item) {
+        auto spinCorrelationThreshold = double(spinCorrelationSlider_->value())/double(255);
+        moleculeWidget_->setMolecule(
+                atomsVector_,
+                clusterCollection_[item->data(Qt::ItemDataRole::UserRole).toInt()],
+                spinConnectionsCheckBox_->checkState() == Qt::CheckState::Checked,
+                spinCorrelationsCheckBox_->checkState() == Qt::CheckState::Checked,
+                spinCorrelationThreshold
+        );
+        
+    };
 
     void updateMoleculeWidget() {
 
         auto spinCorrelationThreshold = double(spinCorrelationSlider_->value())/double(255);
         moleculeWidget_->setMolecule(
                 atomsVector_,
-                clusterCollection_[idSpinBox_->value()],
+                clusterCollection_[0],
                 spinConnectionsCheckBox_->checkState() == Qt::CheckState::Checked,
                 spinCorrelationsCheckBox_->checkState() == Qt::CheckState::Checked,
                 spinCorrelationThreshold
@@ -99,10 +111,10 @@ public slots:
 
 private:
     MoleculeWidget *moleculeWidget_;
-    QSpinBox *idSpinBox_;
     QCheckBox *spinConnectionsCheckBox_, *spinCorrelationsCheckBox_;
     QSlider *spinCorrelationSlider_;
     QLabel *spinCorrelationSliderLabel_;
+    QListWidget *maximaList_;
 
     AtomsVector atomsVector_;
     std::vector<std::pair<std::vector<ElectronsVector>, YAML::Node>> clusterCollection_;
@@ -132,6 +144,7 @@ private:
 
         auto Vnn = doc["Vnn"];
 
+        int id = 0;
         for(YAML::const_iterator it = doc["Clusters"].begin(); it != doc["Clusters"].end();++it) {
             OneParticleEnergies::oneAtomEnergies(*it, Vnn);
             OneParticleEnergies::oneElectronEnergies(*it);
@@ -139,8 +152,16 @@ private:
                     (*it)["Structures"].as<std::vector<ElectronsVector>>(),
                     //Statistics::RunningStatistics<Eigen::MatrixXd>::fromYaml((*it)["SpinCorrelations"]));
                     (*it)["SpinCorrelations"]);
-        }
+            auto N = (*it)["N"].as<int>();
+            auto text = QStringLiteral("Cluster %1 (%2)").arg(QString::number(id),QString::number(N));
 
+            auto item = new QListWidgetItem(text);
+            item->setCheckState(Qt::CheckState::Unchecked);
+            item->setData(Qt::ItemDataRole::UserRole, QVariant(id));
+
+            maximaList_->addItem(item);
+            id++;
+        }
 
 
         atomsVector_ = doc["Atoms"].as<AtomsVector>();
