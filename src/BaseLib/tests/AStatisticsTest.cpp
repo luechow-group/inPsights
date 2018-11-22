@@ -36,6 +36,29 @@ public:
     }
 };
 
+TEST_F(AStatisticsTest, Constructor) {
+    unsigned N = 3;
+    auto mean = mat2;
+    auto standardError = mat1 * 1/std::sqrt(N);
+    auto cwiseMin = mat1;
+    auto cwiseMax = mat3;
+    auto stats = Statistics::RunningStatistics<Eigen::MatrixXd>(mean, standardError, cwiseMin, cwiseMax, N, N*N);
+
+    stats.add(mat2);
+
+    auto expectedStats = Statistics::RunningStatistics<Eigen::MatrixXd>();
+    expectedStats.add(mat1);
+    expectedStats.add(mat2);
+    expectedStats.add(mat3);
+    expectedStats.add(mat2);
+
+    ASSERT_TRUE(stats.mean().isApprox(expectedStats.mean()));
+    ASSERT_TRUE(stats.standardDeviation().isApprox(expectedStats.standardDeviation()));
+    ASSERT_TRUE(stats.cwiseMin().isApprox(expectedStats.cwiseMin()));
+    ASSERT_TRUE(stats.cwiseMax().isApprox(expectedStats.cwiseMax()));
+    ASSERT_EQ(stats.getTotalWeight(), expectedStats.getTotalWeight());
+}
+
 TEST_F(AStatisticsTest, Matrix){
     Statistics::RunningStatistics<Eigen::MatrixXd> stats;
     stats.add(mat1);
