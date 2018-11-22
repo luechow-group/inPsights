@@ -7,16 +7,20 @@
 #ifndef INPSIGHTS_INPSIGHTSWIDGET_H
 #define INPSIGHTS_INPSIGHTSWIDGET_H
 
+
+#include <Statistics.h>
+#include <MoleculeWidget.h>
 #include <QWidget>
 #include <QHBoxLayout>
 #include <QGroupBox>
 #include <QSpinBox>
-#include <MoleculeWidget.h>
 #include <QTimer>
 #include <QSplashScreen>
 #include <QCheckBox>
 #include <QSlider>
 #include <QFileDialog>
+
+#include <OneParticleEnergies.h>
 
 class InPsightsWidget : public QWidget {
 Q_OBJECT
@@ -126,11 +130,18 @@ private:
 
         YAML::Node doc = YAML::LoadFile(dialog->getOpenFileName().toStdString());
 
+        auto Vnn = doc["Vnn"];
+
         for(YAML::const_iterator it = doc["Clusters"].begin(); it != doc["Clusters"].end();++it) {
+            OneParticleEnergies::oneAtomEnergies(*it, Vnn);
+            OneParticleEnergies::oneElectronEnergies(*it);
             clusterCollection_.emplace_back(
                     (*it)["Structures"].as<std::vector<ElectronsVector>>(),
+                    //Statistics::RunningStatistics<Eigen::MatrixXd>::fromYaml((*it)["SpinCorrelations"]));
                     (*it)["SpinCorrelations"]);
         }
+
+
 
         atomsVector_ = doc["Atoms"].as<AtomsVector>();
 
