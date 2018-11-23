@@ -57,6 +57,7 @@ TEST_F(AStatisticsTest, Constructor) {
     ASSERT_TRUE(stats.cwiseMin().isApprox(expectedStats.cwiseMin()));
     ASSERT_TRUE(stats.cwiseMax().isApprox(expectedStats.cwiseMax()));
     ASSERT_EQ(stats.getTotalWeight(), expectedStats.getTotalWeight());
+    ASSERT_EQ(stats.getSquaredTotalWeight(), expectedStats.getSquaredTotalWeight());
 }
 
 TEST_F(AStatisticsTest, Matrix){
@@ -189,4 +190,24 @@ TEST_F(AStatisticsTest, SingleValue){
     ASSERT_TRUE(stats.cwiseMin().isApprox(min));
     ASSERT_TRUE(stats.cwiseMax().isApprox(max));
 
+}
+
+TEST_F(AStatisticsTest, YAMLConversion){
+    Statistics::RunningStatistics<Eigen::MatrixXd> stats;
+    stats.add(mat1);
+    stats.add(mat2);
+    stats.add(mat3);
+
+    YAML::Emitter out;
+    out << stats;
+
+    auto loaded = YAML::Load(out.c_str());
+    auto readStats = loaded.as<Statistics::RunningStatistics<Eigen::MatrixXd>>();
+
+    ASSERT_TRUE(readStats.mean().isApprox(stats.mean()));
+    ASSERT_TRUE(readStats.standardDeviation().isApprox(stats.standardDeviation()));
+    ASSERT_TRUE(readStats.cwiseMin().isApprox(stats.cwiseMin()));
+    ASSERT_TRUE(readStats.cwiseMax().isApprox(stats.cwiseMax()));
+    ASSERT_EQ(readStats.getTotalWeight(), stats.getTotalWeight());
+    ASSERT_EQ(readStats.getSquaredTotalWeight(), stats.getSquaredTotalWeight());
 }

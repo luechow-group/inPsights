@@ -40,11 +40,11 @@ namespace Statistics {
                 initializedQ_(true),
                 squaredTotalWeightInitializedQ_(squaredTotalWeight == 0),
                 totalWeight_(totalWeight),
-                squaredTotalWeight_(squaredTotalWeightInitializedQ_? squaredTotalWeight : totalWeight*totalWeight),
-                mean_(),
-                lastMean_(std::move(mean)),
-                unnormalisedVariance_(),
-                lastUnnormalisedVariance_(calculateVarianceFromStandardError(standardError, totalWeight)),
+                squaredTotalWeight_(squaredTotalWeightInitializedQ_? squaredTotalWeight : totalWeight),
+                mean_(std::move(mean)),
+                lastMean_(mean_),
+                unnormalisedVariance_(calculateVarianceFromStandardError(standardError, totalWeight)),
+                lastUnnormalisedVariance_(unnormalisedVariance_),
                 cwiseMin_(cwiseMin),
                 cwiseMax_(cwiseMax) {}
 
@@ -86,6 +86,10 @@ namespace Statistics {
             }
         }
 
+        Eigen::Index rows() const { return mean().rows(); };
+
+        Eigen::Index cols() const { return mean().cols(); };
+
         Derived mean() const {
             return mean_;
         }
@@ -114,16 +118,20 @@ namespace Statistics {
             return totalWeight_;
         }
 
+        WeightType getSquaredTotalWeight() const {
+            return squaredTotalWeight_;
+        }
+
         void toYaml(YAML::Emitter &out, bool excludeSelfinteractionQ = false) const {
             using namespace YAML;
 
             out << BeginMap;
-            for (Eigen::Index i = 0; i < mean_.rows() - (excludeSelfinteractionQ ? 1 : 0); ++i) {
+            for (Eigen::Index i = 0; i < rows() - (excludeSelfinteractionQ ? 1 : 0); ++i) {
                 out << Key << i << Value;
 
                 if (mean_.cols() > 1) { // Matrix
                     out << BeginMap;
-                    for (Eigen::Index j = (excludeSelfinteractionQ ? i + 1 : 0); j < mean_.cols(); ++j) {
+                    for (Eigen::Index j = (excludeSelfinteractionQ ? i + 1 : 0); j < cols(); ++j) {
                         out << Key << j << Value
                             << Flow << BeginSeq
                             << mean()(i, j)
@@ -179,8 +187,6 @@ namespace Statistics {
                 }
 
             } else {
-//TODO also print with self interactions as upper triangular matrix?
-
                 if (cols > 1) {
                     mean.resize(rows, cols);
                     error.resize(rows, cols);
@@ -225,14 +231,14 @@ namespace Statistics {
         //https://en.wikipedia.org/wiki/Variance#Population_variance_and_sample_variance
         Derived unbiasedSampleVariance() const { // includes Bessel's correction
             if (totalWeight_ <= 1)
-                return Derived::Zero(unnormalisedVariance_.rows(), unnormalisedVariance_.cols());
+                return Derived::Zero(rows(), cols());
             else
                 return (unnormalisedVariance_ / (totalWeight_ - 1));
         }
 
         Derived biasedSampleVariance() const { // population variance
             if (totalWeight_ <= 0)
-                return Derived::Zero(unnormalisedVariance_.rows(), unnormalisedVariance_.cols());
+                return Derived::Zero(rows(), cols());
             else
                 return (unnormalisedVariance_ / totalWeight_);
         }
@@ -240,9 +246,9 @@ namespace Statistics {
         Derived sampleReliabilityVariance() const {
             if(!std::is_integral<WeightType>::value)
                 std::cerr << "The squared total weight was not initialized properly and might be unreliable." << std::endl;
-            
+
             if (totalWeight_ <= 1)
-                return Derived::Zero(unnormalisedVariance_.rows(), unnormalisedVariance_.cols());
+                return Derived::Zero(rows(), cols());
             else
                 return unnormalisedVariance_ / double(totalWeight_ - double(squaredTotalWeight_) / totalWeight_);
         }
@@ -259,6 +265,84 @@ namespace Statistics {
         WeightType totalWeight_, squaredTotalWeight_;
         Derived mean_, lastMean_, unnormalisedVariance_, lastUnnormalisedVariance_, cwiseMin_, cwiseMax_;
     };
+}
+
+namespace YAML {
+    template<typename Derived, typename WeightType> struct convert<Statistics::RunningStatistics<Derived, WeightType>> {
+    static Node encode(const Statistics::RunningStatistics<Derived, WeightType> & rhs){
+        Node node;
+
+        using namespace YAML;
+
+        for (Eigen::Index i = 0; i < rhs.rows(); ++i) {
+            for (Eigen::Index j = 0; j < rhs.cols(); ++j) {
+                node[i][j].push_back(rhs.mean(i,j));
+                node[i][j].push_back(rhs.standardError(i,j));
+                node[i][j].push_back(rhs.cwiseMin(i,j));
+                node[i][j].push_back(rhs.cwiseMax(i,j));
+            }
+        }
+        node["N"] = rhs.getTotalWeight();
+        node["N2"] = rhs.getSquaredTotalWeight();
+
+        return node;
+
+    }
+    static bool decode(const Node& node, Statistics::RunningStatistics<Derived, WeightType> & rhs) {
+        typedef typename Derived::Scalar Scalar;
+
+        if(!node.IsMap()
+        && !node.begin()->second.IsMap()
+        && !node.begin()->second.begin()->second.IsSequence())
+            return false;
+
+        auto N = node["N"].as<WeightType>();
+        auto Nsquared = node["N2"].as<WeightType>();
+
+        auto rows = node.size()-2;
+        auto cols = node.begin()->second.size();
+
+        Derived mean(rows,cols), standardError(rows,cols), cwiseMin(rows,cols), cwiseMax(rows,cols);
+
+        for (size_t i = 0; i < rows; ++i) {
+            for (size_t j = 0; j < cols; ++j) {
+                mean(i, j) = node[i][j][0].as<Scalar>();
+                standardError(i, j) = node[i][j][1].as<Scalar>();
+                cwiseMin(i, j) = node[i][j][2].as<Scalar>();
+                cwiseMax(i, j) = node[i][j][3].as<Scalar>();
+            }
+        }
+
+        Statistics::RunningStatistics<Derived, WeightType> stats (mean, standardError, cwiseMin, cwiseMax, N, Nsquared);
+        rhs = stats;
+        return true;
+    }
+};
+
+template<typename Derived, typename WeightType>
+Emitter& operator<< (Emitter& out, const Statistics::RunningStatistics<Derived, WeightType>& rhs) {
+
+    out << BeginMap;
+    for (Eigen::Index i = 0; i < rhs.rows(); ++i) {
+        out << Key << i << Value  << BeginMap;
+        for (Eigen::Index j = 0; j < rhs.cols(); ++j) {
+            out << Key << j << Value
+                 << Flow << BeginSeq
+                 << rhs.mean()(i, j)
+                 << rhs.standardError()(i, j)
+                 << rhs.cwiseMin()(i, j)
+                 << rhs.cwiseMax()(i, j)
+                 << EndSeq;
+        }
+        out << EndMap;
+    }
+    out
+    << Key << "N" << Value << rhs.getTotalWeight()
+    << Key << "N2" << Value << rhs.getSquaredTotalWeight()
+    << EndMap;
+    std::cout << out.c_str() << std::endl;
+    return out;
+};
 }
 
 #endif //INPSIGHTS_STATISTICS_H
