@@ -26,8 +26,8 @@ namespace Statistics {
     public:
         RunningStatistics()
                 :
-                initializedQ_(false), squaredTotalWeightInitializedQ_(false),
-                totalWeight_(0), squaredTotalWeight_(0),
+                initializedQ_(false),
+                totalWeight_(0),
                 mean_(), lastMean_(),
                 unnormalisedVariance_(), lastUnnormalisedVariance_(),
                 cwiseMin_(), cwiseMax_() {}
@@ -35,12 +35,10 @@ namespace Statistics {
         RunningStatistics(
                 Derived mean, Derived standardError,
                 Derived cwiseMin, Derived cwiseMax,
-                WeightType totalWeight, WeightType squaredTotalWeight = 0)
+                WeightType totalWeight)
                 :
                 initializedQ_(true),
-                squaredTotalWeightInitializedQ_(squaredTotalWeight == 0),
                 totalWeight_(totalWeight),
-                squaredTotalWeight_(squaredTotalWeightInitializedQ_? squaredTotalWeight : totalWeight),
                 mean_(std::move(mean)),
                 lastMean_(mean_),
                 unnormalisedVariance_(calculateVarianceFromStandardError(standardError, totalWeight)),
@@ -48,17 +46,10 @@ namespace Statistics {
                 cwiseMin_(cwiseMin),
                 cwiseMax_(cwiseMax) {}
 
-        RunningStatistics(Derived mean, Derived standardError, WeightType totalWeight, WeightType squaredTotalWeight = 0)
-                : RunningStatistics(mean, standardError,
-                                    mean - 3 * standardError, mean + 3 * standardError,
-                                    totalWeight, squaredTotalWeight) {}
-
 
         void reset() {
             initializedQ_ = false;
-            squaredTotalWeightInitializedQ_ = false;
             totalWeight_ = 0;
-            squaredTotalWeight_ = 0;
             mean_.setZero();
             lastMean_.setZero();
             unnormalisedVariance_.setZero();
@@ -69,8 +60,6 @@ namespace Statistics {
 
         void add(const Derived &sample, WeightType w = 1) {
             totalWeight_ += w;
-            squaredTotalWeight_ += w * w;
-
             if (!initializedQ_) {
                 initialize(sample);
             } else {
@@ -116,10 +105,6 @@ namespace Statistics {
 
         WeightType getTotalWeight() const {
             return totalWeight_;
-        }
-
-        WeightType getSquaredTotalWeight() const {
-            return squaredTotalWeight_;
         }
 
         void toYaml(YAML::Emitter &out, bool excludeSelfinteractionQ = false) const {
@@ -218,7 +203,6 @@ namespace Statistics {
     private:
         void initialize(const Derived &sample) {
             initializedQ_ = true;
-            squaredTotalWeightInitializedQ_ = true;
             mean_ = sample;
             lastMean_ = mean_;
             unnormalisedVariance_ = Derived::Zero(sample.rows(), sample.cols());
@@ -243,26 +227,16 @@ namespace Statistics {
                 return (unnormalisedVariance_ / totalWeight_);
         }
 
-        Derived sampleReliabilityVariance() const {
-            if(!std::is_integral<WeightType>::value)
-                std::cerr << "The squared total weight was not initialized properly and might be unreliable." << std::endl;
-
-            if (totalWeight_ <= 1)
-                return Derived::Zero(rows(), cols());
-            else
-                return unnormalisedVariance_ / double(totalWeight_ - double(squaredTotalWeight_) / totalWeight_);
-        }
-
         Derived biasedStandardDeviation() const { return biasedSampleVariance().array().sqrt(); }
 
         Derived unbiasedSampleStandardDeviation() const { return unbiasedSampleVariance().array().sqrt(); }
 
         Derived calculateVarianceFromStandardError(const Derived &error, WeightType N) const {
-            return N * (N - 1) * error.array().pow(2);//TODO CHECK!!
+            return N * (N - 1) * error.array().pow(2);
         }
 
-        bool initializedQ_, squaredTotalWeightInitializedQ_;
-        WeightType totalWeight_, squaredTotalWeight_;
+        bool initializedQ_;
+        WeightType totalWeight_;
         Derived mean_, lastMean_, unnormalisedVariance_, lastUnnormalisedVariance_, cwiseMin_, cwiseMax_;
     };
 }
@@ -283,8 +257,6 @@ namespace YAML {
             }
         }
         node["N"] = rhs.getTotalWeight();
-        node["N2"] = rhs.getSquaredTotalWeight();
-
         return node;
 
     }
@@ -297,9 +269,8 @@ namespace YAML {
             return false;
 
         auto N = node["N"].as<WeightType>();
-        auto Nsquared = node["N2"].as<WeightType>();
 
-        auto rows = node.size()-2;
+        auto rows = node.size()-1;
         auto cols = node.begin()->second.size();
 
         Derived mean(rows,cols), standardError(rows,cols), cwiseMin(rows,cols), cwiseMax(rows,cols);
@@ -313,7 +284,7 @@ namespace YAML {
             }
         }
 
-        Statistics::RunningStatistics<Derived, WeightType> stats (mean, standardError, cwiseMin, cwiseMax, N, Nsquared);
+        Statistics::RunningStatistics<Derived, WeightType> stats (mean, standardError, cwiseMin, cwiseMax, N);
         rhs = stats;
         return true;
     }
@@ -338,9 +309,7 @@ Emitter& operator<< (Emitter& out, const Statistics::RunningStatistics<Derived, 
     }
     out
     << Key << "N" << Value << rhs.getTotalWeight()
-    << Key << "N2" << Value << rhs.getSquaredTotalWeight()
     << EndMap;
-    std::cout << out.c_str() << std::endl;
     return out;
 };
 }

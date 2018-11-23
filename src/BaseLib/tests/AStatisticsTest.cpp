@@ -42,7 +42,7 @@ TEST_F(AStatisticsTest, Constructor) {
     auto standardError = mat1 * 1/std::sqrt(N);
     auto cwiseMin = mat1;
     auto cwiseMax = mat3;
-    auto stats = Statistics::RunningStatistics<Eigen::MatrixXd>(mean, standardError, cwiseMin, cwiseMax, N, N*N);
+    auto stats = Statistics::RunningStatistics<Eigen::MatrixXd>(mean, standardError, cwiseMin, cwiseMax, N);
 
     stats.add(mat2);
 
@@ -57,7 +57,6 @@ TEST_F(AStatisticsTest, Constructor) {
     ASSERT_TRUE(stats.cwiseMin().isApprox(expectedStats.cwiseMin()));
     ASSERT_TRUE(stats.cwiseMax().isApprox(expectedStats.cwiseMax()));
     ASSERT_EQ(stats.getTotalWeight(), expectedStats.getTotalWeight());
-    ASSERT_EQ(stats.getSquaredTotalWeight(), expectedStats.getSquaredTotalWeight());
 }
 
 TEST_F(AStatisticsTest, Matrix){
@@ -200,6 +199,7 @@ TEST_F(AStatisticsTest, YAMLConversion){
 
     YAML::Emitter out;
     out << stats;
+    
 
     auto loaded = YAML::Load(out.c_str());
     auto readStats = loaded.as<Statistics::RunningStatistics<Eigen::MatrixXd>>();
@@ -209,5 +209,4 @@ TEST_F(AStatisticsTest, YAMLConversion){
     ASSERT_TRUE(readStats.cwiseMin().isApprox(stats.cwiseMin()));
     ASSERT_TRUE(readStats.cwiseMax().isApprox(stats.cwiseMax()));
     ASSERT_EQ(readStats.getTotalWeight(), stats.getTotalWeight());
-    ASSERT_EQ(readStats.getSquaredTotalWeight(), stats.getSquaredTotalWeight());
 }
