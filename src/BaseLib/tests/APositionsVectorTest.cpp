@@ -2,7 +2,7 @@
 // Created by Michael Heuer on 29.10.17.
 //
 
-#include <gtest/gtest.h>
+#include <gmock/gmock.h>
 #include <sstream>
 #include <PositionsVector.h>
 #include <NaturalConstants.h>

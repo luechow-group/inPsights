@@ -127,8 +127,6 @@ public:
         return !(*this == other);
     }
 
-
-
 protected:
     PositionsVector positionsVector_;
     TypesVector<Type> typesVector_;

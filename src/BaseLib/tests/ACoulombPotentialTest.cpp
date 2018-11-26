@@ -2,7 +2,7 @@
 // Created by Michael Heuer on 17.08.18.
 //
 
-#include <gtest/gtest.h>
+#include <gmock/gmock.h>
 #include "CoulombPotential.h"
 #include "TestMolecules.h"
 

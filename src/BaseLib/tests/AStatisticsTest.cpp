@@ -2,7 +2,7 @@
 // Created by Michael Heuer on 15.09.18.
 //
 
-#include <gtest/gtest.h>
+#include <gmock/gmock.h>
 #include <Statistics.h>
 #include <iostream>
 

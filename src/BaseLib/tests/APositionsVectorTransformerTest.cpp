@@ -3,7 +3,7 @@
 //
 
 
-#include <gtest/gtest.h>
+#include <gmock/gmock.h>
 #include <ParticlesVector.h>
 #include <PositionsVectorTransformer.h>
 #include <NaturalConstants.h>

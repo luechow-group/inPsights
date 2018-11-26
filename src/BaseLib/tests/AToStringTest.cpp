@@ -2,7 +2,7 @@
 // Created by Leonard Reuter on 09.03.18.
 //
 
-#include <gtest/gtest.h>
+#include <gmock/gmock.h>
 #include "ToString.h"
 
 using namespace testing;
