@@ -11,15 +11,6 @@
 
 namespace Statistics {
 
-    template<typename Derived>
-    class MeanErrorPair {
-    public:
-        MeanErrorPair(Derived mean, Derived error)
-                : mean_(std::move(mean)), error_(std::move(error)) {};
-
-        Derived mean_, error_;
-    };
-
     template<typename Derived, typename WeightType = unsigned, bool triangularExport = false>
     class RunningStatistics {
 

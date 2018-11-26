@@ -137,8 +137,6 @@ public:
         << Key << "N" << Value << TeStats_.getTotalWeight()
         << Key << "ValueRange" << Value << Comment("[]")
         << valueStats_;
-        //.cwiseMin()[0] //TODO do this for single value
-        //<< valueStats_.cwiseMax()[0] << EndSeq;
 
         yamlDocument_ << Key << "Structures" << Comment("[a0]") << Value << BeginSeq;
 
