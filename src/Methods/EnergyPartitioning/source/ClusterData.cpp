@@ -29,7 +29,7 @@ namespace YAML {
                 node["Vee"].as<Statistics::RunningStatistics<Eigen::MatrixXd,unsigned,true>>(),
                 node["Ven"].as<Statistics::RunningStatistics<Eigen::MatrixXd,unsigned>>()
                 );
-
+        
         return true;
     }
 

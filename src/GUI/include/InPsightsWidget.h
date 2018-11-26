@@ -19,6 +19,7 @@
 #include <QListWidget>
 #include <QString>
 #include <OneParticleEnergies.h>
+#include <ClusterData.h>
 
 class InPsightsWidget : public QWidget {
 Q_OBJECT
@@ -117,7 +118,7 @@ private:
     QListWidget *maximaList_;
 
     AtomsVector atomsVector_;
-    std::vector<std::pair<std::vector<ElectronsVector>, YAML::Node>> clusterCollection_;
+    std::vector<ClusterData> clusterCollection_;
 
 
     QSplashScreen *createSplashScreen() {
@@ -146,14 +147,14 @@ private:
 
         int id = 0;
         for(YAML::const_iterator it = doc["Clusters"].begin(); it != doc["Clusters"].end();++it) {
-            OneParticleEnergies::oneAtomEnergies(*it, Vnn);
-            OneParticleEnergies::oneElectronEnergies(*it);
-            clusterCollection_.emplace_back(
-                    (*it)["Structures"].as<std::vector<ElectronsVector>>(),
-                    //Statistics::RunningStatistics<Eigen::MatrixXd>::fromYaml((*it)["SpinCorrelations"]));
-                    (*it)["SpinCorrelations"]);
-            auto N = (*it)["N"].as<int>();
-            auto text = QStringLiteral("Cluster %1 (%2)").arg(QString::number(id),QString::number(N));
+            //OneParticleEnergies::oneAtomEnergies(*it, Vnn);
+            //OneParticleEnergies::oneElectronEnergies(*it);
+
+            ClusterData clusterData = (*it).as<ClusterData>();
+
+            auto text = QStringLiteral("Cluster %1 (%2)").arg(QString::number(id),QString::number(clusterData.N_));
+
+            clusterCollection_.emplace_back(clusterData);
 
             auto item = new QListWidgetItem(text);
             item->setCheckState(Qt::CheckState::Unchecked);

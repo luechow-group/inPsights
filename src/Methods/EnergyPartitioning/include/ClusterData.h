@@ -19,6 +19,9 @@ private:
 
 class ClusterData {
 public:
+
+    ClusterData() = default;
+
     ClusterData(unsigned totalNumberOfStructures,
                 std::vector<ElectronsVector> exemplaricStructures,
                 Statistics::RunningStatistics<Eigen::VectorXd,unsigned> valueStats,
@@ -41,11 +44,10 @@ public:
         return exemplaricStructures_[0];
     }
 
-
     unsigned N_;
     std::vector<ElectronsVector> exemplaricStructures_;
     Statistics::RunningStatistics<Eigen::VectorXd,unsigned> valueStats_,TeStats_;
-    Statistics::RunningStatistics<Eigen::MatrixXd,unsigned,true> SeeStats_, VeeStats_, VnnStats_;
+    Statistics::RunningStatistics<Eigen::MatrixXd,unsigned,true> SeeStats_, VeeStats_;
     Statistics::RunningStatistics<Eigen::MatrixXd,unsigned> VenStats_;
 };
 

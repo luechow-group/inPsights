@@ -15,6 +15,7 @@
 #include <CoulombPotential.h>
 #include <SpinCorrelation.h>
 #include <ClusterData.h>
+
 class EnergyCalculator{
 public:
 

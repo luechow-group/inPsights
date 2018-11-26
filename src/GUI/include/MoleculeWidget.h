@@ -14,6 +14,8 @@
 #include <AtomsVector3D.h>
 #include <ElectronsVector3D.h>
 #include <Line3D.h>
+#include <ClusterData.h>
+
 class MoleculeWidget : public QWidget{
     Q_OBJECT
 public:
@@ -22,7 +24,7 @@ public:
 
     void setMolecule(
             const AtomsVector& atoms,
-            const std::pair<std::vector<ElectronsVector>,YAML::Node>& clusterData,
+            const ClusterData& clusterData,
             bool drawConnections,
             bool drawSpinCorrelations,
             double spinCorrelationThreshold){
@@ -32,7 +34,7 @@ public:
 
         atomsVector3D_ = new AtomsVector3D(moleculeEntity_, atoms);
 
-        auto electrons = clusterData.first[0]; // Plot all?
+        auto electrons = clusterData.representativeStructure(); // Plot all?
 
         if(drawConnections)
             electronsVector3D_ = new ElectronsVector3D(moleculeEntity_, atoms, electrons);
@@ -43,7 +45,7 @@ public:
             for (int i = 0; i < electrons.numberOfEntities(); ++i) {
                 for (int j = i + 1; j < electrons.numberOfEntities(); ++j) {
 
-                    auto corr = clusterData.second[i][j][0].as<double>();
+                    auto corr = clusterData.SeeStats_.mean()(i,j);
                     if (std::abs(corr) >= spinCorrelationThreshold) {
 
                         QColor color;
