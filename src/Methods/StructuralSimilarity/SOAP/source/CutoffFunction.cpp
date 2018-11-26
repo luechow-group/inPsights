@@ -34,7 +34,7 @@ double CutoffFunction::getWeight(const Eigen::Vector3d& position,
 Eigen::Vector3d CutoffFunction::getWeightGradient(const Eigen::Vector3d&position ) {
     const auto innerPlateauRadius = ExpansionSettings::Cutoff::innerPlateauRadius();
     const auto & cutoffWidth = ExpansionSettings::Cutoff::width;
-    const auto & centerWeight = ExpansionSettings::Cutoff::centerWeight;
+    //const auto & centerWeight = ExpansionSettings::Cutoff::centerWeight;
     const auto & cutoffRadius = ExpansionSettings::Cutoff::radius;
 
     double distanceFromExpansionCenter =position .norm();

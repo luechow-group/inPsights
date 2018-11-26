@@ -76,7 +76,7 @@ void ElectronsVector3D::drawConnections(Qt3DCore::QEntity *root,
         bool notAtNuclei = true;
         for (long k = 0; k < atomsVector.numberOfEntities(); ++k) {
             if (Metrics::distance(electronsVector[i].position(), atomsVector[k].position()) < 0.1) {
-                notAtNuclei *= false;
+                notAtNuclei = false;
             }
         }
         if (notAtNuclei) electronsNotInNuclei.push_back(i);
