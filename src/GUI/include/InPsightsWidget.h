@@ -91,7 +91,7 @@ public slots:
                 spinCorrelationsCheckBox_->checkState() == Qt::CheckState::Checked,
                 spinCorrelationThreshold
         );
-        
+
     };
 
     void updateMoleculeWidget() {

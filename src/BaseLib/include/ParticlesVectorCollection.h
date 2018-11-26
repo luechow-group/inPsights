@@ -81,8 +81,8 @@ public:
 
     void insert(const ParticlesVector<Type> &particlesVector, long i) {
         if (typesVector_.numberOfEntities() != 0) {
-            assert(typesVector_.asEigenVector()
-                   == particlesVector.typesVector().asEigenVector());
+            assert(typesVector_.asEigenVector() == particlesVector.typesVector().asEigenVector()
+            && "Typevectors must be identical.");
         }
         else{
             typesVector_ = particlesVector.typesVector();

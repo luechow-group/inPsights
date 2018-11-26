@@ -5,13 +5,11 @@
 #include <OneParticleEnergies.h>
 
 void OneParticleEnergies::oneAtomEnergies(const YAML::Node &cluster, const YAML::Node &Vnn) {
-
     auto Ven = cluster["Ven"];
     auto nElectrons = Ven.size();
     auto nAtoms = Ven.begin()->second.size();
     std::vector<double> Vn(nAtoms);
     std::vector<double> VnErr(nAtoms);
-
 
     for (unsigned long i = 0; i < nAtoms; ++i) {
 

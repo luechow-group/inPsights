@@ -12,7 +12,7 @@ namespace Visualization {
         Eigen::VectorXd pathLengthVector =
                 Eigen::VectorXd::Zero(optimizationPath.numberOfEntities());
 
-        for (unsigned long i = 1; i < optimizationPath.numberOfEntities(); i++){
+        for (long i = 1; i < optimizationPath.numberOfEntities(); i++){
             optPathLength += optimizationPath.norm(i,i - 1);
             pathLengthVector[i] = optPathLength;
         }
@@ -23,7 +23,7 @@ namespace Visualization {
         // start at 1 because visualization Path already contains optpath[0]
         for (unsigned long i = 1; i < nwanted; i++) {
             index = 0;
-            for (unsigned long j = 1; j < optimizationPath.numberOfEntities(); j++){
+            for (long j = 1; j < optimizationPath.numberOfEntities(); j++){
                 if (fabs(pathLengthVector[j] - i * stepLength) <
                         fabs(pathLengthVector[index] - i * stepLength)){
                     index = j;
@@ -43,7 +43,7 @@ namespace Visualization {
         setlocale(LC_NUMERIC,"C");
 
         ElectronsVectorCollection visualizationPath;
-        if (nwanted < optimizationPath.numberOfEntities()){
+        if (long(nwanted) < optimizationPath.numberOfEntities()){
             visualizationPath = shortenPath(optimizationPath, nwanted);
         }
         else {
