@@ -2,7 +2,7 @@
 // Created by heuer on 10.05.17.
 //
 
-#include "Electron3D.h"
+#include <Electron3D.h>
 
 Electron3D::Electron3D(Qt3DCore::QEntity *root, const QVector3D& location, const Spin& spinType)
         : Sphere(root,

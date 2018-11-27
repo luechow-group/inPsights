@@ -2,54 +2,49 @@
 // Created by Michael Heuer on 12.11.17.
 //
 
-#include "ElectronsVector3D.h"
-#include "Electron3D.h"
-#include "Bond3D.h"
+#include <ElectronsVector3D.h>
+#include <Electron3D.h>
+#include <Bond3D.h>
 #include <Line3D.h>
-
+#include <Metrics.h>
 #include <QPhongMaterial>
 #include <QExtrudedTextMesh>
 #include <ParticlesVector.h>
-#include <Metrics.h>
 
 ElectronsVector3D::ElectronsVector3D(Qt3DCore::QEntity *root,
                                      const ElectronsVector &electronsVector,
-                                     bool showIndicesQ) {
-    drawElectrons(root, electronsVector, showIndicesQ);
+                                     bool showIndicesQ)
+                                     : QEntity(root), electronsVector_(electronsVector) {
+    drawElectrons(showIndicesQ);
 }
 
 ElectronsVector3D::ElectronsVector3D(Qt3DCore::QEntity *root, const AtomsVector &atomsVector,
                                      const ElectronsVector &electonsVector, bool showIndicesQ)
         : ElectronsVector3D(root, electonsVector, showIndicesQ)
 {
-    drawConnections(root, atomsVector, electonsVector);
+    drawConnections(atomsVector, electonsVector);
 }
 
-void ElectronsVector3D::drawElectrons(Qt3DCore::QEntity *root,
-                                      const ElectronsVector &electronsVector,
-                                      bool showIndicesQ) {
-
+void ElectronsVector3D::drawElectrons(bool showIndicesQ) {
     // Draw electrons
-    std::vector<Electron3D> electrons3D;
+    std::vector<Electron3D*> electrons3D;
 
-    for (long i = 0; i < electronsVector.numberOfEntities(); ++i) {
-        Eigen::Vector3d vec = electronsVector[i].position();
-        auto qvector3d = QVector3D(float(vec[0]), float(vec[1]), float(vec[2]));
-        electrons3D.emplace_back(Electron3D(root, qvector3d,
-                                            electronsVector.typesVector()[i]));
+    for (long i = 0; i < electronsVector_.numberOfEntities(); ++i) {
+        auto qvector3d = GuiHelper::toQVector3D(electronsVector_[i].position());
+        electrons3D.emplace_back(new Electron3D(this, qvector3d, electronsVector_.typesVector()[i]));
 
         // Draw Text
         if(showIndicesQ){
-            auto *textMaterial = new Qt3DExtras::QPhongMaterial(root);
+            auto *textMaterial = new Qt3DExtras::QPhongMaterial(this);
 
-            auto *text = new Qt3DCore::QEntity(root);
+            auto *text = new Qt3DCore::QEntity(this);
             auto *textMesh = new Qt3DExtras::QExtrudedTextMesh();
 
             auto *textTransform = new Qt3DCore::QTransform();
             QFont font(QString("Arial"), 12, 0, false);
             QVector3D shift;
 
-            if(electrons3D[i].getSpinType() == Spin::alpha) shift = QVector3D(0.0f,0.15f,0.15f);
+            if(electrons3D[i]->getSpinType() == Spin::alpha) shift = QVector3D(0.0f,0.15f,0.15f);
             else shift = QVector3D(-0.0f,-0.15f,-0.15f);
 
             textTransform->setTranslation(qvector3d+shift);
@@ -58,7 +53,7 @@ void ElectronsVector3D::drawElectrons(Qt3DCore::QEntity *root,
             textMesh->setDepth(0.1f);
             textMesh->setFont(font);
             textMesh->setText(QString::fromStdString(std::to_string(i+1)));
-            textMaterial->setDiffuse(electrons3D[i].getColor());
+            textMaterial->setDiffuse(electrons3D[i]->getColor());
 
             text->addComponent(textMaterial);
             text->addComponent(textMesh);
@@ -66,9 +61,8 @@ void ElectronsVector3D::drawElectrons(Qt3DCore::QEntity *root,
         }
     }
 }
-
-void ElectronsVector3D::drawConnections(Qt3DCore::QEntity *root,
-                                        const AtomsVector &atomsVector,
+//TODO DELETE
+void ElectronsVector3D::drawConnections(const AtomsVector &atomsVector,
                                         const ElectronsVector &electronsVector) {
     std::vector<long> electronsNotInNuclei;
 
@@ -81,7 +75,6 @@ void ElectronsVector3D::drawConnections(Qt3DCore::QEntity *root,
         }
         if (notAtNuclei) electronsNotInNuclei.push_back(i);
     }
-
 
     for (size_t i = 0; i < electronsNotInNuclei.size(); ++i) {
         for (size_t j = i+1; j < electronsNotInNuclei.size(); ++j) {
@@ -98,13 +91,13 @@ void ElectronsVector3D::drawConnections(Qt3DCore::QEntity *root,
 
                 if (e1.type() == e2.type())
                     if(e1.type() == Spin::alpha)
-                        Cylinder(root,Spins::QColorFromSpinType(Spin::alpha), {q1,q2}, 0.015,0.5);
+                        Cylinder(this,Spins::QColorFromSpinType(Spin::alpha), {q1,q2}, 0.015,0.5);
                     else if(e1.type() == Spin::beta)
-                        Cylinder(root,Spins::QColorFromSpinType(Spin::beta), {q1,q2}, 0.015,0.5);
+                        Cylinder(this,Spins::QColorFromSpinType(Spin::beta), {q1,q2}, 0.015,0.5);
                     else
-                        Cylinder(root,Spins::QColorFromSpinType(Spin::none), {q1,q2}, 0.015,0.5);
+                        Cylinder(this,Spins::QColorFromSpinType(Spin::none), {q1,q2}, 0.015,0.5);
                 else
-                    Line3D(root, Qt::black, {q1,q2}, 0.25);
+                    Line3D(this, Qt::black, {q1,q2}, 0.25);
             }
         }
     }

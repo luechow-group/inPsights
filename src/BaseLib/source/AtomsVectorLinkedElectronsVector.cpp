@@ -34,7 +34,7 @@ std::vector<long> AtomsVectorLinkedElectronsVector::coreElectronsIndices(double 
     }
 
     std::sort(indices.begin(), indices.end());
-
+    indices.erase(std::unique( indices.begin(), indices.end() ), indices.end()); // erase duplicates
     return indices;
 }
 

@@ -15,8 +15,7 @@ MoleculeWidget::MoleculeWidget(QWidget *parent)
     moleculeEntity_(new Qt3DCore::QEntity(root_)),
     cameraController_(new Qt3DExtras::QOrbitCameraController(root_)),
     infoText_(new QLabel("Info text")),
-    atomsVector3D_(nullptr),
-    electronsVector3D_(nullptr)
+    atomsVector3D_(nullptr)
 {
     setLayout(layout_);
     layout_->addWidget(createWindowContainer(qt3DWindow_));

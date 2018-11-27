@@ -2,15 +2,8 @@
 // Created by heuer on 15.11.18.
 //
 
-#include <iostream>
-#include <ParticlesVector.h>
-#include <AtomsVector3D.h>
-#include <ElectronsVector3D.h>
 #include <InPsightsWidget.h>
 #include <QApplication>
-#include <yaml-cpp/yaml.h>
-
-
 
 int main(int argc, char *argv[]) {
 
