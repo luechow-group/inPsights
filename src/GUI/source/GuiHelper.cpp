@@ -13,3 +13,11 @@ QColor GuiHelper::QColorFromElementType(const Element &elementType) {
                 int(Elements::ElementInfo::color(elementType).G),
                 int(Elements::ElementInfo::color(elementType).B)};
 }
+
+QVector3D GuiHelper::toQVector3D(const Eigen::Vector3f &vec) {
+    return {vec.x(),vec.y(), vec.z()};
+}
+
+QVector3D GuiHelper::toQVector3D(const Eigen::Vector3d &vec) {
+    return toQVector3D(Eigen::Vector3f(vec.cast<float>()));
+}
