@@ -17,16 +17,16 @@ template<typename Type>
 class Particle {
 public:
     Particle()
-            : position_(Eigen::Vector3d::Zero()),
-              type_(0)
-    {}
+            : Particle(Type(0), Eigen::Vector3d::Zero())
+            {}
 
-    Particle(Type type, const Eigen::Vector3d &position)
-            : position_(position), type_(int(type))
-    {}
+    Particle(Type type, Eigen::Vector3d position)
+            : position_(std::move(position)), type_(int(type))
+            {}
 
-    Particle(const Eigen::Vector3d& position, int typeId = 0)
-            : position_(position), type_(typeId){}
+    Particle(Eigen::Vector3d position, int typeId = 0)
+            : position_(std::move(position)), type_(typeId)
+            {}
 
     const Eigen::Vector3d& position() const{
         return position_;
