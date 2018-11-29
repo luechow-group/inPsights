@@ -3,7 +3,7 @@
 //
 
 #include <ElectronsVector3D.h>
-#include <Electron3D.h>
+#include <Particle3D.h>
 #include <Bond3D.h>
 #include <Line3D.h>
 #include <Metrics.h>
@@ -31,7 +31,7 @@ void ElectronsVector3D::drawElectrons(bool showIndicesQ) {
 
     for (long i = 0; i < electronsVector_.numberOfEntities(); ++i) {
         auto qvector3d = GuiHelper::toQVector3D(electronsVector_[i].position());
-        electrons3D.emplace_back(new Electron3D(this, qvector3d, electronsVector_.typesVector()[i]));
+        electrons3D.emplace_back(new Electron3D(this, electronsVector_[i]));
 
         // Draw Text
         if(showIndicesQ){
@@ -44,7 +44,7 @@ void ElectronsVector3D::drawElectrons(bool showIndicesQ) {
             QFont font(QString("Arial"), 12, 0, false);
             QVector3D shift;
 
-            if(electrons3D[i]->getSpinType() == Spin::alpha) shift = QVector3D(0.0f,0.15f,0.15f);
+            if(electrons3D[i]->type() == Spin::alpha) shift = QVector3D(0.0f,0.15f,0.15f);
             else shift = QVector3D(-0.0f,-0.15f,-0.15f);
 
             textTransform->setTranslation(qvector3d+shift);

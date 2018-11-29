@@ -18,15 +18,15 @@ class Particle {
 public:
     Particle()
             : Particle(Eigen::Vector3d::Zero(), 0)
-            {}
+    {}
 
     Particle(Type type, Eigen::Vector3d position)
             : Particle(position, int(type))
-            {}
+    {}
 
     Particle(Eigen::Vector3d position, int typeId = 0)
             : position_(std::move(position)), type_(typeId)
-            {}
+    {}
 
     const Eigen::Vector3d& position() const{
         return position_;

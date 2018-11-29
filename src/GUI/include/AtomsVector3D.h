@@ -5,10 +5,10 @@
 #ifndef INPSIGHTS_MOLECULARGEOMETRYIMPORTER_H
 #define INPSIGHTS_MOLECULARGEOMETRYIMPORTER_H
 
-#include "Abstract3dObject.h"
-#include "ParticlesVector.h"
+#include <Qt3DCore/QEntity>
+#include <ParticlesVector.h>
 
-class AtomsVector3D{
+class AtomsVector3D : public Qt3DCore::QEntity{
 public:
     AtomsVector3D(Qt3DCore::QEntity *root, const AtomsVector &atomsVector);
 };

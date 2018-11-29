@@ -4,7 +4,7 @@
 
 #include <Polyline.h>
 #include <ParticlesVectorPath3D.h>
-#include <Electron3D.h>
+#include <Particle3D.h>
 #include <GuiHelper.h>
 
 ParticlesVectorPath3D::ParticlesVectorPath3D(Qt3DCore::QEntity *root,

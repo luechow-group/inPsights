@@ -17,7 +17,7 @@
 #include <Line3D.h>
 #include <Bond3D.h>
 #include <Cylinder.h>
-#include <Electron3D.h>
+#include <Particle3D.h>
 #include <ClusterData.h>
 #include <AtomsVectorLinkedElectronsVector.h>
 

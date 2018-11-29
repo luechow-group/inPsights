@@ -21,7 +21,7 @@
 #include <TypesVector.h>
 #include "Sphere.h"
 #include "Bond3D.h"
-#include "Electron3D.h"
+#include "Particle3D.h"
 #include "Polyline.h"
 
 #include "WfFileImporter.h"

@@ -6,7 +6,7 @@
 #define INPSIGHTS_BOND3D_H
 
 #include "DividedCylinder.h"
-#include "Atom3D.h"
+#include "Particle3D.h"
 #include <Particle.h>
 
 class Bond3D : public DividedCylinder {

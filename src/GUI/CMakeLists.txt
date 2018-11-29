@@ -32,10 +32,8 @@ set(HEADER_FILES
         include/DividedCylinder.h
         include/Polyline.h
         include/Cone.h
-        include/Atom3D.h
         include/Bond3D.h
         include/GuiHelper.h
-        include/Electron3D.h
         include/StringMethodCoordinatesPlotter.h
         include/StringMethodValuePlotter.h
         include/AtomsVector3D.h
@@ -45,6 +43,7 @@ set(HEADER_FILES
         include/Visualization.h
         include/InPsightsWidget.h
         include/Line3D.h
+        include/Particle3D.h
         )
 
 set(SOURCE_FILES
@@ -54,10 +53,8 @@ set(SOURCE_FILES
         source/DividedCylinder.cpp
         source/Polyline.cpp
         source/Cone.cpp
-        source/Atom3D.cpp
         source/Bond3D.cpp
         source/GuiHelper.cpp
-        source/Electron3D.cpp
         source/AtomsVector3D.cpp
         source/ElectronsVector3D.cpp
         source/MoleculeWidget.cpp
