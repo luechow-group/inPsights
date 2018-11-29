@@ -15,9 +15,7 @@ public:
            const std::pair<QVector3D, QVector3D>& pair,
            float radius,
            float alpha = 1.0f);
-
-  ~Cylinder() {};
-
+  
   float getRadius() const { return radius_; };
 
   void setRadius(const float radius) {
