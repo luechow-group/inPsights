@@ -18,6 +18,12 @@ public:
     void SetUp() override {};
 };
 
+TEST_F(AParticleTest, DefaultConstructor) {
+    Electron electron2;
+    ASSERT_EQ(electron2.position(), Eigen::Vector3d::Zero());
+    ASSERT_EQ(electron2.type(), Spins::SpinType::none);
+}
+
 TEST_F(AParticleTest, Constructor) {
     Electron electron2(Spin::alpha,pos1);
     ASSERT_EQ(electron1.position(), electron2.position());
