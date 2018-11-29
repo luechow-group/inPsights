@@ -23,11 +23,11 @@ public:
                    GuiHelper::radiusFromType<Type>(particle.type()))
     {
         if(std::is_same<Type,Element>())
-            setAlpha(0.25f);
+            material->setAlpha(0.25f);
         else if (std::is_same<Type,Spin>())
-            setAlpha(0.5f);
+            material->setAlpha(0.5f);
     }
-    
+
     void setPosition(const Eigen::Vector3d &position) override {
         Particle<Type>::setPosition(position);
         transform->setTranslation(GuiHelper::toQVector3D(position));

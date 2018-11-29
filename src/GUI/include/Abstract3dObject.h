@@ -27,14 +27,11 @@ protected:
     Qt3DCore::QTransform *transform;
     //Qt3DRender::QObjectPicker *picker;
 
-    void setAlpha(float alpha);
-
 //public slots:
     //void onPressed(bool pressed);
 
 private:
     QColor color_;
-    float alpha_;
 };
 
 #endif //INPSIGHTS_ABSTRACT3DOBJECT_H

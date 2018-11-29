@@ -8,8 +8,7 @@
 
 Abstract3dObject::Abstract3dObject(Qt3DCore::QEntity *root, QColor color, const QVector3D& location)
   : QEntity(root),
-    color_(color),
-    alpha_(1.0f)
+    color_(color)
 {
   entity = new Qt3DCore::QEntity(root);
   material = new Qt3DExtras::QPhongAlphaMaterial(root);
@@ -28,11 +27,6 @@ Abstract3dObject::Abstract3dObject(Qt3DCore::QEntity *root, QColor color, const 
 
   //connect(picker, &Qt3DRender::QObjectPicker::pressedChanged, this, &Abstract3dObject::onPressed);
 }
-
-void Abstract3dObject::setAlpha(float alpha) {
-  alpha_ = alpha;
-  material->setAlpha(alpha);
-};
 
 /*
 void Abstract3dObject::onPressed(bool pressed) {
