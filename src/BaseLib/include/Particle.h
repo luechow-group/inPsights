@@ -17,7 +17,7 @@ template<typename Type>
 class Particle {
 public:
     Particle()
-            : Particle(Type(0), Eigen::Vector3d::Zero())
+            : Particle(Eigen::Vector3d::Zero(), 0)
             {}
 
     Particle(Type type, Eigen::Vector3d position)
