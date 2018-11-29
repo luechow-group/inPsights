@@ -21,7 +21,7 @@ public:
             {}
 
     Particle(Type type, Eigen::Vector3d position)
-            : position_(std::move(position)), type_(int(type))
+            : Particle(position, int(type))
             {}
 
     Particle(Eigen::Vector3d position, int typeId = 0)
