@@ -25,10 +25,28 @@ namespace GuiHelper {
     }
 
     template<>
-    QColor QColorFromType<Spin>(const Spin &type);
+    QColor QColorFromType<Element>(const Element &type);
 
     template<>
-    QColor QColorFromType<Element>(const Element &type);
+    QColor QColorFromType<Spin>(const Spin &type);
+
+    template<typename Type>
+    float radiusFromType(const Type& type) {
+        assert(std::is_integral<Type>() && "Type must be an integer.");
+
+        auto intType = static_cast<int>(type);
+
+        if (intType > 0)
+            return radiusFromType<Element>(Element(intType));
+        else
+            return radiusFromType<Spin>(Spin(intType));
+    }
+
+    template<>
+    float radiusFromType<Element>(const Element &type);
+
+    template<>
+    float radiusFromType<Spin>(const Spin &type);
 
     QVector3D midPointVector(std::pair<QVector3D, QVector3D> qVector3Dpair);
 

@@ -16,6 +16,14 @@ QVector3D GuiHelper::toQVector3D(const Eigen::Vector3d &vec) {
     return toQVector3D(Eigen::Vector3f(vec.cast<float>()));
 }
 
+
+template<>
+QColor GuiHelper::QColorFromType<Element>(const Element &type) {
+    return {int(Elements::ElementInfo::color(type).R),
+            int(Elements::ElementInfo::color(type).G),
+            int(Elements::ElementInfo::color(type).B)};
+}
+
 template<>
 QColor GuiHelper::QColorFromType<Spin>(const Spin &type) {
     switch (type) {
@@ -31,8 +39,12 @@ QColor GuiHelper::QColorFromType<Spin>(const Spin &type) {
 }
 
 template<>
-QColor GuiHelper::QColorFromType<Element>(const Element &type) {
-    return {int(Elements::ElementInfo::color(type).R),
-            int(Elements::ElementInfo::color(type).G),
-            int(Elements::ElementInfo::color(type).B)};
+float GuiHelper::radiusFromType<Element>(const Element &type) {
+    return static_cast<float>(Elements::ElementInfo::vdwRadius(type)/10.0f);
+}
+
+template<>
+float GuiHelper::radiusFromType<Spin>(const Spin &type) {
+    // choose electron size relative to an hydrogen atom
+    return GuiHelper::radiusFromType<Element>(Element::H)/4.0f;
 }
