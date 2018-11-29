@@ -105,7 +105,7 @@ public:
     }
 
     friend std::ostream& operator<<(std::ostream& os, const ParticlesVectorCollection<Type> & pvc){
-        for (unsigned long i = 0; i < pvc.numberOfEntities(); i++) {
+        for (long i = 0; i < pvc.numberOfEntities(); i++) {
 
             os << "Vector " <<std::to_string(i + 1) << ":"
                << std::endl
