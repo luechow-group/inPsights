@@ -8,11 +8,6 @@
 AtomsVector3D::AtomsVector3D(Qt3DCore::QEntity *root, const AtomsVector &atomsVector)
         : QEntity(root) {
 
-    /*TODO Refactor together with ElectronsVector3D*/
-    std::vector<Atom3D*> atoms3D;
-
-    // Draw atoms
-    for (long i = 0; i < atomsVector.numberOfEntities(); ++i) {
-        atoms3D.emplace_back(new Atom3D(root,atomsVector[i]));
-    }
+    for (long i = 0; i < atomsVector.numberOfEntities(); ++i)
+        atoms3D_.emplace_back(new Atom3D(root,atomsVector[i]));
 }

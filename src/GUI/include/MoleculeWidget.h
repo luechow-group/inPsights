@@ -21,7 +21,6 @@
 #include <ClusterData.h>
 #include <AtomsVectorLinkedElectronsVector.h>
 
-
 class MoleculeWidget : public QWidget{
     Q_OBJECT
 public:
@@ -33,6 +32,7 @@ public:
     void deleteConnections() {};
 
     void drawConnections() { //TODO How to make them deletable?
+
         for (auto &mapItem : activeElectronsVectorsMap_) {
             auto electronsVector3D = mapItem.second;
             AtomsVectorLinkedElectronsVector linkedElectronsVector(
@@ -107,20 +107,16 @@ public:
     }
 
     void drawBonds() {
-        // Draw bonds
-        auto bondDrawingLimit = float(1.40 * 1e-10 / AU::length);
+        auto bondDrawingLimit = float(1.40 * 1e-10 / AU::length); //arbitrary choosen
 
-        for (long i = 0; i < sharedAtomsVector_->numberOfEntities(); ++i) {
-            for (long j = i + 1; j < sharedAtomsVector_->numberOfEntities(); ++j) {
-                auto a1 = sharedAtomsVector_->operator[](i);
-                auto a2 = sharedAtomsVector_->operator[](j);
-                auto distance = Metrics::distance(a1.position(), a2.position())
-                        - (Elements::ElementInfo::vdwRadius(a1.type()) + Elements::ElementInfo::vdwRadius(a2.type()))/10.0;
+        for (auto it = atomsVector3D_->atoms3D_.begin(); it != atomsVector3D_->atoms3D_.end(); it++){
+            for (auto jt = it+1; jt != atomsVector3D_->atoms3D_.end(); jt++){
+                auto distance = Metrics::distance((*it)->position(), (*jt)->position())
+                                - (Elements::ElementInfo::vdwRadius((*it)->type())
+                                   + Elements::ElementInfo::vdwRadius((*jt)->type()))/10.0;
 
-                Elements::ElementInfo::vdwRadius(a1.type());
-                if ( distance < bondDrawingLimit) {
-                    new Bond3D(moleculeEntity_, a1, a2);
-                }
+                if ( distance < bondDrawingLimit)
+                    new Bond3D(*(*it), *(*jt));
             }
         }
     }

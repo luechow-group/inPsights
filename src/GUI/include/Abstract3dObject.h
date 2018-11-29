@@ -13,31 +13,28 @@
 #include <Qt3DRender/QObjectPicker>
 
 class Abstract3dObject : public Qt3DCore::QEntity {
-  Q_OBJECT
+Q_OBJECT
 public:
-  Abstract3dObject() = default;
-  Abstract3dObject(Qt3DCore::QEntity *root, QColor color, const QVector3D& location);
+    Abstract3dObject() = default;
 
-  Qt3DCore::QEntity* entity;
-  Qt3DExtras::QPhongAlphaMaterial* material;
-  Qt3DCore::QTransform* transform;
-  //Qt3DRender::QObjectPicker *picker;
+    Abstract3dObject(Qt3DCore::QEntity *root, QColor color, const QVector3D &location);
 
-  //void setColor(const QColor& color){ this->color = color;};
-  //void setLocation(const QVector3D& location){ this->location = location;};
-
-  void setAlpha(float alpha);
-
-  QColor getColor() const { return color_; };
-  QVector3D getLocation() const { return location_; };
-
-//public slots:
-  //void onPressed(bool pressed);
+    QColor color() const { return color_; };
 
 protected:
-  QColor color_;
-  float alpha_;
-  QVector3D location_;
+    Qt3DCore::QEntity *entity;
+    Qt3DExtras::QPhongAlphaMaterial *material;
+    Qt3DCore::QTransform *transform;
+    //Qt3DRender::QObjectPicker *picker;
+
+    void setAlpha(float alpha);
+
+//public slots:
+    //void onPressed(bool pressed);
+
+private:
+    QColor color_;
+    float alpha_;
 };
 
 #endif //INPSIGHTS_ABSTRACT3DOBJECT_H

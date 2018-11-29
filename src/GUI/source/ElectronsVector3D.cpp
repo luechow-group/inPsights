@@ -53,7 +53,7 @@ void ElectronsVector3D::drawElectrons(bool showIndicesQ) {
             textMesh->setDepth(0.1f);
             textMesh->setFont(font);
             textMesh->setText(QString::fromStdString(std::to_string(i+1)));
-            textMaterial->setDiffuse(electrons3D[i]->getColor());
+            textMaterial->setDiffuse(electrons3D[i]->color());
 
             text->addComponent(textMaterial);
             text->addComponent(textMesh);

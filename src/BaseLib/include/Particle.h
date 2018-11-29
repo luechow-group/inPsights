@@ -32,8 +32,12 @@ public:
         return position_;
     }
 
-    Eigen::Vector3d& position() {
-        return position_;
+    virtual void setPosition(const Eigen::Vector3d& position) {
+        position_ = position;
+    }
+
+    void translate(const Eigen::Vector3d& shift){
+        setPosition(position()+shift);
     }
 
     Type type() const{
@@ -56,7 +60,7 @@ public:
         return os;
     }
 
-    //Generic
+    //Generic particles are not charged
     int charge() const{
         return 0;
     }

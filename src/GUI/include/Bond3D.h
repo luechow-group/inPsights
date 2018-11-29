@@ -12,7 +12,6 @@
 class Bond3D : public DividedCylinder {
 public:
   Bond3D(const Atom3D& src, const Atom3D& dest);
-  Bond3D(Qt3DCore::QEntity *root, const Atom& src, const Atom& dest);
 
 private:
 };

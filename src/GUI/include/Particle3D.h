@@ -27,8 +27,11 @@ public:
         else if (std::is_same<Type,Spin>())
             setAlpha(0.5f);
     }
-
-    //TODO how to handle location and position clash
+    
+    void setPosition(const Eigen::Vector3d &position) override {
+        Particle<Type>::setPosition(position);
+        transform->setTranslation(GuiHelper::toQVector3D(position));
+    }
 };
 
 using TypedParticle3D = Particle3D<int>;
