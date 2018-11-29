@@ -2,12 +2,12 @@
 // Created by heuer on 09.12.16.
 //
 
-#include "Atom3D.h"
-#include "GuiHelper.h"
+#include <Atom3D.h>
+#include <GuiHelper.h>
 
 Atom3D::Atom3D(Qt3DCore::QEntity *root, const QVector3D& location, const Element& elementType)
   : Sphere(root,
-           GuiHelper::QColorFromElementType(elementType),
+           GuiHelper::QColorFromType<Element>(elementType),
            location,
            float(Elements::ElementInfo::vdwRadius(elementType)/10.0f)),
   elementType_(elementType) {

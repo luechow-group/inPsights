@@ -55,13 +55,13 @@ public:
                     if (Metrics::distance(e1.position(), e2.position()) < maxDistance) {
                         if (e1.type() == e2.type())
                             if (e1.type() == Spin::alpha)
-                                Cylinder(electronsVector3D, Spins::QColorFromSpinType(Spin::alpha), {q1, q2}, 0.015,
+                                Cylinder(electronsVector3D, GuiHelper::QColorFromType<Spin>(Spin::alpha), {q1, q2}, 0.015,
                                          0.5);
                             else if (e1.type() == Spin::beta)
-                                Cylinder(electronsVector3D, Spins::QColorFromSpinType(Spin::beta), {q1, q2}, 0.015,
+                                Cylinder(electronsVector3D, GuiHelper::QColorFromType<Spin>(Spin::beta), {q1, q2}, 0.015,
                                          0.5);
                             else
-                                Cylinder(electronsVector3D, Spins::QColorFromSpinType(Spin::none), {q1, q2}, 0.015,
+                                Cylinder(electronsVector3D, GuiHelper::QColorFromType<Spin>(Spin::none), {q1, q2}, 0.015,
                                          0.5);
                         else
                             Line3D(electronsVector3D, Qt::black, {q1, q2}, 0.25);

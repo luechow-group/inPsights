@@ -91,11 +91,11 @@ void ElectronsVector3D::drawConnections(const AtomsVector &atomsVector,
 
                 if (e1.type() == e2.type())
                     if(e1.type() == Spin::alpha)
-                        Cylinder(this,Spins::QColorFromSpinType(Spin::alpha), {q1,q2}, 0.015,0.5);
+                        Cylinder(this,GuiHelper::QColorFromType<Spin>(Spin::alpha), {q1,q2}, 0.015,0.5);
                     else if(e1.type() == Spin::beta)
-                        Cylinder(this,Spins::QColorFromSpinType(Spin::beta), {q1,q2}, 0.015,0.5);
+                        Cylinder(this,GuiHelper::QColorFromType<Spin>(Spin::beta), {q1,q2}, 0.015,0.5);
                     else
-                        Cylinder(this,Spins::QColorFromSpinType(Spin::none), {q1,q2}, 0.015,0.5);
+                        Cylinder(this,GuiHelper::QColorFromType<Spin>(Spin::none), {q1,q2}, 0.015,0.5);
                 else
                     Line3D(this, Qt::black, {q1,q2}, 0.25);
             }

@@ -2,9 +2,9 @@
 // Created by heuer on 06.12.16.
 //
 
-#include "Abstract3dObject.h"
-
 #include <iostream>
+#include <Abstract3dObject.h>
+#include <Eigen/Core>
 
 Abstract3dObject::Abstract3dObject(Qt3DCore::QEntity *root, QColor color, const QVector3D& location)
   : QEntity(root),

@@ -3,9 +3,9 @@
 //
 
 #include <Polyline.h>
-#include "ParticlesVectorPath3D.h"
-#include "Electron3D.h"
-
+#include <ParticlesVectorPath3D.h>
+#include <Electron3D.h>
+#include <GuiHelper.h>
 
 ParticlesVectorPath3D::ParticlesVectorPath3D(Qt3DCore::QEntity *root,
                                                    const ElectronsVectorCollection &electronsVectorCollection,
@@ -24,10 +24,10 @@ ParticlesVectorPath3D::ParticlesVectorPath3D(Qt3DCore::QEntity *root,
         auto spinType = electronsVectorCollection.typesVector()[i];
 
         if (spinType == Spin::alpha) {
-            new Polyline(root,Spins::QColorFromSpinType(Spin::alpha) , pointsList[i], radius);
+            new Polyline(root,GuiHelper::QColorFromType<Spin>(Spin::alpha) , pointsList[i], radius);
         }
         else {
-            new Polyline(root,Spins::QColorFromSpinType(Spin::beta) , pointsList[i], radius);
+            new Polyline(root,GuiHelper::QColorFromType<Spin>(Spin::beta) , pointsList[i], radius);
         }
 
     }

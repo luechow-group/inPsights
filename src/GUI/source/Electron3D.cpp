@@ -3,10 +3,11 @@
 //
 
 #include <Electron3D.h>
+#include <GuiHelper.h>
 
 Electron3D::Electron3D(Qt3DCore::QEntity *root, const QVector3D& location, const Spin& spinType)
         : Sphere(root,
-                 Spins::QColorFromSpinType(spinType),
+                 GuiHelper::QColorFromType<Spin>(spinType),
                  location,
                  float(Elements::ElementInfo::vdwRadius(Element::H)/10.0f/4.0f)),
           spinType_(spinType) {
