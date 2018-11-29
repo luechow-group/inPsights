@@ -2,8 +2,8 @@
 // Created by heuer on 06.12.16.
 //
 
-#ifndef AMOLQC_ABSTRACT3DOBJECT_H
-#define AMOLQC_ABSTRACT3DOBJECT_H
+#ifndef INPSIGHTS_ABSTRACT3DOBJECT_H
+#define INPSIGHTS_ABSTRACT3DOBJECT_H
 
 #include <QVector3D>
 #include <Qt3DCore/QEntity>
@@ -41,4 +41,4 @@ protected:
   QVector3D location_;
 };
 
-#endif //AMOLQC_ABSTRACT3DOBJECT_H
+#endif //INPSIGHTS_ABSTRACT3DOBJECT_H
