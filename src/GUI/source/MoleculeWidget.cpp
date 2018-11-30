@@ -6,6 +6,13 @@
 #include <QtWidgets>
 #include <MoleculeWidget.h>
 
+#include <Metrics.h>
+#include <Line3D.h>
+#include <Bond3D.h>
+#include <Cylinder.h>
+#include <Particle3D.h>
+#include <AtomsVectorLinkedElectronsVector.h>
+
 MoleculeWidget::MoleculeWidget(QWidget *parent)
     :
     QWidget(parent),
