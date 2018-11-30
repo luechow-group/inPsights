@@ -5,7 +5,7 @@
 #ifndef INPSIGHTS_ELECTRONCOLLECTION3D_H
 #define INPSIGHTS_ELECTRONCOLLECTION3D_H
 
-#include "Abstract3dObject.h"
+#include <Qt3DCore/QEntity>
 #include <ParticlesVector.h>
 
 class ElectronsVector3D : public Qt3DCore::QEntity {
