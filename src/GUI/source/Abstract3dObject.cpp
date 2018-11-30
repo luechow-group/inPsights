@@ -13,7 +13,7 @@ Abstract3dObject::Abstract3dObject(Qt3DCore::QEntity *root, QColor color, const 
   entity = new Qt3DCore::QEntity(root);
   material = new Qt3DExtras::QPhongAlphaMaterial(root);
   transform = new Qt3DCore::QTransform;
-  //picker = new Qt3DRender::QObjectPicker;
+  picker = new Qt3DRender::QObjectPicker;
 
   material->setSpecular(Qt::white);
   material->setShininess(0);
@@ -23,13 +23,9 @@ Abstract3dObject::Abstract3dObject(Qt3DCore::QEntity *root, QColor color, const 
 
   entity->addComponent(transform);
   entity->addComponent(material);
-  //entity->addComponent(picker);
+  entity->addComponent(picker);
 
-  //connect(picker, &Qt3DRender::QObjectPicker::pressedChanged, this, &Abstract3dObject::onPressed);
+
+  picker->setHoverEnabled(true);
 }
 
-/*
-void Abstract3dObject::onPressed(bool pressed) {
-  if (pressed) std::cout << "pressed" << std::endl;
-  else std::cout << "not pressed" << std::endl;
-}*/

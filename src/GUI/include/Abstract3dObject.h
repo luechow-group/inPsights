@@ -9,8 +9,8 @@
 #include <Qt3DCore/QEntity>
 #include <Qt3DCore/QTransform>
 #include <Qt3DExtras/QPhongAlphaMaterial>
-#include <Qt3DExtras/QSphereMesh>
 #include <Qt3DRender/QObjectPicker>
+#include <QToolTip>
 
 class Abstract3dObject : public Qt3DCore::QEntity {
 Q_OBJECT
@@ -25,10 +25,9 @@ protected:
     Qt3DCore::QEntity *entity;
     Qt3DExtras::QPhongAlphaMaterial *material;
     Qt3DCore::QTransform *transform;
-    //Qt3DRender::QObjectPicker *picker;
+public:
+    Qt3DRender::QObjectPicker *picker;
 
-//public slots:
-    //void onPressed(bool pressed);
 
 private:
     QColor color_;
