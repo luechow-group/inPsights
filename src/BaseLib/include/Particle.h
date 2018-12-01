@@ -13,6 +13,47 @@
 #include "SpinType.h"
 #include "EigenYamlConversion.h"
 
+#include <memory>
+
+template <typename Type> class LinkedParticle{
+public:
+
+    LinkedParticle(
+            const Eigen::Ref<Eigen::Vector3d> &positionRef,
+            int* typeNameRef)
+    : position_(positionRef), type_(typeNameRef)
+    {}
+
+    Eigen::Ref<Eigen::Vector3d>& positionRef(){
+        return position_;
+    }
+
+    Eigen::Vector3d position(){
+        return Eigen::Vector3d(position_);
+    }
+
+    void setPosition(const Eigen::Vector3d & position){
+        position_ = position;
+    }
+
+    Type type() const{
+        return static_cast<Type>(*type_);
+    }
+
+    int* typeRef(){
+        return type_;
+    }
+
+    void setType(const Type & type){
+        *type_ = static_cast<int>(type);
+    }
+
+private:
+    Eigen::Ref<Eigen::Vector3d> position_;
+    int* type_;
+};
+
+
 template<typename Type>
 class Particle {
 public:
