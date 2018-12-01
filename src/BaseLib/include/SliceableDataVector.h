@@ -12,7 +12,6 @@
 #include <Eigen/Core>
 
 class ISliceable : public AbstractVector{
-    friend class AbstractState;
 public:
     void resetSlice(){
         resetType_ = Reset::Automatic;
