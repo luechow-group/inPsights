@@ -58,6 +58,11 @@ public:
             return dataRef().segment(calculateIndex(i),entityLength());
     }
 
+    //TODO PUT INTO BASECLASS
+    Eigen::DenseCoeffsBase<Eigen::VectorXi>::Scalar& typeRef(long i) {
+        return data_.segment(calculateIndex(i),entityLength())[0];
+    };
+
     Type operator[](long i) const {
         return static_cast<Type>(data_[calculateIndex(i)]);
     }

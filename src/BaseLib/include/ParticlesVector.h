@@ -11,6 +11,7 @@
 #include "TypesVector.h"
 #include <vector>
 #include <yaml-cpp/yaml.h>
+#include <vector>
 
 template<typename Type>
 class ParticlesVector : public ISliceable{
@@ -19,24 +20,41 @@ public:
     ParticlesVector()
             : ISliceable(0),
               positionsVector_(),
-              typesVector_(0)
-    {}
+              typesVector_(0),
+              linkedParticles_(0) {
+        initializeLinkedParticles();
+    }
+
+    void initializeLinkedParticles(){
+        for (long i = 0; i < numberOfEntities(); ++i) {
+            linkedParticles_.emplace_back(std::make_shared<LinkedParticle<Type>>(
+                    positionsVector_.positionRef(i), &typesVector_.typeRef(i)));
+        }
+    }
 
     ParticlesVector(const PositionsVector &positionsVector)
             : ISliceable(positionsVector.numberOfEntities()),
               positionsVector_(positionsVector),
-              typesVector_(numberOfEntities())
-    {}
+              typesVector_(numberOfEntities()),
+              linkedParticles_(0) {
+        initializeLinkedParticles();
+    }
 
     ParticlesVector(const PositionsVector &positionsVector,
                     const TypesVector<Type> &typesVector)
             : ISliceable(positionsVector.numberOfEntities()),
               positionsVector_(positionsVector),
-              typesVector_(typesVector) {
+              typesVector_(typesVector),
+              linkedParticles_(0) {
         assert(numberOfEntities() == positionsVector_.numberOfEntities()
                && numberOfEntities() == typesVector_.numberOfEntities()
                && "The number of entities in ParticlesVector, PositionsVector, and TypesVector must match.");
+        initializeLinkedParticles();
     }
+
+    ParticlesVector(const ParticlesVector& pv)
+            : ParticlesVector(pv.positionsVector(),pv.typesVector()) {}
+
 
     ParticlesVector& slice(const Interval& interval, const Reset& resetType = Reset::Automatic /*TODO makes no sense here*/) {
         setSlice(interval,resetType);
@@ -56,8 +74,13 @@ public:
         for (const auto& particle : particles){
             append(particle);
         }
+        initializeLinkedParticles();
     }
-    
+
+    std::shared_ptr<LinkedParticle<Type>> linkedParticle(long i) {
+        return linkedParticles_[i];
+    }
+
     Particle<Type> operator[](long i) const {
         return {typesVector_[i],positionsVector_[i]};
     }
@@ -85,9 +108,12 @@ public:
         positionsVector_.insert(particle.position(),i);
         typesVector_.insert(particle.type(),i);
         incrementNumberOfEntities();
-
         assert(positionsVector_.numberOfEntities() == numberOfEntities());
         assert(typesVector_.numberOfEntities() == numberOfEntities());
+
+        linkedParticles_.resize(0); //TODO find alternative to recreate the entire vector (what happens to existing linked particles)
+        initializeLinkedParticles();
+        assert(long(linkedParticles_.size()) == numberOfEntities());
     }
 
     void prepend(const Particle<Type> & particle) {
@@ -130,6 +156,8 @@ public:
 protected:
     PositionsVector positionsVector_;
     TypesVector<Type> typesVector_;
+public:
+    std::vector<std::shared_ptr<LinkedParticle<Type>>> linkedParticles_;
 };
 
 using TypedParticlesVector = ParticlesVector<int>;
