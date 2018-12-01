@@ -139,6 +139,10 @@ public:
             return *refPtr_;
     }
 
+    RefEigenVecType dataRef(long i) {
+        return data_.segment(calculateIndex(i),entityLength());
+    };
+
 protected:
     //TODO make double template?
     bool operator==(const SliceableDataVector<Scalar> &other) const {

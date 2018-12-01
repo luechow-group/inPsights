@@ -25,13 +25,6 @@ public:
         initializeLinkedParticles();
     }
 
-    void initializeLinkedParticles(){
-        for (long i = 0; i < numberOfEntities(); ++i) {
-            linkedParticles_.emplace_back(std::make_shared<LinkedParticle<Type>>(
-                    positionsVector_.positionRef(i), &typesVector_.typeRef(i)));
-        }
-    }
-
     ParticlesVector(const PositionsVector &positionsVector)
             : ISliceable(positionsVector.numberOfEntities()),
               positionsVector_(positionsVector),
@@ -63,6 +56,13 @@ public:
 
         //TODO CAREFUL WITH RESET
         return *this;
+    }
+
+    void initializeLinkedParticles(){
+        for (long i = 0; i < numberOfEntities(); ++i) {
+            linkedParticles_.emplace_back(std::make_shared<LinkedParticle<Type>>(
+                    positionsVector_.dataRef(i), &typesVector_.dataRef(i)[0]));//TODO or give LinkedParticle a VectorXi(1) ref?
+        }
     }
 
     ParticlesVector& entity(long i, const Reset& resetType = Reset::Automatic) {

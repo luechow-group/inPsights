@@ -26,12 +26,6 @@ public:
     void rotateAroundOrigin(double angle, const Eigen::Vector3d &axisDirection, const Usage& usage = Usage::Standard);
     void rotate(double angle, const Eigen::Vector3d &center, const Eigen::Vector3d &axisDirection, const Usage& usage = Usage::Standard);
 
-
-    //TODO PUT INTO BASECLASS
-    Eigen::Ref<Eigen::Vector3d> positionRef(long i) {
-        return data_.segment(calculateIndex(i),entityLength());
-    };
-
     Eigen::Vector3d operator[](long i) const;
 
     bool operator==(const PositionsVector& other) const;
