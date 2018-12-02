@@ -59,8 +59,8 @@ Qt3DCore::QEntity* MoleculeWidget::getRoot() {
 void MoleculeWidget::drawBonds() {
     auto bondDrawingLimit = float(1.40 * 1e-10 / AU::length); //arbitrary choosen
 
-    for (auto it = atomsVector3D_->atoms3D_.begin(); it != atomsVector3D_->atoms3D_.end(); it++){
-        for (auto jt = it+1; jt != atomsVector3D_->atoms3D_.end(); jt++){
+    for (auto it = atomsVector3D_->particles3D_.begin(); it != atomsVector3D_->particles3D_.end(); it++){
+        for (auto jt = it+1; jt != atomsVector3D_->particles3D_.end(); jt++){
             auto distance = Metrics::distance((*it)->position(), (*jt)->position())
                             - (Elements::ElementInfo::vdwRadius((*it)->type())
                                + Elements::ElementInfo::vdwRadius((*jt)->type()))/10.0;
@@ -121,11 +121,11 @@ void MoleculeWidget::setSharedAtomsVector(AtomsVector atomsVector) {
 
 void MoleculeWidget::drawConnections() {
 
-    for (auto &mapItem : activeElectronsVectorsMap_) {
+    /*for (auto &mapItem : activeElectronsVectorsMap_) {
         auto electronsVector3D = mapItem.second;
         AtomsVectorLinkedElectronsVector linkedElectronsVector(
                 sharedAtomsVector_,
-                electronsVector3D->electronsVector_);
+                electronsVector3D);
 
         double coreThreshold = 0.1;
         double maxDistance = 1.6;
@@ -156,5 +156,5 @@ void MoleculeWidget::drawConnections() {
                 }
             }
         }
-    }
+    }*/
 }

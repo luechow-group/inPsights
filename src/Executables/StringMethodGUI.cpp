@@ -15,8 +15,7 @@
 #include <Qt3DExtras>
 
 #include "MoleculeWidget.h"
-#include "AtomsVector3D.h"
-#include "ElectronsVector3D.h"
+#include "ParticlesVector3D.h"
 
 #include <TypesVector.h>
 #include "Sphere.h"
@@ -192,7 +191,7 @@ initialCoordinates.row((18 - 1) * 3 + 2) -= 0.05 * bend;//z bend
     WfFileImporter waveFunctionParser(ElectronicWaveFunction::getInstance().getFileName());
 
     AtomsVector3D molecularGeometry3D(root, waveFunctionParser.getAtomsVector());
-    ElectronsVector3D(root, ElectronicWaveFunction::getInstance().getElectronsVector(), true);
+    ElectronsVector3D(root, ElectronicWaveFunction::getInstance().getElectronsVector());
 
 
     //Draw tsguess

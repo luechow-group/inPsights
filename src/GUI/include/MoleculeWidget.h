@@ -11,8 +11,7 @@
 #include <QVBoxLayout>
 #include <QLabel>
 
-#include <AtomsVector3D.h>
-#include <ElectronsVector3D.h>
+#include <ParticlesVector3D.h>
 
 class MoleculeWidget : public QWidget{
     Q_OBJECT

@@ -11,17 +11,18 @@
 #include "GuiHelper.h"
 
 template <typename Type>
-class Particle3D : public Particle<Type>, public Sphere {
+class Particle3D : public LinkedParticle<Type>, public Sphere {
 private:
     Q_DISABLE_COPY(Particle3D<Type>)
 public:
-    Particle3D(Qt3DCore::QEntity *root, Particle<Type> particle)
-    : Particle<Type>::Particle(particle),
+    Particle3D(Qt3DCore::QEntity *root, std::shared_ptr<LinkedParticle<Type>> particle)
+    : LinkedParticle<Type>::LinkedParticle(*particle),
             Sphere(root,
-                   GuiHelper::QColorFromType<Type>(particle.type()),
-                   GuiHelper::toQVector3D(particle.position()),
-                   GuiHelper::radiusFromType<Type>(particle.type()))
-    {
+                   GuiHelper::QColorFromType<Type>(particle->type()),
+                   GuiHelper::toQVector3D(particle->position()),
+                   GuiHelper::radiusFromType<Type>(particle->type())
+                           ) {
+
         if(std::is_same<Type,Element>())
             material->setAlpha(0.25f);
         else if (std::is_same<Type,Spin>())
@@ -29,7 +30,7 @@ public:
     }
 
     void setPosition(const Eigen::Vector3d &position) override {
-        Particle<Type>::setPosition(position);
+        LinkedParticle<Type>::setPosition(position);
         transform->setTranslation(GuiHelper::toQVector3D(position));
     }
 };

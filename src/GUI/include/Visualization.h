@@ -12,14 +12,6 @@
 
 #include <QtWidgets/QApplication>
 
-#include "MoleculeWidget.h"
-#include "AtomsVector3D.h"
-#include "ElectronsVector3D.h"
-
-#include "ParticlesVectorPath3D.h"
-#include "Polyline.h"
-
-
 namespace Visualization{
     int visualizeOptPath(int &argc, char **argv,
                          const AtomsVector &atoms,
@@ -32,9 +24,6 @@ namespace Visualization{
     void drawEigenVector(Qt3DCore::QEntity *root,
                          const Eigen::MatrixXd eigenvectors,
                          const Eigen::VectorXd& origin, int eigenvectorIndex);
-
-
-
 }
 
 #endif //INPSIGHTS_VISUALIZATION_H

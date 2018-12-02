@@ -77,7 +77,7 @@ public:
         initializeLinkedParticles();
     }
 
-    std::shared_ptr<LinkedParticle<Type>> linkedParticle(long i) {
+    std::shared_ptr<LinkedParticle<Type>> linkedParticle(long i) const {
         return linkedParticles_[i];
     }
 

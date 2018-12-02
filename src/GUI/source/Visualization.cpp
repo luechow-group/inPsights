@@ -2,7 +2,13 @@
 // Created by Leonard Reuter on 15.03.18.
 //
 
+#include "MoleculeWidget.h"
+#include "ParticlesVector3D.h"
+
+#include "ParticlesVectorPath3D.h"
+#include "Polyline.h"
 #include "Visualization.h"
+
 namespace Visualization {
 
     ElectronsVectorCollection shortenPath(const ElectronsVectorCollection &optimizationPath, const unsigned long &nwanted) {
@@ -57,7 +63,7 @@ namespace Visualization {
         AtomsVector3D(root, atoms);
 
         // Plot the end point
-        ElectronsVector3D(root, visualizationPath[-1], false);
+        ElectronsVector3D(root, visualizationPath[-1]);
 
         // Plot the optimization path
         ParticlesVectorPath3D(root, visualizationPath);

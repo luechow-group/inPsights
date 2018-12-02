@@ -5,8 +5,7 @@
 #include <Serialization.h>
 #include "RefFileImporter.h"
 #include <MoleculeWidget.h>
-#include <AtomsVector3D.h>
-#include <ElectronsVector3D.h>
+#include <ParticlesVector3D.h>
 
 #include <QApplication>
 #include <iostream>

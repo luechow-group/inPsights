@@ -36,8 +36,6 @@ set(HEADER_FILES
         include/GuiHelper.h
         include/StringMethodCoordinatesPlotter.h
         include/StringMethodValuePlotter.h
-        include/AtomsVector3D.h
-        include/ElectronsVector3D.h
         include/MoleculeWidget.h
         include/ParticlesVectorPath3D.h
         include/Visualization.h
@@ -45,6 +43,7 @@ set(HEADER_FILES
         include/Line3D.h
         include/Particle3D.h
         include/IMolecular3D.h
+        include/ParticlesVector3D.h
         )
 
 set(SOURCE_FILES
@@ -56,8 +55,6 @@ set(SOURCE_FILES
         source/Cone.cpp
         source/Bond3D.cpp
         source/GuiHelper.cpp
-        source/AtomsVector3D.cpp
-        source/ElectronsVector3D.cpp
         source/MoleculeWidget.cpp
         source/ParticlesVectorPath3D.cpp
         source/Visualization.cpp
