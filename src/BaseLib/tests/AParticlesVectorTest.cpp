@@ -40,9 +40,18 @@ TEST_F(AParticlesVectorTest, BraceInitialization) {
     );
 }
 
-//TEST_F(AParticlesVectorTest, CopyConstructor) {
-//    EXPECT_TRUE(false);
-//}
+TEST_F(AParticlesVectorTest, CopyConstructor) {
+
+    auto electronsCopy = electrons;
+
+    ASSERT_EQ(electronsCopy[0].type(),e0.type());
+    ASSERT_EQ(electronsCopy[1].type(),e1.type());
+    ASSERT_EQ(electronsCopy[2].type(),e2.type());
+
+    ASSERT_EQ(electronsCopy[0].position(),e0.position());
+    ASSERT_EQ(electronsCopy[1].position(),e1.position());
+    ASSERT_EQ(electronsCopy[2].position(),e2.position());
+}
 
 TEST_F(AParticlesVectorTest, SpinTypeParticlesVector) {
     std::stringstream stringstream;
