@@ -28,15 +28,15 @@ public:
         return position_;
     }
 
-    Eigen::Vector3d position(){
+    Eigen::Vector3d position() const {
         return Eigen::Vector3d(position_);
     }
 
-    void setPosition(const Eigen::Vector3d & position){
+    virtual void setPosition(const Eigen::Vector3d & position){
         position_ = position;
     }
 
-    Type type() const{
+    Type type() const {
         return static_cast<Type>(*type_);
     }
 
