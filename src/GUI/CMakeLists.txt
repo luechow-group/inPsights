@@ -59,6 +59,7 @@ set(SOURCE_FILES
         source/ParticlesVectorPath3D.cpp
         source/Visualization.cpp
         source/IMolecular3D.cpp
+        source/ParticlesVector3D.cpp
         )
 
 add_library(${PROJECT_NAME} STATIC

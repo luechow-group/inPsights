@@ -20,10 +20,9 @@ public:
 
     Qt3DCore::QEntity* getRoot();
 
-    //TODO implement
-    void deleteConnections() {};
+    void drawConnections();
 
-    void drawConnections();//TODO How to make connections deletable?
+    void deleteConnections();
 
     //void mouseMoveEvent(QMouseEvent* event) override;
 

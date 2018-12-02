@@ -54,26 +54,14 @@ Qt3DCore::QEntity* MoleculeWidget::getRoot() {
     QWidget::mouseMoveEvent(event);  // Or whatever the base class is.
 }*/
 
-
-
-void MoleculeWidget::drawBonds() {
-    auto bondDrawingLimit = float(1.40 * 1e-10 / AU::length); //arbitrary choosen
-
-    for (auto it = atomsVector3D_->particles3D_.begin(); it != atomsVector3D_->particles3D_.end(); it++){
-        for (auto jt = it+1; jt != atomsVector3D_->particles3D_.end(); jt++){
-            auto distance = Metrics::distance((*it)->position(), (*jt)->position())
-                            - (Elements::ElementInfo::vdwRadius((*it)->type())
-                               + Elements::ElementInfo::vdwRadius((*jt)->type()))/10.0;
-
-            if ( distance < bondDrawingLimit)
-                new Bond3D(*(*it), *(*jt));
-        }
-    }
-}
-
 void MoleculeWidget::drawAtoms() {
     atomsVector3D_ = new AtomsVector3D(moleculeEntity_, *sharedAtomsVector_);
 }
+
+void MoleculeWidget::drawBonds() {
+    atomsVector3D_->drawConnections();
+}
+
 
 void MoleculeWidget::addElectronsVector(const ElectronsVector &electronsVector, int id) {
     activeElectronsVectorsMap_.emplace(id,new ElectronsVector3D(moleculeEntity_, electronsVector));
@@ -86,6 +74,16 @@ void MoleculeWidget::removeElectronsVector(int id) {
 
 void MoleculeWidget::setSharedAtomsVector(AtomsVector atomsVector) {
     sharedAtomsVector_ = std::make_shared<AtomsVector >(std::move(atomsVector));
+}
+
+void MoleculeWidget::drawConnections() {
+    for(auto& mapItem : activeElectronsVectorsMap_)
+        mapItem.second->drawConnections();
+}
+
+void MoleculeWidget::deleteConnections() {
+    for(auto& mapItem : activeElectronsVectorsMap_)
+        mapItem.second->deleteConnections();
 }
 
 // TODO should be individually selectable for each list item
@@ -118,43 +116,3 @@ void MoleculeWidget::setSharedAtomsVector(AtomsVector atomsVector) {
             }
     }
 }*/
-
-void MoleculeWidget::drawConnections() {
-
-    /*for (auto &mapItem : activeElectronsVectorsMap_) {
-        auto electronsVector3D = mapItem.second;
-        AtomsVectorLinkedElectronsVector linkedElectronsVector(
-                sharedAtomsVector_,
-                electronsVector3D);
-
-        double coreThreshold = 0.1;
-        double maxDistance = 1.6;
-
-        auto valenceElectronIndices = linkedElectronsVector.valenceElectronsIndices(coreThreshold);
-
-        for (auto it = valenceElectronIndices.begin(); it != valenceElectronIndices.end(); ++it) {
-            for (auto jt = it + 1; jt != valenceElectronIndices.end(); ++jt) {
-                auto e1 = linkedElectronsVector[*it];
-                auto e2 = linkedElectronsVector[*jt];
-
-                auto q1 = GuiHelper::toQVector3D(e1.position());
-                auto q2 = GuiHelper::toQVector3D(e2.position());
-
-                if (Metrics::distance(e1.position(), e2.position()) < maxDistance) {
-                    if (e1.type() == e2.type())
-                        if (e1.type() == Spin::alpha)
-                            Cylinder(electronsVector3D, GuiHelper::QColorFromType<Spin>(Spin::alpha), {q1, q2}, 0.015,
-                                     0.5);
-                        else if (e1.type() == Spin::beta)
-                            Cylinder(electronsVector3D, GuiHelper::QColorFromType<Spin>(Spin::beta), {q1, q2}, 0.015,
-                                     0.5);
-                        else
-                            Cylinder(electronsVector3D, GuiHelper::QColorFromType<Spin>(Spin::none), {q1, q2}, 0.015,
-                                     0.5);
-                    else
-                        Line3D(electronsVector3D, Qt::black, {q1, q2}, 0.25);
-                }
-            }
-        }
-    }*/
-}

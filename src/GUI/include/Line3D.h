@@ -9,8 +9,8 @@
 #include <Qt3DRender/QAttribute>
 #include <Qt3DRender/QBuffer>
 #include <Qt3DRender/QGeometry>
+#include <Qt3DRender/QGeometryRenderer>
 #include "GuiHelper.h"
-
 
 class Line3D : public Abstract3dObject {
 
