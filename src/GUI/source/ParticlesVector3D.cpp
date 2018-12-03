@@ -5,13 +5,16 @@
 #include <ParticlesVector3D.h>
 #include <Bonds3D.h>
 #include <SpinConnections3D.h>
+#include <SpinCorrelations3D.h>
 
-template<>
+template <>
 void AtomsVector3D::drawConnections() {
     new Bonds3D(this);
 }
 
-template<>
+template <>
 void ElectronsVector3D::drawConnections() {
     new SpinConnections3D(this);
 }
+
+//void ElectronsVector3D::drawCorrelations() {}

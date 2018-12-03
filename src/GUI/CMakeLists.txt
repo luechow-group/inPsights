@@ -46,6 +46,7 @@ set(HEADER_FILES
         include/IConnection.h
         include/Bonds3D.h
         include/SpinConnections3D.h
+        include/SpinCorrelations3D.h
         )
 
 set(SOURCE_FILES
@@ -64,6 +65,7 @@ set(SOURCE_FILES
         source/Line3D.cpp
         source/Bonds3D.cpp
         source/SpinConnections3D.cpp
+        source/SpinCorrelations3D.cpp
         source/InPsightsWidget.cpp
         )
 

@@ -27,7 +27,7 @@ public slots:
 
     void onSpinConnectionsChecked(int stateId);
 
-    void onSpinCorrelationsChecked(int stateId){}
+    void onSpinCorrelationsChecked(int stateId);
 
 private:
     MoleculeWidget *moleculeWidget_;

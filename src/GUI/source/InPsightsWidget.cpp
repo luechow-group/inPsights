@@ -58,6 +58,9 @@ InPsightsWidget::InPsightsWidget(QWidget *parent)
         QObject::connect(spinConnectionsCheckBox_, SIGNAL(stateChanged(int)),
                          this, SLOT(onSpinConnectionsChecked(int)));
 
+        QObject::connect(spinCorrelationsCheckBox_, SIGNAL(stateChanged(int)),
+                         this, SLOT(onSpinCorrelationsChecked(int)));
+
         /*QObject::connect(maximaList_, SIGNAL(itemChanged(QListWidgetItem*)),
                 this, SLOT(updateMoleculeWidget(QListWidgetItem*)));
 
@@ -97,7 +100,15 @@ InPsightsWidget::InPsightsWidget(QWidget *parent)
         moleculeWidget_->drawSpinConnections(Qt::CheckState(stateId) == Qt::CheckState::Checked);
     }
 
-    QSplashScreen *InPsightsWidget::createSplashScreen() {
+    void InPsightsWidget::onSpinCorrelationsChecked(int stateId) {
+        std::cout << "WRONG STATS ARE USED" << std::endl;
+        moleculeWidget_->drawSpinCorrelations(Qt::CheckState(stateId) == Qt::CheckState::Checked,
+                clusterCollection_[0].SeeStats_, //TODO !!! WRONG ONE
+                spinCorrelationSlider_->value()
+                );
+    }
+
+QSplashScreen *InPsightsWidget::createSplashScreen() {
         auto splashScreen = new QSplashScreen();
 
         QImage file(":inPsights.png");

@@ -27,9 +27,10 @@ public:
     void drawSpinConnections(bool drawQ);
 
     void drawSpinCorrelations(bool drawQ,
+            const Statistics::RunningStatistics<Eigen::MatrixXd, unsigned, true> &SeeStats,
+                              int spinCorrelationThreshold);
 
     void drawBonds(bool drawQ);
-
 
     void addElectronsVector(const ElectronsVector& electronsVector, int id = 0);
 

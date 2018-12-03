@@ -15,7 +15,10 @@ class ParticlesVector3D : public ParticlesVector<Type>, public Qt3DCore::QEntity
 public:
     ParticlesVector3D(Qt3DCore::QEntity *root, const ParticlesVector<Type> &particlesVector)
     : ParticlesVector<Type>(particlesVector),
-            QEntity(root), connections_(new Qt3DCore::QEntity(this)), particles3D_(0) {
+            QEntity(root),
+            connections_(new Qt3DCore::QEntity(this)),
+            correlations_(new Qt3DCore::QEntity(this)),
+            particles3D_(0) {
 
         for (long i = 0; i < ParticlesVector<Type>::numberOfEntities(); ++i) {
             particles3D_.emplace_back(new Particle3D<Type>(this, particlesVector.linkedParticle(i)));
@@ -29,9 +32,15 @@ public:
         connections_ = new Qt3DCore::QEntity(this);
     }
 
-    Qt3DCore::QEntity* connections_;
-    std::vector<Particle3D<Type>*> particles3D_; // shared pointers?
-    std::vector<IConnection*> bla;
+    void deleteCorrelations() {
+        std::cout << "delete corr" << std::endl;
+        correlations_->deleteLater();
+        correlations_ = new Qt3DCore::QEntity(this);
+    }
+
+    Qt3DCore::QEntity* connections_, *correlations_;
+    std::vector<std::shared_ptr<Particle3D<Type>>> particles3D_;
+    std::vector<IConnection*> iConnections_;
 };
 
 using AtomsVector3D = ParticlesVector3D<Element>;

@@ -13,6 +13,8 @@
 #include <Particle3D.h>
 #include <AtomsVectorLinkedElectronsVector.h>
 
+#include <SpinCorrelations3D.h>
+
 MoleculeWidget::MoleculeWidget(QWidget *parent)
     :
     QWidget(parent),
@@ -88,4 +90,36 @@ void MoleculeWidget::removeElectronsVector(int id) {
 
 void MoleculeWidget::setSharedAtomsVector(AtomsVector atomsVector) {
     sharedAtomsVector_ = std::make_shared<AtomsVector >(std::move(atomsVector));
+}
+
+void MoleculeWidget::drawSpinCorrelations(bool drawQ,
+                                          const Statistics::RunningStatistics<Eigen::MatrixXd, unsigned, true> &SeeStats,
+                                          int spinCorrelationThreshold) {
+  for(auto &mapItem : activeElectronsVectorsMap_) {
+      if(drawQ) {
+          new SpinCorrelations3D(mapItem.second, SeeStats, spinCorrelationThreshold);
+      } else {
+          std::cout << "off" << std::endl;
+          mapItem.second->correlations_->deleteLater();
+          mapItem.second->correlations_ = new Qt3DCore::QEntity(root_);
+          //mapItem.second->deleteCorrelations();
+          //activeElectronsVectorsMap_[mapItem.first]->deleteCorrelations();
+      }
+      //auto& connections =  electronsVector3D->iConnections_;
+      /*
+      if (drawQ) {
+          connections.emplace_back(
+                  new SpinCorrelations3D(electronsVector3D, SeeStats, spinCorrelationThreshold)
+                  );
+      } else {
+          for(auto it = connections.begin(); it !=  connections.end(); it++) {
+              // check if SpinCorrelations3D
+              auto castedIConnection = dynamic_cast<SpinCorrelations3D*>(*it);
+              if (castedIConnection) {
+                  castedIConnection->deleteLater();
+                  connections->erase(it);
+              }
+          }
+      }*/
+  }
 }
