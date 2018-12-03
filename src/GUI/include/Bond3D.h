@@ -11,9 +11,8 @@
 
 class Bond3D : public DividedCylinder {
 public:
-  Bond3D(const Atom3D& src, const Atom3D& dest); //TODO why use const ref?
+    Bond3D(const Atom3D &src, const Atom3D &dest); //TODO why use const ref?
 
-private:
 };
 
 #endif //INPSIGHTS_BOND3D_H

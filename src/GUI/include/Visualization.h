@@ -9,8 +9,8 @@
 #include <Qt3DCore>
 #include <Qt3DRender>
 #include <Qt3DExtras>
-
 #include <QtWidgets/QApplication>
+#include <ParticlesVectorCollection.h>
 
 namespace Visualization{
     int visualizeOptPath(int &argc, char **argv,

@@ -39,6 +39,8 @@ public:
         lineEntity->addComponent(material);
     }
 
+    ~Line3D() { /*QT manages destruction*/ };
+
     Qt3DRender::QGeometry *getGeometry(QEntity *root, const std::pair<QVector3D, QVector3D> &pair) const {
         auto *geometry = new Qt3DRender::QGeometry(root);
 
@@ -87,7 +89,6 @@ public:
         return geometry;
     };
 
-    ~Line3D() {};
 
     float length() const { return difference().length(); };
 

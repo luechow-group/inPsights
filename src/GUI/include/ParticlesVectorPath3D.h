@@ -6,6 +6,7 @@
 #define INPSIGHTS_PARTICLECOLLECTIONPATH3D_H
 
 #include <ParticlesVectorCollection.h>
+#include <Qt3DCore/QEntity>
 
 class ParticlesVectorPath3D{
 public:

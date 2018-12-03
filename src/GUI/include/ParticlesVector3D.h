@@ -21,6 +21,8 @@ public:
         }
     };
 
+    ~ParticlesVector3D() { /*QT manages destruction*/ };
+
     // TODO add to vecotr of IConnections
     void drawConnections(){
         //dummy

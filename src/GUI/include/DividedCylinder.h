@@ -16,11 +16,10 @@ public:
                   float radius,
                   float alpha = 1.0f);
 
-  ~DividedCylinder(){}
-
+ ~DividedCylinder() { /*QT manages destruction*/ };
 
 private:
-  Cylinder srcCylinder_,destCylinder_;
+  Cylinder srcCylinder_,destCylinder_; //TODO make pointer
 };
 
 #endif //INPSIGHTS_DIVIDEDCYLINDER_H
