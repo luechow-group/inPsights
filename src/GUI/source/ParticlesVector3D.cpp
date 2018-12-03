@@ -68,16 +68,13 @@ void ElectronsVector3D::drawConnections() {
                 if (Metrics::distance(e1.position(), e2.position()) < maxDistance) {
                     if (e1.type() == e2.type())
                         if (e1.type() == Spin::alpha)
-                            Cylinder(connections_, GuiHelper::QColorFromType<Spin>(Spin::alpha), {q1, q2}, 0.015,
-                                     0.5);//TODO connect to atoms
+                            new Cylinder(connections_, GuiHelper::QColorFromType<Spin>(Spin::alpha), {q1, q2}, 0.015, 0.5);//TODO connect to atoms
                         else if (e1.type() == Spin::beta)
-                            Cylinder(connections_, GuiHelper::QColorFromType<Spin>(Spin::beta), {q1, q2}, 0.015,
-                                     0.5);
+                            new Cylinder(connections_, GuiHelper::QColorFromType<Spin>(Spin::beta), {q1, q2}, 0.015, 0.5);
                         else
-                            Cylinder(connections_, GuiHelper::QColorFromType<Spin>(Spin::none), {q1, q2}, 0.015,
-                                     0.5);
+                            new Cylinder(connections_, GuiHelper::QColorFromType<Spin>(Spin::none), {q1, q2}, 0.015, 0.5);
                     else
-                        Line3D(connections_, Qt::black, {q1, q2}, 0.25);
+                        new Line3D(connections_, Qt::black, {q1, q2}, 0.25);
                 }
             }
         }
