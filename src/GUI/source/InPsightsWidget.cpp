@@ -3,7 +3,6 @@
 //
 
 #include <InPsightsWidget.h>
-
 #include <QFileDialog>
 #include <QString>
 
@@ -57,7 +56,7 @@ InPsightsWidget::InPsightsWidget(QWidget *parent)
                          this, SLOT(onBondsChecked()));
 
         QObject::connect(spinConnectionsCheckBox_, SIGNAL(stateChanged(int)),
-                         this, SLOT(onConnectionsChecked()));
+                         this, SLOT(onSpinConnectionsChecked()));
         /*QObject::connect(maximaList_, SIGNAL(itemChanged(QListWidgetItem*)),
                 this, SLOT(updateMoleculeWidget(QListWidgetItem*)));
 
@@ -102,7 +101,7 @@ InPsightsWidget::InPsightsWidget(QWidget *parent)
         }
     }
 
-    void InPsightsWidget::onConnectionsChecked(){
+    void InPsightsWidget::onSpinConnectionsChecked(){
         switch(spinConnectionsCheckBox_->checkState()) {
             case Qt::CheckState::Checked:
                 moleculeWidget_->drawConnections();
@@ -114,7 +113,6 @@ InPsightsWidget::InPsightsWidget(QWidget *parent)
                 throw std::runtime_error("Unknown button state.");
         }
     }
-
 
     QSplashScreen *InPsightsWidget::createSplashScreen() {
         auto splashScreen = new QSplashScreen();
@@ -136,7 +134,7 @@ InPsightsWidget::InPsightsWidget(QWidget *parent)
         dialog->setFileMode(QFileDialog::FileMode::ExistingFile);
         dialog->setViewMode(QFileDialog::ViewMode::Detail);
 
-        YAML::Node doc = YAML::LoadFile(dialog->getOpenFileName().toStdString());
+        YAML::Node doc = YAML::LoadFile(QFileDialog::getOpenFileName().toStdString());
 
         auto Vnn = doc["Vnn"];
 

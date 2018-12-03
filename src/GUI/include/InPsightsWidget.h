@@ -25,7 +25,7 @@ public slots:
 
     void onBondsChecked();
 
-    void onConnectionsChecked();
+    void onSpinConnectionsChecked();
 
 private:
     MoleculeWidget *moleculeWidget_;
