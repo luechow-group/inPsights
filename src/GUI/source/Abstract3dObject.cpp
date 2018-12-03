@@ -8,8 +8,7 @@
 
 Abstract3dObject::Abstract3dObject(Qt3DCore::QEntity *root, QColor color, const QVector3D& location)
   : QEntity(root),
-    entity(new Qt3DCore::QEntity(root)),
-    material(new Qt3DExtras::QPhongAlphaMaterial(root)),
+    material(new Qt3DExtras::QPhongAlphaMaterial(this)),
     transform(new Qt3DCore::QTransform),
     picker(new Qt3DRender::QObjectPicker),
     color_(color)
@@ -20,9 +19,9 @@ Abstract3dObject::Abstract3dObject(Qt3DCore::QEntity *root, QColor color, const 
   material->setAlpha(1.0f);
   transform->setTranslation(location);
 
-  entity->addComponent(transform);
-  entity->addComponent(material);
-  entity->addComponent(picker);
+  addComponent(transform);
+  addComponent(material);
+  addComponent(picker);
 
   picker->setHoverEnabled(true);
 }

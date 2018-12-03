@@ -29,14 +29,11 @@ public:
         line->setGeometry(getGeometry(root, pair));
         line->setPrimitiveType(Qt3DRender::QGeometryRenderer::Lines);
 
-        auto *material = new Qt3DExtras::QPhongAlphaMaterial(root);
         material->setAmbient(color);
         material->setAlpha(alpha);
 
         // entity
-        auto *lineEntity = new Qt3DCore::QEntity(root);
-        lineEntity->addComponent(line);
-        lineEntity->addComponent(material);
+        addComponent(line);
     }
 
     ~Line3D() { /*QT manages destruction*/ };

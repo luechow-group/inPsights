@@ -14,5 +14,5 @@ Sphere::Sphere(Qt3DCore::QEntity *root, QColor color, const QVector3D location, 
   mesh_->setRings(8);
   mesh_->setSlices(16);
 
-  entity->addComponent(mesh_);
+  addComponent(mesh_);
 }

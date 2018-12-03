@@ -30,7 +30,7 @@ Cone::Cone(Qt3DCore::QEntity *root,
 
   material->setAmbient(color);
 
-  entity->addComponent(mesh_);
+  addComponent(mesh_);
 }
 
 void Cone::rotateToOrientation(const QVector3D &orientation) {

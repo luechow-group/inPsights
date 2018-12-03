@@ -27,7 +27,7 @@ Cylinder::Cylinder(Qt3DCore::QEntity *root,
 
     material->setAmbient(color);
 
-    entity->addComponent(mesh_);
+    addComponent(mesh_);
 }
 
 void Cylinder::rotateToOrientation(const QVector3D &orientation) {

@@ -22,7 +22,6 @@ public:
     QColor color() const { return color_; };
 
 protected:
-    Qt3DCore::QEntity *entity;
     Qt3DExtras::QPhongAlphaMaterial *material;
     Qt3DCore::QTransform *transform;
 public:
