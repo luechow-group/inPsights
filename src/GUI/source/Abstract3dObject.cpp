@@ -6,7 +6,7 @@
 #include <Abstract3dObject.h>
 #include <Eigen/Core>
 
-Abstract3dObject::Abstract3dObject(Qt3DCore::QEntity *root, QColor color, const QVector3D& location)
+Abstract3dObject::Abstract3dObject(Qt3DCore::QEntity *root, QColor color, const QVector3D& location, float alpha)
   : QEntity(root),
     material(new Qt3DExtras::QPhongAlphaMaterial(this)),
     transform(new Qt3DCore::QTransform),
@@ -16,7 +16,7 @@ Abstract3dObject::Abstract3dObject(Qt3DCore::QEntity *root, QColor color, const 
   material->setSpecular(Qt::white);
   material->setShininess(0);
   material->setAmbient(color);
-  material->setAlpha(1.0f);
+  material->setAlpha(alpha);
   transform->setTranslation(location);
 
   addComponent(transform);
