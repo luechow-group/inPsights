@@ -19,12 +19,12 @@ public:
            const std::pair<QVector3D, QVector3D> &pair,
            float alpha = 1.0f)
             :
-            Abstract3dObject(root, QColor(), GuiHelper::midPointVector(pair), alpha),
+            Abstract3dObject(root, std::move(color), GuiHelper::midPointVector(pair), alpha),
             start_(pair.first),
             end_(pair.second) {
 
         // mesh
-        auto *line = new Qt3DRender::QGeometryRenderer(this);
+        auto *line = new Qt3DRender::QGeometryRenderer(this->parentNode());
         line->setGeometry(getGeometry(pair));
         line->setPrimitiveType(Qt3DRender::QGeometryRenderer::Lines);
 

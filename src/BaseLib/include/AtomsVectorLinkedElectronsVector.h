@@ -13,7 +13,7 @@ public:
 
     explicit AtomsVectorLinkedElectronsVector(std::shared_ptr<AtomsVector> linkedAtomsVector);
 
-    AtomsVectorLinkedElectronsVector(std::shared_ptr<AtomsVector> sharedAtomsVector, ElectronsVector ev);
+    AtomsVectorLinkedElectronsVector(std::shared_ptr<AtomsVector> sharedAtomsVector, const ElectronsVector& ev);
 
     std::vector<long> coreElectronsIndices(long k, double threshold = 0.1) const;
 

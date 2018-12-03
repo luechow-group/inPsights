@@ -27,7 +27,6 @@ protected:
 public:
     Qt3DRender::QObjectPicker *picker;
 
-
 private:
     QColor color_;
 };

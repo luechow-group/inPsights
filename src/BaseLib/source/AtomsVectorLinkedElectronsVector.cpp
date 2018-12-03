@@ -12,8 +12,8 @@ AtomsVectorLinkedElectronsVector::AtomsVectorLinkedElectronsVector(
         : ElectronsVector(), linkedAtomsVector_(std::move(linkedAtomsVector)) {}
 
 AtomsVectorLinkedElectronsVector::AtomsVectorLinkedElectronsVector(std::shared_ptr<AtomsVector> sharedAtomsVector,
-                                                                   ElectronsVector ev)
-        : ElectronsVector(std::move(ev)), linkedAtomsVector_(std::move(sharedAtomsVector)) {}
+                                                                   const ElectronsVector& ev)
+        : ElectronsVector(ev), linkedAtomsVector_(std::move(sharedAtomsVector)) {}
 
 std::vector<long> AtomsVectorLinkedElectronsVector::coreElectronsIndices(long k, double threshold) const {
     std::vector<long> indices;
