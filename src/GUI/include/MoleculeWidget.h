@@ -10,8 +10,8 @@
 #include <Qt3DExtras>
 #include <QVBoxLayout>
 #include <QLabel>
-
 #include <ParticlesVector3D.h>
+#include <Statistics.h>
 
 class MoleculeWidget : public QWidget{
     Q_OBJECT
@@ -20,17 +20,16 @@ public:
 
     Qt3DCore::QEntity* getRoot();
 
-    void drawConnections();
+        //void mouseMoveEvent(QMouseEvent* event) override;
 
-    void deleteConnections();
+    void drawAtoms(bool drawQ = true);
 
-    //void mouseMoveEvent(QMouseEvent* event) override;
+    void drawSpinConnections(bool drawQ);
 
-    void drawAtoms();
+    void drawSpinCorrelations(bool drawQ,
 
-    void drawBonds();
+    void drawBonds(bool drawQ);
 
-    void deleteBonds();
 
     void addElectronsVector(const ElectronsVector& electronsVector, int id = 0);
 

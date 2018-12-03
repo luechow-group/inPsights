@@ -23,9 +23,11 @@ public:
 public slots:
     void selectedStructure(QListWidgetItem* item);
 
-    void onBondsChecked();
+    void onBondsChecked(int stateId);
 
-    void onSpinConnectionsChecked();
+    void onSpinConnectionsChecked(int stateId);
+
+    void onSpinCorrelationsChecked(int stateId){}
 
 private:
     MoleculeWidget *moleculeWidget_;

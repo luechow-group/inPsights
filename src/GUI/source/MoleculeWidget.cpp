@@ -54,16 +54,27 @@ Qt3DCore::QEntity* MoleculeWidget::getRoot() {
     QWidget::mouseMoveEvent(event);  // Or whatever the base class is.
 }*/
 
-void MoleculeWidget::drawAtoms() {
-    atomsVector3D_ = new AtomsVector3D(moleculeEntity_, *sharedAtomsVector_);
+void MoleculeWidget::drawAtoms(bool drawQ) {
+    if(drawQ)
+        atomsVector3D_ = new AtomsVector3D(moleculeEntity_, *sharedAtomsVector_);
+    else
+        atomsVector3D_->deleteLater();
 }
 
-void MoleculeWidget::drawBonds() {
-    atomsVector3D_->drawConnections();
+void MoleculeWidget::drawBonds(bool drawQ) {
+    if(drawQ)
+        atomsVector3D_->drawConnections();
+    else
+        atomsVector3D_->deleteConnections();
 }
 
-void MoleculeWidget::deleteBonds() {
-    atomsVector3D_->deleteConnections();
+void MoleculeWidget::drawSpinConnections(bool drawQ) {
+    if(drawQ)
+        for(auto& mapItem : activeElectronsVectorsMap_)
+            mapItem.second->drawConnections();
+    else
+        for(auto& mapItem : activeElectronsVectorsMap_)
+            mapItem.second->deleteConnections();
 }
 
 void MoleculeWidget::addElectronsVector(const ElectronsVector &electronsVector, int id) {
@@ -77,14 +88,4 @@ void MoleculeWidget::removeElectronsVector(int id) {
 
 void MoleculeWidget::setSharedAtomsVector(AtomsVector atomsVector) {
     sharedAtomsVector_ = std::make_shared<AtomsVector >(std::move(atomsVector));
-}
-
-void MoleculeWidget::drawConnections() {
-    for(auto& mapItem : activeElectronsVectorsMap_)
-        mapItem.second->drawConnections();
-}
-
-void MoleculeWidget::deleteConnections() {
-    for(auto& mapItem : activeElectronsVectorsMap_)
-        mapItem.second->deleteConnections();
 }

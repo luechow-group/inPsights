@@ -8,6 +8,7 @@
 #include <Qt3DCore/QEntity>
 #include <ParticlesVector.h>
 #include "Particle3D.h"
+#include <IConnection.h>
 
 template <typename Type>
 class ParticlesVector3D : public ParticlesVector<Type>, public Qt3DCore::QEntity {
@@ -30,6 +31,7 @@ public:
 
     Qt3DCore::QEntity* connections_;
     std::vector<Particle3D<Type>*> particles3D_; // shared pointers?
+    std::vector<IConnection*> bla;
 };
 
 using AtomsVector3D = ParticlesVector3D<Element>;

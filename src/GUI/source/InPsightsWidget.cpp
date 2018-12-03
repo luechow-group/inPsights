@@ -53,10 +53,11 @@ InPsightsWidget::InPsightsWidget(QWidget *parent)
                          this, SLOT(selectedStructure(QListWidgetItem*)));
 
         QObject::connect(bondsCheckBox_, SIGNAL(stateChanged(int)),
-                         this, SLOT(onBondsChecked()));
+                         this, SLOT(onBondsChecked(int)));
 
         QObject::connect(spinConnectionsCheckBox_, SIGNAL(stateChanged(int)),
-                         this, SLOT(onSpinConnectionsChecked()));
+                         this, SLOT(onSpinConnectionsChecked(int)));
+
         /*QObject::connect(maximaList_, SIGNAL(itemChanged(QListWidgetItem*)),
                 this, SLOT(updateMoleculeWidget(QListWidgetItem*)));
 
@@ -88,30 +89,12 @@ InPsightsWidget::InPsightsWidget(QWidget *parent)
             moleculeWidget_->removeElectronsVector(id);
     };
 
-    void InPsightsWidget::onBondsChecked(){
-        switch(bondsCheckBox_->checkState()) {
-            case Qt::CheckState::Checked:
-                moleculeWidget_->drawBonds();
-                break;
-            case Qt::CheckState::Unchecked:
-                moleculeWidget_->deleteBonds();
-                break;
-            default:
-                throw std::runtime_error("Unknown button state.");
-        }
+    void InPsightsWidget::onBondsChecked(int stateId){
+        moleculeWidget_->drawBonds(Qt::CheckState(stateId) == Qt::CheckState::Checked);
     }
 
-    void InPsightsWidget::onSpinConnectionsChecked(){
-        switch(spinConnectionsCheckBox_->checkState()) {
-            case Qt::CheckState::Checked:
-                moleculeWidget_->drawConnections();
-                break;
-            case Qt::CheckState::Unchecked:
-                moleculeWidget_->deleteConnections();
-                break;
-            default:
-                throw std::runtime_error("Unknown button state.");
-        }
+    void InPsightsWidget::onSpinConnectionsChecked(int stateId){
+        moleculeWidget_->drawSpinConnections(Qt::CheckState(stateId) == Qt::CheckState::Checked);
     }
 
     QSplashScreen *InPsightsWidget::createSplashScreen() {
