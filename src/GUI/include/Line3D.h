@@ -25,15 +25,15 @@ public:
 
         // mesh
         auto *line = new Qt3DRender::QGeometryRenderer(this);
-        line->setGeometry(getGeometry(this, pair));
+        line->setGeometry(getGeometry(pair));
         line->setPrimitiveType(Qt3DRender::QGeometryRenderer::Lines);
 
         // entity
         addComponent(line);
     }
 
-    Qt3DRender::QGeometry *getGeometry(Qt3DCore::QEntity *entity, const std::pair<QVector3D, QVector3D> &pair) const {
-        auto *geometry = new Qt3DRender::QGeometry(entity);
+    Qt3DRender::QGeometry *getGeometry( const std::pair<QVector3D, QVector3D> &pair) const {
+        auto *geometry = new Qt3DRender::QGeometry(this->parentNode());
 
         // position vertices (start and end)
         QByteArray bufferBytes;

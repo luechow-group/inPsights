@@ -39,6 +39,7 @@ public:
 
         loadData();
 
+
         auto gbox = new QGroupBox("Settings:");
         auto hbox = new QHBoxLayout(this);
         auto vboxOuter = new QVBoxLayout();
@@ -87,6 +88,7 @@ public:
         QTimer::singleShot(1000, this, SLOT(show()));
 
         update();
+        initialView();
     }
 
 public slots:
@@ -179,10 +181,13 @@ private:
             id++;
         }
         moleculeWidget_->setSharedAtomsVector(doc["Atoms"].as<AtomsVector>());
+    }
+
+    void initialView(){
         moleculeWidget_->drawAtoms();
         bondsCheckBox_->setCheckState(Qt::CheckState::Checked);
-        onBondsChecked();
-        //moleculeWidget_->drawBonds();
+        maximaList_->item(0)->setCheckState(Qt::CheckState::Checked);
+        spinConnectionsCheckBox_->setCheckState(Qt::CheckState::Checked);
     }
 };
 
