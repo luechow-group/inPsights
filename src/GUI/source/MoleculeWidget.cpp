@@ -88,34 +88,3 @@ void MoleculeWidget::deleteConnections() {
     for(auto& mapItem : activeElectronsVectorsMap_)
         mapItem.second->deleteConnections();
 }
-
-// TODO should be individually selectable for each list item
-/*void drawSpinCorrelations() {
-    for ( auto it = activeElectronsVectorsMap_.begin(); it != activeElectronsVectorsMap_.end(); it++ ){
-        if(drawSpinCorrelations) {
-            for (int i = 0; i < electrons.numberOfEntities(); ++i) {
-                for (int j = i + 1; j < electrons.numberOfEntities(); ++j) {
-
-                    auto corr = clusterData.SeeStats_.mean()(i,j);
-                    if (std::abs(corr) >= spinCorrelationThreshold) {
-
-                        QColor color;
-                        if(corr > 0)
-                            color = QColor::fromRgb(255,0,255);
-                        else
-                            color = QColor::fromRgb(0,255,0);
-
-                        QVector3D start, end;
-                        start.setX(electrons.positionsVector()[i].x()); //TODO use helper
-                        start.setY(electrons.positionsVector()[i].y());
-                        start.setZ(electrons.positionsVector()[i].z());
-                        end.setX(electrons.positionsVector()[j].x());
-                        end.setY(electrons.positionsVector()[j].y());
-                        end.setZ(electrons.positionsVector()[j].z());
-
-                        new Line3D(moleculeEntity_, color, {start, end}, std::abs(corr));
-                    }
-                }
-            }
-    }
-}*/

@@ -64,6 +64,7 @@ set(SOURCE_FILES
         source/Line3D.cpp
         source/Bonds3D.cpp
         source/SpinConnections3D.cpp
+        source/InPsightsWidget.cpp
         )
 
 add_library(${PROJECT_NAME} STATIC
