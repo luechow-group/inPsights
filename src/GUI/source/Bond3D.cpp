@@ -1,8 +1,5 @@
 
 #include <Bond3D.h>
-
-#include "Bond3D.h"
-
 #include "GuiHelper.h"
 #include "cmath"
 
