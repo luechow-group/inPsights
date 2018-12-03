@@ -22,7 +22,6 @@ int main(int argc, char *argv[]) {
      * - debug linkedParticles
      * GUI
      * - show correlation lines
-     * - IConnections Interface
      * - atom highlighting (color change or glow)
      * - tree view
      * - energy view
@@ -34,5 +33,6 @@ int main(int argc, char *argv[]) {
      * - show eigenvectors (.wf needed)
      * - load screen
      * - screenshot button
+     * - camera reset and settings in MoleculeWidget
      */
 }
