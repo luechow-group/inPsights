@@ -58,7 +58,7 @@ void ElectronsVector3D::drawConnections() {
 
 
     for (auto it = freeElectronsIndices.begin(); it != freeElectronsIndices.end(); ++it) {
-            for (auto jt = it + 1; jt != freeElectronsIndices.end(); ++jt) {
+        for (auto jt = it + 1; jt != freeElectronsIndices.end(); ++jt) {
                 auto e1 = operator[](*it);
                 auto e2 = operator[](*jt);
 
