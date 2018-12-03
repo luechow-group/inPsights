@@ -14,7 +14,7 @@ class ParticlesVector3D : public ParticlesVector<Type>, public Qt3DCore::QEntity
 public:
     ParticlesVector3D(Qt3DCore::QEntity *root, const ParticlesVector<Type> &particlesVector)
     : ParticlesVector<Type>(particlesVector),
-            QEntity(root), connections_(this), particles3D_(0) {
+            QEntity(root), connections_(new Qt3DCore::QEntity(this)), particles3D_(0) {
 
         for (long i = 0; i < ParticlesVector<Type>::numberOfEntities(); ++i) {
             particles3D_.emplace_back(new Particle3D<Type>(this, particlesVector.linkedParticle(i)));
@@ -24,12 +24,11 @@ public:
     ~ParticlesVector3D() { /*QT manages destruction*/ };
 
     // TODO add to vecotr of IConnections
-    void drawConnections(){
-        //dummy
-    }
+    void drawConnections() {};
 
     void deleteConnections(){
         connections_->deleteLater();
+        connections_ = new Qt3DCore::QEntity(this);
     }
 
     Qt3DCore::QEntity* connections_;

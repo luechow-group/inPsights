@@ -62,6 +62,9 @@ void MoleculeWidget::drawBonds() {
     atomsVector3D_->drawConnections();
 }
 
+void MoleculeWidget::deleteBonds() {
+    atomsVector3D_->deleteConnections();
+}
 
 void MoleculeWidget::addElectronsVector(const ElectronsVector &electronsVector, int id) {
     activeElectronsVectorsMap_.emplace(id,new ElectronsVector3D(moleculeEntity_, electronsVector));

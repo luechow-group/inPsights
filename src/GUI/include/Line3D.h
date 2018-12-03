@@ -24,18 +24,16 @@ public:
             end_(pair.second) {
 
         // mesh
-        auto *line = new Qt3DRender::QGeometryRenderer(root);
-        line->setGeometry(getGeometry(root, pair));
+        auto *line = new Qt3DRender::QGeometryRenderer(this);
+        line->setGeometry(getGeometry(this, pair));
         line->setPrimitiveType(Qt3DRender::QGeometryRenderer::Lines);
 
         // entity
         addComponent(line);
     }
 
-    ~Line3D() { /*QT manages destruction*/ };
-
-    Qt3DRender::QGeometry *getGeometry(QEntity *root, const std::pair<QVector3D, QVector3D> &pair) const {
-        auto *geometry = new Qt3DRender::QGeometry(root);
+    Qt3DRender::QGeometry *getGeometry(Qt3DCore::QEntity *entity, const std::pair<QVector3D, QVector3D> &pair) const {
+        auto *geometry = new Qt3DRender::QGeometry(entity);
 
         // position vertices (start and end)
         QByteArray bufferBytes;
@@ -93,7 +91,6 @@ public:
 
 private:
     QVector3D start_, end_;
-    //Qt3DExtras::QCylinderMesh *mesh_;
 };
 
 #endif //INPSIGHTS_LINE3D_H

@@ -28,6 +28,7 @@ public:
     :
             QWidget(parent),
             moleculeWidget_(new MoleculeWidget(this)),
+            bondsCheckBox_(new QCheckBox("Bonds", this)),
             spinConnectionsCheckBox_(new QCheckBox("Spin Connections", this)),
             spinCorrelationsCheckBox_(new QCheckBox("Spin Correlations", this)),
             spinCorrelationSlider_(new QSlider(Qt::Orientation::Horizontal, this)),
@@ -53,6 +54,7 @@ public:
         vboxOuter->addWidget(gbox);
         gbox->setLayout(vboxInner);
 
+        vboxInner->addWidget(bondsCheckBox_);
         vboxInner->addWidget(spinConnectionsCheckBox_);
         vboxInner->addWidget(spinCorrelationsCheckBox_);
         vboxInner->addWidget(spinCorrelationSlider_);
@@ -61,6 +63,9 @@ public:
 
         QObject::connect(maximaList_, SIGNAL(itemChanged(QListWidgetItem*)),
                 this, SLOT(selectedStructure(QListWidgetItem*)));
+
+        QObject::connect(bondsCheckBox_, SIGNAL(stateChanged(int)),
+                this, SLOT(onBondsChecked()));
 
         QObject::connect(spinConnectionsCheckBox_, SIGNAL(stateChanged(int)),
                 this, SLOT(onConnectionsChecked()));
@@ -95,6 +100,19 @@ public slots:
             moleculeWidget_->removeElectronsVector(id);
     };
 
+    void onBondsChecked(){
+        switch(bondsCheckBox_->checkState()) {
+            case Qt::CheckState::Checked:
+                moleculeWidget_->drawBonds();
+                break;
+            case Qt::CheckState::Unchecked:
+                moleculeWidget_->deleteBonds();
+                break;
+            default:
+                throw std::runtime_error("Unknown button state.");
+        }
+    }
+
     void onConnectionsChecked(){
         switch(spinConnectionsCheckBox_->checkState()) {
             case Qt::CheckState::Checked:
@@ -110,7 +128,7 @@ public slots:
 
 private:
     MoleculeWidget *moleculeWidget_;
-    QCheckBox *spinConnectionsCheckBox_, *spinCorrelationsCheckBox_;
+    QCheckBox *bondsCheckBox_, *spinConnectionsCheckBox_, *spinCorrelationsCheckBox_;
     QSlider *spinCorrelationSlider_;
     QLabel *spinCorrelationSliderLabel_;
     QListWidget *maximaList_;
@@ -162,7 +180,9 @@ private:
         }
         moleculeWidget_->setSharedAtomsVector(doc["Atoms"].as<AtomsVector>());
         moleculeWidget_->drawAtoms();
-        moleculeWidget_->drawBonds();
+        bondsCheckBox_->setCheckState(Qt::CheckState::Checked);
+        onBondsChecked();
+        //moleculeWidget_->drawBonds();
     }
 };
 

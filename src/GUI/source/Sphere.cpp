@@ -1,3 +1,5 @@
+#include <utility>
+
 //
 // Created by heuer on 06.12.16.
 //
@@ -6,9 +8,9 @@
 
 Sphere::Sphere(Qt3DCore::QEntity *root, QColor color, const QVector3D location, const float radius)
   :
-  Abstract3dObject(root, color, location),
+  Abstract3dObject(root, std::move(color), location),
   radius_(radius),
-  mesh_(new Qt3DExtras::QSphereMesh(root)) {
+  mesh_(new Qt3DExtras::QSphereMesh(static_cast<Qt3DCore::QEntity*>(this))) {
 
   mesh_->setRadius(radius);
   mesh_->setRings(8);

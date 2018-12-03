@@ -30,6 +30,8 @@ public:
 
     void drawBonds();
 
+    void deleteBonds();
+
     void addElectronsVector(const ElectronsVector& electronsVector, int id = 0);
 
     void removeElectronsVector(int id = 0);

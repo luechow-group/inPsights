@@ -14,7 +14,7 @@ Cone::Cone(Qt3DCore::QEntity *root,
           bottomRadius_(bottomRadius),
           start_(pair.first),
           end_(pair.second),
-          mesh_(new Qt3DExtras::QConeMesh(root)) {
+          mesh_(new Qt3DExtras::QConeMesh(static_cast<Qt3DCore::QEntity*>(this))) {
 
   mesh_->setTopRadius(topRadius);
   mesh_->hasTopEndcapChanged(true);
