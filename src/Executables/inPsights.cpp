@@ -21,9 +21,18 @@ int main(int argc, char *argv[]) {
      * BASELIB
      * - debug linkedParticles
      * GUI
+     * - show correlation lines
+     * - IConnections Interface
+     * - atom highlighting (color change or glow)
+     * - tree view
+     * - energy view
+     * - mouse events
+     *  - energy view triggers atom hightlight
      * - dotted and dashed lines
      * - founds + psi
      * - show energies
      * - show eigenvectors (.wf needed)
+     * - load screen
+     * - screenshot button
      */
 }
