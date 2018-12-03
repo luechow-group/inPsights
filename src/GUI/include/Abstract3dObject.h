@@ -17,8 +17,6 @@ Q_OBJECT
 public:
     Abstract3dObject(Qt3DCore::QEntity *root, QColor color, const QVector3D &location, float alpha = 1.0);
 
-    ~Abstract3dObject() { /*QT manages destruction*/ };
-
     QColor color() const { return color_; };
 
 protected:

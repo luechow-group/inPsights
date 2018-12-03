@@ -17,8 +17,6 @@ public:
          float topRadius = 0.0f,
          float alpha = 1.0f);
 
-    ~Cone() { /*QT manages destruction*/ };
-
     float getBottomRadius() const { return bottomRadius_; };
 
     void setBottomRadius(const float bottomRadius) {

@@ -16,8 +16,6 @@ public:
                   float radius,
                   float alpha = 1.0f);
 
- ~DividedCylinder() { /*QT manages destruction*/ };
-
 private:
   Cylinder *srcCylinder_, *destCylinder_;
 };

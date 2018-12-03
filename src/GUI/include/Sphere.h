@@ -12,8 +12,6 @@ class Sphere : public Abstract3dObject{
 public:
     Sphere(Qt3DCore::QEntity *root, QColor color, QVector3D location, float radius);
 
-    ~Sphere() { /*QT manages destruction*/ };
-
     float getRadius() const { return radius_;};
 
     void setRadius(const float radius) {

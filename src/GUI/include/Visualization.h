@@ -12,18 +12,18 @@
 #include <QtWidgets/QApplication>
 #include <ParticlesVectorCollection.h>
 
-namespace Visualization{
+namespace Visualization {
     int visualizeOptPath(int &argc, char **argv,
                          const AtomsVector &atoms,
                          const ElectronsVectorCollection &optimizationPath,
                          const unsigned long &nwanted = 300);
 
     ElectronsVectorCollection shortenPath(const ElectronsVectorCollection &optimizationPath,
-                                const unsigned long &nwanted);
+                                          const unsigned long &nwanted);
 
     void drawEigenVector(Qt3DCore::QEntity *root,
                          const Eigen::MatrixXd eigenvectors,
-                         const Eigen::VectorXd& origin, int eigenvectorIndex);
+                         const Eigen::VectorXd &origin, int eigenvectorIndex);
 }
 
 #endif //INPSIGHTS_VISUALIZATION_H

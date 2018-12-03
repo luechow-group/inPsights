@@ -16,8 +16,6 @@ public:
            float radius,
            float alpha = 1.0f);
 
-  ~Cylinder() { /*QT manages destruction*/ };
-
   float getRadius() const { return radius_; };
 
   void setRadius(const float radius) {
