@@ -24,28 +24,27 @@ public:
             end_(pair.second) {
 
         // mesh
-        auto *line = new Qt3DRender::QGeometryRenderer(this->parentNode());
-        line->setGeometry(getGeometry(pair));
+        auto *line = new Qt3DRender::QGeometryRenderer(this);
+        line->setGeometry(getGeometry(this, pair));
         line->setPrimitiveType(Qt3DRender::QGeometryRenderer::Lines);
 
-        // entity
         addComponent(line);
     }
 
-    Qt3DRender::QGeometry *getGeometry( const std::pair<QVector3D, QVector3D> &pair) const {
-        auto *geometry = new Qt3DRender::QGeometry(this->parentNode());
+    Qt3DRender::QGeometry *getGeometry(Qt3DCore::QEntity* entity, const std::pair<QVector3D, QVector3D> &pair) const {
+        auto *geometry = new Qt3DRender::QGeometry(entity);
 
         // position vertices (start and end)
         QByteArray bufferBytes;
         bufferBytes.resize(3 * 2 * sizeof(float)); // start.x, start.y, start.end + end.x, end.y, end.z
         float *positions = reinterpret_cast<float *>(bufferBytes.data());
 
-        *positions++ = pair.first.x();
-        *positions++ = pair.first.y();
-        *positions++ = pair.first.z();
-        *positions++ = pair.second.x();
-        *positions++ = pair.second.y();
-        *positions++ = pair.second.z();
+        *positions++ = (pair.first - transform->translation()).x();
+        *positions++ = (pair.first - transform->translation()).y();
+        *positions++ = (pair.first - transform->translation()).z();
+        *positions++ = (pair.second - transform->translation()).x();
+        *positions++ = (pair.second - transform->translation()).y();
+        *positions++ = (pair.second - transform->translation()).z();
 
         auto *buf = new Qt3DRender::QBuffer(Qt3DRender::QBuffer::VertexBuffer, geometry);
         buf->setData(bufferBytes);
