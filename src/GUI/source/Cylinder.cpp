@@ -17,7 +17,7 @@ Cylinder::Cylinder(Qt3DCore::QEntity *root,
     radius_(radius),
     start_(pair.first),
     end_(pair.second),
-    mesh_(new Qt3DExtras::QCylinderMesh(static_cast<Qt3DCore::QEntity*>(this))) {
+    mesh_(new Qt3DExtras::QCylinderMesh(this)) {
 
     mesh_->setRadius(radius);
     mesh_->setLength(length());

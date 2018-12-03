@@ -12,13 +12,13 @@ DividedCylinder::DividedCylinder(Qt3DCore::QEntity *root,
                                  float alpha)
   : QEntity(root),
     srcCylinder_(new Cylinder(
-            static_cast<Qt3DCore::QEntity*>(this),
+            this,
             colorPair.first,
             {locationPair.first, GuiHelper::midPointVector(locationPair)},
             radius,
             alpha)),
     destCylinder_(new Cylinder(
-            static_cast<Qt3DCore::QEntity*>(this),
+            this,
             colorPair.second,
             {GuiHelper::midPointVector(locationPair),
              locationPair.second},
