@@ -42,7 +42,6 @@ set(HEADER_FILES
         include/InPsightsWidget.h
         include/Line3D.h
         include/Particle3D.h
-        include/IMolecular3D.h
         include/ParticlesVector3D.h
         )
 
@@ -58,7 +57,6 @@ set(SOURCE_FILES
         source/MoleculeWidget.cpp
         source/ParticlesVectorPath3D.cpp
         source/Visualization.cpp
-        source/IMolecular3D.cpp
         source/ParticlesVector3D.cpp
         )
 
