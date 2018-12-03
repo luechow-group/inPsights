@@ -19,7 +19,7 @@ public:
  ~DividedCylinder() { /*QT manages destruction*/ };
 
 private:
-  Cylinder srcCylinder_,destCylinder_; //TODO make pointer
+  Cylinder *srcCylinder_, *destCylinder_;
 };
 
 #endif //INPSIGHTS_DIVIDEDCYLINDER_H

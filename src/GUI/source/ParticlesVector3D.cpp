@@ -19,7 +19,7 @@ void AtomsVector3D::drawConnections() {
                                + Elements::ElementInfo::vdwRadius(operator[](j).type()))/10.0;
 
             if ( distance < bondDrawingLimit)
-                new Bond3D(*particles3D_[i], *particles3D_[j]);
+                new Bond3D(this, *particles3D_[i], *particles3D_[j]);
         }
     }
 }

@@ -4,8 +4,8 @@
 #include "cmath"
 
 // bond is internally attached to the src root
-Bond3D::Bond3D(const Atom3D &src, const Atom3D &dest) //TODO what if dest gets deleted
-        : DividedCylinder(src.parentEntity(),
+Bond3D::Bond3D(Qt3DCore::QEntity *root, const Atom3D &src, const Atom3D &dest) //TODO what if dest gets deleted
+        : DividedCylinder(root,
                           {GuiHelper::QColorFromType<Element>(src.type()),
                            GuiHelper::QColorFromType<Element>(dest.type())},
                           {GuiHelper::toQVector3D(src.position()),
