@@ -24,6 +24,8 @@ InPsightsWidget::InPsightsWidget(QWidget *parent)
             maximaList_(new QListWidget(this))
     {
         auto splashScreen = createSplashScreen();
+        setWindowIcon(QIcon(":inPsightsIcon.png"));
+        setWindowTitle("inPsights - Chemical insights from |Ψ|².");
 
         loadData();
 
@@ -31,7 +33,6 @@ InPsightsWidget::InPsightsWidget(QWidget *parent)
         auto hbox = new QHBoxLayout(this);
         auto vboxOuter = new QVBoxLayout();
         auto vboxInner = new QVBoxLayout();
-
 
         setLayout(hbox);
         resize(1024, 768);
@@ -111,10 +112,7 @@ InPsightsWidget::InPsightsWidget(QWidget *parent)
 QSplashScreen *InPsightsWidget::createSplashScreen() {
         auto splashScreen = new QSplashScreen();
 
-        QImage file(":inPsights.png");
-        QPixmap qPixmap;
-        qPixmap.convertFromImage(file);
-        splashScreen->setPixmap(qPixmap);
+        splashScreen->setPixmap(QPixmap(":inPsights.png"));
         splashScreen->show();
         splashScreen->showMessage("Version 1.0.0", Qt::AlignRight, Qt::lightGray);
 
