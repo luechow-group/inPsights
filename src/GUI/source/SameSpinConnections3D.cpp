@@ -7,6 +7,15 @@
 #include <Cylinder.h>
 #include <Line3D.h>
 
+SameSpinConnections3D::SameSpinConnections3D(
+        ElectronsVector3D *electronsVector3D,
+        double identicalThreshold,
+        double maxDistance)
+        : SpinConnections3D(electronsVector3D, identicalThreshold, maxDistance) {
+    createConnections(electronsVector3D);
+};
+
+
 void SameSpinConnections3D::createConnections(ElectronsVector3D *electronsVector3D) {
     for (auto &idxPair : pairIndicesMap_) {
         auto i = idxPair.first.first;
@@ -23,16 +32,16 @@ void SameSpinConnections3D::createConnections(ElectronsVector3D *electronsVector
             if (Metrics::distance(e1.position(), e2.position()) < maxDistance_) {
                 if (e1.type() == e2.type())
                     if (e1.type() == Spin::alpha)
-                        new Cylinder(electronsVector3D->connections_,
+                        new Cylinder(this,
                                      GuiHelper::QColorFromType<Spin>(Spin::alpha), {q1, q2}, 0.015, 0.5);
                     else if (e1.type() == Spin::beta)
-                        new Cylinder(electronsVector3D->connections_,
+                        new Cylinder(this,
                                      GuiHelper::QColorFromType<Spin>(Spin::beta), {q1, q2}, 0.015, 0.5);
                     else
-                        new Cylinder(electronsVector3D->connections_,
+                        new Cylinder(this,
                                      GuiHelper::QColorFromType<Spin>(Spin::none), {q1, q2}, 0.015, 0.5);
                 else
-                    new Line3D(electronsVector3D->connections_, Qt::black, {q1, q2}, 0.25);
+                    new Line3D(this, Qt::black, {q1, q2}, 0.25);
             }
         }
     }

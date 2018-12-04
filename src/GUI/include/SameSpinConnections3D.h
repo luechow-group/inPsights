@@ -10,10 +10,7 @@
 class SameSpinConnections3D : public SpinConnections3D{
 public:
     explicit SameSpinConnections3D(ElectronsVector3D *electronsVector3D,
-            double identicalThreshold = 0.01, double maxDistance = 1.6)
-    : SpinConnections3D(electronsVector3D, identicalThreshold, maxDistance){
-        createConnections(electronsVector3D);
-    };
+            double identicalThreshold = 0.01, double maxDistance = 1.6);
 
     void createConnections(ElectronsVector3D *electronsVector3D);
 

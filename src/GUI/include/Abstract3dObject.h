@@ -13,7 +13,6 @@
 #include <QToolTip>
 
 class Abstract3dObject : public Qt3DCore::QEntity {
-Q_OBJECT
 public:
     Abstract3dObject(Qt3DCore::QEntity *root, QColor color, const QVector3D &location, float alpha = 1.0);
 
