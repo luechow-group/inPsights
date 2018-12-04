@@ -11,6 +11,7 @@
 #include <QSpinBox>
 #include <QSplashScreen>
 #include <QTimer>
+#include <QTreeWidgetItem>
 
 InPsightsWidget::InPsightsWidget(QWidget *parent)
             :
@@ -22,7 +23,7 @@ InPsightsWidget::InPsightsWidget(QWidget *parent)
             spinCorrelationsCheckBox_(new QCheckBox("Spin Correlations", this)),
             spinCorrelationSlider_(new QSlider(Qt::Orientation::Horizontal, this)),
             spinCorrelationSliderLabel_(new QLabel(this)),
-            maximaList_(new QListWidget(this))
+            maximaList_(new QTreeWidget(this))
     {
         auto splashScreen = createSplashScreen();
         setWindowIcon(QIcon(":inPsightsIcon.png"));
@@ -40,10 +41,14 @@ InPsightsWidget::InPsightsWidget(QWidget *parent)
         hbox->addWidget(moleculeWidget_, Qt::AlignLeft);
         hbox->addLayout(vboxOuter);
 
+        auto headerLabels = QList<QString>({"ID","N", "min(-ln(|Ψ|²))","max(-ln(|Ψ|²))"});
+        maximaList_->setColumnCount(headerLabels.size());
+        maximaList_->setHeaderLabels(headerLabels);
         vboxOuter->addWidget(maximaList_);
         vboxOuter->addWidget(gbox);
         gbox->setLayout(vboxInner);
 
+        maximaList_->setFixedWidth(300);
         vboxInner->addWidget(atomsCheckBox_);
         vboxInner->addWidget(bondsCheckBox_);
         vboxInner->addWidget(spinConnectionsCheckBox_);
@@ -52,8 +57,8 @@ InPsightsWidget::InPsightsWidget(QWidget *parent)
         vboxInner->addWidget(spinCorrelationSliderLabel_);
 
 
-        QObject::connect(maximaList_, SIGNAL(itemChanged(QListWidgetItem*)),
-                         this, SLOT(selectedStructure(QListWidgetItem*)));
+        QObject::connect(maximaList_, SIGNAL(itemChanged(QTreeWidgetItem*,int)),
+                         this, SLOT(selectedStructure(QTreeWidgetItem*, int)));
 
         QObject::connect(atomsCheckBox_, SIGNAL(stateChanged(int)),
                          this, SLOT(onAtomsChecked(int)));
@@ -67,13 +72,9 @@ InPsightsWidget::InPsightsWidget(QWidget *parent)
         QObject::connect(spinCorrelationsCheckBox_, SIGNAL(stateChanged(int)),
                          this, SLOT(onSpinCorrelationsChecked(int)));
 
-        /*QObject::connect(maximaList_, SIGNAL(itemChanged(QListWidgetItem*)),
-                this, SLOT(updateMoleculeWidget(QListWidgetItem*)));
 
-        QObject::connect(spinCorrelationsCheckBox_, SIGNAL(stateChanged(int)),
-                this, SLOT(updateMoleculeWidget()));
-        QObject::connect(spinCorrelationSlider_, SIGNAL(valueChanged(int)),
-                this, SLOT(updateMoleculeWidget()));*/
+        //QObject::connect(spinCorrelationSlider_, SIGNAL(valueChanged(int)),
+        //                 this, SLOT(updateMoleculeWidget()));
 
         spinCorrelationSlider_->setRange(0, 255);
         spinCorrelationSlider_->setSingleStep(1);
@@ -88,11 +89,12 @@ InPsightsWidget::InPsightsWidget(QWidget *parent)
         initialView();
     }
 
-    void InPsightsWidget::selectedStructure(QListWidgetItem* item) {
-        auto id = item->data(Qt::ItemDataRole::UserRole).toInt();
+    void InPsightsWidget::selectedStructure(QTreeWidgetItem* item, int column) {
+
+        auto id = item->data(column,Qt::ItemDataRole::UserRole).toInt();
         auto data = clusterCollection_[id];
 
-        if(item->checkState() == Qt::CheckState::Checked)
+        if(item->checkState(column) == Qt::CheckState::Checked)
             moleculeWidget_->addElectronsVector(data.representativeStructure(), id);
         else
             moleculeWidget_->removeElectronsVector(id);
@@ -116,6 +118,12 @@ InPsightsWidget::InPsightsWidget(QWidget *parent)
                 clusterCollection_[0].SeeStats_, //TODO !!! WRONG ONE
                 spinCorrelationSlider_->value()
                 );
+    }
+
+    void InPsightsWidget::onSpinCorrelationsSliderChanged(int value) {
+        //if(spinConnectionsCheckBox_->checkState() == Qt::CheckState::Checked)
+        //    //TODO CONTINUE HERE
+
     }
 
 QSplashScreen *InPsightsWidget::createSplashScreen() {
@@ -146,24 +154,31 @@ QSplashScreen *InPsightsWidget::createSplashScreen() {
 
             ClusterData clusterData = (*it).as<ClusterData>();
 
-            auto text = QStringLiteral("Cluster %1 (%2)").arg(QString::number(id),QString::number(clusterData.N_));
-
             clusterCollection_.emplace_back(clusterData);
+            auto item = new QTreeWidgetItem(QList<QString>({
+                QString::number(id),
+                QString::number(clusterData.N_),
+                QString::number(clusterData.valueStats_.cwiseMin()[0]),
+                QString::number(clusterData.valueStats_.cwiseMax()[0])
+            }));
 
-            auto item = new QListWidgetItem(text);
-            item->setCheckState(Qt::CheckState::Unchecked);
-            item->setData(Qt::ItemDataRole::UserRole, QVariant(id));
+            item->setCheckState(0,Qt::CheckState::Unchecked);
+            item->setData(0, Qt::ItemDataRole::UserRole, QVariant(id));
 
-            maximaList_->addItem(item);
+            maximaList_->addTopLevelItem(item);
             id++;
         }
         moleculeWidget_->setSharedAtomsVector(doc["Atoms"].as<AtomsVector>());
     }
 
     void InPsightsWidget::initialView(){
+        maximaList_->resizeColumnToContents(0);
+        maximaList_->resizeColumnToContents(1);
+        maximaList_->resizeColumnToContents(2);
+        maximaList_->resizeColumnToContents(3);
         atomsCheckBox_->setCheckState(Qt::CheckState::Checked);
         bondsCheckBox_->setCheckState(Qt::CheckState::Checked);
-        maximaList_->item(0)->setCheckState(Qt::CheckState::Checked);
+        maximaList_->topLevelItem(0)->setCheckState(0,Qt::CheckState::Checked);
         spinConnectionsCheckBox_->setCheckState(Qt::CheckState::Checked);
     }
 

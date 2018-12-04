@@ -10,7 +10,7 @@
 
 #include <QCheckBox>
 #include <QSlider>
-#include <QListWidget>
+#include <QTreeWidget>
 #include <ClusterData.h>
 
 class QSplashScreen;
@@ -21,7 +21,7 @@ public:
     explicit InPsightsWidget(QWidget *parent = nullptr);
 
 public slots:
-    void selectedStructure(QListWidgetItem* item);
+    void selectedStructure(QTreeWidgetItem* item, int column);
 
     void onAtomsChecked(int stateId);
 
@@ -31,12 +31,14 @@ public slots:
 
     void onSpinCorrelationsChecked(int stateId);
 
+    void onSpinCorrelationsSliderChanged(int value);
+
 private:
     MoleculeWidget *moleculeWidget_;
     QCheckBox *atomsCheckBox_, *bondsCheckBox_, *spinConnectionsCheckBox_, *spinCorrelationsCheckBox_;
     QSlider *spinCorrelationSlider_;
     QLabel *spinCorrelationSliderLabel_;
-    QListWidget *maximaList_;
+    QTreeWidget *maximaList_;
     std::vector<ClusterData> clusterCollection_;
 
     QSplashScreen *createSplashScreen();
