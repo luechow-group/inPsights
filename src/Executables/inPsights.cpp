@@ -21,8 +21,8 @@ int main(int argc, char *argv[]) {
      * BASELIB
      * - debug linkedParticles
      * GUI
+     * - state machine for buttons
      * - show correlation lines
-     * - atom highlighting (color change or glow)
      * - tree view
      * - energy view
      * - mouse events

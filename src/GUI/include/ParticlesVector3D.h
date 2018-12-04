@@ -21,9 +21,6 @@ public:
             particles3D_(0) {
 
         drawParticles(true);
-        /*for(long i = 0; i < ParticlesVector<Type>::numberOfEntities(); ++i) {
-            particles3D_.emplace_back(new Particle3D<Type>(this, particlesVector.linkedParticle(i)));
-        }*/
     };
 
 public slots:
@@ -44,7 +41,6 @@ public slots:
     }
 
     void deleteCorrelations() {
-        std::cout << "delete corr" << std::endl;
         correlations_->deleteLater();
         correlations_ = new Qt3DCore::QEntity(this);
     }
