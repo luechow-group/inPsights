@@ -7,7 +7,7 @@
 
 SpinCorrelations3D::SpinCorrelations3D(ElectronsVector3D *electronsVector3D,
                                        Statistics::RunningStatistics<Eigen::MatrixXd, unsigned, true> SeeStats,
-                                       int spinCorrelationThreshold)
+                                       double spinCorrelationThreshold)
         :
         SpinConnections3D(electronsVector3D, 0.01),
         SeeStats_(std::move(SeeStats)) {
@@ -15,7 +15,7 @@ SpinCorrelations3D::SpinCorrelations3D(ElectronsVector3D *electronsVector3D,
     drawSpinCorrelations(electronsVector3D, spinCorrelationThreshold);
 }
 
-void SpinCorrelations3D::drawSpinCorrelations(ElectronsVector3D *electronsVector3D, int spinCorrelationThreshold)  {
+void SpinCorrelations3D::drawSpinCorrelations(ElectronsVector3D *electronsVector3D, double spinCorrelationThreshold)  {
 
     for (auto &idxPair : pairIndicesMap_) {
         auto i = idxPair.first.first;
@@ -24,7 +24,7 @@ void SpinCorrelations3D::drawSpinCorrelations(ElectronsVector3D *electronsVector
         if (idxPair.second == PairType::closeBy && !atSamePositionQList_[i] && !atSamePositionQList_[j]) {
 
             auto corr = SeeStats_.mean()(i, j);
-            if (int(std::abs(corr)*255) >= spinCorrelationThreshold) {
+            if (std::abs(corr) >= spinCorrelationThreshold) {
 
                 QColor color;
                 if (corr > 0)

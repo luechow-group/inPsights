@@ -93,7 +93,7 @@ void MoleculeWidget::setSharedAtomsVector(AtomsVector atomsVector) {
 
 void MoleculeWidget::drawSpinCorrelations(bool drawQ,
                                           const std::vector<ClusterData> &clusterData,
-                                          int spinCorrelationThreshold) {
+                                          double spinCorrelationThreshold) {
     //TODO SPLIT INTO DRAW AND DELETE METHODS
     for (auto &cluster : activeElectronsVectorsMap_)
         for (auto &structure : cluster.second) {

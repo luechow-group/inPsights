@@ -48,6 +48,10 @@ private:
     void loadData();
 
     void initialView();
+
+    void setupSliderBox();
+
+    void updateSpinCorrelationSliderLabel(int value);
 };
 
 #endif //INPSIGHTS_INPSIGHTSWIDGET_H

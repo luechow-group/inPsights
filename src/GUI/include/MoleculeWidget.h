@@ -29,7 +29,7 @@ public:
 
     void drawSpinCorrelations(bool drawQ,
                               const std::vector<ClusterData> &clusterData,
-                              int spinCorrelationThreshold);
+                              double spinCorrelationThreshold);
 
     void drawBonds(bool drawQ);
 

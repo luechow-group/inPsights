@@ -37,6 +37,7 @@ InPsightsWidget::InPsightsWidget(QWidget *parent)
     auto hbox = new QHBoxLayout(this);
     auto vboxOuter = new QVBoxLayout();
     auto vboxInner = new QVBoxLayout();
+    auto sliderBox = new QHBoxLayout();
 
     setLayout(hbox);
     resize(1024, 768);
@@ -56,8 +57,11 @@ InPsightsWidget::InPsightsWidget(QWidget *parent)
     vboxInner->addWidget(spinConnectionsCheckBox);
     vboxInner->addWidget(spinCorrelationsCheckBox);
     vboxInner->addWidget(spinCorrelationSlider);
-    vboxInner->addWidget(spinCorrelationSliderLabel);
+    vboxInner->addLayout(sliderBox);
 
+    sliderBox->addWidget(spinCorrelationSliderLabel);
+    sliderBox->addWidget(spinCorrelationSlider);
+    setupSliderBox();
 
     QObject::connect(maximaList, SIGNAL(itemChanged(QTreeWidgetItem * , int)),
                      this, SLOT(selectedStructure(QTreeWidgetItem * , int)));
@@ -78,9 +82,7 @@ InPsightsWidget::InPsightsWidget(QWidget *parent)
     QObject::connect(spinCorrelationSlider, SIGNAL(valueChanged(int)),
                      this, SLOT(onSpinCorrelationsSliderChanged(int)));
 
-    spinCorrelationSlider->setRange(0, 255);
-    spinCorrelationSlider->setSingleStep(1);
-    spinCorrelationSlider->setValue(int(0.75 * 255));
+
 
     spinCorrelationSliderLabel->setFixedHeight(14);
 
@@ -89,6 +91,14 @@ InPsightsWidget::InPsightsWidget(QWidget *parent)
 
     update();
     initialView();
+}
+
+void InPsightsWidget::setupSliderBox() {
+    spinCorrelationSlider->setRange(0,100);
+    spinCorrelationSlider->setSingleStep(1);
+    spinCorrelationSlider->setValue(75);
+    spinCorrelationSlider->setTickInterval(25);
+    spinCorrelationSlider->setTickPosition(QSlider::TicksBelow);
 }
 
 void InPsightsWidget::selectedStructure(QTreeWidgetItem *item, int column) {
@@ -125,14 +135,18 @@ void InPsightsWidget::onSpinConnectionsChecked(int stateId) {
 void InPsightsWidget::onSpinCorrelationsChecked(int stateId) {
     moleculeWidget->drawSpinCorrelations(Qt::CheckState(stateId) == Qt::CheckState::Checked,
                                          clusterCollection_,
-                                         spinCorrelationSlider->value()
-    );
+                                         double(spinCorrelationSlider->value())/spinCorrelationSlider->maximum());
+}
+
+void InPsightsWidget::updateSpinCorrelationSliderLabel(int value) {
+    auto corr = double(value)/spinCorrelationSlider->maximum();
+    spinCorrelationSliderLabel->setText(QString::number(corr, 'f', 2));
 }
 
 void InPsightsWidget::onSpinCorrelationsSliderChanged(int value) {
+    updateSpinCorrelationSliderLabel(value);
     if (spinCorrelationsCheckBox->checkState() == Qt::CheckState::Checked) {
-        onSpinCorrelationsChecked(
-                Qt::CheckState::Unchecked); //TODO ugly, create update() function in SpinCorrelation3D and make it accessible
+        onSpinCorrelationsChecked(Qt::CheckState::Unchecked); //TODO ugly, create update() function in SpinCorrelation3D and make it accessible
         onSpinCorrelationsChecked(Qt::CheckState::Checked);
     }
 }
@@ -198,4 +212,5 @@ void InPsightsWidget::initialView() {
     bondsCheckBox->setCheckState(Qt::CheckState::Checked);
     maximaList->topLevelItem(0)->setCheckState(0, Qt::CheckState::Checked);
     spinConnectionsCheckBox->setCheckState(Qt::CheckState::Checked);
+    updateSpinCorrelationSliderLabel(spinCorrelationSlider->value());
 }
