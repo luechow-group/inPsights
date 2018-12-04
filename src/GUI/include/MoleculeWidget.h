@@ -12,6 +12,7 @@
 #include <QLabel>
 #include <ParticlesVector3D.h>
 #include <Statistics.h>
+#include <ClusterData.h>
 
 class MoleculeWidget : public QWidget{
     Q_OBJECT
@@ -20,14 +21,14 @@ public:
 
     Qt3DCore::QEntity* getRoot();
 
-        //void mouseMoveEvent(QMouseEvent* event) override;
+    //TODO make base MoleculeWidget and InPsightsMoleculeWidget child
 
     void drawAtoms(bool drawQ = true);
 
     void drawSpinConnections(bool drawQ);
 
     void drawSpinCorrelations(bool drawQ,
-            const Statistics::RunningStatistics<Eigen::MatrixXd, unsigned, true> &SeeStats,
+                              const std::vector<ClusterData> &clusterData,
                               int spinCorrelationThreshold);
 
     void drawBonds(bool drawQ);

@@ -80,7 +80,7 @@ InPsightsWidget::InPsightsWidget(QWidget *parent)
 
     spinCorrelationSlider->setRange(0, 255);
     spinCorrelationSlider->setSingleStep(1);
-    spinCorrelationSlider->setValue(int(0.75*255));
+    spinCorrelationSlider->setValue(int(0.75 * 255));
 
     spinCorrelationSliderLabel->setFixedHeight(14);
 
@@ -123,16 +123,16 @@ void InPsightsWidget::onSpinConnectionsChecked(int stateId) {
 }
 
 void InPsightsWidget::onSpinCorrelationsChecked(int stateId) {
-    console->critical("ATTENTION: Currently, the same correlation data is plotted for all structures.");
     moleculeWidget->drawSpinCorrelations(Qt::CheckState(stateId) == Qt::CheckState::Checked,
-                                         clusterCollection_[0].SeeStats_, //TODO !!! WRONG ONE
+                                         clusterCollection_,
                                          spinCorrelationSlider->value()
     );
 }
 
 void InPsightsWidget::onSpinCorrelationsSliderChanged(int value) {
-    if(spinCorrelationsCheckBox->checkState() == Qt::CheckState::Checked){
-        onSpinCorrelationsChecked(Qt::CheckState::Unchecked); //TODO ugly, create update() function in SpinCorrelation3D and make it accessible
+    if (spinCorrelationsCheckBox->checkState() == Qt::CheckState::Checked) {
+        onSpinCorrelationsChecked(
+                Qt::CheckState::Unchecked); //TODO ugly, create update() function in SpinCorrelation3D and make it accessible
         onSpinCorrelationsChecked(Qt::CheckState::Checked);
     }
 }
@@ -199,31 +199,3 @@ void InPsightsWidget::initialView() {
     maximaList->topLevelItem(0)->setCheckState(0, Qt::CheckState::Checked);
     spinConnectionsCheckBox->setCheckState(Qt::CheckState::Checked);
 }
-
-
-/*
-void updateMoleculeWidget(QListWidgetItem* item) {
-    auto spinCorrelationThreshold = double(spinCorrelationSlider_->value())/double(255);
-    moleculeWidget_->setMolecule(
-            atomsVector_,
-            clusterCollection_[item->data(Qt::ItemDataRole::UserRole).toInt()],
-            spinConnectionsCheckBox_->checkState() == Qt::CheckState::Checked,
-            spinCorrelationsCheckBox_->checkState() == Qt::CheckState::Checked,
-            spinCorrelationThreshold
-    );
-};
-
-void updateMoleculeWidget() {
-
-    auto spinCorrelationThreshold = double(spinCorrelationSlider_->value())/double(255);
-    moleculeWidget_->setMolecule(
-            atomsVector_,
-            clusterCollection_[0],
-            spinConnectionsCheckBox_->checkState() == Qt::CheckState::Checked,
-            spinCorrelationsCheckBox_->checkState() == Qt::CheckState::Checked,
-            spinCorrelationThreshold
-    );
-
-    spinCorrelationSliderLabel_->setText(QString::number(spinCorrelationThreshold));
-};
-*/

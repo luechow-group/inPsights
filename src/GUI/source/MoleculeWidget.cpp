@@ -48,12 +48,6 @@ Qt3DCore::QEntity *MoleculeWidget::getRoot() {
     return root_;
 }
 
-/*void MoleculeWidget::mouseMoveEvent(QMouseEvent *event) {
-    std::cout << "MOUSE MOVEMENT" << std::endl;
-
-    QWidget::mouseMoveEvent(event);  // Or whatever the base class is.
-}*/
-
 void MoleculeWidget::drawAtoms(bool drawQ) {
     if (drawQ) {
         atomsVector3D_ = new AtomsVector3D(moleculeEntity_, *sharedAtomsVector_);
@@ -98,33 +92,17 @@ void MoleculeWidget::setSharedAtomsVector(AtomsVector atomsVector) {
 }
 
 void MoleculeWidget::drawSpinCorrelations(bool drawQ,
-                                          const Statistics::RunningStatistics<Eigen::MatrixXd, unsigned, true> &SeeStats,
+                                          const std::vector<ClusterData> &clusterData,
                                           int spinCorrelationThreshold) {
-    // SPLIT INTO DRAW AND DELETE METHODS
+    //TODO SPLIT INTO DRAW AND DELETE METHODS
     for (auto &cluster : activeElectronsVectorsMap_)
         for (auto &structure : cluster.second) {
             if (drawQ) {
-                new SpinCorrelations3D(structure.second, SeeStats, spinCorrelationThreshold);
+                new SpinCorrelations3D(structure.second, clusterData[cluster.first].SeeStats_,
+                                       spinCorrelationThreshold);
             } else {
-                std::cout << "off" << std::endl;
                 structure.second->correlations_->deleteLater();
                 structure.second->correlations_ = new Qt3DCore::QEntity(root_);
             }
-            //auto& connections =  electronsVector3D->iConnections_;
-            /*
-            if (drawQ) {
-                connections.emplace_back(
-                        new SpinCorrelations3D(electronsVector3D, SeeStats, spinCorrelationThreshold)
-                        );
-            } else {
-                for(auto it = connections.begin(); it !=  connections.end(); it++) {
-                    // check if SpinCorrelations3D
-                    auto castedIConnection = dynamic_cast<SpinCorrelations3D*>(*it);
-                    if (castedIConnection) {
-                        castedIConnection->deleteLater();
-                        connections->erase(it);
-                    }
-                }
-            }*/
         }
 }
