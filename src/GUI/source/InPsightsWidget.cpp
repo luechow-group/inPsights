@@ -75,12 +75,12 @@ InPsightsWidget::InPsightsWidget(QWidget *parent)
                      this, SLOT(onSpinCorrelationsChecked(int)));
 
 
-    //QObject::connect(spinCorrelationSlider_, SIGNAL(valueChanged(int)),
-    //                 this, SLOT(updateMoleculeWidget()));
+    QObject::connect(spinCorrelationSlider, SIGNAL(valueChanged(int)),
+                     this, SLOT(onSpinCorrelationsSliderChanged(int)));
 
     spinCorrelationSlider->setRange(0, 255);
     spinCorrelationSlider->setSingleStep(1);
-    spinCorrelationSlider->setValue(191);
+    spinCorrelationSlider->setValue(int(0.75*255));
 
     spinCorrelationSliderLabel->setFixedHeight(14);
 
@@ -131,9 +131,10 @@ void InPsightsWidget::onSpinCorrelationsChecked(int stateId) {
 }
 
 void InPsightsWidget::onSpinCorrelationsSliderChanged(int value) {
-    //if(spinConnectionsCheckBox_->checkState() == Qt::CheckState::Checked)
-    //    //TODO CONTINUE HERE
-
+    if(spinCorrelationsCheckBox->checkState() == Qt::CheckState::Checked){
+        onSpinCorrelationsChecked(Qt::CheckState::Unchecked); //TODO ugly, create update() function in SpinCorrelation3D and make it accessible
+        onSpinCorrelationsChecked(Qt::CheckState::Checked);
+    }
 }
 
 QSplashScreen *InPsightsWidget::createSplashScreen() {
