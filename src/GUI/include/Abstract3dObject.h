@@ -17,7 +17,7 @@ Q_OBJECT
 public:
     Abstract3dObject(Qt3DCore::QEntity *root, QColor color, const QVector3D &location, float alpha = 1.0);
 
-    QColor color() const { return color_; };
+    QColor color() const;
 
 protected:
     Qt3DExtras::QPhongAlphaMaterial *material;

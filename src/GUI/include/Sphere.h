@@ -19,8 +19,11 @@ public:
         mesh_->setRadius(radius);
     };
 
+public slots:
+    void highlight(bool highlightQ);
+
 private:
-    float radius_;
+    float radius_, oldAlpha_;
     Qt3DExtras::QSphereMesh* mesh_;
 };
 

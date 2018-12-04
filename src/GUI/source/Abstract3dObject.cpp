@@ -26,3 +26,6 @@ Abstract3dObject::Abstract3dObject(Qt3DCore::QEntity *root, QColor color, const 
   picker->setHoverEnabled(true);
 }
 
+QColor Abstract3dObject::color() const {
+    return color_;
+}

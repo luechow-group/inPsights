@@ -42,8 +42,7 @@ MoleculeWidget::MoleculeWidget(QWidget *parent)
     cameraController_->setLookSpeed(180.f);
     cameraController_->setCamera(qt3DWindow_->camera());
 
-    //setToolTip(QString("Hey there"));
-    //setMouseTracking(true);
+    setMouseTracking(true);
 }
 
 Qt3DCore::QEntity* MoleculeWidget::getRoot() {
