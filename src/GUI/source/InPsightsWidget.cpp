@@ -12,6 +12,8 @@
 #include <QSplashScreen>
 #include <QTimer>
 #include <QTreeWidgetItem>
+#include <iterator>
+#include <vector>
 
 InPsightsWidget::InPsightsWidget(QWidget *parent)
             :
@@ -91,13 +93,18 @@ InPsightsWidget::InPsightsWidget(QWidget *parent)
 
     void InPsightsWidget::selectedStructure(QTreeWidgetItem* item, int column) {
 
-        auto id = item->data(column,Qt::ItemDataRole::UserRole).toInt();
-        auto data = clusterCollection_[id];
+        if(column == 0) {
+            auto clusterId = item->data(0, Qt::ItemDataRole::UserRole).toInt();
+            auto structureId = item->data(1, Qt::ItemDataRole::UserRole).toInt();
 
-        if(item->checkState(column) == Qt::CheckState::Checked)
-            moleculeWidget_->addElectronsVector(data.representativeStructure(), id);
-        else
-            moleculeWidget_->removeElectronsVector(id);
+            if (item->checkState(0) == Qt::CheckState::Checked)
+                moleculeWidget_->addElectronsVector(clusterCollection_[clusterId].exemplaricStructures_[structureId],
+                        clusterId, structureId);
+            else
+                moleculeWidget_->removeElectronsVector(clusterId,structureId);
+        } else {
+            std::cout << "wrong column" << std::endl; // TODO treat properly
+        }
     };
 
     void InPsightsWidget::onAtomsChecked(int stateId){
@@ -147,26 +154,35 @@ QSplashScreen *InPsightsWidget::createSplashScreen() {
 
         auto Vnn = doc["Vnn"];
 
-        int id = 0;
-        for(YAML::const_iterator it = doc["Clusters"].begin(); it != doc["Clusters"].end();++it) {
+        for (int clusterId = 0; clusterId < static_cast<int>(doc["Clusters"].size()); ++clusterId) {
             //OneParticleEnergies::oneAtomEnergies(*it, Vnn);
             //OneParticleEnergies::oneElectronEnergies(*it);
 
-            ClusterData clusterData = (*it).as<ClusterData>();
+            ClusterData clusterData = doc["Clusters"][clusterId].as<ClusterData>();
 
             clusterCollection_.emplace_back(clusterData);
             auto item = new QTreeWidgetItem(QList<QString>({
-                QString::number(id),
+                QString::number(clusterId),
                 QString::number(clusterData.N_),
                 QString::number(clusterData.valueStats_.cwiseMin()[0]),
                 QString::number(clusterData.valueStats_.cwiseMax()[0])
             }));
 
             item->setCheckState(0,Qt::CheckState::Unchecked);
-            item->setData(0, Qt::ItemDataRole::UserRole, QVariant(id));
+            item->setData(0, Qt::ItemDataRole::UserRole, QVariant(clusterId));
+            item->setData(1, Qt::ItemDataRole::UserRole, QVariant(0)); // representative structure
+
+            auto structures = doc["Clusters"][clusterId]["Structures"];
+
+            for (int structure = 1; structure < static_cast<int>(structures.size()); ++structure) {
+                auto subItem = new QTreeWidgetItem(QList<QString>({QString::number(structure)}));
+                subItem->setCheckState(0,Qt::CheckState::Unchecked);
+                subItem->setData(0, Qt::ItemDataRole::UserRole, QVariant(clusterId));
+                subItem->setData(1, Qt::ItemDataRole::UserRole, QVariant(structure));
+                item->addChild(subItem);
+            }
 
             maximaList_->addTopLevelItem(item);
-            id++;
         }
         moleculeWidget_->setSharedAtomsVector(doc["Atoms"].as<AtomsVector>());
     }

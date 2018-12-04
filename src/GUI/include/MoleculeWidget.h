@@ -32,9 +32,9 @@ public:
 
     void drawBonds(bool drawQ);
 
-    void addElectronsVector(const ElectronsVector& electronsVector, int id = 0);
+    void addElectronsVector(const ElectronsVector& electronsVector, int clusterId = 0, int structureId = 0);
 
-    void removeElectronsVector(int id = 0);
+    void removeElectronsVector(int clusterId = 0, int structureId = 0);
 
     void setSharedAtomsVector(AtomsVector atomsVector);
 
@@ -48,7 +48,7 @@ public:
 private:
     std::shared_ptr<AtomsVector> sharedAtomsVector_;
     AtomsVector3D* atomsVector3D_;
-    std::map<int, ElectronsVector3D*> activeElectronsVectorsMap_;
+    std::map<int, std::map<int,ElectronsVector3D*>> activeElectronsVectorsMap_;
 };
 
 #endif //INPSIGHTS_MOLECULEWIDGET_H

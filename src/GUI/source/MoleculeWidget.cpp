@@ -16,16 +16,15 @@
 #include <SpinCorrelations3D.h>
 
 MoleculeWidget::MoleculeWidget(QWidget *parent)
-    :
-    QWidget(parent),
-    layout_(new QVBoxLayout(this)),
-    qt3DWindow_(new Qt3DExtras::Qt3DWindow()),
-    root_(new Qt3DCore::QEntity()),
-    moleculeEntity_(new Qt3DCore::QEntity(root_)),
-    cameraController_(new Qt3DExtras::QOrbitCameraController(root_)),
-    infoText_(new QLabel("Info text")),
-    atomsVector3D_(nullptr)
-{
+        :
+        QWidget(parent),
+        layout_(new QVBoxLayout(this)),
+        qt3DWindow_(new Qt3DExtras::Qt3DWindow()),
+        root_(new Qt3DCore::QEntity()),
+        moleculeEntity_(new Qt3DCore::QEntity(root_)),
+        cameraController_(new Qt3DExtras::QOrbitCameraController(root_)),
+        infoText_(new QLabel("Info text")),
+        atomsVector3D_(nullptr) {
     setLayout(layout_);
     layout_->addWidget(createWindowContainer(qt3DWindow_));
     layout_->addWidget(infoText_);
@@ -45,7 +44,7 @@ MoleculeWidget::MoleculeWidget(QWidget *parent)
     setMouseTracking(true);
 }
 
-Qt3DCore::QEntity* MoleculeWidget::getRoot() {
+Qt3DCore::QEntity *MoleculeWidget::getRoot() {
     return root_;
 }
 
@@ -56,7 +55,7 @@ Qt3DCore::QEntity* MoleculeWidget::getRoot() {
 }*/
 
 void MoleculeWidget::drawAtoms(bool drawQ) {
-    if(drawQ) {
+    if (drawQ) {
         atomsVector3D_ = new AtomsVector3D(moleculeEntity_, *sharedAtomsVector_);
     } else {
         atomsVector3D_->deleteConnections();
@@ -67,7 +66,7 @@ void MoleculeWidget::drawAtoms(bool drawQ) {
 }
 
 void MoleculeWidget::drawBonds(bool drawQ) {
-    if(atomsVector3D_) {
+    if (atomsVector3D_) {
         if (drawQ)
             atomsVector3D_->drawConnections();
         else
@@ -76,55 +75,57 @@ void MoleculeWidget::drawBonds(bool drawQ) {
 }
 
 void MoleculeWidget::drawSpinConnections(bool drawQ) {
-    if(drawQ)
-        for(auto& mapItem : activeElectronsVectorsMap_)
-            mapItem.second->drawConnections();
+    if (drawQ)
+        for (auto &cluster : activeElectronsVectorsMap_)
+            for (auto &structure : cluster.second)
+                structure.second->drawConnections();
     else
-        for(auto& mapItem : activeElectronsVectorsMap_)
-            mapItem.second->deleteConnections();
+        for (auto &cluster : activeElectronsVectorsMap_)
+            for (auto &structure : cluster.second)
+                structure.second->deleteConnections();
 }
 
-void MoleculeWidget::addElectronsVector(const ElectronsVector &electronsVector, int id) {
-    activeElectronsVectorsMap_.emplace(id,new ElectronsVector3D(moleculeEntity_, electronsVector));
+void MoleculeWidget::addElectronsVector(const ElectronsVector &electronsVector, int clusterId, int structureId) {
+    activeElectronsVectorsMap_[clusterId][structureId] = new ElectronsVector3D(moleculeEntity_, electronsVector);
 }
 
-void MoleculeWidget::removeElectronsVector(int id) {
-    activeElectronsVectorsMap_[id]->deleteLater();
-    activeElectronsVectorsMap_.erase(id);
+void MoleculeWidget::removeElectronsVector(int clusterId, int structureId) {
+    activeElectronsVectorsMap_[clusterId][structureId]->deleteLater();
+    activeElectronsVectorsMap_[clusterId].erase(structureId);
 }
 
 void MoleculeWidget::setSharedAtomsVector(AtomsVector atomsVector) {
-    sharedAtomsVector_ = std::make_shared<AtomsVector >(std::move(atomsVector));
+    sharedAtomsVector_ = std::make_shared<AtomsVector>(std::move(atomsVector));
 }
 
 void MoleculeWidget::drawSpinCorrelations(bool drawQ,
                                           const Statistics::RunningStatistics<Eigen::MatrixXd, unsigned, true> &SeeStats,
                                           int spinCorrelationThreshold) {
-  for(auto &mapItem : activeElectronsVectorsMap_) {
-      if(drawQ) {
-          new SpinCorrelations3D(mapItem.second, SeeStats, spinCorrelationThreshold);
-      } else {
-          std::cout << "off" << std::endl;
-          mapItem.second->correlations_->deleteLater();
-          mapItem.second->correlations_ = new Qt3DCore::QEntity(root_);
-          //mapItem.second->deleteCorrelations();
-          //activeElectronsVectorsMap_[mapItem.first]->deleteCorrelations();
-      }
-      //auto& connections =  electronsVector3D->iConnections_;
-      /*
-      if (drawQ) {
-          connections.emplace_back(
-                  new SpinCorrelations3D(electronsVector3D, SeeStats, spinCorrelationThreshold)
-                  );
-      } else {
-          for(auto it = connections.begin(); it !=  connections.end(); it++) {
-              // check if SpinCorrelations3D
-              auto castedIConnection = dynamic_cast<SpinCorrelations3D*>(*it);
-              if (castedIConnection) {
-                  castedIConnection->deleteLater();
-                  connections->erase(it);
-              }
-          }
-      }*/
-  }
+    // SPLIT INTO DRAW AND DELETE METHODS
+    for (auto &cluster : activeElectronsVectorsMap_)
+        for (auto &structure : cluster.second) {
+            if (drawQ) {
+                new SpinCorrelations3D(structure.second, SeeStats, spinCorrelationThreshold);
+            } else {
+                std::cout << "off" << std::endl;
+                structure.second->correlations_->deleteLater();
+                structure.second->correlations_ = new Qt3DCore::QEntity(root_);
+            }
+            //auto& connections =  electronsVector3D->iConnections_;
+            /*
+            if (drawQ) {
+                connections.emplace_back(
+                        new SpinCorrelations3D(electronsVector3D, SeeStats, spinCorrelationThreshold)
+                        );
+            } else {
+                for(auto it = connections.begin(); it !=  connections.end(); it++) {
+                    // check if SpinCorrelations3D
+                    auto castedIConnection = dynamic_cast<SpinCorrelations3D*>(*it);
+                    if (castedIConnection) {
+                        castedIConnection->deleteLater();
+                        connections->erase(it);
+                    }
+                }
+            }*/
+        }
 }
