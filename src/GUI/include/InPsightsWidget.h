@@ -5,6 +5,7 @@
 #ifndef INPSIGHTS_INPSIGHTSWIDGET_H
 #define INPSIGHTS_INPSIGHTSWIDGET_H
 
+#include <Logger.h>
 #include <MoleculeWidget.h>
 #include <QWidget>
 
@@ -34,11 +35,12 @@ public slots:
     void onSpinCorrelationsSliderChanged(int value);
 
 private:
-    MoleculeWidget *moleculeWidget_;
-    QCheckBox *atomsCheckBox_, *bondsCheckBox_, *spinConnectionsCheckBox_, *spinCorrelationsCheckBox_;
-    QSlider *spinCorrelationSlider_;
-    QLabel *spinCorrelationSliderLabel_;
-    QTreeWidget *maximaList_;
+    std::shared_ptr<spdlog::logger> console;
+    MoleculeWidget *moleculeWidget;
+    QCheckBox *atomsCheckBox, *bondsCheckBox, *spinConnectionsCheckBox, *spinCorrelationsCheckBox;
+    QSlider *spinCorrelationSlider;
+    QLabel *spinCorrelationSliderLabel;
+    QTreeWidget *maximaList;
     std::vector<ClusterData> clusterCollection_;
 
     QSplashScreen *createSplashScreen();

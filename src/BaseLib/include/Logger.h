@@ -6,6 +6,7 @@
 #define INPSIGHTS_LOGGER_H
 
 #include <string>
+#include <spdlog/spdlog.h>
 
 namespace Logger{
 

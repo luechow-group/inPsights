@@ -4,12 +4,16 @@
 
 #include <InPsightsWidget.h>
 #include <QApplication>
+#include <Logger.h>
 
 int main(int argc, char *argv[]) {
 
     Q_INIT_RESOURCE(myresources);
     QApplication app(argc, argv);
     setlocale(LC_NUMERIC,"C");
+
+    Logger::initialize();
+    spdlog::get(Logger::name)->info("Welcome to inPsights!");
 
     new InPsightsWidget();
 
