@@ -1,6 +1,6 @@
 <RCC>
     <qresource prefix="">
         <file alias="inPsights.png">inPsights.png</file>
-        <file alias="inPsightsIcon.png">inPsights.png</file>
+        <file alias="inPsightsIcon.png">inPsightsIcon.png</file>
     </qresource>
 </RCC>
