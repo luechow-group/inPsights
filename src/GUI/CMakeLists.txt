@@ -47,6 +47,7 @@ set(HEADER_FILES
         include/Bonds3D.h
         include/SpinConnections3D.h
         include/SpinCorrelations3D.h
+        include/SameSpinConnections3D.h
         )
 
 set(SOURCE_FILES
@@ -67,6 +68,7 @@ set(SOURCE_FILES
         source/SpinConnections3D.cpp
         source/SpinCorrelations3D.cpp
         source/InPsightsWidget.cpp
+        source/SameSpinConnections3D.cpp
         )
 
 add_library(${PROJECT_NAME} STATIC

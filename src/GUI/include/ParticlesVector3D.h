@@ -47,7 +47,7 @@ public slots:
 
     Qt3DCore::QEntity* connections_, *correlations_;
     std::vector<std::shared_ptr<Particle3D<Type>>> particles3D_;
-    std::vector<IConnection*> iConnections_;
+    std::vector<IConnection*> iConnections_;//TODO manage creation of connections
 };
 
 using AtomsVector3D = ParticlesVector3D<Element>;

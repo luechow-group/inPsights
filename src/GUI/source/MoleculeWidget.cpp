@@ -62,7 +62,6 @@ void MoleculeWidget::drawAtoms(bool drawQ) {
         atomsVector3D_->deleteLater();
         delete atomsVector3D_;
     }
-
 }
 
 void MoleculeWidget::drawBonds(bool drawQ) {

@@ -4,8 +4,7 @@
 
 #include <ParticlesVector3D.h>
 #include <Bonds3D.h>
-#include <SpinConnections3D.h>
-#include <SpinCorrelations3D.h>
+#include <SameSpinConnections3D.h>
 
 template <>
 void AtomsVector3D::drawConnections() {
@@ -14,7 +13,7 @@ void AtomsVector3D::drawConnections() {
 
 template <>
 void ElectronsVector3D::drawConnections() {
-    new SpinConnections3D(this);
+    new SameSpinConnections3D(this);
 }
 
 //void ElectronsVector3D::drawCorrelations() {}
