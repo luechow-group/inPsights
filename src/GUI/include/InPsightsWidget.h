@@ -23,6 +23,8 @@ public:
 public slots:
     void selectedStructure(QListWidgetItem* item);
 
+    void onAtomsChecked(int stateId);
+
     void onBondsChecked(int stateId);
 
     void onSpinConnectionsChecked(int stateId);
@@ -31,7 +33,7 @@ public slots:
 
 private:
     MoleculeWidget *moleculeWidget_;
-    QCheckBox *bondsCheckBox_, *spinConnectionsCheckBox_, *spinCorrelationsCheckBox_;
+    QCheckBox *atomsCheckBox_, *bondsCheckBox_, *spinConnectionsCheckBox_, *spinCorrelationsCheckBox_;
     QSlider *spinCorrelationSlider_;
     QLabel *spinCorrelationSliderLabel_;
     QListWidget *maximaList_;

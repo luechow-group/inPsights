@@ -56,17 +56,23 @@ Qt3DCore::QEntity* MoleculeWidget::getRoot() {
 }*/
 
 void MoleculeWidget::drawAtoms(bool drawQ) {
-    if(drawQ)
+    if(drawQ) {
         atomsVector3D_ = new AtomsVector3D(moleculeEntity_, *sharedAtomsVector_);
-    else
+    } else {
+        atomsVector3D_->deleteConnections();
         atomsVector3D_->deleteLater();
+        delete atomsVector3D_;
+    }
+
 }
 
 void MoleculeWidget::drawBonds(bool drawQ) {
-    if(drawQ)
-        atomsVector3D_->drawConnections();
-    else
-        atomsVector3D_->deleteConnections();
+    if(atomsVector3D_) {
+        if (drawQ)
+            atomsVector3D_->drawConnections();
+        else
+            atomsVector3D_->deleteConnections();
+    }
 }
 
 void MoleculeWidget::drawSpinConnections(bool drawQ) {

@@ -16,6 +16,7 @@ InPsightsWidget::InPsightsWidget(QWidget *parent)
             :
             QWidget(parent),
             moleculeWidget_(new MoleculeWidget(this)),
+            atomsCheckBox_(new QCheckBox("Atoms", this)),
             bondsCheckBox_(new QCheckBox("Bonds", this)),
             spinConnectionsCheckBox_(new QCheckBox("Spin Connections", this)),
             spinCorrelationsCheckBox_(new QCheckBox("Spin Correlations", this)),
@@ -43,6 +44,7 @@ InPsightsWidget::InPsightsWidget(QWidget *parent)
         vboxOuter->addWidget(gbox);
         gbox->setLayout(vboxInner);
 
+        vboxInner->addWidget(atomsCheckBox_);
         vboxInner->addWidget(bondsCheckBox_);
         vboxInner->addWidget(spinConnectionsCheckBox_);
         vboxInner->addWidget(spinCorrelationsCheckBox_);
@@ -52,6 +54,9 @@ InPsightsWidget::InPsightsWidget(QWidget *parent)
 
         QObject::connect(maximaList_, SIGNAL(itemChanged(QListWidgetItem*)),
                          this, SLOT(selectedStructure(QListWidgetItem*)));
+
+        QObject::connect(atomsCheckBox_, SIGNAL(stateChanged(int)),
+                         this, SLOT(onAtomsChecked(int)));
 
         QObject::connect(bondsCheckBox_, SIGNAL(stateChanged(int)),
                          this, SLOT(onBondsChecked(int)));
@@ -92,6 +97,10 @@ InPsightsWidget::InPsightsWidget(QWidget *parent)
         else
             moleculeWidget_->removeElectronsVector(id);
     };
+
+    void InPsightsWidget::onAtomsChecked(int stateId){
+        moleculeWidget_->drawAtoms(Qt::CheckState(stateId) == Qt::CheckState::Checked);
+    }
 
     void InPsightsWidget::onBondsChecked(int stateId){
         moleculeWidget_->drawBonds(Qt::CheckState(stateId) == Qt::CheckState::Checked);
@@ -152,7 +161,7 @@ QSplashScreen *InPsightsWidget::createSplashScreen() {
     }
 
     void InPsightsWidget::initialView(){
-        moleculeWidget_->drawAtoms();
+        atomsCheckBox_->setCheckState(Qt::CheckState::Checked);
         bondsCheckBox_->setCheckState(Qt::CheckState::Checked);
         maximaList_->item(0)->setCheckState(Qt::CheckState::Checked);
         spinConnectionsCheckBox_->setCheckState(Qt::CheckState::Checked);

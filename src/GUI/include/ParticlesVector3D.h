@@ -20,10 +20,21 @@ public:
             correlations_(new Qt3DCore::QEntity(this)),
             particles3D_(0) {
 
-        for (long i = 0; i < ParticlesVector<Type>::numberOfEntities(); ++i) {
+        drawParticles(true);
+        /*for(long i = 0; i < ParticlesVector<Type>::numberOfEntities(); ++i) {
             particles3D_.emplace_back(new Particle3D<Type>(this, particlesVector.linkedParticle(i)));
-        }
+        }*/
     };
+
+public slots:
+    void drawParticles(bool drawQ = true) {
+        if(drawQ && particles3D_.empty())
+            for(long i = 0; i < ParticlesVector<Type>::numberOfEntities(); ++i)
+                particles3D_.emplace_back(new Particle3D<Type>(this, this->linkedParticle(i)));
+        else
+            for(auto it = particles3D_.begin(); it != particles3D_.end(); it++)
+                particles3D_.erase(it);
+};
 
     void drawConnections() {};
 
