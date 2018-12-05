@@ -14,12 +14,10 @@ ParticlesVectorPath3D::ParticlesVectorPath3D(Qt3DCore::QEntity *root,
 
     auto numberOfParticles = electronsVectorCollection[0].numberOfEntities();
     std::vector<std::vector<QVector3D>> pointsList(numberOfParticles);
-    for (unsigned i = 0; i < numberOfParticles; ++i) { // iterate over particles
+    for (long i = 0; i < numberOfParticles; ++i) { // iterate over particles
 
-        for (int j = 0; j < electronsVectorCollection.numberOfEntities(); ++j) {
-            auto tmp = electronsVectorCollection[j][i].position();
-            pointsList[i].emplace_back(QVector3D(float(tmp(0)),float(tmp(1)),float(tmp(2))));
-        }
+        for (long j = 0; j < electronsVectorCollection.numberOfEntities(); ++j)
+            pointsList[i].emplace_back(GuiHelper::toQVector3D(electronsVectorCollection[j][i].position()));
 
         auto spinType = electronsVectorCollection.typesVector()[i];
 

@@ -11,7 +11,7 @@
 
 namespace Visualization {
 
-    ElectronsVectorCollection shortenPath(const ElectronsVectorCollection &optimizationPath, const unsigned long &nwanted) {
+    ElectronsVectorCollection shortenPath(const ElectronsVectorCollection &optimizationPath, long nwanted) {
         ElectronsVectorCollection visualizationPath(optimizationPath[0]);
 
         double optPathLength = 0.0;
@@ -25,9 +25,9 @@ namespace Visualization {
 
         double stepLength = optPathLength / (nwanted - 1);
 
-        unsigned long index = 0;
+        long index = 0;
         // start at 1 because visualization Path already contains optpath[0]
-        for (unsigned long i = 1; i < nwanted; i++) {
+        for (long i = 1; i < nwanted; i++) {
             index = 0;
             for (long j = 1; j < optimizationPath.numberOfEntities(); j++){
                 if (fabs(pathLengthVector[j] - i * stepLength) <
@@ -43,7 +43,7 @@ namespace Visualization {
     int visualizeOptPath(int &argc, char **argv,
                        const AtomsVector &atoms,
                        const ElectronsVectorCollection &optimizationPath,
-                       const unsigned long &nwanted) {
+                       long nwanted) {
 
         QApplication app(argc, argv);
         setlocale(LC_NUMERIC,"C");
@@ -73,7 +73,7 @@ namespace Visualization {
 }
 
 void Visualization::drawEigenVector(Qt3DCore::QEntity *root,
-                                    const Eigen::MatrixXd eigenvectors,
+                                    const Eigen::MatrixXd &eigenvectors,
                                     const Eigen::VectorXd &origin,
                                     int eigenvectorIndex) {
 
@@ -84,13 +84,9 @@ void Visualization::drawEigenVector(Qt3DCore::QEntity *root,
 
 
     for (int i = 0; i < eigenvectors.rows()/3; ++i) {
-        QVector3D v1(origin(i*3+0),
-                     origin(i*3+1),
-                     origin(i*3+2));
+        QVector3D v1(GuiHelper::toQVector3D(Eigen::Vector3d(origin.segment(i,3))));
         QVector3D v2 = v1;
-        QVector3D ev(eigenvectors.col(eigenvectorIndex)(i*3+0),
-                     eigenvectors.col(eigenvectorIndex)(i*3+1),
-                     eigenvectors.col(eigenvectorIndex)(i*3+2));
+        QVector3D ev(GuiHelper::toQVector3D(Eigen::Vector3d(eigenvectors.col(eigenvectorIndex).segment(i,3))));
         v2 += ev;
         std::vector<QVector3D> points = {v1, v2};
         Polyline pl(root, QColor(Qt::black), points, 0.01, true);

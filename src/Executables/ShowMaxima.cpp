@@ -6,7 +6,6 @@
 #include "RefFileImporter.h"
 #include <MoleculeWidget.h>
 #include <ParticlesVector3D.h>
-
 #include <QApplication>
 #include <iostream>
 #include <exception>

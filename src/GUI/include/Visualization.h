@@ -16,13 +16,13 @@ namespace Visualization {
     int visualizeOptPath(int &argc, char **argv,
                          const AtomsVector &atoms,
                          const ElectronsVectorCollection &optimizationPath,
-                         const unsigned long &nwanted = 300);
+                         long nwanted = 300);
 
     ElectronsVectorCollection shortenPath(const ElectronsVectorCollection &optimizationPath,
-                                          const unsigned long &nwanted);
+                                          long nwanted);
 
     void drawEigenVector(Qt3DCore::QEntity *root,
-                         const Eigen::MatrixXd eigenvectors,
+                         const Eigen::MatrixXd &eigenvectors,
                          const Eigen::VectorXd &origin, int eigenvectorIndex);
 }
 
