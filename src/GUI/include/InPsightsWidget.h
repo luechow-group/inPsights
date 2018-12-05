@@ -7,7 +7,7 @@
 
 #include <Logger.h>
 #include <MoleculeWidget.h>
-#include <QWidget>
+#include <EnergyPartitioningWidget.h>
 
 #include <QCheckBox>
 #include <QSlider>
@@ -32,6 +32,7 @@ public slots:
 private:
     std::shared_ptr<spdlog::logger> console;
     MoleculeWidget *moleculeWidget;
+    EnergyPartitioningWidget *energyPartitioningWidget;
     QCheckBox *atomsCheckBox, *bondsCheckBox, *spinConnectionsCheckBox, *spinCorrelationsCheckBox;
     QSlider *spinCorrelationSlider;
     QLabel *spinCorrelationSliderLabel;

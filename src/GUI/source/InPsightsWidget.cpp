@@ -22,6 +22,7 @@ InPsightsWidget::InPsightsWidget(QWidget *parent)
         QWidget(parent),
         console(spdlog::get(Logger::name)),
         moleculeWidget(new MoleculeWidget(this)),
+        energyPartitioningWidget(new EnergyPartitioningWidget()), // additional window
         atomsCheckBox(new QCheckBox("Atoms", this)),
         bondsCheckBox(new QCheckBox("Bonds", this)),
         spinConnectionsCheckBox(new QCheckBox("Spin Connections", this)),
@@ -30,12 +31,15 @@ InPsightsWidget::InPsightsWidget(QWidget *parent)
         spinCorrelationSliderLabel(new QLabel(this)),
         maximaList(new QTreeWidget(this)) {
 
+    energyPartitioningWidget->show(); //TODO put at the end after testing
+
     loadData();
     showSplashScreen();
     createWidget();
     connectSignals();
     initialView();
     show();
+
 }
 
 void InPsightsWidget::createWidget() {
