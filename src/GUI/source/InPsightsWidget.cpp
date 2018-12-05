@@ -29,7 +29,7 @@ InPsightsWidget::InPsightsWidget(QWidget *parent)
         spinCorrelationSlider(new QSlider(Qt::Orientation::Horizontal, this)),
         spinCorrelationSliderLabel(new QLabel(this)),
         maximaList(new QTreeWidget(this)) {
-    auto splashScreen = createSplashScreen();
+
     setWindowIcon(QIcon(":inPsightsIcon.png"));
     setWindowTitle("inPsights - Chemical insights from |Ψ|².");
 
@@ -65,6 +65,7 @@ InPsightsWidget::InPsightsWidget(QWidget *parent)
 
     sliderBox->addWidget(spinCorrelationSliderLabel);
     sliderBox->addWidget(spinCorrelationSlider);
+
     setupSliderBox();
 
     QObject::connect(maximaList, SIGNAL(itemChanged(QTreeWidgetItem * , int)),
@@ -88,10 +89,10 @@ InPsightsWidget::InPsightsWidget(QWidget *parent)
 
 
 
-    spinCorrelationSliderLabel->setFixedHeight(14);
-
-    QTimer::singleShot(1000, splashScreen, SLOT(close()));
-    QTimer::singleShot(1000, this, SLOT(show()));
+    //auto splashScreen = createSplashScreen();
+    //QTimer::singleShot(1000, splashScreen, SLOT(close()));
+    //QTimer::singleShot(1000, this, SLOT(show()));
+    show();
 
     update();
     initialView();
@@ -221,5 +222,6 @@ void InPsightsWidget::initialView() {
     bondsCheckBox->setCheckState(Qt::CheckState::Checked);
     maximaList->topLevelItem(0)->setCheckState(0, Qt::CheckState::Checked);
     spinConnectionsCheckBox->setCheckState(Qt::CheckState::Checked);
+    spinCorrelationsCheckBox->setCheckState(Qt::CheckState::Checked);
     updateSpinCorrelationSliderLabel(spinCorrelationSlider->value());
 }

@@ -26,8 +26,7 @@ int main(int argc, char *argv[]) {
      * - debug linkedParticles
      * GUI
      * - state machine for buttons
-     * - show correlation lines
-     * - tree view
+    
      * - energy view
      * - mouse events
      *  - energy view triggers atom hightlight
