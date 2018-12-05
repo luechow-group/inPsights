@@ -1,3 +1,5 @@
+#include <utility>
+
 //
 // Created by heuer on 06.12.16.
 //
@@ -11,23 +13,20 @@ Cylinder::Cylinder(Qt3DCore::QEntity *root,
                    const std::pair<QVector3D, QVector3D>& pair,
                    float radius,
                    float alpha)
-  : Abstract3dObject(root, QColor(), GuiHelper::midPointVector(pair)),
+  : Abstract3dObject(root, std::move(color), GuiHelper::midPointVector(pair), alpha),
     radius_(radius),
     start_(pair.first),
     end_(pair.second),
-    mesh_(new Qt3DExtras::QCylinderMesh(root)) {
+    mesh_(new Qt3DExtras::QCylinderMesh(this)) {
 
     mesh_->setRadius(radius);
     mesh_->setLength(length());
     mesh_->setRings(8);
     mesh_->setSlices(16);
-    material->setAlpha(alpha);
 
     rotateToOrientation(difference());
 
-    material->setAmbient(color);
-
-    entity->addComponent(mesh_);
+    addComponent(mesh_);
 }
 
 void Cylinder::rotateToOrientation(const QVector3D &orientation) {

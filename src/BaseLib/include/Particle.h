@@ -13,27 +13,72 @@
 #include "SpinType.h"
 #include "EigenYamlConversion.h"
 
+#include <memory>
+
+template <typename Type> class LinkedParticle{
+public:
+
+    LinkedParticle(
+            const Eigen::Ref<Eigen::Vector3d> &positionRef,
+            int* typeNameRef)
+    : position_(positionRef), type_(typeNameRef)
+    {}
+
+    Eigen::Ref<Eigen::Vector3d>& positionRef(){
+        return position_;
+    }
+
+    Eigen::Vector3d position() const {
+        return Eigen::Vector3d(position_);
+    }
+
+    virtual void setPosition(const Eigen::Vector3d & position){
+        position_ = position;
+    }
+
+    Type type() const {
+        return static_cast<Type>(*type_);
+    }
+
+    int* typeRef(){
+        return type_;
+    }
+
+    void setType(const Type & type){
+        *type_ = static_cast<int>(type);
+    }
+
+private:
+    Eigen::Ref<Eigen::Vector3d> position_;
+    int* type_;
+};
+
+
 template<typename Type>
 class Particle {
 public:
     Particle()
-            : position_(Eigen::Vector3d::Zero()),
-              type_(0)
+            : Particle(Eigen::Vector3d::Zero(), 0)
     {}
 
-    Particle(Type type, const Eigen::Vector3d &position)
-            : position_(position), type_(int(type))
+    Particle(Type type, Eigen::Vector3d position)
+            : Particle(position, int(type))
     {}
 
-    Particle(const Eigen::Vector3d& position, int typeId = 0)
-            : position_(position), type_(typeId){}
+    Particle(Eigen::Vector3d position, int typeId = 0)
+            : position_(std::move(position)), type_(typeId)
+    {}
 
     const Eigen::Vector3d& position() const{
         return position_;
     }
 
-    Eigen::Vector3d& position() {
-        return position_;
+    virtual void setPosition(const Eigen::Vector3d& position) {
+        position_ = position;
+    }
+
+    void translate(const Eigen::Vector3d& shift){
+        setPosition(position()+shift);
     }
 
     Type type() const{
@@ -56,7 +101,7 @@ public:
         return os;
     }
 
-    //Generic
+    //Generic particles are not charged
     int charge() const{
         return 0;
     }

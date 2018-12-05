@@ -2,7 +2,7 @@
 // Created by Michael Heuer on 29.10.17.
 //
 
-#include <gtest/gtest.h>
+#include <gmock/gmock.h>
 #include <ParticlesVector.h>
 #include <sstream>
 
@@ -40,9 +40,18 @@ TEST_F(AParticlesVectorTest, BraceInitialization) {
     );
 }
 
-//TEST_F(AParticlesVectorTest, CopyConstructor) {
-//    EXPECT_TRUE(false);
-//}
+TEST_F(AParticlesVectorTest, CopyConstructor) {
+
+    auto electronsCopy = electrons;
+
+    ASSERT_EQ(electronsCopy[0].type(),e0.type());
+    ASSERT_EQ(electronsCopy[1].type(),e1.type());
+    ASSERT_EQ(electronsCopy[2].type(),e2.type());
+
+    ASSERT_EQ(electronsCopy[0].position(),e0.position());
+    ASSERT_EQ(electronsCopy[1].position(),e1.position());
+    ASSERT_EQ(electronsCopy[2].position(),e2.position());
+}
 
 TEST_F(AParticlesVectorTest, SpinTypeParticlesVector) {
     std::stringstream stringstream;
@@ -121,4 +130,33 @@ TEST_F(AParticlesVectorTest, IntegrationTest_PermuteAndTranslateAlphaElectrons){
     ASSERT_EQ(e[0].position(),e0.position()+Vector3d(0,0,0.5));
     ASSERT_EQ(e[1].position(),e1.position()+Vector3d(0,0,0.5));
     ASSERT_EQ(e[2].position(),e2.position());
+}
+
+TEST_F(AParticlesVectorTest, LinkedParticles){
+    ElectronsVector e = electrons;
+
+    auto l0 = e.linkedParticle(0);
+    auto l1 = e.linkedParticle(1);
+    auto l2 = e.linkedParticle(2);
+
+    ASSERT_EQ(e[0].type(),l0->type());
+    ASSERT_EQ(e[1].type(),l1->type());
+    ASSERT_EQ(e[2].type(),l2->type());
+
+    ASSERT_EQ(e[0].position(),l0->position());
+    ASSERT_EQ(e[1].position(),l1->position());
+    ASSERT_EQ(e[2].position(),l2->position());
+
+    auto changed = Eigen::Vector3d({1,1,1});
+    l1->setPosition(changed);
+    l2->setType(Spin::none);
+
+
+    ASSERT_EQ(e[0].type(),l0->type());
+    ASSERT_EQ(e[1].type(),l1->type());
+    ASSERT_EQ(e[2].type(),Spin::none);
+
+    ASSERT_EQ(e[0].position(),l0->position());
+    ASSERT_EQ(e[1].position(),changed);
+    ASSERT_EQ(e[2].position(),l2->position());
 }

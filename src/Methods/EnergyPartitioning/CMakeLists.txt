@@ -17,10 +17,14 @@ set(HEADER_FILES
         include/GlobalClusterSorter.h
         include/EnergyCalculator.h
         include/SimilarReferences.h
+        include/OneParticleEnergies.h
+        include/ClusterData.h
         )
 
 set(SOURCE_FILES
         source/RawDataReader.cpp
+        source/OneParticleEnergies.cpp
+        source/ClusterData.cpp
         )
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES})

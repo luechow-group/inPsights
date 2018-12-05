@@ -13,8 +13,6 @@ class Polyline : public Abstract3dObject{
 public:
     Polyline(Qt3DCore::QEntity *root, QColor color, const std::vector<QVector3D> points, const float radius,
              bool arrowTipQ = false);
-    ~Polyline(){};
-
 private:
     std::vector<QVector3D> points_;
     std::vector<Cylinder*> cylinders_;

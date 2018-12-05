@@ -15,13 +15,12 @@
 #include <Qt3DExtras>
 
 #include "MoleculeWidget.h"
-#include "AtomsVector3D.h"
-#include "ElectronsVector3D.h"
+#include "ParticlesVector3D.h"
 
 #include <TypesVector.h>
 #include "Sphere.h"
 #include "Bond3D.h"
-#include "Electron3D.h"
+#include "Particle3D.h"
 #include "Polyline.h"
 
 #include "WfFileImporter.h"
@@ -185,14 +184,14 @@ initialCoordinates.row((18 - 1) * 3 + 2) -= 0.05 * bend;//z bend
 
     //visualization
     auto moleculeWidget = new MoleculeWidget();
-    auto root = moleculeWidget->getRoot();
+    auto root = moleculeWidget->getMoleculeEntity();
 
     // draw molecular geometry
     std::cout << "wf:" << ElectronicWaveFunction::getInstance().getFileName() << std::endl;
     WfFileImporter waveFunctionParser(ElectronicWaveFunction::getInstance().getFileName());
 
     AtomsVector3D molecularGeometry3D(root, waveFunctionParser.getAtomsVector());
-    ElectronsVector3D(root, ElectronicWaveFunction::getInstance().getElectronsVector(), true);
+    ElectronsVector3D(root, ElectronicWaveFunction::getInstance().getElectronsVector());
 
 
     //Draw tsguess

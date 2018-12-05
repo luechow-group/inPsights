@@ -40,7 +40,7 @@ public:
       int p = arcLengthParametrizedBSpline.getDegree();
       int nCP = arcLengthParametrizedBSpline.getControlPointNumber();
       for (int j = 0+p; j < U.size()-p; ++j) {
-        //Polyline pl(root, Spin::QColorFromSpinType(Spin::Alpha), pointsList[j], radius, true);
+        //Polyline pl(root, Spin::QColorFromType<Spin>(Spin::Alpha), pointsList[j], radius, true);
         Eigen::VectorXd uStructure= arcLengthParametrizedBSpline.reducedEvaluate(U(j), 0).tail(reducedDim);
 
         for (int k = 0; k < reducedDim/3; ++k) {
@@ -53,10 +53,10 @@ public:
       }*/
 
       for (int j = 0; j < pointsList.size()/2; ++j) {
-        new Polyline(root, Spins::QColorFromSpinType(Spin::alpha), pointsList[j], radius, true);
+        new Polyline(root, GuiHelper::QColorFromType<Spin>(Spin::alpha), pointsList[j], radius, true);
       }
       for (int j = pointsList.size()/2; j < pointsList.size(); ++j) {
-       new Polyline(root, Spins::QColorFromSpinType(Spin ::beta), pointsList[j], radius, true);
+       new Polyline(root, GuiHelper::QColorFromType<Spin>(Spin ::beta), pointsList[j], radius, true);
       }
 
     }

@@ -68,7 +68,7 @@ unsigned long WfFileImporter::getNumberOfElectrons() {
   ElementTypesVector etc = getAtomsVector().typesVector();
   unsigned long numberOfElectrons = 0;
 
-  for (unsigned long i = 0; i < etc.numberOfEntities(); ++i) {
+  for (long i = 0; i < etc.numberOfEntities(); ++i) {
     numberOfElectrons += Elements::ElementInfo::Z(etc[i]);
   }
   numberOfElectrons -= charge_;

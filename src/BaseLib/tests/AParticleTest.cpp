@@ -2,7 +2,7 @@
 // Created by Michael Heuer on 29.10.17.
 //
 
-#include <gtest/gtest.h>
+#include <gmock/gmock.h>
 #include <Particle.h>
 #include <sstream>
 
@@ -17,6 +17,12 @@ public:
 
     void SetUp() override {};
 };
+
+TEST_F(AParticleTest, DefaultConstructor) {
+    Electron electron2;
+    ASSERT_EQ(electron2.position(), Eigen::Vector3d::Zero());
+    ASSERT_EQ(electron2.type(), Spins::SpinType::none);
+}
 
 TEST_F(AParticleTest, Constructor) {
     Electron electron2(Spin::alpha,pos1);

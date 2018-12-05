@@ -6,24 +6,13 @@
 #define INPSIGHTS_BOND3D_H
 
 #include "DividedCylinder.h"
-#include "Atom3D.h"
+#include "Particle3D.h"
+#include <Particle.h>
 
 class Bond3D : public DividedCylinder {
 public:
-  Bond3D(const Atom3D& src, const Atom3D& dest);
-  //Bond3D(Atom* src, Atom* dest);
+  Bond3D(Qt3DCore::QEntity* root, const Atom3D& src, const Atom3D& dest); //TODO why use const ref?
 
-private:
-  const Atom3D& src_,dest_;
 };
-
-/* TODO delete if not needed
-#include "Cylinder.h"
-#include "Atom.h"
-class Bond3D : public Cylinder {
-public:
-  //Bond3D(Qt3DCore::QEntity* root, Atom* src, Atom* dest);
-  Bond3D(Qt3DCore::QEntity* root,const Atom& src, const Atom& dest);
-};*/
 
 #endif //INPSIGHTS_BOND3D_H

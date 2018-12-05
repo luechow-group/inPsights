@@ -2,42 +2,30 @@
 // Created by heuer on 06.12.16.
 //
 
-#include "Abstract3dObject.h"
-
 #include <iostream>
+#include <Abstract3dObject.h>
+#include <Eigen/Core>
 
-Abstract3dObject::Abstract3dObject(Qt3DCore::QEntity *root, QColor color, const QVector3D& location)
+Abstract3dObject::Abstract3dObject(Qt3DCore::QEntity *root, QColor color, const QVector3D& location, float alpha)
   : QEntity(root),
-    color_(color),
-    alpha_(1.0f),
-    location_(location)
+    material(new Qt3DExtras::QPhongAlphaMaterial(this)),
+    transform(new Qt3DCore::QTransform),
+    picker(new Qt3DRender::QObjectPicker),
+    color_(std::move(color))
 {
-
-  entity = new Qt3DCore::QEntity(root);
-  material = new Qt3DExtras::QPhongAlphaMaterial(root);
-  transform = new Qt3DCore::QTransform;
-  //picker = new Qt3DRender::QObjectPicker;
-
   material->setSpecular(Qt::white);
   material->setShininess(0);
   material->setAmbient(color);
-  material->setAlpha(1.0f);
+  material->setAlpha(alpha);
   transform->setTranslation(location);
 
-  entity->addComponent(transform);
-  entity->addComponent(material);
-  //entity->addComponent(picker);
+  addComponent(transform);
+  addComponent(material);
+  addComponent(picker);
 
-  //connect(picker, &Qt3DRender::QObjectPicker::pressedChanged, this, &Abstract3dObject::onPressed);
+  picker->setHoverEnabled(true);
 }
 
-void Abstract3dObject::setAlpha(float alpha) {
-  alpha_ = alpha;
-  material->setAlpha(alpha);
-};
-
-/*
-void Abstract3dObject::onPressed(bool pressed) {
-  if (pressed) std::cout << "pressed" << std::endl;
-  else std::cout << "not pressed" << std::endl;
-}*/
+QColor Abstract3dObject::color() const {
+    return color_;
+}

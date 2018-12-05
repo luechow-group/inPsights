@@ -14,7 +14,7 @@ Cone::Cone(Qt3DCore::QEntity *root,
           bottomRadius_(bottomRadius),
           start_(pair.first),
           end_(pair.second),
-          mesh_(new Qt3DExtras::QConeMesh(root)) {
+          mesh_(new Qt3DExtras::QConeMesh(this)) {
 
   mesh_->setTopRadius(topRadius);
   mesh_->hasTopEndcapChanged(true);
@@ -30,7 +30,7 @@ Cone::Cone(Qt3DCore::QEntity *root,
 
   material->setAmbient(color);
 
-  entity->addComponent(mesh_);
+  addComponent(mesh_);
 }
 
 void Cone::rotateToOrientation(const QVector3D &orientation) {

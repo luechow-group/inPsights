@@ -2,7 +2,7 @@
 // Created by Michael Heuer on 22.06.18.
 //
 
-#include <gtest/gtest.h>
+#include <gmock/gmock.h>
 #include <sstream>
 #include <TestMolecules.h>
 #include <yaml-cpp/yaml.h>

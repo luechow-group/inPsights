@@ -3,9 +3,11 @@
 //
 
 #include <iostream>
-#include "../AmolqcInterface/AmolqcFileImport/include/WfFileImporter.h"
-#include "../AmolqcInterface/AmolqcFileImport/include/OptimizationPathFileImporter.h"
+#include <WfFileImporter.h>
+#include <OptimizationPathFileImporter.h>
 #include <Visualization.h>
+#include <MoleculeWidget.h>
+#include <ParticlesVectorPath3D.h>
 
 bool handleCommandlineArguments(int argc, char **argv,
                                 std::string &pathFilename,
@@ -48,10 +50,31 @@ int main(int argc, char *argv[]) {
         if (!inputArgumentsFoundQ) return 0;
     }
 
+    QApplication app(argc, argv);
+    setlocale(LC_NUMERIC,"C");
 
     OptimizationPathFileImporter optimizationPathFileImporter(pathFilename);
     auto path = optimizationPathFileImporter.getPath(pathId);
     auto atoms = optimizationPathFileImporter.getAtomsVector();
 
-    return Visualization::visualizeOptPath(argc, argv, atoms, path);
+    long nWanted = 1000;
+    ElectronsVectorCollection visualizationPath;
+    if (nWanted < path.numberOfEntities())
+        visualizationPath = Visualization::shortenPath(path, nWanted);
+    else 
+        visualizationPath = path;
+
+    auto moleculeWidget = new MoleculeWidget();
+    moleculeWidget->setSharedAtomsVector(atoms);
+    moleculeWidget->addElectronsVector(visualizationPath[-1]); // Last ElectronsVector of the path
+    moleculeWidget->drawAtoms();
+    moleculeWidget->drawBonds();
+
+    ParticlesVectorPath3D(moleculeWidget->getMoleculeEntity(), visualizationPath);
+
+    moleculeWidget->infoText_->setText(QString::fromStdString(pathFilename));
+    moleculeWidget->resize(1024,768);
+    moleculeWidget->show();
+
+    return app.exec();
 }

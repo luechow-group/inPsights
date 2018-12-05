@@ -26,7 +26,6 @@ public:
     void rotateAroundOrigin(double angle, const Eigen::Vector3d &axisDirection, const Usage& usage = Usage::Standard);
     void rotate(double angle, const Eigen::Vector3d &center, const Eigen::Vector3d &axisDirection, const Usage& usage = Usage::Standard);
 
-
     Eigen::Vector3d operator[](long i) const;
 
     bool operator==(const PositionsVector& other) const;

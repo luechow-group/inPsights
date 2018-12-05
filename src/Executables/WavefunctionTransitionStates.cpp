@@ -10,8 +10,7 @@
 #include "ElectronicWaveFunctionProblem.h"
 #include "Serialization.h"
 #include "MoleculeWidget.h"
-#include "ElectronsVector3D.h"
-#include "AtomsVector3D.h"
+#include "ParticlesVector3D.h"
 #include "LocalNewtonSearch.h"
 #include "Visualization.h"
 #include "RefFileImporter.h"
@@ -144,7 +143,7 @@ int main(int argc, char *argv[]) {
 
         // Visualization
         auto moleculeWidget = new MoleculeWidget();
-        auto root = moleculeWidget->getRoot();
+        auto root = moleculeWidget->getMoleculeEntity();
 
         // Plot atoms
         AtomsVector3D(root, av);

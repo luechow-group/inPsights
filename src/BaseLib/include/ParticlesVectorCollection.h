@@ -81,8 +81,8 @@ public:
 
     void insert(const ParticlesVector<Type> &particlesVector, long i) {
         if (typesVector_.numberOfEntities() != 0) {
-            assert(typesVector_.asEigenVector()
-                   == particlesVector.typesVector().asEigenVector());
+            assert(typesVector_.asEigenVector() == particlesVector.typesVector().asEigenVector()
+            && "Typevectors must be identical.");
         }
         else{
             typesVector_ = particlesVector.typesVector();
@@ -105,7 +105,7 @@ public:
     }
 
     friend std::ostream& operator<<(std::ostream& os, const ParticlesVectorCollection<Type> & pvc){
-        for (unsigned long i = 0; i < pvc.numberOfEntities(); i++) {
+        for (long i = 0; i < pvc.numberOfEntities(); i++) {
 
             os << "Vector " <<std::to_string(i + 1) << ":"
                << std::endl

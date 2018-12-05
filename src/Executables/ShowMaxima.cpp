@@ -5,9 +5,7 @@
 #include <Serialization.h>
 #include "RefFileImporter.h"
 #include <MoleculeWidget.h>
-#include <AtomsVector3D.h>
-#include <ElectronsVector3D.h>
-
+#include <ParticlesVector3D.h>
 #include <QApplication>
 #include <iostream>
 #include <exception>
@@ -55,15 +53,18 @@ int main(int argc, char *argv[]) {
     auto atoms = refFileImporter.getAtomsVector();
     auto electrons = refFileImporter.getMaximaStructure(k,m);
 
-    // Visualization
     QApplication app(argc, argv);
     setlocale(LC_NUMERIC,"C");
 
     auto moleculeWidget = new MoleculeWidget();
-    auto root = moleculeWidget->getRoot();
-
-    AtomsVector3D(root, atoms);
-    ElectronsVector3D(root, atoms, electrons, false);
+    moleculeWidget->setSharedAtomsVector(atoms);
+    moleculeWidget->addElectronsVector(electrons);
+    moleculeWidget->drawAtoms();
+    moleculeWidget->drawBonds();
+    moleculeWidget->drawSpinConnections();
+    moleculeWidget->infoText_->setText(QString::fromStdString(refFilename));
+    moleculeWidget->resize(1024,768);
+    moleculeWidget->show();
 
     return app.exec();
 };

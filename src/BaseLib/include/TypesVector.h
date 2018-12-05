@@ -18,7 +18,7 @@ public:
 
     // unsigned long dummy is there to be specialized in TypesVector<Spin::SpinTypes>
     TypesVector(unsigned long size = 0, unsigned long dummy = 0)
-    : InsertableVector<int>(size)
+    : InsertableVector<int>(long(size))
     {
         resetRef();
     }
@@ -72,7 +72,7 @@ public:
     }
 
     friend std::ostream& operator<<(std::ostream& os, const TypesVector& tv){
-        for (unsigned long i = 0; i < tv.numberOfEntities(); i++) {
+        for (long i = 0; i < tv.numberOfEntities(); i++) {
             os << tv[i] << std::endl;
         }
         return os;
@@ -80,7 +80,7 @@ public:
 
     unsigned countOccurence(const Type &type) const { // cannot handle slices
         unsigned count = 0;
-        for (int i = 0; i < this->numberOfEntities(); ++i) {
+        for (long i = 0; i < this->numberOfEntities(); ++i) {
             if (this->operator[](i) == type)
                 count++;
         }
@@ -103,7 +103,7 @@ public:
                "This index is out of bounds.");
 
         unsigned count = 0;
-        for (unsigned j = 0; j < numberOfEntities(); ++j) {
+        for (long j = 0; j < numberOfEntities(); ++j) {
             if(this->operator[](j) == indexedType.type_) count++;
             if(count-1 == indexedType.number_) return {true, j};
         }
@@ -122,7 +122,7 @@ public:
             std::sort(copy.data(), copy.data()+numberOfEntities());
 
             unsigned count = 1;
-            for (int i = 1; i < numberOfEntities(); ++i) {
+            for (long i = 1; i < numberOfEntities(); ++i) {
                 const auto& lastType = copy[i - 1];
                 const auto& currentType = copy[i];
 

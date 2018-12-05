@@ -10,73 +10,40 @@
 #include <Qt3DExtras>
 #include <QVBoxLayout>
 #include <QLabel>
+#include <ParticlesVector3D.h>
+#include <Statistics.h>
+#include <ClusterData.h>
 
-#include <AtomsVector3D.h>
-#include <ElectronsVector3D.h>
-#include <Line3D.h>
 class MoleculeWidget : public QWidget{
     Q_OBJECT
 public:
     explicit MoleculeWidget(QWidget *parent = nullptr);
-    Qt3DCore::QEntity* getRoot();
 
-    void setMolecule(
-            const AtomsVector& atoms,
-            const std::pair<std::vector<ElectronsVector>,YAML::Node>& clusterData,
-            bool drawConnections,
-            bool drawSpinCorrelations,
-            double spinCorrelationThreshold){
+    Qt3DCore::QEntity* getMoleculeEntity();
 
-        moleculeEntity_->deleteLater();
-        moleculeEntity_ = new Qt3DCore::QEntity(root_);
+    //TODO make base MoleculeWidget and InPsightsMoleculeWidget child
 
-        atomsVector3D_ = new AtomsVector3D(moleculeEntity_, atoms);
-
-        auto electrons = clusterData.first[0]; // Plot all?
-
-        if(drawConnections)
-            electronsVector3D_ = new ElectronsVector3D(moleculeEntity_, atoms, electrons);
-        else
-            electronsVector3D_ = new ElectronsVector3D(moleculeEntity_, electrons);
-
-        if(drawSpinCorrelations) {
-            for (int i = 0; i < electrons.numberOfEntities(); ++i) {
-                for (int j = i + 1; j < electrons.numberOfEntities(); ++j) {
-
-                    auto corr = clusterData.second[i][j][0].as<double>();
-                    if (std::abs(corr) >= spinCorrelationThreshold) {
-
-                        QColor color;
-                        if(corr > 0)
-                            color = QColor::fromRgb(255,0,255);
-                        else
-                            color = QColor::fromRgb(0,255,0);
-
-                        QVector3D start, end;
-                        start.setX(electrons.positionsVector()[i].x()); //TODO use helper
-                        start.setY(electrons.positionsVector()[i].y());
-                        start.setZ(electrons.positionsVector()[i].z());
-                        end.setX(electrons.positionsVector()[j].x());
-                        end.setY(electrons.positionsVector()[j].y());
-                        end.setZ(electrons.positionsVector()[j].z());
-
-                        new Line3D(moleculeEntity_, color, {start, end}, std::abs(corr));
-                    }
-                }
-            }
-        }
-    }
+    void drawAtoms(bool drawQ = true);
+    void drawBonds(bool drawQ = true);
+    void drawSpinConnections(bool drawQ = true);
+    void drawSpinCorrelations(bool drawQ,
+                              const std::vector<ClusterData> &clusterData,
+                              double spinCorrelationThreshold);
+    void setSharedAtomsVector(AtomsVector atomsVector);
+    void addElectronsVector(const ElectronsVector& electronsVector, int clusterId = 0, int structureId = 0);
+    void removeElectronsVector(int clusterId = 0, int structureId = 0);
 
 private:
     QVBoxLayout *layout_;
     Qt3DExtras::Qt3DWindow *qt3DWindow_;
     Qt3DCore::QEntity *root_, *moleculeEntity_;
     Qt3DExtras::QOrbitCameraController *cameraController_;
+public:
     QLabel* infoText_;
-
-
+private:
+    std::shared_ptr<AtomsVector> sharedAtomsVector_;
     AtomsVector3D* atomsVector3D_;
-    ElectronsVector3D* electronsVector3D_;
+    std::map<int, std::map<int,ElectronsVector3D*>> activeElectronsVectorsMap_;
 };
 
 #endif //INPSIGHTS_MOLECULEWIDGET_H

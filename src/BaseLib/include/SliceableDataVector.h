@@ -12,7 +12,6 @@
 #include <Eigen/Core>
 
 class ISliceable : public AbstractVector{
-    friend class AbstractState;
 public:
     void resetSlice(){
         resetType_ = Reset::Automatic;
@@ -139,6 +138,10 @@ public:
         else
             return *refPtr_;
     }
+
+    RefEigenVecType dataRef(long i) {
+        return data_.segment(calculateIndex(i),entityLength());
+    };
 
 protected:
     //TODO make double template?

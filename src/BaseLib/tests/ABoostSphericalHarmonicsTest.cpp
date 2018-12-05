@@ -2,7 +2,7 @@
 // Created by Michael Heuer on 20.03.18.
 //
 
-#include <gtest/gtest.h>
+#include <gmock/gmock.h>
 #include <SpecialMathFunctions/BoostSphericalHarmonics.h>
 
 using namespace testing;

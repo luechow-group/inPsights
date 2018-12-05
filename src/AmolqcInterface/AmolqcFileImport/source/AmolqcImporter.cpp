@@ -69,7 +69,6 @@ AmolqcImporter::countSubstructures(unsigned long startLineIdx, unsigned long blo
     }
     // add last superstructure
     if (k > 0){
-        m_last; //TODO why is this expression empty?
         substructuresData.emplace_back(
                 SubstructureDataEntry(firstLineOfSuperstructure, m_last, sumOfMaximaNumbersTillCurrent));
     }

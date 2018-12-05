@@ -23,8 +23,8 @@ target_link_libraries(StructuralSimilarity.exe
         )
 
 if (DEFINED BUILD_GUI AND ON)
-    add_executable(inPsights.exe inPsights.cpp)
-    target_link_libraries(inPsights.exe
+    add_executable(inPsights inPsights.cpp)
+    target_link_libraries(inPsights
             GUI
             EnergyPartitioning
             )

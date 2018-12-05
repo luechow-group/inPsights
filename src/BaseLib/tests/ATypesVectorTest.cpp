@@ -2,7 +2,7 @@
 // Created by Michael Heuer on 25.04.18.
 //
 
-#include <gtest/gtest.h>
+#include <gmock/gmock.h>
 #include <TypesVector.h>
 #include <SpinType.h>
 #include <ElementType.h>

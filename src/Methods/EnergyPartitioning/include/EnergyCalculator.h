@@ -14,6 +14,7 @@
 #include <spdlog/spdlog.h>
 #include <CoulombPotential.h>
 #include <SpinCorrelation.h>
+#include <ClusterData.h>
 
 class EnergyCalculator{
 public:
@@ -82,7 +83,7 @@ public:
         Eigen::MatrixXd Ven_ = CoulombPotential::energies(samples_[reference.ownId()].sample_,atoms_);
 
         valueStats_.add(value, count);
-        spinCorrelationsStats_.add(spinCorrelations_, count);
+        SeeStats_.add(spinCorrelations_, count);
         TeStats_.add(Te_, count);
         VeeStats_.add(Vee_, count);
         VenStats_.add(Ven_, count);
@@ -95,10 +96,7 @@ public:
 
         yamlDocument_ << BeginDoc << BeginMap
         << Key << "Atoms" << Value << atoms_ << Comment("[a0]")
-        << Key << "Vnn" << Comment("[Eh]") << Value;
-        VnnStats_.toYaml(yamlDocument_, true);
-
-        yamlDocument_
+        << Key << "Vnn" << Comment("[Eh]") << Value << VnnStats_
         << Key << "NSamples" << Value << samples_.size()
         << Key << "Clusters" << Value << BeginSeq;
 
@@ -109,7 +107,7 @@ public:
 
             for (auto &simRefVector : cluster) {
                 valueStats_.reset();
-                spinCorrelationsStats_.reset();
+                SeeStats_.reset();
                 TeStats_.reset();
                 VeeStats_.reset();
                 VenStats_.reset();
@@ -135,42 +133,20 @@ public:
     void printCluster(std::vector<ElectronsVector>& structures){
         using namespace YAML;
 
-        yamlDocument_
-        << BeginMap
-        << Key << "N" << Value << TeStats_.getTotalWeight()
-        << Key << "ValueRange" << Value << Comment("[]") << Flow << BeginSeq
-        << valueStats_.cwiseMin()[0]
-        << valueStats_.cwiseMax()[0] << EndSeq;
-
-        yamlDocument_ << Key << "Structures" << Comment("[a0]") << Value << BeginSeq;
-
         size_t nWanted = 16;
+        std::vector<ElectronsVector> selectedStructures;
+
         if(structures.size() < nWanted){
-            for (auto& i : structures) yamlDocument_ << i;
+            for (auto& i : structures) selectedStructures.push_back(i);
         } else {
             size_t skipLength = (structures.size()-1) / (nWanted-1);
-            for (size_t i = 0; i < nWanted; ++i) {
-                yamlDocument_ << structures[i*skipLength];
-            }
+
+            for (size_t i = 0; i < nWanted; ++i)
+                selectedStructures.push_back(structures[i*skipLength]);
         }
 
-        yamlDocument_
-        << EndSeq << Newline
-        << Key << "SpinCorrelations" << Comment("[]");
-        spinCorrelationsStats_.toYaml(yamlDocument_, true);
-
-        yamlDocument_
-        << Key << "Te" << Comment("[Eh]");
-        TeStats_.toYaml(yamlDocument_);
-
-        yamlDocument_
-        << Key << "Vee" << Comment("[Eh]");
-        VeeStats_.toYaml(yamlDocument_,true);
-
-        yamlDocument_
-        << Key << "Ven" << Comment("[Eh]");
-        VenStats_.toYaml(yamlDocument_);
-        yamlDocument_ << EndMap;
+        yamlDocument_ << ClusterData(TeStats_.getTotalWeight(), selectedStructures, valueStats_, TeStats_,
+                SeeStats_, VeeStats_, VenStats_);
     }
 
     YAML::Node getYamlNode(){ return YAML::Load(yamlDocument_.c_str()); }
@@ -181,9 +157,9 @@ private:
     const std::vector<Sample>& samples_;
     AtomsVector atoms_;
 
-    Statistics::RunningStatistics<Eigen::MatrixXd> spinCorrelationsStats_;
-    Statistics::RunningStatistics<Eigen::VectorXd> TeStats_, valueStats_;
-    Statistics::RunningStatistics<Eigen::MatrixXd> VeeStats_, VenStats_, VnnStats_;
+    Statistics::RunningStatistics<Eigen::VectorXd,unsigned> valueStats_,TeStats_;
+    Statistics::RunningStatistics<Eigen::MatrixXd,unsigned,true> SeeStats_, VeeStats_, VnnStats_;
+    Statistics::RunningStatistics<Eigen::MatrixXd,unsigned> VenStats_;
 
     Eigen::MatrixXd Vnn_;
 
