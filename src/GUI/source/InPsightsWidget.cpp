@@ -30,16 +30,11 @@ InPsightsWidget::InPsightsWidget(QWidget *parent)
         spinCorrelationSliderLabel(new QLabel(this)),
         maximaList(new QTreeWidget(this)) {
 
-
     loadData();
     showSplashScreen();
-
     createWidget();
-
     connectSignals();
-
     initialView();
-
     show();
 }
 
@@ -171,14 +166,16 @@ void InPsightsWidget::showSplashScreen() {
 
 void InPsightsWidget::loadData() {
 
-    auto dialog = new QFileDialog(this);
-    dialog->setWindowTitle("Open results file");
-    dialog->setFileMode(QFileDialog::FileMode::ExistingFile);
-    dialog->setViewMode(QFileDialog::ViewMode::Detail);
-    moleculeWidget->infoText_->setText(QFileDialog::getOpenFileName());
+    auto fileName = QFileDialog::getOpenFileName(this,
+            QString("Open results file"),
+            QDir::currentPath(),
+            QString("YAML files (*.yml *.yaml *.json)"));
+    //dialog->setFileMode(QFileDialog::FileMode::ExistingFile);
+    //dialog->setViewMode(QFileDialog::ViewMode::Detail);
 
-    YAML::Node doc = YAML::LoadFile(QFileDialog::getOpenFileName().toStdString());
+    moleculeWidget->infoText_->setText(fileName);
 
+    YAML::Node doc = YAML::LoadFile(fileName.toStdString());
     auto Vnn = doc["Vnn"];
 
     for (int clusterId = 0; clusterId < static_cast<int>(doc["Clusters"].size()); ++clusterId) {

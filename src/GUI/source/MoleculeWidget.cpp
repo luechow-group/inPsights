@@ -29,7 +29,7 @@ MoleculeWidget::MoleculeWidget(QWidget *parent)
     layout_->addWidget(createWindowContainer(qt3DWindow_));
     layout_->addWidget(infoText_);
 
-    infoText_->setFixedHeight(14);
+    infoText_->setFixedHeight(18);
 
     qt3DWindow_->setRootEntity(root_);
 
