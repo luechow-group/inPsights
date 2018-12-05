@@ -11,9 +11,11 @@
 #include <QSpinBox>
 #include <QSplashScreen>
 #include <QTimer>
-#include <QTreeWidgetItem>
+//#include <QTreeWidgetItem>
+#include "MaximaTreeWidgetItem.h"
 #include <iterator>
 #include <vector>
+
 
 InPsightsWidget::InPsightsWidget(QWidget *parent)
         :
@@ -52,6 +54,8 @@ InPsightsWidget::InPsightsWidget(QWidget *parent)
     gbox->setLayout(vboxInner);
 
     maximaList->setFixedWidth(300);
+    maximaList->setSortingEnabled(true);
+
     vboxInner->addWidget(atomsCheckBox);
     vboxInner->addWidget(bondsCheckBox);
     vboxInner->addWidget(spinConnectionsCheckBox);
@@ -102,14 +106,16 @@ void InPsightsWidget::setupSliderBox() {
 }
 
 void InPsightsWidget::selectedStructure(QTreeWidgetItem *item, int column) {
+    auto maximaTreeWidgetItem = dynamic_cast<MaximaTreeWidgetItem*>(item);
 
     if (column != 0)
         console->critical("Column 0 expected but got {} ", column);
 
-    auto clusterId = item->data(0, Qt::ItemDataRole::UserRole).toInt();
-    auto structureId = item->data(1, Qt::ItemDataRole::UserRole).toInt();
+    auto id = maximaTreeWidgetItem->data(0, Qt::ItemDataRole::UserRole).toList();
+    auto clusterId = id[0].toInt();
+    auto structureId = id[1].toInt();
 
-    auto createQ = item->checkState(0) == Qt::CheckState::Checked;
+    auto createQ = maximaTreeWidgetItem->checkState(0) == Qt::CheckState::Checked;
     console->info("Selected structure {1} from cluster {0} for {2}.", clusterId, structureId,
                   createQ ? "creation" : "deletion");
 
@@ -179,22 +185,24 @@ void InPsightsWidget::loadData() {
         ClusterData clusterData = doc["Clusters"][clusterId].as<ClusterData>();
 
         clusterCollection_.emplace_back(clusterData);
-        auto item = new QTreeWidgetItem(QList<QString>({QString::number(clusterId),
-                                                        QString::number(clusterData.N_),
-                                                        QString::number(clusterData.valueStats_.cwiseMin()[0]),
-                                                        QString::number(clusterData.valueStats_.cwiseMax()[0])}));
+        auto item = new MaximaTreeWidgetItem(maximaList,{QString::number(clusterId),
+                                                         QString::number(clusterData.N_),
+                                                         QString::number(clusterData.valueStats_.cwiseMin()[0]),
+                                                         QString::number(clusterData.valueStats_.cwiseMax()[0])});
 
         item->setCheckState(0, Qt::CheckState::Unchecked);
-        item->setData(0, Qt::ItemDataRole::UserRole, QVariant(clusterId));
-        item->setData(1, Qt::ItemDataRole::UserRole, QVariant(0)); // representative structure
+
+        QList<QVariant> id = {clusterId, 0};
+        item->setData(0, Qt::ItemDataRole::UserRole, id);
 
         auto structures = doc["Clusters"][clusterId]["Structures"];
 
-        for (int structure = 1; structure < static_cast<int>(structures.size()); ++structure) {
-            auto subItem = new QTreeWidgetItem(QList<QString>({QString::number(structure)}));
+        for (int structureId = 1; structureId < static_cast<int>(structures.size()); ++structureId) {
+            auto subItem = new MaximaTreeWidgetItem(item, QStringList({QString::number(structureId)}));
             subItem->setCheckState(0, Qt::CheckState::Unchecked);
-            subItem->setData(0, Qt::ItemDataRole::UserRole, QVariant(clusterId));
-            subItem->setData(1, Qt::ItemDataRole::UserRole, QVariant(structure));
+
+            id = {clusterId, structureId};
+            subItem->setData(0, Qt::ItemDataRole::UserRole, id);
             item->addChild(subItem);
         }
 
@@ -208,6 +216,7 @@ void InPsightsWidget::initialView() {
     maximaList->resizeColumnToContents(1);
     maximaList->resizeColumnToContents(2);
     maximaList->resizeColumnToContents(3);
+    maximaList->sortItems(0,Qt::SortOrder::AscendingOrder);
     atomsCheckBox->setCheckState(Qt::CheckState::Checked);
     bondsCheckBox->setCheckState(Qt::CheckState::Checked);
     maximaList->topLevelItem(0)->setCheckState(0, Qt::CheckState::Checked);

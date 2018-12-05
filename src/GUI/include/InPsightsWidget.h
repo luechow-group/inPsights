@@ -22,7 +22,8 @@ public:
     explicit InPsightsWidget(QWidget *parent = nullptr);
 
 public slots:
-    void selectedStructure(QTreeWidgetItem* item, int column);
+
+    void selectedStructure(QTreeWidgetItem *item, int column);
 
     void onAtomsChecked(int stateId);
 

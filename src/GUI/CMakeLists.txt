@@ -48,6 +48,7 @@ set(HEADER_FILES
         include/SpinConnections3D.h
         include/SpinCorrelations3D.h
         include/SameSpinConnections3D.h
+        include/MaximaTreeWidgetItem.h
         )
 
 set(SOURCE_FILES
@@ -69,6 +70,7 @@ set(SOURCE_FILES
         source/SpinCorrelations3D.cpp
         source/InPsightsWidget.cpp
         source/SameSpinConnections3D.cpp
+        source/MaximaTreeWidgetItem.cpp
         )
 
 add_library(${PROJECT_NAME} STATIC
