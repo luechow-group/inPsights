@@ -7,7 +7,7 @@
 
 Polyline::Polyline(Qt3DCore::QEntity *root, QColor color, const std::vector<QVector3D> points, const float radius,
                    bool arrowTipQ)
-        : Abstract3dObject(root,color, GuiHelper::midPointVector(std::make_pair(*points.begin(), *points.end()))),
+        : Abstract3dObject(root,color, QVector3D({0,0,0})),
           points_(points),
           cylinders_(0),
           radius_(radius),
