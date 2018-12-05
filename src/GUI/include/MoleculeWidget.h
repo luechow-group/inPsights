@@ -24,20 +24,14 @@ public:
     //TODO make base MoleculeWidget and InPsightsMoleculeWidget child
 
     void drawAtoms(bool drawQ = true);
-
-    void drawSpinConnections(bool drawQ);
-
+    void drawBonds(bool drawQ = true);
+    void drawSpinConnections(bool drawQ = true);
     void drawSpinCorrelations(bool drawQ,
                               const std::vector<ClusterData> &clusterData,
                               double spinCorrelationThreshold);
-
-    void drawBonds(bool drawQ);
-
-    void addElectronsVector(const ElectronsVector& electronsVector, int clusterId = 0, int structureId = 0);
-
-    void removeElectronsVector(int clusterId = 0, int structureId = 0);
-
     void setSharedAtomsVector(AtomsVector atomsVector);
+    void addElectronsVector(const ElectronsVector& electronsVector, int clusterId = 0, int structureId = 0);
+    void removeElectronsVector(int clusterId = 0, int structureId = 0);
 
 private:
     QVBoxLayout *layout_;
