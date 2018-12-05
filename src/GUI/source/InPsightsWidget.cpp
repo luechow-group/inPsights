@@ -175,6 +175,7 @@ void InPsightsWidget::loadData() {
     dialog->setWindowTitle("Open results file");
     dialog->setFileMode(QFileDialog::FileMode::ExistingFile);
     dialog->setViewMode(QFileDialog::ViewMode::Detail);
+    moleculeWidget->infoText_->setText(QFileDialog::getOpenFileName());
 
     YAML::Node doc = YAML::LoadFile(QFileDialog::getOpenFileName().toStdString());
 
