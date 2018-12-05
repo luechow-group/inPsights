@@ -22,17 +22,11 @@ public:
     explicit InPsightsWidget(QWidget *parent = nullptr);
 
 public slots:
-
     void selectedStructure(QTreeWidgetItem *item, int column);
-
     void onAtomsChecked(int stateId);
-
     void onBondsChecked(int stateId);
-
     void onSpinConnectionsChecked(int stateId);
-
     void onSpinCorrelationsChecked(int stateId);
-
     void onSpinCorrelationsSliderChanged(int value);
 
 private:
@@ -44,15 +38,13 @@ private:
     QTreeWidget *maximaList;
     std::vector<ClusterData> clusterCollection_;
 
-    QSplashScreen *createSplashScreen();
-
+    void showSplashScreen();
     void loadData();
-
     void initialView();
-
     void setupSliderBox();
-
     void updateSpinCorrelationSliderLabel(int value);
+    void connectSignals();
+    void createWidget();
 };
 
 #endif //INPSIGHTS_INPSIGHTSWIDGET_H

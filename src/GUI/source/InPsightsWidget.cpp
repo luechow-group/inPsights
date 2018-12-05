@@ -30,11 +30,21 @@ InPsightsWidget::InPsightsWidget(QWidget *parent)
         spinCorrelationSliderLabel(new QLabel(this)),
         maximaList(new QTreeWidget(this)) {
 
-    setWindowIcon(QIcon(":inPsightsIcon.png"));
-    setWindowTitle("inPsights - Chemical insights from |Ψ|².");
 
     loadData();
+    showSplashScreen();
 
+    createWidget();
+
+    connectSignals();
+
+    initialView();
+
+    show();
+}
+
+void InPsightsWidget::createWidget() {
+    setWindowTitle("inPsights - Chemical insights from |Ψ|².");
     auto gbox = new QGroupBox("Settings:");
     auto hbox = new QHBoxLayout(this);
     auto vboxOuter = new QVBoxLayout();
@@ -67,35 +77,26 @@ InPsightsWidget::InPsightsWidget(QWidget *parent)
     sliderBox->addWidget(spinCorrelationSlider);
 
     setupSliderBox();
+}
 
-    QObject::connect(maximaList, SIGNAL(itemChanged(QTreeWidgetItem * , int)),
-                     this, SLOT(selectedStructure(QTreeWidgetItem * , int)));
+void InPsightsWidget::connectSignals() {
+    connect(maximaList, SIGNAL(itemChanged(QTreeWidgetItem * , int)),
+            this, SLOT(selectedStructure(QTreeWidgetItem * , int)));
 
-    QObject::connect(atomsCheckBox, SIGNAL(stateChanged(int)),
-                     this, SLOT(onAtomsChecked(int)));
+    connect(atomsCheckBox, SIGNAL(stateChanged(int)),
+            this, SLOT(onAtomsChecked(int)));
 
-    QObject::connect(bondsCheckBox, SIGNAL(stateChanged(int)),
-                     this, SLOT(onBondsChecked(int)));
+    connect(bondsCheckBox, SIGNAL(stateChanged(int)),
+            this, SLOT(onBondsChecked(int)));
 
-    QObject::connect(spinConnectionsCheckBox, SIGNAL(stateChanged(int)),
-                     this, SLOT(onSpinConnectionsChecked(int)));
+    connect(spinConnectionsCheckBox, SIGNAL(stateChanged(int)),
+            this, SLOT(onSpinConnectionsChecked(int)));
 
-    QObject::connect(spinCorrelationsCheckBox, SIGNAL(stateChanged(int)),
-                     this, SLOT(onSpinCorrelationsChecked(int)));
+    connect(spinCorrelationsCheckBox, SIGNAL(stateChanged(int)),
+            this, SLOT(onSpinCorrelationsChecked(int)));
 
-
-    QObject::connect(spinCorrelationSlider, SIGNAL(valueChanged(int)),
-                     this, SLOT(onSpinCorrelationsSliderChanged(int)));
-
-
-
-    //auto splashScreen = createSplashScreen();
-    //QTimer::singleShot(1000, splashScreen, SLOT(close()));
-    //QTimer::singleShot(1000, this, SLOT(show()));
-    show();
-
-    update();
-    initialView();
+    connect(spinCorrelationSlider, SIGNAL(valueChanged(int)),
+            this, SLOT(onSpinCorrelationsSliderChanged(int)));
 }
 
 void InPsightsWidget::setupSliderBox() {
@@ -158,14 +159,14 @@ void InPsightsWidget::onSpinCorrelationsSliderChanged(int value) {
     }
 }
 
-QSplashScreen *InPsightsWidget::createSplashScreen() {
+void InPsightsWidget::showSplashScreen() {
     auto splashScreen = new QSplashScreen();
 
     splashScreen->setPixmap(QPixmap(":inPsights.png"));
     splashScreen->show();
     splashScreen->showMessage("Version 1.0.0", Qt::AlignRight, Qt::lightGray);
 
-    return splashScreen;
+    splashScreen->finish(this);
 }
 
 void InPsightsWidget::loadData() {
