@@ -19,7 +19,7 @@ class MoleculeWidget : public QWidget{
 public:
     explicit MoleculeWidget(QWidget *parent = nullptr);
 
-    Qt3DCore::QEntity* getRoot();
+    Qt3DCore::QEntity* getMoleculeEntity();
 
     //TODO make base MoleculeWidget and InPsightsMoleculeWidget child
 

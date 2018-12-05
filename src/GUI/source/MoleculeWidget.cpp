@@ -44,8 +44,8 @@ MoleculeWidget::MoleculeWidget(QWidget *parent)
     setMouseTracking(true);
 }
 
-Qt3DCore::QEntity *MoleculeWidget::getRoot() {
-    return root_;
+Qt3DCore::QEntity *MoleculeWidget::getMoleculeEntity() {
+    return moleculeEntity_;
 }
 
 void MoleculeWidget::drawAtoms(bool drawQ) {
@@ -102,7 +102,7 @@ void MoleculeWidget::drawSpinCorrelations(bool drawQ,
                                        spinCorrelationThreshold);
             } else {
                 structure.second->correlations_->deleteLater();
-                structure.second->correlations_ = new Qt3DCore::QEntity(root_);
+                structure.second->correlations_ = new Qt3DCore::QEntity(structure.second);
             }
         }
 }

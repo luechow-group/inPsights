@@ -184,7 +184,7 @@ initialCoordinates.row((18 - 1) * 3 + 2) -= 0.05 * bend;//z bend
 
     //visualization
     auto moleculeWidget = new MoleculeWidget();
-    auto root = moleculeWidget->getRoot();
+    auto root = moleculeWidget->getMoleculeEntity();
 
     // draw molecular geometry
     std::cout << "wf:" << ElectronicWaveFunction::getInstance().getFileName() << std::endl;

@@ -143,7 +143,7 @@ int main(int argc, char *argv[]) {
 
         // Visualization
         auto moleculeWidget = new MoleculeWidget();
-        auto root = moleculeWidget->getRoot();
+        auto root = moleculeWidget->getMoleculeEntity();
 
         // Plot atoms
         AtomsVector3D(root, av);
