@@ -12,23 +12,23 @@
 EnergyPartitioningWidget::EnergyPartitioningWidget(const IntraParticlesStatistics& VnnStats, int nAtoms, int nElectrons, QWidget *parent)
         : QWidget(parent),
           VnnStats_(VnnStats),
-          Te(new QTableWidget(nElectrons, 1, this)),
-          Ven(new QTableWidget(nElectrons, nAtoms, this)),
+          Te(new QTableWidget(1, nElectrons, this)),
+          Ven(new QTableWidget(nAtoms, nElectrons, this)),
           Vee(new QTableWidget(nElectrons, nElectrons, this)),
-          Ee(new QTableWidget(nElectrons, 1, this)),
+          Ee(new QTableWidget(1, nElectrons, this)),
           Vnn(new QTableWidget(nAtoms, nAtoms, this)),
-          En(new QTableWidget(1,nAtoms, this)),
+          En(new QTableWidget(nAtoms, 1, this)),
           tables({Te, Ven, Vee, Ee, Vnn, En}) {
 
     auto gridLayout = new QGridLayout(this);
 
-    gridLayout->addWidget(Te, 0, 0);
-    gridLayout->addWidget(Ven, 0, 1);
-    gridLayout->addWidget(Vee, 0, 2);
-    gridLayout->addWidget(Ee, 0, 3);
-    gridLayout->addWidget(Vnn, 1, 1);
-    gridLayout->addWidget(En, 2, 1);
-
+    gridLayout->addWidget(Te,  0,0);
+    gridLayout->addWidget(Vee, 1,0);
+    gridLayout->addWidget(Ven, 2,0);
+    gridLayout->addWidget(Ee,  3,0);
+    gridLayout->addWidget(Vnn, 2,1);
+    gridLayout->addWidget(En,  2,2);
+    
     setTableSizes(nAtoms,nElectrons);
 
     QFont font;
@@ -47,12 +47,12 @@ void EnergyPartitioningWidget::setTableSize(QTableWidget *table, int rows, int c
 }
 
 void EnergyPartitioningWidget::setTableSizes(int nAtoms, int nElectrons) const {
-    setTableSize(Te, nElectrons, 1);
-    setTableSize(Ven, nElectrons, nAtoms);
+    setTableSize(Te , 1         , nElectrons);
+    setTableSize(Ven, nAtoms    , nElectrons);
     setTableSize(Vee, nElectrons, nElectrons);
-    setTableSize(Ee, nElectrons, 1);
-    setTableSize(Vnn, nAtoms, nAtoms);
-    setTableSize(En, 1, nAtoms);
+    setTableSize(Ee , 1         , nElectrons);
+    setTableSize(Vnn, nAtoms    , nAtoms    );
+    setTableSize(En , nAtoms    , 1         );
 }
 
 void EnergyPartitioningWidget::adjustAllTableSizes() const {
@@ -99,7 +99,7 @@ void EnergyPartitioningWidget::updateData(ClusterData &clusterData) const {
     adjustAllTableSizes();
 }
 
-void EnergyPartitioningWidget::placeItem(QTableWidget *table, double value, int i, int j) const {
+void EnergyPartitioningWidget::placeItem(QTableWidget *table, double value, int j, int i) const {
     table->item(i,j)->setData(Qt::UserRole, value);
     table->item(i,j)->setText(QString::number(value, 'f', 4));
 }
