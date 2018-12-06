@@ -45,7 +45,7 @@ void InPsightsWidget::createWidget() {
     setWindowTitle("inPsights - Chemical insights from |Ψ|².");
     auto gbox = new QGroupBox("Settings:");
     auto hbox = new QHBoxLayout(this);
-    auto hbox2 = new QHBoxLayout();
+    //auto hbox2 = new QHBoxLayout();
     auto vboxOuter = new QVBoxLayout();
     auto vboxInner = new QVBoxLayout();
     auto sliderBox = new QHBoxLayout();
@@ -53,14 +53,16 @@ void InPsightsWidget::createWidget() {
     setLayout(hbox);
     resize(1024, 768);
     hbox->addWidget(moleculeWidget, Qt::AlignLeft);
-    hbox->addLayout(hbox2);
-    hbox2->addLayout(vboxOuter);
-    hbox2->addWidget(energyPartitioningWidget);
+    hbox->addLayout(vboxOuter);
+    //hbox->addLayout(hbox2);
+    //hbox2->addLayout(vboxOuter);
+    //hbox2->addWidget(energyPartitioningWidget);
 
     auto headerLabels = QList<QString>({"ID", "N", "min(-ln(|Ψ|²))", "max(-ln(|Ψ|²))"});
     maximaList->setColumnCount(headerLabels.size());
     maximaList->setHeaderLabels(headerLabels);
     vboxOuter->addWidget(maximaList);
+    vboxOuter->addWidget(energyPartitioningWidget);
     vboxOuter->addWidget(gbox);
     gbox->setLayout(vboxInner);
 
@@ -176,7 +178,7 @@ void InPsightsWidget::loadData() {
             QString("Open results file"),
             QDir::currentPath(),
             QString("YAML files (*.yml *.yaml *.json)"));
-    
+
     moleculeWidget->infoText_->setText(fileName);
 
     YAML::Node doc = YAML::LoadFile(fileName.toStdString());

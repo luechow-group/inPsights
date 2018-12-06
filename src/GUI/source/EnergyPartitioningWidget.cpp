@@ -11,38 +11,33 @@
 #include <QGridLayout>
 #include <QHBoxLayout>
 
-EnergyPartitioningWidget::EnergyPartitioningWidget(QWidget *parent, int nAtoms, int nElectrons)
+EnergyPartitioningWidget::EnergyPartitioningWidget(QWidget *parent)
         :
         QWidget(parent),
         initializedQ_(false),
-        Ee(new QTableWidget(nElectrons, 2, this)),
-        En(new QTableWidget(nAtoms, 2, this)) {
+        Ee(new QTreeWidget(this)),
+        En(new QTreeWidget(this)) {
 
     auto outerLayout = new QHBoxLayout(this);
 
     outerLayout->addWidget(Ee);
     outerLayout->addWidget(En);
 
-    QFont font;
-    font.setPointSize(8);
-    Ee->setFont(font);
-    En->setFont(font);
+    Ee->setColumnCount(2);
+    Ee->setHeaderLabels(QList<QString>({"Ee", "Error"}));
+    Ee->setSortingEnabled(true);
+
+    En->setColumnCount(2);
+    En->setHeaderLabels(QList<QString>({"En", "Error"}));
+    En->setSortingEnabled(true);
 }
 
 void EnergyPartitioningWidget::initializeItems(int nAtoms, int nElectrons) {
-    Ee->setRowCount(nElectrons);
-    Ee->setColumnCount(2);
-    for (int i = 0; i < nElectrons; ++i) {
-        Ee->setItem(i, 0, new QTableWidgetItem());
-        Ee->setItem(i, 1, new QTableWidgetItem());
-    }
+    for (int i = 0; i < nElectrons; ++i)
+        Ee->addTopLevelItem(new QTreeWidgetItem());
 
-    En->setRowCount(nAtoms);
-    En->setColumnCount(2);
-    for (int i = 0; i < nAtoms; ++i) {
-        En->setItem(i, 0, new QTableWidgetItem());
-        En->setItem(i, 1, new QTableWidgetItem());
-    }
+    for (int i = 0; i < nAtoms; ++i)
+        En->addTopLevelItem(new QTreeWidgetItem());
 
 }
 
@@ -54,9 +49,6 @@ void EnergyPartitioningWidget::updateData(ClusterData &clusterData) const {
     auto nElectrons = static_cast<int>(clusterData.VenStats_.rows());
     auto nAtoms = static_cast<int>(clusterData.VenStats_.cols());
 
-    Ee->setRowCount(nElectrons);
-    En->setRowCount(nAtoms);
-
     auto EeVal = OneParticleEnergies::oneElectronEnergies(clusterData);
     auto EeErr = OneParticleEnergies::oneElectronEnergiesErrors(clusterData);
 
@@ -64,18 +56,21 @@ void EnergyPartitioningWidget::updateData(ClusterData &clusterData) const {
     auto EnErr = OneParticleEnergies::oneAtomEnergiesErrors(VnnStats_,clusterData);
 
     for (int i = 0; i < nElectrons; ++i) {
-        Ee->item(i, 0)->setData(Qt::UserRole, EeVal[i]);
-        Ee->item(i, 1)->setData(Qt::UserRole, EeErr[i]);
-        Ee->item(i, 0)->setText(QString::number(EeVal[i], 'f', 4));
-        Ee->item(i, 1)->setText(QString::number(EeErr[i], 'f', 4));
+        Ee->topLevelItem(i)->setData(0,Qt::DisplayRole, EeVal[i]);
+        Ee->topLevelItem(i)->setData(1,Qt::DisplayRole, EeErr[i]);
     }
 
-    for (int i = 0; i < nAtoms; ++i) {
-        En->item(i, 0)->setData(Qt::UserRole, EnVal[i]);
-        En->item(i, 1)->setData(Qt::UserRole, EnErr[i]);
-        En->item(i, 0)->setText(QString::number(EnVal[i], 'f', 4));
-        En->item(i, 1)->setText(QString::number(EnErr[i], 'f', 4));
+    for (int k = 0; k < nAtoms; ++k) {
+        En->topLevelItem(k)->setData(0,Qt::DisplayRole, EnVal[k]);
+        En->topLevelItem(k)->setData(1,Qt::DisplayRole, EnErr[k]);
     }
+
+    Ee->resizeColumnToContents(0);
+    Ee->resizeColumnToContents(1);
+
+    En->resizeColumnToContents(0);
+    En->resizeColumnToContents(1);
+
 }
 
 EnergyPartitioningWidget2::EnergyPartitioningWidget2(const IntraParticlesStatistics& VnnStats, int nAtoms, int nElectrons, QWidget *parent)

@@ -30,7 +30,7 @@ OneParticleEnergies::oneAtomEnergiesErrors(const IntraParticlesStatistics &Vnn, 
     auto nAtoms = clusterData.VenStats_.cols();
     const auto& Ven = clusterData.VenStats_;
 
-    Eigen::VectorXd EnErr(nAtoms);
+    Eigen::VectorXd EnErr = Eigen::VectorXd::Zero(nAtoms);
 
     for (Eigen::Index i = 0; i < nAtoms; ++i) {
         for (Eigen::Index j = i + 1; j < nAtoms; ++j)
@@ -39,6 +39,8 @@ OneParticleEnergies::oneAtomEnergiesErrors(const IntraParticlesStatistics &Vnn, 
         for (Eigen::Index  k = 0; k < nElectrons; ++k)
             EnErr[i] = 0.5 * std::sqrt(std::pow(EnErr[i], 2) + std::pow(Ven.standardError()(k,i), 2));
     }
+
+    std::cout << EnErr.transpose()  << std::endl;
     return EnErr;
 }
 
@@ -49,7 +51,7 @@ Eigen::VectorXd OneParticleEnergies::oneElectronEnergies(const ClusterData &clus
     const auto& Vee = clusterData.VeeStats_;
     const auto& Ven = clusterData.VenStats_;
 
-    Eigen::VectorXd Ee(nElectrons);
+    Eigen::VectorXd Ee= Eigen::VectorXd::Zero(nElectrons);
 
     for (Eigen::Index i = 0; i < nElectrons; ++i) {
         Ee[i] = Te.mean()[i];
@@ -70,16 +72,17 @@ Eigen::VectorXd OneParticleEnergies::oneElectronEnergiesErrors(const ClusterData
     const auto& Vee = clusterData.VeeStats_;
     const auto& Ven = clusterData.VenStats_;
 
-    Eigen::VectorXd EeErr(nElectrons);
+    Eigen::VectorXd EeErr = Eigen::VectorXd::Zero(nElectrons);
 
     for (Eigen::Index i = 0; i < nElectrons; ++i) {
         EeErr[i] = Te.standardError()[i];
 
         for (Eigen::Index  k = 0; k < nAtoms; ++k)
-            EeErr[i] = 0.5*std::sqrt(std::pow(EeErr[i], 2) + std::pow(Ven.mean()(i,k), 2));
+            EeErr[i] = 0.5*std::sqrt(std::pow(EeErr[i], 2) + std::pow(Ven.standardError()(i,k), 2));
 
         for (Eigen::Index  j = i + 1; j < nElectrons; ++j)
-            EeErr[i] = 0.5 * std::sqrt(std::pow(EeErr[i], 2) + std::pow(Vee.mean()(i,j), 2));
+            EeErr[i] = 0.5 * std::sqrt(std::pow(EeErr[i], 2) + std::pow(Vee.standardError()(i,j), 2));
     }
+    std::cout << EeErr.transpose() << std::endl;
     return EeErr;
 }

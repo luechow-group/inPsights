@@ -7,7 +7,7 @@
 
 #include <QWidget>
 #include <QTableWidget>
-
+#include <QTreeWidget>
 #include <Statistics.h>
 
 #include <ClusterData.h>
@@ -15,7 +15,7 @@
 class EnergyPartitioningWidget : public QWidget {
 Q_OBJECT
 public:
-    explicit EnergyPartitioningWidget(QWidget* parent = nullptr, int nAtoms = 0, int nElectrons = 0);
+    explicit EnergyPartitioningWidget(QWidget* parent = nullptr);
 
     void initializeItems(int nAtoms, int nElectrons);
     void setAtomEnergies(IntraParticlesStatistics VnnStats);
@@ -24,7 +24,7 @@ public:
 private:
     bool initializedQ_;
     IntraParticlesStatistics VnnStats_;
-    QTableWidget *Ee, *En;
+    QTreeWidget *Ee, *En;
 };
 
 
