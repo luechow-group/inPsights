@@ -23,11 +23,11 @@ namespace YAML {
         rhs = ClusterData(
                 node["N"].as<unsigned>(),
                 node["Structures"].as<std::vector<ElectronsVector>>(),
-                node["ValueRange"].as<Statistics::RunningStatistics<Eigen::VectorXd,unsigned>>(),
-                node["Te"].as<Statistics::RunningStatistics<Eigen::VectorXd,unsigned>>(),
-                node["SpinCorrelations"].as<Statistics::RunningStatistics<Eigen::MatrixXd,unsigned,true>>(),
-                node["Vee"].as<Statistics::RunningStatistics<Eigen::MatrixXd,unsigned,true>>(),
-                node["Ven"].as<Statistics::RunningStatistics<Eigen::MatrixXd,unsigned>>()
+                node["ValueRange"].as<SingleParticlesStatistics>(),
+                node["Te"].as<SingleParticlesStatistics>(),
+                node["SpinCorrelations"].as<IntraParticlesStatistics>(),
+                node["Vee"].as<IntraParticlesStatistics>(),
+                node["Ven"].as<InterParticlesStatistics>()
                 );
         
         return true;

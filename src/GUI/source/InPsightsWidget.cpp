@@ -15,14 +15,14 @@
 #include "MaximaTreeWidgetItem.h"
 #include <iterator>
 #include <vector>
-
+#include <ParticlesVector.h>
 
 InPsightsWidget::InPsightsWidget(QWidget *parent)
         :
         QWidget(parent),
         console(spdlog::get(Logger::name)),
         moleculeWidget(new MoleculeWidget(this)),
-        energyPartitioningWidget(new EnergyPartitioningWidget()), // additional window
+        energyPartitioningWidget(nullptr), // additional window
         atomsCheckBox(new QCheckBox("Atoms", this)),
         bondsCheckBox(new QCheckBox("Bonds", this)),
         spinConnectionsCheckBox(new QCheckBox("Spin Connections", this)),
@@ -31,10 +31,11 @@ InPsightsWidget::InPsightsWidget(QWidget *parent)
         spinCorrelationSliderLabel(new QLabel(this)),
         maximaList(new QTreeWidget(this)) {
 
-    energyPartitioningWidget->show(); //TODO put at the end after testing
-
     loadData();
     showSplashScreen();
+
+    energyPartitioningWidget->show(); //TODO put at the end after testing
+
     createWidget();
     connectSignals();
     initialView();
@@ -120,10 +121,10 @@ void InPsightsWidget::selectedStructure(QTreeWidgetItem *item, int column) {
     console->info("Selected structure {1} from cluster {0} for {2}.", clusterId, structureId,
                   createQ ? "creation" : "deletion");
 
-    if (createQ)
-        moleculeWidget->addElectronsVector(clusterCollection_[clusterId].exemplaricStructures_[structureId], clusterId,
-                                           structureId);
-    else
+    if (createQ) {
+        moleculeWidget->addElectronsVector(clusterCollection_[clusterId].exemplaricStructures_[structureId], clusterId, structureId);
+        energyPartitioningWidget->updateData(clusterCollection_[clusterId]);
+    } else
         moleculeWidget->removeElectronsVector(clusterId, structureId);
 };
 
@@ -180,11 +181,13 @@ void InPsightsWidget::loadData() {
     moleculeWidget->infoText_->setText(fileName);
 
     YAML::Node doc = YAML::LoadFile(fileName.toStdString());
-    auto Vnn = doc["Vnn"];
+    auto nAtoms = doc["Atoms"].as<AtomsVector>().numberOfEntities();
+    auto nElectrons = doc["Clusters"][0]["Structures"][0].as<ElectronsVector>().numberOfEntities();
+
+    auto VnnStats = doc["Vnn"].as<IntraParticlesStatistics>();
+    energyPartitioningWidget = new EnergyPartitioningWidget(VnnStats, int(nAtoms),int(nElectrons));
 
     for (int clusterId = 0; clusterId < static_cast<int>(doc["Clusters"].size()); ++clusterId) {
-        //OneParticleEnergies::oneAtomEnergies(*it, Vnn);
-        //OneParticleEnergies::oneElectronEnergies(*it);
 
         ClusterData clusterData = doc["Clusters"][clusterId].as<ClusterData>();
 

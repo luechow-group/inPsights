@@ -3,52 +3,83 @@
 //
 
 #include <OneParticleEnergies.h>
+#include <ClusterData.h>
+#include <math.h>
 
-void OneParticleEnergies::oneAtomEnergies(const YAML::Node &cluster, const YAML::Node &Vnn) {
-    auto Ven = cluster["Ven"];
-    auto nElectrons = Ven.size();
-    auto nAtoms = Ven.begin()->second.size();
-    std::vector<double> Vn(nAtoms);
-    std::vector<double> VnErr(nAtoms);
+Eigen::VectorXd
+OneParticleEnergies::oneAtomEnergies(const IntraParticlesStatistics& Vnn, const ClusterData &clusterData) {
+    auto nElectrons = clusterData.VenStats_.rows();
+    auto nAtoms = clusterData.VenStats_.cols();
+    const auto& Ven = clusterData.VenStats_;
 
-    for (unsigned long i = 0; i < nAtoms; ++i) {
+    Eigen::VectorXd En = Eigen::VectorXd::Zero(nAtoms);
 
-        for (unsigned long j = i + 1; j < nAtoms; ++j) {
-            Vn[i] += 0.5 * Vnn[i][j][0].as<double>();
-            VnErr[i] = 0.5 * std::sqrt(std::pow(VnErr[i], 2) + std::pow(Vnn[i][j][1].as<double>(), 2));
-        }
+    for (Eigen::Index k = 0; k < nAtoms; ++k) {
+        for (Eigen::Index l = k + 1; l < nAtoms; ++l)
+            En[k] += 0.5 * Vnn.mean()(k,l);
 
-        for (unsigned long k = 0; k < nElectrons; ++k) {
-            Vn[i] += 0.5 * Ven[k][i][0].as<double>();
-            VnErr[i] = 0.5 * std::sqrt(std::pow(VnErr[i], 2) + std::pow(Ven[k][i][1].as<double>(), 2));
-        }
-
-        std::cout << "En = " << Vn[i] << "+/-" << VnErr[i] << std::endl;
+        for (Eigen::Index  i = 0; i < nElectrons; ++i)
+            En[k] += 0.5 * Ven.mean()(i,k);
     }
+    return En;
 }
 
-void OneParticleEnergies::oneElectronEnergies(const YAML::Node &cluster) {
-    auto Te = cluster["Te"];
-    auto Vee = cluster["Vee"];
-    auto Ven = cluster["Ven"];
-    auto nElectrons = Ven.size();
-    auto nAtoms = Ven.begin()->second.size();
-    std::vector<double> Ve(nElectrons);
-    std::vector<double> VeErr(nElectrons);
+Eigen::VectorXd
+OneParticleEnergies::oneAtomEnergiesErrors(const IntraParticlesStatistics &Vnn, const ClusterData &clusterData) {
+    auto nElectrons = clusterData.VenStats_.rows();
+    auto nAtoms = clusterData.VenStats_.cols();
+    const auto& Ven = clusterData.VenStats_;
 
-    for (unsigned long i = 0; i < nElectrons; ++i) {
-        Ve[i] = Te[i][0].as<double>();
-        VeErr[i] = Te[i][1].as<double>();
+    Eigen::VectorXd EnErr(nAtoms);
 
-        for (unsigned long k = 0; k < nAtoms; ++k) {
-            Ve[i] += 0.5*Ven[i][k][0].as<double>();
-            VeErr[i] = 0.5*std::sqrt(std::pow(VeErr[i], 2) + std::pow(Ven[i][k][1].as<double>(), 2));
-        }
+    for (Eigen::Index i = 0; i < nAtoms; ++i) {
+        for (Eigen::Index j = i + 1; j < nAtoms; ++j)
+            EnErr[i] = 0.5 * std::sqrt(std::pow(EnErr[i], 2) + std::pow(Vnn.standardError()(i,j), 2));
 
-        for (unsigned long j = i + 1; j < nElectrons; ++j) {
-            Ve[i] += 0.5 * Vee[i][j][0].as<double>();
-            VeErr[i] = 0.5 * std::sqrt(std::pow(VeErr[i], 2) + std::pow(Vee[i][j][1].as<double>(), 2));
-        }
-        std::cout << "Ee = " << Ve[i] << "+/-" << VeErr[i] << std::endl;
+        for (Eigen::Index  k = 0; k < nElectrons; ++k)
+            EnErr[i] = 0.5 * std::sqrt(std::pow(EnErr[i], 2) + std::pow(Ven.standardError()(k,i), 2));
     }
-};
+    return EnErr;
+}
+
+Eigen::VectorXd OneParticleEnergies::oneElectronEnergies(const ClusterData &clusterData) {
+    auto nElectrons = clusterData.VenStats_.rows();
+    auto nAtoms = clusterData.VenStats_.cols();
+    const auto& Te = clusterData.TeStats_;
+    const auto& Vee = clusterData.VeeStats_;
+    const auto& Ven = clusterData.VenStats_;
+
+    Eigen::VectorXd Ee(nElectrons);
+
+    for (Eigen::Index i = 0; i < nElectrons; ++i) {
+        Ee[i] = Te.mean()[i];
+
+        for (Eigen::Index  k = 0; k < nAtoms; ++k)
+            Ee[i] += 0.5*Ven.mean()(i,k);
+
+        for (Eigen::Index  j = i + 1; j < nElectrons; ++j)
+            Ee[i] += 0.5 * Vee.mean()(i,j);
+    }
+    return Ee;
+}
+
+Eigen::VectorXd OneParticleEnergies::oneElectronEnergiesErrors(const ClusterData &clusterData) {
+    auto nElectrons = clusterData.VenStats_.rows();
+    auto nAtoms = clusterData.VenStats_.cols();
+    const auto& Te = clusterData.TeStats_;
+    const auto& Vee = clusterData.VeeStats_;
+    const auto& Ven = clusterData.VenStats_;
+
+    Eigen::VectorXd EeErr(nElectrons);
+
+    for (Eigen::Index i = 0; i < nElectrons; ++i) {
+        EeErr[i] = Te.standardError()[i];
+
+        for (Eigen::Index  k = 0; k < nAtoms; ++k)
+            EeErr[i] = 0.5*std::sqrt(std::pow(EeErr[i], 2) + std::pow(Ven.mean()(i,k), 2));
+
+        for (Eigen::Index  j = i + 1; j < nElectrons; ++j)
+            EeErr[i] = 0.5 * std::sqrt(std::pow(EeErr[i], 2) + std::pow(Vee.mean()(i,j), 2));
+    }
+    return EeErr;
+}

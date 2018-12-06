@@ -139,6 +139,10 @@ namespace Statistics {
     };
 }
 
+using SingleParticlesStatistics = Statistics::RunningStatistics<Eigen::VectorXd, unsigned>;
+using InterParticlesStatistics = Statistics::RunningStatistics<Eigen::MatrixXd, unsigned>;
+using IntraParticlesStatistics = Statistics::RunningStatistics<Eigen::MatrixXd, unsigned, true>;
+
 namespace YAML {
 
     template<typename Derived, typename WeightType, bool triangularExport = false>

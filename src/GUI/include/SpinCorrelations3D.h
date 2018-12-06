@@ -13,14 +13,14 @@
 class SpinCorrelations3D : public SpinConnections3D {
 public:
     SpinCorrelations3D(ElectronsVector3D *electronsVector3D,
-                       Statistics::RunningStatistics<Eigen::MatrixXd, unsigned, true> SeeStats,
+                       IntraParticlesStatistics SeeStats,
                        double spinCorrelationThreshold);
 
     //TODO add createConnection() as in SpinConnections3D, add update() method
     void drawSpinCorrelations(ElectronsVector3D *electronsVector3D, double spinCorrelationThreshold);
 
 private:
-    Statistics::RunningStatistics<Eigen::MatrixXd, unsigned, true> SeeStats_;
+    IntraParticlesStatistics SeeStats_;
 };
 
 #endif //INPSIGHTS_SPINCORRELATIONS3D_H

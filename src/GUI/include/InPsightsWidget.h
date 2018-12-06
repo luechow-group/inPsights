@@ -14,8 +14,6 @@
 #include <QTreeWidget>
 #include <ClusterData.h>
 
-class QSplashScreen;
-
 class InPsightsWidget : public QWidget {
 Q_OBJECT
 public:

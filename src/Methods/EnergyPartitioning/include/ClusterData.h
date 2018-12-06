@@ -24,11 +24,11 @@ public:
 
     ClusterData(unsigned totalNumberOfStructures,
                 std::vector<ElectronsVector> exemplaricStructures,
-                Statistics::RunningStatistics<Eigen::VectorXd,unsigned> valueStats,
-                Statistics::RunningStatistics<Eigen::VectorXd,unsigned> TeStats,
-                Statistics::RunningStatistics<Eigen::MatrixXd,unsigned,true> SeeStats,
-                Statistics::RunningStatistics<Eigen::MatrixXd,unsigned,true> VeeStats,
-                Statistics::RunningStatistics<Eigen::MatrixXd,unsigned> VenStats)
+                SingleParticlesStatistics valueStats,
+                SingleParticlesStatistics TeStats,
+                IntraParticlesStatistics SeeStats,
+                IntraParticlesStatistics VeeStats,
+                InterParticlesStatistics VenStats)
     :
     N_(totalNumberOfStructures),
     exemplaricStructures_(std::move(exemplaricStructures)),
@@ -46,9 +46,9 @@ public:
 
     unsigned N_;
     std::vector<ElectronsVector> exemplaricStructures_;
-    Statistics::RunningStatistics<Eigen::VectorXd,unsigned> valueStats_,TeStats_;
-    Statistics::RunningStatistics<Eigen::MatrixXd,unsigned,true> SeeStats_, VeeStats_;
-    Statistics::RunningStatistics<Eigen::MatrixXd,unsigned> VenStats_;
+    SingleParticlesStatistics valueStats_,TeStats_;
+    IntraParticlesStatistics SeeStats_, VeeStats_;
+    InterParticlesStatistics VenStats_;
 };
 
 namespace YAML {

@@ -8,14 +8,30 @@
 #include <QWidget>
 #include <QTableWidget>
 #include <QGridLayout>
+#include <Statistics.h>
+
+class ClusterData;
 
 class EnergyPartitioningWidget : public QWidget {
 Q_OBJECT
 public:
-    explicit EnergyPartitioningWidget(QWidget* parent = nullptr, int nAtoms = 3, int nElectrons = 5);
+    // Improve constructor
+    EnergyPartitioningWidget(const IntraParticlesStatistics& VnnStats, int nAtoms = 0, int nElectrons = 0, QWidget* parent = nullptr);
 
+    void setAtomEnergies(IntraParticlesStatistics VnnStats);
+    void updateData(ClusterData& clusterData) const ;
+    void setTableSizes(int nAtoms = 0, int nElectrons = 0) const;
+
+private:
+    IntraParticlesStatistics VnnStats_;
     QTableWidget *Te, *Ven, *Vee, *Ee, *Vnn, *En;
     QList<QTableWidget*> tables;
+
+    void adjustAllTableSizes() const;
+
+    void placeItem(QTableWidget *table, double value, int i, int j = 0) const;
+
+    void setTableSize(QTableWidget *table, int rows, int cols) const;
 };
 
 #endif //INPSIGHTS_ENERGYPARTITIONINGWIDGET_H

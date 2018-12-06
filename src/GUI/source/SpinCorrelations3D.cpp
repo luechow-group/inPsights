@@ -6,7 +6,7 @@
 #include <Line3D.h>
 
 SpinCorrelations3D::SpinCorrelations3D(ElectronsVector3D *electronsVector3D,
-                                       Statistics::RunningStatistics<Eigen::MatrixXd, unsigned, true> SeeStats,
+                                       IntraParticlesStatistics SeeStats,
                                        double spinCorrelationThreshold)
         :
         SpinConnections3D(electronsVector3D, 0.01),

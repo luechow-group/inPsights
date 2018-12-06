@@ -5,15 +5,20 @@
 #ifndef INPSIGHTS_ONEPARTICLEENERGIES_H
 #define INPSIGHTS_ONEPARTICLEENERGIES_H
 
+#include <Eigen/Core>
+#include <Statistics.h>
 
-#include <iostream>
-#include <math.h>
-#include <yaml-cpp/yaml.h>
+class ClusterData;
 
 namespace OneParticleEnergies {
-    void oneAtomEnergies(const YAML::Node &cluster, const YAML::Node &Vnn);
 
-    void oneElectronEnergies(const YAML::Node &cluster);
+    Eigen::VectorXd oneAtomEnergies(const IntraParticlesStatistics& Vnn, const ClusterData &clusterData);
+    Eigen::VectorXd oneAtomEnergiesErrors(const IntraParticlesStatistics& Vnn, const ClusterData &clusterData);
+
+
+    Eigen::VectorXd oneElectronEnergies(const ClusterData &clusterData);
+    Eigen::VectorXd oneElectronEnergiesErrors(const ClusterData &clusterData);
+
 }
 
 #endif //INPSIGHTS_ONEPARTICLEENERGIES_H

@@ -157,9 +157,9 @@ private:
     const std::vector<Sample>& samples_;
     AtomsVector atoms_;
 
-    Statistics::RunningStatistics<Eigen::VectorXd,unsigned> valueStats_,TeStats_;
-    Statistics::RunningStatistics<Eigen::MatrixXd,unsigned,true> SeeStats_, VeeStats_, VnnStats_;
-    Statistics::RunningStatistics<Eigen::MatrixXd,unsigned> VenStats_;
+    SingleParticlesStatistics valueStats_,TeStats_;
+    IntraParticlesStatistics SeeStats_, VeeStats_, VnnStats_;
+    InterParticlesStatistics VenStats_;
 
     Eigen::MatrixXd Vnn_;
 
