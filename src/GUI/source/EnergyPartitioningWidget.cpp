@@ -8,8 +8,77 @@
 #include <QHeaderView>
 #include <ClusterData.h>
 #include <OneParticleEnergies.h>
+#include <QGridLayout>
+#include <QHBoxLayout>
 
-EnergyPartitioningWidget::EnergyPartitioningWidget(const IntraParticlesStatistics& VnnStats, int nAtoms, int nElectrons, QWidget *parent)
+EnergyPartitioningWidget::EnergyPartitioningWidget(QWidget *parent, int nAtoms, int nElectrons)
+        :
+        QWidget(parent),
+        initializedQ_(false),
+        Ee(new QTableWidget(nElectrons, 2, this)),
+        En(new QTableWidget(nAtoms, 2, this)) {
+
+    auto outerLayout = new QHBoxLayout(this);
+
+    outerLayout->addWidget(Ee);
+    outerLayout->addWidget(En);
+
+    QFont font;
+    font.setPointSize(8);
+    Ee->setFont(font);
+    En->setFont(font);
+}
+
+void EnergyPartitioningWidget::initializeItems(int nAtoms, int nElectrons) {
+    Ee->setRowCount(nElectrons);
+    Ee->setColumnCount(2);
+    for (int i = 0; i < nElectrons; ++i) {
+        Ee->setItem(i, 0, new QTableWidgetItem());
+        Ee->setItem(i, 1, new QTableWidgetItem());
+    }
+
+    En->setRowCount(nAtoms);
+    En->setColumnCount(2);
+    for (int i = 0; i < nAtoms; ++i) {
+        En->setItem(i, 0, new QTableWidgetItem());
+        En->setItem(i, 1, new QTableWidgetItem());
+    }
+
+}
+
+void EnergyPartitioningWidget::setAtomEnergies(IntraParticlesStatistics VnnStats) {
+    VnnStats_ = std::move(VnnStats);
+}
+
+void EnergyPartitioningWidget::updateData(ClusterData &clusterData) const {
+    auto nElectrons = static_cast<int>(clusterData.VenStats_.rows());
+    auto nAtoms = static_cast<int>(clusterData.VenStats_.cols());
+
+    Ee->setRowCount(nElectrons);
+    En->setRowCount(nAtoms);
+
+    auto EeVal = OneParticleEnergies::oneElectronEnergies(clusterData);
+    auto EeErr = OneParticleEnergies::oneElectronEnergiesErrors(clusterData);
+
+    auto EnVal = OneParticleEnergies::oneAtomEnergies(VnnStats_,clusterData);
+    auto EnErr = OneParticleEnergies::oneAtomEnergiesErrors(VnnStats_,clusterData);
+
+    for (int i = 0; i < nElectrons; ++i) {
+        Ee->item(i, 0)->setData(Qt::UserRole, EeVal[i]);
+        Ee->item(i, 1)->setData(Qt::UserRole, EeErr[i]);
+        Ee->item(i, 0)->setText(QString::number(EeVal[i], 'f', 4));
+        Ee->item(i, 1)->setText(QString::number(EeErr[i], 'f', 4));
+    }
+
+    for (int i = 0; i < nAtoms; ++i) {
+        En->item(i, 0)->setData(Qt::UserRole, EnVal[i]);
+        En->item(i, 1)->setData(Qt::UserRole, EnErr[i]);
+        En->item(i, 0)->setText(QString::number(EnVal[i], 'f', 4));
+        En->item(i, 1)->setText(QString::number(EnErr[i], 'f', 4));
+    }
+}
+
+EnergyPartitioningWidget2::EnergyPartitioningWidget2(const IntraParticlesStatistics& VnnStats, int nAtoms, int nElectrons, QWidget *parent)
         : QWidget(parent),
           VnnStats_(VnnStats),
           Te(new QTableWidget(1, nElectrons, this)),
@@ -28,7 +97,7 @@ EnergyPartitioningWidget::EnergyPartitioningWidget(const IntraParticlesStatistic
     gridLayout->addWidget(Ee,  3,0);
     gridLayout->addWidget(Vnn, 2,1);
     gridLayout->addWidget(En,  2,2);
-    
+
     setTableSizes(nAtoms,nElectrons);
 
     QFont font;
@@ -37,7 +106,7 @@ EnergyPartitioningWidget::EnergyPartitioningWidget(const IntraParticlesStatistic
         t->setFont(font);
 }
 
-void EnergyPartitioningWidget::setTableSize(QTableWidget *table, int rows, int cols) const {
+void EnergyPartitioningWidget2::setTableSize(QTableWidget *table, int rows, int cols) const {
     table->setRowCount(rows);
     table->setColumnCount(cols);
 
@@ -46,7 +115,7 @@ void EnergyPartitioningWidget::setTableSize(QTableWidget *table, int rows, int c
             table->setItem(i, j, new QTableWidgetItem());
 }
 
-void EnergyPartitioningWidget::setTableSizes(int nAtoms, int nElectrons) const {
+void EnergyPartitioningWidget2::setTableSizes(int nAtoms, int nElectrons) const {
     setTableSize(Te , 1         , nElectrons);
     setTableSize(Ven, nAtoms    , nElectrons);
     setTableSize(Vee, nElectrons, nElectrons);
@@ -55,7 +124,7 @@ void EnergyPartitioningWidget::setTableSizes(int nAtoms, int nElectrons) const {
     setTableSize(En , nAtoms    , 1         );
 }
 
-void EnergyPartitioningWidget::adjustAllTableSizes() const {
+void EnergyPartitioningWidget2::adjustAllTableSizes() const {
     for(auto t : tables) {
         t->setSizePolicy(QSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum));
         t->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -69,7 +138,7 @@ void EnergyPartitioningWidget::adjustAllTableSizes() const {
 }
 
 
-void EnergyPartitioningWidget::updateData(ClusterData &clusterData) const {
+void EnergyPartitioningWidget2::updateData(ClusterData &clusterData) const {
 
     auto nElectrons = Vee->rowCount();
     auto nAtoms = Vnn->rowCount();
@@ -99,7 +168,7 @@ void EnergyPartitioningWidget::updateData(ClusterData &clusterData) const {
     adjustAllTableSizes();
 }
 
-void EnergyPartitioningWidget::placeItem(QTableWidget *table, double value, int j, int i) const {
+void EnergyPartitioningWidget2::placeItem(QTableWidget *table, double value, int j, int i) const {
     table->item(i,j)->setData(Qt::UserRole, value);
     table->item(i,j)->setText(QString::number(value, 'f', 4));
 }

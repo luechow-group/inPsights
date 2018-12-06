@@ -22,7 +22,7 @@ InPsightsWidget::InPsightsWidget(QWidget *parent)
         QWidget(parent),
         console(spdlog::get(Logger::name)),
         moleculeWidget(new MoleculeWidget(this)),
-        energyPartitioningWidget(nullptr), // additional window
+        energyPartitioningWidget(new EnergyPartitioningWidget(this)), // TODO refator, should it be an additional window?
         atomsCheckBox(new QCheckBox("Atoms", this)),
         bondsCheckBox(new QCheckBox("Bonds", this)),
         spinConnectionsCheckBox(new QCheckBox("Spin Connections", this)),
@@ -33,8 +33,6 @@ InPsightsWidget::InPsightsWidget(QWidget *parent)
 
     loadData();
     showSplashScreen();
-
-    energyPartitioningWidget->show(); //TODO put at the end after testing
 
     createWidget();
     connectSignals();
@@ -47,6 +45,7 @@ void InPsightsWidget::createWidget() {
     setWindowTitle("inPsights - Chemical insights from |Ψ|².");
     auto gbox = new QGroupBox("Settings:");
     auto hbox = new QHBoxLayout(this);
+    auto hbox2 = new QHBoxLayout();
     auto vboxOuter = new QVBoxLayout();
     auto vboxInner = new QVBoxLayout();
     auto sliderBox = new QHBoxLayout();
@@ -54,7 +53,9 @@ void InPsightsWidget::createWidget() {
     setLayout(hbox);
     resize(1024, 768);
     hbox->addWidget(moleculeWidget, Qt::AlignLeft);
-    hbox->addLayout(vboxOuter);
+    hbox->addLayout(hbox2);
+    hbox2->addLayout(vboxOuter);
+    hbox2->addWidget(energyPartitioningWidget);
 
     auto headerLabels = QList<QString>({"ID", "N", "min(-ln(|Ψ|²))", "max(-ln(|Ψ|²))"});
     maximaList->setColumnCount(headerLabels.size());
@@ -175,9 +176,7 @@ void InPsightsWidget::loadData() {
             QString("Open results file"),
             QDir::currentPath(),
             QString("YAML files (*.yml *.yaml *.json)"));
-    //dialog->setFileMode(QFileDialog::FileMode::ExistingFile);
-    //dialog->setViewMode(QFileDialog::ViewMode::Detail);
-
+    
     moleculeWidget->infoText_->setText(fileName);
 
     YAML::Node doc = YAML::LoadFile(fileName.toStdString());
@@ -185,7 +184,8 @@ void InPsightsWidget::loadData() {
     auto nElectrons = doc["Clusters"][0]["Structures"][0].as<ElectronsVector>().numberOfEntities();
 
     auto VnnStats = doc["Vnn"].as<IntraParticlesStatistics>();
-    energyPartitioningWidget = new EnergyPartitioningWidget(VnnStats, int(nAtoms),int(nElectrons));
+    energyPartitioningWidget->setAtomEnergies(VnnStats);
+    energyPartitioningWidget->initializeItems(int(nAtoms),int(nElectrons));
 
     for (int clusterId = 0; clusterId < static_cast<int>(doc["Clusters"].size()); ++clusterId) {
 
