@@ -11,7 +11,7 @@
 #include <QSpinBox>
 #include <QSplashScreen>
 #include <QTimer>
-//#include <QTreeWidgetItem>
+#include <QHeaderView>
 #include "MaximaTreeWidgetItem.h"
 #include <iterator>
 #include <vector>
@@ -51,6 +51,9 @@ void InPsightsWidget::createWidget() {
     auto sliderBox = new QHBoxLayout();
 
     setLayout(hbox);
+    hbox->setStretch(0,3);
+    hbox->setStretch(1,1);
+
     resize(1024, 768);
     hbox->addWidget(moleculeWidget, Qt::AlignLeft);
     hbox->addLayout(vboxOuter);
@@ -58,9 +61,13 @@ void InPsightsWidget::createWidget() {
     //hbox2->addLayout(vboxOuter);
     //hbox2->addWidget(energyPartitioningWidget);
 
+
+    // put into MaximaTreeWidget class
     auto headerLabels = QList<QString>({"ID", "N", "min(-ln(|Ψ|²))", "max(-ln(|Ψ|²))"});
     maximaList->setColumnCount(headerLabels.size());
     maximaList->setHeaderLabels(headerLabels);
+    maximaList->header()->setStretchLastSection(false);
+
     vboxOuter->addWidget(maximaList);
     vboxOuter->addWidget(energyPartitioningWidget);
     vboxOuter->addWidget(gbox);
@@ -69,10 +76,13 @@ void InPsightsWidget::createWidget() {
     maximaList->setFixedWidth(300);
     maximaList->setSortingEnabled(true);
 
-    vboxInner->addWidget(atomsCheckBox);
-    vboxInner->addWidget(bondsCheckBox);
-    vboxInner->addWidget(spinConnectionsCheckBox);
-    vboxInner->addWidget(spinCorrelationsCheckBox);
+    auto checkboxGrid = new QGridLayout();
+    vboxInner->addLayout(checkboxGrid);
+    checkboxGrid->addWidget(atomsCheckBox,0,0);
+    checkboxGrid->addWidget(bondsCheckBox,1,0);
+    checkboxGrid->addWidget(spinConnectionsCheckBox,0,1);
+    checkboxGrid->addWidget(spinCorrelationsCheckBox,1,1);
+
     vboxInner->addWidget(spinCorrelationSlider);
     vboxInner->addLayout(sliderBox);
 
@@ -216,6 +226,10 @@ void InPsightsWidget::loadData() {
         }
 
         maximaList->addTopLevelItem(item);
+        for (int i = 0; i < maximaList->columnCount(); ++i) {
+            maximaList->resizeColumnToContents(i);
+        }
+        //maximaList->resize(maximaList->minimumSize());
     }
     moleculeWidget->setSharedAtomsVector(doc["Atoms"].as<AtomsVector>());
 }

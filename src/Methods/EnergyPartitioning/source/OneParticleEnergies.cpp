@@ -39,8 +39,6 @@ OneParticleEnergies::oneAtomEnergiesErrors(const IntraParticlesStatistics &Vnn, 
         for (Eigen::Index  k = 0; k < nElectrons; ++k)
             EnErr[i] = 0.5 * std::sqrt(std::pow(EnErr[i], 2) + std::pow(Ven.standardError()(k,i), 2));
     }
-
-    std::cout << EnErr.transpose()  << std::endl;
     return EnErr;
 }
 
@@ -83,6 +81,5 @@ Eigen::VectorXd OneParticleEnergies::oneElectronEnergiesErrors(const ClusterData
         for (Eigen::Index  j = i + 1; j < nElectrons; ++j)
             EeErr[i] = 0.5 * std::sqrt(std::pow(EeErr[i], 2) + std::pow(Vee.standardError()(i,j), 2));
     }
-    std::cout << EeErr.transpose() << std::endl;
     return EeErr;
 }
