@@ -23,30 +23,35 @@ EnergyPartitioningWidget::EnergyPartitioningWidget(QWidget *parent)
     outerLayout->addWidget(Ee);
     outerLayout->addWidget(En);
 
-    Ee->setColumnCount(2);
-    Ee->setHeaderLabels(QList<QString>({"Ee", "Error"}));
-    Ee->setSortingEnabled(true);
-    Ee->header()->setStretchLastSection(false);
-    //Ee->setMinimumWidth(150);
-    //Ee->setSizePolicy(QSizePolicy::Policy::Minimum, QSizePolicy::Policy::Minimum);
-    Ee->setFixedWidth(150);
-
-    En->setColumnCount(2);
-    En->setHeaderLabels(QList<QString>({"En", "Error"}));
-    En->setSortingEnabled(true);
-    En->header()->setStretchLastSection(false);
-    //En->setMinimumWidth(150);
-    //En->setSizePolicy(QSizePolicy::Policy::Minimum, QSizePolicy::Policy::Minimum);
-    En->setFixedWidth(150);
+    initializeTree(Ee);
+    initializeTree(En);
 }
 
-void EnergyPartitioningWidget::initializeItems(int nAtoms, int nElectrons) {
-    for (int i = 0; i < nElectrons; ++i)
-        Ee->addTopLevelItem(new QTreeWidgetItem());
+void EnergyPartitioningWidget::initializeTree(QTreeWidget *tree) const {
+    tree->setColumnCount(3);
+    tree->setHeaderLabels(QList<QString>({"Ee", "Error","ID"}));
+    tree->setSortingEnabled(true);
+    tree->header()->setStretchLastSection(false);
+    //tree->setMinimumWidth(150);
+    //tree->setSizePolicy(QSizePolicy::Policy::Minimum, QSizePolicy::Policy::Minimum);
+    tree->setFixedWidth(150);
+}
 
-    for (int i = 0; i < nAtoms; ++i)
-        En->addTopLevelItem(new QTreeWidgetItem());
+QTreeWidget *EnergyPartitioningWidget::atomsTreeWidget() {
+    return En;
+}
 
+QTreeWidget *EnergyPartitioningWidget::electronsTreeWidget() {
+    return Ee;
+
+}
+
+void EnergyPartitioningWidget::initializeTreeItems(QTreeWidget *tree, int numberOfParticles) {
+    for (int i = 0; i < numberOfParticles; ++i) {
+        auto item = new QTreeWidgetItem();
+        item->setCheckState(0,Qt::CheckState::Unchecked);
+        tree->addTopLevelItem(item);
+    }
 }
 
 void EnergyPartitioningWidget::setAtomEnergies(IntraParticlesStatistics VnnStats) {
@@ -54,37 +59,40 @@ void EnergyPartitioningWidget::setAtomEnergies(IntraParticlesStatistics VnnStats
 }
 
 void EnergyPartitioningWidget::updateData(const ClusterData &clusterData) {
-    auto nElectrons = static_cast<int>(clusterData.VenStats_.rows());
-    auto nAtoms = static_cast<int>(clusterData.VenStats_.cols());
+    assert(Ee->topLevelItemCount() == static_cast<int>(clusterData.VenStats_.rows())
+    && "The number of tree items and electrons must match.");
+    assert(En->topLevelItemCount() == static_cast<int>(clusterData.VenStats_.cols())
+    && "The number of tree items and atoms must match.");
 
-    auto EeVal = OneParticleEnergies::oneElectronEnergies(clusterData);
-    auto EeErr = OneParticleEnergies::oneElectronEnergiesErrors(clusterData);
+    updateEnergies(Ee,
+            OneParticleEnergies::oneElectronEnergies(clusterData),
+            OneParticleEnergies::oneElectronEnergiesErrors(clusterData));
 
-    auto EnVal = OneParticleEnergies::oneAtomEnergies(VnnStats_,clusterData);
-    auto EnErr = OneParticleEnergies::oneAtomEnergiesErrors(VnnStats_,clusterData);
+    updateEnergies(En,
+                   OneParticleEnergies::oneAtomEnergies(VnnStats_, clusterData),
+                   OneParticleEnergies::oneAtomEnergiesErrors(VnnStats_, clusterData));
 
-    for (int i = 0; i < nElectrons; ++i) {
-        auto item = Ee->topLevelItem(i);
-        item->setData(0,Qt::UserRole, EeVal[i]);
-        item->setData(1,Qt::UserRole, EeErr[i]);
-        item->setText(0,QString::number(EeVal[i],'f',4));
-        item->setText(1,QString::number(EeErr[i],'f',4));
+}
+
+void EnergyPartitioningWidget::updateEnergies(QTreeWidget *tree,
+                                              const Eigen::VectorXd &energies,
+                                              const Eigen::VectorXd &errors) const {
+    assert(energies.size() == errors.size()
+    && "Value and error vector must have the same size.");
+    assert(tree->topLevelItemCount() == static_cast<int>(energies.size())
+    && "The number of tree items and energy values must match.");
+
+    for (int i = 0; i < energies.size(); ++i) {
+        auto item = tree->topLevelItem(i);
+        item->setData(0, Qt::UserRole, energies[i]);
+        item->setData(1, Qt::UserRole, errors[i]);
+        item->setData(2, Qt::UserRole, i);
+        item->setText(0, QString::number(energies[i], 'f', 4));
+        item->setText(1, QString::number(errors[i], 'f', 4));
+        item->setText(2, QString::number(i));
     }
-
-    for (int k = 0; k < nAtoms; ++k) {
-        auto item = En->topLevelItem(k);
-        item->setData(0,Qt::UserRole, EnVal[k]);
-        item->setData(1,Qt::UserRole, EnErr[k]);
-        item->setText(0,QString::number(EnVal[k],'f',4));
-        item->setText(1,QString::number(EnErr[k],'f',4));
-    }
-
-    Ee->resizeColumnToContents(0);
-    Ee->resizeColumnToContents(1);
-
-    En->resizeColumnToContents(0);
-    En->resizeColumnToContents(1);
-
-    //this->resize(minimumWidth(), sizeHint().height());
+    tree->resizeColumnToContents(0);
+    tree->resizeColumnToContents(1);
+    tree->resizeColumnToContents(2);
 }
 

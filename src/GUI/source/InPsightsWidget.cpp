@@ -197,7 +197,8 @@ void InPsightsWidget::loadData() {
 
     auto VnnStats = doc["Vnn"].as<IntraParticlesStatistics>();
     energyPartitioningWidget->setAtomEnergies(VnnStats);
-    energyPartitioningWidget->initializeItems(int(nAtoms),int(nElectrons));
+    energyPartitioningWidget->initializeTreeItems(energyPartitioningWidget->atomsTreeWidget(),int(nAtoms));
+    energyPartitioningWidget->initializeTreeItems(energyPartitioningWidget->electronsTreeWidget(),int(nElectrons));
 
     for (int clusterId = 0; clusterId < static_cast<int>(doc["Clusters"].size()); ++clusterId) {
 
