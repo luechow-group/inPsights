@@ -9,4 +9,8 @@ namespace Logger{
     void initialize(){
         auto console = spdlog::stdout_color_st(name);
     };
+
+    std::shared_ptr<spdlog::logger> get() {
+        return spdlog::get(Logger::name);
+    }
 }

@@ -20,7 +20,8 @@ public:
     };
 
 public slots:
-    void highlight(bool highlightQ);
+    void onHighlighted(bool highlightQ);
+    void onSelected(bool selectedQ);
 
 private:
     float radius_, oldAlpha_;

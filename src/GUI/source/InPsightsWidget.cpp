@@ -12,7 +12,7 @@
 #include <QSplashScreen>
 #include <QTimer>
 #include <QHeaderView>
-#include "MaximaTreeWidgetItem.h"
+#include "IntegerSortedTreeWidgetItem.h"
 #include <iterator>
 #include <vector>
 #include <ParticlesVector.h>
@@ -20,7 +20,7 @@
 InPsightsWidget::InPsightsWidget(QWidget *parent)
         :
         QWidget(parent),
-        console(spdlog::get(Logger::name)),
+        console(Logger::get()),
         moleculeWidget(new MoleculeWidget(this)),
         energyPartitioningWidget(new EnergyPartitioningWidget(this)), // TODO refator, should it be an additional window?
         atomsCheckBox(new QCheckBox("Atoms", this)),
@@ -105,6 +105,11 @@ void InPsightsWidget::connectSignals() {
 
     connect(spinCorrelationSlider, SIGNAL(valueChanged(int)),
             this, SLOT(onSpinCorrelationsSliderChanged(int)));
+
+    connect(energyPartitioningWidget, SIGNAL(atomsChecked(std::vector<int>)),
+            moleculeWidget, SLOT(onAtomsChecked(std::vector<int>)));
+    connect(energyPartitioningWidget, SIGNAL(electronsChecked(std::vector<int>)),
+            moleculeWidget, SLOT(onElectronsChecked(std::vector<int>)));
 }
 
 void InPsightsWidget::setupSliderBox() {
@@ -116,7 +121,7 @@ void InPsightsWidget::setupSliderBox() {
 }
 
 void InPsightsWidget::selectedStructure(QTreeWidgetItem *item, int column) {
-    auto maximaTreeWidgetItem = dynamic_cast<MaximaTreeWidgetItem*>(item);
+    auto maximaTreeWidgetItem = dynamic_cast<IntegerSortedTreeWidgetItem*>(item);
 
     if (column != 0)
         console->critical("Column 0 expected but got {} ", column);
@@ -200,7 +205,7 @@ void InPsightsWidget::loadData() {
         ClusterData clusterData = doc["Clusters"][clusterId].as<ClusterData>();
 
         clusterCollection_.emplace_back(clusterData);
-        auto item = new MaximaTreeWidgetItem(maximaList,{QString::number(clusterId),
+        auto item = new IntegerSortedTreeWidgetItem(maximaList,{QString::number(clusterId),
                                                          QString::number(clusterData.N_),
                                                          QString::number(clusterData.valueStats_.cwiseMin()[0]),
                                                          QString::number(clusterData.valueStats_.cwiseMax()[0])});
@@ -213,7 +218,7 @@ void InPsightsWidget::loadData() {
         auto structures = doc["Clusters"][clusterId]["Structures"];
 
         for (int structureId = 1; structureId < static_cast<int>(structures.size()); ++structureId) {
-            auto subItem = new MaximaTreeWidgetItem(item, QStringList({QString::number(structureId)}));
+            auto subItem = new IntegerSortedTreeWidgetItem(item, QStringList({QString::number(structureId)}));
             subItem->setCheckState(0, Qt::CheckState::Unchecked);
 
             id = {clusterId, structureId};

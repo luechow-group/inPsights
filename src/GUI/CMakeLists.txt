@@ -48,7 +48,7 @@ set(HEADER_FILES
         include/SpinConnections3D.h
         include/SpinCorrelations3D.h
         include/SameSpinConnections3D.h
-        include/MaximaTreeWidgetItem.h
+        include/IntegerSortedTreeWidgetItem.h
         include/EnergyPartitioningWidget.h
         )
 
@@ -71,7 +71,7 @@ set(SOURCE_FILES
         source/SpinCorrelations3D.cpp
         source/InPsightsWidget.cpp
         source/SameSpinConnections3D.cpp
-        source/MaximaTreeWidgetItem.cpp
+        source/IntegerSortedTreeWidgetItem.cpp
         source/EnergyPartitioningWidget.cpp
         )
 

@@ -12,6 +12,7 @@
 #include <Statistics.h>
 #include <QLabel>
 #include <QGridLayout>
+#include <Logger.h>
 
 class ClusterData;
 
@@ -27,10 +28,17 @@ public:
     QTreeWidget& atomsTreeWidget();
     QTreeWidget& electronsTreeWidget();
 
-public slots:
-    void onItemChanged(QTreeWidgetItem *item, int column);
+Q_SIGNALS:
+    void atomsChecked(std::vector<int> selectedIds);
+    void electronsChecked(std::vector<int> selectedIds);
+
+public Q_SLOTS:
+    void onItemChanged();
+    void onAtomSelectionChanged();
+    void onElectronSelectionChanged();
 
 private:
+    std::shared_ptr<spdlog::logger> console;
     bool initializedQ_;
     IntraParticlesStatistics VnnStats_;
     QGridLayout grid_;
@@ -42,8 +50,10 @@ private:
                         const Eigen::VectorXd &errors) const;
 
     void initializeTree(QTreeWidget &tree, const QString& particleSymbol) const;
-
-    void addContributions(QTreeWidget &tree, double &intra, double &inter, double &intraErr, double &interErr) const;
+    //TODO use struct
+    void addContributions(const QTreeWidget &tree, double &intra, double &inter, double &intraErr, double &interErr) const;
+    void recalculateMotifEnergy();
+    std::vector<int> getSelectedItems(const QTreeWidget &tree);
 };
 
 #endif //INPSIGHTS_ENERGYPARTITIONINGWIDGET_H

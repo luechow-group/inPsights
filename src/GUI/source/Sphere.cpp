@@ -20,15 +20,19 @@ Sphere::Sphere(Qt3DCore::QEntity *root, QColor color, const QVector3D location, 
 
     addComponent(mesh_);
 
-    QObject::connect(picker, &Qt3DRender::QObjectPicker::containsMouseChanged, this, &Sphere::highlight);
+    QObject::connect(picker, &Qt3DRender::QObjectPicker::containsMouseChanged, this, &Sphere::onHighlighted);
 }
 
-void Sphere::highlight(bool highlightQ) {
-    if(highlightQ) {
-        oldAlpha_ = material->alpha();
-        material->setAlpha(1.0f);
-    } else {
-        material->setAlpha(oldAlpha_);
-    }
+void Sphere::onHighlighted(bool highlightQ) {
+    if(highlightQ)
+        material->setAmbient(QColor(0, 255, 255));
+    else
+        material->setAmbient(color());
+}
 
+void Sphere::onSelected(bool selectedQ) {
+    if(selectedQ)
+        material->setAmbient(QColor(255, 0, 255));
+    else
+        material->setAmbient(color());
 }
