@@ -33,7 +33,6 @@ InPsightsWidget::InPsightsWidget(QWidget *parent)
 
     loadData();
     showSplashScreen();
-
     createWidget();
     connectSignals();
     initialView();
@@ -45,7 +44,6 @@ void InPsightsWidget::createWidget() {
     setWindowTitle("inPsights - Chemical insights from |Ψ|².");
     auto gbox = new QGroupBox("Settings:");
     auto hbox = new QHBoxLayout(this);
-    //auto hbox2 = new QHBoxLayout();
     auto vboxOuter = new QVBoxLayout();
     auto vboxInner = new QVBoxLayout();
     auto sliderBox = new QHBoxLayout();
@@ -54,12 +52,9 @@ void InPsightsWidget::createWidget() {
     hbox->setStretch(0,3);
     hbox->setStretch(1,1);
 
-    resize(1024, 768);
+    resize(1280, 800);
     hbox->addWidget(moleculeWidget, Qt::AlignLeft);
     hbox->addLayout(vboxOuter);
-    //hbox->addLayout(hbox2);
-    //hbox2->addLayout(vboxOuter);
-    //hbox2->addWidget(energyPartitioningWidget);
 
 
     // put into MaximaTreeWidget class
@@ -73,7 +68,7 @@ void InPsightsWidget::createWidget() {
     vboxOuter->addWidget(gbox);
     gbox->setLayout(vboxInner);
 
-    maximaList->setFixedWidth(300);
+    maximaList->setFixedWidth(350);
     maximaList->setSortingEnabled(true);
 
     auto checkboxGrid = new QGridLayout();
