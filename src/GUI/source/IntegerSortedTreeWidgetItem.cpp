@@ -19,8 +19,8 @@ IntegerSortedTreeWidgetItem::IntegerSortedTreeWidgetItem(QTreeWidgetItem *parent
         : QTreeWidgetItem(parent, strings, type) {}
 
 bool IntegerSortedTreeWidgetItem::operator<(const QTreeWidgetItem &other) const {
-    int sortCol = treeWidget()->sortColumn();
-    int myNumber = text(sortCol).toInt();
-    int otherNumber = other.text(sortCol).toInt();
+    auto sortCol = treeWidget()->sortColumn();
+    auto myNumber = text(sortCol).toDouble(); //TODO Refactor
+    auto  otherNumber = other.text(sortCol).toDouble();
     return myNumber < otherNumber;
 }

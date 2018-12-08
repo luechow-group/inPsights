@@ -95,8 +95,6 @@ std::vector<int> EnergyPartitioningWidget::getSelectedItems(const QTreeWidget &t
             selection.push_back(id);
         }
     }
-
-
     return selection;
 }
 
