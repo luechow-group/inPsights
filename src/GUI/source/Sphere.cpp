@@ -39,7 +39,7 @@ void Sphere::update() {
         material->setAmbient(QColor(0, 255, 255));
     } else if (selectedQ_) {
         mesh_->setRadius(radius_);
-        material->setAmbient(QColor(255, 0, 255));
+        material->setAmbient(QColor(255, 255, 0));
     } else {
         mesh_->setRadius(radius_);
         material->setAmbient(color());
