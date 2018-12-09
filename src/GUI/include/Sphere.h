@@ -24,8 +24,11 @@ public slots:
     void onSelected(bool selectedQ);
 
 private:
-    float radius_, oldAlpha_;
+    bool highlightedQ_, selectedQ_;
+    float radius_;
     Qt3DExtras::QSphereMesh* mesh_;
+
+    void update();
 };
 
 #endif //TEST_SPHERE_H

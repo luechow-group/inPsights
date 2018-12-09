@@ -11,7 +11,7 @@ class IntegerSortedTreeWidgetItem : public QTreeWidgetItem {
 public:
     IntegerSortedTreeWidgetItem();
 
-    IntegerSortedTreeWidgetItem(QTreeWidget *tree);
+    explicit IntegerSortedTreeWidgetItem(QTreeWidget *tree);
 
     IntegerSortedTreeWidgetItem(QTreeWidgetItem *parent, const QStringList &strings, int type = Type);
 

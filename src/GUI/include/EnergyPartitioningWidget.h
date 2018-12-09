@@ -31,9 +31,13 @@ public:
 Q_SIGNALS:
     void atomsChecked(std::vector<int> selectedIds);
     void electronsChecked(std::vector<int> selectedIds);
+    void atomsHighlighted(std::vector<int> selectedIds);
+    void electronsHighlighted(std::vector<int> selectedIds);
 
 public Q_SLOTS:
     void onItemChanged();
+    void onAtomItemChanged();
+    void onElectronItemChanged();
     void onAtomSelectionChanged();
     void onElectronSelectionChanged();
 
@@ -53,6 +57,7 @@ private:
     //TODO use struct
     void addContributions(const QTreeWidget &tree, double &intra, double &inter, double &intraErr, double &interErr) const;
     void recalculateMotifEnergy();
+    std::vector<int> getCheckedItems(const QTreeWidget &tree);
     std::vector<int> getSelectedItems(const QTreeWidget &tree);
 };
 

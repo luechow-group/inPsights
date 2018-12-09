@@ -37,6 +37,8 @@ public Q_SLOTS:
 
     void onAtomsChecked(std::vector<int>);
     void onElectronsChecked(std::vector<int>);
+    void onAtomsHighlighted(std::vector<int>);
+    void onElectronsHighlighted(std::vector<int>);
 
 private:
     QVBoxLayout *layout_;

@@ -116,6 +116,15 @@ void MoleculeWidget::onAtomsChecked(std::vector<int> selectedParticles) {
     }
 }
 
+void MoleculeWidget::onAtomsHighlighted(std::vector<int> selectedParticles) {
+    auto &particles = atomsVector3D_->particles3D_;
+
+    for (int i = 0; i < static_cast<int>(particles.size()); ++i) {
+        auto foundQ = std::find(selectedParticles.begin(), selectedParticles.end(), i) != selectedParticles.end();
+        particles[i]->onHighlighted(foundQ);
+    }
+}
+
 
 void MoleculeWidget::onElectronsChecked(std::vector<int> selectedParticles) {
     if(activeElectronsVectorsMap_.size() != 1)
@@ -126,6 +135,19 @@ void MoleculeWidget::onElectronsChecked(std::vector<int> selectedParticles) {
         for (int i = 0; i < static_cast<int>(particles.size()); ++i) {
             auto foundQ = std::find(selectedParticles.begin(), selectedParticles.end(), i) != selectedParticles.end();
             particles[i]->onSelected(foundQ);
+        }
+    }
+}
+
+void MoleculeWidget::onElectronsHighlighted(std::vector<int> selectedParticles) {
+    if(activeElectronsVectorsMap_.size() != 1)
+        std::cout << "Make sure only one Electronsvector is checked" << std::endl;
+    else {
+        auto &particles = activeElectronsVectorsMap_.begin()->second.begin()->second->particles3D_;
+
+        for (int i = 0; i < static_cast<int>(particles.size()); ++i) {
+            auto foundQ = std::find(selectedParticles.begin(), selectedParticles.end(), i) != selectedParticles.end();
+            particles[i]->onHighlighted(foundQ);
         }
     }
 }

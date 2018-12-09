@@ -33,10 +33,14 @@ EnergyPartitioningWidget::EnergyPartitioningWidget(QWidget *parent)
             this, SLOT(onItemChanged()));
 
     connect(&En_, SIGNAL(itemChanged(QTreeWidgetItem*,int)),
-            this, SLOT(onAtomSelectionChanged()));
+            this, SLOT(onAtomItemChanged()));
     connect(&Ee_, SIGNAL(itemChanged(QTreeWidgetItem*,int)),
-            this, SLOT(onElectronSelectionChanged()));
+            this, SLOT(onElectronItemChanged()));
 
+    connect(&En_, SIGNAL(itemSelectionChanged()),
+            this, SLOT(onAtomSelectionChanged()));
+    connect(&Ee_, SIGNAL(itemSelectionChanged()),
+            this, SLOT(onElectronSelectionChanged()));
 }
 
 void EnergyPartitioningWidget::initializeTree(QTreeWidget &tree, const QString& particleSymbol) const {
@@ -46,6 +50,7 @@ void EnergyPartitioningWidget::initializeTree(QTreeWidget &tree, const QString& 
         QString("u_E%1 / Eh").arg(particleSymbol),
         QString("ID")}));
     tree.setSortingEnabled(true);
+    tree.sortItems(0,Qt::SortOrder::AscendingOrder);
     tree.header()->setStretchLastSection(false);
     //tree.setMinimumWidth(150);
     //tree.setSizePolicy(QSizePolicy::Policy::Minimum, QSizePolicy::Policy::Minimum);
@@ -76,15 +81,34 @@ void EnergyPartitioningWidget::recalculateMotifEnergy(){
 }
 
 
+void EnergyPartitioningWidget::onAtomItemChanged() {
+    emit atomsChecked(getCheckedItems(En_));
+
+}
+
+void EnergyPartitioningWidget::onElectronItemChanged() {
+    emit electronsChecked(getCheckedItems(Ee_));
+}
+
 void EnergyPartitioningWidget::onAtomSelectionChanged() {
-    emit atomsChecked(getSelectedItems(En_));
+    emit atomsHighlighted(getSelectedItems(En_));
 }
 
 void EnergyPartitioningWidget::onElectronSelectionChanged() {
-    emit electronsChecked(getSelectedItems(Ee_));
+    emit electronsHighlighted(getSelectedItems(Ee_));
 }
 
 std::vector<int> EnergyPartitioningWidget::getSelectedItems(const QTreeWidget &tree) {
+    std::vector<int> selection;
+
+    for(auto &item : tree.selectedItems()) {
+        auto id = item->data(2, Qt::UserRole).toInt();
+        selection.push_back(id);
+    }
+    return selection;
+}
+
+std::vector<int> EnergyPartitioningWidget::getCheckedItems(const QTreeWidget &tree) {
     std::vector<int> selection;
 
     for (int i = 0; i < tree.topLevelItemCount(); ++i) {
@@ -166,4 +190,3 @@ void EnergyPartitioningWidget::updateEnergies(QTreeWidget &tree,
     tree.resizeColumnToContents(1);
     tree.resizeColumnToContents(2);
 }
-

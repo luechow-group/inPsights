@@ -110,6 +110,11 @@ void InPsightsWidget::connectSignals() {
             moleculeWidget, SLOT(onAtomsChecked(std::vector<int>)));
     connect(energyPartitioningWidget, SIGNAL(electronsChecked(std::vector<int>)),
             moleculeWidget, SLOT(onElectronsChecked(std::vector<int>)));
+
+    connect(energyPartitioningWidget, SIGNAL(atomsHighlighted(std::vector<int>)),
+            moleculeWidget, SLOT(onAtomsHighlighted(std::vector<int>)));
+    connect(energyPartitioningWidget, SIGNAL(electronsHighlighted(std::vector<int>)),
+            moleculeWidget, SLOT(onElectronsHighlighted(std::vector<int>)));
 }
 
 void InPsightsWidget::setupSliderBox() {
