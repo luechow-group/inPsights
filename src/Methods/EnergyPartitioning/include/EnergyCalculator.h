@@ -94,8 +94,17 @@ public:
     void calculateStatistics(const std::vector<std::vector<SimilarReferences>>& clusteredGloballySimilarMaxima){
         using namespace YAML;
 
+        auto totalEnergies = calculateTotalEnergies();
+
         yamlDocument_ << BeginDoc << BeginMap
         << Key << "Atoms" << Value << atoms_ << Comment("[a0]")
+        << Key << "TotalEnergies" << BeginMap
+                << Key << "E" << Value << totalEnergies.totalEnergy()
+                << Key << "Te" << Value << totalEnergies.Te
+                << Key << "Vee" << Value << totalEnergies.Vee
+                << Key << "Ven" << Value << totalEnergies.Ven
+                << Key << "Vnn" << Value << totalEnergies.Vnn
+                << EndMap
         << Key << "Vnn" << Comment("[Eh]") << Value << VnnStats_
         << Key << "NSamples" << Value << samples_.size()
         << Key << "Clusters" << Value << BeginSeq;
