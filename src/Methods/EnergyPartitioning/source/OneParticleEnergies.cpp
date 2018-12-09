@@ -15,8 +15,10 @@ OneParticleEnergies::oneAtomEnergies(const IntraParticlesStatistics& Vnn, const 
     Eigen::VectorXd En = Eigen::VectorXd::Zero(nAtoms);
 
     for (Eigen::Index k = 0; k < nAtoms; ++k) {
-        for (Eigen::Index l = k + 1; l < nAtoms; ++l)
-            En[k] += 0.5 * Vnn.mean()(k,l);
+        for (Eigen::Index l = k + 1; l < nAtoms; ++l) {
+            En[k] += 0.5 * Vnn.mean()(k, l);
+            En[l] += 0.5 * Vnn.mean()(k, l);
+        }
 
         for (Eigen::Index  i = 0; i < nElectrons; ++i)
             En[k] += 0.5 * Ven.mean()(i,k);
@@ -32,12 +34,14 @@ OneParticleEnergies::oneAtomEnergiesErrors(const IntraParticlesStatistics &Vnn, 
 
     Eigen::VectorXd EnErr = Eigen::VectorXd::Zero(nAtoms);
 
-    for (Eigen::Index i = 0; i < nAtoms; ++i) {
-        for (Eigen::Index j = i + 1; j < nAtoms; ++j)
-            EnErr[i] = 0.5 * std::sqrt(std::pow(EnErr[i], 2) + std::pow(Vnn.standardError()(i,j), 2));
+    for (Eigen::Index k = 0; k < nAtoms; ++k) {
+        for (Eigen::Index l = k + 1; l < nAtoms; ++l) {
+            EnErr[k] = 0.5 * std::sqrt(std::pow(EnErr[k], 2) + std::pow(Vnn.standardError()(k, l), 2));
+            EnErr[l] = 0.5 * std::sqrt(std::pow(EnErr[l], 2) + std::pow(Vnn.standardError()(k, l), 2));
+        }
 
-        for (Eigen::Index  k = 0; k < nElectrons; ++k)
-            EnErr[i] = 0.5 * std::sqrt(std::pow(EnErr[i], 2) + std::pow(Ven.standardError()(k,i), 2));
+        for (Eigen::Index  i = 0; i < nElectrons; ++i)
+            EnErr[k] = 0.5 * std::sqrt(std::pow(EnErr[k], 2) + std::pow(Ven.standardError()(i,k), 2));
     }
     return EnErr;
 }
@@ -49,16 +53,18 @@ Eigen::VectorXd OneParticleEnergies::oneElectronEnergies(const ClusterData &clus
     const auto& Vee = clusterData.VeeStats_;
     const auto& Ven = clusterData.VenStats_;
 
-    Eigen::VectorXd Ee= Eigen::VectorXd::Zero(nElectrons);
+    Eigen::VectorXd Ee = Eigen::VectorXd::Zero(nElectrons);
 
     for (Eigen::Index i = 0; i < nElectrons; ++i) {
         Ee[i] = Te.mean()[i];
 
-        for (Eigen::Index  k = 0; k < nAtoms; ++k)
-            Ee[i] += 0.5*Ven.mean()(i,k);
+        for (Eigen::Index k = 0; k < nAtoms; ++k)
+            Ee[i] += 0.5 * Ven.mean()(i, k);
 
-        for (Eigen::Index  j = i + 1; j < nElectrons; ++j)
-            Ee[i] += 0.5 * Vee.mean()(i,j);
+        for (Eigen::Index  j = i + 1; j < nElectrons; ++j) {
+            Ee[i] += 0.5 * Vee.mean()(i, j);
+            Ee[j] += 0.5 * Vee.mean()(i, j);
+        }
     }
     return Ee;
 }
@@ -78,8 +84,10 @@ Eigen::VectorXd OneParticleEnergies::oneElectronEnergiesErrors(const ClusterData
         for (Eigen::Index  k = 0; k < nAtoms; ++k)
             EeErr[i] = 0.5*std::sqrt(std::pow(EeErr[i], 2) + std::pow(Ven.standardError()(i,k), 2));
 
-        for (Eigen::Index  j = i + 1; j < nElectrons; ++j)
-            EeErr[i] = 0.5 * std::sqrt(std::pow(EeErr[i], 2) + std::pow(Vee.standardError()(i,j), 2));
+        for (Eigen::Index  j = i + 1; j < nElectrons; ++j) {
+            EeErr[i] = 0.5 * std::sqrt(std::pow(EeErr[i], 2) + std::pow(Vee.standardError()(i, j), 2));
+            EeErr[j] = 0.5 * std::sqrt(std::pow(EeErr[j], 2) + std::pow(Vee.standardError()(i, j), 2));
+        }
     }
     return EeErr;
 }
