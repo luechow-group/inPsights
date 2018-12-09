@@ -129,24 +129,25 @@ void InPsightsWidget::setupSliderBox() {
 }
 
 void InPsightsWidget::selectedStructure(QTreeWidgetItem *item, int column) {
-    auto maximaTreeWidgetItem = dynamic_cast<IntegerSortedTreeWidgetItem*>(item);
+    //auto maximaTreeWidgetItem = dynamic_cast<IntegerSortedTreeWidgetItem*>(item);
 
     if (column != 0)
         console->critical("Column 0 expected but got {} ", column);
 
-    auto id = maximaTreeWidgetItem->data(0, Qt::ItemDataRole::UserRole).toList();
+    auto id = item->data(0, Qt::ItemDataRole::UserRole).toList();
     auto clusterId = id[0].toInt();
     auto structureId = id[1].toInt();
 
-    auto createQ = maximaTreeWidgetItem->checkState(0) == Qt::CheckState::Checked;
-    console->info("Selected structure {1} from cluster {0} for {2}.", clusterId, structureId,
+    auto createQ = item->checkState(0) == Qt::CheckState::Checked;
+    console->info("Selected structure {0} from cluster {0} for {1}.", structureId, clusterId,
                   createQ ? "creation" : "deletion");
 
     if (createQ) {
         moleculeWidget->addElectronsVector(clusterCollection_[clusterId].exemplaricStructures_[structureId], clusterId, structureId);
         energyPartitioningWidget->updateData(clusterCollection_[clusterId]);
-    } else
+    } else {
         moleculeWidget->removeElectronsVector(clusterId, structureId);
+    }
 };
 
 void InPsightsWidget::onAtomsChecked(int stateId) {

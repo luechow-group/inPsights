@@ -50,6 +50,7 @@ public:
 private:
     std::shared_ptr<AtomsVector> sharedAtomsVector_;
     AtomsVector3D* atomsVector3D_;
+public:
     std::map<int, std::map<int,ElectronsVector3D*>> activeElectronsVectorsMap_;
 
 };

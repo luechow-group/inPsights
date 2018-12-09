@@ -85,6 +85,10 @@ void MoleculeWidget::addElectronsVector(const ElectronsVector &electronsVector, 
 void MoleculeWidget::removeElectronsVector(int clusterId, int structureId) {
     activeElectronsVectorsMap_[clusterId][structureId]->deleteLater();
     activeElectronsVectorsMap_[clusterId].erase(structureId);
+
+    if(activeElectronsVectorsMap_[clusterId].empty()) {
+        activeElectronsVectorsMap_.erase(clusterId);
+    }
 }
 
 void MoleculeWidget::setSharedAtomsVector(AtomsVector atomsVector) {
@@ -121,7 +125,7 @@ void MoleculeWidget::onAtomsHighlighted(std::vector<int> selectedParticles) {
 
     for (int i = 0; i < static_cast<int>(particles.size()); ++i) {
         auto foundQ = std::find(selectedParticles.begin(), selectedParticles.end(), i) != selectedParticles.end();
-        particles[i]->onHighlighted(foundQ);
+        particles[i]->onHighlighted(foundQ); //TODO add highlight, select and normal function
     }
 }
 
