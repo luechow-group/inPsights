@@ -35,7 +35,6 @@ Q_SIGNALS:
     void electronsHighlighted(std::vector<int> selectedIds);
 
 public Q_SLOTS:
-    void onItemChanged();
     void onAtomItemChanged();
     void onElectronItemChanged();
     void onAtomSelectionChanged();

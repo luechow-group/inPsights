@@ -24,23 +24,18 @@ EnergyPartitioningWidget::EnergyPartitioningWidget(QWidget *parent)
     grid_.addWidget(&EintraErr_, 1, 1, Qt::AlignLeft);
     grid_.addWidget(&EinterErr_, 2, 1, Qt::AlignLeft);
 
-    initializeTree(Ee_,QString("e"));
+
     initializeTree(En_,QString("n"));
+    connect(&En_, &QTreeWidget::itemSelectionChanged,
+            this, &EnergyPartitioningWidget::onAtomSelectionChanged);
+    connect(&En_, &QTreeWidget::itemChanged,
+            this, &EnergyPartitioningWidget::onAtomItemChanged);
 
-    connect(&Ee_, SIGNAL(itemChanged(QTreeWidgetItem*, int)),
-            this, SLOT(onItemChanged()));
-    connect(&En_, SIGNAL(itemChanged(QTreeWidgetItem*, int)),
-            this, SLOT(onItemChanged()));
-
-    connect(&En_, SIGNAL(itemChanged(QTreeWidgetItem*,int)),
-            this, SLOT(onAtomItemChanged()));
+    initializeTree(Ee_,QString("e"));
+    connect(&Ee_, &QTreeWidget::itemSelectionChanged,
+            this, &EnergyPartitioningWidget::onElectronSelectionChanged);
     connect(&Ee_, SIGNAL(itemChanged(QTreeWidgetItem*,int)),
             this, SLOT(onElectronItemChanged()));
-
-    connect(&En_, SIGNAL(itemSelectionChanged()),
-            this, SLOT(onAtomSelectionChanged()));
-    connect(&Ee_, SIGNAL(itemSelectionChanged()),
-            this, SLOT(onElectronSelectionChanged()));
 }
 
 void EnergyPartitioningWidget::initializeTree(QTreeWidget &tree, const QString& particleSymbol) const {
@@ -65,10 +60,6 @@ QTreeWidget& EnergyPartitioningWidget::electronsTreeWidget() {
     return Ee_;
 }
 
-void EnergyPartitioningWidget::onItemChanged() {
-    recalculateMotifEnergy();
-}
-
 void EnergyPartitioningWidget::recalculateMotifEnergy(){
     double intra = 0, inter = 0, intraErr = 0, interErr = 0;
     addContributions(Ee_, intra, inter, intraErr, interErr);
@@ -82,11 +73,12 @@ void EnergyPartitioningWidget::recalculateMotifEnergy(){
 
 
 void EnergyPartitioningWidget::onAtomItemChanged() {
+    recalculateMotifEnergy();
     emit atomsChecked(getCheckedItems(En_));
-
 }
 
 void EnergyPartitioningWidget::onElectronItemChanged() {
+    recalculateMotifEnergy();
     emit electronsChecked(getCheckedItems(Ee_));
 }
 
