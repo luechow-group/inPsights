@@ -88,33 +88,36 @@ void InPsightsWidget::createWidget() {
 }
 
 void InPsightsWidget::connectSignals() {
-    connect(maximaList, SIGNAL(itemChanged(QTreeWidgetItem * , int)),
-            this, SLOT(selectedStructure(QTreeWidgetItem * , int)));
+    connect(maximaList, &QTreeWidget::itemChanged,
+            this, &InPsightsWidget::selectedStructure);
 
-    connect(atomsCheckBox, SIGNAL(stateChanged(int)),
-            this, SLOT(onAtomsChecked(int)));
+    connect(atomsCheckBox, &QCheckBox::stateChanged,
+            this, &InPsightsWidget::onAtomsChecked);
 
-    connect(bondsCheckBox, SIGNAL(stateChanged(int)),
-            this, SLOT(onBondsChecked(int)));
+    connect(bondsCheckBox, &QCheckBox::stateChanged,
+            this, &InPsightsWidget::onBondsChecked);
 
-    connect(spinConnectionsCheckBox, SIGNAL(stateChanged(int)),
-            this, SLOT(onSpinConnectionsChecked(int)));
+    connect(spinConnectionsCheckBox, &QCheckBox::stateChanged,
+            this, &InPsightsWidget::onSpinConnectionsChecked);
 
-    connect(spinCorrelationsCheckBox, SIGNAL(stateChanged(int)),
-            this, SLOT(onSpinCorrelationsChecked(int)));
+    connect(spinCorrelationsCheckBox, &QCheckBox::stateChanged,
+            this, &InPsightsWidget::onSpinCorrelationsChecked);
 
-    connect(spinCorrelationSlider, SIGNAL(valueChanged(int)),
-            this, SLOT(onSpinCorrelationsSliderChanged(int)));
+    connect(spinCorrelationsCheckBox, &QCheckBox::stateChanged,
+            this, &InPsightsWidget::onSpinCorrelationsChecked);
 
-    connect(energyPartitioningWidget, SIGNAL(atomsChecked(std::vector<int>)),
-            moleculeWidget, SLOT(onAtomsChecked(std::vector<int>)));
-    connect(energyPartitioningWidget, SIGNAL(electronsChecked(std::vector<int>)),
-            moleculeWidget, SLOT(onElectronsChecked(std::vector<int>)));
+    connect(spinCorrelationSlider, &QSlider::valueChanged,
+            this, &InPsightsWidget::onSpinCorrelationsSliderChanged);
 
-    connect(energyPartitioningWidget, SIGNAL(atomsHighlighted(std::vector<int>)),
-            moleculeWidget, SLOT(onAtomsHighlighted(std::vector<int>)));
-    connect(energyPartitioningWidget, SIGNAL(electronsHighlighted(std::vector<int>)),
-            moleculeWidget, SLOT(onElectronsHighlighted(std::vector<int>)));
+    connect(energyPartitioningWidget, &EnergyPartitioningWidget::atomsChecked,
+            moleculeWidget, &MoleculeWidget::onAtomsChecked);
+    connect(energyPartitioningWidget, &EnergyPartitioningWidget::electronsChecked,
+            moleculeWidget, &MoleculeWidget::onElectronsChecked);
+
+    connect(energyPartitioningWidget, &EnergyPartitioningWidget::atomsHighlighted,
+            moleculeWidget, &MoleculeWidget::onAtomsHighlighted);
+    connect(energyPartitioningWidget, &EnergyPartitioningWidget::electronsHighlighted,
+            moleculeWidget, &MoleculeWidget::onElectronsHighlighted);
 }
 
 void InPsightsWidget::setupSliderBox() {
