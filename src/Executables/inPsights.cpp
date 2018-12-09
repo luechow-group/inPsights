@@ -30,14 +30,11 @@ int main(int argc, char *argv[]) {
      * - test linkedParticles
      * GUI
      * - state machine for buttons
-     * - energy view
      * - mouse events
-     *  - energy view triggers atom hightlight
      * - dotted and dashed lines
-     * - show energies
      * - show eigenvectors (.wf needed)
      * - load menu
      * - screenshot button
-     * - camera reset and settings in MoleculeWidget
+     * - axis, camera reset and settings in MoleculeWidget
      */
 }
