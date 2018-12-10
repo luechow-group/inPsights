@@ -75,19 +75,22 @@ public:
 
     unsigned long addReference(const Reference &reference) {
         auto count = unsigned(reference.count());
-
+        
         Eigen::VectorXd value(1); value[0] = reference.value();
         Eigen::MatrixXd spinCorrelations_ = SpinCorrelation::spinCorrelations(reference.maximum().typesVector()).cast<double>();
-        Eigen::VectorXd Te_ = samples_[reference.ownId()].kineticEnergies_;
-        Eigen::MatrixXd Vee_ = CoulombPotential::energies(samples_[reference.ownId()].sample_);
-        Eigen::MatrixXd Ven_ = CoulombPotential::energies(samples_[reference.ownId()].sample_,atoms_);
-
+        // Maximum related statistics
         valueStats_.add(value, count);
-        SeeStats_.add(spinCorrelations_, count);
-        TeStats_.add(Te_, count);
-        VeeStats_.add(Vee_, count);
-        VenStats_.add(Ven_, count);
+        SeeStats_.add(spinCorrelations_,count);
 
+        // Sample related statistics
+        for (auto & id : reference.sampleIds()) {
+            Eigen::VectorXd Te_ = samples_[id].kineticEnergies_;
+            Eigen::MatrixXd Vee_ = CoulombPotential::energies(samples_[id].sample_);
+            Eigen::MatrixXd Ven_ = CoulombPotential::energies(samples_[id].sample_,atoms_);
+            TeStats_.add(Te_,1);
+            VeeStats_.add(Vee_,1);
+            VenStats_.add(Ven_,1);
+        }
         return count;
     }
 
@@ -139,6 +142,7 @@ public:
     }
 
 
+    // selects nWanted structures and prints the statistic data
     void printCluster(std::vector<ElectronsVector>& structures){
         using namespace YAML;
 
