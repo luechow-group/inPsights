@@ -65,8 +65,8 @@ void EnergyPartitioningWidget::recalculateMotifEnergy(){
     addContributions(Ee_, intra, inter, intraErr, interErr);
     addContributions(En_, intra, inter, intraErr, interErr);
 
-    Eintra_.setText(QString("E_intra = ") + QString::number(intra, 'f', 4));
-    Einter_.setText(QString("E_inter = ") + QString::number(inter, 'f', 4));
+    Eintra_.setText(QString("E_selected = ") + QString::number(intra, 'f', 4));
+    Einter_.setText(QString("E_unselected = ") + QString::number(inter, 'f', 4));
     EintraErr_.setText(QString(" ± ") + QString::number(sqrt(intraErr), 'f', 4) + QString(" Eh"));
     EinterErr_.setText(QString(" ± ") + QString::number(sqrt(interErr), 'f', 4) + QString(" Eh"));
 }

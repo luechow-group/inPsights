@@ -36,9 +36,7 @@ public:
     TeStats_(std::move(TeStats)),
     SeeStats_(std::move(SeeStats)),
     VeeStats_(std::move(VeeStats)),
-    VenStats_(std::move(VenStats))
-    {
-    };
+    VenStats_(std::move(VenStats)) {};
 
     ElectronsVector representativeStructure() const {
         return exemplaricStructures_[0];
