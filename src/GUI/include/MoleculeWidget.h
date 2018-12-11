@@ -10,6 +10,7 @@
 #include <Qt3DExtras>
 #include <QVBoxLayout>
 #include <QLabel>
+#include <QPushButton>
 #include <ParticlesVector3D.h>
 #include <Statistics.h>
 #include <ClusterData.h>
@@ -40,11 +41,13 @@ public Q_SLOTS:
     void onAtomsHighlighted(std::vector<int>);
     void onElectronsHighlighted(std::vector<int>);
 
+    void onScreenshot(bool);
+
 private:
-    QVBoxLayout *layout_;
     Qt3DExtras::Qt3DWindow *qt3DWindow_;
     Qt3DCore::QEntity *root_, *moleculeEntity_;
     Qt3DExtras::QOrbitCameraController *cameraController_;
+    QPushButton *screenshotButton_;
 public:
     QLabel* infoText_;
 private:

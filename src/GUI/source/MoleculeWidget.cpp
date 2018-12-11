@@ -4,6 +4,7 @@
 
 #include <Qt3DRender>
 #include <QtWidgets>
+#include <QPixmap>
 #include <MoleculeWidget.h>
 
 #include <Metrics.h>
@@ -18,16 +19,22 @@
 MoleculeWidget::MoleculeWidget(QWidget *parent)
         :
         QWidget(parent),
-        layout_(new QVBoxLayout(this)),
         qt3DWindow_(new Qt3DExtras::Qt3DWindow()),
         root_(new Qt3DCore::QEntity()),
         moleculeEntity_(new Qt3DCore::QEntity(root_)),
         cameraController_(new Qt3DExtras::QOrbitCameraController(root_)),
+        screenshotButton_(new QPushButton("Save image", this)),
         infoText_(new QLabel("Info text")),
         atomsVector3D_(nullptr) {
-    setLayout(layout_);
-    layout_->addWidget(createWindowContainer(qt3DWindow_));
-    layout_->addWidget(infoText_);
+
+    auto outerLayout = new QVBoxLayout(this);
+    auto innerLayout = new QHBoxLayout();
+
+    setLayout(outerLayout);
+    outerLayout->addWidget(createWindowContainer(qt3DWindow_));
+    outerLayout->addLayout(innerLayout);
+    innerLayout->addWidget(screenshotButton_);
+    innerLayout->addWidget(infoText_);
 
     infoText_->setFixedHeight(18);
 
@@ -40,6 +47,8 @@ MoleculeWidget::MoleculeWidget(QWidget *parent)
     cameraController_->setLinearSpeed(50.f);
     cameraController_->setLookSpeed(180.f);
     cameraController_->setCamera(qt3DWindow_->camera());
+
+    connect(screenshotButton_, &QPushButton::clicked, this, &MoleculeWidget::onScreenshot);
 
     setMouseTracking(true);
 }
@@ -154,4 +163,11 @@ void MoleculeWidget::onElectronsHighlighted(std::vector<int> selectedParticles) 
             particles[i]->onHighlighted(foundQ);
         }
     }
+}
+
+void MoleculeWidget::onScreenshot(bool) {
+    auto pixmap = QPixmap::grabWindow(qt3DWindow_->winId());
+    QFile file("yourFile.png");
+    file.open(QIODevice::WriteOnly);
+    pixmap.save(&file, "PNG");
 }
