@@ -112,4 +112,12 @@ int main(int argc, char *argv[]) {
     yamlFile.close();
     
     return 0;
+
+    /*TODO
+     * - choice of function value increment
+     * - validate that ring-like clusters are ordered correctly
+     * - use global similarity for permutation sorting
+     * - don't do gaussian error propagation
+     * - load settings from .yaml file
+     * */
 };
