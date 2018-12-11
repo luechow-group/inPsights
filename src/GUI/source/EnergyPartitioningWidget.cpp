@@ -1,9 +1,8 @@
-#include <utility>
-
 //
 // Created by heuer on 05.12.18.
 //
 
+#include <utility>
 #include <EnergyPartitioningWidget.h>
 #include <QHeaderView>
 #include <ClusterData.h>
@@ -47,9 +46,6 @@ void EnergyPartitioningWidget::initializeTree(QTreeWidget &tree, const QString& 
     tree.setSortingEnabled(true);
     tree.sortItems(0,Qt::SortOrder::AscendingOrder);
     tree.header()->setStretchLastSection(false);
-    //tree.setMinimumWidth(150);
-    //tree.setSizePolicy(QSizePolicy::Policy::Minimum, QSizePolicy::Policy::Minimum);
-    tree.setFixedWidth(175);
 }
 
 QTreeWidget& EnergyPartitioningWidget::atomsTreeWidget() {
@@ -156,7 +152,6 @@ void EnergyPartitioningWidget::updateData(const ClusterData &clusterData) {
     updateEnergies(En_,
                    OneParticleEnergies::oneAtomEnergies(VnnStats_, clusterData),
                    OneParticleEnergies::oneAtomEnergiesErrors(VnnStats_, clusterData));
-
 }
 
 void EnergyPartitioningWidget::updateEnergies(QTreeWidget &tree,

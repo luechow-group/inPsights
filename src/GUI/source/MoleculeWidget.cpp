@@ -4,7 +4,7 @@
 
 #include <Qt3DRender>
 #include <QtWidgets>
-#include <QPixmap>
+#include <QScreen>
 #include <MoleculeWidget.h>
 
 #include <Metrics.h>
@@ -31,15 +31,12 @@ MoleculeWidget::MoleculeWidget(QWidget *parent)
     auto innerLayout = new QHBoxLayout();
 
     setLayout(outerLayout);
-    outerLayout->addWidget(createWindowContainer(qt3DWindow_));
-    outerLayout->addLayout(innerLayout);
-    innerLayout->addWidget(screenshotButton_);
-    innerLayout->addWidget(infoText_);
-
-    infoText_->setFixedHeight(18);
+    outerLayout->addWidget(createWindowContainer(qt3DWindow_),1);
+    outerLayout->addLayout(innerLayout,0);
+    innerLayout->addWidget(screenshotButton_,1);
+    innerLayout->addWidget(infoText_,3);
 
     qt3DWindow_->setRootEntity(root_);
-
     qt3DWindow_->camera()->lens()->setPerspectiveProjection(45.0f, 16.0f / 9.0f, 0.1f, 100.0f);
     qt3DWindow_->camera()->setPosition(QVector3D(2.5, -8, 0.0));
     qt3DWindow_->camera()->setViewCenter(QVector3D(0, 0, 0));

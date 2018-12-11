@@ -6,7 +6,7 @@
 #include <QFileDialog>
 #include <QString>
 
-#include <QHBoxLayout>
+#include <QGridLayout>
 #include <QGroupBox>
 #include <QSpinBox>
 #include <QSplashScreen>
@@ -42,20 +42,18 @@ InPsightsWidget::InPsightsWidget(QWidget *parent)
 
 void InPsightsWidget::createWidget() {
     setWindowTitle("inPsights - Chemical insights from |Ψ|².");
-    auto gbox = new QGroupBox("Settings:");
+
     auto hbox = new QHBoxLayout(this);
     auto vboxOuter = new QVBoxLayout();
     auto vboxInner = new QVBoxLayout();
+    auto gbox = new QGroupBox("Settings:");
     auto sliderBox = new QHBoxLayout();
 
     setLayout(hbox);
-    hbox->setStretch(0,3);
-    hbox->setStretch(1,1);
 
     resize(1280, 800);
-    hbox->addWidget(moleculeWidget, Qt::AlignLeft);
-    hbox->addLayout(vboxOuter);
-
+    hbox->addWidget(moleculeWidget, 2);
+    hbox->addLayout(vboxOuter, 1);
 
     // put into MaximaTreeWidget class
     auto headerLabels = QList<QString>({"ID", "N", "min(-ln(|Ψ|²))", "max(-ln(|Ψ|²))"});
@@ -63,16 +61,15 @@ void InPsightsWidget::createWidget() {
     maximaList->setHeaderLabels(headerLabels);
     maximaList->header()->setStretchLastSection(false);
 
-    vboxOuter->addWidget(maximaList);
-    vboxOuter->addWidget(energyPartitioningWidget);
+    vboxOuter->addWidget(maximaList, 1);
+    vboxOuter->addWidget(energyPartitioningWidget,1);
     vboxOuter->addWidget(gbox);
     gbox->setLayout(vboxInner);
 
-    maximaList->setFixedWidth(350);
     maximaList->setSortingEnabled(true);
 
     auto checkboxGrid = new QGridLayout();
-    vboxInner->addLayout(checkboxGrid);
+    vboxInner->addLayout(checkboxGrid,1);
     checkboxGrid->addWidget(atomsCheckBox,0,0);
     checkboxGrid->addWidget(bondsCheckBox,1,0);
     checkboxGrid->addWidget(spinConnectionsCheckBox,0,1);
@@ -239,7 +236,6 @@ void InPsightsWidget::loadData() {
         for (int i = 0; i < maximaList->columnCount(); ++i) {
             maximaList->resizeColumnToContents(i);
         }
-        //maximaList->resize(maximaList->minimumSize());
     }
     moleculeWidget->setSharedAtomsVector(doc["Atoms"].as<AtomsVector>());
 }
