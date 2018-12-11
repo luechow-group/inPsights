@@ -166,8 +166,14 @@ void MoleculeWidget::onElectronsHighlighted(std::vector<int> selectedParticles) 
 }
 
 void MoleculeWidget::onScreenshot(bool) {
-    auto pixmap = QPixmap::grabWindow(qt3DWindow_->winId());
-    QFile file("yourFile.png");
+    QScreen *screen = QGuiApplication::primaryScreen();
+    if (const QWindow *window = windowHandle())
+        screen = window->screen();
+    if (!screen)
+        return;
+
+    QFile file(QDateTime::currentDateTime().toString(Qt::ISODate) + QString(".png"));
     file.open(QIODevice::WriteOnly);
-    pixmap.save(&file, "PNG");
+    screen->grabWindow(qt3DWindow_->winId()).save(&file, "PNG");
+    file.close();
 }
