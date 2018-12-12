@@ -25,6 +25,7 @@ set(SOURCE_FILES
         source/RawDataReader.cpp
         source/OneParticleEnergies.cpp
         source/ClusterData.cpp
+        source/EnergyCalculator.cpp
         )
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES})
