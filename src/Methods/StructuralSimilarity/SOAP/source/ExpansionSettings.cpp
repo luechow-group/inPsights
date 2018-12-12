@@ -108,7 +108,7 @@ namespace ExpansionSettings {
                << "-------" << std::endl
                << "BasisType\t\t\t: " << basisType << std::endl
                << "n_max\t\t\t\t: " << nmax << std::endl
-               << "sigma_atom\t\t\t: " << sigmaAtom << " angstrom" << std::endl
+               << "sigma_atom\t\t\t: " << sigmaAtom << " bohr" << std::endl
                << "Integration steps\t: " << integrationSteps << std::endl
                << "Desired abs. err\t: " << desiredAbsoluteError << std::endl
                << "Desired rel. err\t: " << desiredRelativeError << std::endl;
@@ -156,8 +156,8 @@ namespace ExpansionSettings {
             std::stringstream ss;
             ss << "Cutoff:" << std::endl
                << "-------" << std::endl
-               << "Radius\t\t\t\t: " << radius << " angstrom" << std::endl
-               << "Width\t\t\t\t: " << width << " angstrom" << std::endl
+               << "Radius\t\t\t\t: " << radius << " bohr" << std::endl
+               << "Width\t\t\t\t: " << width << " bohr" << std::endl
                << "Center weight\t\t: " << centerWeight << std::endl;
             return ss.str();
         }
