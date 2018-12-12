@@ -20,7 +20,7 @@ GNU build:
   - mkdir -p cmake-build-debug-gnu
   - cd cmake-build-debug-gnu
   - cmake .. -DCMAKE_BUILD_TYPE=DEBUG -DBUILD_GUI=OFF  -DPFUNIT=OFF
-  - cmake --build . --target inPsightsTests -- -j4
+  - cmake --build . --target inPsightsTests -- -j2
   cache:
     key: "$CI_COMMIT_REF_SLUG-GNU"
     paths:
@@ -41,7 +41,7 @@ Intel build:
   - mkdir -p cmake-build-debug-intel
   - cd cmake-build-debug-intel
   - cmake .. -DCMAKE_BUILD_TYPE=DEBUG -DBUILD_GUI=OFF -DPFUNIT=OFF
-  - cmake --build . --target inPsightsTests -- -j4
+  - cmake --build . --target inPsightsTests -- -j2
   cache:
     key: "$CI_COMMIT_REF_SLUG-Intel"
     paths:
