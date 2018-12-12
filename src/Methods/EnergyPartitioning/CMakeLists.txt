@@ -25,6 +25,7 @@ set(SOURCE_FILES
         source/RawDataReader.cpp
         source/OneParticleEnergies.cpp
         source/ClusterData.cpp
+        source/GlobalIdentitySorter.cpp
         source/GlobalSimilaritySorter.cpp
         source/EnergyCalculator.cpp
         )
