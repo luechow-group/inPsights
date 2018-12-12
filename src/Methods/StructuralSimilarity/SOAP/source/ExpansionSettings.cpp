@@ -75,7 +75,7 @@ namespace ExpansionSettings {
         void defaults() {
             nmax = 5;
             basisType = BasisType::equispaced;
-            sigmaAtom = 1.0;//0.5*ConversionFactors::angstrom2bohr;
+            sigmaAtom = 0.5*ConversionFactors::angstrom2bohr;
             integrationSteps = 100;
             desiredAbsoluteError = 0.0;
             desiredRelativeError = std::numeric_limits<double>::epsilon()*1e2;
@@ -138,13 +138,13 @@ namespace ExpansionSettings {
     }
     
     namespace Cutoff {
-        double radius = 8.0;//4.0*ConversionFactors::angstrom2bohr;
-        double width = 2.0;//1.0*ConversionFactors::angstrom2bohr; //TODO
+        double radius = 4.0*ConversionFactors::angstrom2bohr;
+        double width = 1.0*ConversionFactors::angstrom2bohr;
         double centerWeight = 1.0; //TODO
 
         void defaults() {
-            radius = 8.0;//4.0*ConversionFactors::angstrom2bohr;
-            width = 2.0;//1.0*ConversionFactors::angstrom2bohr;
+            radius = 4.0*ConversionFactors::angstrom2bohr;
+            width = 1.0*ConversionFactors::angstrom2bohr;
             centerWeight = 1.0;
         }
 

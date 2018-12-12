@@ -2,8 +2,9 @@
 // Created by Michael Heuer on 15.05.18.
 //
 
-#include <gtest/gtest.h>
 #include "ExpansionSettings.h"
+#include <NaturalConstants.h>
+#include <gtest/gtest.h>
 
 using namespace testing;
 
@@ -23,8 +24,8 @@ TEST_F(AExpansionSettingsTest , uninitialized) {
 
     ASSERT_EQ(ExpansionSettings::Angular::lmax,5);
 
-    ASSERT_EQ(ExpansionSettings::Cutoff::radius,8.0);
-    ASSERT_EQ(ExpansionSettings::Cutoff::width,2.0);
+    ASSERT_EQ(ExpansionSettings::Cutoff::radius, 4.0*ConversionFactors::angstrom2bohr);
+    ASSERT_EQ(ExpansionSettings::Cutoff::width, 1.0*ConversionFactors::angstrom2bohr);
     ASSERT_EQ(ExpansionSettings::Cutoff::centerWeight,1.0);
 
 
@@ -40,12 +41,12 @@ TEST_F(AExpansionSettingsTest, defaults) {
 
     ASSERT_EQ(ExpansionSettings::Radial::nmax,5);
     ASSERT_EQ(ExpansionSettings::Radial::basisType,ExpansionSettings::Radial::BasisType::equispaced);
-    ASSERT_EQ(ExpansionSettings::Radial::sigmaAtom,1.0);
+    ASSERT_EQ(ExpansionSettings::Radial::sigmaAtom,0.5*ConversionFactors::angstrom2bohr);
 
     ASSERT_EQ(ExpansionSettings::Angular::lmax,5);
 
-    ASSERT_EQ(ExpansionSettings::Cutoff::radius,8.0);
-    ASSERT_EQ(ExpansionSettings::Cutoff::width,2.0);
+    ASSERT_EQ(ExpansionSettings::Cutoff::radius, 4.0*ConversionFactors::angstrom2bohr);
+    ASSERT_EQ(ExpansionSettings::Cutoff::width, 1.0*ConversionFactors::angstrom2bohr);
     ASSERT_EQ(ExpansionSettings::Cutoff::centerWeight,1.0);
 
     ExpansionSettings::Radial::nmax = 4;
@@ -70,7 +71,7 @@ TEST_F(AExpansionSettingsTest, toString) {
             "-------\n"
             "BasisType\t\t\t: equispaced\n"
             "n_max\t\t\t\t: 5\n"
-            "sigma_atom\t\t\t: 1 angstrom\n"
+            "sigma_atom\t\t\t: 0.944863 bohr\n"
             "Integration steps\t: 100\n"
             "Desired abs. err\t: 0\n"
             "Desired rel. err\t: 2.22045e-14\n"
@@ -81,8 +82,8 @@ TEST_F(AExpansionSettingsTest, toString) {
             "\n"
             "Cutoff:\n"
             "-------\n"
-            "Radius\t\t\t\t: 8 angstrom\n"
-            "Width\t\t\t\t: 2 angstrom\n"
+            "Radius\t\t\t\t: 7.5589 bohr\n"
+            "Width\t\t\t\t: 1.88973 bohr\n"
             "Center weight\t\t: 1\n\n"
             "Alchemical Similarities:\n"
             "------------------------\n"
