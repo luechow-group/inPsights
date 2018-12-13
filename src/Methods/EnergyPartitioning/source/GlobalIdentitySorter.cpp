@@ -19,8 +19,7 @@ GlobalIdentiySorter::GlobalIdentiySorter(std::vector<Reference> &references, std
     };
 }
 
-GlobalIdentiySorter::GlobalIdentiySorter(std::vector<Reference> &references, std::vector<Sample> &samples,
-                                         double distThresh)
+GlobalIdentiySorter::GlobalIdentiySorter(std::vector<Reference> &references, std::vector<Sample> &samples, double distThresh)
         :
         GlobalIdentiySorter(references, samples, distThresh, (*references.rbegin()).value() * 1e-7) {}
 
@@ -35,7 +34,6 @@ bool GlobalIdentiySorter::sort() {
 
     std::sort(references_.begin(), references_.end());
     auto beginIt = references_.begin();
-
 
     while (beginIt != references_.end()) {
         auto total = std::distance(references_.begin(), references_.end());

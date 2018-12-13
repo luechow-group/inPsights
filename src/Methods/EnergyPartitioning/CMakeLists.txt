@@ -7,7 +7,6 @@ set ( PROJECT_PATH ${PROJECT_NAME})
 set ( OUTPUT_NAME "${PROJECT_FOLDER_NAME}" )
 message ( "-- ++ CREATING PROJECT OR MAKEFILE ---> ${OUTPUT_NAME}" )
 
-
 set(HEADER_FILES
         include/RawDataReader.h
         include/Sample.h
@@ -19,6 +18,7 @@ set(HEADER_FILES
         include/SimilarReferences.h
         include/OneParticleEnergies.h
         include/ClusterData.h
+        include/GlobalPermutationSorter.h
         )
 
 set(SOURCE_FILES
@@ -29,6 +29,7 @@ set(SOURCE_FILES
         source/GlobalIdentitySorter.cpp
         source/GlobalSimilaritySorter.cpp
         source/EnergyCalculator.cpp
+        source/GlobalPermutationSorter.cpp
         )
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES})

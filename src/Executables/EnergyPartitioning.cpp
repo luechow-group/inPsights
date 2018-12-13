@@ -6,6 +6,7 @@
 #include <GlobalIdentitySorter.h>
 #include <GlobalSimilaritySorter.h>
 #include <GlobalClusterSorter.h>
+#include <GlobalPermutationSorter.h>
 #include <EnergyCalculator.h>
 #include <algorithm>
 #include <utility>
@@ -104,6 +105,12 @@ int main(int argc, char *argv[]) {
     GlobalClusterSorter globalClusterSorter(samples, globallySimilarMaxima, globallyClusteredMaxima, similarDistThresh);
     globalClusterSorter.sort();
     console->info("number of elements after cluster sort {}", globallyClusteredMaxima.size());
+
+    // Permutation sort
+    std::vector<std::vector<SimilarReferences>> globallyPermutationallyInvariantClusteredMaxima;
+
+    GlobalPermutationSorter globalPermutationSorter(atoms, samples, globallyClusteredMaxima, globallyPermutationallyInvariantClusteredMaxima);
+    globalPermutationSorter.sort();
 
     //Statistics
     energyCalculator.calculateStatistics(globallyClusteredMaxima);
