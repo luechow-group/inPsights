@@ -20,7 +20,7 @@ TEST(AGlobalClusterSorterTest, TwoRotatedAndOneStationaryElectrons){
     std::vector<Sample> samples;
     std::vector<Reference> references, expected;
 
-    auto rng = std::default_random_engine{};
+    auto rng = std::default_random_engine();
     rng.seed(std::clock());
 
     // emplace first element

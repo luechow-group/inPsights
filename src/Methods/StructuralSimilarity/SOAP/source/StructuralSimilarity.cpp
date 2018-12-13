@@ -7,6 +7,11 @@
 namespace StructuralSimilarity{
 
     Eigen::MatrixXd correlationMatrix(const MolecularSpectrum& A, const MolecularSpectrum& B) {
+        assert(ParticleKit::isSubsetQ(A.molecule_)
+               && "The underlying molecule must be a subset of the selected particle kit.");
+        assert(ParticleKit::isSubsetQ(B.molecule_)
+               && "The underlying molecule must be a subset of the selected particle kit.");
+
         auto N = ParticleKit::numberOfParticles();
         Eigen::MatrixXd C = Eigen::MatrixXd::Zero(N, N);
         NumberedType<int> numberedType_i, numberedType_j;
@@ -31,6 +36,9 @@ namespace StructuralSimilarity{
     }
 
     Eigen::MatrixXd selfCorrelationMatrix(const MolecularSpectrum &A) {
+        assert(ParticleKit::isSubsetQ(A.molecule_)
+               && "The underlying molecule must be a subset of the selected particle kit.");
+
         auto N = ParticleKit::numberOfParticles();
         Eigen::MatrixXd C = Eigen::MatrixXd::Zero(N, N);
 
