@@ -121,6 +121,8 @@ int main(int argc, char *argv[]) {
     return 0;
 
     /*TODO
+     * - F2 cluster includes other references that shouldn't be there
+     * - fix issue: max refs does not work, if number surpasses the number that can be contained in one .ref file
      * - test naive std
      * - choice of function value increment
      * - validate that ring-like clusters are ordered correctly

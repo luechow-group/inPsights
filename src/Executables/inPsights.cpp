@@ -29,6 +29,7 @@ int main(int argc, char *argv[]) {
      *  BASELIB
      *  - test linkedParticles
      *  GUI
+     *  - bonds and spinCorrelations together lead to program crash (selecting correlations when bonds are displayed and vice versa)
      *  - state machine for buttons
      *  - mouse events
      *  - dotted and dashed lines
