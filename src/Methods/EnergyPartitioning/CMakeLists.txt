@@ -18,7 +18,7 @@ set(HEADER_FILES
         include/SimilarReferences.h
         include/OneParticleEnergies.h
         include/ClusterData.h
-        include/GlobalPermutationSorter.h
+        #include/GlobalPermutationSorter.h
         )
 
 set(SOURCE_FILES
@@ -29,7 +29,7 @@ set(SOURCE_FILES
         source/GlobalIdentitySorter.cpp
         source/GlobalSimilaritySorter.cpp
         source/EnergyCalculator.cpp
-        source/GlobalPermutationSorter.cpp
+        #source/GlobalPermutationSorter.cpp
         )
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES})

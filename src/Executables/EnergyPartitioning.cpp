@@ -107,11 +107,11 @@ int main(int argc, char *argv[]) {
     console->info("number of elements after cluster sort {}", globallyClusteredMaxima.size());
 
     // Permutation sort
-    std::vector<std::vector<SimilarReferences>> globallyPermutationallyInvariantClusteredMaxima;
-
+    /*std::vector<std::vector<SimilarReferences>> globallyPermutationallyInvariantClusteredMaxima;
     GlobalPermutationSorter globalPermutationSorter(atoms, samples, globallyClusteredMaxima, globallyPermutationallyInvariantClusteredMaxima);
     globalPermutationSorter.sort();
-
+    */
+     
     //Statistics
     energyCalculator.calculateStatistics(globallyClusteredMaxima);
     std::ofstream yamlFile(basename + ".yml");
