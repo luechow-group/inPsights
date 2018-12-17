@@ -135,23 +135,18 @@ void EnergyPartitioningWidget::initializeTreeItems(QTreeWidget &tree, int number
     }
 }
 
-void EnergyPartitioningWidget::setAtomEnergies(IntraParticlesStatistics VnnStats) {
-    VnnStats_ = std::move(VnnStats);
+void EnergyPartitioningWidget::setAtomEnergies(SingleParticlesStatistics EnStats) {
+    EnStats_ = std::move(EnStats);
 }
 
 void EnergyPartitioningWidget::updateData(const ClusterData &clusterData) {
-    assert(Ee_.topLevelItemCount() == static_cast<int>(clusterData.VenStats_.rows())
+    assert(Ee_.topLevelItemCount() == static_cast<int>(clusterData.EeStats_.rows())
     && "The number of tree items and electrons must match.");
     assert(En_.topLevelItemCount() == static_cast<int>(clusterData.VenStats_.cols())
     && "The number of tree items and atoms must match.");
 
-    updateEnergies(Ee_,
-            OneParticleEnergies::oneElectronEnergies(clusterData),
-            OneParticleEnergies::oneElectronEnergiesErrors(clusterData));
-
-    updateEnergies(En_,
-                   OneParticleEnergies::oneAtomEnergies(VnnStats_, clusterData),
-                   OneParticleEnergies::oneAtomEnergiesErrors(VnnStats_, clusterData));
+    updateEnergies(Ee_, clusterData.EeStats_.mean(), clusterData.EeStats_.standardError());
+    updateEnergies(En_, EnStats_.mean(), EnStats_.standardError());
 }
 
 void EnergyPartitioningWidget::updateEnergies(QTreeWidget &tree,

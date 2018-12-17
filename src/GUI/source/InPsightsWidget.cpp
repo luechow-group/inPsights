@@ -201,8 +201,8 @@ void InPsightsWidget::loadData() {
     auto nAtoms = doc["Atoms"].as<AtomsVector>().numberOfEntities();
     auto nElectrons = doc["Clusters"][0]["Structures"][0].as<ElectronsVector>().numberOfEntities();
 
-    auto VnnStats = doc["Vnn"].as<IntraParticlesStatistics>();
-    energyPartitioningWidget->setAtomEnergies(VnnStats);
+    auto EnStats = doc["En"].as<SingleParticlesStatistics>();
+    energyPartitioningWidget->setAtomEnergies(EnStats);
     energyPartitioningWidget->initializeTreeItems(energyPartitioningWidget->atomsTreeWidget(),int(nAtoms));
     energyPartitioningWidget->initializeTreeItems(energyPartitioningWidget->electronsTreeWidget(),int(nElectrons));
 

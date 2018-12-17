@@ -6,6 +6,7 @@
 #include <ClusterData.h>
 #include <SpinCorrelation.h>
 #include <CoulombPotential.h>
+#include <OneParticleEnergies.h>
 
 EnergyCalculator::EnergyCalculator(const std::vector<Sample>& samples, AtomsVector atoms)
         :
@@ -20,6 +21,7 @@ EnergyCalculator::EnergyCalculator(const std::vector<Sample>& samples, AtomsVect
     };
 
     VnnStats_.add(Vnn_);
+    EnStats_.add(OneParticleEnergies::oneAtomEnergies(Vnn_));
 }
 
 EnergyCalculator::TotalEnergies EnergyCalculator::calculateTotalEnergies() {
@@ -61,12 +63,14 @@ unsigned long EnergyCalculator::addReference(const Reference &reference) {
 
     // Sample related statistics
     for (auto & id : reference.sampleIds()) {
-        Eigen::VectorXd Te_ = samples_[id].kineticEnergies_;
-        Eigen::MatrixXd Vee_ = CoulombPotential::energies(samples_[id].sample_);
-        Eigen::MatrixXd Ven_ = CoulombPotential::energies(samples_[id].sample_,atoms_);
-        TeStats_.add(Te_,1);
-        VeeStats_.add(Vee_,1);
-        VenStats_.add(Ven_,1);
+        Eigen::VectorXd Te = samples_[id].kineticEnergies_;
+        Eigen::MatrixXd Vee = CoulombPotential::energies(samples_[id].sample_);
+        Eigen::MatrixXd Ven = CoulombPotential::energies(samples_[id].sample_,atoms_);
+        Eigen::VectorXd Ee = OneParticleEnergies::oneElectronEnergies(Te, Vee, Ven, Vnn_);
+        TeStats_.add(Te,1);
+        VeeStats_.add(Vee,1);
+        VenStats_.add(Ven,1);
+        EeStats_.add(Ee,1);
     }
     return count;
 }
@@ -86,6 +90,7 @@ void EnergyCalculator::calculateStatistics(const std::vector<std::vector<Similar
                   << Key << "Vnn" << Value << totalEnergies.Vnn
                   << EndMap
                   << Key << "Vnn" << Comment("[Eh]") << Value << VnnStats_
+                  << Key << "En" << Comment("[Eh]") << Value << EnStats_
                   << Key << "NSamples" << Value << samples_.size()
                   << Key << "Clusters" << Value << BeginSeq;
 
@@ -98,6 +103,7 @@ void EnergyCalculator::calculateStatistics(const std::vector<std::vector<Similar
             valueStats_.reset();
             SeeStats_.reset();
             TeStats_.reset();
+            EeStats_.reset();
             VeeStats_.reset();
             VenStats_.reset();
 
@@ -135,7 +141,7 @@ void EnergyCalculator::printCluster(std::vector<ElectronsVector>& structures){
             selectedStructures.push_back(structures[i*skipLength]);
     }
 
-    yamlDocument_ << ClusterData(TeStats_.getTotalWeight(), selectedStructures, valueStats_, TeStats_,
+    yamlDocument_ << ClusterData(TeStats_.getTotalWeight(), selectedStructures, valueStats_, TeStats_, EeStats_,
                                  SeeStats_, VeeStats_, VenStats_);
 }
 

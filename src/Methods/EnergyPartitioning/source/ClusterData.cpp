@@ -25,6 +25,7 @@ namespace YAML {
                 node["Structures"].as<std::vector<ElectronsVector>>(),
                 node["ValueRange"].as<SingleParticlesStatistics>(),
                 node["Te"].as<SingleParticlesStatistics>(),
+                node["Ee"].as<SingleParticlesStatistics>(),
                 node["SpinCorrelations"].as<IntraParticlesStatistics>(),
                 node["Vee"].as<IntraParticlesStatistics>(),
                 node["Ven"].as<InterParticlesStatistics>()
@@ -40,6 +41,7 @@ namespace YAML {
             << Key << "Structures" << Comment("[a0]") << Value << rhs.exemplaricStructures_ << Newline
             << Key << "SpinCorrelations" << Comment("[]") << Value << rhs.SeeStats_
             << Key << "Te" << Comment("[Eh]") << Value << rhs.TeStats_
+            << Key << "Ee" << Comment("[Eh]") << Value << rhs.EeStats_
             << Key << "Vee" << Comment("[Eh]") << Value << rhs.VeeStats_
             << Key << "Ven" << Comment("[Eh]") << Value << rhs.VenStats_
             << EndMap;

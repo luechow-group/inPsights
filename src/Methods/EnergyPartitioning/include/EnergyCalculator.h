@@ -45,11 +45,12 @@ private:
     const std::vector<Sample> &samples_;
     AtomsVector atoms_;
 
-    SingleParticlesStatistics valueStats_, TeStats_;
+    SingleParticlesStatistics valueStats_, TeStats_, EeStats_, EnStats_;
     IntraParticlesStatistics SeeStats_, VeeStats_, VnnStats_;
     InterParticlesStatistics VenStats_;
 
     Eigen::MatrixXd Vnn_;
+    
 
     YAML::Emitter yamlDocument_;
     std::shared_ptr<spdlog::logger> console;

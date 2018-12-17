@@ -26,6 +26,7 @@ public:
                 std::vector<ElectronsVector> exemplaricStructures,
                 SingleParticlesStatistics valueStats,
                 SingleParticlesStatistics TeStats,
+                SingleParticlesStatistics EeStats,
                 IntraParticlesStatistics SeeStats,
                 IntraParticlesStatistics VeeStats,
                 InterParticlesStatistics VenStats)
@@ -34,6 +35,7 @@ public:
     exemplaricStructures_(std::move(exemplaricStructures)),
     valueStats_(std::move(valueStats)),
     TeStats_(std::move(TeStats)),
+    EeStats_(std::move(EeStats)),
     SeeStats_(std::move(SeeStats)),
     VeeStats_(std::move(VeeStats)),
     VenStats_(std::move(VenStats)) {};
@@ -44,7 +46,7 @@ public:
 
     unsigned N_;
     std::vector<ElectronsVector> exemplaricStructures_;
-    SingleParticlesStatistics valueStats_,TeStats_;
+    SingleParticlesStatistics valueStats_,TeStats_, EeStats_;
     IntraParticlesStatistics SeeStats_, VeeStats_;
     InterParticlesStatistics VenStats_;
 };

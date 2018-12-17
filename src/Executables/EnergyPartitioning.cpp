@@ -111,7 +111,7 @@ int main(int argc, char *argv[]) {
     GlobalPermutationSorter globalPermutationSorter(atoms, samples, globallyClusteredMaxima, globallyPermutationallyInvariantClusteredMaxima);
     globalPermutationSorter.sort();
     */
-     
+
     //Statistics
     energyCalculator.calculateStatistics(globallyClusteredMaxima);
     std::ofstream yamlFile(basename + ".yml");
@@ -121,6 +121,7 @@ int main(int argc, char *argv[]) {
     return 0;
 
     /*TODO
+     * - test naive std
      * - choice of function value increment
      * - validate that ring-like clusters are ordered correctly
      * - use global similarity for permutation sorting

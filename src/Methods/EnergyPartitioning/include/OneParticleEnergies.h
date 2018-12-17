@@ -12,6 +12,13 @@ class ClusterData;
 
 namespace OneParticleEnergies {
 
+    Eigen::VectorXd oneAtomEnergies(const Eigen::MatrixXd &Vnn);
+    Eigen::VectorXd oneElectronEnergies(
+            const Eigen::VectorXd &Te,
+            const Eigen::MatrixXd &Vee,
+            const Eigen::MatrixXd &Ven,
+            const Eigen::MatrixXd &Vnn);
+
     Eigen::VectorXd oneAtomEnergies(const IntraParticlesStatistics& Vnn, const ClusterData &clusterData);
     Eigen::VectorXd oneAtomEnergiesErrors(const IntraParticlesStatistics& Vnn, const ClusterData &clusterData);
 

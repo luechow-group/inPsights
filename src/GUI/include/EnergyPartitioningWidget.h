@@ -22,7 +22,7 @@ public:
     explicit EnergyPartitioningWidget(QWidget* parent = nullptr);
 
     void initializeTreeItems(QTreeWidget &tree, int numberOfParticles);
-    void setAtomEnergies(IntraParticlesStatistics VnnStats);
+    void setAtomEnergies(SingleParticlesStatistics EnStats);
     void updateData(const ClusterData& clusterData);
 
     QTreeWidget& atomsTreeWidget();
@@ -43,7 +43,7 @@ public Q_SLOTS:
 private:
     std::shared_ptr<spdlog::logger> console;
     bool initializedQ_;
-    IntraParticlesStatistics VnnStats_;
+    SingleParticlesStatistics EnStats_;
     QGridLayout grid_;
     QTreeWidget Ee_, En_;
     QLabel Eintra_, Einter_,EintraErr_, EinterErr_;
