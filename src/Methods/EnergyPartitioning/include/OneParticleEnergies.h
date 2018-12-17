@@ -6,9 +6,6 @@
 #define INPSIGHTS_ONEPARTICLEENERGIES_H
 
 #include <Eigen/Core>
-#include <Statistics.h>
-
-class ClusterData;
 
 namespace OneParticleEnergies {
 
@@ -18,14 +15,6 @@ namespace OneParticleEnergies {
             const Eigen::MatrixXd &Vee,
             const Eigen::MatrixXd &Ven,
             const Eigen::MatrixXd &Vnn);
-
-    Eigen::VectorXd oneAtomEnergies(const IntraParticlesStatistics& Vnn, const ClusterData &clusterData);
-    Eigen::VectorXd oneAtomEnergiesErrors(const IntraParticlesStatistics& Vnn, const ClusterData &clusterData);
-
-
-    Eigen::VectorXd oneElectronEnergies(const ClusterData &clusterData);
-    Eigen::VectorXd oneElectronEnergiesErrors(const ClusterData &clusterData);
-
 }
 
 #endif //INPSIGHTS_ONEPARTICLEENERGIES_H
