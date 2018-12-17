@@ -123,3 +123,31 @@ TEST_F(AParticleKitTest, toString) {
                       "1*H, 1*He, 2*ea, 1*eb\n";
     ASSERT_EQ(ParticleKit::toString(),ref);
 }
+
+TEST_F(AParticleKitTest, electronsToKitPermutation) {
+    ParticleKit::create(TestMolecules::threeElectrons::spinFlipped);
+    auto original = TestMolecules::threeElectrons::spinFlipped.electrons();
+    auto copy = original;
+
+    //permute so that the result matches the kit
+    copy.permute(ParticleKit::toKitPermutation(original));
+    ASSERT_EQ(copy.typesVector(), ParticleKit::toSpinTypesVector());
+
+    // permute copy back to the original order
+    copy.permute(ParticleKit::fromKitPermutation(original));
+    ASSERT_EQ(copy, original);
+}
+
+TEST_F(AParticleKitTest, atomsToKitPermutation) {
+    ParticleKit::create(TestMolecules::CO2::nucleiPermuted);
+    auto original = TestMolecules::CO2::nucleiPermuted.atoms();
+    auto copy = original;
+
+    //permute so that the result matches the kit
+    copy.permute(ParticleKit::toKitPermutation(original));
+    ASSERT_EQ(copy.typesVector(), ParticleKit::toElementTypesVector());
+
+    // permute copy back to the original order
+    copy.permute(ParticleKit::fromKitPermutation(original));
+    ASSERT_EQ(copy, original);
+}

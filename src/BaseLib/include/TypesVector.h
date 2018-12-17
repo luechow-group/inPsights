@@ -129,7 +129,7 @@ public:
                 if (currentType == lastType)
                     count++;
                 else {
-                    typeCountsPair.push_back({Type(lastType), count}); // cast redundant?
+                    typeCountsPair.push_back({Type(lastType), count});
                     count = 1;
                 }
                 // treat last element
