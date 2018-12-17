@@ -96,26 +96,26 @@ void EnergyCalculator::calculateStatistics(const std::vector<std::vector<Similar
 
     size_t totalCount = 0;
     for (auto& cluster : clusteredGloballySimilarMaxima) {
+        valueStats_.reset();
+        SeeStats_.reset();
+        TeStats_.reset();
+        EeStats_.reset();
+        VeeStats_.reset();
+        VenStats_.reset();
 
         auto types = cluster[0].representativeReference().maximum().typesVector().asEigenVector();
 
+        std::vector<ElectronsVector> structures;
         for (auto &simRefVector : cluster) {
-            valueStats_.reset();
-            SeeStats_.reset();
-            TeStats_.reset();
-            EeStats_.reset();
-            VeeStats_.reset();
-            VenStats_.reset();
 
             // Iterate over references being similar to the representative reference.
-            std::vector<ElectronsVector> structures;
+
             for (const auto &ref : simRefVector.similarReferencesIterators()){
                 totalCount += addReference(*ref);
-                structures.push_back(ref->maximum());
             }
-
-            printCluster(structures);
+            structures.push_back(simRefVector.representativeReference().maximum());
         }
+        printCluster(structures);
     }
     console->info("overall count {}", totalCount);
     assert(totalCount == samples_.size() && "The total count must match the sample size.");
