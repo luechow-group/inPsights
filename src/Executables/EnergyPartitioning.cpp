@@ -45,8 +45,13 @@ int main(int argc, char *argv[]) {
 
     YAML::Node doc = YAML::LoadFile(fileName);
 
-    size_t numberOfSamples;
+    //write input file
+    YAML::Emitter emitter;
+    emitter << doc;
+    console->info("Executable: {}", argv[0]);
+    console->info("Input file {}:\n{}", fileName, emitter.c_str());
 
+    size_t numberOfSamples;
     if(doc["settings"]["samplesToAnalyze"])
         try {
             numberOfSamples = doc["settings"]["samplesToAnalyze"].as<size_t>();
@@ -66,11 +71,7 @@ int main(int argc, char *argv[]) {
         numberOfSamples = std::numeric_limits<size_t>::max();
         console->info("Analyzing all samples.");
     }
-
     auto basename = doc["basename"].as<std::string>();
-
-
-
 
 
     std::vector<Reference> globallyIdenticalMaxima;
