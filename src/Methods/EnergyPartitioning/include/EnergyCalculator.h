@@ -10,25 +10,11 @@
 #include "Sample.h"
 #include <Statistics.h>
 #include <Logger.h>
-#include <utility>
 
 class EnergyCalculator {
 public:
 
-    struct TotalEnergies {
-        TotalEnergies()
-                : Te(0), Vee(0), Ven(0), Vnn(0) {};
-
-        double totalEnergy() const {
-            return Te + Vee + Ven + Vnn;
-        };
-
-        double Te, Vee, Ven, Vnn;
-    };
-
-    EnergyCalculator(const std::vector<Sample> &samples, AtomsVector atoms);
-
-    TotalEnergies calculateTotalEnergies();
+    EnergyCalculator(YAML::Emitter& yamlDocument, const std::vector<Sample> &samples, AtomsVector atoms);
 
     unsigned long addReference(const Reference &reference);
 
@@ -37,11 +23,14 @@ public:
     // selects nWanted structures and prints the statistic data
     void printCluster(std::vector<ElectronsVector> &structures);
 
+    YAML::Emitter getYamlEmitter();
+
     YAML::Node getYamlNode();
 
     std::string getYamlDocumentString();
 
 private:
+    YAML::Emitter& yamlDocument_;
     const std::vector<Sample> &samples_;
     AtomsVector atoms_;
 
@@ -50,9 +39,6 @@ private:
     InterParticlesStatistics VenStats_;
 
     Eigen::MatrixXd Vnn_;
-    
-
-    YAML::Emitter yamlDocument_;
     std::shared_ptr<spdlog::logger> console;
 };
 

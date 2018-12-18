@@ -139,6 +139,7 @@ namespace Statistics {
     };
 }
 
+using SingleValueStatistics = Statistics::RunningStatistics<Eigen::Matrix<double,1,1>, unsigned>;
 using SingleParticlesStatistics = Statistics::RunningStatistics<Eigen::VectorXd, unsigned>;
 using InterParticlesStatistics = Statistics::RunningStatistics<Eigen::MatrixXd, unsigned>;
 using IntraParticlesStatistics = Statistics::RunningStatistics<Eigen::MatrixXd, unsigned, true>;

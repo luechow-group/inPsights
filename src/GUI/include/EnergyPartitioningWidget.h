@@ -5,8 +5,6 @@
 #ifndef INPSIGHTS_ENERGYPARTITIONINGWIDGET_H
 #define INPSIGHTS_ENERGYPARTITIONINGWIDGET_H
 
-
-
 #include <QWidget>
 #include <QTreeWidget>
 #include <Statistics.h>

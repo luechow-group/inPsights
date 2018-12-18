@@ -8,6 +8,7 @@
 #include <GlobalClusterSorter.h>
 #include <GlobalPermutationSorter.h>
 #include <EnergyCalculator.h>
+#include <GeneralStatistics.h>
 #include <algorithm>
 #include <utility>
 #include <experimental/filesystem>
@@ -31,6 +32,7 @@ bool handleCommandlineArguments(int argc, char *const *argv, std::string &fileNa
     }
 }
 
+using namespace YAML;
 
 int main(int argc, char *argv[]) {
     std::string fileName;
@@ -73,7 +75,6 @@ int main(int argc, char *argv[]) {
     }
     auto basename = doc["basename"].as<std::string>();
 
-
     std::vector<Reference> globallyIdenticalMaxima;
     std::vector<Sample> samples;
     RawDataReader reader(globallyIdenticalMaxima,samples);
@@ -82,15 +83,17 @@ int main(int argc, char *argv[]) {
 
     console->info("number of inital refs {}", globallyIdenticalMaxima.size());
 
-    EnergyCalculator energyCalculator(samples,atoms);
-    auto totalEnergies = energyCalculator.calculateTotalEnergies();
 
-    console->info("Te= {}, Vee = {}, Ven = {}, Vnn = {}, Eges = {}",
-            totalEnergies.Te,
-            totalEnergies.Vee,
-            totalEnergies.Ven,
-            totalEnergies.Vnn,
-            totalEnergies.totalEnergy());
+    YAML::Emitter out;
+
+    out << BeginDoc << BeginMap
+        << Key << "Atoms" << Value << atoms << Comment("[a0]")
+        << Key << "NSamples" << Value << samples.size()
+        << Key << "OverallResults" << GeneralStatistics::calculate(globallyIdenticalMaxima, samples, atoms);
+
+
+    EnergyCalculator energyCalculator(out, samples,atoms);
+    //! USE value stats for choice of increments.
 
     auto identityRadius = doc["settings"]["identityRadius"].as<double>();
     auto similarityRadius = doc["settings"]["similarityRadius"].as<double>();
@@ -117,13 +120,18 @@ int main(int argc, char *argv[]) {
 
     //Statistics
     energyCalculator.calculateStatistics(globallyClusteredMaxima);
+
+
+    out << EndDoc << EndMap;
     std::ofstream yamlFile(basename + ".yml");
-    yamlFile << energyCalculator.getYamlDocumentString();
+    yamlFile << out.c_str();
     yamlFile.close();
     
     return 0;
 
     /*TODO
+     * - make single value statistics class
+     * - refactor names
      * - F2 cluster includes other references that shouldn't be there
      * - test naive std
      * - choice of function value increment
