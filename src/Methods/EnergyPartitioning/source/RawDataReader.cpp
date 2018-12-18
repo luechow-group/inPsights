@@ -18,7 +18,8 @@ RawDataReader::RawDataReader(
         :
         BinaryFileReader(recordDelimiterLength),
         references_(references),
-        samples_(samples)
+        samples_(samples),
+        id_(0)
         {}
 
 
@@ -49,9 +50,7 @@ void RawDataReader::readAtomsHeader(std::ifstream &input) {
 void RawDataReader::readSamplesAndMaxima(std::ifstream &input, int fileLength, size_t numberOfSamples) {
     auto ne = spins_.numberOfEntities();
 
-    size_t id = 0;
-
-    while (checkEOF(input, fileLength) && id < numberOfSamples) {
+    while (checkEOF(input, fileLength) && id_ < numberOfSamples) {
         auto serializedData = readVectorXd(input, size_t(ne)*7+1, 1);
 
         // create sample
@@ -63,10 +62,10 @@ void RawDataReader::readSamplesAndMaxima(std::ifstream &input, int fileLength, s
         // create reference
         auto maximum =  serializedData.segment(4*ne, 3*ne);
         auto value = serializedData[7*ne];
-        auto r = Reference(value, ElectronsVector(PositionsVector(maximum), spins_), id);
+        auto r = Reference(value, ElectronsVector(PositionsVector(maximum), spins_), id_);
         references_.emplace_back(r);
 
-        id++;
+        id_++;
     }
 }
 

@@ -30,11 +30,12 @@ private:
     std::string zeroPadNumber(int num);
     long long int getFileLength(std::ifstream &input) const;
     std::string getFilename(const std::string &basename, unsigned fileCounter);
-    
+
     AtomsVector atoms_;
     SpinTypesVector spins_;
     std::vector<Reference>& references_;
     std::vector<Sample>& samples_;
+    size_t id_;
 };
 
 #endif //INPSIGHTS_RAWDATAREADER_H
