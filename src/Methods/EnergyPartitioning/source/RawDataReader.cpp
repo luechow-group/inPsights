@@ -52,6 +52,7 @@ void RawDataReader::readSamplesAndMaxima(std::ifstream &input, int fileLength, s
 
     while (checkEOF(input, fileLength) && id_ < numberOfSamples) {
         auto serializedData = readVectorXd(input, size_t(ne)*7+1, 1);
+        assert(serializedData.allFinite() && "The imported data must contain only finite values (non NaN or +/- Inf).");
 
         // create sample
         auto sample = serializedData.segment(0,3*ne);
