@@ -40,13 +40,38 @@ int main(int argc, char *argv[]) {
             return 1;
     }
 
+    Logger::initialize();
+    auto console = Logger::get();
+
     YAML::Node doc = YAML::LoadFile(fileName);
-    auto numberOfSamples = doc["settings"]["samplesToAnalyze"].as<size_t >();
+
+    size_t numberOfSamples;
+
+    if(doc["settings"]["samplesToAnalyze"])
+        try {
+            numberOfSamples = doc["settings"]["samplesToAnalyze"].as<size_t>();
+            console->info("Analyzing {} samples.", numberOfSamples);
+        } catch ( const YAML::BadConversion&  e) {
+            auto string = doc["settings"]["samplesToAnalyze"].as<std::string>();
+            if(string == "all" || string == "All" || string == "ALL")
+                console->info("Analyzing all samples.");
+            else
+                console->error("{} \n"
+                               "The key samplesToAnalyze is neither a positive integer nor \"all\".\n" \
+                               "Analyze all samples anyway.", e.what());
+
+            numberOfSamples = std::numeric_limits<size_t>::max();
+        }
+    else {
+        numberOfSamples = std::numeric_limits<size_t>::max();
+        console->info("Analyzing all samples.");
+    }
+
     auto basename = doc["basename"].as<std::string>();
 
 
-    Logger::initialize();
-    auto console = spdlog::get(Logger::name);
+
+
 
     std::vector<Reference> globallyIdenticalMaxima;
     std::vector<Sample> samples;
