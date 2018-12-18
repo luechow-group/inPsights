@@ -10,48 +10,22 @@
 #include <EnergyCalculator.h>
 #include <algorithm>
 #include <utility>
+#include <experimental/filesystem>
 
-void checkBasename(char *arg, std::string &basename) {
-    basename = arg;
-    try {
-        if (basename.find('.') != std::string::npos)
-            throw std::invalid_argument("Basename '" + basename + "'should not have a file ending.");
-    }
-    catch (std::invalid_argument &e){
-        std::cout << e.what() << std::endl;
-        abort();
-    }
-};
+namespace fs = std::experimental::filesystem;
 
-void checkNumberOfSamples(char *arg, int &numberOfSamples) {
-    numberOfSamples = std::atoi(arg);
-    try {
-        if (numberOfSamples < 1)
-            throw std::invalid_argument("NumberOfSamples is '" + std::to_string(numberOfSamples) + "'but should be positive.");
-    }
-    catch (std::invalid_argument &e){
-        std::cout << e.what() << std::endl;
-        abort();
-    }
-};
-
-bool handleCommandlineArguments(int argc, char *const *argv,
-                                std::string &basename,
-                                int &numberOfSamples) {
+bool handleCommandlineArguments(int argc, char *const *argv, std::string &fileName) {
     if (argc < 2) {
         std::cout << "Usage: \n"
-                  << "Argument 1: basename\n"
-                  << "Argument 2: number of samples (optional)"
+                  << "Argument 1: filename\n"
                   << std::endl;
-        std::cout << "raw 100" << std::endl;
+        std::cout << "epart.yml" << std::endl;
         return false;
     } else if (argc == 2) {
-        checkBasename(argv[1], basename);
-        return true;
-    } else if (argc == 3) {
-        checkBasename(argv[1], basename);
-        checkNumberOfSamples(argv[2], numberOfSamples);
-        return true;
+        fileName = argv[1];
+        auto extension = fs::path(fileName).extension().string();
+        std::vector<std::string> extensions = {".yml", ".yaml", ".json"};
+        return std::any_of(extensions.begin(), extensions.end(), [extension](std::string i){return i == extension;});
     } else {
         throw std::invalid_argument("Too many arguments");
     }
@@ -59,14 +33,17 @@ bool handleCommandlineArguments(int argc, char *const *argv,
 
 
 int main(int argc, char *argv[]) {
-    std::string basename;
-    int numberOfSamples = std::numeric_limits<int>::max();
-
-    if (basename.empty()) {
-        bool inputArgumentsFoundQ =
-                handleCommandlineArguments(argc, argv, basename, numberOfSamples);
-        if (!inputArgumentsFoundQ) return 1;
+    std::string fileName;
+    if (fileName.empty()) {
+        bool inputArgumentsFoundQ = handleCommandlineArguments(argc, argv, fileName);
+        if (!inputArgumentsFoundQ)
+            return 1;
     }
+
+    YAML::Node doc = YAML::LoadFile(fileName);
+    auto numberOfSamples = doc["settings"]["samplesToAnalyze"].as<size_t >();
+    auto basename = doc["basename"].as<std::string>();
+
 
     Logger::initialize();
     auto console = spdlog::get(Logger::name);
@@ -74,7 +51,7 @@ int main(int argc, char *argv[]) {
     std::vector<Reference> globallyIdenticalMaxima;
     std::vector<Sample> samples;
     RawDataReader reader(globallyIdenticalMaxima,samples);
-    reader.read(basename, size_t(numberOfSamples));
+    reader.read(basename, numberOfSamples);
     auto atoms = reader.getAtoms();
 
     console->info("number of inital refs {}", globallyIdenticalMaxima.size());
@@ -89,20 +66,20 @@ int main(int argc, char *argv[]) {
             totalEnergies.Vnn,
             totalEnergies.totalEnergy());
 
+    auto identityRadius = doc["settings"]["identityRadius"].as<double>();
+    auto similarityRadius = doc["settings"]["similarityRadius"].as<double>();
 
-    double identicalDistThresh = 0.01;
-    GlobalIdentiySorter globalIdentiySorter(globallyIdenticalMaxima, samples, identicalDistThresh);
+    GlobalIdentiySorter globalIdentiySorter(globallyIdenticalMaxima, samples, identityRadius);
     globalIdentiySorter.sort();
     console->info("number of elements after identity sort {}",globallyIdenticalMaxima.size());
 
-    double similarDistThresh = 0.2;
     std::vector<SimilarReferences> globallySimilarMaxima;
-    GlobalSimilaritySorter globalSimilaritySorter(samples,globallyIdenticalMaxima, globallySimilarMaxima,similarDistThresh);
+    GlobalSimilaritySorter globalSimilaritySorter(samples,globallyIdenticalMaxima, globallySimilarMaxima,similarityRadius);
     globalSimilaritySorter.sort();
-    console->info("number of elements after similarity sort {}",globallySimilarMaxima.size());
+    console->info("number of elements after similarity sort {}", globallySimilarMaxima.size());
 
     std::vector<std::vector<SimilarReferences>> globallyClusteredMaxima;
-    GlobalClusterSorter globalClusterSorter(samples, globallySimilarMaxima, globallyClusteredMaxima, similarDistThresh);
+    GlobalClusterSorter globalClusterSorter(samples, globallySimilarMaxima, globallyClusteredMaxima, similarityRadius);
     globalClusterSorter.sort();
     console->info("number of elements after cluster sort {}", globallyClusteredMaxima.size());
 
