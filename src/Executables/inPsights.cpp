@@ -5,6 +5,7 @@
 #include <InPsightsWidget.h>
 #include <QApplication>
 #include <Logger.h>
+#include <memory>
 
 int main(int argc, char *argv[]) {
 
@@ -18,8 +19,7 @@ int main(int argc, char *argv[]) {
     Logger::initialize();
     spdlog::get(Logger::name)->info("Welcome to inPsights!");
 
-
-    new InPsightsWidget();
+    auto widget = std::make_unique<InPsightsWidget>();
 
     return QApplication::exec();
 
