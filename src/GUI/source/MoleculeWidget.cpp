@@ -108,11 +108,9 @@ void MoleculeWidget::drawSpinCorrelations(bool drawQ,
     for (auto &cluster : activeElectronsVectorsMap_)
         for (auto &structure : cluster.second) {
             if (drawQ) {
-                new SpinCorrelations3D(structure.second, clusterData[cluster.first].SeeStats_,
-                                       spinCorrelationThreshold);
+                new SpinCorrelations3D(structure.second, clusterData[cluster.first].SeeStats_, spinCorrelationThreshold);
             } else {
-                structure.second->correlations_->deleteLater();
-                structure.second->correlations_ = new Qt3DCore::QEntity(structure.second);
+                structure.second->deleteCorrelations();
             }
         }
 }
