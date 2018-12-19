@@ -44,7 +44,9 @@ bool GlobalIdentiySorter::sort() {
 
         if (beginIt != endIt) {
             it++; // start with the element next to beginIt
-            while (it != endIt) subLoop(beginIt, it, endIt);
+            while (it != endIt)
+                subLoop(beginIt, it, endIt);
+
             beginIt = endIt;
         } else ++beginIt; // range is zero
     }

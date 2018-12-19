@@ -23,8 +23,6 @@ public:
     // selects nWanted structures and prints the statistic data
     void printCluster(std::vector<ElectronsVector> &structures);
 
-    YAML::Emitter getYamlEmitter();
-
     YAML::Node getYamlNode();
 
     std::string getYamlDocumentString();
