@@ -4,6 +4,28 @@
 
 #include <ClusterData.h>
 
+ClusterData::ClusterData(unsigned totalNumberOfStructures,
+            std::vector<ElectronsVector> exemplaricStructures,
+            SingleParticlesStatistics valueStats,
+            SingleParticlesStatistics TeStats,
+            SingleParticlesStatistics EeStats,
+            IntraParticlesStatistics SeeStats,
+            IntraParticlesStatistics VeeStats,
+            InterParticlesStatistics VenStats)
+        :
+        N_(totalNumberOfStructures),
+        exemplaricStructures_(std::move(exemplaricStructures)),
+        valueStats_(std::move(valueStats)),
+        TeStats_(std::move(TeStats)),
+        EeStats_(std::move(EeStats)),
+        SeeStats_(std::move(SeeStats)),
+        VeeStats_(std::move(VeeStats)),
+        VenStats_(std::move(VenStats)) {};
+
+ElectronsVector ClusterData::representativeStructure() const {
+    return exemplaricStructures_[0];
+}
+
 namespace YAML {
     Node convert<ClusterData>::encode(const ClusterData &rhs) {
         Node node;

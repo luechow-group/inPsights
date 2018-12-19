@@ -8,18 +8,8 @@
 #include <Statistics.h>
 #include <ParticlesVector.h>
 
-class AtomsData{
-public:
-    AtomsData();
-
-private:
-    AtomsVector atomsVector_;
-    Eigen::MatrixXd Vnn_;
-};
-
 class ClusterData {
 public:
-
     ClusterData() = default;
 
     ClusterData(unsigned totalNumberOfStructures,
@@ -29,20 +19,9 @@ public:
                 SingleParticlesStatistics EeStats,
                 IntraParticlesStatistics SeeStats,
                 IntraParticlesStatistics VeeStats,
-                InterParticlesStatistics VenStats)
-    :
-    N_(totalNumberOfStructures),
-    exemplaricStructures_(std::move(exemplaricStructures)),
-    valueStats_(std::move(valueStats)),
-    TeStats_(std::move(TeStats)),
-    EeStats_(std::move(EeStats)),
-    SeeStats_(std::move(SeeStats)),
-    VeeStats_(std::move(VeeStats)),
-    VenStats_(std::move(VenStats)) {};
+                InterParticlesStatistics VenStats);
 
-    ElectronsVector representativeStructure() const {
-        return exemplaricStructures_[0];
-    }
+    ElectronsVector representativeStructure() const;
 
     unsigned N_;
     std::vector<ElectronsVector> exemplaricStructures_;
