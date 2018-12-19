@@ -20,15 +20,6 @@ GlobalSimilaritySorter::GlobalSimilaritySorter(std::vector<Sample> &samples, std
     };
 }
 
-GlobalSimilaritySorter::GlobalSimilaritySorter(
-        std::vector<Sample> &samples,
-        std::vector<Reference> &references,
-        std::vector<SimilarReferences> &similarReferencesVector,
-        double distThresh)
-        :
-        GlobalSimilaritySorter(samples, references, similarReferencesVector, distThresh,
-                               std::abs((*references.rbegin()).value() * 1e-4)) {}
-
 bool GlobalSimilaritySorter::sort() {
     if (references_.empty()) {
         console->error("References are empty.");

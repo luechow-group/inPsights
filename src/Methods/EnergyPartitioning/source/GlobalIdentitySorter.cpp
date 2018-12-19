@@ -19,10 +19,6 @@ GlobalIdentiySorter::GlobalIdentiySorter(std::vector<Reference> &references, std
     };
 }
 
-GlobalIdentiySorter::GlobalIdentiySorter(std::vector<Reference> &references, std::vector<Sample> &samples, double distThresh)
-        :
-        GlobalIdentiySorter(references, samples, distThresh, (*references.rbegin()).value() * 1e-7) {}
-
 bool GlobalIdentiySorter::sort() {
     if (references_.empty()) {
         console->error("References are empty.");

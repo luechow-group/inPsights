@@ -17,13 +17,6 @@ public:
     GlobalSimilaritySorter(std::vector<Sample> &samples, std::vector<Reference> &references,
                                std::vector<SimilarReferences> &similarReferencesVector,
                                double distThresh, double increment);
-
-    GlobalSimilaritySorter(
-            std::vector<Sample>& samples,
-            std::vector<Reference>& references,
-            std::vector<SimilarReferences>& similarReferencesVector,
-            double distThresh = 0.1);
-
     bool sort();
 
 private:

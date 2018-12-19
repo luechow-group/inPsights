@@ -16,9 +16,6 @@ public:
 
     GlobalIdentiySorter(std::vector<Reference> &references, std::vector<Sample> &samples,
                         double distThresh, double increment);
-
-    GlobalIdentiySorter(std::vector<Reference> &references, std::vector<Sample> &samples, double distThresh = 0.01);
-
     bool sort();
 
 private:
