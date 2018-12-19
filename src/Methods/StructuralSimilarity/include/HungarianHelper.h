@@ -89,7 +89,7 @@ namespace Metrics{
         auto costMatrix = Metrics::positionalDistances<positionalNorm>(permutee,reference);
         Eigen::PermutationMatrix<Eigen::Dynamic> bestMatch = Hungarian<double>::findMatching(costMatrix);
 
-        return {bestMatchNorm<overallNorm, positionalNorm>(permutee, bestMatch, reference), bestMatch};
+        return {bestMatchNorm<overallNorm, positionalNorm>(permutee, bestMatch, reference), std::move(bestMatch)};
     }
 
     template<int overallNorm = Eigen::Infinity, int positionalNorm = 2>
@@ -120,7 +120,7 @@ namespace Metrics{
         return {bestMatchNorm<overallNorm, positionalNorm>(
                 permutee.positionsVector(), spinSpecificBestMatch,
                 reference.positionsVector()),
-                spinSpecificBestMatch};
+                std::move(spinSpecificBestMatch)};
     }
 
     template<int overallNorm = Eigen::Infinity, int positionalNorm = 2>
