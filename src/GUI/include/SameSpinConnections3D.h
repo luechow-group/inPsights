@@ -13,7 +13,7 @@ public:
     explicit SameSpinConnections3D(ElectronsVector3D *electronsVector3D,
             double maxDistance = 1.6, double identicalThreshold = 0.01);
 
-    void createConnections(ElectronsVector3D *electronsVector3D,
+    void createConnections(const ElectronsVector &electronsVector,
                            double maxDistance, double identicalThreshold);
 };
 

@@ -17,7 +17,7 @@ public:
                        const IntraParticlesStatistics& SeeStats,
                        double spinCorrelationThreshold);
 
-    void createConnections(ElectronsVector3D *electronsVector3D,
+    void createConnections(const ElectronsVector &electronsVector,
                            const IntraParticlesStatistics &SeeStats,
                            double spinCorrelationThreshold);
 };

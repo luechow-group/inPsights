@@ -14,13 +14,14 @@ SameSpinConnections3D::SameSpinConnections3D(
         double identicalThreshold)
         : IConnection(electronsVector3D->connections_) {
 
-    createConnections(electronsVector3D, maxDistance, identicalThreshold);
+    createConnections(*electronsVector3D, maxDistance, identicalThreshold);
 };
 
 
-void SameSpinConnections3D::createConnections(ElectronsVector3D *electronsVector3D, double maxDistance, double identicalThreshold) {
+void SameSpinConnections3D::createConnections(const ElectronsVector &electronsVector, double maxDistance,
+                                              double identicalThreshold) {
 
-    auto pairTypes = SpinClassification::classify(*electronsVector3D, maxDistance, identicalThreshold );
+    auto pairTypes = SpinClassification::classify(electronsVector, maxDistance, identicalThreshold );
 
     for (auto &idxPair : pairTypes) {
         auto i = idxPair.first.first;
@@ -31,8 +32,8 @@ void SameSpinConnections3D::createConnections(ElectronsVector3D *electronsVector
             && !SpinClassification::isAtSamePositionQ(pairTypes,j)
             ) {
 
-            auto e1 = electronsVector3D->operator[](i);
-            auto e2 = electronsVector3D->operator[](j);
+            auto e1 = electronsVector[i];
+            auto e2 = electronsVector[j];
 
             auto q1 = GuiHelper::toQVector3D(e1.position());
             auto q2 = GuiHelper::toQVector3D(e2.position());

@@ -11,14 +11,14 @@ SpinCorrelations3D::SpinCorrelations3D(ElectronsVector3D *electronsVector3D,
         :
         IConnection(electronsVector3D->correlations_) {
 
-    createConnections(electronsVector3D, SeeStats, spinCorrelationThreshold);
+    createConnections(*electronsVector3D, SeeStats, spinCorrelationThreshold);
 }
 
-void SpinCorrelations3D::createConnections(ElectronsVector3D *electronsVector3D,
+void SpinCorrelations3D::createConnections(const ElectronsVector &electronsVector,
                                            const IntraParticlesStatistics &SeeStats,
                                            double spinCorrelationThreshold)  {
 
-    auto pairTypes = SpinClassification::classify(*electronsVector3D);
+    auto pairTypes = SpinClassification::classify(electronsVector);
 
     for (auto &idxPair : pairTypes) {
         auto i = idxPair.first.first;
@@ -39,8 +39,8 @@ void SpinCorrelations3D::createConnections(ElectronsVector3D *electronsVector3D,
                     color = QColor::fromRgb(0, 255, 0);
 
                 new Line3D(this, color, {
-                        GuiHelper::toQVector3D(electronsVector3D->positionsVector()[i]),
-                        GuiHelper::toQVector3D(electronsVector3D->positionsVector()[j])}, std::abs(corr));
+                        GuiHelper::toQVector3D(electronsVector.positionsVector()[i]),
+                        GuiHelper::toQVector3D(electronsVector.positionsVector()[j])}, std::abs(corr));
             }
         }
     }
