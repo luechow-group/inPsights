@@ -5,15 +5,16 @@
 #ifndef INPSIGHTS_SAMESPINCONNECTIONS3D_H
 #define INPSIGHTS_SAMESPINCONNECTIONS3D_H
 
-#include <SpinConnections3D.h>
+#include "IConnection.h"
+#include "ParticlesVector3D.h"
 
-class SameSpinConnections3D : public SpinConnections3D{
+class SameSpinConnections3D : public IConnection{
 public:
     explicit SameSpinConnections3D(ElectronsVector3D *electronsVector3D,
-            double identicalThreshold = 0.01, double maxDistance = 1.6);
+            double maxDistance = 1.6, double identicalThreshold = 0.01);
 
-    void createConnections(ElectronsVector3D *electronsVector3D);
-
+    void createConnections(ElectronsVector3D *electronsVector3D,
+                           double maxDistance, double identicalThreshold);
 };
 
 #endif //INPSIGHTS_SAMESPINCONNECTIONS3D_H

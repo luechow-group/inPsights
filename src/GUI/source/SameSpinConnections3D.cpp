@@ -3,25 +3,33 @@
 //
 
 #include <SameSpinConnections3D.h>
+#include <SpinClassification.h>
 #include <Metrics.h>
 #include <Cylinder.h>
 #include <Line3D.h>
 
 SameSpinConnections3D::SameSpinConnections3D(
         ElectronsVector3D *electronsVector3D,
-        double identicalThreshold,
-        double maxDistance)
-        : SpinConnections3D(electronsVector3D, identicalThreshold, maxDistance) {
-    createConnections(electronsVector3D);
+        double maxDistance,
+        double identicalThreshold)
+        : IConnection(electronsVector3D->connections_) {
+
+    createConnections(electronsVector3D, maxDistance, identicalThreshold);
 };
 
 
-void SameSpinConnections3D::createConnections(ElectronsVector3D *electronsVector3D) {
-    for (auto &idxPair : pairIndicesMap_) {
+void SameSpinConnections3D::createConnections(ElectronsVector3D *electronsVector3D, double maxDistance, double identicalThreshold) {
+
+    auto pairTypes = SpinClassification::classify(*electronsVector3D, maxDistance, identicalThreshold );
+
+    for (auto &idxPair : pairTypes) {
         auto i = idxPair.first.first;
         auto j = idxPair.first.second;
 
-        if (idxPair.second == PairType::closeBy && !atSamePositionQList_[i] && !atSamePositionQList_[j]) {
+        if (idxPair.second == SpinClassification::PairType::closeBy
+            && !SpinClassification::isAtSamePositionQ(pairTypes,i)
+            && !SpinClassification::isAtSamePositionQ(pairTypes,j)
+            ) {
 
             auto e1 = electronsVector3D->operator[](i);
             auto e2 = electronsVector3D->operator[](j);
@@ -29,7 +37,7 @@ void SameSpinConnections3D::createConnections(ElectronsVector3D *electronsVector
             auto q1 = GuiHelper::toQVector3D(e1.position());
             auto q2 = GuiHelper::toQVector3D(e2.position());
 
-            if (Metrics::distance(e1.position(), e2.position()) < maxDistance_) {
+            if (Metrics::distance(e1.position(), e2.position()) < maxDistance) {
                 if (e1.type() == e2.type())
                     if (e1.type() == Spin::alpha)
                         new Cylinder(this,

@@ -45,7 +45,7 @@ set(HEADER_FILES
         include/ParticlesVector3D.h
         include/IConnection.h
         include/Bonds3D.h
-        include/SpinConnections3D.h
+        include/SpinClassification.h
         include/SpinCorrelations3D.h
         include/SameSpinConnections3D.h
         include/IntegerSortedTreeWidgetItem.h
@@ -67,7 +67,7 @@ set(SOURCE_FILES
         source/ParticlesVector3D.cpp
         source/Line3D.cpp
         source/Bonds3D.cpp
-        source/SpinConnections3D.cpp
+        source/SpinClassification.cpp
         source/SpinCorrelations3D.cpp
         source/InPsightsWidget.cpp
         source/SameSpinConnections3D.cpp
