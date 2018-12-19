@@ -37,7 +37,6 @@ InPsightsWidget::InPsightsWidget(QWidget *parent)
     connectSignals();
     initialView();
     show();
-
 }
 
 void InPsightsWidget::createWidget() {
@@ -136,7 +135,7 @@ void InPsightsWidget::selectedStructure(QTreeWidgetItem *item, int column) {
     auto structureId = id[1].toInt();
 
     auto createQ = item->checkState(0) == Qt::CheckState::Checked;
-    console->info("Selected structure {0} from cluster {0} for {1}.", structureId, clusterId,
+    console->info("Selected structure {0} from cluster {1} for {2}.", structureId, clusterId,
                   createQ ? "creation" : "deletion");
 
     if (createQ) {

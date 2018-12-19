@@ -47,7 +47,7 @@ int main(int argc, char *argv[]) {
 
     YAML::Node doc = YAML::LoadFile(fileName);
 
-    //write input file
+    //print input file
     YAML::Emitter emitter;
     emitter << doc;
     console->info("Executable: {}", argv[0]);
@@ -83,27 +83,29 @@ int main(int argc, char *argv[]) {
 
     console->info("number of inital refs {}", globallyIdenticalMaxima.size());
 
+    auto results = GeneralStatistics::calculate(globallyIdenticalMaxima, samples, atoms);
 
     YAML::Emitter out;
-
     out << BeginDoc << BeginMap
         << Key << "Atoms" << Value << atoms << Comment("[a0]")
         << Key << "NSamples" << Value << samples.size()
-        << Key << "OverallResults" << GeneralStatistics::calculate(globallyIdenticalMaxima, samples, atoms);
-
+        << Key << "OverallResults" << results;
 
     EnergyCalculator energyCalculator(out, samples,atoms);
-    //! USE value stats for choice of increments.
 
     auto identityRadius = doc["settings"]["identityRadius"].as<double>();
     auto similarityRadius = doc["settings"]["similarityRadius"].as<double>();
+    auto valueStandardError = results.valueStats_.standardError()(0,0);
 
-    GlobalIdentiySorter globalIdentiySorter(globallyIdenticalMaxima, samples, identityRadius);
+    GlobalIdentiySorter globalIdentiySorter(globallyIdenticalMaxima, samples, identityRadius, valueStandardError*1e-4);
     globalIdentiySorter.sort();
     console->info("number of elements after identity sort {}",globallyIdenticalMaxima.size());
 
     std::vector<SimilarReferences> globallySimilarMaxima;
-    GlobalSimilaritySorter globalSimilaritySorter(samples,globallyIdenticalMaxima, globallySimilarMaxima,similarityRadius);
+    GlobalSimilaritySorter globalSimilaritySorter(samples,
+            globallyIdenticalMaxima,
+            globallySimilarMaxima,
+            similarityRadius, valueStandardError*1e-2);
     globalSimilaritySorter.sort();
     console->info("number of elements after similarity sort {}", globallySimilarMaxima.size());
 
