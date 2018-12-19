@@ -73,7 +73,7 @@ int main(int argc, char *argv[]) {
         numberOfSamples = std::numeric_limits<size_t>::max();
         console->info("Analyzing all samples.");
     }
-    auto basename = doc["basename"].as<std::string>();
+    auto basename = doc["binaryFileBasename"].as<std::string>();
 
     std::vector<Reference> globallyIdenticalMaxima;
     std::vector<Sample> samples;
@@ -97,9 +97,13 @@ int main(int argc, char *argv[]) {
     auto similarityRadius = doc["settings"]["similarityRadius"].as<double>();
     auto valueStandardError = results.valueStats_.standardError()(0,0);
 
-    GlobalIdentiySorter globalIdentiySorter(globallyIdenticalMaxima, samples, identityRadius, valueStandardError*1e-4);
-    globalIdentiySorter.sort();
-    console->info("number of elements after identity sort {}",globallyIdenticalMaxima.size());
+    auto identitySearchOption = doc["settings"]["skipIdentitySearch"];
+    if(identitySearchOption && identitySearchOption.as<bool>()) {
+        console->info("Start identity search");
+        GlobalIdentiySorter globalIdentiySorter(globallyIdenticalMaxima, samples, identityRadius, valueStandardError*1e-4);
+        globalIdentiySorter.sort();
+        console->info("number of elements after identity sort {}",globallyIdenticalMaxima.size());
+    }
 
     std::vector<SimilarReferences> globallySimilarMaxima;
     GlobalSimilaritySorter globalSimilaritySorter(samples,
@@ -123,7 +127,6 @@ int main(int argc, char *argv[]) {
     //Statistics
     energyCalculator.calculateStatistics(globallyClusteredMaxima);
 
-
     out << EndDoc << EndMap;
     std::ofstream yamlFile(basename + ".yml");
     yamlFile << out.c_str();
@@ -139,5 +142,6 @@ int main(int argc, char *argv[]) {
      * - choice of function value increment
      * - validate that ring-like clusters are ordered correctly
      * - use global similarity for permutation sorting
+     * - split identity sort into batches that can be compared in parallel using OpenMP
      * */
 };
