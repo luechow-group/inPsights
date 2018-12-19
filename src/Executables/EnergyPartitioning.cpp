@@ -81,8 +81,8 @@ int main(int argc, char *argv[]) {
     reader.read(basename, numberOfSamples);
     auto atoms = reader.getAtoms();
 
-    console->info("number of inital refs {}", globallyIdenticalMaxima.size());
 
+    console->info("number of inital refs {}", globallyIdenticalMaxima.size());
     auto results = GeneralStatistics::calculate(globallyIdenticalMaxima, samples, atoms);
 
     YAML::Emitter out;
@@ -143,5 +143,6 @@ int main(int argc, char *argv[]) {
      * - validate that ring-like clusters are ordered correctly
      * - use global similarity for permutation sorting
      * - split identity sort into batches that can be compared in parallel using OpenMP
+     * - improve spinSpecificHungarian
      * */
 };

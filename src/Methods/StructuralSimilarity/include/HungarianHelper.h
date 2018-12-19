@@ -16,6 +16,8 @@ namespace HungarianHelper{
             const Eigen::PermutationMatrix<Eigen::Dynamic>& p1,
             const Eigen::PermutationMatrix<Eigen::Dynamic>& p2, bool flipSpinsQ = false);
 
+
+
     template <int positionalNorm = 2>
     Eigen::PermutationMatrix<Eigen::Dynamic> spinSpecificBestMatch(
             const ElectronsVector &lhs,
@@ -62,7 +64,6 @@ namespace HungarianHelper{
         else
             return combinePermutations(bestMatchBeta, bestMatchAlpha, true);
     };
-
 };
 
 namespace Metrics{

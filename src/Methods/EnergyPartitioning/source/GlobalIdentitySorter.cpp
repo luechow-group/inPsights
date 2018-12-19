@@ -4,6 +4,7 @@
 
 #include <GlobalIdentitySorter.h>
 #include <HungarianHelper.h>
+#include <ValueSorter.h>
 
 GlobalIdentiySorter::GlobalIdentiySorter(std::vector<Reference> &references, std::vector<Sample> &samples,
                                          double distThresh, double increment)
@@ -18,17 +19,12 @@ GlobalIdentiySorter::GlobalIdentiySorter(std::vector<Reference> &references, std
         console = spdlog::get(Logger::name);
     };
 }
-
+// assumes an value sorted list of references.
 bool GlobalIdentiySorter::sort() {
-    if (references_.empty()) {
-        console->error("References are empty.");
-        return false;
-    } else if (references_.size() == 1) {
-        console->warn("No sorting because only one reference was found.");
-        return true;
-    }
 
-    std::sort(references_.begin(), references_.end());
+    // first, sort references by value
+    ValueSorter::sortReferencesByValue(references_);
+
     auto beginIt = references_.begin();
 
     while (beginIt != references_.end()) {

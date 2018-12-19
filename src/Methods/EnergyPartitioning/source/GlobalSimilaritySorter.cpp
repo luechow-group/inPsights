@@ -3,6 +3,7 @@
 //
 
 #include <GlobalSimilaritySorter.h>
+#include <ValueSorter.h>
 
 GlobalSimilaritySorter::GlobalSimilaritySorter(std::vector<Sample> &samples, std::vector<Reference> &references,
                                                std::vector<SimilarReferences> &similarReferencesVector,
@@ -19,24 +20,15 @@ GlobalSimilaritySorter::GlobalSimilaritySorter(std::vector<Sample> &samples, std
         console = spdlog::get(Logger::name);
     };
 }
-
+// assumes a sorted reference vector
 bool GlobalSimilaritySorter::sort() {
-    if (references_.empty()) {
-        console->error("References are empty.");
-        return false;
-    } else if (references_.size() == 1) {
-        console->warn("No sorting because only one reference was found.");
-        return true;
-    }
+    // first, sort references by value
+    ValueSorter::sortReferencesByValue(references_);
 
-    auto beginIt = references_.begin();
-
-    if (similarReferencesVector_.empty()) {
-        similarReferencesVector_.emplace_back(SimilarReferences(references_.begin()));
-        beginIt++;
-    }
-
-    for (auto ref = beginIt; ref != references_.end(); ++ref) {
+    // insert first element
+    similarReferencesVector_.emplace_back(SimilarReferences(references_.begin()));
+    // start with the second reference
+    for (auto ref = references_.begin()+1; ref != references_.end(); ++ref) {
         bool isSimilarQ = false;
 
         std::vector<Reference> lowerRef = {Reference((*ref).value() - increment_)};
@@ -66,7 +58,7 @@ bool GlobalSimilaritySorter::sort() {
         if (!isSimilarQ) {
             similarReferencesVector_.emplace_back(SimilarReferences(ref));
         }
-        std::sort(similarReferencesVector_.begin(), similarReferencesVector_.end());
     }
+
     return true;
 }

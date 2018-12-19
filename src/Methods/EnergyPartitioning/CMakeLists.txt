@@ -20,6 +20,7 @@ set(HEADER_FILES
         include/ClusterData.h
         #include/GlobalPermutationSorter.h
         include/GeneralStatistics.h
+        include/ValueSorter.h
         )
 
 set(SOURCE_FILES
@@ -32,6 +33,7 @@ set(SOURCE_FILES
         source/EnergyCalculator.cpp
         #source/GlobalPermutationSorter.cpp
         source/GeneralStatistics.cpp
+        source/ValueSorter.cpp
         )
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES})
