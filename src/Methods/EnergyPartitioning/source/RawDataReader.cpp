@@ -81,10 +81,10 @@ void RawDataReader::read(const std::string &basename, size_t numberOfSamples){
         input = std::ifstream(filename.c_str(), std::ios::binary);
         fileLength = static_cast<int>(getFileLength(input));
     }
-    else throw std::runtime_error("Could not open file '" + basename + "'");
+    else throw std::runtime_error("Could not open file '" + filename + "'");
 
     if( input.good() ) readHeader(input);
-    else throw std::runtime_error("Could not open file '" + basename + "'");
+    else throw std::runtime_error("Could not read header");
 
     while(fs::exists(filename) && references_.size() < numberOfSamples) {
         if( input.good() ) {
@@ -92,11 +92,11 @@ void RawDataReader::read(const std::string &basename, size_t numberOfSamples){
             input.close();
 
             fileCounter++;
-            filename = getFilename(basename,fileCounter);
+            filename = getFilename(basename, fileCounter);
             input = std::ifstream(filename.c_str(), std::ios::binary);
             fileLength = static_cast<int>(getFileLength(input));
         }
-        else throw std::runtime_error("Could not open file '" + basename + "'");
+        else throw std::runtime_error("Could not open file '" + filename + "'");
     }
 }
 

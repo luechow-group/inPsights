@@ -61,7 +61,7 @@ int main(int argc, char *argv[]) {
             auto string = doc["settings"]["samplesToAnalyze"].as<std::string>();
             if(string == "all" || string == "All" || string == "ALL"){
                 numberOfSamples = std::numeric_limits<size_t>::max();
-                console->info("Analyzing all {} samples.", numberOfSamples);
+                console->info("Analyzing all samples.");
             } else {
                 console->error("{0} \n"
                                "The key samplesToAnalyze is neither a positive integer nor \"all\". Abort.", e.what());
@@ -70,7 +70,7 @@ int main(int argc, char *argv[]) {
         }
     else {
         numberOfSamples = std::numeric_limits<size_t>::max();
-        console->info("Analyzing all {} samples.", numberOfSamples);
+        console->info("Analyzing all samples.");
     }
     auto basename = doc["binaryFileBasename"].as<std::string>();
 
