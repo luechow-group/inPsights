@@ -6,7 +6,6 @@
 #include <GlobalIdentitySorter.h>
 #include <GlobalSimilaritySorter.h>
 #include <GlobalClusterSorter.h>
-#include <GlobalPermutationSorter.h>
 #include <EnergyCalculator.h>
 #include <GeneralStatistics.h>
 #include <algorithm>
@@ -60,27 +59,26 @@ int main(int argc, char *argv[]) {
             console->info("Analyzing {} samples.", numberOfSamples);
         } catch ( const YAML::BadConversion&  e) {
             auto string = doc["settings"]["samplesToAnalyze"].as<std::string>();
-            if(string == "all" || string == "All" || string == "ALL")
-                console->info("Analyzing all samples.");
-            else
-                console->error("{} \n"
-                               "The key samplesToAnalyze is neither a positive integer nor \"all\".\n" \
-                               "Analyze all samples anyway.", e.what());
-
-            numberOfSamples = std::numeric_limits<size_t>::max();
+            if(string == "all" || string == "All" || string == "ALL"){
+                numberOfSamples = std::numeric_limits<size_t>::max();
+                console->info("Analyzing all {} samples.", numberOfSamples);
+            } else {
+                console->error("{0} \n"
+                               "The key samplesToAnalyze is neither a positive integer nor \"all\". Abort.", e.what());
+                return 1;
+            }
         }
     else {
         numberOfSamples = std::numeric_limits<size_t>::max();
-        console->info("Analyzing all samples.");
+        console->info("Analyzing all {} samples.", numberOfSamples);
     }
     auto basename = doc["binaryFileBasename"].as<std::string>();
 
     std::vector<Reference> globallyIdenticalMaxima;
     std::vector<Sample> samples;
-    RawDataReader reader(globallyIdenticalMaxima,samples);
+    RawDataReader reader(globallyIdenticalMaxima, samples);
     reader.read(basename, numberOfSamples);
     auto atoms = reader.getAtoms();
-
 
     console->info("number of inital refs {}", globallyIdenticalMaxima.size());
     auto results = GeneralStatistics::calculate(globallyIdenticalMaxima, samples, atoms);
