@@ -58,13 +58,13 @@ void RawDataReader::readSamplesAndMaxima(std::ifstream &input, int fileLength, s
         auto sample = serializedData.segment(0,3*ne);
         auto kineticEnergies = serializedData.segment(3*ne, ne);
         auto s = Sample(ElectronsVector(PositionsVector(sample), spins_),kineticEnergies);
-        samples_.emplace_back(s);
+        samples_.emplace_back(std::move(s));
 
         // create reference
         auto maximum =  serializedData.segment(4*ne, 3*ne);
         auto value = serializedData[7*ne];
         auto r = Reference(value, ElectronsVector(PositionsVector(maximum), spins_), id_);
-        references_.emplace_back(r);
+        references_.emplace_back(std::move(r));
 
         id_++;
     }

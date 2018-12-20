@@ -122,14 +122,17 @@ int main(int argc, char *argv[]) {
     globalPermutationSorter.sort();
     */
 
-    //Statistics
+    console->info("Calculating statistics...}");
     energyCalculator.calculateStatistics(globallyClusteredMaxima);
 
+    std::string resultsFilename = basename + ".yml";
+    console->info("Writing results into file \"{}\"",resultsFilename);
     out << EndDoc << EndMap;
-    std::ofstream yamlFile(basename + ".yml");
+    std::ofstream yamlFile(resultsFilename);
     yamlFile << out.c_str();
     yamlFile.close();
-    
+    console->info("Done! Bye bye.");
+
     return 0;
 
     /*TODO
