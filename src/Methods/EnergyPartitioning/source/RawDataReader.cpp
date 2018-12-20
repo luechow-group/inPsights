@@ -89,6 +89,7 @@ void RawDataReader::read(const std::string &basename, size_t numberOfSamples){
     while(fs::exists(filename) && references_.size() < numberOfSamples) {
         if( input.good() ) {
             readSamplesAndMaxima(input, fileLength, numberOfSamples);
+            input.close();
 
             fileCounter++;
             filename = getFilename(basename,fileCounter);
