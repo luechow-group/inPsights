@@ -144,7 +144,19 @@ void InPsightsWidget::selectedStructure(QTreeWidgetItem *item, int column) {
     } else {
         moleculeWidget->removeElectronsVector(clusterId, structureId);
     }
+    redrawSpinDecorations();
 };
+
+void InPsightsWidget::redrawSpinDecorations() {
+    if(spinConnectionsCheckBox->checkState() == Qt::CheckState::Checked){
+        onSpinConnectionsChecked(Qt::Unchecked);
+        onSpinConnectionsChecked(Qt::Checked);
+    }
+    if(spinCorrelationsCheckBox->checkState() == Qt::Checked){
+        onSpinCorrelationsChecked(Qt::Unchecked);
+        onSpinCorrelationsChecked(Qt::Checked);
+    }
+}
 
 void InPsightsWidget::onAtomsChecked(int stateId) {
     moleculeWidget->drawAtoms(Qt::CheckState(stateId) == Qt::CheckState::Checked);

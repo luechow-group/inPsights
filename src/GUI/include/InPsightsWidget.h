@@ -23,8 +23,8 @@ public slots:
     void selectedStructure(QTreeWidgetItem *item, int column);
     void onAtomsChecked(int stateId);
     void onBondsChecked(int stateId);
-    void onSpinConnectionsChecked(int stateId);
-    void onSpinCorrelationsChecked(int stateId);
+    void onSpinConnectionsChecked(int stateId = 0);
+    void onSpinCorrelationsChecked(int stateId= 0);
     void onSpinCorrelationsSliderChanged(int value);
 
 private:
@@ -44,6 +44,7 @@ private:
     void updateSpinCorrelationSliderLabel(int value);
     void connectSignals();
     void createWidget();
+    void redrawSpinDecorations();
 };
 
 #endif //INPSIGHTS_INPSIGHTSWIDGET_H
