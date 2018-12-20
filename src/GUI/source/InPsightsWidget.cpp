@@ -260,7 +260,7 @@ void InPsightsWidget::initialView() {
     atomsCheckBox->setCheckState(Qt::CheckState::Checked);
     bondsCheckBox->setCheckState(Qt::CheckState::Checked);
     maximaList->topLevelItem(0)->setCheckState(0, Qt::CheckState::Checked);
-    spinConnectionsCheckBox->setCheckState(Qt::CheckState::Checked);
-    spinCorrelationsCheckBox->setCheckState(Qt::CheckState::Checked);
+    //spinConnectionsCheckBox->setCheckState(Qt::CheckState::Checked);
+    //spinCorrelationsCheckBox->setCheckState(Qt::CheckState::Checked);
     updateSpinCorrelationSliderLabel(spinCorrelationSlider->value());
 }
