@@ -12,7 +12,6 @@ public:
     double regularizationParameter = 1.0;
 
     void SetUp() override {
-        ExpansionSettings::defaults();
         ExpansionSettings::mode = ExpansionSettings::Mode::chemical;
         ParticleKit::create({{Element::H,2},{Element::He,2}},{2,2});
     }
@@ -20,7 +19,6 @@ public:
 
 TEST_F(AStructuralSimilarityTest , Identity) {
     auto A = TestMolecules::H2::ElectronsInCores::normal;
-    ExpansionSettings::defaults();
     ExpansionSettings::mode = ExpansionSettings::Mode::chemical;
     ParticleKit::create(A);
     
@@ -30,7 +28,6 @@ TEST_F(AStructuralSimilarityTest , Identity) {
 
 TEST_F(AStructuralSimilarityTest , nmax2) {
     auto A = TestMolecules::H2::ElectronsInCores::normal;
-    ExpansionSettings::defaults();
     ExpansionSettings::Radial::nmax=2;
     ExpansionSettings::mode = ExpansionSettings::Mode::chemical;
     ParticleKit::create(A);
@@ -42,7 +39,6 @@ TEST_F(AStructuralSimilarityTest , nmax2) {
 TEST_F(AStructuralSimilarityTest , TranslationalSymmetry) {
     auto A = TestMolecules::H2::ElectronsInCores::normal;
     auto B = TestMolecules::H2::ElectronsInCores::translated;
-    ExpansionSettings::defaults();
     ExpansionSettings::mode = ExpansionSettings::Mode::chemical;
     ParticleKit::create(A);
     
@@ -54,7 +50,6 @@ TEST_F(AStructuralSimilarityTest , TranslationalSymmetry) {
 TEST_F(AStructuralSimilarityTest, PermutationalSymmetry_ReversedOrder) {
     auto A = TestMolecules::twoElectrons::oppositeSpin;
     auto B = TestMolecules::twoElectrons::oppositeSpinReversedOrder;
-    ExpansionSettings::defaults();
     ExpansionSettings::mode = ExpansionSettings::Mode::chemical;
     ParticleKit::create(A);
 
@@ -66,7 +61,6 @@ TEST_F(AStructuralSimilarityTest, PermutationalSymmetry_ReversedOrder) {
 TEST_F(AStructuralSimilarityTest, PermutationalSymmetry_FlippedSpins) {
     auto A = TestMolecules::H2::ElectronsInCores::normal;
     auto B = TestMolecules::H2::ElectronsInCores::flippedSpins;
-    ExpansionSettings::defaults();
     ExpansionSettings::mode = ExpansionSettings::Mode::chemical;
     ParticleKit::create(A);
 
@@ -77,7 +71,6 @@ TEST_F(AStructuralSimilarityTest, PermutationalSymmetry_FlippedSpins) {
 
 TEST_F(AStructuralSimilarityTest, RotationalSymmetry) {
     auto A = TestMolecules::H2::ElectronsOutsideCores::offCenter;
-    ExpansionSettings::defaults();
     ExpansionSettings::mode = ExpansionSettings::Mode::chemical;
     ParticleKit::create(A);
 

@@ -8,6 +8,7 @@
 #include <cassert>
 #include <ElementType.h>
 #include <SpinType.h>
+#include <NaturalConstants.h>
 
 namespace ExpansionSettings{
     namespace Radial{
@@ -20,43 +21,40 @@ namespace ExpansionSettings{
 
         const double radiusZero = 1e-10;
 
-        extern unsigned nmax;
-        extern BasisType basisType;
-        extern double sigmaAtom;
+        inline unsigned nmax = {5};
+        inline BasisType basisType = {BasisType::equispaced};
+        inline double sigmaAtom = {0.5*ConversionFactors::angstrom2bohr};
 
-        extern unsigned integrationSteps;
-        extern double desiredAbsoluteError,desiredRelativeError;
+        inline unsigned integrationSteps = {100};
+        inline double desiredAbsoluteError = {0.0}, desiredRelativeError = {std::numeric_limits<double>::epsilon()*1e2};
 
-        void defaults();
         void checkBounds(unsigned n);
 
         std::string toString();
     };
 
     namespace Angular {
-        extern unsigned lmax;
+        inline unsigned lmax = {5};
 
-        void defaults();
         void checkBounds(unsigned l, int m = 0);
 
         std::string toString();
     };
 
     namespace Cutoff {
-        extern double radius, width, centerWeight;
+        inline double radius = {4.0*ConversionFactors::angstrom2bohr};
+        inline double width = {1.0*ConversionFactors::angstrom2bohr};
+        inline double centerWeight = {1.0}; //TODO
 
-        void defaults();
         double innerPlateauRadius();
 
         std::string toString();
     }
 
     namespace Alchemical{
-        extern std::map<std::pair<int,int>,double> pairSimilarities;
-        //const std::map<std::pair<int,int>,double> pairSimilarities = {
-        //        {{int(Spin::alpha),int(Spin::beta)}, 0.5}
-        //};
-
+        inline std::map<std::pair<int,int>,double> pairSimilarities = {
+                {{int(Spin::alpha),int(Spin::beta)}, 0.5}
+        };
         std::string toString();
     }
 
@@ -64,11 +62,9 @@ namespace ExpansionSettings{
         typeAgnostic = 0, chemical, alchemical
     };
 
-    extern Mode mode;
-    extern double zeta;  // LocalSimilarity exponent
-    extern double gamma; // StructuralSimilarity regularization parameter
-
-    void defaults();
+    inline Mode mode = ExpansionSettings::Mode::chemical;
+    inline double zeta = 2; // LocalSimilarity exponent
+    inline double gamma = 0.1; // StructuralSimilarity regularization parameter
 
     void checkBounds(unsigned n, unsigned l, int m);
 

@@ -121,7 +121,6 @@ void doublyStochasticCheck(const Eigen::MatrixXd& regularizedMatrix,
     long N = regularizedMatrix.rows();
     long M = regularizedMatrix.cols();
 
-    double totalSum = 0;
     for (unsigned i = 0; i < N; ++i) {
         ASSERT_NEAR(regularizedMatrix.row(i).sum(), 1./double(N), eps);
     }

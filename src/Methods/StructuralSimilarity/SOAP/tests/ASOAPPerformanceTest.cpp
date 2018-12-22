@@ -13,7 +13,6 @@ public:
     double regularizationParameter = 0.5;
 
     void SetUp() override {
-        ExpansionSettings::defaults();
         ExpansionSettings::mode = ExpansionSettings::Mode::alchemical;
     }
 };

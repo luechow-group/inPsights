@@ -8,27 +8,14 @@
 #include <SpinType.h>
 #include <sstream>
 #include <ElementInfo.h>
+#include <ExpansionSettings.h>
+
 
 namespace ExpansionSettings {
-
-    ExpansionSettings::Mode mode = ExpansionSettings::Mode::chemical;
-    double zeta = 2;
-    double gamma = 0.1;
-
     void checkBounds(unsigned n, unsigned l, int m) {
         Radial::checkBounds(n);
         Angular::checkBounds(l, m);
     }
-
-    void defaults() {
-        Radial::defaults();
-        Angular::defaults();
-        Cutoff::defaults();
-        mode = ExpansionSettings::Mode::chemical;
-        zeta = 2;
-        gamma = 0.1; // small values yields an efficient Best-Match approximation
-
-    };
 
     std::string toString(const Mode &mode) {
         switch(mode) {
@@ -64,23 +51,6 @@ namespace ExpansionSettings {
     }
 
     namespace Radial {
-        unsigned nmax = 5;
-        BasisType basisType = BasisType::equispaced;
-        double sigmaAtom = 0.5;
-
-        unsigned integrationSteps = 100;
-        double desiredAbsoluteError = 0.0;// TODO Deprecated delete
-        double desiredRelativeError = 1e-6;// TODO Deprecated delete
-
-        void defaults() {
-            nmax = 5;
-            basisType = BasisType::equispaced;
-            sigmaAtom = 0.5*ConversionFactors::angstrom2bohr;
-            integrationSteps = 100;
-            desiredAbsoluteError = 0.0;
-            desiredRelativeError = std::numeric_limits<double>::epsilon()*1e2;
-        };
-
         void checkBounds(unsigned n) {
             assert(n <= nmax && "n must be smaller than nmax");
             assert(n >= 1 && "n must greater than or equal to 1");
@@ -117,11 +87,6 @@ namespace ExpansionSettings {
     }
 
     namespace Angular {
-        unsigned lmax = 5;
-
-        void defaults() {
-            lmax = 5;
-        };
 
         void checkBounds(unsigned l, int m) {
             assert(l <= lmax && "l must be less than or equal to lmax");
@@ -138,16 +103,6 @@ namespace ExpansionSettings {
     }
     
     namespace Cutoff {
-        double radius = 4.0*ConversionFactors::angstrom2bohr;
-        double width = 1.0*ConversionFactors::angstrom2bohr;
-        double centerWeight = 1.0; //TODO
-
-        void defaults() {
-            radius = 4.0*ConversionFactors::angstrom2bohr;
-            width = 1.0*ConversionFactors::angstrom2bohr;
-            centerWeight = 1.0;
-        }
-
         double innerPlateauRadius() {
             return radius - width;
         }
@@ -163,10 +118,6 @@ namespace ExpansionSettings {
         }
     }
     namespace Alchemical{
-        std::map<std::pair<int,int>,double> pairSimilarities = {
-                {{int(Spin::alpha),int(Spin::beta)}, 0.5} //pairs start with the smaller typeId
-        };
-
         std::string toString() {
             std::stringstream ss;
             ss << "Alchemical Similarities:" << std::endl
