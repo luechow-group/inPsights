@@ -32,8 +32,11 @@ bool handleCommandlineArguments(int argc, char *const *argv, std::string &fileNa
 }
 
 using namespace YAML;
+using namespace Logger;
 
 int main(int argc, char *argv[]) {
+
+
     std::string fileName;
     if (fileName.empty()) {
         bool inputArgumentsFoundQ = handleCommandlineArguments(argc, argv, fileName);
@@ -41,8 +44,7 @@ int main(int argc, char *argv[]) {
             return 1;
     }
 
-    Logger::initialize();
-    auto console = Logger::get();
+
 
     YAML::Node doc = YAML::LoadFile(fileName);
 

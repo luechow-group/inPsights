@@ -12,7 +12,6 @@
 EnergyPartitioningWidget::EnergyPartitioningWidget(QWidget *parent)
         :
         QWidget(parent),
-        console(Logger::get()),
         initializedQ_(false),
         grid_(this) {
 

@@ -13,13 +13,8 @@ GlobalSimilaritySorter::GlobalSimilaritySorter(std::vector<Sample> &samples, std
         references_(references),
         similarReferencesVector_(similarReferencesVector),
         distThresh_(distThresh),
-        increment_(increment),
-        console(spdlog::get(Logger::name)) {
-    if (!console) {
-        Logger::initialize();
-        console = spdlog::get(Logger::name);
-    };
-}
+        increment_(increment) {}
+        
 // assumes a sorted reference vector
 bool GlobalSimilaritySorter::sort() {
     // first, sort references by value

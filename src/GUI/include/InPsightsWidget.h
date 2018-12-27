@@ -28,7 +28,6 @@ public slots:
     void onSpinCorrelationsSliderChanged(int value);
 
 private:
-    std::shared_ptr<spdlog::logger> console;
     MoleculeWidget *moleculeWidget;
     EnergyPartitioningWidget *energyPartitioningWidget;
     QCheckBox *atomsCheckBox, *bondsCheckBox, *spinConnectionsCheckBox, *spinCorrelationsCheckBox;

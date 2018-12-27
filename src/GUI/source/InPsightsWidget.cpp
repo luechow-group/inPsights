@@ -20,7 +20,6 @@
 InPsightsWidget::InPsightsWidget(QWidget *parent)
         :
         QWidget(parent),
-        console(Logger::get()),
         moleculeWidget(new MoleculeWidget(this)),
         energyPartitioningWidget(new EnergyPartitioningWidget(this)), // TODO refator, should it be an additional window?
         atomsCheckBox(new QCheckBox("Atoms", this)),
@@ -125,6 +124,7 @@ void InPsightsWidget::setupSliderBox() {
 }
 
 void InPsightsWidget::selectedStructure(QTreeWidgetItem *item, int column) {
+    using namespace Logger;
     //auto maximaTreeWidgetItem = dynamic_cast<IntegerSortedTreeWidgetItem*>(item);
 
     if (column != 0)

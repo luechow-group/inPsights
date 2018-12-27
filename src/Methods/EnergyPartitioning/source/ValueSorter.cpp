@@ -3,9 +3,10 @@
 //
 
 #include "ValueSorter.h"
+#include <Logger.h>
 
 bool ValueSorter::sortReferencesByValue(std::vector<Reference> &references) {
-    auto console = Logger::get();
+    using namespace Logger;
     if (references.empty()) {
         console->error("References are empty.");
         return false;
@@ -16,4 +17,5 @@ bool ValueSorter::sortReferencesByValue(std::vector<Reference> &references) {
     console->info("Sort references according to -ln|Ψ|² value...");
     std::sort(references.begin(), references.end());
     console->info("Finished value sorting.");
+    return true;
 }

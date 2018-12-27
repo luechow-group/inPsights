@@ -13,12 +13,7 @@ GlobalClusterSorter::GlobalClusterSorter(
         samples_(samples),
         globallySimilarMaxima_(globallySimilarMaxima),
         globallyClusteredMaxima_(globallyClusteredMaxima),
-        similarDistThresh_(similarDistThresh),
-        console(spdlog::get(Logger::name)) {
-    if (!console) {
-        Logger::initialize();
-        console = spdlog::get(Logger::name);
-    };
+        similarDistThresh_(similarDistThresh) {
 }
 
 void GlobalClusterSorter::sort() {

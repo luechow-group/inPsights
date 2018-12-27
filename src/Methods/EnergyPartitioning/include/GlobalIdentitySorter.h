@@ -33,8 +33,6 @@ private:
     std::vector<Reference> &references_;
     std::vector<Sample> &samples_;
     double increment_, distThresh_;
-    std::shared_ptr<spdlog::logger> console;
-
 };
 
 

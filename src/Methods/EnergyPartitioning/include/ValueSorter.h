@@ -7,7 +7,6 @@
 
 #include "Reference.h"
 #include <vector>
-#include <Logger.h>
 
 namespace ValueSorter {
     bool sortReferencesByValue(std::vector<Reference>& references);

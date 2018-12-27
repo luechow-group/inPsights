@@ -24,7 +24,6 @@ private:
     std::vector<Reference>& references_;
     std::vector<SimilarReferences>& similarReferencesVector_;
     double distThresh_, increment_;
-    std::shared_ptr<spdlog::logger> console;
 };
 
 

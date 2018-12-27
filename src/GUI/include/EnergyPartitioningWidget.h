@@ -39,7 +39,6 @@ public Q_SLOTS:
     void onElectronSelectionChanged();
 
 private:
-    std::shared_ptr<spdlog::logger> console;
     bool initializedQ_;
     SingleParticlesStatistics EnStats_;
     QGridLayout grid_;

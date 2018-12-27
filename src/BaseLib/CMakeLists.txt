@@ -68,7 +68,6 @@ set(SOURCE_FILES
         source/SpecialMathFunctions/BoostSphericalHarmonics.cpp
         source/SpecialMathFunctions/ModifiedSphericalBesser1stKind.cpp
         source/SpecialMathFunctions/Gaussian.cpp
-        source/Logger.cpp
         source/BinaryFileReader.cpp
         source/AtomsVectorLinkedElectronsVector.cpp
         )

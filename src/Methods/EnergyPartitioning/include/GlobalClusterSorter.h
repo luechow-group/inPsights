@@ -25,9 +25,7 @@ private:
     std::vector<SimilarReferences> &globallySimilarMaxima_;
     std::vector<std::vector<SimilarReferences>> &globallyClusteredMaxima_;
     double similarDistThresh_;
-    std::shared_ptr<spdlog::logger> console;
-
-
+    
     struct SortElement {
         SortElement(
                 std::pair<double, Eigen::PermutationMatrix<Eigen::Dynamic>> bestMatch,

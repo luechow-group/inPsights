@@ -13,13 +13,8 @@ EnergyCalculator::EnergyCalculator(YAML::Emitter& yamlDocument, const std::vecto
         yamlDocument_(yamlDocument),
         samples_(samples),
         atoms_(std::move(atoms)),
-        Vnn_(CoulombPotential::energies<Element>(atoms_)),
-        console(spdlog::get(Logger::name))
+        Vnn_(CoulombPotential::energies<Element>(atoms_))
 {
-    if(!console){
-        Logger::initialize();
-        console = spdlog::get(Logger::name);
-    };
 
     VnnStats_.add(Vnn_);
     EnStats_.add(OneParticleEnergies::oneAtomEnergies(Vnn_));
@@ -50,6 +45,7 @@ unsigned long EnergyCalculator::addReference(const Reference &reference) {
 
 void EnergyCalculator::calculateStatistics(const std::vector<std::vector<SimilarReferences>>& clusteredGloballySimilarMaxima){
     using namespace YAML;
+    using namespace Logger;
 
     yamlDocument_ << Key << "En" << Comment("[Eh]") << Value << EnStats_
                   << Key << "Clusters" << BeginSeq;
