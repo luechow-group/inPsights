@@ -11,7 +11,11 @@ public:
     Property<int> number = {1234567890, VARNAME(number)};
     Property<double> threshold = {1.234567890, VARNAME(threshold)};
 
-    TestSettings() = default;
+    TestSettings() {
+        threshold.on_change().connect([&](double val) {
+            assert(val > 0 && "The threshold cannot be negative.");
+        });
+    }
 
     explicit TestSettings(const YAML::Node &node) {
         intProperty::decode(node, number);
@@ -35,7 +39,7 @@ TEST(AGeneralSettingsTest, YamlConversion) {
     ASSERT_EQ(settings.threshold.get(),1.234567890);
 
     settings.number = 123;
-    settings.threshold = -1.23;
+    settings.threshold = 1.23;
     auto node = YAML::convert<TestSettings>::encode(settings);
 
     ASSERT_TRUE(node["number"]);
@@ -49,4 +53,7 @@ TEST(AGeneralSettingsTest, YamlConversion) {
     ASSERT_EQ(decodedSettings.number.get(), settings.number.get());
     ASSERT_STREQ(decodedSettings.threshold.name().c_str(), settings.threshold.name().c_str());
     ASSERT_EQ(decodedSettings.threshold.get(), settings.threshold.get());
+
+    EXPECT_DEATH(settings.threshold = -0.1, "The threshold cannot be negative.");
 }
+
