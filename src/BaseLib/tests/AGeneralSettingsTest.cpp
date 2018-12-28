@@ -8,6 +8,7 @@
 
 class TestSettings : public GeneralSettings {
 public:
+    inline static const std::string className = {VARNAME(TestSettings)};
     Property<int> number = {1234567890, VARNAME(number)};
     Property<double> threshold = {1.234567890, VARNAME(threshold)};
 
@@ -18,13 +19,13 @@ public:
     }
 
     explicit TestSettings(const YAML::Node &node) {
-        intProperty::decode(node, number);
-        doubleProperty::decode(node, threshold);
+        intProperty::decode(node[className], number);
+        doubleProperty::decode(node[className], threshold);
     }
 
     void addToNode(YAML::Node &node) const override{
-        node[number.name()] = number.get();
-        node[threshold.name()] = threshold.get();
+        node[className][number.name()] = number.get();
+        node[className][threshold.name()] = threshold.get();
     }
 };
 YAML_GENERALSETTINGS_DECLARATION(TestSettings)
@@ -47,10 +48,11 @@ TEST(AGeneralSettingsTest, YamlConversion) {
     settings.threshold = 1.23;
     auto node = YAML::convert<TestSettings>::encode(settings);
 
-    ASSERT_TRUE(node["number"]);
-    ASSERT_EQ(node["number"].as<int>(), settings.number.get());
-    ASSERT_TRUE(node["threshold"]);
-    ASSERT_EQ(node["threshold"].as<double>(), settings.threshold.get());
+
+    ASSERT_TRUE(node[TestSettings::className]["number"]);
+    ASSERT_EQ(node[TestSettings::className]["number"].as<int>(), settings.number.get());
+    ASSERT_TRUE(node[TestSettings::className]["threshold"]);
+    ASSERT_EQ(node[TestSettings::className]["threshold"].as<double>(), settings.threshold.get());
 
     TestSettings decodedSettings(node);
 
@@ -77,4 +79,12 @@ TEST(AGeneralSettingsTest, StaticMembership) {
     ASSERT_EQ(settings.number.get(), 123);
     ASSERT_STREQ(settings.threshold.name().c_str(), "threshold");
     ASSERT_EQ(settings.threshold.get(), 1.23);
+}
+
+TEST(AGeneralSettingsTest, SettingsToYaml) {
+    TestSettings settings;
+    settings.number = 123;
+    settings.threshold = 1.23;
+    auto node = YAML::convert<TestSettings>::encode(settings);
+    std::cout << node << std::endl;
 }
