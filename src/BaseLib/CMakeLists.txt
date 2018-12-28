@@ -47,7 +47,7 @@ set(HEADER_FILES
         include/Statistics.h
         include/SpinCorrelation.h
         include/AtomsVectorLinkedElectronsVector.h
-        include/GeneralSettings.h
+        include/ISettings.h
         include/Property.h
         include/Signal.h
         )

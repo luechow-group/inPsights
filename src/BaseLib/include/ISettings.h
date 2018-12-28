@@ -2,8 +2,8 @@
 // Created by Michael Heuer on 2018-12-24.
 //
 
-#ifndef INPSIGHTS_GENERALSETTINGS_H
-#define INPSIGHTS_GENERALSETTINGS_H
+#ifndef INPSIGHTS_ISETTINGS_H
+#define INPSIGHTS_ISETTINGS_H
 
 #define VARNAME(name) #name
 
@@ -39,9 +39,11 @@ namespace YAML {
     class Node;
 }
 
-class GeneralSettings{
-protected:
-    virtual void addToNode(YAML::Node &node) const = 0;
-};
+namespace Settings{
+    class ISettings {
+    protected:
+        virtual void addToNode(YAML::Node &node) const = 0;
+    };
+}
 
-#endif //INPSIGHTS_GENERALSETTINGS_H
+#endif //INPSIGHTS_ISETTINGS_H

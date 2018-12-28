@@ -3,41 +3,43 @@
 //
 
 #include <gmock/gmock.h>
-#include <GeneralSettings.h>
+#include <ISettings.h>
 #include <Property.h>
 
-class TestSettings : public GeneralSettings {
-public:
-    inline static const std::string className = {VARNAME(TestSettings)};
-    Property<int> number = {1234567890, VARNAME(number)};
-    Property<double> threshold = {1.234567890, VARNAME(threshold)};
+namespace Settings {
+    class TestSettings : public ISettings {
+    public:
+        inline static const std::string className = {VARNAME(TestSettings)};
+        Property<int> number = {1234567890, VARNAME(number)};
+        Property<double> threshold = {1.234567890, VARNAME(threshold)};
 
-    TestSettings() {
-        threshold.onChange().connect([&](double val) {
-            assert(val > 0 && "The threshold cannot be negative.");
-        });
-    }
+        TestSettings() {
+            threshold.onChange().connect([&](double val) {
+                assert(val > 0 && "The threshold cannot be negative.");
+            });
+        }
 
-    explicit TestSettings(const YAML::Node &node) {
-        intProperty::decode(node[className], number);
-        doubleProperty::decode(node[className], threshold);
-    }
+        explicit TestSettings(const YAML::Node &node) {
+            intProperty::decode(node[className], number);
+            doubleProperty::decode(node[className], threshold);
+        }
 
-    void addToNode(YAML::Node &node) const override{
-        node[className][number.name()] = number.get();
-        node[className][threshold.name()] = threshold.get();
-    }
-};
-YAML_GENERALSETTINGS_DECLARATION(TestSettings)
-YAML_GENERALSETTINGS_DEFINITION(TestSettings)
+        void addToNode(YAML::Node &node) const override {
+            node[className][number.name()] = number.get();
+            node[className][threshold.name()] = threshold.get();
+        }
+    };
+}
+YAML_GENERALSETTINGS_DECLARATION(Settings::TestSettings)
+YAML_GENERALSETTINGS_DEFINITION(Settings::TestSettings)
 
 class TestMethod{
 public:
-    static inline TestSettings settings;
+    static inline Settings::TestSettings settings;
 };
 
-
 TEST(AGeneralSettingsTest, YamlConversion) {
+    using namespace Settings;
     TestSettings settings;
     ASSERT_STREQ(settings.number.name().c_str(), "number");
     ASSERT_EQ(settings.number.get(), 1234567890);
@@ -65,6 +67,7 @@ TEST(AGeneralSettingsTest, YamlConversion) {
 }
 
 TEST(AGeneralSettingsTest, StaticMembership) {
+    using namespace Settings;
     TestSettings& settings = TestMethod::settings;
 
     ASSERT_STREQ(settings.number.name().c_str(), "number");
@@ -82,6 +85,7 @@ TEST(AGeneralSettingsTest, StaticMembership) {
 }
 
 TEST(AGeneralSettingsTest, SettingsToYaml) {
+    using namespace Settings;
     TestSettings settings;
     settings.number = 123;
     settings.threshold = 1.23;
