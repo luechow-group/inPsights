@@ -12,7 +12,7 @@ public:
     Property<double> threshold = {1.234567890, VARNAME(threshold)};
 
     TestSettings() {
-        threshold.on_change().connect([&](double val) {
+        threshold.onChange().connect([&](double val) {
             assert(val > 0 && "The threshold cannot be negative.");
         });
     }
@@ -56,4 +56,3 @@ TEST(AGeneralSettingsTest, YamlConversion) {
 
     EXPECT_DEATH(settings.threshold = -0.1, "The threshold cannot be negative.");
 }
-

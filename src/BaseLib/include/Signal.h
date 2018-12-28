@@ -53,7 +53,7 @@ public:
     }
 
     // disconnects all previously connected functions
-    void disconnect_all() const {
+    void disconnectAll() const {
         slots_.clear();
     }
 
@@ -66,7 +66,7 @@ public:
 
     // assignment creates new Signal
     Signal& operator=(Signal const& other) {
-        disconnect_all();
+        disconnectAll();
     }
 
 private:
