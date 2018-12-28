@@ -30,6 +30,11 @@ public:
 YAML_GENERALSETTINGS_DECLARATION(TestSettings)
 YAML_GENERALSETTINGS_DEFINITION(TestSettings)
 
+class TestMethod{
+public:
+    static inline TestSettings settings;
+};
+
 
 TEST(AGeneralSettingsTest, YamlConversion) {
     TestSettings settings;
@@ -55,4 +60,21 @@ TEST(AGeneralSettingsTest, YamlConversion) {
     ASSERT_EQ(decodedSettings.threshold.get(), settings.threshold.get());
 
     EXPECT_DEATH(settings.threshold = -0.1, "The threshold cannot be negative.");
+}
+
+TEST(AGeneralSettingsTest, StaticMembership) {
+    TestSettings& settings = TestMethod::settings;
+
+    ASSERT_STREQ(settings.number.name().c_str(), "number");
+    ASSERT_EQ(settings.number.get(), 1234567890);
+    ASSERT_STREQ(settings.threshold.name().c_str(), "threshold");
+    ASSERT_EQ(settings.threshold.get(), 1.234567890);
+
+    settings.number = 123;
+    settings.threshold = 1.23;
+
+    ASSERT_STREQ(settings.number.name().c_str(), "number");
+    ASSERT_EQ(settings.number.get(), 123);
+    ASSERT_STREQ(settings.threshold.name().c_str(), "threshold");
+    ASSERT_EQ(settings.threshold.get(), 1.23);
 }
