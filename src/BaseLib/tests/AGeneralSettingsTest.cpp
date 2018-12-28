@@ -30,8 +30,8 @@ namespace Settings {
         }
     };
 }
-YAML_GENERALSETTINGS_DECLARATION(Settings::TestSettings)
-YAML_GENERALSETTINGS_DEFINITION(Settings::TestSettings)
+YAML_SETTINGS_DECLARATION(Settings::TestSettings)
+YAML_SETTINGS_DEFINITION(Settings::TestSettings)
 
 class TestMethod{
 public:
@@ -82,13 +82,4 @@ TEST(AGeneralSettingsTest, StaticMembership) {
     ASSERT_EQ(settings.number.get(), 123);
     ASSERT_STREQ(settings.threshold.name().c_str(), "threshold");
     ASSERT_EQ(settings.threshold.get(), 1.23);
-}
-
-TEST(AGeneralSettingsTest, SettingsToYaml) {
-    using namespace Settings;
-    TestSettings settings;
-    settings.number = 123;
-    settings.threshold = 1.23;
-    auto node = YAML::convert<TestSettings>::encode(settings);
-    std::cout << node << std::endl;
 }
