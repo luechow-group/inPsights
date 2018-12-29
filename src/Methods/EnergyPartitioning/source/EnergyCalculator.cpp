@@ -7,6 +7,7 @@
 #include <SpinCorrelation.h>
 #include <CoulombPotential.h>
 #include <OneParticleEnergies.h>
+#include <Logger.h>
 
 EnergyCalculator::EnergyCalculator(YAML::Emitter& yamlDocument, const std::vector<Sample>& samples, AtomsVector atoms)
         :
@@ -73,7 +74,7 @@ void EnergyCalculator::calculateStatistics(const std::vector<std::vector<Similar
         }
         printCluster(structures);
     }
-    console->info("overall count {}", totalCount);
+    Logger::console->info("overall count {}", totalCount);
     assert(totalCount == samples_.size() && "The total count must match the sample size.");
 
     yamlDocument_ << EndSeq;

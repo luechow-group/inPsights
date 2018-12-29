@@ -9,7 +9,6 @@
 #include "SimilarReferences.h"
 #include "Sample.h"
 #include <Statistics.h>
-#include <Logger.h>
 
 class EnergyCalculator {
 public:
@@ -37,7 +36,6 @@ private:
     InterParticlesStatistics VenStats_;
 
     Eigen::MatrixXd Vnn_;
-    std::shared_ptr<spdlog::logger> console;
 };
 
 #endif //INPSIGHTS_ENERGYCALCULATOR_H
