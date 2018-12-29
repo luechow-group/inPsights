@@ -21,6 +21,7 @@ set(HEADER_FILES
         #include/GlobalPermutationSorter.h
         include/GeneralStatistics.h
         include/ValueSorter.h
+        include/GlobalSortSettings.h
         )
 
 set(SOURCE_FILES
@@ -34,6 +35,7 @@ set(SOURCE_FILES
         #source/GlobalPermutationSorter.cpp
         source/GeneralStatistics.cpp
         source/ValueSorter.cpp
+        source/GlobalSortSettings.cpp
         )
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES})
