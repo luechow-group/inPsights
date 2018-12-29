@@ -200,9 +200,10 @@ namespace YAML {
         }
 
         static bool decode(const Node &nodes, Property<T> &rhs) {
-            if(!nodes.IsMap() || !nodes[rhs.name()])//&& nodes[0].IsScalar())
-            {std::cout << "failed" << std::endl;
-                return false;}
+            if(!nodes.IsMap() || !nodes[rhs.name()]) {
+                std::cout << "failed" << std::endl;
+                return false;
+            }
 
             rhs = nodes[rhs.name()].template as<T>();
             return true;
