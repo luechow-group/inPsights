@@ -17,14 +17,19 @@ using namespace YAML;
 using namespace Logger;
 
 int main(int argc, char *argv[]) {
-    YAML::Node doc = YAML::LoadFile(argv[1]);
+    std::string inputFilename = argv[1];
+    YAML::Node inputYaml = YAML::LoadFile(argv[1]);
     YAML::Emitter emitter;
-    emitter << doc;
-    console->info("Executable: {}", argv[0]);
-    console->info("Input file {}:\n{}", argv[1], emitter.c_str());
+    emitter << inputYaml;
 
-    Settings::GlobalSort settings(doc);
-    auto basename = doc["binaryFileBasename"].as<std::string>();
+    YAML::Emitter outputYaml;
+    outputYaml << BeginDoc << YAML::Comment(inputFilename) << inputYaml  << EndDoc;
+
+    console->info("Executable: {}", argv[0]);
+    console->info("Input file {}:\n{}", inputFilename, emitter.c_str());
+
+    Settings::GlobalSort settings(inputYaml);
+    auto basename = inputYaml["binaryFileBasename"].as<std::string>(); //Add to Settings::GlobalSort?
 
     std::vector<Reference> globallyIdenticalMaxima;
     std::vector<Sample> samples;
@@ -35,13 +40,12 @@ int main(int argc, char *argv[]) {
     console->info("number of inital refs {}", globallyIdenticalMaxima.size());
     auto results = GeneralStatistics::calculate(globallyIdenticalMaxima, samples, atoms);
 
-    YAML::Emitter out;
-    out << BeginDoc << BeginMap
+    outputYaml << BeginDoc << BeginMap
         << Key << "Atoms" << Value << atoms << Comment("[a0]")
         << Key << "NSamples" << Value << samples.size()
         << Key << "OverallResults" << results;
 
-    EnergyCalculator energyCalculator(out, samples,atoms);
+    EnergyCalculator energyCalculator(outputYaml, samples,atoms);
 
     auto valueStandardError = results.valueStats_.standardError()(0,0);
 
@@ -84,9 +88,9 @@ int main(int argc, char *argv[]) {
 
     std::string resultsFilename = basename + ".yml";
     console->info("Writing results into file \"{}\"",resultsFilename);
-    out << EndDoc << EndMap;
+    outputYaml << EndDoc << EndMap;
     std::ofstream yamlFile(resultsFilename);
-    yamlFile << out.c_str();
+    yamlFile << outputYaml.c_str();
     yamlFile.close();
     console->info("Done! Bye bye.");
 

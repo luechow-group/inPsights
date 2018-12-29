@@ -208,7 +208,7 @@ void InPsightsWidget::loadData() {
 
     moleculeWidget->infoText_->setText(fileName);
 
-    YAML::Node doc = YAML::LoadFile(fileName.toStdString());
+    YAML::Node doc = YAML::LoadAllFromFile(fileName.toStdString())[1]; // load results
     auto nAtoms = doc["Atoms"].as<AtomsVector>().numberOfEntities();
     auto nElectrons = doc["Clusters"][0]["Structures"][0].as<ElectronsVector>().numberOfEntities();
 
