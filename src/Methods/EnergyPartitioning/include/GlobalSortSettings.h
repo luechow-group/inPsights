@@ -13,13 +13,13 @@ enum class SamplesToAnalyze{
     small = 10000,
     medium = 100000,
     large = 1000000,
-    all = -1 };
+    all = 0 };
 
 namespace Settings {
     class GlobalSort : public ISettings {
-    public:
         inline static const std::string className = {VARNAME(GlobalSort)};
-        Property<int> samplesToAnalyze = {int(SamplesToAnalyze::small), VARNAME(samplesToAnalyze)};
+    public:
+        Property<unsigned> samplesToAnalyze = {unsigned(SamplesToAnalyze::small), VARNAME(samplesToAnalyze)};
         Property<bool> identitySearch = {false, VARNAME(identitySearch)};
         Property<double> identityRadius = {0.01, VARNAME(identityRadius)};
         Property<double> similarityRadius = {0.1, VARNAME(similarityRadius)};

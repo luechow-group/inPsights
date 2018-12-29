@@ -4,16 +4,34 @@
 
 #include "GlobalSortSettings.h"
 #include <assert.h>
+#include <Logger.h>
 
 namespace Settings {
     GlobalSort::GlobalSort() {
-        identityRadius.onChange().connect([&](double val) {
-            assert(val > 0 && "The threshold cannot be negative.");
+        samplesToAnalyze.onChange().connect([&](unsigned value) {
+            if(value > 0)
+                Logger::console->info("Analyzing {} samples.", value);
+            else if (value == 0) {
+                samplesToAnalyze = std::numeric_limits<unsigned>::max();
+                Logger::console->info("Analyzing all samples.");
+            } else
+                throw std::invalid_argument("The number of samples to analyze is negative.");
+        });
+
+        identityRadius.onChange().connect([&](double value) {
+            if(value > similarityRadius.get())
+                throw std::invalid_argument("Choosing the identityRadius greater than the similarityRadius makes no sense.");
+        });
+        similarityRadius.onChange().connect([&](double value) {
+            if(value < identityRadius.get())
+                throw std::invalid_argument("Choosing the similarityRadius smaller than the identityRadius makes no sense.");
+
         });
     }
 
-    GlobalSort::GlobalSort(const YAML::Node &node) {
-        intProperty::decode(node[className], samplesToAnalyze);
+    GlobalSort::GlobalSort(const YAML::Node &node)
+    : GlobalSort() {
+        unsignedProperty::decode(node[className], samplesToAnalyze);
         boolProperty::decode(node[className], identitySearch);
         doubleProperty::decode(node[className], identityRadius);
         doubleProperty::decode(node[className], similarityRadius);

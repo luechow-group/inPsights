@@ -11,75 +11,25 @@
 #include <algorithm>
 #include <utility>
 #include <experimental/filesystem>
-
-namespace fs = std::experimental::filesystem;
-
-bool handleCommandlineArguments(int argc, char *const *argv, std::string &fileName) {
-    if (argc < 2) {
-        std::cout << "Usage: \n"
-                  << "Argument 1: filename\n"
-                  << std::endl;
-        std::cout << "epart.yml" << std::endl;
-        return false;
-    } else if (argc == 2) {
-        fileName = argv[1];
-        auto extension = fs::path(fileName).extension().string();
-        std::vector<std::string> extensions = {".yml", ".yaml", ".json"};
-        return std::any_of(extensions.begin(), extensions.end(), [extension](std::string i){return i == extension;});
-    } else {
-        throw std::invalid_argument("Too many arguments");
-    }
-}
+#include <GlobalSortSettings.h>
 
 using namespace YAML;
 using namespace Logger;
 
 int main(int argc, char *argv[]) {
-
-
-    std::string fileName;
-    if (fileName.empty()) {
-        bool inputArgumentsFoundQ = handleCommandlineArguments(argc, argv, fileName);
-        if (!inputArgumentsFoundQ)
-            return 1;
-    }
-
-
-
-    YAML::Node doc = YAML::LoadFile(fileName);
-
-    //print input file
+    YAML::Node doc = YAML::LoadFile(argv[1]);
     YAML::Emitter emitter;
     emitter << doc;
     console->info("Executable: {}", argv[0]);
-    console->info("Input file {}:\n{}", fileName, emitter.c_str());
+    console->info("Input file {}:\n{}", argv[1], emitter.c_str());
 
-    size_t numberOfSamples;
-    if(doc["settings"]["samplesToAnalyze"])
-        try {
-            numberOfSamples = doc["settings"]["samplesToAnalyze"].as<size_t>();
-            console->info("Analyzing {} samples.", numberOfSamples);
-        } catch ( const YAML::BadConversion&  e) {
-            auto string = doc["settings"]["samplesToAnalyze"].as<std::string>();
-            if(string == "all" || string == "All" || string == "ALL"){
-                numberOfSamples = std::numeric_limits<size_t>::max();
-                console->info("Analyzing all samples.");
-            } else {
-                console->error("{0} \n"
-                               "The key samplesToAnalyze is neither a positive integer nor \"all\". Abort.", e.what());
-                return 1;
-            }
-        }
-    else {
-        numberOfSamples = std::numeric_limits<size_t>::max();
-        console->info("Analyzing all samples.");
-    }
+    Settings::GlobalSort settings(doc);
     auto basename = doc["binaryFileBasename"].as<std::string>();
 
     std::vector<Reference> globallyIdenticalMaxima;
     std::vector<Sample> samples;
     RawDataReader reader(globallyIdenticalMaxima, samples);
-    reader.read(basename, numberOfSamples);
+    reader.read(basename, settings.samplesToAnalyze.get());
     auto atoms = reader.getAtoms();
 
     console->info("number of inital refs {}", globallyIdenticalMaxima.size());
@@ -93,14 +43,15 @@ int main(int argc, char *argv[]) {
 
     EnergyCalculator energyCalculator(out, samples,atoms);
 
-    auto identityRadius = doc["settings"]["identityRadius"].as<double>();
-    auto similarityRadius = doc["settings"]["similarityRadius"].as<double>();
     auto valueStandardError = results.valueStats_.standardError()(0,0);
 
-    auto identitySearchOption = doc["settings"]["skipIdentitySearch"];
-    if(identitySearchOption && identitySearchOption.as<bool>()) {
+    if(settings.identitySearch.get()) {
         console->info("Start identity search");
-        GlobalIdentiySorter globalIdentiySorter(globallyIdenticalMaxima, samples, identityRadius, valueStandardError*1e-4);
+        GlobalIdentiySorter globalIdentiySorter(
+                globallyIdenticalMaxima,
+                samples,
+                settings.identityRadius.get(),
+                valueStandardError*1e-4);
         globalIdentiySorter.sort();
         console->info("number of elements after identity sort {}",globallyIdenticalMaxima.size());
     }
@@ -109,12 +60,16 @@ int main(int argc, char *argv[]) {
     GlobalSimilaritySorter globalSimilaritySorter(samples,
             globallyIdenticalMaxima,
             globallySimilarMaxima,
-            similarityRadius, valueStandardError*1e-2);
+            settings.similarityRadius.get(), valueStandardError*1e-2);
     globalSimilaritySorter.sort();
     console->info("number of elements after similarity sort {}", globallySimilarMaxima.size());
 
     std::vector<std::vector<SimilarReferences>> globallyClusteredMaxima;
-    GlobalClusterSorter globalClusterSorter(samples, globallySimilarMaxima, globallyClusteredMaxima, similarityRadius);
+    GlobalClusterSorter globalClusterSorter(
+            samples,
+            globallySimilarMaxima,
+            globallyClusteredMaxima,
+            settings.similarityRadius.get());
     globalClusterSorter.sort();
     console->info("number of elements after cluster sort {}", globallyClusteredMaxima.size());
 
@@ -124,7 +79,7 @@ int main(int argc, char *argv[]) {
     globalPermutationSorter.sort();
     */
 
-    console->info("Calculating statistics...}");
+    console->info("Calculating statistics...");
     energyCalculator.calculateStatistics(globallyClusteredMaxima);
 
     std::string resultsFilename = basename + ".yml";
