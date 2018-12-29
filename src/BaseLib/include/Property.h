@@ -9,7 +9,7 @@
 #include "Signal.h"
 #include <iostream>
 #include <yaml-cpp/yaml.h>
-
+#include <Logger.h>
 // A Property is a encapsulates a value and may inform
 // you on any changes applied to this value.
 
@@ -201,7 +201,7 @@ namespace YAML {
 
         static bool decode(const Node &nodes, Property<T> &rhs) {
             if(!nodes.IsMap() || !nodes[rhs.name()]) {
-                std::cout << "failed" << std::endl;
+                Logger::console->info("Property \"{0}\" was not found. Using preset value: {1}", rhs.name(), rhs.get());
                 return false;
             }
 
