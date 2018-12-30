@@ -129,7 +129,7 @@ public:
 
     std::string name() const { return name_; }
 
-    void setName(const std::string& name) { name_ = name; }
+    //void setName(const std::string& name) { name_ = name; }
 
 private:
     T value_;
@@ -161,6 +161,10 @@ inline Property<int>::Property(std::string name)
 template<>
 inline Property<char>::Property(std::string name)
         :  value_(0), connection_(nullptr), connectionId_(-1), name_(std::move(name)) {}
+
+template<>
+inline Property<std::string>::Property(std::string name)
+        :  value_(""), connection_(nullptr), connectionId_(-1), name_(std::move(name)) {}
 
 template<>
 inline Property<unsigned>::Property(std::string name)
@@ -199,13 +203,13 @@ namespace YAML {
             return node;
         }
 
-        static bool decode(const Node &nodes, Property<T> &rhs) {
-            if(!nodes.IsMap() || !nodes[rhs.name()]) {
+        static bool decode(const Node &node, Property<T> &rhs) {
+            if(!node.IsMap() || !node[rhs.name()]) {
                 Logger::console->info("Property \"{0}\" was not found. Using preset value: {1}", rhs.name(), rhs.get());
                 return false;
             }
 
-            rhs = nodes[rhs.name()].template as<T>();
+            rhs = node[rhs.name()].template as<T>();
             return true;
         }
     };
@@ -222,6 +226,7 @@ using floatProperty    = YAML::convert<Property<float>>;
 using shortProperty    = YAML::convert<Property<short>>;
 using intProperty      = YAML::convert<Property<int>>;
 using charProperty     = YAML::convert<Property<char>>;
+using stringProperty     = YAML::convert<Property<std::string>>;
 using unsignedProperty = YAML::convert<Property<unsigned>>;
 using boolProperty     = YAML::convert<Property<bool>>;
 

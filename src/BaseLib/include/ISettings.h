@@ -7,7 +7,7 @@
 
 #define VARNAME(name) #name
 
-#define YAML_SETTINGS_DECLARATION(classename)            \
+#define YAML_SETTINGS_DECLARATION(classename)                   \
 namespace YAML {                                                \
     class Node; class Emitter;                                  \
     template <typename Type> struct convert;                    \
@@ -18,7 +18,7 @@ namespace YAML {                                                \
     Emitter &operator<<(Emitter &out, const classename &p) ;    \
 }
 
-#define YAML_SETTINGS_DEFINITION(classname)                          \
+#define YAML_SETTINGS_DEFINITION(classname)                                 \
 namespace YAML {                                                            \
     Node convert<classname>::encode(const classname &rhs) {                 \
         YAML::Node node;                                                    \

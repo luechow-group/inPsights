@@ -11,7 +11,7 @@
 #include <algorithm>
 #include <utility>
 #include <experimental/filesystem>
-#include <GlobalSortSettings.h>
+#include <EnergyPartitioningSettings.h>
 
 using namespace YAML;
 using namespace Logger;
@@ -23,27 +23,23 @@ int main(int argc, char *argv[]) {
     emitter << inputYaml;
 
     YAML::Emitter outputYaml;
-    outputYaml << BeginDoc << YAML::Comment(inputFilename) << inputYaml  << EndDoc;
-
     console->info("Executable: {}", argv[0]);
     console->info("Input file {}:\n{}", inputFilename, emitter.c_str());
 
-    Settings::GlobalSort settings(inputYaml);
-    auto basename = inputYaml["binaryFileBasename"].as<std::string>(); //Add to Settings::GlobalSort?
+    // Apply settings from inputYaml
+    Settings::EnergyPartitioning settings(inputYaml);
+    GlobalIdentitySorter::settings = Settings::GlobalIdentitySorter(inputYaml);
+    GlobalSimilaritySorter::settings = Settings::GlobalSimilaritySorter(inputYaml);
+    GlobalClusterSorter::settings = Settings::GlobalClusterSorter(inputYaml);
 
     std::vector<Reference> globallyIdenticalMaxima;
     std::vector<Sample> samples;
     RawDataReader reader(globallyIdenticalMaxima, samples);
-    reader.read(basename, settings.samplesToAnalyze.get());
+    reader.read(settings.binaryFileBasename.get(), settings.samplesToAnalyze.get());
     auto atoms = reader.getAtoms();
 
     console->info("number of inital refs {}", globallyIdenticalMaxima.size());
     auto results = GeneralStatistics::calculate(globallyIdenticalMaxima, samples, atoms);
-
-    outputYaml << BeginDoc << BeginMap
-        << Key << "Atoms" << Value << atoms << Comment("[a0]")
-        << Key << "NSamples" << Value << samples.size()
-        << Key << "OverallResults" << results;
 
     EnergyCalculator energyCalculator(outputYaml, samples,atoms);
 
@@ -51,20 +47,17 @@ int main(int argc, char *argv[]) {
 
     if(settings.identitySearch.get()) {
         console->info("Start identity search");
-        GlobalIdentiySorter globalIdentiySorter(
-                globallyIdenticalMaxima,
-                samples,
-                settings.identityRadius.get(),
-                valueStandardError*1e-4);
+        GlobalIdentitySorter globalIdentiySorter(globallyIdenticalMaxima,samples);
+        if(!inputYaml["GlobalIdentitySorter"]["valueIncrement"])
+            GlobalIdentitySorter::settings.valueIncrement = valueStandardError*1e-4;
         globalIdentiySorter.sort();
-        console->info("number of elements after identity sort {}",globallyIdenticalMaxima.size());
+        console->info("number of elements after identity sort {}", globallyIdenticalMaxima.size());
     }
 
     std::vector<SimilarReferences> globallySimilarMaxima;
-    GlobalSimilaritySorter globalSimilaritySorter(samples,
-            globallyIdenticalMaxima,
-            globallySimilarMaxima,
-            settings.similarityRadius.get(), valueStandardError*1e-2);
+    GlobalSimilaritySorter globalSimilaritySorter(samples,globallyIdenticalMaxima, globallySimilarMaxima);
+    if(!inputYaml["GlobalSimilaritySorter"]["valueIncrement"])
+        GlobalSimilaritySorter::settings.valueIncrement = valueStandardError*1e-2;
     globalSimilaritySorter.sort();
     console->info("number of elements after similarity sort {}", globallySimilarMaxima.size());
 
@@ -72,8 +65,7 @@ int main(int argc, char *argv[]) {
     GlobalClusterSorter globalClusterSorter(
             samples,
             globallySimilarMaxima,
-            globallyClusteredMaxima,
-            settings.similarityRadius.get());
+            globallyClusteredMaxima);
     globalClusterSorter.sort();
     console->info("number of elements after cluster sort {}", globallyClusteredMaxima.size());
 
@@ -83,15 +75,33 @@ int main(int argc, char *argv[]) {
     globalPermutationSorter.sort();
     */
 
+
+    // write used settings
+    YAML::Node usedSettings;
+    settings.addToNode(usedSettings);
+    GlobalIdentitySorter::settings.addToNode(usedSettings);
+    GlobalSimilaritySorter::settings.addToNode(usedSettings);
+    GlobalClusterSorter::settings.addToNode(usedSettings);
+    outputYaml << BeginDoc << Comment("used settings") << usedSettings << EndDoc;
+
+
+    // write results
+    outputYaml << BeginDoc << BeginMap
+               << Key << "Atoms" << Value << atoms << Comment("[a0]")
+               << Key << "NSamples" << Value << samples.size()
+               << Key << "OverallResults" << results;
     console->info("Calculating statistics...");
     energyCalculator.calculateStatistics(globallyClusteredMaxima);
+    outputYaml << EndMap << EndDoc;
 
-    std::string resultsFilename = basename + ".yml";
-    console->info("Writing results into file \"{}\"",resultsFilename);
-    outputYaml << EndDoc << EndMap;
+    std::string resultsFilename = settings.binaryFileBasename.get() + ".yml";
+    console->info("Writing results into file \"{}\"", resultsFilename);
+
+
     std::ofstream yamlFile(resultsFilename);
     yamlFile << outputYaml.c_str();
     yamlFile.close();
+
     console->info("Done! Bye bye.");
 
     return 0;
@@ -100,6 +110,7 @@ int main(int argc, char *argv[]) {
      * - make single value statistics class
      * - refactor names
      * - F2 cluster includes other references that shouldn't be there
+     * - F2 spin correlations seem to be not symmetrical
      * - test naive std
      * - choice of function value increment
      * - validate that ring-like clusters are ordered correctly

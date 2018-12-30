@@ -8,21 +8,41 @@
 #include "Reference.h"
 #include "Sample.h"
 #include <Logger.h>
+#include <ISettings.h>
+#include <Property.h>
 #include <utility>
 #include <vector>
 
-class GlobalIdentiySorter {
-public:
+namespace Settings {
+    class GlobalIdentitySorter : public ISettings {
+        inline static const std::string className = {VARNAME(GlobalIdentitySorter)};
+    public:
+        Property<double> identityRadius = {0.01, VARNAME(identityRadius)};
+        Property<double> valueIncrement = {1e-7, VARNAME(valueIncrement)};
 
-    GlobalIdentiySorter(std::vector<Reference> &references, std::vector<Sample> &samples,
-                        double distThresh, double increment);
+        GlobalIdentitySorter();
+        explicit GlobalIdentitySorter(const YAML::Node &node);
+        void addToNode(YAML::Node &node) const override;
+    };
+}
+YAML_SETTINGS_DECLARATION(Settings::GlobalIdentitySorter)
+
+class GlobalIdentitySorter {
+public:
+    inline static Settings::GlobalIdentitySorter settings;
+
+    GlobalIdentitySorter(
+            std::vector<Reference> &references,
+            std::vector<Sample> &samples);
     bool sort();
 
 private:
     void subLoop(
             std::vector<Reference>::iterator &beginIt,
             std::vector<Reference>::iterator &it,
-            std::vector<Reference>::iterator &endIt);
+            std::vector<Reference>::iterator &endIt,
+            double distThresh,
+            double valueIncrement);
 
     // TODO This method should be located inside of a reference container class
     void addReference(
@@ -32,7 +52,6 @@ private:
 
     std::vector<Reference> &references_;
     std::vector<Sample> &samples_;
-    double increment_, distThresh_;
 };
 
 

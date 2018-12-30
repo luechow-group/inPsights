@@ -6,6 +6,7 @@
 #include <Reference.h>
 #include <Sample.h>
 #include <GlobalIdentitySorter.h>
+#include <GlobalSimilaritySorter.h>
 #include <algorithm>
 #include <random>
 
@@ -17,6 +18,8 @@ public:
     std::vector<Sample> tripletSamples, singletSamples;
 
     void SetUp() override {
+        GlobalSimilaritySorter::settings.similarityRadius = 10; // prevent assert
+
         auto rng = std::default_random_engine {};
 
         // Multiplicity = 3: Spin flip is not possible.
@@ -60,21 +63,27 @@ public:
 };
 
 TEST_F(AGlobalIdentitySorterTest, OneListTriplet) {
-    GlobalIdentiySorter globalIdentiySorter(tripletMaxima, tripletSamples, 2, 1);
+    GlobalIdentitySorter globalIdentiySorter(tripletMaxima, tripletSamples);
+    GlobalIdentitySorter::settings.identityRadius = 2;
+    GlobalIdentitySorter::settings.valueIncrement = 1;
     globalIdentiySorter.sort();
 
     ASSERT_THAT(tripletMaxima.at(0).sampleIds(), ElementsAre(0,1,2,3,4,5,6,7));
 }
 
 TEST_F(AGlobalIdentitySorterTest, OneListSinglet) {
-    GlobalIdentiySorter globalIdentiySorter(singletMaxima, singletSamples, 2, 1);
+    GlobalIdentitySorter globalIdentiySorter(singletMaxima, singletSamples);
+    GlobalIdentitySorter::settings.identityRadius = 2;
+    GlobalIdentitySorter::settings.valueIncrement = 1;
     globalIdentiySorter.sort();
 
     ASSERT_THAT(singletMaxima.at(0).sampleIds(), ElementsAre(0,1,2,3,4,5,6,7));
 }
 
 TEST_F(AGlobalIdentitySorterTest, TwoListsTriplet) {
-    GlobalIdentiySorter globalIdentiySorter(tripletMaxima, tripletSamples, 1, 0.05);
+    GlobalIdentitySorter globalIdentiySorter(tripletMaxima, tripletSamples);
+    GlobalIdentitySorter::settings.identityRadius = 1;
+    GlobalIdentitySorter::settings.valueIncrement = 0.05;
     globalIdentiySorter.sort();
 
     ASSERT_THAT(tripletMaxima.at(0).sampleIds(), ElementsAre(0,1,2,3));
@@ -82,7 +91,9 @@ TEST_F(AGlobalIdentitySorterTest, TwoListsTriplet) {
 }
 
 TEST_F(AGlobalIdentitySorterTest, TwoListsSinglet) {
-    GlobalIdentiySorter globalIdentiySorter(singletMaxima, singletSamples, 1, 0.05);
+    GlobalIdentitySorter globalIdentiySorter(singletMaxima, singletSamples);
+    GlobalIdentitySorter::settings.identityRadius = 1;
+    GlobalIdentitySorter::settings.valueIncrement = 0.05;
     globalIdentiySorter.sort();
 
     ASSERT_THAT(singletMaxima.at(0).sampleIds(), ElementsAre(0,1,2,3));
@@ -90,7 +101,9 @@ TEST_F(AGlobalIdentitySorterTest, TwoListsSinglet) {
 }
 
 TEST_F(AGlobalIdentitySorterTest, TwoListsIncrementBorderCaseTriplet) {
-    GlobalIdentiySorter globalIdentiySorter(tripletMaxima, tripletSamples, 1, 0.1);
+    GlobalIdentitySorter globalIdentiySorter(tripletMaxima, tripletSamples);
+    GlobalIdentitySorter::settings.identityRadius = 1;
+    GlobalIdentitySorter::settings.valueIncrement = 0.1;
     globalIdentiySorter.sort();
 
     ASSERT_THAT(tripletMaxima.at(0).sampleIds(), ElementsAre(0,1,2,3,4));
@@ -98,7 +111,9 @@ TEST_F(AGlobalIdentitySorterTest, TwoListsIncrementBorderCaseTriplet) {
 }
 
 TEST_F(AGlobalIdentitySorterTest, TwoListsIncrementBorderCaseSinglet) {
-    GlobalIdentiySorter globalIdentiySorter(singletMaxima, singletSamples, 1, 0.1);
+    GlobalIdentitySorter globalIdentiySorter(singletMaxima, singletSamples);
+    GlobalIdentitySorter::settings.identityRadius = 1;
+    GlobalIdentitySorter::settings.valueIncrement = 0.1;
     globalIdentiySorter.sort();
 
     ASSERT_THAT(singletMaxima.at(0).sampleIds(), ElementsAre(0,1,2,3,4));

@@ -7,16 +7,34 @@
 
 #include "SimilarReferences.h"
 #include <DensityBasedScan.h>
-#include <Logger.h>
+#include <GlobalSimilaritySorter.h>
+#include <Property.h>
+#include <ISettings.h>
+#include <spdlog/spdlog.h>
+
+namespace Settings {
+    class GlobalClusterSorter : public ISettings {
+        inline static const std::string className = {VARNAME(GlobalClusterSorter)};
+    public:
+        Property<double> clusterRadius = {
+                ::GlobalSimilaritySorter::settings.similarityRadius.get(), VARNAME(clusterRadius)};
+
+        GlobalClusterSorter();
+        explicit GlobalClusterSorter(const YAML::Node &node);
+        void addToNode(YAML::Node &node) const override;
+    };
+}
+YAML_SETTINGS_DECLARATION(Settings::GlobalClusterSorter)
 
 class GlobalClusterSorter {
 public:
+    inline static Settings::GlobalClusterSorter settings;
+
 
     GlobalClusterSorter(
             std::vector<Sample> &samples,
             std::vector<SimilarReferences> &globallySimilarMaxima,
-            std::vector<std::vector<SimilarReferences>> &globallyClusteredMaxima,
-            double similarDistThresh);
+            std::vector<std::vector<SimilarReferences>> &globallyClusteredMaxima);
 
     void sort();
 
@@ -24,7 +42,6 @@ private:
     std::vector<Sample> &samples_;
     std::vector<SimilarReferences> &globallySimilarMaxima_;
     std::vector<std::vector<SimilarReferences>> &globallyClusteredMaxima_;
-    double similarDistThresh_;
     
     struct SortElement {
         SortElement(

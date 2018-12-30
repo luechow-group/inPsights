@@ -8,22 +8,39 @@
 #include "SimilarReferences.h"
 #include <Logger.h>
 #include <HungarianHelper.h>
+#include <Property.h>
+#include <ISettings.h>
 #include <spdlog/spdlog.h>
 #include <vector>
 
+namespace Settings {
+    class GlobalSimilaritySorter : public ISettings {
+        inline static const std::string className = {VARNAME(GlobalSimilaritySorter)};
+    public:
+        Property<double> similarityRadius = {0.1, VARNAME(similarityRadius)};
+        Property<double> valueIncrement = {1e-5, VARNAME(valueIncrement)};
+
+        GlobalSimilaritySorter();
+        explicit GlobalSimilaritySorter(const YAML::Node &node);
+        void addToNode(YAML::Node &node) const override;
+    };
+}
+YAML_SETTINGS_DECLARATION(Settings::GlobalSimilaritySorter)
+
 class GlobalSimilaritySorter {
 public:
+    inline static Settings::GlobalSimilaritySorter settings;
 
-    GlobalSimilaritySorter(std::vector<Sample> &samples, std::vector<Reference> &references,
-                               std::vector<SimilarReferences> &similarReferencesVector,
-                               double distThresh, double increment);
+    GlobalSimilaritySorter(
+            std::vector<Sample> &samples,
+            std::vector<Reference> &references,
+            std::vector<SimilarReferences> &similarReferencesVector);
     bool sort();
 
 private:
     std::vector<Sample>& samples_;
     std::vector<Reference>& references_;
     std::vector<SimilarReferences>& similarReferencesVector_;
-    double distThresh_, increment_;
 };
 
 

@@ -5,6 +5,7 @@
 #include <gmock/gmock.h>
 #include <SimilarReferences.h>
 #include <GlobalClusterSorter.h>
+#include <GlobalSimilaritySorter.h>
 #include <random>
 #include <TestMolecules.h>
 
@@ -12,9 +13,14 @@ using namespace testing;
 
 class AGlobalClusterSorterTest : public ::testing::Test {
 public:
+    void SetUp() override {
+        GlobalSimilaritySorter::settings.similarityRadius = 1; // prevent assert
+    }
 };
 
-TEST(AGlobalClusterSorterTest, TwoRotatedAndOneStationaryElectrons){
+TEST_F(AGlobalClusterSorterTest, TwoRotatedAndOneStationaryElectrons){
+    GlobalClusterSorter::settings.clusterRadius = 1;
+
     const auto &ev = TestMolecules::threeElectrons::normal.electrons();
 
     std::vector<Sample> samples;
@@ -60,7 +66,7 @@ TEST(AGlobalClusterSorterTest, TwoRotatedAndOneStationaryElectrons){
     }
 
     std::vector<std::vector<SimilarReferences>> globallyClusteredMaxima;
-    GlobalClusterSorter globalClusterSorter(samples, globallySimilarMaxima, globallyClusteredMaxima, 1);
+    GlobalClusterSorter globalClusterSorter(samples, globallySimilarMaxima, globallyClusteredMaxima);
     globalClusterSorter.sort();
 
 

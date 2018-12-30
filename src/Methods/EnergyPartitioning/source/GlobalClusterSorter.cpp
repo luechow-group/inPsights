@@ -3,22 +3,47 @@
 //
 
 #include <GlobalClusterSorter.h>
+#include <GlobalSimilaritySorter.h>
+#include <Logger.h>
+
+namespace Settings {
+    GlobalClusterSorter::GlobalClusterSorter() {
+        clusterRadius.onChange().connect([&](double value) {
+            if(value > ::GlobalSimilaritySorter::settings.similarityRadius.get())
+                throw std::invalid_argument(
+                        "The " + clusterRadius.name() + " with " + std::to_string(clusterRadius.get())
+                        + " is greater than the "+ ::GlobalSimilaritySorter::settings.similarityRadius.name() + " with "
+                        + std::to_string(::GlobalSimilaritySorter::settings.similarityRadius.get()));
+        });
+    }
+
+    GlobalClusterSorter::GlobalClusterSorter(const YAML::Node &node)
+            : GlobalClusterSorter() {
+        doubleProperty::decode(node[className], clusterRadius);
+    }
+
+    void GlobalClusterSorter::addToNode(YAML::Node &node) const {
+        node[className][clusterRadius.name()] = clusterRadius.get();
+    }
+}
+YAML_SETTINGS_DEFINITION(Settings::GlobalClusterSorter)
+
 
 GlobalClusterSorter::GlobalClusterSorter(
         std::vector<Sample> &samples,
         std::vector<SimilarReferences> &globallySimilarMaxima,
-        std::vector<std::vector<SimilarReferences>> &globallyClusteredMaxima,
-        double similarDistThresh)
+        std::vector<std::vector<SimilarReferences>> &globallyClusteredMaxima)
         :
         samples_(samples),
         globallySimilarMaxima_(globallySimilarMaxima),
-        globallyClusteredMaxima_(globallyClusteredMaxima),
-        similarDistThresh_(similarDistThresh) {
+        globallyClusteredMaxima_(globallyClusteredMaxima) {
 }
 
 void GlobalClusterSorter::sort() {
+    auto threshold = settings.clusterRadius.get() * 2 + 0.01; // TODO WHY IS THIS CORRECTIONS NECESSARY?
+
     DensityBasedScan<double, SimilarReferences, GlobalClusterSorter::wrapper> dbscan(globallySimilarMaxima_);
-    auto nClusters = dbscan.findClusters(similarDistThresh_ * 2 + 0.01, 1); // why multiplication by 2 is needed?
+    auto nClusters = dbscan.findClusters(threshold, 1); // why multiplication by 2 is needed?
 
     auto labels = dbscan.getLabels();
     globallyClusteredMaxima_.resize(static_cast<unsigned long>(nClusters));

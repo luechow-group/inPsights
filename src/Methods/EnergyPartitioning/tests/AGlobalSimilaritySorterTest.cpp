@@ -6,6 +6,7 @@
 #include <Reference.h>
 #include <Sample.h>
 #include <GlobalSimilaritySorter.h>
+#include <GlobalIdentitySorter.h>
 #include <algorithm>
 #include <random>
 
@@ -18,6 +19,8 @@ public:
     Eigen::VectorXd ekin;
 
     void SetUp() override {
+        GlobalIdentitySorter::settings.identityRadius = 1e-4; // prevent assert
+
         ekin.resize(2);
         ekin[0] = 0;
         ekin[1] = 0;
@@ -47,7 +50,9 @@ public:
 
 TEST_F(AGlobalSimilaritySorterTest, OneList) {
     std::vector<SimilarReferences> similarReferencesVector;
-    GlobalSimilaritySorter globalSimilaritySorter(samples, maxima, similarReferencesVector, 1, 1);
+    GlobalSimilaritySorter globalSimilaritySorter(samples, maxima, similarReferencesVector);
+    GlobalSimilaritySorter::settings.similarityRadius = 1;
+    GlobalSimilaritySorter::settings.valueIncrement = 1;
     globalSimilaritySorter.sort();
 
     ASSERT_EQ(similarReferencesVector.at(0).representativeReference().ownId(),0);
@@ -63,7 +68,9 @@ TEST_F(AGlobalSimilaritySorterTest, OneList) {
 
 TEST_F(AGlobalSimilaritySorterTest, TwoLists) {
     std::vector<SimilarReferences> similarReferencesVector;
-    GlobalSimilaritySorter globalSimilaritySorter(samples, maxima, similarReferencesVector, 0.1, 1);
+    GlobalSimilaritySorter globalSimilaritySorter(samples, maxima, similarReferencesVector);
+    GlobalSimilaritySorter::settings.similarityRadius = 0.1;
+    GlobalSimilaritySorter::settings.valueIncrement = 1;
     globalSimilaritySorter.sort();
     
     ASSERT_EQ(similarReferencesVector.at(0).representativeReference().ownId(),0);
@@ -79,7 +86,9 @@ TEST_F(AGlobalSimilaritySorterTest, TwoLists) {
 
 TEST_F(AGlobalSimilaritySorterTest, TwoListsIncrementBorderCase) {
     std::vector<SimilarReferences> similarReferencesVector;
-    GlobalSimilaritySorter globalSimilaritySorter(samples, maxima, similarReferencesVector, 0.02, 1);
+    GlobalSimilaritySorter globalSimilaritySorter(samples, maxima, similarReferencesVector);
+    GlobalSimilaritySorter::settings.similarityRadius = 0.02;
+    GlobalSimilaritySorter::settings.valueIncrement = 1;
     globalSimilaritySorter.sort();
 
     ASSERT_EQ(similarReferencesVector.at(0).representativeReference().ownId(),0);
