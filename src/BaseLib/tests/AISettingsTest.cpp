@@ -38,7 +38,7 @@ public:
     static inline Settings::TestSettings settings;
 };
 
-TEST(AGeneralSettingsTest, YamlConversion) {
+TEST(AISettingsTest, YamlConversion) {
     using namespace Settings;
     TestSettings settings;
     ASSERT_STREQ(settings.number.name().c_str(), "number");
@@ -66,20 +66,17 @@ TEST(AGeneralSettingsTest, YamlConversion) {
     EXPECT_DEATH(settings.threshold = -0.1, "The threshold cannot be negative.");
 }
 
-TEST(AGeneralSettingsTest, StaticMembership) {
-    using namespace Settings;
-    TestSettings& settings = TestMethod::settings;
+TEST(AISettingsTest, StaticMembership) {
+    ASSERT_STREQ(TestMethod::settings.number.name().c_str(), "number");
+    ASSERT_EQ(TestMethod::settings.number.get(), 1234567890);
+    ASSERT_STREQ(TestMethod::settings.threshold.name().c_str(), "threshold");
+    ASSERT_EQ(TestMethod::settings.threshold.get(), 1.234567890);
 
-    ASSERT_STREQ(settings.number.name().c_str(), "number");
-    ASSERT_EQ(settings.number.get(), 1234567890);
-    ASSERT_STREQ(settings.threshold.name().c_str(), "threshold");
-    ASSERT_EQ(settings.threshold.get(), 1.234567890);
+    TestMethod::settings.number = 123;
+    TestMethod::settings.threshold = 1.23;
 
-    settings.number = 123;
-    settings.threshold = 1.23;
-
-    ASSERT_STREQ(settings.number.name().c_str(), "number");
-    ASSERT_EQ(settings.number.get(), 123);
-    ASSERT_STREQ(settings.threshold.name().c_str(), "threshold");
-    ASSERT_EQ(settings.threshold.get(), 1.23);
+    ASSERT_STREQ(TestMethod::settings.number.name().c_str(), "number");
+    ASSERT_EQ(TestMethod::settings.number.get(), 123);
+    ASSERT_STREQ(TestMethod::settings.threshold.name().c_str(), "threshold");
+    ASSERT_EQ(TestMethod::settings.threshold.get(), 1.23);
 }
