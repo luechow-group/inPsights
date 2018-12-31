@@ -23,7 +23,7 @@ namespace Settings {
         doubleProperty::decode(node[className], valueIncrement);
     }
 
-    void GlobalSimilaritySorter::addToNode(YAML::Node &node) const {
+    void GlobalSimilaritySorter::appendToNode(YAML::Node &node) const {
         node[className][similarityRadius.name()] = similarityRadius.get();
         node[className][valueIncrement.name()] = valueIncrement.get();
     }

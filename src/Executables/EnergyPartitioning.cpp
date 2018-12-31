@@ -78,10 +78,10 @@ int main(int argc, char *argv[]) {
 
     // write used settings
     YAML::Node usedSettings;
-    settings.addToNode(usedSettings);
-    GlobalIdentitySorter::settings.addToNode(usedSettings);
-    GlobalSimilaritySorter::settings.addToNode(usedSettings);
-    GlobalClusterSorter::settings.addToNode(usedSettings);
+    settings.appendToNode(usedSettings);
+    GlobalIdentitySorter::settings.appendToNode(usedSettings);
+    GlobalSimilaritySorter::settings.appendToNode(usedSettings);
+    GlobalClusterSorter::settings.appendToNode(usedSettings);
     outputYaml << BeginDoc << Comment("used settings") << usedSettings << EndDoc;
 
 

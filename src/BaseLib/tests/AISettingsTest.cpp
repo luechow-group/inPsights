@@ -24,7 +24,7 @@ namespace Settings {
             doubleProperty::decode(node[className], threshold);
         }
 
-        void addToNode(YAML::Node &node) const override {
+        void appendToNode(YAML::Node &node) const override {
             node[className][number.name()] = number.get();
             node[className][threshold.name()] = threshold.get();
         }

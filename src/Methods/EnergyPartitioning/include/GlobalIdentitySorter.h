@@ -22,7 +22,7 @@ namespace Settings {
 
         GlobalIdentitySorter();
         explicit GlobalIdentitySorter(const YAML::Node &node);
-        void addToNode(YAML::Node &node) const override;
+        void appendToNode(YAML::Node &node) const override;
     };
 }
 YAML_SETTINGS_DECLARATION(Settings::GlobalIdentitySorter)

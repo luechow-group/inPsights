@@ -26,7 +26,7 @@ namespace Settings {
         boolProperty::decode(node[className], identitySearch);
     }
 
-    void EnergyPartitioning::addToNode(YAML::Node &node) const {
+    void EnergyPartitioning::appendToNode(YAML::Node &node) const {
         node[className][binaryFileBasename.name()] = binaryFileBasename.get();
         node[className][samplesToAnalyze.name()] = samplesToAnalyze.get();
         node[className][identitySearch.name()] = identitySearch.get();

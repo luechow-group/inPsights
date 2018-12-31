@@ -24,7 +24,7 @@ namespace Settings {
         doubleProperty::decode(node[className], valueIncrement);
     }
 
-    void GlobalIdentitySorter::addToNode(YAML::Node &node) const {
+    void GlobalIdentitySorter::appendToNode(YAML::Node &node) const {
         node[className][identityRadius.name()] = identityRadius.get();
         node[className][valueIncrement.name()] = valueIncrement.get();
     }

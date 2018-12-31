@@ -22,7 +22,7 @@ namespace Settings {
         doubleProperty::decode(node[className], clusterRadius);
     }
 
-    void GlobalClusterSorter::addToNode(YAML::Node &node) const {
+    void GlobalClusterSorter::appendToNode(YAML::Node &node) const {
         node[className][clusterRadius.name()] = clusterRadius.get();
     }
 }

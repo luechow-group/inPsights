@@ -22,7 +22,7 @@ namespace YAML {                                                \
 namespace YAML {                                                            \
     Node convert<classname>::encode(const classname &rhs) {                 \
         YAML::Node node;                                                    \
-        rhs.addToNode(node);                                                \
+        rhs.appendToNode(node);                                             \
         return node;                                                        \
     }                                                                       \
     bool convert<classname>::decode(const Node &node, classname &rhs) {     \
@@ -42,7 +42,7 @@ namespace YAML {
 namespace Settings{
     class ISettings {
     protected:
-        virtual void addToNode(YAML::Node &node) const = 0;
+        virtual void appendToNode(YAML::Node &node) const = 0;
     };
 }
 
