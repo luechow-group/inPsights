@@ -12,8 +12,6 @@ namespace Settings {
             if(value > 0 && value < std::numeric_limits<unsigned>::max())
                 Logger::console->info("Analyzing {} samples.", value);
             else if (value == 0)
-                samplesToAnalyze = std::numeric_limits<unsigned>::max();
-            else if (value == std::numeric_limits<unsigned>::max())
                 Logger::console->info("Analyzing all samples.");
             else
                 throw std::invalid_argument("The number of samples to analyze is negative.");

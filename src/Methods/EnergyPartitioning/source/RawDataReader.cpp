@@ -84,8 +84,10 @@ void RawDataReader::read(const std::string &basename, size_t numberOfSamples){
 
     readHeader(input);
 
-    while(input.good() && references_.size() < numberOfSamples) {
-            readSamplesAndMaxima(input, fileLength, numberOfSamples);
+    auto samplesLimit = (numberOfSamples == 0)? std::numeric_limits<size_t>::max() : numberOfSamples;
+
+    while(input.good() && references_.size() < samplesLimit) {
+            readSamplesAndMaxima(input, fileLength, samplesLimit);
             input.close();
 
             fileCounter++;
