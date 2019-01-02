@@ -18,7 +18,7 @@ namespace Settings {
         inline static const std::string className = {VARNAME(GlobalIdentitySorter)};
     public:
         Property<double> identityRadius = {0.01, VARNAME(identityRadius)};
-        Property<double> valueIncrement = {1e-7, VARNAME(valueIncrement)};
+        Property<double> identityValueIncrement = {1e-7, VARNAME(identityValueIncrement)};
 
         GlobalIdentitySorter();
         explicit GlobalIdentitySorter(const YAML::Node &node);

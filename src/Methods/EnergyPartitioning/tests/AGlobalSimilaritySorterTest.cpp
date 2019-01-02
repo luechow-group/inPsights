@@ -52,7 +52,7 @@ TEST_F(AGlobalSimilaritySorterTest, OneList) {
     std::vector<SimilarReferences> similarReferencesVector;
     GlobalSimilaritySorter globalSimilaritySorter(samples, maxima, similarReferencesVector);
     GlobalSimilaritySorter::settings.similarityRadius = 1;
-    GlobalSimilaritySorter::settings.valueIncrement = 1;
+    GlobalSimilaritySorter::settings.similarityValueIncrement = 1;
     globalSimilaritySorter.sort();
 
     ASSERT_EQ(similarReferencesVector.at(0).representativeReference().ownId(),0);
@@ -70,7 +70,7 @@ TEST_F(AGlobalSimilaritySorterTest, TwoLists) {
     std::vector<SimilarReferences> similarReferencesVector;
     GlobalSimilaritySorter globalSimilaritySorter(samples, maxima, similarReferencesVector);
     GlobalSimilaritySorter::settings.similarityRadius = 0.1;
-    GlobalSimilaritySorter::settings.valueIncrement = 1;
+    GlobalSimilaritySorter::settings.similarityValueIncrement = 1;
     globalSimilaritySorter.sort();
     
     ASSERT_EQ(similarReferencesVector.at(0).representativeReference().ownId(),0);
@@ -88,7 +88,7 @@ TEST_F(AGlobalSimilaritySorterTest, TwoListsIncrementBorderCase) {
     std::vector<SimilarReferences> similarReferencesVector;
     GlobalSimilaritySorter globalSimilaritySorter(samples, maxima, similarReferencesVector);
     GlobalSimilaritySorter::settings.similarityRadius = 0.02;
-    GlobalSimilaritySorter::settings.valueIncrement = 1;
+    GlobalSimilaritySorter::settings.similarityValueIncrement = 1;
     globalSimilaritySorter.sort();
 
     ASSERT_EQ(similarReferencesVector.at(0).representativeReference().ownId(),0);

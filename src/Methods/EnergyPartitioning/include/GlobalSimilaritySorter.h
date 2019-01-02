@@ -18,7 +18,7 @@ namespace Settings {
         inline static const std::string className = {VARNAME(GlobalSimilaritySorter)};
     public:
         Property<double> similarityRadius = {0.1, VARNAME(similarityRadius)};
-        Property<double> valueIncrement = {1e-5, VARNAME(valueIncrement)};
+        Property<double> similarityValueIncrement = {1e-5, VARNAME(similarityValueIncrement)};
 
         GlobalSimilaritySorter();
         explicit GlobalSimilaritySorter(const YAML::Node &node);

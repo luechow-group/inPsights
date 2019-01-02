@@ -65,7 +65,7 @@ public:
 TEST_F(AGlobalIdentitySorterTest, OneListTriplet) {
     GlobalIdentitySorter globalIdentiySorter(tripletMaxima, tripletSamples);
     GlobalIdentitySorter::settings.identityRadius = 2;
-    GlobalIdentitySorter::settings.valueIncrement = 1;
+    GlobalIdentitySorter::settings.identityValueIncrement = 1;
     globalIdentiySorter.sort();
 
     ASSERT_THAT(tripletMaxima.at(0).sampleIds(), ElementsAre(0,1,2,3,4,5,6,7));
@@ -74,7 +74,7 @@ TEST_F(AGlobalIdentitySorterTest, OneListTriplet) {
 TEST_F(AGlobalIdentitySorterTest, OneListSinglet) {
     GlobalIdentitySorter globalIdentiySorter(singletMaxima, singletSamples);
     GlobalIdentitySorter::settings.identityRadius = 2;
-    GlobalIdentitySorter::settings.valueIncrement = 1;
+    GlobalIdentitySorter::settings.identityValueIncrement = 1;
     globalIdentiySorter.sort();
 
     ASSERT_THAT(singletMaxima.at(0).sampleIds(), ElementsAre(0,1,2,3,4,5,6,7));
@@ -83,7 +83,7 @@ TEST_F(AGlobalIdentitySorterTest, OneListSinglet) {
 TEST_F(AGlobalIdentitySorterTest, TwoListsTriplet) {
     GlobalIdentitySorter globalIdentiySorter(tripletMaxima, tripletSamples);
     GlobalIdentitySorter::settings.identityRadius = 1;
-    GlobalIdentitySorter::settings.valueIncrement = 0.05;
+    GlobalIdentitySorter::settings.identityValueIncrement = 0.05;
     globalIdentiySorter.sort();
 
     ASSERT_THAT(tripletMaxima.at(0).sampleIds(), ElementsAre(0,1,2,3));
@@ -93,7 +93,7 @@ TEST_F(AGlobalIdentitySorterTest, TwoListsTriplet) {
 TEST_F(AGlobalIdentitySorterTest, TwoListsSinglet) {
     GlobalIdentitySorter globalIdentiySorter(singletMaxima, singletSamples);
     GlobalIdentitySorter::settings.identityRadius = 1;
-    GlobalIdentitySorter::settings.valueIncrement = 0.05;
+    GlobalIdentitySorter::settings.identityValueIncrement = 0.05;
     globalIdentiySorter.sort();
 
     ASSERT_THAT(singletMaxima.at(0).sampleIds(), ElementsAre(0,1,2,3));
@@ -103,7 +103,7 @@ TEST_F(AGlobalIdentitySorterTest, TwoListsSinglet) {
 TEST_F(AGlobalIdentitySorterTest, TwoListsIncrementBorderCaseTriplet) {
     GlobalIdentitySorter globalIdentiySorter(tripletMaxima, tripletSamples);
     GlobalIdentitySorter::settings.identityRadius = 1;
-    GlobalIdentitySorter::settings.valueIncrement = 0.1;
+    GlobalIdentitySorter::settings.identityValueIncrement = 0.1;
     globalIdentiySorter.sort();
 
     ASSERT_THAT(tripletMaxima.at(0).sampleIds(), ElementsAre(0,1,2,3,4));
@@ -113,7 +113,7 @@ TEST_F(AGlobalIdentitySorterTest, TwoListsIncrementBorderCaseTriplet) {
 TEST_F(AGlobalIdentitySorterTest, TwoListsIncrementBorderCaseSinglet) {
     GlobalIdentitySorter globalIdentiySorter(singletMaxima, singletSamples);
     GlobalIdentitySorter::settings.identityRadius = 1;
-    GlobalIdentitySorter::settings.valueIncrement = 0.1;
+    GlobalIdentitySorter::settings.identityValueIncrement = 0.1;
     globalIdentiySorter.sort();
 
     ASSERT_THAT(singletMaxima.at(0).sampleIds(), ElementsAre(0,1,2,3,4));

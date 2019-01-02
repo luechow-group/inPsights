@@ -21,12 +21,12 @@ namespace Settings {
     GlobalIdentitySorter::GlobalIdentitySorter(const YAML::Node &node)
             : GlobalIdentitySorter() {
         doubleProperty::decode(node[className], identityRadius);
-        doubleProperty::decode(node[className], valueIncrement);
+        doubleProperty::decode(node[className], identityValueIncrement);
     }
 
     void GlobalIdentitySorter::appendToNode(YAML::Node &node) const {
         node[className][identityRadius.name()] = identityRadius.get();
-        node[className][valueIncrement.name()] = valueIncrement.get();
+        node[className][identityValueIncrement.name()] = identityValueIncrement.get();
     }
 }
 YAML_SETTINGS_DEFINITION(Settings::GlobalIdentitySorter)
@@ -41,7 +41,7 @@ GlobalIdentitySorter::GlobalIdentitySorter(
 
 bool GlobalIdentitySorter::sort() {
     auto identityRadius = settings.identityRadius.get();
-    auto valueIncrement = settings.valueIncrement.get();
+    auto valueIncrement = settings.identityValueIncrement.get();
 
     // first, sort references by value
     ValueSorter::sortReferencesByValue(references_);

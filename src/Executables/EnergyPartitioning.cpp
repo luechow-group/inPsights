@@ -47,16 +47,16 @@ int main(int argc, char *argv[]) {
     if(settings.identitySearch.get()) {
         console->info("Start identity search");
         GlobalIdentitySorter globalIdentiySorter(globallyIdenticalMaxima,samples);
-        if(!inputYaml["GlobalIdentitySorter"]["valueIncrement"])
-            GlobalIdentitySorter::settings.valueIncrement = valueStandardError*1e-4;
+        if(!inputYaml["GlobalIdentitySorter"]["identityValueIncrement"])
+            GlobalIdentitySorter::settings.identityValueIncrement = valueStandardError*1e-4;
         globalIdentiySorter.sort();
         console->info("number of elements after identity sort {}", globallyIdenticalMaxima.size());
     }
 
     std::vector<SimilarReferences> globallySimilarMaxima;
     GlobalSimilaritySorter globalSimilaritySorter(samples,globallyIdenticalMaxima, globallySimilarMaxima);
-    if(!inputYaml["GlobalSimilaritySorter"]["valueIncrement"])
-        GlobalSimilaritySorter::settings.valueIncrement = valueStandardError*1e-2;
+    if(!inputYaml["GlobalSimilaritySorter"]["similarityValueIncrement"])
+        GlobalSimilaritySorter::settings.similarityValueIncrement = valueStandardError*1e-2;
     globalSimilaritySorter.sort();
     console->info("number of elements after similarity sort {}", globallySimilarMaxima.size());
 

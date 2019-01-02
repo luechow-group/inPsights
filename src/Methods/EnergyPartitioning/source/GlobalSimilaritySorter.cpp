@@ -20,12 +20,12 @@ namespace Settings {
     GlobalSimilaritySorter::GlobalSimilaritySorter(const YAML::Node &node)
             : GlobalSimilaritySorter() {
         doubleProperty::decode(node[className], similarityRadius);
-        doubleProperty::decode(node[className], valueIncrement);
+        doubleProperty::decode(node[className], similarityValueIncrement);
     }
 
     void GlobalSimilaritySorter::appendToNode(YAML::Node &node) const {
         node[className][similarityRadius.name()] = similarityRadius.get();
-        node[className][valueIncrement.name()] = valueIncrement.get();
+        node[className][similarityValueIncrement.name()] = similarityValueIncrement.get();
     }
 }
 YAML_SETTINGS_DEFINITION(Settings::GlobalSimilaritySorter)
@@ -42,7 +42,7 @@ GlobalSimilaritySorter::GlobalSimilaritySorter(
 // assumes a sorted reference vector
 bool GlobalSimilaritySorter::sort() {
     auto similarityRadius = settings.similarityRadius.get();
-    auto valueIncrement = settings.valueIncrement.get();
+    auto valueIncrement = settings.similarityValueIncrement.get();
 
     // first, sort references by value
     ValueSorter::sortReferencesByValue(references_);
