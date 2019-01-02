@@ -28,8 +28,7 @@ YAML_SETTINGS_DECLARATION(Settings::GlobalClusterSorter)
 
 class GlobalClusterSorter {
 public:
-    inline static Settings::GlobalClusterSorter settings;
-
+    inline static Settings::GlobalClusterSorter settings {};
 
     GlobalClusterSorter(
             std::vector<Sample> &samples,

@@ -16,10 +16,13 @@
 
 template <typename... Args>
 class Signal {
-
 public:
 
     Signal() : current_id_(0) {}
+
+    ~Signal(){
+        disconnectAll();
+    }
 
     // copy creates new signal
     Signal(Signal const& other) : current_id_(0) {}
