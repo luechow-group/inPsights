@@ -9,7 +9,7 @@
 #include <spdlog/sinks/stdout_color_sinks.h>
 
 namespace Logger{
-    inline std::shared_ptr<spdlog::logger> console = {spdlog::stdout_color_st("console")};
+    extern std::shared_ptr<spdlog::logger> console;
 }
 
 #endif //INPSIGHTS_LOGGER_H
