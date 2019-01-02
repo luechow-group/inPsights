@@ -10,7 +10,6 @@
 #include <GeneralStatistics.h>
 #include <algorithm>
 #include <utility>
-#include <experimental/filesystem>
 #include <EnergyPartitioningSettings.h>
 
 using namespace YAML;

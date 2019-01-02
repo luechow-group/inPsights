@@ -7,10 +7,8 @@
 #include "ParticlesVector.h"
 #include <Logger.h>
 #include <spdlog/spdlog.h>
-#include <experimental/filesystem>
 #include <iomanip>
-
-namespace fs = std::experimental::filesystem;
+#include <fstream>
 
 RawDataReader::RawDataReader(
         std::vector<Reference>& references,
@@ -72,31 +70,29 @@ void RawDataReader::readSamplesAndMaxima(std::ifstream &input, int fileLength, s
 
 void RawDataReader::read(const std::string &basename, size_t numberOfSamples){
 
-    std::ifstream input;
+
     unsigned fileCounter = 0;
     int fileLength;
 
     auto filename = getFilename(basename, fileCounter);
-    if( fs::exists(filename) ) {
-        input = std::ifstream(filename.c_str(), std::ios::binary);
+
+    std::ifstream input(filename.c_str(), std::ios::binary);
+    if( input.good() ) {
         fileLength = static_cast<int>(getFileLength(input));
     }
     else throw std::runtime_error("Could not open file '" + filename + "'");
 
-    if( input.good() ) readHeader(input);
-    else throw std::runtime_error("Could not read header");
+    readHeader(input);
 
-    while(fs::exists(filename) && references_.size() < numberOfSamples) {
-        if( input.good() ) {
+    while(input.good() && references_.size() < numberOfSamples) {
             readSamplesAndMaxima(input, fileLength, numberOfSamples);
             input.close();
 
             fileCounter++;
             filename = getFilename(basename, fileCounter);
             input = std::ifstream(filename.c_str(), std::ios::binary);
+
             fileLength = static_cast<int>(getFileLength(input));
-        }
-        else throw std::runtime_error("Could not open file '" + filename + "'");
     }
 }
 
