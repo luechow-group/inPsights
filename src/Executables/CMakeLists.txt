@@ -23,6 +23,11 @@ target_link_libraries(StructuralSimilarity.exe
         )
 
 if (DEFINED BUILD_GUI AND ON)
+    add_executable(CustomMesh CustomMesh.cpp)
+    target_link_libraries(CustomMesh
+            GUI
+            )
+
     add_executable(inPsights inPsights.cpp)
     target_link_libraries(inPsights
             GUI
