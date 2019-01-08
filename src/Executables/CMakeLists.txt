@@ -25,6 +25,7 @@ target_link_libraries(StructuralSimilarity.exe
 if (DEFINED BUILD_GUI AND ON)
     add_executable(CustomMesh CustomMesh.cpp)
     target_link_libraries(CustomMesh
+            VoxelProcessing # contains dualmc
             GUI
             )
 

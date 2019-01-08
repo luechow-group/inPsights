@@ -2,8 +2,8 @@
 // Created by heuer on 06.12.16.
 //
 
-#ifndef TEST_SPHERE_H
-#define TEST_SPHERE_H
+#ifndef INPSIGHTS_SPHERE_H
+#define INPSIGHTS_SPHERE_H
 
 #include <Qt3DExtras/QSphereMesh>
 #include "Abstract3dObject.h"
@@ -31,4 +31,4 @@ private:
     void update();
 };
 
-#endif //TEST_SPHERE_H
+#endif //INPSIGHTS_SPHERE_H

@@ -117,7 +117,7 @@ bool PositionsVector::operator!=(const PositionsVector&other) const {
 namespace YAML {
     Node convert<PositionsVector>::encode(const PositionsVector &rhs) {
         Node node;
-        for (unsigned i = 0; i < rhs.numberOfEntities(); ++i)
+        for (long i = 0; i < rhs.numberOfEntities(); ++i)
             node.push_back(rhs[i]);
         return node;
     }
