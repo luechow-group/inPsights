@@ -2,8 +2,8 @@
 // Created by Michael Heuer on 2019-01-08.
 //
 
-#ifndef INPSIGHTS_VOXELCUBEGENERATOR_H
-#define INPSIGHTS_VOXELCUBEGENERATOR_H
+#ifndef INPSIGHTS_VOXELCUBEGENERATION_H
+#define INPSIGHTS_VOXELCUBEGENERATION_H
 
 #include <VoxelCube.h>
 
@@ -17,4 +17,4 @@ namespace VoxelCubeGeneration{
             const std::vector<Sample> &samples);
 };
 
-#endif //INPSIGHTS_VOXELCUBEGENERATOR_H
+#endif //INPSIGHTS_VOXELCUBEGENERATION_H

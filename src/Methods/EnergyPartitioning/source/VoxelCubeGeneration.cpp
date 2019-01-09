@@ -2,7 +2,7 @@
 // Created by Michael Heuer on 2019-01-09.
 //
 
-#include <VoxelCubeGenerator.h>
+#include <VoxelCubeGeneration.h>
 #include <Sample.h>
 #include <SimilarReferences.h>
 

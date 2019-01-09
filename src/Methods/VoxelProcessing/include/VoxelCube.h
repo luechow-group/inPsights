@@ -12,13 +12,14 @@
 #include <DualMC.h>
 #include <Vertex.h>
 
-template <typename T> //uint_8t or uint16_t
+template <typename BinType> //uint_8t or uint16_t
 class VoxelCube {
+public:
     using IndexType = dualmc::QuadIndexType;
     using VertexComponentsType = dualmc::VertexComponentsType;
-public:
+
     explicit VoxelCube(
-            IndexType dimension = 128,
+            IndexType dimension = 32,
             VertexComponentsType length = 8 * ConversionFactors::angstrom2bohr)
             :
             dimension(dimension),
@@ -51,19 +52,48 @@ public:
         }
     }
 
-    /*void shiftDualMCResults(std::vector<Vertex>& vertices){
-        for(auto & v : vertices){
-            //v.position /= dimension; // TODO use invDim ??
-            v.position *= inverseDimension;
-            v.position.array() -= offset;
-            v.position *= length;
-        }
-    }*/
-
     IndexType dimension;
     VertexComponentsType length, halfLength, inverseDimension;
-    std::vector<T> data;
-    const VertexComponentsType offset = 0.5;
+    std::vector<BinType> data;
+    static constexpr VertexComponentsType offset = 0.5;
 };
+
+#include <yaml-cpp/yaml.h>
+namespace YAML {
+    template<typename BinType> struct convert<VoxelCube<BinType>> {
+        static Node encode(const VoxelCube<BinType> &rhs) {
+            Node node;
+            node["dimension"] = rhs.dimension;
+            node["length"] = rhs.length;
+            node["data"] = rhs.data;
+            return node;
+        }
+
+        static bool decode(const Node &node, VoxelCube<BinType> &rhs) {
+            if (!node.IsMap())
+                return false;
+
+            auto dimension = node["dimension"].as<typename VoxelCube<BinType>::IndexType>();
+            auto length = node["length"].as<typename VoxelCube<BinType>::VertexComponentsType>();
+
+            rhs = VoxelCube<BinType>(dimension, length);
+            rhs.data = node["data"].as<std::vector<BinType>>();
+            return true;
+        }
+    };
+
+    template<typename BinType>
+    Emitter& operator<< (Emitter& out, const VoxelCube<BinType>& rhs){
+        out << BeginMap
+        << Key << "dimension" << Value << rhs.dimension
+        << Key << "length" << Value << rhs.length
+        << Key << "data" << Value << Flow << BeginSeq;
+        for(const auto& i : rhs.data) {
+            out << int(i);
+        }
+        out << EndSeq << EndMap;
+        return out;
+    };
+}
 
 #endif //INPSIGHTS_VOXELCUBE_H
