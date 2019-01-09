@@ -11,10 +11,11 @@
 #include <Qt3DExtras/QPhongAlphaMaterial>
 
 #include <iostream>
-#include <Isosurface.h>
+#include <Surface.h>
 
 #include <DualMC.h>
 #include <Conversion.h>
+#include <SurfaceData.h>
 #include <Vertex.h>
 #include <Triangle.h>
 
@@ -42,6 +43,9 @@ int main(int argc, char* argv[])
 
     auto triangles = Conversion::quadsToTriangles(quads);
     Conversion::calculateVertexNormals(vertices, triangles);
+    SurfaceData surfaceData;
+    surfaceData.triangles = triangles;
+    surfaceData.vertices = vertices;
 
     QApplication app(argc, argv);
 
@@ -68,7 +72,7 @@ int main(int argc, char* argv[])
 
     // Isosurface
     auto *entity = new Qt3DCore::QEntity(rootEntity);
-    new Isosurface(entity, vertices, triangles, Qt::red);
+    new Surface(entity, surfaceData, Qt::red);
 
     qt3DWindow->setRootEntity(rootEntity);
     widget->show();

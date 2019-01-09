@@ -16,6 +16,7 @@
 #include <iterator>
 #include <vector>
 #include <ParticlesVector.h>
+#include <SurfaceData.h>
 
 InPsightsWidget::InPsightsWidget(QWidget *parent)
         :
@@ -249,6 +250,8 @@ void InPsightsWidget::loadData() {
         }
     }
     moleculeWidget->setSharedAtomsVector(doc["Atoms"].as<AtomsVector>());
+
+    moleculeWidget->drawSurface(doc["SurfaceData"].as<SurfaceData>());
 }
 
 void InPsightsWidget::initialView() {

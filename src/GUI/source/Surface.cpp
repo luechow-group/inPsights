@@ -2,16 +2,16 @@
 // Created by Michael Heuer on 2019-01-07.
 //
 
-#include <Isosurface.h>
+#include <Surface.h>
+#include <SurfaceData.h>
 
-Isosurface::Isosurface(
+Surface::Surface(
         Qt3DCore::QEntity *root,
-        const std::vector<Vertex> &vertices,
-        const std::vector<Triangle> &triangles,
+        const SurfaceData & surfaceData,
         QColor color, float alpha)
         :
         Abstract3dObject(root, std::move(color), {0,0,0}),
-        mesh_(new IsosurfaceMesh(vertices, triangles)) {
+        mesh_(new SurfaceMesh(surfaceData)) {
 
     addComponent(mesh_);
 }

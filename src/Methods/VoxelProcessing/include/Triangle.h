@@ -5,8 +5,6 @@
 #ifndef INPSIGHTS_TRIANGLE_H
 #define INPSIGHTS_TRIANGLE_H
 
-#include <cstdint>
-
 #include <Eigen/Core>
 
  struct Triangle {

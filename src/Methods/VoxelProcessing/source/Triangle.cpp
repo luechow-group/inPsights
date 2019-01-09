@@ -15,6 +15,7 @@ namespace YAML {
         node = rhs.indices;
         return node;
     }
+    
     bool convert<Triangle>::decode(const Node &node, Triangle &rhs) {
         if (!node.IsSequence())
             return false;

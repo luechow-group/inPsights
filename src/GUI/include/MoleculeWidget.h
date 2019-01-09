@@ -14,6 +14,8 @@
 #include <ParticlesVector3D.h>
 #include <Statistics.h>
 #include <ClusterData.h>
+#include <SurfaceData.h>
+#include <Surface.h>
 
 class MoleculeWidget : public QWidget{
     Q_OBJECT
@@ -23,6 +25,10 @@ public:
     Qt3DCore::QEntity* getMoleculeEntity();
 
     //TODO make base MoleculeWidget and InPsightsMoleculeWidget child
+
+    void drawSurface(const SurfaceData& data){
+        new Surface(moleculeEntity_,data, Qt::red, 0.5);
+    };
 
     void drawAtoms(bool drawQ = true);
     void drawBonds(bool drawQ = true);

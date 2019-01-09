@@ -11,8 +11,7 @@ set(HEADER_FILES
         include/Conversion.h
         include/Vertex.h
         include/Triangle.h
-        include/Volume.h
-        include/VoxelDataGenerator.h
+        include/VoxelCube.h
         include/SurfaceDataGenerator.h
         include/SurfaceData.h
         )

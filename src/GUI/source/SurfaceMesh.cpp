@@ -2,28 +2,18 @@
 // Created by Michael Heuer on 2019-01-03.
 //
 
-#include "IsosurfaceMesh.h"
+#include "SurfaceMesh.h"
+#include <SurfaceData.h>
 
 #include <Qt3DCore/QEntity>
-#include <Qt3DCore/QTransform>
-#include <Qt3DCore/QAspectEngine>
-
-#include <Qt3DInput/QInputAspect>
-
-#include <Qt3DExtras/Qt3DWindow>
-#include <Qt3DExtras/QForwardRenderer>
-#include <Qt3DExtras/QPerVertexColorMaterial>
-#include <Qt3DExtras/QOrbitCameraController>
-
 #include <Qt3DRender/QRenderAspect>
 #include <Qt3DRender/QGeometryRenderer>
 #include <Qt3DRender/QGeometry>
 #include <Qt3DRender/QAttribute>
 #include <Qt3DRender/QBuffer>
 
-IsosurfaceMesh::IsosurfaceMesh(
-        const std::vector<Vertex>& vertices,
-        const std::vector<Triangle>& triangles,
+SurfaceMesh::SurfaceMesh(
+        const SurfaceData& surfaceData,
         Qt3DCore::QNode *parent) {
 
     // Custom Mesh
@@ -33,13 +23,13 @@ IsosurfaceMesh::IsosurfaceMesh(
     auto *indexDataBuffer = new Qt3DRender::QBuffer(Qt3DRender::QBuffer::IndexBuffer, customGeometry);
 
     // Vertices
-    auto vertexDataPackageSize = nCoordinates*2; // position + normal
+    auto vertexDataPackageSize = nCoordinates*2; // position + normal vector
     QByteArray vertexBufferData;
-    vertexBufferData.resize(vertices.size() * vertexDataPackageSize * sizeof(float));
+    vertexBufferData.resize(surfaceData.vertices.size() * vertexDataPackageSize * sizeof(float));
     auto *rawVertexArray = reinterpret_cast<float *>(vertexBufferData.data());
 
     int idx = 0;
-    for (const auto & v : vertices) {
+    for (const auto & v : surfaceData.vertices) {
         rawVertexArray[idx++] = float(v.position[0]);
         rawVertexArray[idx++] = float(v.position[1]);
         rawVertexArray[idx++] = float(v.position[2]);
@@ -57,7 +47,7 @@ IsosurfaceMesh::IsosurfaceMesh(
     positionAttribute->setDataSize(nCoordinates);
     positionAttribute->setByteOffset(0);
     positionAttribute->setByteStride(vertexDataPackageSize  * sizeof(float));
-    positionAttribute->setCount(vertices.size());
+    positionAttribute->setCount(surfaceData.vertices.size());
     positionAttribute->setName(Qt3DRender::QAttribute::defaultPositionAttributeName());
 
     auto *normalAttribute = new Qt3DRender::QAttribute();
@@ -67,14 +57,14 @@ IsosurfaceMesh::IsosurfaceMesh(
     normalAttribute->setDataSize(nCoordinates);
     normalAttribute->setByteOffset(nCoordinates * sizeof(float));
     normalAttribute->setByteStride(vertexDataPackageSize * sizeof(float));
-    normalAttribute->setCount(vertices.size());
+    normalAttribute->setCount(surfaceData.vertices.size());
     normalAttribute->setName(Qt3DRender::QAttribute::defaultNormalAttributeName());
 
     QByteArray indexBufferData;
-    indexBufferData.resize(triangles.size() * nIndicesPerTriangle * sizeof(unsigned));
+    indexBufferData.resize(surfaceData.triangles.size() * nIndicesPerTriangle * sizeof(unsigned));
     auto *rawIndexArray = reinterpret_cast<unsigned*>(indexBufferData.data());
     idx = 0;
-    for (const auto& t : triangles) {
+    for (const auto& t : surfaceData.triangles) {
 
         rawIndexArray[idx++] = t.indices[0];
         rawIndexArray[idx++] = t.indices[1];
@@ -90,7 +80,7 @@ IsosurfaceMesh::IsosurfaceMesh(
     indexAttribute->setDataSize(1);
     indexAttribute->setByteOffset(0);
     indexAttribute->setByteStride(0);
-    indexAttribute->setCount(triangles.size()*nIndicesPerTriangle);
+    indexAttribute->setCount(surfaceData.triangles.size()*nIndicesPerTriangle);
 
     customGeometry->addAttribute(positionAttribute);
     customGeometry->addAttribute(normalAttribute);
@@ -102,5 +92,5 @@ IsosurfaceMesh::IsosurfaceMesh(
     setFirstInstance(0);
     setPrimitiveType(Qt3DRender::QGeometryRenderer::Triangles);
     setGeometry(customGeometry);
-    setVertexCount(triangles.size()*nIndicesPerTriangle);
+    setVertexCount(surfaceData.triangles.size()*nIndicesPerTriangle);
 }

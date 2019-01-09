@@ -15,7 +15,7 @@ namespace YAML {                                                \
         static Node encode(const classename &rhs);              \
         static bool decode(const Node &node, classename &rhs);  \
     };                                                          \
-    Emitter &operator<<(Emitter &out, const classename &p) ;    \
+    Emitter &operator<<(Emitter &out, const classename &rhs) ;  \
 }
 
 #define YAML_SETTINGS_DEFINITION(classname)                                 \
@@ -29,8 +29,8 @@ namespace YAML {                                                            \
         rhs = classname(node);                                              \
         return true;                                                        \
     }                                                                       \
-    Emitter &operator<<(Emitter &out, const classname &p) {                 \
-        out << convert<classname>::encode(p);                               \
+    Emitter &operator<<(Emitter &out, const classname &rhs) {               \
+        out << convert<classname>::encode(rhs);                             \
         return out;                                                         \
     }                                                                       \
 }

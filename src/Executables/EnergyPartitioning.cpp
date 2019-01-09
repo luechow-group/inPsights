@@ -11,6 +11,8 @@
 #include <algorithm>
 #include <utility>
 #include <EnergyPartitioningSettings.h>
+#include <VoxelCubeGenerator.h>
+#include <SurfaceDataGenerator.h>
 
 using namespace YAML;
 using namespace Logger;
@@ -74,6 +76,9 @@ int main(int argc, char *argv[]) {
     globalPermutationSorter.sort();
     */
 
+    auto voxelCube = VoxelCubeGeneration::fromCluster(globallyClusteredMaxima[0],samples);
+    SurfaceDataGenerator surfaceDataGenerator(voxelCube);
+    auto surfaceData = surfaceDataGenerator.computeSurfaceData(0.5);
 
     // write used settings
     YAML::Node usedSettings;
@@ -91,6 +96,7 @@ int main(int argc, char *argv[]) {
                << Key << "OverallResults" << results;
     console->info("Calculating statistics...");
     energyCalculator.calculateStatistics(globallyClusteredMaxima);
+    outputYaml << Key << "SurfaceData" << Value << surfaceData;
     outputYaml << EndMap << EndDoc;
 
     std::string resultsFilename = settings.binaryFileBasename.get() + ".yml";

@@ -9,6 +9,11 @@
 #include "Vertex.h"
 
 struct SurfaceData{
+
+    SurfaceData() = default;
+    SurfaceData(const std::vector<Vertex>& vertices, const std::vector<Triangle>& triangles)
+    : vertices(vertices), triangles(triangles){}
+
     std::vector<Vertex> vertices;
     std::vector<Triangle> triangles;
 };

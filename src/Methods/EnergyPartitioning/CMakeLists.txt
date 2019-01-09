@@ -22,6 +22,7 @@ set(HEADER_FILES
         include/GeneralStatistics.h
         include/ValueSorter.h
         include/EnergyPartitioningSettings.h
+        include/VoxelCubeGenerator.h
         )
 
 set(SOURCE_FILES
@@ -36,6 +37,7 @@ set(SOURCE_FILES
         source/GeneralStatistics.cpp
         source/ValueSorter.cpp
         source/EnergyPartitioningSettings.cpp
+        source/VoxelCubeGenerator.cpp
         )
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES})

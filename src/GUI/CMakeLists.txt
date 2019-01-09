@@ -50,8 +50,8 @@ set(HEADER_FILES
         include/SameSpinConnections3D.h
         include/IntegerSortedTreeWidgetItem.h
         include/EnergyPartitioningWidget.h
-        include/IsosurfaceMesh.h
-        include/Isosurface.h
+        include/SurfaceMesh.h
+        include/Surface.h
         )
 
 set(SOURCE_FILES
@@ -75,8 +75,8 @@ set(SOURCE_FILES
         source/SameSpinConnections3D.cpp
         source/IntegerSortedTreeWidgetItem.cpp
         source/EnergyPartitioningWidget.cpp
-        source/IsosurfaceMesh.cpp
-        source/Isosurface.cpp
+        source/SurfaceMesh.cpp
+        source/Surface.cpp
         )
 
 add_library(${PROJECT_NAME} STATIC

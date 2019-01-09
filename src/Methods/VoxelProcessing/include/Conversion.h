@@ -12,16 +12,12 @@
 #include <Eigen/Geometry>
 #include <vector>
 
-
-
 namespace Conversion {
-
-
     std::vector<Vertex> convertVertices(const std::vector<dualmc::Vertex>& dualMcVertices){
         std::vector<Vertex> vertices;
 
         for( const auto& v : dualMcVertices)
-            vertices.emplace_back<Vertex>({{v.x, v.y, v.y}});
+            vertices.emplace_back<Vertex>({{v.x, v.y, v.z}});
 
         return vertices;
     }
@@ -51,6 +47,9 @@ namespace Conversion {
     void calculateVertexNormals(
             std::vector<Vertex> &vertices,
             const std::vector<Triangle> &triangles) {
+
+        assert(vertices.size() > 3);
+        assert(triangles.size() > 0);
 
         // add normals to vertices
         for (auto it = vertices.begin(); it != vertices.end(); ++it) {
