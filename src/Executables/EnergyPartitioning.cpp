@@ -113,8 +113,23 @@ int main(int argc, char *argv[]) {
     return 0;
 
     /*TODO
-     * - make single value statistics class
+     * - make similar ref a nested structure
+     *  - has a first/representative structure
+     *  - has an averagedStructure
+     *  - similarity attribute (enum) - spatially|permutationally|rotationally + similar|identical,
+     * - use averaged structure for permutation sort, store best match permutation to add energies
+     * - use spin correlations to select motifs
+     *  - calculate inter- and intra- motif energies
+     *   - what happens with the cores?
+     * - export voxel for all electrons for all clusters (external file?)
+     *  - center voxel cube on averaged electron pos
      * - refactor names
+     *  - rename EnergyPartitioning to MaximaProcessing
+     * - settings classes
+     *   - fix memory leak after destruction of properties observed with the intel compiler
+     *   - voxel settings
+     *   - expansion settings structural similarity
+     * - make single value statistics class
      * - F2 cluster includes other references that shouldn't be there
      * - F2 spin correlations seem to be not symmetrical
      * - test naive std
@@ -122,6 +137,6 @@ int main(int argc, char *argv[]) {
      * - validate that ring-like clusters are ordered correctly
      * - use global similarity for permutation sorting
      * - split identity sort into batches that can be compared in parallel using OpenMP
-     * - improve spinSpecificHungarian
+     * - improve spinSpecificHungarian (low priority)
      * */
 };
