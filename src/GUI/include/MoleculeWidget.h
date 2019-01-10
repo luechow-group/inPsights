@@ -26,8 +26,8 @@ public:
 
     //TODO make base MoleculeWidget and InPsightsMoleculeWidget child
 
-    void drawSurface(const SurfaceData& data){
-        new Surface(moleculeEntity_,data, Qt::red, 0.5);
+    void drawSurface(const SurfaceData& data, const QColor& color = Qt::lightGray, float alpha = 0.25){
+        new Surface(moleculeEntity_,data, color, alpha);
     };
 
     void drawAtoms(bool drawQ = true);

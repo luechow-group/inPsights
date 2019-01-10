@@ -16,7 +16,8 @@
 #include <iterator>
 #include <vector>
 #include <ParticlesVector.h>
-#include <SurfaceData.h>
+#include <SurfaceDataGenerator.h>
+
 
 InPsightsWidget::InPsightsWidget(QWidget *parent)
         :
@@ -251,7 +252,12 @@ void InPsightsWidget::loadData() {
     }
     moleculeWidget->setSharedAtomsVector(doc["Atoms"].as<AtomsVector>());
 
-    moleculeWidget->drawSurface(doc["SurfaceData"].as<SurfaceData>());
+    auto voxelData = doc["VoxelData"].as<std::vector<VoxelCube<uint16_t>>>();
+    for (int j = 0; j < nElectrons; ++j) {
+        SurfaceDataGenerator surfaceDataGenerator(voxelData[j]);
+        auto surfaceData = surfaceDataGenerator.computeSurfaceData(0.25);
+        moleculeWidget->drawSurface(surfaceData);
+    }
 }
 
 void InPsightsWidget::initialView() {

@@ -77,9 +77,9 @@ int main(int argc, char *argv[]) {
     globalPermutationSorter.sort();
     */
 
-    auto voxelCube = VoxelCubeGeneration::fromCluster(globallyClusteredMaxima[0],samples);
-    SurfaceDataGenerator surfaceDataGenerator(voxelCube);
-    auto surfaceData = surfaceDataGenerator.computeSurfaceData(0.5);
+    auto voxelCubes = VoxelCubeGeneration::fromCluster(globallyClusteredMaxima[0],samples);
+    //SurfaceDataGenerator surfaceDataGenerator(voxelCubes);
+    //auto surfaceData = surfaceDataGenerator.computeSurfaceData(0.5);
 
     // write used settings
     YAML::Node usedSettings;
@@ -93,11 +93,11 @@ int main(int argc, char *argv[]) {
     outputYaml << BeginDoc << BeginMap
                << Key << "Atoms" << Value << atoms << Comment("[a0]")
                << Key << "NSamples" << Value << samples.size()
-               << Key << "OverallResults" << results;
+               << Key << "OverallResults" << Value << results;
     console->info("Calculating statistics...");
     energyCalculator.calculateStatistics(globallyClusteredMaxima);
-    outputYaml << Key << "SurfaceData" << Value << surfaceData;
-    outputYaml << Key << "VoxelData" << Value << voxelCube;
+    //outputYaml << Key << "SurfaceData" << Value << surfaceData;
+    outputYaml << Key << "VoxelData" << Value << voxelCubes;
     outputYaml << EndMap << EndDoc;
 
     std::string resultsFilename = settings.binaryFileBasename.get() + ".yml";

@@ -47,17 +47,17 @@ public:
 
     void shiftDualMCResults(std::vector<dualmc::Vertex>& vertices){
         for(auto & v : vertices){
-            v.x = (v.x * inverseDimension - offset + origin[0])*length;
-            v.y = (v.y * inverseDimension - offset + origin[1])*length;
-            v.z = (v.z * inverseDimension - offset + origin[2])*length;
+            v.x = (v.x * inverseDimension - offset) * length + origin[0];
+            v.y = (v.y * inverseDimension - offset) * length + origin[1];
+            v.z = (v.z * inverseDimension - offset) * length + origin[2];
         }
     }
 
     IndexType dimension;
     VertexComponentsType length, halfLength, inverseDimension;
     std::vector<BinType> data;
+    Eigen::Matrix<VertexComponentsType,3,1> origin;
     static constexpr VertexComponentsType offset = 0.5;
-    Eigen::Vector3f origin;
 };
 
 #include <yaml-cpp/yaml.h>
@@ -67,6 +67,7 @@ namespace YAML {
             Node node;
             node["dimension"] = rhs.dimension;
             node["length"] = rhs.length;
+            node["origin"] = rhs.origin;
             node["data"] = rhs.data;
             return node;
         }
@@ -77,8 +78,8 @@ namespace YAML {
 
             auto dimension = node["dimension"].as<typename VoxelCube<BinType>::IndexType>();
             auto length = node["length"].as<typename VoxelCube<BinType>::VertexComponentsType>();
-
-            rhs = VoxelCube<BinType>(dimension, length);
+            auto origin = node["origin"].as<Eigen::Matrix<typename VoxelCube<BinType>::VertexComponentsType,3,1>>();
+            rhs = VoxelCube<BinType>(dimension, length, origin);
             rhs.data = node["data"].as<std::vector<BinType>>();
             return true;
         }
@@ -89,6 +90,7 @@ namespace YAML {
         out << BeginMap
         << Key << "dimension" << Value << rhs.dimension
         << Key << "length" << Value << rhs.length
+        << Key << "origin" << Value << rhs.origin
         << Key << "data" << Value << Flow << BeginSeq;
         for(const auto& i : rhs.data) {
             out << int(i);

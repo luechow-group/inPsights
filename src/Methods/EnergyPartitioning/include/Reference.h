@@ -62,7 +62,6 @@ public:
         return sampleIds_;
     }
 
-
 private:
     double negLogSqrdProbabilityDensity_;
     ElectronsVector maximum_;
