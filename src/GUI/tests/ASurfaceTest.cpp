@@ -51,10 +51,13 @@ private:
 };
 
 
-TEST(DISABLED_ASurfaceTest, SphereFromDensity) {
-    VoxelCube<uint16_t> cube(32,1.0);
+TEST(ASurfaceTest, SphereFromDensity) {
+    VoxelCube<uint16_t> cube(32, 1.0, {0.5,0,0});
 
-    RadialGaussian a(0.02,cube.offset,cube.offset,cube.offset);
+    RadialGaussian a(0.02,
+            VoxelCube<uint16_t>::offset,
+            VoxelCube<uint16_t>::offset,
+            VoxelCube<uint16_t>::offset);
     int32_t p = 0;
     for (int32_t z = 0; z < cube.dimension; ++z) {
         float const nZ = float(z) * cube.inverseDimension;
@@ -122,7 +125,7 @@ TEST(ASurfaceTest, CubeFromData) {
         {{0.0f, 0.0f, 1.0f}},
         {{0.0f, 1.0f, 1.0f}},
         {{1.0f, 1.0f, 1.0f}}
-                                 });
+    });
 
     std::vector<dualmc::Quad> quads({
         {0, 3, 2, 1},
