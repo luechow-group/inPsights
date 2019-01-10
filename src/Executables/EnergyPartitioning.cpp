@@ -123,7 +123,7 @@ int main(int argc, char *argv[]) {
      * - use averaged structure for permutation sort, store best match permutation to add energies
      * - use spin correlations to select motifs
      *  - calculate inter- and intra- motif energies
-     *   - what happens with the cores?
+     *   - what happens with the cores? => incorporate into intra motif energies => inter-electronic energies
      * - export voxel for all electrons for all clusters (external file?)
      *  - center voxel cube on averaged electron pos
      * - refactor names

@@ -17,6 +17,7 @@ namespace Settings {
         inline static const std::string className = {VARNAME(VoxelCubeGeneration)};
     public:
         Property<bool> generateVoxelCubesQ = {false, VARNAME(generateVoxelCubesQ)};
+        Property<bool> centerCubesAtElectronsQ = {true, VARNAME(centerCubesAtElectronsQ)};
         Property<uint16_t> dimension = {16, VARNAME(dimension)};
         Property<VoxelCube<uint16_t>::VertexComponentsType > length = {2, VARNAME(length)};
 

@@ -10,12 +10,14 @@ namespace Settings {
     VoxelCubeGeneration::VoxelCubeGeneration(const YAML::Node &node)
             : VoxelCubeGeneration() {
         boolProperty::decode(node[className], generateVoxelCubesQ);
+        boolProperty::decode(node[className], centerCubesAtElectronsQ);
         unsignedShortProperty::decode(node[className], dimension);
         YAML::convert<Property<VoxelCube<uint16_t>::VertexComponentsType>>::decode(node[className], length);
     };
 
     void VoxelCubeGeneration::appendToNode(YAML::Node &node) const {
         node[className][generateVoxelCubesQ.name()] = generateVoxelCubesQ.get();
+        node[className][centerCubesAtElectronsQ.name()] = centerCubesAtElectronsQ.get();
         node[className][dimension.name()] = dimension.get();
         node[className][length.name()] = length.get();
     };
@@ -32,9 +34,12 @@ std::vector<VoxelCube<uint16_t>> VoxelCubeGeneration::fromCluster(const std::vec
     auto firstMax = cluster[0].representativeReference().maximum();//cluster[0].similarReferencesIterators()[0].base()->maximum();//TODO use averaged point
 
     for (long i = 0; i < firstMax.numberOfEntities(); ++i) {
-        VoxelCube<uint16_t> voxel(
-                dimension, length,
-                firstMax[i].position().cast<VoxelCube<uint16_t>::VertexComponentsType>()); //TODO use averaged point
+        Eigen::Matrix<VoxelCube<uint16_t>::VertexComponentsType,3,1> cubeOrigin({0,0,0});
+
+        if(settings.centerCubesAtElectronsQ.get())  //TODO use averaged point
+            cubeOrigin = firstMax[i].position().cast<VoxelCube<uint16_t>::VertexComponentsType>();
+
+        VoxelCube<uint16_t> voxel(dimension, length, cubeOrigin);
         for (const auto &simRef : cluster) {
             for (const auto &ref : simRef.similarReferencesIterators()) {
 
