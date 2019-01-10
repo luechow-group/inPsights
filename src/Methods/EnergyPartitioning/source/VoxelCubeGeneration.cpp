@@ -6,16 +6,35 @@
 #include <Sample.h>
 #include <SimilarReferences.h>
 
-//YAML_SETTINGS_DEFINITION(Settings::VoxelCubeGeneration)*/
+namespace Settings {
+    VoxelCubeGeneration::VoxelCubeGeneration(const YAML::Node &node)
+            : VoxelCubeGeneration() {
+        boolProperty::decode(node[className], generateVoxelCubesQ);
+        unsignedShortProperty::decode(node[className], dimension);
+        YAML::convert<Property<VoxelCube<uint16_t>::VertexComponentsType>>::decode(node[className], length);
+    };
+
+    void VoxelCubeGeneration::appendToNode(YAML::Node &node) const {
+        node[className][generateVoxelCubesQ.name()] = generateVoxelCubesQ.get();
+        node[className][dimension.name()] = dimension.get();
+        node[className][length.name()] = length.get();
+    };
+}
+YAML_SETTINGS_DEFINITION(Settings::VoxelCubeGeneration)
 
 std::vector<VoxelCube<uint16_t>> VoxelCubeGeneration::fromCluster(const std::vector<SimilarReferences> &cluster,
                                                      const std::vector<Sample> &samples) {
+    auto dimension = settings.dimension.get();
+    auto length = settings.length.get();
+
     std::vector<VoxelCube<uint16_t>> voxels;
 
     auto firstMax = cluster[0].representativeReference().maximum();//cluster[0].similarReferencesIterators()[0].base()->maximum();//TODO use averaged point
 
     for (long i = 0; i < firstMax.numberOfEntities(); ++i) {
-        VoxelCube<uint16_t> voxel(16, 2.0*ConversionFactors::angstrom2bohr, firstMax[i].position().cast<VoxelCube<uint16_t>::VertexComponentsType>()); //TODO use averaged point
+        VoxelCube<uint16_t> voxel(
+                dimension, length,
+                firstMax[i].position().cast<VoxelCube<uint16_t>::VertexComponentsType>()); //TODO use averaged point
         for (const auto &simRef : cluster) {
             for (const auto &ref : simRef.similarReferencesIterators()) {
 

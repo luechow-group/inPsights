@@ -8,6 +8,7 @@
 #include <utility>
 #include "Signal.h"
 #include <iostream>
+#include <Eigen/Core>
 #include <yaml-cpp/yaml.h>
 #include <Logger.h>
 // A Property is a encapsulates a value and may inform
@@ -171,6 +172,11 @@ inline Property<unsigned>::Property(std::string name)
         : value_(0), connection_(nullptr), connectionId_(-1), name_(std::move(name)) {}
 
 template<>
+inline Property<unsigned short>::Property(std::string name)
+        : value_(0), connection_(nullptr), connectionId_(-1), name_(std::move(name)) {}
+
+
+template<>
 inline Property<bool>::Property(std::string name)
         : value_(false), connection_(nullptr), connectionId_(-1), name_(std::move(name)) {}
 
@@ -221,13 +227,14 @@ namespace YAML {
     };
 }
 
-using doubleProperty   = YAML::convert<Property<double>>;
-using floatProperty    = YAML::convert<Property<float>>;
-using shortProperty    = YAML::convert<Property<short>>;
-using intProperty      = YAML::convert<Property<int>>;
-using charProperty     = YAML::convert<Property<char>>;
-using stringProperty     = YAML::convert<Property<std::string>>;
-using unsignedProperty = YAML::convert<Property<unsigned>>;
-using boolProperty     = YAML::convert<Property<bool>>;
+using doubleProperty        = YAML::convert<Property<double>>;
+using floatProperty         = YAML::convert<Property<float>>;
+using shortProperty         = YAML::convert<Property<short>>;
+using intProperty           = YAML::convert<Property<int>>;
+using charProperty          = YAML::convert<Property<char>>;
+using stringProperty        = YAML::convert<Property<std::string>>;
+using unsignedProperty      = YAML::convert<Property<unsigned>>;
+using unsignedShortProperty = YAML::convert<Property<unsigned short>>;
+using boolProperty          = YAML::convert<Property<bool>>;
 
 #endif //INPSIGHTS_PROPERTY_H

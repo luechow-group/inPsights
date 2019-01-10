@@ -33,6 +33,7 @@ int main(int argc, char *argv[]) {
     GlobalIdentitySorter::settings = Settings::GlobalIdentitySorter(inputYaml);
     GlobalSimilaritySorter::settings = Settings::GlobalSimilaritySorter(inputYaml);
     GlobalClusterSorter::settings = Settings::GlobalClusterSorter(inputYaml);
+    VoxelCubeGeneration::settings = Settings::VoxelCubeGeneration(inputYaml);
 
     std::vector<Reference> globallyIdenticalMaxima;
     std::vector<Sample> samples;
@@ -77,16 +78,13 @@ int main(int argc, char *argv[]) {
     globalPermutationSorter.sort();
     */
 
-    auto voxelCubes = VoxelCubeGeneration::fromCluster(globallyClusteredMaxima[0],samples);
-    //SurfaceDataGenerator surfaceDataGenerator(voxelCubes);
-    //auto surfaceData = surfaceDataGenerator.computeSurfaceData(0.5);
-
     // write used settings
     YAML::Node usedSettings;
     settings.appendToNode(usedSettings);
     GlobalIdentitySorter::settings.appendToNode(usedSettings);
     GlobalSimilaritySorter::settings.appendToNode(usedSettings);
     GlobalClusterSorter::settings.appendToNode(usedSettings);
+    VoxelCubeGeneration::settings.appendToNode(usedSettings);
     outputYaml << BeginDoc << Comment("used settings") << usedSettings << EndDoc;
 
     // write results
@@ -97,7 +95,12 @@ int main(int argc, char *argv[]) {
     console->info("Calculating statistics...");
     energyCalculator.calculateStatistics(globallyClusteredMaxima);
     //outputYaml << Key << "SurfaceData" << Value << surfaceData;
-    outputYaml << Key << "VoxelData" << Value << voxelCubes;
+
+    if(VoxelCubeGeneration::settings.generateVoxelCubesQ.get()) {
+        auto voxelCubes = VoxelCubeGeneration::fromCluster(globallyClusteredMaxima[0], samples);
+        outputYaml << Key << "VoxelData" << Value << voxelCubes;
+    }
+
     outputYaml << EndMap << EndDoc;
 
     std::string resultsFilename = settings.binaryFileBasename.get() + ".yml";
