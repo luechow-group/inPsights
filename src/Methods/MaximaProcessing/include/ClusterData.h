@@ -7,6 +7,7 @@
 
 #include <Statistics.h>
 #include <ParticlesVector.h>
+#include <VoxelCube.h>
 
 class ClusterData {
 public:
@@ -19,7 +20,9 @@ public:
                 SingleParticlesStatistics EeStats,
                 IntraParticlesStatistics SeeStats,
                 IntraParticlesStatistics VeeStats,
-                InterParticlesStatistics VenStats);
+                InterParticlesStatistics VenStats,
+                std::vector<VoxelCube> voxelCubes
+                );
 
     ElectronsVector representativeStructure() const;
 
@@ -28,6 +31,7 @@ public:
     SingleParticlesStatistics valueStats_,TeStats_, EeStats_;
     IntraParticlesStatistics SeeStats_, VeeStats_;
     InterParticlesStatistics VenStats_;
+    std::vector<VoxelCube> voxelCubes_;
 };
 
 namespace YAML {

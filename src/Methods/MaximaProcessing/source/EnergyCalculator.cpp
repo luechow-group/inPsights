@@ -2,12 +2,12 @@
 // Created by heuer on 12.12.18.
 //
 #include <EnergyCalculator.h>
-
 #include <ClusterData.h>
 #include <SpinCorrelation.h>
 #include <CoulombPotential.h>
 #include <OneParticleEnergies.h>
 #include <Logger.h>
+#include <VoxelCubeGeneration.h>
 
 EnergyCalculator::EnergyCalculator(YAML::Emitter& yamlDocument, const std::vector<Sample>& samples, AtomsVector atoms)
         :
@@ -72,7 +72,17 @@ void EnergyCalculator::calculateStatistics(const std::vector<std::vector<Similar
             }
             structures.push_back(simRefVector.representativeReference().maximum());
         }
-        printCluster(structures);
+
+
+        auto voxelsQ = VoxelCubeGeneration::settings.generateVoxelCubesQ.get();
+        if(voxelsQ) {
+            auto voxelCubes = VoxelCubeGeneration::fromCluster(cluster, samples_);
+            yamlDocument_ << Key << "VoxelData" << voxelCubes;
+            printCluster(structures,voxelCubes);
+        } else
+            printCluster(structures, {});
+
+
     }
     Logger::console->info("overall count {}", totalCount);
     assert(totalCount == samples_.size() && "The total count must match the sample size.");
@@ -83,7 +93,7 @@ void EnergyCalculator::calculateStatistics(const std::vector<std::vector<Similar
 
 
 // selects nWanted structures and prints the statistic data
-void EnergyCalculator::printCluster(std::vector<ElectronsVector>& structures){
+void EnergyCalculator::printCluster(std::vector<ElectronsVector>& structures, std::vector<VoxelCube> voxelCubes){
 
     size_t nWanted = 16;
     std::vector<ElectronsVector> selectedStructures;
@@ -98,7 +108,7 @@ void EnergyCalculator::printCluster(std::vector<ElectronsVector>& structures){
     }
 
     yamlDocument_ << ClusterData(TeStats_.getTotalWeight(), selectedStructures, valueStats_, TeStats_, EeStats_,
-                                 SeeStats_, VeeStats_, VenStats_);
+                                 SeeStats_, VeeStats_, VenStats_, std::move(voxelCubes));
 }
 
 YAML::Node EnergyCalculator::getYamlNode(){

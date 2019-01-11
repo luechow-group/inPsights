@@ -9,6 +9,7 @@
 #include "SimilarReferences.h"
 #include "Sample.h"
 #include <Statistics.h>
+#include <VoxelCube.h>
 
 class EnergyCalculator {
 public:
@@ -20,7 +21,7 @@ public:
     void calculateStatistics(const std::vector<std::vector<SimilarReferences>> &clusteredGloballySimilarMaxima);
 
     // selects nWanted structures and prints the statistic data
-    void printCluster(std::vector<ElectronsVector> &structures);
+    void printCluster(std::vector<ElectronsVector> &structures, std::vector<VoxelCube> voxelCubes);
 
     YAML::Node getYamlNode();
 

@@ -19,6 +19,7 @@ set(HEADER_FILES
 set(SOURCE_FILES
         source/Vertex.cpp
         source/Triangle.cpp
+        source/VoxelCube.cpp
         source/SurfaceData.cpp
         )
 

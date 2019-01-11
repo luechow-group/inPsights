@@ -11,7 +11,8 @@ ClusterData::ClusterData(unsigned totalNumberOfStructures,
             SingleParticlesStatistics EeStats,
             IntraParticlesStatistics SeeStats,
             IntraParticlesStatistics VeeStats,
-            InterParticlesStatistics VenStats)
+            InterParticlesStatistics VenStats,
+            std::vector<VoxelCube> voxelCubes)
         :
         N_(totalNumberOfStructures),
         exemplaricStructures_(std::move(exemplaricStructures)),
@@ -20,7 +21,8 @@ ClusterData::ClusterData(unsigned totalNumberOfStructures,
         EeStats_(std::move(EeStats)),
         SeeStats_(std::move(SeeStats)),
         VeeStats_(std::move(VeeStats)),
-        VenStats_(std::move(VenStats)) {};
+        VenStats_(std::move(VenStats)),
+        voxelCubes_(std::move(voxelCubes)) {};
 
 ElectronsVector ClusterData::representativeStructure() const {
     return exemplaricStructures_[0];
@@ -36,6 +38,7 @@ namespace YAML {
         node["Te"] = rhs.TeStats_;
         node["Vee"] = rhs.VeeStats_;
         node["Ven"] = rhs.VenStats_;
+        node["VoxelCubes"] = rhs.voxelCubes_;
 
         return node;
     }
@@ -50,7 +53,8 @@ namespace YAML {
                 node["Ee"].as<SingleParticlesStatistics>(),
                 node["SpinCorrelations"].as<IntraParticlesStatistics>(),
                 node["Vee"].as<IntraParticlesStatistics>(),
-                node["Ven"].as<InterParticlesStatistics>()
+                node["Ven"].as<InterParticlesStatistics>(),
+                node["VoxelCubes"].as<std::vector<VoxelCube>>()
                 );
         
         return true;
@@ -66,6 +70,7 @@ namespace YAML {
             << Key << "Ee" << Comment("[Eh]") << Value << rhs.EeStats_
             << Key << "Vee" << Comment("[Eh]") << Value << rhs.VeeStats_
             << Key << "Ven" << Comment("[Eh]") << Value << rhs.VenStats_
+            << Key << "VoxelCubes" << Value << rhs.voxelCubes_
             << EndMap;
 
         return out;

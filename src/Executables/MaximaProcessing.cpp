@@ -12,7 +12,6 @@
 #include <utility>
 #include <MaximaProcessingSettings.h>
 #include <VoxelCubeGeneration.h>
-#include <SurfaceDataGenerator.h>
 
 using namespace YAML;
 using namespace Logger;
@@ -34,6 +33,8 @@ int main(int argc, char *argv[]) {
     GlobalSimilaritySorter::settings = Settings::GlobalSimilaritySorter(inputYaml);
     GlobalClusterSorter::settings = Settings::GlobalClusterSorter(inputYaml);
     VoxelCubeGeneration::settings = Settings::VoxelCubeGeneration(inputYaml);
+
+    std::cout << "GENERATE VOXELS?" << VoxelCubeGeneration::settings.generateVoxelCubesQ.get() << std::endl;
 
     std::vector<Reference> globallyIdenticalMaxima;
     std::vector<Sample> samples;
@@ -95,11 +96,6 @@ int main(int argc, char *argv[]) {
     console->info("Calculating statistics...");
     energyCalculator.calculateStatistics(globallyClusteredMaxima);
     //outputYaml << Key << "SurfaceData" << Value << surfaceData;
-
-    if(VoxelCubeGeneration::settings.generateVoxelCubesQ.get()) {
-        auto voxelCubes = VoxelCubeGeneration::fromCluster(globallyClusteredMaxima[0], samples);
-        outputYaml << Key << "VoxelData" << Value << voxelCubes;
-    }
 
     outputYaml << EndMap << EndDoc;
 

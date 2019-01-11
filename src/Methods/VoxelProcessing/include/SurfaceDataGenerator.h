@@ -43,7 +43,7 @@ public:
         return mid;
     }
 
-    explicit SurfaceDataGenerator(VoxelCube<uint16_t> volume)
+    explicit SurfaceDataGenerator(VoxelCube volume)
             : cube(volume), dualMcVertices_(), dualMcQuads_() {} //TODO use move semantics?
 
     SurfaceData computeSurfaceData(double volumeThreshold = 0.5) {
@@ -74,7 +74,7 @@ public:
         return surfaceData;
     }
 
-    VoxelCube<uint16_t> cube; //TODO template
+    VoxelCube cube; //TODO template
     std::vector<dualmc::Vertex> dualMcVertices_;
     std::vector<dualmc::Quad> dualMcQuads_;
 };

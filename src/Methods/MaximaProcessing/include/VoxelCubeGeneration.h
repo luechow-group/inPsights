@@ -19,7 +19,7 @@ namespace Settings {
         Property<bool> generateVoxelCubesQ = {false, VARNAME(generateVoxelCubesQ)};
         Property<bool> centerCubesAtElectronsQ = {true, VARNAME(centerCubesAtElectronsQ)};
         Property<uint16_t> dimension = {16, VARNAME(dimension)};
-        Property<VoxelCube<uint16_t>::VertexComponentsType > length = {2, VARNAME(length)};
+        Property<VoxelCube::VertexComponentsType > length = {2, VARNAME(length)};
 
 
         VoxelCubeGeneration() = default;
@@ -31,9 +31,9 @@ YAML_SETTINGS_DECLARATION(Settings::VoxelCubeGeneration)
 
 
 namespace VoxelCubeGeneration{
-    inline static Settings::VoxelCubeGeneration settings {};
+    inline Settings::VoxelCubeGeneration settings {};
 
-    std::vector<VoxelCube<uint16_t>> fromCluster(
+    std::vector<VoxelCube> fromCluster(
             const std::vector<SimilarReferences> &cluster,
             const std::vector<Sample> &samples);
 };
