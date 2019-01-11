@@ -7,7 +7,7 @@
 
 #include <Logger.h>
 #include <MoleculeWidget.h>
-#include <EnergyPartitioningWidget.h>
+#include <MaximaProcessingWidget.h>
 
 #include <QCheckBox>
 #include <QSlider>
@@ -29,7 +29,7 @@ public slots:
 
 private:
     MoleculeWidget *moleculeWidget;
-    EnergyPartitioningWidget *energyPartitioningWidget;
+    MaximaProcessingWidget *energyPartitioningWidget;
     QCheckBox *atomsCheckBox, *bondsCheckBox, *spinConnectionsCheckBox, *spinCorrelationsCheckBox;
     QSlider *spinCorrelationSlider;
     QLabel *spinCorrelationSliderLabel;

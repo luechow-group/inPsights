@@ -2,8 +2,8 @@
 // Created by heuer on 05.12.18.
 //
 
-#ifndef INPSIGHTS_ENERGYPARTITIONINGWIDGET_H
-#define INPSIGHTS_ENERGYPARTITIONINGWIDGET_H
+#ifndef INPSIGHTS_MAXIMAPROCESSINGWIDGET_H
+#define INPSIGHTS_MAXIMAPROCESSINGWIDGET_H
 
 #include <QWidget>
 #include <QTreeWidget>
@@ -14,10 +14,10 @@
 
 class ClusterData;
 
-class EnergyPartitioningWidget : public QWidget {
+class MaximaProcessingWidget : public QWidget {
 Q_OBJECT
 public:
-    explicit EnergyPartitioningWidget(QWidget* parent = nullptr);
+    explicit MaximaProcessingWidget(QWidget* parent = nullptr);
 
     void initializeTreeItems(QTreeWidget &tree, int numberOfParticles);
     void setAtomEnergies(SingleParticlesStatistics EnStats);
@@ -57,4 +57,4 @@ private:
     std::vector<int> getSelectedItems(const QTreeWidget &tree);
 };
 
-#endif //INPSIGHTS_ENERGYPARTITIONINGWIDGET_H
+#endif //INPSIGHTS_MAXIMAPROCESSINGWIDGET_H

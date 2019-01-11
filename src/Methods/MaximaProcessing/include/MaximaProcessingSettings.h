@@ -2,8 +2,8 @@
 // Created by Michael Heuer on 2018-12-28.
 //
 
-#ifndef INPSIGHTS_ENERGYPARTITIONINGSETTINGS_H
-#define INPSIGHTS_ENERGYPARTITIONINGSETTINGS_H
+#ifndef INPSIGHTS_MAXIMAPROCESSINGSETTINGS_H
+#define INPSIGHTS_MAXIMAPROCESSINGSETTINGS_H
 
 #include <ISettings.h>
 #include <Property.h>
@@ -16,19 +16,19 @@ enum class SamplesToAnalyze{
     all = 0 };
 
 namespace Settings {
-    class EnergyPartitioning : public ISettings {
+    class MaximaProcessing : public ISettings {
     public:
-        inline static const std::string className = {VARNAME(EnergyPartitioning)};
+        inline static const std::string className = {VARNAME(MaximaProcessing)};
 
         Property<std::string> binaryFileBasename = {"raw", VARNAME(binaryFileBasename)};
         Property<unsigned> samplesToAnalyze = {unsigned(SamplesToAnalyze::small), VARNAME(samplesToAnalyze)};
         Property<bool> identitySearch = {false, VARNAME(identitySearch)};
 
-        EnergyPartitioning();
-        explicit EnergyPartitioning(const YAML::Node &node);
+        MaximaProcessing();
+        explicit MaximaProcessing(const YAML::Node &node);
         void appendToNode(YAML::Node &node) const override;
     };
 }
-YAML_SETTINGS_DECLARATION(Settings::EnergyPartitioning)
+YAML_SETTINGS_DECLARATION(Settings::MaximaProcessing)
 
-#endif //INPSIGHTS_ENERGYPARTITIONINGSETTINGS_H
+#endif //INPSIGHTS_MAXIMAPROCESSINGSETTINGS_H

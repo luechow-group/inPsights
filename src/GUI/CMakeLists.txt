@@ -49,7 +49,7 @@ set(HEADER_FILES
         include/SpinCorrelations3D.h
         include/SameSpinConnections3D.h
         include/IntegerSortedTreeWidgetItem.h
-        include/EnergyPartitioningWidget.h
+        include/MaximaProcessingWidget.h
         include/SurfaceMesh.h
         include/Surface.h
         )
@@ -74,7 +74,7 @@ set(SOURCE_FILES
         source/InPsightsWidget.cpp
         source/SameSpinConnections3D.cpp
         source/IntegerSortedTreeWidgetItem.cpp
-        source/EnergyPartitioningWidget.cpp
+        source/MaximaProcessingWidget.cpp
         source/SurfaceMesh.cpp
         source/Surface.cpp
         )
@@ -91,7 +91,7 @@ target_include_directories(${PROJECT_NAME}
 
 target_link_libraries(${PROJECT_NAME}
         BaseLib # includes eigen
-        EnergyPartitioning
+        MaximaProcessing
         VoxelProcessing # includes dualmc
         Qt5::Core
         Qt5::Gui

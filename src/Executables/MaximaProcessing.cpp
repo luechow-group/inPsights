@@ -10,7 +10,7 @@
 #include <GeneralStatistics.h>
 #include <algorithm>
 #include <utility>
-#include <EnergyPartitioningSettings.h>
+#include <MaximaProcessingSettings.h>
 #include <VoxelCubeGeneration.h>
 #include <SurfaceDataGenerator.h>
 
@@ -29,7 +29,7 @@ int main(int argc, char *argv[]) {
     console->info("Input file {}:\n{}", inputFilename, emitter.c_str());
 
     // Apply settings from inputYaml
-    Settings::EnergyPartitioning settings(inputYaml);
+    Settings::MaximaProcessing settings(inputYaml);
     GlobalIdentitySorter::settings = Settings::GlobalIdentitySorter(inputYaml);
     GlobalSimilaritySorter::settings = Settings::GlobalSimilaritySorter(inputYaml);
     GlobalClusterSorter::settings = Settings::GlobalClusterSorter(inputYaml);
@@ -126,8 +126,6 @@ int main(int argc, char *argv[]) {
      *   - what happens with the cores? => incorporate into intra motif energies => inter-electronic energies
      * - export voxel for all electrons for all clusters (external file?)
      *  - center voxel cube on averaged electron pos
-     * - refactor names
-     *  - rename EnergyPartitioning to MaximaProcessing
      * - settings classes
      *   - fix memory leak after destruction of properties observed with the intel compiler
      *   - voxel settings

@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.10)
 
-project(EnergyPartitioning CXX)
+project(MaximaProcessing CXX)
 
 set ( PROJECT_FOLDER_NAME ${PROJECT_NAME} )
 set ( PROJECT_PATH ${PROJECT_NAME})
@@ -21,7 +21,7 @@ set(HEADER_FILES
         #include/GlobalPermutationSorter.h
         include/GeneralStatistics.h
         include/ValueSorter.h
-        include/EnergyPartitioningSettings.h
+        include/MaximaProcessingSettings.h
         include/VoxelCubeGeneration.h
         )
 
@@ -36,7 +36,7 @@ set(SOURCE_FILES
         #source/GlobalPermutationSorter.cpp
         source/GeneralStatistics.cpp
         source/ValueSorter.cpp
-        source/EnergyPartitioningSettings.cpp
+        source/MaximaProcessingSettings.cpp
         source/VoxelCubeGeneration.cpp
         )
 

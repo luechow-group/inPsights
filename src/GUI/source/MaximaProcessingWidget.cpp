@@ -3,13 +3,13 @@
 //
 
 #include <utility>
-#include <EnergyPartitioningWidget.h>
+#include <MaximaProcessingWidget.h>
 #include <QHeaderView>
 #include <ClusterData.h>
 #include <OneParticleEnergies.h>
 #include <IntegerSortedTreeWidgetItem.h>
 
-EnergyPartitioningWidget::EnergyPartitioningWidget(QWidget *parent)
+MaximaProcessingWidget::MaximaProcessingWidget(QWidget *parent)
         :
         QWidget(parent),
         initializedQ_(false),
@@ -25,18 +25,18 @@ EnergyPartitioningWidget::EnergyPartitioningWidget(QWidget *parent)
 
     initializeTree(En_,QString("n"));
     connect(&En_, &QTreeWidget::itemSelectionChanged,
-            this, &EnergyPartitioningWidget::onAtomSelectionChanged);
+            this, &MaximaProcessingWidget::onAtomSelectionChanged);
     connect(&En_, &QTreeWidget::itemChanged,
-            this, &EnergyPartitioningWidget::onAtomItemChanged);
+            this, &MaximaProcessingWidget::onAtomItemChanged);
 
     initializeTree(Ee_,QString("e"));
     connect(&Ee_, &QTreeWidget::itemSelectionChanged,
-            this, &EnergyPartitioningWidget::onElectronSelectionChanged);
+            this, &MaximaProcessingWidget::onElectronSelectionChanged);
     connect(&Ee_, SIGNAL(itemChanged(QTreeWidgetItem*,int)),
             this, SLOT(onElectronItemChanged()));
 }
 
-void EnergyPartitioningWidget::initializeTree(QTreeWidget &tree, const QString& particleSymbol) const {
+void MaximaProcessingWidget::initializeTree(QTreeWidget &tree, const QString& particleSymbol) const {
     tree.setColumnCount(3);
     tree.setHeaderLabels(QStringList({
         QString("E%1 / Eh").arg(particleSymbol),
@@ -47,15 +47,15 @@ void EnergyPartitioningWidget::initializeTree(QTreeWidget &tree, const QString& 
     tree.header()->setStretchLastSection(false);
 }
 
-QTreeWidget& EnergyPartitioningWidget::atomsTreeWidget() {
+QTreeWidget& MaximaProcessingWidget::atomsTreeWidget() {
     return En_;
 }
 
-QTreeWidget& EnergyPartitioningWidget::electronsTreeWidget() {
+QTreeWidget& MaximaProcessingWidget::electronsTreeWidget() {
     return Ee_;
 }
 
-void EnergyPartitioningWidget::recalculateMotifEnergy(){
+void MaximaProcessingWidget::recalculateMotifEnergy(){
     double intra = 0, inter = 0, intraErr = 0, interErr = 0;
     addContributions(Ee_, intra, inter, intraErr, interErr);
     addContributions(En_, intra, inter, intraErr, interErr);
@@ -67,25 +67,25 @@ void EnergyPartitioningWidget::recalculateMotifEnergy(){
 }
 
 
-void EnergyPartitioningWidget::onAtomItemChanged() {
+void MaximaProcessingWidget::onAtomItemChanged() {
     recalculateMotifEnergy();
     emit atomsChecked(getCheckedItems(En_));
 }
 
-void EnergyPartitioningWidget::onElectronItemChanged() {
+void MaximaProcessingWidget::onElectronItemChanged() {
     recalculateMotifEnergy();
     emit electronsChecked(getCheckedItems(Ee_));
 }
 
-void EnergyPartitioningWidget::onAtomSelectionChanged() {
+void MaximaProcessingWidget::onAtomSelectionChanged() {
     emit atomsHighlighted(getSelectedItems(En_));
 }
 
-void EnergyPartitioningWidget::onElectronSelectionChanged() {
+void MaximaProcessingWidget::onElectronSelectionChanged() {
     emit electronsHighlighted(getSelectedItems(Ee_));
 }
 
-std::vector<int> EnergyPartitioningWidget::getSelectedItems(const QTreeWidget &tree) {
+std::vector<int> MaximaProcessingWidget::getSelectedItems(const QTreeWidget &tree) {
     std::vector<int> selection;
 
     for(auto &item : tree.selectedItems()) {
@@ -95,7 +95,7 @@ std::vector<int> EnergyPartitioningWidget::getSelectedItems(const QTreeWidget &t
     return selection;
 }
 
-std::vector<int> EnergyPartitioningWidget::getCheckedItems(const QTreeWidget &tree) {
+std::vector<int> MaximaProcessingWidget::getCheckedItems(const QTreeWidget &tree) {
     std::vector<int> selection;
 
     for (int i = 0; i < tree.topLevelItemCount(); ++i) {
@@ -109,7 +109,7 @@ std::vector<int> EnergyPartitioningWidget::getCheckedItems(const QTreeWidget &tr
     return selection;
 }
 
-void EnergyPartitioningWidget::addContributions(const QTreeWidget &tree,
+void MaximaProcessingWidget::addContributions(const QTreeWidget &tree,
                                                 double &intra, double &inter, double &intraErr, double &interErr) const {
     for (int i = 0; i < tree.topLevelItemCount(); ++i) {
         auto topItem = tree.topLevelItem(i);
@@ -126,7 +126,7 @@ void EnergyPartitioningWidget::addContributions(const QTreeWidget &tree,
     }
 }
 
-void EnergyPartitioningWidget::initializeTreeItems(QTreeWidget &tree, int numberOfParticles) {
+void MaximaProcessingWidget::initializeTreeItems(QTreeWidget &tree, int numberOfParticles) {
     for (int i = 0; i < numberOfParticles; ++i) {
         auto item = new IntegerSortedTreeWidgetItem();
         item->setCheckState(0,Qt::CheckState::Unchecked);
@@ -134,11 +134,11 @@ void EnergyPartitioningWidget::initializeTreeItems(QTreeWidget &tree, int number
     }
 }
 
-void EnergyPartitioningWidget::setAtomEnergies(SingleParticlesStatistics EnStats) {
+void MaximaProcessingWidget::setAtomEnergies(SingleParticlesStatistics EnStats) {
     EnStats_ = std::move(EnStats);
 }
 
-void EnergyPartitioningWidget::updateData(const ClusterData &clusterData) {
+void MaximaProcessingWidget::updateData(const ClusterData &clusterData) {
     assert(Ee_.topLevelItemCount() == static_cast<int>(clusterData.EeStats_.rows())
     && "The number of tree items and electrons must match.");
     assert(En_.topLevelItemCount() == static_cast<int>(clusterData.VenStats_.cols())
@@ -148,7 +148,7 @@ void EnergyPartitioningWidget::updateData(const ClusterData &clusterData) {
     updateEnergies(En_, EnStats_.mean(), EnStats_.standardError());
 }
 
-void EnergyPartitioningWidget::updateEnergies(QTreeWidget &tree,
+void MaximaProcessingWidget::updateEnergies(QTreeWidget &tree,
                                               const Eigen::VectorXd &energies,
                                               const Eigen::VectorXd &errors) const {
     assert(energies.size() == errors.size()

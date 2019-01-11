@@ -9,10 +9,10 @@ set ( OUTPUT_NAME "${PROJECT_FOLDER_NAME}" )
 message ( "-- ++ CREATING PROJECT OR MAKEFILE ---> ${OUTPUT_NAME}" )
 
 
-add_executable(EnergyPartitioning.exe EnergyPartitioning.cpp)
-target_link_libraries(EnergyPartitioning.exe
+add_executable(MaximaProcessing.exe MaximaProcessing.cpp)
+target_link_libraries(MaximaProcessing.exe
         BaseLib
-        EnergyPartitioning
+        MaximaProcessing
         )
 
 add_executable(StructuralSimilarity.exe StructuralSimilarityExec.cpp)
@@ -32,7 +32,7 @@ if (DEFINED BUILD_GUI AND ON)
     add_executable(inPsights inPsights.cpp)
     target_link_libraries(inPsights
             GUI
-            EnergyPartitioning
+            MaximaProcessing
             )
 
     add_executable(StringMethodGUI.exe StringMethodGUI.cpp)

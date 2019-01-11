@@ -23,7 +23,7 @@ InPsightsWidget::InPsightsWidget(QWidget *parent)
         :
         QWidget(parent),
         moleculeWidget(new MoleculeWidget(this)),
-        energyPartitioningWidget(new EnergyPartitioningWidget(this)), // TODO refator, should it be an additional window?
+        energyPartitioningWidget(new MaximaProcessingWidget(this)), // TODO refator, should it be an additional window?
         atomsCheckBox(new QCheckBox("Atoms", this)),
         bondsCheckBox(new QCheckBox("Bonds", this)),
         spinConnectionsCheckBox(new QCheckBox("Spin Connections", this)),
@@ -106,14 +106,14 @@ void InPsightsWidget::connectSignals() {
     connect(spinCorrelationSlider, &QSlider::valueChanged,
             this, &InPsightsWidget::onSpinCorrelationsSliderChanged);
 
-    connect(energyPartitioningWidget, &EnergyPartitioningWidget::atomsChecked,
+    connect(energyPartitioningWidget, &MaximaProcessingWidget::atomsChecked,
             moleculeWidget, &MoleculeWidget::onAtomsChecked);
-    connect(energyPartitioningWidget, &EnergyPartitioningWidget::electronsChecked,
+    connect(energyPartitioningWidget, &MaximaProcessingWidget::electronsChecked,
             moleculeWidget, &MoleculeWidget::onElectronsChecked);
 
-    connect(energyPartitioningWidget, &EnergyPartitioningWidget::atomsHighlighted,
+    connect(energyPartitioningWidget, &MaximaProcessingWidget::atomsHighlighted,
             moleculeWidget, &MoleculeWidget::onAtomsHighlighted);
-    connect(energyPartitioningWidget, &EnergyPartitioningWidget::electronsHighlighted,
+    connect(energyPartitioningWidget, &MaximaProcessingWidget::electronsHighlighted,
             moleculeWidget, &MoleculeWidget::onElectronsHighlighted);
 }
 
