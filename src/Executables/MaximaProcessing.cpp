@@ -34,8 +34,6 @@ int main(int argc, char *argv[]) {
     GlobalClusterSorter::settings = Settings::GlobalClusterSorter(inputYaml);
     VoxelCubeGeneration::settings = Settings::VoxelCubeGeneration(inputYaml);
 
-    std::cout << "GENERATE VOXELS?" << VoxelCubeGeneration::settings.generateVoxelCubesQ.get() << std::endl;
-
     std::vector<Reference> globallyIdenticalMaxima;
     std::vector<Sample> samples;
     RawDataReader reader(globallyIdenticalMaxima, samples);
@@ -112,6 +110,7 @@ int main(int argc, char *argv[]) {
     return 0;
 
     /*TODO
+     * - SEDs seem to be off
      * - make similar ref a nested structure
      *  - has a first/representative structure
      *  - has an averagedStructure
