@@ -70,7 +70,7 @@ std::ostream& operator<<(std::ostream& os, const PositionsVector& pc){
 }
 
 bool PositionsVector::operator==(const PositionsVector& other) const {
-    return SliceableDataVector<double>::operator==(other);
+    return DataVector<double>::operator==(other);
 }
 
 bool PositionsVector::operator!=(const PositionsVector&other) const {

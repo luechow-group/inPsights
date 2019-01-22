@@ -2,27 +2,27 @@
 // Created by Michael Heuer on 31.08.18.
 //
 
-#ifndef INPSIGHTS_SLICEABLEDATAVECTOR_H
-#define INPSIGHTS_SLICEABLEDATAVECTOR_H
+#ifndef INPSIGHTS_DATAVECTOR_H
+#define INPSIGHTS_DATAVECTOR_H
 
 #include "AbstractVector.h"
 #include <Eigen/Core>
 
 template<typename Scalar>
-class SliceableDataVector : public AbstractVector {
+class DataVector : public AbstractVector {
 
 protected:
     using EigenVecType = Eigen::Matrix<Scalar, Eigen::Dynamic,1>;
     using RefEigenVecType = Eigen::Ref<EigenVecType>;
 
 public:
-    SliceableDataVector(long numberOfEntities = 0, long entityLength = 1)
+    DataVector(long numberOfEntities = 0, long entityLength = 1)
     :
     AbstractVector(numberOfEntities,entityLength),
     data_(EigenVecType::Constant(numberOfEntities, 0))
     {}
 
-    SliceableDataVector(const SliceableDataVector &rhs)
+    DataVector(const DataVector &rhs)
     :
     AbstractVector(rhs.numberOfEntities(), rhs.entityLength()),
     data_(rhs.asEigenVector())
@@ -45,11 +45,11 @@ public:
     };
 
 protected:
-    bool operator==(const SliceableDataVector<Scalar> &other) const {
+    bool operator==(const DataVector<Scalar> &other) const {
         return (data_ == other.data_);
     }
-    
-    bool operator!=(const SliceableDataVector<Scalar> &other) const {
+
+    bool operator!=(const DataVector<Scalar> &other) const {
         return !(*this == other);
     }
 
@@ -82,4 +82,4 @@ protected:
     EigenVecType data_;
 };
 
-#endif //INPSIGHTS_SLICEABLEDATAVECTOR_H
+#endif //INPSIGHTS_DATAVECTOR_H

@@ -57,7 +57,7 @@ public:
     }
     
     bool operator==(const TypesVector<Type> &other) const {
-        return SliceableDataVector<int>::operator==(other);
+        return DataVector<int>::operator==(other);
     }
 
     bool operator!=(const TypesVector<Type> &other) const {
