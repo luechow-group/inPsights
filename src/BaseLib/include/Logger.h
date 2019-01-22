@@ -5,15 +5,11 @@
 #ifndef INPSIGHTS_LOGGER_H
 #define INPSIGHTS_LOGGER_H
 
-#include <string>
 #include <spdlog/spdlog.h>
+#include <spdlog/sinks/stdout_color_sinks.h>
 
 namespace Logger{
-
-    const std::string name = "console";
-
-    void initialize();
-    std::shared_ptr<spdlog::logger> get();
+    extern std::shared_ptr<spdlog::logger> console;
 }
 
 #endif //INPSIGHTS_LOGGER_H

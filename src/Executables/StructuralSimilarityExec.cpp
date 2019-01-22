@@ -50,7 +50,6 @@ int main(int argc, char *argv[]) {
     std::cout << atomsVector<< std::endl;
 
     // Settings
-    ExpansionSettings::defaults();
     ExpansionSettings::mode = ExpansionSettings::Mode::alchemical;
     ExpansionSettings::Alchemical::pairSimilarities[{int(Spin::alpha),int(Spin::beta)}] = 0.5;
     ParticleKit::create(atomsVector,importer.getMaximaStructure(1,1));
@@ -81,7 +80,6 @@ int main(int argc, char *argv[]) {
     std::cout << electronsVectors << std::endl;
 
     // Settings
-    ExpansionSettings::defaults();
     ExpansionSettings::Radial::nmax = nmax;
     ExpansionSettings::Angular::lmax = lmax;
     ExpansionSettings::mode = ExpansionSettings::Mode::alchemical;

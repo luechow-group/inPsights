@@ -4,7 +4,6 @@
 
 #include <utility>
 #include <Sphere.h>
-#include "Sphere.h"
 
 Sphere::Sphere(Qt3DCore::QEntity *root, QColor color, const QVector3D location, const float radius)
         :

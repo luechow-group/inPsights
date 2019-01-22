@@ -16,8 +16,7 @@ int main(int argc, char *argv[]) {
     app.setWindowIcon(QIcon(":inPsightsIcon.png"));
     app.setApplicationName("inPsights");
 
-    Logger::initialize();
-    spdlog::get(Logger::name)->info("Welcome to inPsights!");
+    Logger::console->info("Welcome to inPsights!");
 
     auto widget = std::make_unique<InPsightsWidget>();
 

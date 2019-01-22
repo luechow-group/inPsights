@@ -54,6 +54,7 @@ Qt3DCore::QEntity *MoleculeWidget::getMoleculeEntity() {
     return moleculeEntity_;
 }
 
+#include <SurfaceMesh.h>
 void MoleculeWidget::drawAtoms(bool drawQ) {
     if (drawQ) {
         atomsVector3D_ = new AtomsVector3D(moleculeEntity_, *sharedAtomsVector_);

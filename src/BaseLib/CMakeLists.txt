@@ -47,6 +47,9 @@ set(HEADER_FILES
         include/Statistics.h
         include/SpinCorrelation.h
         include/AtomsVectorLinkedElectronsVector.h
+        include/ISettings.h
+        include/Property.h
+        include/Signal.h
         )
 
 set(SOURCE_FILES
@@ -68,9 +71,9 @@ set(SOURCE_FILES
         source/SpecialMathFunctions/BoostSphericalHarmonics.cpp
         source/SpecialMathFunctions/ModifiedSphericalBesser1stKind.cpp
         source/SpecialMathFunctions/Gaussian.cpp
-        source/Logger.cpp
         source/BinaryFileReader.cpp
         source/AtomsVectorLinkedElectronsVector.cpp
+        source/Logger.cpp
         )
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES})

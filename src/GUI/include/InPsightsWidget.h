@@ -7,7 +7,7 @@
 
 #include <Logger.h>
 #include <MoleculeWidget.h>
-#include <EnergyPartitioningWidget.h>
+#include <MaximaProcessingWidget.h>
 
 #include <QCheckBox>
 #include <QSlider>
@@ -28,9 +28,8 @@ public slots:
     void onSpinCorrelationsSliderChanged(int value);
 
 private:
-    std::shared_ptr<spdlog::logger> console;
     MoleculeWidget *moleculeWidget;
-    EnergyPartitioningWidget *energyPartitioningWidget;
+    MaximaProcessingWidget *energyPartitioningWidget;
     QCheckBox *atomsCheckBox, *bondsCheckBox, *spinConnectionsCheckBox, *spinCorrelationsCheckBox;
     QSlider *spinCorrelationSlider;
     QLabel *spinCorrelationSliderLabel;

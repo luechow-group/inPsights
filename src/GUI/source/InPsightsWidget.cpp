@@ -16,13 +16,14 @@
 #include <iterator>
 #include <vector>
 #include <ParticlesVector.h>
+#include <SurfaceDataGenerator.h>
+
 
 InPsightsWidget::InPsightsWidget(QWidget *parent)
         :
         QWidget(parent),
-        console(Logger::get()),
         moleculeWidget(new MoleculeWidget(this)),
-        energyPartitioningWidget(new EnergyPartitioningWidget(this)), // TODO refator, should it be an additional window?
+        energyPartitioningWidget(new MaximaProcessingWidget(this)), // TODO refator, should it be an additional window?
         atomsCheckBox(new QCheckBox("Atoms", this)),
         bondsCheckBox(new QCheckBox("Bonds", this)),
         spinConnectionsCheckBox(new QCheckBox("Spin Connections", this)),
@@ -105,14 +106,14 @@ void InPsightsWidget::connectSignals() {
     connect(spinCorrelationSlider, &QSlider::valueChanged,
             this, &InPsightsWidget::onSpinCorrelationsSliderChanged);
 
-    connect(energyPartitioningWidget, &EnergyPartitioningWidget::atomsChecked,
+    connect(energyPartitioningWidget, &MaximaProcessingWidget::atomsChecked,
             moleculeWidget, &MoleculeWidget::onAtomsChecked);
-    connect(energyPartitioningWidget, &EnergyPartitioningWidget::electronsChecked,
+    connect(energyPartitioningWidget, &MaximaProcessingWidget::electronsChecked,
             moleculeWidget, &MoleculeWidget::onElectronsChecked);
 
-    connect(energyPartitioningWidget, &EnergyPartitioningWidget::atomsHighlighted,
+    connect(energyPartitioningWidget, &MaximaProcessingWidget::atomsHighlighted,
             moleculeWidget, &MoleculeWidget::onAtomsHighlighted);
-    connect(energyPartitioningWidget, &EnergyPartitioningWidget::electronsHighlighted,
+    connect(energyPartitioningWidget, &MaximaProcessingWidget::electronsHighlighted,
             moleculeWidget, &MoleculeWidget::onElectronsHighlighted);
 }
 
@@ -125,6 +126,7 @@ void InPsightsWidget::setupSliderBox() {
 }
 
 void InPsightsWidget::selectedStructure(QTreeWidgetItem *item, int column) {
+    using namespace Logger;
     //auto maximaTreeWidgetItem = dynamic_cast<IntegerSortedTreeWidgetItem*>(item);
 
     if (column != 0)
@@ -208,7 +210,7 @@ void InPsightsWidget::loadData() {
 
     moleculeWidget->infoText_->setText(fileName);
 
-    YAML::Node doc = YAML::LoadFile(fileName.toStdString());
+    YAML::Node doc = YAML::LoadAllFromFile(fileName.toStdString())[1]; // load results
     auto nAtoms = doc["Atoms"].as<AtomsVector>().numberOfEntities();
     auto nElectrons = doc["Clusters"][0]["Structures"][0].as<ElectronsVector>().numberOfEntities();
 
@@ -249,6 +251,13 @@ void InPsightsWidget::loadData() {
         }
     }
     moleculeWidget->setSharedAtomsVector(doc["Atoms"].as<AtomsVector>());
+
+    /*auto voxelData = doc["Clusters"][0]["VoxelCubes"].as<std::vector<VoxelCube>>();
+    for (int j = 0; j < nElectrons; ++j) {
+        SurfaceDataGenerator surfaceDataGenerator(voxelData[j]);
+        auto surfaceData = surfaceDataGenerator.computeSurfaceData(0.25);
+        moleculeWidget->drawSurface(surfaceData);
+    }*/
 }
 
 void InPsightsWidget::initialView() {

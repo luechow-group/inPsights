@@ -49,7 +49,9 @@ set(HEADER_FILES
         include/SpinCorrelations3D.h
         include/SameSpinConnections3D.h
         include/IntegerSortedTreeWidgetItem.h
-        include/EnergyPartitioningWidget.h
+        include/MaximaProcessingWidget.h
+        include/SurfaceMesh.h
+        include/Surface.h
         )
 
 set(SOURCE_FILES
@@ -72,7 +74,9 @@ set(SOURCE_FILES
         source/InPsightsWidget.cpp
         source/SameSpinConnections3D.cpp
         source/IntegerSortedTreeWidgetItem.cpp
-        source/EnergyPartitioningWidget.cpp
+        source/MaximaProcessingWidget.cpp
+        source/SurfaceMesh.cpp
+        source/Surface.cpp
         )
 
 add_library(${PROJECT_NAME} STATIC
@@ -86,8 +90,9 @@ target_include_directories(${PROJECT_NAME}
         )
 
 target_link_libraries(${PROJECT_NAME}
-        BaseLib #includes eigen already
-        EnergyPartitioning
+        BaseLib # includes eigen
+        MaximaProcessing
+        VoxelProcessing # includes dualmc
         Qt5::Core
         Qt5::Gui
         Qt5::Widgets
@@ -97,4 +102,4 @@ target_link_libraries(${PROJECT_NAME}
         Qt5::Charts
         )
 
-add_gtest_subdirectory_with_dependency(tests "gtest;pthread")
+add_gtest_subdirectory_with_dependency(tests "gmock;pthread")

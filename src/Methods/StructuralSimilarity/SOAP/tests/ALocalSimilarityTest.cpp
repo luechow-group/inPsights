@@ -20,10 +20,10 @@ public:
     double eps = std::numeric_limits<double>::epsilon()*1e3;
     void SetUp() override {};
 };
+// CAREFUL, ExpansionSettings made persist for following tests.
 
 TEST_F(ALocalSimilarityTest , GenericNormalization) {
     ParticleKit::create(molecule);
-    ExpansionSettings::defaults();
     ExpansionSettings::mode = ExpansionSettings::Mode::typeAgnostic;
 
     Environment e1(molecule,molecule.atoms()[1].position());
@@ -35,7 +35,6 @@ TEST_F(ALocalSimilarityTest , GenericNormalization) {
 
 TEST_F(ALocalSimilarityTest , SameEnvironmentsOnDifferentCenters) {
     ParticleKit::create(molecule);
-    ExpansionSettings::defaults();
 
     Environment e1(molecule,molecule.atoms()[1].position());
     Environment e2(molecule,molecule.atoms()[2].position());
@@ -45,10 +44,7 @@ TEST_F(ALocalSimilarityTest , SameEnvironmentsOnDifferentCenters) {
 
 TEST_F(ALocalSimilarityTest , Cross) {
     ParticleKit::create(molecule);
-    ExpansionSettings::defaults();
     ExpansionSettings::mode = ExpansionSettings::Mode::typeAgnostic;
-    ExpansionSettings::Cutoff::radius = 1.2;
-    ExpansionSettings::Angular::lmax = 3;
 
     Environment e0(molecule, molecule.atoms()[0].position()); // C
     Environment e1(molecule, molecule.atoms()[1].position()); // O1
@@ -68,7 +64,6 @@ TEST_F(ALocalSimilarityTest , Cross) {
 
 TEST_F(ALocalSimilarityTest, TypeSpecificNormalization) {
     ParticleKit::create(molecule);
-    ExpansionSettings::defaults();
     ExpansionSettings::mode = ExpansionSettings::Mode::chemical;
 
     Environment e1(molecule,molecule.atoms()[1].position());
@@ -80,7 +75,6 @@ TEST_F(ALocalSimilarityTest, TypeSpecificNormalization) {
 
 TEST_F(ALocalSimilarityTest, SameEnvironmentOnDifferentCentersGeneric) {
     ParticleKit::create(molecule);
-    ExpansionSettings::defaults();
     ExpansionSettings::mode = ExpansionSettings::Mode::typeAgnostic;
 
     Environment e1(molecule,molecule.atoms()[1].position());
@@ -91,7 +85,6 @@ TEST_F(ALocalSimilarityTest, SameEnvironmentOnDifferentCentersGeneric) {
 
 TEST_F(ALocalSimilarityTest, SameEnvironmentOnDifferentCentersTypeSpecific) {
     ParticleKit::create(molecule);
-    ExpansionSettings::defaults();
     ExpansionSettings::mode = ExpansionSettings::Mode::chemical;
 
     Environment e1(molecule,molecule.atoms()[1].position());
@@ -102,7 +95,6 @@ TEST_F(ALocalSimilarityTest, SameEnvironmentOnDifferentCentersTypeSpecific) {
 
 TEST_F(ALocalSimilarityTest, IsolatedSpecies) {
     ParticleKit::create(TestMolecules::CO2::isolatedNuclei);
-    ExpansionSettings::defaults();
     ExpansionSettings::mode = ExpansionSettings::Mode::chemical;
 
     auto isolated = TestMolecules::CO2::isolatedNuclei;
@@ -115,7 +107,6 @@ TEST_F(ALocalSimilarityTest, IsolatedSpecies) {
 };
 
 TEST_F(ALocalSimilarityTest, H2sameCenter) {
-    ExpansionSettings::defaults();
     ExpansionSettings::mode = ExpansionSettings::Mode::chemical;
     ParticleKit::create(TestMolecules::H2::ElectronsInCores::normal);
 
@@ -128,7 +119,6 @@ TEST_F(ALocalSimilarityTest, H2sameCenter) {
 }
 
 TEST_F(ALocalSimilarityTest, H2sameEnvironment) {
-    ExpansionSettings::defaults();
     ExpansionSettings::mode = ExpansionSettings::Mode::chemical;
     ParticleKit::create(TestMolecules::H2::ElectronsInCores::normal);
 
@@ -141,7 +131,6 @@ TEST_F(ALocalSimilarityTest, H2sameEnvironment) {
 }
 
 TEST_F(ALocalSimilarityTest, twoOppositeElectrons) {
-    ExpansionSettings::defaults();
     ExpansionSettings::mode = ExpansionSettings::Mode::chemical;
 
     auto eaeb = TestMolecules::twoElectrons::oppositeSpin;
@@ -154,7 +143,6 @@ TEST_F(ALocalSimilarityTest, twoOppositeElectrons) {
 }
 
 TEST_F(ALocalSimilarityTest, twoOppositeElectronsReversedOrder) {
-    ExpansionSettings::defaults();
     ExpansionSettings::mode = ExpansionSettings::Mode::chemical;
 
     auto ebea = TestMolecules::twoElectrons::oppositeSpinReversedOrder;
@@ -171,7 +159,6 @@ TEST_F(ALocalSimilarityTest, twoOppositeSpinElectronsComparision) {
     auto mol2 = TestMolecules::twoElectrons::oppositeSpinReversedOrder;
     ParticleKit::create(mol1);
 
-    ExpansionSettings::defaults();
     ExpansionSettings::mode = ExpansionSettings::Mode::chemical;
 
     Environment mol1e0(mol1, mol1.electrons()[0].position());
@@ -192,7 +179,6 @@ TEST_F(ALocalSimilarityTest, twoOppositeSpinElectronsComparisionMs) {
     auto mol2 = TestMolecules::twoElectrons::oppositeSpinReversedOrder;
     ParticleKit::create(mol1);
 
-    ExpansionSettings::defaults();
     ExpansionSettings::mode = ExpansionSettings::Mode::chemical;
 
     MolecularSpectrum ms1(mol1);
@@ -209,7 +195,6 @@ TEST_F(ALocalSimilarityTest, twoOppositeSpinElectronsComparisionMs) {
 }
 
 TEST_F(ALocalSimilarityTest, twoAlphaElectrons) {
-    ExpansionSettings::defaults();
     ExpansionSettings::mode = ExpansionSettings::Mode::chemical;
 
     auto eaea = TestMolecules::twoElectrons::sameSpinAlpha;
@@ -223,7 +208,6 @@ TEST_F(ALocalSimilarityTest, twoAlphaElectrons) {
 
 
 TEST_F(ALocalSimilarityTest, twoBetaElectrons) {
-    ExpansionSettings::defaults();
     ExpansionSettings::mode = ExpansionSettings::Mode::chemical;
 
     auto ebeb = TestMolecules::twoElectrons::sameSpinBeta;
@@ -239,7 +223,6 @@ TEST_F(ALocalSimilarityTest, TypeSpecificAndAlchemicalComparison) {
     auto mol1 = TestMolecules::twoElectrons::oppositeSpin;
     auto mol2 = TestMolecules::twoElectrons::oppositeSpinReversedOrder;
     ParticleKit::create(mol1);
-    ExpansionSettings::defaults();
 
     ExpansionSettings::mode = ExpansionSettings::Mode::chemical;
     Environment mol1e0(mol1, mol1.electrons()[0].position());
@@ -274,7 +257,6 @@ TEST_F(ALocalSimilarityTest, TypeSpecificAndAlchemicalComparison) {
 
 
 TEST_F(ALocalSimilarityTest, DissociationIntoTwoIsolatedSpecies) {
-    ExpansionSettings::defaults();
     ExpansionSettings::mode = ExpansionSettings::Mode::chemical;
     ExpansionSettings::Cutoff::radius = 2;// bohr
     ExpansionSettings::Cutoff::width = 1;// bohr // the inner plateau ends at 1
@@ -302,7 +284,6 @@ TEST_F(ALocalSimilarityTest, DissociationIntoTwoIsolatedSpecies) {
 };
 
 TEST_F(ALocalSimilarityTest, DissociationIntoOneIsolatedSpecies) {
-    ExpansionSettings::defaults();
     ExpansionSettings::mode = ExpansionSettings::Mode::typeAgnostic;
     ExpansionSettings::Cutoff::radius = 2;// bohr
     ExpansionSettings::Cutoff::width = 1;// bohr

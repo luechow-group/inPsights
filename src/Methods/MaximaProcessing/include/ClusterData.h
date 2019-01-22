@@ -1,0 +1,48 @@
+//
+// Created by Michael Heuer on 22.11.18.
+//
+
+#ifndef INPSIGHTS_CLUSTERDATA_H
+#define INPSIGHTS_CLUSTERDATA_H
+
+#include <Statistics.h>
+#include <ParticlesVector.h>
+#include <VoxelCube.h>
+
+class ClusterData {
+public:
+    ClusterData() = default;
+
+    ClusterData(unsigned totalNumberOfStructures,
+                const std::vector<ElectronsVector> & exemplaricStructures,
+                const SingleParticlesStatistics & valueStats,
+                const SingleParticlesStatistics & TeStats,
+                const SingleParticlesStatistics & EeStats,
+                const IntraParticlesStatistics & SeeStats,
+                const IntraParticlesStatistics & VeeStats,
+                const InterParticlesStatistics & VenStats,
+                const std::vector<VoxelCube>& voxelCubes
+                );
+
+    ElectronsVector representativeStructure() const;
+
+    unsigned N_;
+    std::vector<ElectronsVector> exemplaricStructures_;
+    SingleParticlesStatistics valueStats_,TeStats_, EeStats_;
+    IntraParticlesStatistics SeeStats_, VeeStats_;
+    InterParticlesStatistics VenStats_;
+    std::vector<VoxelCube> voxelCubes_;
+};
+
+namespace YAML {
+    class Node; class Emitter;
+    template <typename Type> struct convert;
+
+    template<> struct convert<ClusterData> {
+        static Node encode(const ClusterData &rhs);
+        static bool decode(const Node &node, ClusterData &rhs);
+    };
+    Emitter &operator<<(Emitter &out, const ClusterData &p) ;
+}
+
+#endif //INPSIGHTS_CLUSTERDATA_H

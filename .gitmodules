@@ -7,6 +7,9 @@
 [submodule "src/Externals/cppoptlib"]
 	path = src/Externals/cppoptlib
 	url = ./../CppNumericalSolvers.git
+[submodule "src/Externals/dualmc"]
+	path = src/Externals/dualmc
+	url = ./../../michael.heuer/dualmc.git
 [submodule "src/Externals/yaml-cpp"]
 	path = src/Externals/yaml-cpp
 	url = https://github.com/jbeder/yaml-cpp.git
