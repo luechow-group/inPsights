@@ -20,12 +20,6 @@ namespace PositionsVectorTransformer{
 
     void translateCenterOfMassToOrigin(PositionsVector& positionsVector);
 
-    void rotateAroundAxis(PositionsVector &p, double angle,
-                          const Eigen::Vector3d &axisStart,
-                          const Eigen::Vector3d &axisEnd);
-    void rotateAroundAxis(PositionsVector &positionsVector, double angle,
-                          const Eigen::Vector3d &axis);
-
     Eigen::Matrix3d rotationMatrixFromQuaternion(const Eigen::Vector4d &q);
 
     Eigen::Vector3d calculateCenterOfMass(const PositionsVector& positionsVector,

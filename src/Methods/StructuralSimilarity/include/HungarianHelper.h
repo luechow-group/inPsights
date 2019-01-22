@@ -9,6 +9,7 @@
 #include "Hungarian.h"
 #include <Metrics.h>
 #include <ParticlesVector.h>
+#include <Interval.h>
 
 namespace HungarianHelper{
 
@@ -47,16 +48,16 @@ namespace HungarianHelper{
             // flip slice intervals
             rhsAlpha = lhsBeta;
             rhsBeta = lhsAlpha;
-        }
+        };
 
         auto costMatrixAlpha = Metrics::positionalDistances<positionalNorm>(
-                PositionsVector(lhsCopy.slice(lhsAlpha).dataRef()),
-                PositionsVector(rhsCopy.slice(rhsAlpha).dataRef()));
+                PositionsVector(lhsCopy.asEigenVector().segment(lhsAlpha.start()*3,lhsAlpha.numberOfEntities()*3)),
+                PositionsVector(rhsCopy.asEigenVector().segment(rhsAlpha.start()*3,rhsAlpha.numberOfEntities()*3)));
         auto bestMatchAlpha = Hungarian<double>::findMatching(costMatrixAlpha);
 
         auto costMatrixBeta = Metrics::positionalDistances<positionalNorm>(
-                PositionsVector(lhsCopy.slice(lhsBeta).dataRef()),
-                PositionsVector(rhsCopy.slice(rhsBeta).dataRef()));
+                PositionsVector(lhsCopy.asEigenVector().segment(lhsBeta.start()*3,lhsBeta.numberOfEntities()*3)),
+                PositionsVector(rhsCopy.asEigenVector().segment(rhsBeta.start()*3,rhsBeta.numberOfEntities()*3)));
         auto bestMatchBeta = Hungarian<double>::findMatching(costMatrixBeta);
 
         if(!flipSpinsQ)

@@ -52,12 +52,6 @@ TEST_F(ATypesVectorTest, ElementTypesStream){
     ASSERT_EQ(stringstream.str(), "H\nHe\nOg\nHe\nHe\n");
 }
 
-/*TEST_F(ATypesVectorTest, CopyConstructor){//TODO
-    SpinTypesVector s(stv);
-    bool b = (s==stv);
-    std::cout << b << std::endl;
-}*/
-
 TEST_F(ATypesVectorTest, SpecializedConstructor){
     SpinTypesVector stv(2,3);
     std::stringstream stringstream;
@@ -119,27 +113,6 @@ TEST_F(ATypesVectorTest, CountTypes_SpinTypes){
     ASSERT_EQ(result[1].second, 3);
 }
 
-TEST_F(ATypesVectorTest, Slice){
-    auto s = stvsmall;
-    auto types = s.asEigenVector();
-
-    ASSERT_EQ(s.entity(0).dataRef(), types.segment(0,1));
-    ASSERT_EQ(s.entity(1).dataRef(), types.segment(1,1));
-    ASSERT_EQ(s.entity(2).dataRef(), types.segment(2,1));
-
-    ASSERT_EQ(s.slice({0, 1}).dataRef(), s.entity(0).dataRef());
-    ASSERT_EQ(s.slice({1, 1}).dataRef(), s.entity(1).dataRef());
-    ASSERT_EQ(s.slice({2, 1}).dataRef(), s.entity(2).dataRef());
-
-    ASSERT_EQ(s.slice({0, 2}).dataRef(), types.segment(0,2));
-    ASSERT_EQ(s.slice({1, 2}).dataRef(), types.segment(1,2));
-    ASSERT_EQ(s.slice({0, 3}).dataRef(), types.segment(0,3));
-
-    ASSERT_EQ(s.slice({0, 3}).dataRef(), s.dataRef());
-
-    EXPECT_DEATH(s.entity(-1).dataRef(),"");
-    EXPECT_DEATH(s.slice({0, 4}).dataRef(),"");
-}
 
 TEST_F(ATypesVectorTest, Permute){
     auto s = stvsmall;
@@ -151,34 +124,6 @@ TEST_F(ATypesVectorTest, Permute){
     ASSERT_EQ(s[0],Spin::alpha);
     ASSERT_EQ(s[1],Spin::beta);
     ASSERT_EQ(s[2],Spin::alpha);
-}
-
-TEST_F(ATypesVectorTest, PermuteSlice){
-    auto s = stvsmall;
-
-    VectorXi p(2);
-    p << 1,0;
-
-    s.slice({1,2}).permute(PermutationMatrix<Dynamic>(p));
-    ASSERT_EQ(s[0],Spin::alpha);
-    ASSERT_EQ(s[1],Spin::beta);
-    ASSERT_EQ(s[2],Spin::alpha);
-
-}
-
-TEST_F(ATypesVectorTest, EqualityOperator) {
-    SpinTypesVector s1({Spin::alpha, Spin::alpha, Spin::beta});
-    SpinTypesVector s2({Spin::alpha, Spin::alpha, Spin::beta});
-    SpinTypesVector s3({Spin::beta, Spin::alpha, Spin::beta});
-
-    ASSERT_TRUE(s1 == s2);
-    ASSERT_TRUE(s1.slice({0, 2}) == s2.slice({0, 2}));
-
-    ASSERT_FALSE(s1.slice({0, 2}) == s2.slice({1, 2}));
-    ASSERT_FALSE(s1 == s3);
-
-    //equality means that not only the slice but also the underlying data is identical
-    ASSERT_FALSE(s1.slice({1, 2}) == s3.slice({1, 2}));
 }
 
 TEST_F(ATypesVectorTest, Multiplicity) {
