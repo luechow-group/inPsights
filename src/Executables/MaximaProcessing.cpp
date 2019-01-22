@@ -43,8 +43,6 @@ int main(int argc, char *argv[]) {
     console->info("number of inital refs {}", globallyIdenticalMaxima.size());
     auto results = GeneralStatistics::calculate(globallyIdenticalMaxima, samples, atoms);
 
-    EnergyCalculator energyCalculator(outputYaml, samples,atoms);
-
     auto valueStandardError = results.valueStats_.standardError()(0,0);
 
     if(settings.identitySearch.get()) {
@@ -57,6 +55,7 @@ int main(int argc, char *argv[]) {
     }
 
     std::vector<SimilarReferences> globallySimilarMaxima;
+
     GlobalSimilaritySorter globalSimilaritySorter(samples,globallyIdenticalMaxima, globallySimilarMaxima);
     if(!inputYaml["GlobalSimilaritySorter"]["similarityValueIncrement"])
         GlobalSimilaritySorter::settings.similarityValueIncrement = valueStandardError*1e-2;
@@ -92,14 +91,14 @@ int main(int argc, char *argv[]) {
                << Key << "NSamples" << Value << samples.size()
                << Key << "OverallResults" << Value << results;
     console->info("Calculating statistics...");
+
+    EnergyCalculator energyCalculator(outputYaml, samples,atoms);
     energyCalculator.calculateStatistics(globallyClusteredMaxima);
-    //outputYaml << Key << "SurfaceData" << Value << surfaceData;
 
     outputYaml << EndMap << EndDoc;
 
     std::string resultsFilename = settings.binaryFileBasename.get() + ".yml";
     console->info("Writing results into file \"{}\"", resultsFilename);
-
 
     std::ofstream yamlFile(resultsFilename);
     yamlFile << outputYaml.c_str();

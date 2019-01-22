@@ -252,12 +252,12 @@ void InPsightsWidget::loadData() {
     }
     moleculeWidget->setSharedAtomsVector(doc["Atoms"].as<AtomsVector>());
 
-    auto voxelData = doc["VoxelData"].as<std::vector<VoxelCube>>();
+    /*auto voxelData = doc["Clusters"][0]["VoxelCubes"].as<std::vector<VoxelCube>>();
     for (int j = 0; j < nElectrons; ++j) {
         SurfaceDataGenerator surfaceDataGenerator(voxelData[j]);
         auto surfaceData = surfaceDataGenerator.computeSurfaceData(0.25);
         moleculeWidget->drawSurface(surfaceData);
-    }
+    }*/
 }
 
 void InPsightsWidget::initialView() {

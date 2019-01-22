@@ -19,7 +19,7 @@ namespace Settings {
         Property<bool> generateVoxelCubesQ = {false, VARNAME(generateVoxelCubesQ)};
         Property<bool> centerCubesAtElectronsQ = {true, VARNAME(centerCubesAtElectronsQ)};
         Property<uint16_t> dimension = {16, VARNAME(dimension)};
-        Property<VoxelCube::VertexComponentsType > length = {2, VARNAME(length)};
+        Property<VoxelCube::VertexComponentsType > length = {4, VARNAME(length)};
 
 
         VoxelCubeGeneration() = default;

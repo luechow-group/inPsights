@@ -9,45 +9,70 @@
 VoxelCube::VoxelCube(
         IndexType dimension,
         VertexComponentsType length,
-        const Eigen::Matrix<VertexComponentsType, 3, 1> &origin)
+        const Eigen::Matrix<VertexComponentsType, 3, 1>& origin)
         :
-        dimension(dimension),
-        length(length), halfLength(length / 2.0), inverseDimension(1.0 / (dimension - 1)),
-        data(static_cast<unsigned long>(dimension * dimension * dimension)),
-        origin(origin) {
+        dimension_(dimension),
+        length_(length),
+        halfLength_(length / 2.0f),
+        inverseDimension_(1.0f / (dimension - 1)),
+        origin_(origin),
+        data_(static_cast<unsigned long>(dimension * dimension * dimension)) {
     assert(dimension > 3 && "The cube dimensions must be greater than 3.");
     assert(length > 0 && "Length must be positive.");
 }
 
-inline long VoxelCube::index(IndexType x, IndexType y, IndexType z) {
-    return x + dimension * (y + dimension * z);
+long VoxelCube::index(IndexType i, IndexType j, IndexType k) {
+    return i + dimension_ * (j + dimension_ * k);
 }
 
 void VoxelCube::add(const Eigen::Vector3d &pos, IndexType weight) {
-    if (pos.minCoeff() >= -halfLength && pos.maxCoeff() < halfLength) {
-        auto x = IndexType((pos[0] + halfLength - origin[0]) / length * dimension);
-        auto y = IndexType((pos[1] + halfLength - origin[1]) / length * dimension);
-        auto z = IndexType((pos[2] + halfLength - origin[2]) / length * dimension);
+    auto i = IndexType((pos[0] + halfLength_ - origin_[0]) / length_ * dimension_);
+    auto j = IndexType((pos[1] + halfLength_ - origin_[1]) / length_ * dimension_);
+    auto k = IndexType((pos[2] + halfLength_ - origin_[2]) / length_ * dimension_);
 
-        data[index(x, y, z)] += weight;
+    if((0 <= i && i < dimension_)
+    && (0 <= j && j < dimension_)
+    && (0 <= k && k < dimension_)) {
+        assert(index(i, j, k) < data_.size() && "The index must fit into the vector");
+        data_[index(i, j, k)] += static_cast<VolumeDataType>(weight);
     }
 };
 
 void VoxelCube::shiftDualMCResults(std::vector<dualmc::Vertex> &vertices) {
     for (auto &v : vertices) {
-        v.x = (v.x * inverseDimension - offset) * length + origin[0];
-        v.y = (v.y * inverseDimension - offset) * length + origin[1];
-        v.z = (v.z * inverseDimension - offset) * length + origin[2];
+        v.x = (v.x * inverseDimension_ - offset_) * length_ + origin_[0];
+        v.y = (v.y * inverseDimension_ - offset_) * length_ + origin_[1];
+        v.z = (v.z * inverseDimension_ - offset_) * length_ + origin_[2];
     }
+}
+
+VoxelCube::IndexType VoxelCube::getDimension() const {
+    return dimension_;
+}
+
+VoxelCube::VertexComponentsType VoxelCube::getLength() const {
+    return length_;
+}
+
+const Eigen::Matrix<VoxelCube::VertexComponentsType, 3, 1> &VoxelCube::getOrigin() const {
+    return origin_;
+}
+
+const std::vector<VoxelCube::VolumeDataType> &VoxelCube::getData() const {
+    return data_;
+}
+
+void VoxelCube::setData(const std::vector<VoxelCube::VolumeDataType> &data) {
+    VoxelCube::data_ = data;
 }
 
 namespace YAML {
     Node convert<VoxelCube>::encode(const VoxelCube &rhs) {
         Node node;
-        node["dimension"] = rhs.dimension;
-        node["length"] = rhs.length;
-        node["origin"] = rhs.origin;
-        node["data"] = rhs.data;
+        node["dimension"] = rhs.getDimension();
+        node["length"] = rhs.getLength();
+        node["origin"] = rhs.getOrigin();
+        node["data"] = rhs.getData();
         return node;
     }
 
@@ -59,17 +84,17 @@ namespace YAML {
         auto length = node["length"].as<VoxelCube::VertexComponentsType>();
         auto origin = node["origin"].as<Eigen::Matrix<VoxelCube::VertexComponentsType, 3, 1>>();
         rhs = VoxelCube(dimension, length, origin);
-        rhs.data = node["data"].as<std::vector<uint16_t >>();
+        rhs.setData(node["data"].as<std::vector<VoxelCube::VolumeDataType>>());
         return true;
     }
 
     Emitter &operator<<(Emitter &out, const VoxelCube &rhs) {
         out << BeginMap
-            << Key << "dimension" << Value << rhs.dimension
-            << Key << "length" << Value << rhs.length
-            << Key << "origin" << Value << rhs.origin
+            << Key << "dimension" << Value << rhs.getDimension()
+            << Key << "length" << Value << rhs.getLength()
+            << Key << "origin" << Value << rhs.getOrigin()
             << Key << "data" << Value << Flow << BeginSeq;
-        for (const auto &i : rhs.data) {
+        for (const auto &i : rhs.getData()) {
             out << int(i);
         }
         out << EndSeq << EndMap;

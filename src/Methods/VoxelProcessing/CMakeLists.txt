@@ -17,6 +17,7 @@ set(HEADER_FILES
         )
 
 set(SOURCE_FILES
+        source/Conversion.cpp
         source/Vertex.cpp
         source/Triangle.cpp
         source/VoxelCube.cpp

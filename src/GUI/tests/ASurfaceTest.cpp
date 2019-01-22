@@ -9,6 +9,7 @@
 
 #include <VoxelCube.h>
 #include <Cylinder.h>
+#include <Conversion.h>
 
 #include <QApplication>
 #include <QWidget>
@@ -55,21 +56,21 @@ TEST(ASurfaceTest, SphereFromDensity) {
     VoxelCube cube(32, 1.0, {0.5,0,0});
 
     RadialGaussian a(0.02,
-            VoxelCube::offset,
-            VoxelCube::offset,
-            VoxelCube::offset);
+            VoxelCube::offset_,
+            VoxelCube::offset_,
+            VoxelCube::offset_);
     int32_t p = 0;
-    for (int32_t z = 0; z < cube.dimension; ++z) {
-        float const nZ = float(z) * cube.inverseDimension;
-        for (int32_t y = 0; y < cube.dimension; ++y) {
-            float const nY = float(y) * cube.inverseDimension;
-            for (int32_t x = 0; x < cube.dimension; ++x, ++p) {
-                float const nX = float(x) * cube.inverseDimension;
+    for (int32_t z = 0; z < cube.getDimension(); ++z) {
+        float const nZ = float(z) * cube.inverseDimension_;
+        for (int32_t y = 0; y < cube.getDimension(); ++y) {
+            float const nY = float(y) * cube.inverseDimension_;
+            for (int32_t x = 0; x < cube.getDimension(); ++x, ++p) {
+                float const nX = float(x) * cube.inverseDimension_;
 
                 float rho = a.eval(nX, nY, nZ);
                 if (rho > 1.0f) rho = 1.0f;
 
-                cube.data[p] = uint16_t(rho * std::numeric_limits<uint16_t>::max());
+                cube.data_[p] = uint16_t(rho * std::numeric_limits<uint16_t>::max());
             }
         }
     }

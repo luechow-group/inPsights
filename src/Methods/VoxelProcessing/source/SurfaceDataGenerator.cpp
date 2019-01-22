@@ -1,5 +1,3 @@
-#include <utility>
-
 //
 // Created by Michael Heuer on 2019-01-11.
 //
@@ -12,14 +10,14 @@ SurfaceDataGenerator::SurfaceDataGenerator(VoxelCube volume)
         : cube_(std::move(volume)), dualMcVertices_(), dualMcQuads_() {} //TODO use move semantics?
 
 SurfaceData SurfaceDataGenerator::computeSurfaceData(double volumeThreshold) {
-    dualmc::DualMC<uint16_t> builder;
+    dualmc::DualMC<VoxelCube::VolumeDataType> builder;
 
     auto isovalue = getIsoValue(volumeThreshold);
 
     auto quadSoupQ = false;
     auto manifoldQ = true;
-    builder.build(&cube_.data.front(),
-                  cube_.dimension, cube_.dimension, cube_.dimension,
+    builder.build(&cube_.getData().front(),
+                  cube_.getDimension(), cube_.getDimension(), cube_.getDimension(),
                   isovalue,
                   manifoldQ, quadSoupQ, dualMcVertices_, dualMcQuads_);
 
@@ -41,13 +39,13 @@ SurfaceData SurfaceDataGenerator::computeSurfaceData(double volumeThreshold) {
 
 
 uint16_t SurfaceDataGenerator::getIsoValue(double volumeThreshold, unsigned maxSteps, double eps) {
-    auto res = std::minmax_element(cube_.data.begin(), cube_.data.end());
+    auto res = std::minmax_element(cube_.getData().begin(), cube_.getData().end());
     auto min = *res.first, max = *res.second;
-    auto lower = min, mid = uint16_t(0.2 * max), upper = max;
+    auto lower = min, mid = VoxelCube::VolumeDataType(0.2 * max), upper = max;
 
     for (unsigned i = 0; i < maxSteps; ++i) {
         unsigned sumIn = 0, sumOut = 0;
-        for (auto v : cube_.data) {
+        for (auto v : cube_.getData()) {
             if (v > mid)
                 sumIn += v;
             else
@@ -60,7 +58,7 @@ uint16_t SurfaceDataGenerator::getIsoValue(double volumeThreshold, unsigned maxS
             upper = mid;
         else
             lower = mid;
-        mid = (upper + lower) / uint16_t(2);
+        mid = (upper + lower) / VoxelCube::VolumeDataType(2);
     }
     return mid;
 }

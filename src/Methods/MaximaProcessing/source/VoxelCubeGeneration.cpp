@@ -29,28 +29,23 @@ std::vector<VoxelCube> VoxelCubeGeneration::fromCluster(const std::vector<Simila
     auto dimension = settings.dimension.get();
     auto length = settings.length.get();
 
-    std::vector<VoxelCube> voxels;
+    ElectronsVector firstMax = cluster[0].representativeReference().maximum(); //TODO use averaged point
+    std::vector<VoxelCube> voxels(static_cast<unsigned long>(firstMax.numberOfEntities()));
 
-    auto firstMax = cluster[0].representativeReference().maximum();//cluster[0].similarReferencesIterators()[0].base()->maximum();//TODO use averaged point
-
-    for (long i = 0; i < firstMax.numberOfEntities(); ++i) {
-        Eigen::Matrix<VoxelCube::VertexComponentsType,3,1> cubeOrigin({0,0,0});
-
-        if(settings.centerCubesAtElectronsQ.get())  //TODO use averaged point
-            cubeOrigin = firstMax[i].position().cast<VoxelCube::VertexComponentsType>();
+    for (long i = 0; i <firstMax.numberOfEntities(); ++i) {
+        Eigen::Vector3f cubeOrigin = Eigen::Vector3f::Zero();
+        if(settings.centerCubesAtElectronsQ.get())
+            cubeOrigin = firstMax.positionsVector()[i].cast<float>();
 
         VoxelCube voxel(dimension, length, cubeOrigin);
         for (const auto &simRef : cluster) {
             for (const auto &ref : simRef.similarReferencesIterators()) {
-
-                for (auto sample : ref.base()->sampleIds()) {
-                    auto electrons = samples[sample].sample_;
-                    auto p = electrons[i].position();
-                    voxel.add(p);
+                for (auto sampleId : ref.base()->sampleIds()) {
+                    voxel.add(samples[sampleId].sample_[i].position());
                 }
             }
         }
-        voxels.emplace_back(voxel);
+        voxels[i] = voxel;
     }
 
     return voxels;

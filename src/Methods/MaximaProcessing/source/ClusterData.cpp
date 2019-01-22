@@ -5,24 +5,26 @@
 #include <ClusterData.h>
 
 ClusterData::ClusterData(unsigned totalNumberOfStructures,
-            std::vector<ElectronsVector> exemplaricStructures,
-            SingleParticlesStatistics valueStats,
-            SingleParticlesStatistics TeStats,
-            SingleParticlesStatistics EeStats,
-            IntraParticlesStatistics SeeStats,
-            IntraParticlesStatistics VeeStats,
-            InterParticlesStatistics VenStats,
-            std::vector<VoxelCube> voxelCubes)
+            const std::vector<ElectronsVector>& exemplaricStructures,
+            const SingleParticlesStatistics & valueStats,
+            const SingleParticlesStatistics & TeStats,
+            const SingleParticlesStatistics & EeStats,
+            const IntraParticlesStatistics & SeeStats,
+            const IntraParticlesStatistics & VeeStats,
+            const InterParticlesStatistics & VenStats,
+            const std::vector<VoxelCube> &voxelCubes
+            )
         :
         N_(totalNumberOfStructures),
-        exemplaricStructures_(std::move(exemplaricStructures)),
-        valueStats_(std::move(valueStats)),
-        TeStats_(std::move(TeStats)),
-        EeStats_(std::move(EeStats)),
-        SeeStats_(std::move(SeeStats)),
-        VeeStats_(std::move(VeeStats)),
-        VenStats_(std::move(VenStats)),
-        voxelCubes_(std::move(voxelCubes)) {};
+        exemplaricStructures_(exemplaricStructures),
+        valueStats_(valueStats),
+        TeStats_(TeStats),
+        EeStats_(EeStats),
+        SeeStats_(SeeStats),
+        VeeStats_(VeeStats),
+        VenStats_(VenStats),
+        voxelCubes_(voxelCubes)
+        {};
 
 ElectronsVector ClusterData::representativeStructure() const {
     return exemplaricStructures_[0];

@@ -14,14 +14,14 @@ public:
     ClusterData() = default;
 
     ClusterData(unsigned totalNumberOfStructures,
-                std::vector<ElectronsVector> exemplaricStructures,
-                SingleParticlesStatistics valueStats,
-                SingleParticlesStatistics TeStats,
-                SingleParticlesStatistics EeStats,
-                IntraParticlesStatistics SeeStats,
-                IntraParticlesStatistics VeeStats,
-                InterParticlesStatistics VenStats,
-                std::vector<VoxelCube> voxelCubes
+                const std::vector<ElectronsVector> & exemplaricStructures,
+                const SingleParticlesStatistics & valueStats,
+                const SingleParticlesStatistics & TeStats,
+                const SingleParticlesStatistics & EeStats,
+                const IntraParticlesStatistics & SeeStats,
+                const IntraParticlesStatistics & VeeStats,
+                const InterParticlesStatistics & VenStats,
+                const std::vector<VoxelCube>& voxelCubes
                 );
 
     ElectronsVector representativeStructure() const;
