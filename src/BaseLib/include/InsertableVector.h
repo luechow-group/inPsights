@@ -29,7 +29,6 @@ protected:
         SliceableDataVector<Scalar>::data_ << before, data, after;
 
         AbstractVector::incrementNumberOfEntities();
-        SliceableDataVector<Scalar>::resetRef(); // reset, because slices and refs are invalid now
     }
 };
 

@@ -26,48 +26,6 @@ public:
     }
 };
 
-TEST_F(APositionsVectorTransformerTest, counterclockwiseRotation){
-
-    double angle = 120.*ConversionFactors::deg2rad; // 120° counterclockwise rotiation
-    Eigen::Vector3d axis = {1,1,1};
-
-    auto rotmat =PositionsVectorTransformer::rotationMatrixFromQuaternion(
-            PositionsVectorTransformer::quaternionFromAngleAndAxis(angle,axis));
-
-    Eigen::Matrix3d expectedRotationMatrix;
-    expectedRotationMatrix << 0,0,1, 1,0,0, 0,1,0;
-
-    ASSERT_TRUE(rotmat.isApprox(expectedRotationMatrix));
-
-    PositionsVectorTransformer::rotateAroundAxis(ev.positionsVector(), angle, axis);
-
-    Eigen::VectorXd expectedPositions(12);
-    expectedPositions << 0,0,0, 0,0,1, 1,0,0, 0,1,0;
-
-    ASSERT_TRUE(ev.positionsVector().asEigenVector().isApprox(expectedPositions));
-}
-
-TEST_F(APositionsVectorTransformerTest, clockwiseRotation){
-
-    double angle = -120.*ConversionFactors::deg2rad; // 120° clockwise rotiation
-    Eigen::Vector3d axis = {1,1,1};
-
-    auto rotmat =PositionsVectorTransformer::rotationMatrixFromQuaternion(
-            PositionsVectorTransformer::quaternionFromAngleAndAxis(angle,axis));
-
-    Eigen::Matrix3d expectedRotationMatrix;
-    expectedRotationMatrix << 0,1,0, 0,0,1, 1,0,0;
-
-    ASSERT_TRUE(rotmat.isApprox(expectedRotationMatrix));
-
-    PositionsVectorTransformer::rotateAroundAxis(ev.positionsVector(), angle, axis);
-
-    Eigen::VectorXd expectedPositions(12);
-    expectedPositions << 0,0,0, 0,1,0, 0,0,1, 1,0,0;
-
-    ASSERT_TRUE(ev.positionsVector().asEigenVector().isApprox(expectedPositions));
-}
-
 TEST_F(APositionsVectorTransformerTest, centerOfMassTranslation){
 
     auto centerOfMass = PositionsVectorTransformer::calculateCenterOfMass(ev.positionsVector());
@@ -84,5 +42,4 @@ TEST_F(APositionsVectorTransformerTest, centerOfMassTranslation){
     -1./4.,-1./4.,3./4.;
 
     ASSERT_TRUE(ev.positionsVector().asEigenVector().isApprox(expectedPositions));
-
 }

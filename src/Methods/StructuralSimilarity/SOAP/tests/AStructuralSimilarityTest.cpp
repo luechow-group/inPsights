@@ -85,9 +85,8 @@ TEST_F(AStructuralSimilarityTest, RotationalSymmetry) {
     for (unsigned i = 0; i < n; ++i) {
         double angle = 2*M_PI*double(i)/double(n-1);
         auto pos = A.electrons().positionsVector();
-        PositionsVectorTransformer::rotateAroundAxis(pos,angle,
-                                                     A.atoms()[0].position(),
-                                                     A.atoms()[1].position());
+
+        pos.rotateAroundOrigin(angle, A.atoms()[1].position() - A.atoms()[0].position());
 
         ElectronsVector rotatedElectrons(pos,A.electrons().typesVector());
         MolecularGeometry molRotated = {A.atoms(),rotatedElectrons};

@@ -41,25 +41,6 @@ void PositionsVectorTransformer::translateCenterOfMassToOrigin(PositionsVector& 
     positionsVector.translate(-center);
 };
 
-void PositionsVectorTransformer::rotateAroundAxis(PositionsVector &p, double angle,
-                                                  const Eigen::Vector3d &axisStart,
-                                                  const Eigen::Vector3d &axisEnd){
-    auto rotMat = rotationMatrixFromQuaternion(
-            quaternionFromAngleAndAxis(angle, axisEnd - axisStart));
-
-    p.translate(-axisStart);
-
-    for (unsigned i = 0; i < p.numberOfEntities(); i++)
-        p.entity(i).dataRef() = p[i].transpose()*rotMat;
-
-    p.translate(axisStart);
-}
-
-void PositionsVectorTransformer::rotateAroundAxis(PositionsVector &positionsVector, double angle,
-                                                  const Eigen::Vector3d &axis){
-    return rotateAroundAxis(positionsVector, angle, Eigen::Vector3d::Zero(), axis);
-}
-
 Eigen::Vector3d PositionsVectorTransformer::calculateCenterOfMass(const PositionsVector& positionsVector,
                                       const Eigen::VectorXd& weights){
     Eigen::Vector3d center = Eigen::Vector3d::Zero();

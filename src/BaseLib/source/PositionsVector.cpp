@@ -11,10 +11,7 @@
 using namespace Eigen;
 
 PositionsVector::PositionsVector()
-        : InsertableVector(0,3)
-{
-    resetRef();
-}
+        : InsertableVector(0,3) {}
 
 PositionsVector::PositionsVector(const VectorXd &positions)
 : PositionsVector() {
@@ -24,24 +21,14 @@ PositionsVector::PositionsVector(const VectorXd &positions)
 
     AbstractVector::setNumberOfEntities(size/3);
     data_ = positions;
-
-    resetRef();
 }
 
 Eigen::Vector3d PositionsVector::operator[](long i) const {
     return data_.segment(calculateIndex(i),entityLength());
 }
 
-//TODO replace operator[] by this?
-Eigen::Vector3d PositionsVector::position(long i, const Usage& usage) {
-    assertResetInstruction(usage);
-
-    if((resetType() == Reset::Automatic && usage == Usage::Standard)
-    || (resetType() == Reset::OnFinished && usage == Usage::Finished))
-        return RETURN_AND_RESET<PositionsVector,Eigen::Vector3d>(
-                *this,dataRef(usage).segment(calculateIndex(i),entityLength())).returnAndReset();
-    else
-        return dataRef(usage).segment(calculateIndex(i),entityLength());
+Eigen::Vector3d PositionsVector::position(long i) {
+    return operator[](i);
 }
 
 void PositionsVector::prepend(const Eigen::Vector3d &position) {
@@ -54,54 +41,31 @@ void PositionsVector::insert(const Eigen::Vector3d &position, long i) {
     InsertableVector<double>::insert(position,i);
 }
 
-void PositionsVector::translate(const Eigen::Vector3d &shift, const Usage& usage) {
-    auto tmp = resetType_;
-    resetType_ = Reset::OnFinished;
-
-    for (long i = 0; i < sliceInterval_.numberOfEntities(); ++i)
-        dataRef(Usage::NotFinished).segment(calculateIndex(i), 3) += shift;
-
-    resetType_ = tmp;
-    resetStrategy(usage);
+void PositionsVector::translate(const Eigen::Vector3d &shift) {
+   for (long i = 0; i < numberOfEntities(); ++i)
+        data_.segment(calculateIndex(i), 3) += shift;
 }
 
-void PositionsVector::rotateAroundOrigin(double angle, const Eigen::Vector3d &axisDirection, const Usage& usage) {
-    rotate(angle,{0,0,0},axisDirection,usage);
+void PositionsVector::rotateAroundOrigin(double angle, const Eigen::Vector3d &axisDirection) {
+    rotate(angle,{0,0,0},axisDirection);
 }
 
-void PositionsVector::rotate(double angle,const Eigen::Vector3d &center,const Eigen::Vector3d &axisDirection, const Usage& usage) {
-
+void PositionsVector::rotate(double angle,const Eigen::Vector3d &center,const Eigen::Vector3d &axisDirection) {
     auto rotMat = PositionsVectorTransformer::rotationMatrixFromQuaternion(
             PositionsVectorTransformer::quaternionFromAngleAndAxis(angle, axisDirection));
 
-    auto tmp = resetType_;
-    resetType_ = Reset::OnFinished;
+    this->translate(-center);
 
-    this->translate(-center,Usage::NotFinished);
+    for (long i = 0; i < numberOfEntities(); ++i)
+        data_.segment(calculateIndex(i), entityLength()) = position(i).transpose() * rotMat;
 
-    for (long i = 0; i < sliceInterval_.numberOfEntities(); ++i)
-        dataRef(Usage::NotFinished).segment(calculateIndex(i), entityLength()) = position(i,Usage::NotFinished).transpose() * rotMat;
-
-    this->translate(center,Usage::NotFinished);
-
-    resetType_ = tmp;
-    resetStrategy(usage);
+    this->translate(center);
 };
-
-PositionsVector& PositionsVector::entity(long i, const Reset& resetType) {
-    return slice(Interval(i), resetType);
-}
-
-PositionsVector& PositionsVector::slice(const Interval& interval, const Reset& resetType) {
-    SliceableDataVector<double>::slice(interval,resetType);
-    return *this;
-}
 
 std::ostream& operator<<(std::ostream& os, const PositionsVector& pc){
     for (long i = 0; i < pc.numberOfEntities(); i++){
         os << ToString::longToString(i + 1) << " " << ToString::vector3dToString(pc[i]) << std::endl;
     }
-    const_cast<PositionsVector &>(pc).resetRef(); //TODO refactor
     return os;
 }
 

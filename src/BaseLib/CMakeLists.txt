@@ -40,7 +40,6 @@ set(HEADER_FILES
         include/CoulombPotential.h
         include/BinaryFileReader.h
         include/Interval.h
-        include/ReturnAndReset.h
         include/SliceableDataVector.h
         include/InsertableVector.h
         include/Logger.h

@@ -93,22 +93,7 @@ TEST_F(AParticlesVectorTest, Permute){
     ASSERT_EQ(e[2].position(),e0.position());
 }
 
-TEST_F(AParticlesVectorTest, PermuteSlice){
-    auto e = electrons;
-
-    VectorXi p(2);
-    p << 1,0;
-
-    e.slice({1,2}).permute(PermutationMatrix<Dynamic>(p));
-    ASSERT_EQ(e[0].type(),e0.type());
-    ASSERT_EQ(e[1].type(),e2.type());
-    ASSERT_EQ(e[2].type(),e1.type());
-
-    ASSERT_EQ(e[0].position(),e0.position());
-    ASSERT_EQ(e[1].position(),e2.position());
-    ASSERT_EQ(e[2].position(),e1.position());
-}
-
+/*
 TEST_F(AParticlesVectorTest, IntegrationTest_PermuteAndTranslateAlphaElectrons){
     auto e = electrons;
 
@@ -130,7 +115,7 @@ TEST_F(AParticlesVectorTest, IntegrationTest_PermuteAndTranslateAlphaElectrons){
     ASSERT_EQ(e[0].position(),e0.position()+Vector3d(0,0,0.5));
     ASSERT_EQ(e[1].position(),e1.position()+Vector3d(0,0,0.5));
     ASSERT_EQ(e[2].position(),e2.position());
-}
+}*/
 
 TEST_F(AParticlesVectorTest, LinkedParticles){
     ElectronsVector e = electrons;
