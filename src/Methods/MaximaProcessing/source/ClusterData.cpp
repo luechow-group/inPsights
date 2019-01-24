@@ -47,6 +47,13 @@ namespace YAML {
 
     bool convert<ClusterData>::decode(const Node &node, ClusterData &rhs) {
 
+
+        // TODO temporary - remove
+        std::vector<VoxelCube> cubes = {};
+        if(node["VoxelCubes"])
+            if (node["VoxelCubes"].IsSequence() && node["VoxelCubes"].size() > 0)
+                cubes = node["VoxelCubes"].as<std::vector<VoxelCube>>();
+
         rhs = ClusterData(
                 node["N"].as<unsigned>(),
                 node["Structures"].as<std::vector<ElectronsVector>>(),
@@ -56,8 +63,8 @@ namespace YAML {
                 node["SpinCorrelations"].as<IntraParticlesStatistics>(),
                 node["Vee"].as<IntraParticlesStatistics>(),
                 node["Ven"].as<InterParticlesStatistics>(),
-                node["VoxelCubes"].as<std::vector<VoxelCube>>()
-                );
+                        cubes
+                        );
         
         return true;
     }
