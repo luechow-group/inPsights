@@ -35,7 +35,7 @@ YAML_SETTINGS_DEFINITION(Settings::TestSettings)
 
 class TestMethod{
 public:
-    static inline Settings::TestSettings settings;
+    static inline Settings::TestSettings settings {};
 };
 
 TEST(AISettingsTest, YamlConversion) {
