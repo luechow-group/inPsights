@@ -15,6 +15,8 @@ TEST(AEigenYamlConversionTest, Vector3d){
     out << vec;
     auto node = YAML::convert<Eigen::Vector3d>::encode(vec);
 
-    std::cout << node << std::endl;
-    std::cout << out.c_str() << std::endl;
+    Eigen::Vector3d decodedVector;
+    YAML::convert<Eigen::Vector3d>::decode(node,decodedVector);
+
+    ASSERT_TRUE(decodedVector.isApprox(vec));
 };
