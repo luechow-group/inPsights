@@ -4,7 +4,6 @@
 
 #include <GlobalClusterSorter.h>
 #include <GlobalSimilaritySorter.h>
-#include <Logger.h>
 
 namespace Settings {
     GlobalClusterSorter::GlobalClusterSorter() {

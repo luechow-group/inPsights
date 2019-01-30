@@ -14,7 +14,7 @@ using namespace testing;
 class AGlobalClusterSorterTest : public ::testing::Test {
 public:
     void SetUp() override {
-        Logger::console->set_level(spdlog::level::off);
+        spdlog::set_level(spdlog::level::off);
         GlobalSimilaritySorter::settings.similarityRadius = 1; // prevent assert
     }
 };

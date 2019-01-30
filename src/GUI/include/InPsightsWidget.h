@@ -5,7 +5,6 @@
 #ifndef INPSIGHTS_INPSIGHTSWIDGET_H
 #define INPSIGHTS_INPSIGHTSWIDGET_H
 
-#include <Logger.h>
 #include <MoleculeWidget.h>
 #include <MaximaProcessingWidget.h>
 

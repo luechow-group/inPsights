@@ -10,7 +10,6 @@
 #include <Statistics.h>
 #include <QLabel>
 #include <QGridLayout>
-#include <Logger.h>
 
 class ClusterData;
 

@@ -4,8 +4,8 @@
 
 #include <InPsightsWidget.h>
 #include <QApplication>
-#include <Logger.h>
 #include <memory>
+#include <spdlog/spdlog.h>
 
 int main(int argc, char *argv[]) {
 
@@ -16,7 +16,7 @@ int main(int argc, char *argv[]) {
     app.setWindowIcon(QIcon(":inPsightsIcon.png"));
     app.setApplicationName("inPsights");
 
-    Logger::console->info("Welcome to inPsights!");
+    spdlog::info("Welcome to inPsights!");
 
     auto widget = std::make_unique<InPsightsWidget>();
 

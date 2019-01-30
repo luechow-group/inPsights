@@ -6,6 +6,7 @@
 #include <GlobalSimilaritySorter.h>
 #include <HungarianHelper.h>
 #include <ValueSorter.h>
+#include <spdlog/spdlog.h>
 
 namespace Settings {
     GlobalIdentitySorter::GlobalIdentitySorter() {
@@ -52,7 +53,7 @@ bool GlobalIdentitySorter::sort() {
         auto total = std::distance(references_.begin(), references_.end());
         auto endIt = std::upper_bound(beginIt, references_.end(), Reference((*beginIt).value() + valueIncrement));
 
-        Logger::console->info("Global identiy search in interval {} to {}, total: {}",
+        spdlog::info("Global identiy search in interval {} to {}, total: {}",
                       total - std::distance(beginIt, references_.end()),
                       total - std::distance(endIt, references_.end()),
                       std::distance(references_.begin(), references_.end()));

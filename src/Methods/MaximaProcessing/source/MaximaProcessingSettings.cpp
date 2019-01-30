@@ -4,15 +4,15 @@
 
 #include "MaximaProcessingSettings.h"
 #include <assert.h>
-#include <Logger.h>
+#include <spdlog/spdlog.h>
 
 namespace Settings {
     MaximaProcessing::MaximaProcessing() {
         samplesToAnalyze.onChange().connect([&](unsigned value) {
             if(value > 0 && value < std::numeric_limits<unsigned>::max())
-                Logger::console->info("Analyzing {} samples.", value);
+                spdlog::info("Analyzing {} samples.", value);
             else if (value == 0)
-                Logger::console->info("Analyzing all samples.");
+                spdlog::info("Analyzing all samples.");
             else
                 throw std::invalid_argument("The number of samples to analyze is negative.");
         });

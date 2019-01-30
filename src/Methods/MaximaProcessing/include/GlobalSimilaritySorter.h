@@ -6,11 +6,9 @@
 #define INPSIGHTS_GLOBALSIMILARITYSORTER_H
 
 #include "SimilarReferences.h"
-#include <Logger.h>
 #include <HungarianHelper.h>
 #include <Property.h>
 #include <ISettings.h>
-#include <spdlog/spdlog.h>
 #include <vector>
 
 namespace Settings {

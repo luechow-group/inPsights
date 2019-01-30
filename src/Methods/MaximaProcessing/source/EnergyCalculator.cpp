@@ -6,8 +6,8 @@
 #include <SpinCorrelation.h>
 #include <CoulombPotential.h>
 #include <OneParticleEnergies.h>
-#include <Logger.h>
 #include <VoxelCubeGeneration.h>
+#include <spdlog/spdlog.h>
 
 EnergyCalculator::EnergyCalculator(YAML::Emitter& yamlDocument, const std::vector<Sample>& samples, AtomsVector atoms)
         :
@@ -46,7 +46,6 @@ unsigned long EnergyCalculator::addReference(const Reference &reference) {
 
 void EnergyCalculator::calculateStatistics(const std::vector<std::vector<SimilarReferences>>& clusteredGloballySimilarMaxima){
     using namespace YAML;
-    using namespace Logger;
 
     yamlDocument_ << Key << "En" << Comment("[Eh]") << Value << EnStats_
                   << Key << "Clusters" << BeginSeq;
@@ -81,7 +80,7 @@ void EnergyCalculator::calculateStatistics(const std::vector<std::vector<Similar
         yamlDocument_ <<  ClusterData(TeStats_.getTotalWeight(), structures, valueStats_, TeStats_, EeStats_,
                                       SeeStats_, VeeStats_, VenStats_, voxelCubes);
     }
-    Logger::console->info("overall count {}", totalCount);
+    spdlog::info("overall count {}", totalCount);
     assert(totalCount == samples_.size() && "The total count must match the sample size.");
 
     yamlDocument_ << EndSeq;

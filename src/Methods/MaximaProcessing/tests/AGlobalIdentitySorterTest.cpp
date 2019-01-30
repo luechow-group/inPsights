@@ -18,7 +18,7 @@ public:
     std::vector<Sample> tripletSamples, singletSamples;
 
     void SetUp() override {
-        Logger::console->set_level(spdlog::level::off);
+        spdlog::set_level(spdlog::level::off);
         GlobalSimilaritySorter::settings.similarityRadius = 10; // prevent assert
 
         auto rng = std::default_random_engine {};

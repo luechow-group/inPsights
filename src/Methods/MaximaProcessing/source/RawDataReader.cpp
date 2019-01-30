@@ -5,8 +5,6 @@
 #include <RawDataReader.h>
 #include "Reference.h"
 #include "ParticlesVector.h"
-#include <Logger.h>
-#include <spdlog/spdlog.h>
 #include <iomanip>
 #include <fstream>
 

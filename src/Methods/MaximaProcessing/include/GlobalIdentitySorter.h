@@ -7,7 +7,6 @@
 
 #include "Reference.h"
 #include "Sample.h"
-#include <Logger.h>
 #include <ISettings.h>
 #include <Property.h>
 #include <utility>

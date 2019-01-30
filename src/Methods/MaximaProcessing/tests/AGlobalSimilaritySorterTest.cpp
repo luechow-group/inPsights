@@ -19,7 +19,7 @@ public:
     Eigen::VectorXd ekin;
 
     void SetUp() override {
-        Logger::console->set_level(spdlog::level::off);
+        spdlog::set_level(spdlog::level::off);
         GlobalIdentitySorter::settings.identityRadius = 1e-4; // prevent assert
 
         ekin.resize(2);

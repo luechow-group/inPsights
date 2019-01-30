@@ -5,13 +5,10 @@
 #ifndef INPSIGHTS_GLOBALPERMUTATIONSORTER_H
 #define INPSIGHTS_GLOBALPERMUTATIONSORTER_H
 
-
 #include "Sample.h"
 #include "SimilarReferences.h"
 #include <StructuralSimilarity.h>
-#include <Logger.h>
-
-
+#include <spdlog/spdlog.h>
 
 class GlobalPermutationSorter{
 public:
@@ -24,8 +21,7 @@ public:
             atoms_(atoms),
             samples_(samples),
             globallyClusteredMaxima_(globallyClusteredMaxima),
-            globallyPermutationallyInvariantClusteredMaxima_(globallyPermutationallyInvariantClusteredMaxima),
-            console(spdlog::get(Logger::name))
+            globallyPermutationallyInvariantClusteredMaxima_(globallyPermutationallyInvariantClusteredMaxima)
     {
         ParticleKit::create(atoms_, (*samples.begin()).sample_);
     };
@@ -45,7 +41,7 @@ public:
         std::vector<std::pair<std::vector<std::vector<SimilarReferences>>::iterator, MolecularSpectrum>>
                 identicalSpectra(0);
 
-        console->info("Spectra to calculate: {}", numberOfClusters);
+        spdlog::info("Spectra to calculate: {}", numberOfClusters);
 
         //collect representative structures before loop
         //std::vector<ElectronsVector> representativeClusterStructures(numberOfClusters);
@@ -61,7 +57,7 @@ public:
             auto index = std::distance(globallyClusteredMaxima_.begin(),it);
             spectra[std::distance(globallyClusteredMaxima_.begin(),it)] =
                     {it, MolecularSpectrum({atoms_,(*it)[0].representativeReference().maximum()})};
-            console->info("Thread {0} wrote element i={1}, elapsed time: {2}",
+            spdlog::info("Thread {0} wrote element i={1}, elapsed time: {2}",
                     omp_get_thread_num(), index, omp_get_wtime()-start);
         }
 
@@ -72,16 +68,16 @@ public:
         globallyPermutationallyInvariantClusteredMaxima_.resize(0);
 
 
-        //console->info("Size before  = {}", globallyClusteredMaxima_.size());
-        //console->info("Size before  = {}", globallyPermutationallyInvariantClusteredMaxima_.size());
+        //spdlog::info("Size before  = {}", globallyClusteredMaxima_.size());
+        //spdlog::info("Size before  = {}", globallyPermutationallyInvariantClusteredMaxima_.size());
         //globallyPermutationallyInvariantClusteredMaxima_.emplace_back(std::move(*globallyClusteredMaxima_.begin()));
         //globallyClusteredMaxima_.erase(globallyClusteredMaxima_.begin());
 
         identicalSpectra.emplace_back(std::move(*spectra.begin()));
         spectra.erase(spectra.begin());
 
-        //console->info("Size after  = {}", globallyClusteredMaxima_.size());
-        //console->info("Size after  = {}", globallyPermutationallyInvariantClusteredMaxima_.size());
+        //spdlog::info("Size after  = {}", globallyClusteredMaxima_.size());
+        //spdlog::info("Size after  = {}", globallyPermutationallyInvariantClusteredMaxima_.size());
 
 
 
@@ -128,8 +124,6 @@ private:
     std::vector<Sample> &samples_;
     std::vector<std::vector<SimilarReferences>> &globallyClusteredMaxima_;
     std::vector<std::vector<SimilarReferences>> &globallyPermutationallyInvariantClusteredMaxima_;
-
-    std::shared_ptr<spdlog::logger> console;
 };
 
 #endif //INPSIGHTS_GLOBALPERMUTATIONSORTER_H

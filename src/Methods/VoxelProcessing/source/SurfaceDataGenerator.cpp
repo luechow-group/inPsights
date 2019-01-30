@@ -4,7 +4,7 @@
 
 #include <SurfaceDataGenerator.h>
 #include "Conversion.h"
-#include <Logger.h>
+#include <spdlog/spdlog.h>
 
 SurfaceDataGenerator::SurfaceDataGenerator(VoxelCube volume)
         : cube_(std::move(volume)), dualMcVertices_(), dualMcQuads_() {} //TODO use move semantics?
@@ -24,7 +24,7 @@ SurfaceData SurfaceDataGenerator::computeSurfaceData(double volumeThreshold) {
     // correct vertices by voxel cube dimension, offset and length
     cube_.shiftDualMCResults(dualMcVertices_);
 
-    Logger::console->info("{0} vertices and {1} quads found for an iso value {2}",
+    spdlog::info("{0} vertices and {1} quads found for an iso value {2}",
                           dualMcVertices_.size(), dualMcQuads_.size(), isovalue);
 
 

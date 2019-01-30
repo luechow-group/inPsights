@@ -10,7 +10,7 @@
 #include <iostream>
 #include <Eigen/Core>
 #include <yaml-cpp/yaml.h>
-#include <Logger.h>
+#include <spdlog/spdlog.h>
 // A Property is a encapsulates a value and may inform
 // you on any changes applied to this value.
 
@@ -211,7 +211,7 @@ namespace YAML {
 
         static bool decode(const Node &node, Property<T> &rhs) {
             if(!node.IsMap() || !node[rhs.name()]) {
-                Logger::console->info("Property \"{0}\" was not found. Using preset value: {1}", rhs.name(), rhs.get());
+                spdlog::info("Property \"{0}\" was not found. Using preset value: {1}", rhs.name(), rhs.get());
                 return false;
             }
 

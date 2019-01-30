@@ -42,7 +42,6 @@ set(HEADER_FILES
         include/Interval.h
         include/DataVector.h
         include/InsertableVector.h
-        include/Logger.h
         include/Statistics.h
         include/SpinCorrelation.h
         include/AtomsVectorLinkedElectronsVector.h
@@ -72,7 +71,6 @@ set(SOURCE_FILES
         source/SpecialMathFunctions/Gaussian.cpp
         source/BinaryFileReader.cpp
         source/AtomsVectorLinkedElectronsVector.cpp
-        source/Logger.cpp
         )
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES})

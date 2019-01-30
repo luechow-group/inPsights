@@ -17,6 +17,7 @@
 #include <vector>
 #include <ParticlesVector.h>
 #include <SurfaceDataGenerator.h>
+#include <spdlog/spdlog.h>
 
 
 InPsightsWidget::InPsightsWidget(QWidget *parent)
@@ -126,18 +127,17 @@ void InPsightsWidget::setupSliderBox() {
 }
 
 void InPsightsWidget::selectedStructure(QTreeWidgetItem *item, int column) {
-    using namespace Logger;
     //auto maximaTreeWidgetItem = dynamic_cast<IntegerSortedTreeWidgetItem*>(item);
 
     if (column != 0)
-        console->critical("Column 0 expected but got {} ", column);
+        spdlog::critical("Column 0 expected but got {} ", column);
 
     auto id = item->data(0, Qt::ItemDataRole::UserRole).toList();
     auto clusterId = id[0].toInt();
     auto structureId = id[1].toInt();
 
     auto createQ = item->checkState(0) == Qt::CheckState::Checked;
-    console->info("Selected structure {0} from cluster {1} for {2}.", structureId, clusterId,
+    spdlog::info("Selected structure {0} from cluster {1} for {2}.", structureId, clusterId,
                   createQ ? "creation" : "deletion");
 
     if (createQ) {
