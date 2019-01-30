@@ -7,6 +7,7 @@
 
 #include "Triangle.h"
 #include "Vertex.h"
+#include <vector>
 
 struct SurfaceData{
 
