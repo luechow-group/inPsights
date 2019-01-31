@@ -8,13 +8,15 @@
 
 namespace Settings {
     GlobalSimilaritySorter::GlobalSimilaritySorter() {
-        similarityRadius.onChange().connect([&](double value) {
-            if(value < ::GlobalIdentitySorter::settings.identityRadius.get())
-                throw std::invalid_argument(
-                        "The " + similarityRadius.name() + " with " + std::to_string(similarityRadius.get())
-                        + " is smaller than the "+ ::GlobalIdentitySorter::settings.identityRadius.name() + " with "
-                        + std::to_string(::GlobalIdentitySorter::settings.identityRadius.get()));
-        });
+        similarityRadius.onChange_.connect(
+                [&](double value) {
+                    if(value < ::GlobalIdentitySorter::settings.identityRadius.get())
+                        throw std::invalid_argument(
+                                "The " + similarityRadius.name() + " with " + std::to_string(similarityRadius.get())
+                                + " is smaller than the "+ ::GlobalIdentitySorter::settings.identityRadius.name() 
+                                + " with "
+                                + std::to_string(::GlobalIdentitySorter::settings.identityRadius.get()));
+                });
     }
 
     GlobalSimilaritySorter::GlobalSimilaritySorter(const YAML::Node &node)
