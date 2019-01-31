@@ -7,7 +7,6 @@
 
 #include "SimilarReferences.h"
 #include <HungarianHelper.h>
-#include <Property.h>
 #include <ISettings.h>
 #include <vector>
 

@@ -8,7 +8,6 @@
 #include "SimilarReferences.h"
 #include <DensityBasedScan.h>
 #include <GlobalSimilaritySorter.h>
-#include <Property.h>
 #include <ISettings.h>
 #include <spdlog/spdlog.h>
 

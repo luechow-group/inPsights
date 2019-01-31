@@ -12,29 +12,29 @@
 
 RadialBasis::RadialBasis()
         : basis_(createBasis()),
-          Sab_(Sab(ExpansionSettings::Radial::nmax)),
+          Sab_(Sab(Radial::settings.nmax.get())),
           radialTransform_(calculateRadialTransform(Sab_))
 {}
 
 std::vector<Gaussian> RadialBasis::createBasis() {
-    const auto& nmax = ExpansionSettings::Radial::nmax;
-    const auto& lmax = ExpansionSettings::Angular::lmax;
-    const auto& sigmaAtom = ExpansionSettings::Radial::sigmaAtom;
+    const auto& nmax = Radial::settings.nmax.get();
+    const auto& lmax = Angular::settings.lmax.get();
+    const auto& sigmaAtom = Radial::settings.sigmaAtom.get();
 
     assert(nmax > 1 && "nmax must be greater than 1");
 
     std::vector<Gaussian> basis;
     double basisFunctionCenter = 0;
 
-    switch (ExpansionSettings::Radial::basisType){
-        case ExpansionSettings::Radial::BasisType::equispaced : {
+    switch (Radial::basisType){
+        case Radial::BasisType::equispaced : {
             for (unsigned i = 0; i < nmax; ++i) {
-                basisFunctionCenter = (ExpansionSettings::Cutoff::radius*double(i)) /double(nmax-1);
+                basisFunctionCenter = (Cutoff::settings.radius.get()*double(i)) /double(nmax-1);
                 basis.emplace_back(basisFunctionCenter, sigmaAtom);
             }
             return basis;
         }
-        case ExpansionSettings::Radial::BasisType::adaptive :{
+        case Radial::BasisType::adaptive :{
             basisFunctionCenter = 0;
             double sigmaStride = 1/2.;
             
@@ -48,7 +48,7 @@ std::vector<Gaussian> RadialBasis::createBasis() {
                     // this can interfere with the global variable we use in ExpansionSettings::Radial::cutoff
                     // add lock function?
                     //TODO CHANGE THIS or don't use this method!
-            ExpansionSettings::Cutoff::radius = (*basis_.end()).center(); //TODO check this: is the last basis function centered at the cutoff radius?
+            Cutoff::settings.radius = (*basis_.end()).center(); //TODO check this: is the last basis function centered at the cutoff radius?
             return basis;
         }
         default:
@@ -59,7 +59,7 @@ std::vector<Gaussian> RadialBasis::createBasis() {
 
 
 double RadialBasis::operator()(double r, unsigned n) const{
-    const auto& nmax  = ExpansionSettings::Radial::nmax;
+    const auto& nmax  = Radial::settings.nmax.get();
     assert(n > 0 && "The radial basis function index must be positive");
     assert(n <= nmax && "The radial basis function index must be smaller than or equal to nmax");
 
@@ -114,8 +114,8 @@ Eigen::MatrixXd RadialBasis::calculateRadialTransform(const Eigen::MatrixXd &Sab
 // Compute integrals S r^2 dr i_l(2*ai*ri*r) exp(-beta_ik*(r-rho_ik)^2) //TODO what is the difference between r and ri
 std::vector<double> RadialBasis::calculateIntegrals(double ai, double ri, double rho_ik,double beta_ik) const {
 
-    auto lmax = ExpansionSettings::Angular::lmax;
-    auto n_steps = ExpansionSettings::Radial::integrationSteps;
+    auto lmax = Angular::settings.lmax.get();
+    auto n_steps = Radial::settings.integrationSteps.get();
 
     double sigma_ik = sqrt(0.5/beta_ik);
     double r_min = rho_ik - 4*sigma_ik;
@@ -162,13 +162,13 @@ std::vector<double> RadialBasis::calculateIntegrals(double ai, double ri, double
 
 /* Copied code from soapxx */
 Eigen::MatrixXd RadialBasis::computeCoefficients(double centerToNeighborDistance, double neighborSigma) const {
-    const auto lmax = ExpansionSettings::Angular::lmax;
-    const auto nmax = ExpansionSettings::Radial::nmax;
+    const auto lmax = Angular::settings.lmax.get();
+    const auto nmax = Radial::settings.nmax.get();
 
     //TODO just resize?
     Eigen::MatrixXd radialCoeffsGnl = Eigen::MatrixXd::Zero(nmax,lmax+1);
 
-    if (neighborSigma < ExpansionSettings::Radial::radiusZero) {
+    if (neighborSigma < Radial::settings.radiusZero.get()) {
 
         for (unsigned n = 0; n < nmax; ++n) {
             double gn_at_r = basis_[n].value(centerToNeighborDistance);

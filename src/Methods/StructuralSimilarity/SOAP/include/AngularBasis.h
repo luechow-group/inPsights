@@ -5,7 +5,6 @@
 #ifndef INPSIGHTS_ANGULARBASIS_H
 #define INPSIGHTS_ANGULARBASIS_H
 
-#include "ExpansionSettings.h"
 #include <Eigen/Core>
 
 namespace AngularBasis{

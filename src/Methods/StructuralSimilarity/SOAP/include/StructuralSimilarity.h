@@ -23,16 +23,16 @@ namespace StructuralSimilarity{
     Eigen::MatrixXd selfCorrelationMatrix(const MolecularSpectrum &A);
 
     double kernel(const MolecularGeometry &A,
-                  const MolecularGeometry &B, double gamma = ExpansionSettings::gamma);
+                  const MolecularGeometry &B, double gamma = Settings::gamma);
 
     double kernel(const MolecularSpectrum &spectrumA,
-                  const MolecularSpectrum &spectrumB, double gamma = ExpansionSettings::gamma);
+                  const MolecularSpectrum &spectrumB, double gamma = Settings::gamma);
 
     double kernelDistance(const MolecularGeometry &A,
-                          const MolecularGeometry &B, double gamma = ExpansionSettings::gamma);
+                          const MolecularGeometry &B, double gamma = Settings::gamma);
 
     double kernelDistance(const MolecularSpectrum &spectrumA,
-                          const MolecularSpectrum &spectrumB, double gamma = ExpansionSettings::gamma);
+                          const MolecularSpectrum &spectrumB, double gamma = Settings::gamma);
 };
 
 #endif //INPSIGHTS_STRUCTURALSIMILARITY_H

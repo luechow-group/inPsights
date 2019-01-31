@@ -8,7 +8,6 @@
 #include "Reference.h"
 #include "Sample.h"
 #include <ISettings.h>
-#include <Property.h>
 #include <utility>
 #include <vector>
 

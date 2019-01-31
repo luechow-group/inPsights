@@ -2,32 +2,119 @@
 // Created by Michael Heuer on 04.05.18.
 //
 
-#include "ExpansionSettings.h"
+#include <ExpansionSettings.h>
 #include <cassert>
 #include <limits>
 #include <SpinType.h>
 #include <sstream>
 #include <ElementInfo.h>
-#include <ExpansionSettings.h>
 
 
-namespace ExpansionSettings {
-    Mode mode = ExpansionSettings::Mode::chemical;
+namespace Settings {
+    Angular::Angular(const YAML::Node &node) {
+        unsignedProperty::decode(node[className], lmax);
+    }
+
+    void Angular::appendToNode(YAML::Node &node) const {
+        node[className][lmax.name()] = lmax.get();
+    }
+
+
+    Radial::Radial(const YAML::Node &node) {
+        unsignedProperty::decode(node[className], nmax);
+        doubleProperty::decode(node[className], sigmaAtom);
+        unsignedProperty::decode(node[className], integrationSteps);
+        doubleProperty::decode(node[className], desiredAbsoluteError);
+        doubleProperty::decode(node[className], desiredRelativeError);
+    }
+
+    void Radial::appendToNode(YAML::Node &node) const {
+        node[className][nmax.name()] = nmax.get();
+        node[className][sigmaAtom.name()] = sigmaAtom.get();
+        node[className][integrationSteps.name()] = integrationSteps.get();
+        node[className][desiredAbsoluteError.name()] = desiredAbsoluteError.get();
+        node[className][desiredRelativeError.name()] = desiredRelativeError.get();
+    }
+
+
+    Cutoff::Cutoff(const YAML::Node &node) {
+        doubleProperty::decode(node[className], radius);
+        doubleProperty::decode(node[className], width);
+        doubleProperty::decode(node[className], centerWeight);
+    }
+
+    void Cutoff::appendToNode(YAML::Node &node) const {
+        node[className][radius.name()] = radius.get();
+        node[className][width.name()] = width.get();
+        node[className][centerWeight.name()] = centerWeight.get();
+    }
+}
+YAML_SETTINGS_DEFINITION(Settings::Angular)
+YAML_SETTINGS_DEFINITION(Settings::Radial)
+YAML_SETTINGS_DEFINITION(Settings::Cutoff)
+
+
+namespace Angular{
+    Settings::Angular settings = Settings::Angular();
+
+    void checkBounds(unsigned l, int m) {
+        assert(l <= settings.lmax.get() && "l must be less than or equal to lmax");
+        assert(unsigned(abs(m)) <= settings.lmax.get() && "abs(m) must be smaller than lmax");
+    }
+}
+
+namespace Radial{
+    Settings::Radial settings = Settings::Radial();
+    BasisType basisType = BasisType::equispaced;
+
+    void checkBounds(unsigned n) {
+        assert(n <= settings.nmax.get() && "n must be smaller than nmax");
+        assert(n >= 1 && "n must greater than or equal to 1");
+    }
+
+    std::string toString(const BasisType &type) {
+        switch(type) {
+            case BasisType::equispaced :
+                return "equispaced";
+            case BasisType::adaptive :
+                return "adaptive";
+            default:
+                return "undefined";
+        }
+    }
+
+    std::ostream &operator<<(std::ostream &os, const BasisType &type) {
+        os << toString(type);
+        return os;
+    }
+}
+
+namespace Cutoff{
+    Settings::Cutoff settings = Settings::Cutoff();
+
+    double innerPlateauRadius() {
+        return settings.radius.get() - settings.width.get();
+    }
+}
+
+
+namespace Settings {
+    Mode mode = Settings::Mode::chemical;
     double zeta = 2; // LocalSimilarity exponent
     double gamma = 0.1; // StructuralSimilarity regularization parameter
 
     void checkBounds(unsigned n, unsigned l, int m) {
-        Radial::checkBounds(n);
-        Angular::checkBounds(l, m);
+        ::Radial::checkBounds(n);
+        ::Angular::checkBounds(l, m);
     }
 
     std::string toString(const Mode &mode) {
         switch(mode) {
-            case ExpansionSettings::Mode::typeAgnostic :
+            case Settings::Mode::typeAgnostic :
                 return "typeAgnostic";
-            case ExpansionSettings::Mode::chemical :
+            case Settings::Mode::chemical :
                 return "chemical";
-            case ExpansionSettings::Mode::alchemical :
+            case Settings::Mode::alchemical :
                 return "alchemical";
             default:
                 return "undefined";
@@ -39,101 +126,6 @@ namespace ExpansionSettings {
         return os;
     }
 
-    std::string toString() {
-        std::stringstream ss;
-        ss << "General:" << std::endl
-           << "--------" << std::endl
-           << "Expansion mode\t\t: "<< ExpansionSettings::mode << std::endl
-           << "Sharpness zeta\t\t: "<< zeta << std::endl
-           << "Regularization gamma: "<< gamma << std::endl
-           << std::endl
-           << Radial::toString() << std::endl
-           << Angular::toString() << std::endl
-           << Cutoff::toString() << std::endl
-           << Alchemical::toString() << std::endl;
-        return ss.str();
-    }
-
-    namespace Radial {
-        unsigned nmax = 5;
-        BasisType basisType = BasisType::equispaced;
-        double sigmaAtom = 0.5*ConversionFactors::angstrom2bohr;
-
-        unsigned integrationSteps = {100};
-        double desiredAbsoluteError = {0.0}, desiredRelativeError = {std::numeric_limits<double>::epsilon()*1e2};
-
-
-        void checkBounds(unsigned n) {
-            assert(n <= nmax && "n must be smaller than nmax");
-            assert(n >= 1 && "n must greater than or equal to 1");
-        }
-
-        std::string toString(const BasisType &type) {
-            switch(type) {
-                case BasisType::equispaced :
-                    return "equispaced";
-                case BasisType::adaptive :
-                    return "adaptive";
-                default:
-                    return "undefined";
-            }
-        }
-
-        std::ostream &operator<<(std::ostream &os, const BasisType &type) {
-            os << toString(type);
-            return os;
-        }
-
-        std::string toString() {
-            std::stringstream ss;
-            ss << "Radial:" << std::endl
-               << "-------" << std::endl
-               << "BasisType\t\t\t: " << basisType << std::endl
-               << "n_max\t\t\t\t: " << nmax << std::endl
-               << "sigma_atom\t\t\t: " << sigmaAtom << " bohr" << std::endl
-               << "Integration steps\t: " << integrationSteps << std::endl
-               << "Desired abs. err\t: " << desiredAbsoluteError << std::endl
-               << "Desired rel. err\t: " << desiredRelativeError << std::endl;
-            return ss.str();
-        }
-    }
-
-    namespace Angular {
-        unsigned lmax = 5;
-
-        void checkBounds(unsigned l, int m) {
-            assert(l <= lmax && "l must be less than or equal to lmax");
-            assert(unsigned(abs(m)) <= lmax && "abs(m) must be smaller than lmax");
-        }
-
-        std::string toString() {
-            std::stringstream ss;
-            ss << "Angular:" << std::endl
-               << "--------" << std::endl
-               << "l_max\t\t\t\t: " << lmax  << std::endl;
-            return ss.str();
-        }
-    }
-    
-    namespace Cutoff {
-        double radius = 4.0*ConversionFactors::angstrom2bohr;
-        double width = 1.0*ConversionFactors::angstrom2bohr;
-        double centerWeight = 1.0; //TODO
-
-        double innerPlateauRadius() {
-            return radius - width;
-        }
-
-        std::string toString() {
-            std::stringstream ss;
-            ss << "Cutoff:" << std::endl
-               << "-------" << std::endl
-               << "Radius\t\t\t\t: " << radius << " bohr" << std::endl
-               << "Width\t\t\t\t: " << width << " bohr" << std::endl
-               << "Center weight\t\t: " << centerWeight << std::endl;
-            return ss.str();
-        }
-    }
     namespace Alchemical{
         std::map<std::pair<int,int>,double> pairSimilarities = {
                 {{int(Spin::alpha),int(Spin::beta)}, 0.5}

@@ -5,6 +5,8 @@
 #ifndef INPSIGHTS_ISETTINGS_H
 #define INPSIGHTS_ISETTINGS_H
 
+#include <Property.h>
+
 #define VARNAME(name) #name
 
 #define YAML_SETTINGS_DECLARATION(classename)                   \

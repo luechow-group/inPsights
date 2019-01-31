@@ -13,7 +13,7 @@ public:
     double regularizationParameter = 0.5;
 
     void SetUp() override {
-        ExpansionSettings::mode = ExpansionSettings::Mode::alchemical;
+        Settings::mode = Settings::Mode::alchemical;
     }
 };
 
@@ -23,9 +23,9 @@ TEST_F(ASOAPPerformanceTest, DISABLED_SingleGlobalSimTiming) {
     unsigned lmax = nmax;
     unsigned nParticles = 20; // nParticles = nTypes
 
-    ExpansionSettings::Radial::nmax = nmax;
-    ExpansionSettings::Angular::lmax = lmax;
-    ExpansionSettings::mode = ExpansionSettings::Mode::alchemical;
+    Radial::settings.nmax = nmax;
+    Angular::settings.lmax = lmax;
+    Settings::mode = Settings::Mode::alchemical;
     //ExpansionSettings::Alchemical::pairSimilarities[{int(Spin::alpha),int(Spin::beta)}] = 0.5;
 
 
@@ -61,8 +61,8 @@ TEST_F(ASOAPPerformanceTest, DISABLED_GlobalSimPerformance){
         unsigned nParticles = 30; // nParticles = nTypes
         printf("{%d,\n",nmax);
         //calculate a molecular spectrum
-        ExpansionSettings::Radial::nmax = nmax;
-        ExpansionSettings::Angular::lmax = lmax;
+        Radial::settings.nmax = nmax;
+        Angular::settings.lmax = lmax;
         //ExpansionSettings::Alchemical::pairSimilarities[{int(Spin::alpha),int(Spin::beta)}] = 0.5;
 
         //Distribute the particles on a unit circle
@@ -78,7 +78,7 @@ TEST_F(ASOAPPerformanceTest, DISABLED_GlobalSimPerformance){
             double start;
             MolecularSpectrum ms;
 
-            ExpansionSettings::mode = ExpansionSettings::Mode::typeAgnostic;
+            Settings::mode = Settings::Mode::typeAgnostic;
             start = omp_get_wtime();
             ms = MolecularSpectrum(mol);
             double t1a = omp_get_wtime() - start;
@@ -86,7 +86,7 @@ TEST_F(ASOAPPerformanceTest, DISABLED_GlobalSimPerformance){
             double generic = StructuralSimilarity::kernel(ms, ms, regularizationParameter);
             double t1b = omp_get_wtime() - start;
 
-            ExpansionSettings::mode = ExpansionSettings::Mode::chemical;
+            Settings::mode = Settings::Mode::chemical;
             start = omp_get_wtime();
             ms = MolecularSpectrum(mol);
             double t2a = omp_get_wtime() - start;
@@ -94,7 +94,7 @@ TEST_F(ASOAPPerformanceTest, DISABLED_GlobalSimPerformance){
             double chemical = StructuralSimilarity::kernel(ms, ms, regularizationParameter);
             double t2b = omp_get_wtime() - start;
 
-            ExpansionSettings::mode = ExpansionSettings::Mode::alchemical;
+            Settings::mode = Settings::Mode::alchemical;
             start = omp_get_wtime();
             ms = MolecularSpectrum(mol);
             double t3a = omp_get_wtime() - start;
@@ -119,8 +119,8 @@ TEST_F(ASOAPPerformanceTest, DISABLED_LocalSimPerformance){
         unsigned nParticles = 30; // nParticles = nTypes
         printf("{%d,\n",nmax);
         //calculate a molecular spectrum
-        ExpansionSettings::Radial::nmax = nmax;
-        ExpansionSettings::Angular::lmax = lmax;
+        Radial::settings.nmax = nmax;
+        Angular::settings.lmax = lmax;
         //ExpansionSettings::Alchemical::pairSimilarities[{int(Spin::alpha),int(Spin::beta)}] = 0.5;
 
         //Distribute the particles on a unit circle
@@ -141,19 +141,19 @@ TEST_F(ASOAPPerformanceTest, DISABLED_LocalSimPerformance){
 
             MolecularSpectrum ms(mol);
 
-            ExpansionSettings::mode = ExpansionSettings::Mode::typeAgnostic;
+            Settings::mode = Settings::Mode::typeAgnostic;
             e1 = Environment(mol,mol.atoms()[0].position());
             start = omp_get_wtime();
             double generic = LocalSimilarity::kernel(e1,e1);
             double t1 = omp_get_wtime() - start;
 
-            ExpansionSettings::mode = ExpansionSettings::Mode::chemical;
+            Settings::mode = Settings::Mode::chemical;
             e1 = Environment(mol,mol.atoms()[0].position());
             start = omp_get_wtime();
             double chemical = LocalSimilarity::kernel(e1,e1);
             double t2 = omp_get_wtime() - start;
 
-            ExpansionSettings::mode = ExpansionSettings::Mode::alchemical;
+            Settings::mode = Settings::Mode::alchemical;
             e1 = Environment(mol,mol.atoms()[0].position());
             start = omp_get_wtime();
             double alchemical = LocalSimilarity::kernel(e1,e1);
