@@ -59,19 +59,22 @@ namespace LocalSimilarity {
             const TypeSpecificNeighborhoodsAtOneCenter &expansions2) {
 
         double similarityValue = 0;
-        switch (Settings::mode) {
-            case Settings::Mode::typeAgnostic: {
+        auto mode = SOAPExpansion::settings.mode.get();
+        switch (mode) {
+            case SOAPExpansion::Mode::typeAgnostic: {
                 similarityValue = internal::typeAgnostic(expansions1, expansions2);
                 break;
             }
-            case Settings::Mode::chemical: {
+            case SOAPExpansion::Mode::chemical: {
                 similarityValue = internal::chemical(expansions1, expansions2);
                 break;
             }
-            case Settings::Mode::alchemical: {
+            case SOAPExpansion::Mode::alchemical: {
                 similarityValue = internal::alchemical(expansions1, expansions2);
                 break;
             }
+            case SOAPExpansion::Mode::undefined:
+                throw std::exception();
         }
         assert(similarityValue >= 0 && "The similarity cannot be negative. "
                                        "(It might be zero if one of the centers is completely isolated)");
@@ -80,20 +83,23 @@ namespace LocalSimilarity {
 
     double unnormalizedSelfKernel(const TypeSpecificNeighborhoodsAtOneCenter &expansions) {
         double similarityValue = 0;
-        switch (Settings::mode) {
-            case Settings::Mode::typeAgnostic: {
+        auto mode = SOAPExpansion::settings.mode.get();
+        switch (mode) {
+            case SOAPExpansion::Mode::typeAgnostic: {
                 similarityValue = internal::typeAgnostic(expansions);
                 break;
             }
-            case Settings::Mode::chemical: {
+            case SOAPExpansion::Mode::chemical: {
                 similarityValue = internal::chemical(expansions);
                 break;
             }
-            case Settings::Mode::alchemical: {
+            case SOAPExpansion::Mode::alchemical: {
                 similarityValue = internal::alchemical(expansions, expansions);
                 // a dedicated self-similarity method for the alchemical expansion does not increase efficiency here
                 break;
             }
+            case SOAPExpansion::Mode::undefined:
+                throw std::exception();
         }
         assert(similarityValue >= 0 && "The similarity cannot be negative. "
                                        "(It might be zero if the center is completely isolated)");

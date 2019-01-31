@@ -14,7 +14,7 @@ public:
     double eps = std::numeric_limits<double>::epsilon()*1e2;
 
     Eigen::MatrixXd sinkhornSoapxxReference(const Eigen::MatrixXd& matrix,
-                                            double gamma = Settings::gamma,
+                                            double gamma = SOAPExpansion::settings.gamma.get(),
                                             double eps = std::numeric_limits<double>::epsilon()) {
         long nx = matrix.rows();
         long ny = matrix.cols();
@@ -65,7 +65,7 @@ public:
     }
 
     Eigen::MatrixXd sinkhornSoapPythonReference(const Eigen::MatrixXd& matrix,
-                                                double gamma = Settings::gamma,
+                                                double gamma = SOAPExpansion::settings.gamma.get(),
                                                 double eps = std::numeric_limits<double>::epsilon()) {
 /* Sinkhorn algorithm */
         auto MAX_TOTAL = matrix.rows();

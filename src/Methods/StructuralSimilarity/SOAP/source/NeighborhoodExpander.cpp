@@ -53,24 +53,27 @@ TypeSpecificNeighborhoodsAtOneCenter
 NeighborhoodExpander::computeParticularExpansions(const Environment &e) { // WORKS!
     TypeSpecificNeighborhoodsAtOneCenter expansions;
 
-    switch (Settings::mode) {
-        case Settings::Mode::typeAgnostic: {
+    auto mode = SOAPExpansion::settings.mode.get();
+    switch (mode) {
+        case SOAPExpansion::Mode::typeAgnostic: {
             auto noneTypeId = 0;
             expansions.emplace(noneTypeId, expandEnvironment(e, noneTypeId));
             break;
         }
-        case Settings::Mode::chemical: {
+        case SOAPExpansion::Mode::chemical: {
             for(auto & type : ParticleKit::kit){
                 expansions.emplace(type.first, expandEnvironment(e, type.first));
             }
             break;
         }
-        case Settings::Mode::alchemical: {
+        case SOAPExpansion::Mode::alchemical: {
             for(auto & type : ParticleKit::kit){
                 expansions.emplace(type.first, expandEnvironment(e, type.first));
             }
             break;
         }
+        case SOAPExpansion::Mode::undefined:
+            throw std::exception();
     }
     return expansions;
 }

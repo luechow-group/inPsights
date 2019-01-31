@@ -10,7 +10,6 @@
 #include "ExpansionSettings.h"
 #include "Environment.h"
 #include "TestMolecules.h"
-
 #include "NeighborhoodExpander.h"
 
 class ALocalSimilarityTest : public ::testing::Test {
@@ -24,7 +23,7 @@ public:
 
 TEST_F(ALocalSimilarityTest , GenericNormalization) {
     ParticleKit::create(molecule);
-    Settings::mode = Settings::Mode::typeAgnostic;
+    SOAPExpansion::settings.mode = SOAPExpansion::Mode::typeAgnostic;
 
     Environment e1(molecule,molecule.atoms()[1].position());
     Environment e2(molecule,molecule.atoms()[2].position());
@@ -44,7 +43,7 @@ TEST_F(ALocalSimilarityTest , SameEnvironmentsOnDifferentCenters) {
 
 TEST_F(ALocalSimilarityTest , Cross) {
     ParticleKit::create(molecule);
-    Settings::mode = Settings::Mode::typeAgnostic;
+    SOAPExpansion::settings.mode = SOAPExpansion::Mode::typeAgnostic;
 
     Environment e0(molecule, molecule.atoms()[0].position()); // C
     Environment e1(molecule, molecule.atoms()[1].position()); // O1
@@ -64,7 +63,7 @@ TEST_F(ALocalSimilarityTest , Cross) {
 
 TEST_F(ALocalSimilarityTest, TypeSpecificNormalization) {
     ParticleKit::create(molecule);
-    Settings::mode = Settings::Mode::chemical;
+    SOAPExpansion::settings.mode = SOAPExpansion::Mode::chemical;
 
     Environment e1(molecule,molecule.atoms()[1].position());
     Environment e2(molecule,molecule.atoms()[2].position());
@@ -75,7 +74,7 @@ TEST_F(ALocalSimilarityTest, TypeSpecificNormalization) {
 
 TEST_F(ALocalSimilarityTest, SameEnvironmentOnDifferentCentersGeneric) {
     ParticleKit::create(molecule);
-    Settings::mode = Settings::Mode::typeAgnostic;
+    SOAPExpansion::settings.mode = SOAPExpansion::Mode::typeAgnostic;
 
     Environment e1(molecule,molecule.atoms()[1].position());
     Environment e2(molecule,molecule.atoms()[2].position());
@@ -85,7 +84,7 @@ TEST_F(ALocalSimilarityTest, SameEnvironmentOnDifferentCentersGeneric) {
 
 TEST_F(ALocalSimilarityTest, SameEnvironmentOnDifferentCentersTypeSpecific) {
     ParticleKit::create(molecule);
-    Settings::mode = Settings::Mode::chemical;
+    SOAPExpansion::settings.mode = SOAPExpansion::Mode::chemical;
 
     Environment e1(molecule,molecule.atoms()[1].position());
     Environment e2(molecule,molecule.atoms()[2].position());
@@ -95,7 +94,7 @@ TEST_F(ALocalSimilarityTest, SameEnvironmentOnDifferentCentersTypeSpecific) {
 
 TEST_F(ALocalSimilarityTest, IsolatedSpecies) {
     ParticleKit::create(TestMolecules::CO2::isolatedNuclei);
-    Settings::mode = Settings::Mode::chemical;
+    SOAPExpansion::settings.mode = SOAPExpansion::Mode::chemical;
 
     auto isolated = TestMolecules::CO2::isolatedNuclei;
     Environment e0(isolated, isolated.atoms()[0].position());
@@ -107,7 +106,7 @@ TEST_F(ALocalSimilarityTest, IsolatedSpecies) {
 };
 
 TEST_F(ALocalSimilarityTest, H2sameCenter) {
-    Settings::mode = Settings::Mode::chemical;
+    SOAPExpansion::settings.mode = SOAPExpansion::Mode::chemical;
     ParticleKit::create(TestMolecules::H2::ElectronsInCores::normal);
 
     auto H2 = TestMolecules::H2::ElectronsInCores::normal;
@@ -119,7 +118,7 @@ TEST_F(ALocalSimilarityTest, H2sameCenter) {
 }
 
 TEST_F(ALocalSimilarityTest, H2sameEnvironment) {
-    Settings::mode = Settings::Mode::chemical;
+    SOAPExpansion::settings.mode = SOAPExpansion::Mode::chemical;
     ParticleKit::create(TestMolecules::H2::ElectronsInCores::normal);
 
     auto H2 = TestMolecules::H2::ElectronsInCores::normal;
@@ -131,7 +130,7 @@ TEST_F(ALocalSimilarityTest, H2sameEnvironment) {
 }
 
 TEST_F(ALocalSimilarityTest, twoOppositeElectrons) {
-    Settings::mode = Settings::Mode::chemical;
+    SOAPExpansion::settings.mode = SOAPExpansion::Mode::chemical;
 
     auto eaeb = TestMolecules::twoElectrons::oppositeSpin;
     ParticleKit::create(eaeb);
@@ -143,7 +142,7 @@ TEST_F(ALocalSimilarityTest, twoOppositeElectrons) {
 }
 
 TEST_F(ALocalSimilarityTest, twoOppositeElectronsReversedOrder) {
-    Settings::mode = Settings::Mode::chemical;
+    SOAPExpansion::settings.mode = SOAPExpansion::Mode::chemical;
 
     auto ebea = TestMolecules::twoElectrons::oppositeSpinReversedOrder;
     ParticleKit::create(ebea);
@@ -159,7 +158,7 @@ TEST_F(ALocalSimilarityTest, twoOppositeSpinElectronsComparision) {
     auto mol2 = TestMolecules::twoElectrons::oppositeSpinReversedOrder;
     ParticleKit::create(mol1);
 
-    Settings::mode = Settings::Mode::chemical;
+    SOAPExpansion::settings.mode = SOAPExpansion::Mode::chemical;
 
     Environment mol1e0(mol1, mol1.electrons()[0].position());
     Environment mol1e1(mol1, mol1.electrons()[1].position());
@@ -179,7 +178,7 @@ TEST_F(ALocalSimilarityTest, twoOppositeSpinElectronsComparisionMs) {
     auto mol2 = TestMolecules::twoElectrons::oppositeSpinReversedOrder;
     ParticleKit::create(mol1);
 
-    Settings::mode = Settings::Mode::chemical;
+    SOAPExpansion::settings.mode = SOAPExpansion::Mode::chemical;
 
     MolecularSpectrum ms1(mol1);
     MolecularSpectrum ms2(mol2);
@@ -195,7 +194,7 @@ TEST_F(ALocalSimilarityTest, twoOppositeSpinElectronsComparisionMs) {
 }
 
 TEST_F(ALocalSimilarityTest, twoAlphaElectrons) {
-    Settings::mode = Settings::Mode::chemical;
+    SOAPExpansion::settings.mode = SOAPExpansion::Mode::chemical;
 
     auto eaea = TestMolecules::twoElectrons::sameSpinAlpha;
     ParticleKit::create(eaea);
@@ -208,7 +207,7 @@ TEST_F(ALocalSimilarityTest, twoAlphaElectrons) {
 
 
 TEST_F(ALocalSimilarityTest, twoBetaElectrons) {
-    Settings::mode = Settings::Mode::chemical;
+    SOAPExpansion::settings.mode = SOAPExpansion::Mode::chemical;
 
     auto ebeb = TestMolecules::twoElectrons::sameSpinBeta;
     ParticleKit::create(ebeb);
@@ -224,7 +223,7 @@ TEST_F(ALocalSimilarityTest, TypeSpecificAndAlchemicalComparison) {
     auto mol2 = TestMolecules::twoElectrons::oppositeSpinReversedOrder;
     ParticleKit::create(mol1);
 
-    Settings::mode = Settings::Mode::chemical;
+    SOAPExpansion::settings.mode = SOAPExpansion::Mode::chemical;
     Environment mol1e0(mol1, mol1.electrons()[0].position());
     Environment mol1e1(mol1, mol1.electrons()[1].position());
 
@@ -238,7 +237,7 @@ TEST_F(ALocalSimilarityTest, TypeSpecificAndAlchemicalComparison) {
     ASSERT_NEAR(LocalSimilarity::kernel(mol2e0, mol1e1), 1.0, eps);
 
 
-    Settings::mode = Settings::Mode::alchemical;
+    SOAPExpansion::settings.mode = SOAPExpansion::Mode::alchemical;
     auto simMol1e0e1 = LocalSimilarity::kernel(mol1e0, mol1e1);
     auto simMol2e0e1 = LocalSimilarity::kernel(mol2e0, mol2e1);
 
@@ -257,7 +256,7 @@ TEST_F(ALocalSimilarityTest, TypeSpecificAndAlchemicalComparison) {
 
 
 TEST_F(ALocalSimilarityTest, DissociationIntoTwoIsolatedSpecies) {
-    Settings::mode = Settings::Mode::chemical;
+    SOAPExpansion::settings.mode = SOAPExpansion::Mode::chemical;
     Cutoff::settings.radius = 2;// bohr
     Cutoff::settings.width = 1;// bohr // the inner plateau ends at 1
     ParticleKit::create({},{2,0}); //the particle kit consists of two alpha electrons
@@ -284,7 +283,7 @@ TEST_F(ALocalSimilarityTest, DissociationIntoTwoIsolatedSpecies) {
 };
 
 TEST_F(ALocalSimilarityTest, DissociationIntoOneIsolatedSpecies) {
-    Settings::mode = Settings::Mode::typeAgnostic;
+    SOAPExpansion::settings.mode = SOAPExpansion::Mode::typeAgnostic;
     Cutoff::settings.radius = 2;// bohr
     Cutoff::settings.width = 1;// bohr
     ParticleKit::create({},{3,0}); //the particle kit consists of three alpha electrons

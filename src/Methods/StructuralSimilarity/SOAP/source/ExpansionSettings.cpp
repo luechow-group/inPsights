@@ -9,8 +9,26 @@
 #include <sstream>
 #include <ElementInfo.h>
 
-
 namespace Settings {
+    SOAPExpansion::SOAPExpansion(const YAML::Node &node) {
+        auto modeNode = node[className][mode.name()];
+        if(!modeNode)
+            spdlog::info("Property \"{0}\" was not found. Using preset value: {1}",
+                    mode.name(), ::SOAPExpansion::toString(mode.get()));
+        else
+            mode = ::SOAPExpansion::fromString(modeNode.as<std::string>());
+
+        doubleProperty::decode(node[className], zeta);
+        doubleProperty::decode(node[className], gamma);
+    }
+
+    void SOAPExpansion::appendToNode(YAML::Node &node) const {
+        node[className][mode.name()] = ::SOAPExpansion::toString(::SOAPExpansion::Mode(mode.get()));
+        node[className][zeta.name()] = zeta.get();
+        node[className][gamma.name()] = gamma.get();
+    }
+
+
     Angular::Angular(const YAML::Node &node) {
         unsignedProperty::decode(node[className], lmax);
     }
@@ -52,7 +70,40 @@ namespace Settings {
 YAML_SETTINGS_DEFINITION(Settings::Angular)
 YAML_SETTINGS_DEFINITION(Settings::Radial)
 YAML_SETTINGS_DEFINITION(Settings::Cutoff)
+YAML_SETTINGS_DEFINITION(Settings::SOAPExpansion)
 
+namespace SOAPExpansion{
+    Settings::SOAPExpansion settings = Settings::SOAPExpansion();
+
+    std::string toString(SOAPExpansion::Mode mode) {
+        switch(mode) {
+            case SOAPExpansion::Mode::chemical :
+                return "chemical";
+            case SOAPExpansion::Mode::alchemical :
+                return "alchemical";
+            case SOAPExpansion::Mode::typeAgnostic :
+                return "typeAgnostic";
+            default:
+                return "undefined";
+        }
+    }
+
+    Mode fromString(std::string string) {
+        if(string == "chemical")
+            return SOAPExpansion::Mode::chemical;
+        else if (string == "alchemical")
+            return SOAPExpansion::Mode::alchemical;
+        else if (string == "typeAgnostic")
+            return SOAPExpansion::Mode::typeAgnostic;
+        else
+            return SOAPExpansion::Mode::undefined;
+    }
+
+    void checkBounds(unsigned n, unsigned l, int m) {
+        ::Radial::checkBounds(n);
+        ::Angular::checkBounds(l, m);
+    }
+}
 
 namespace Angular{
     Settings::Angular settings = Settings::Angular();
@@ -99,61 +150,10 @@ namespace Cutoff{
 
 
 namespace Settings {
-    Mode mode = Settings::Mode::chemical;
-    double zeta = 2; // LocalSimilarity exponent
-    double gamma = 0.1; // StructuralSimilarity regularization parameter
-
-    void checkBounds(unsigned n, unsigned l, int m) {
-        ::Radial::checkBounds(n);
-        ::Angular::checkBounds(l, m);
-    }
-
-    std::string toString(const Mode &mode) {
-        switch(mode) {
-            case Settings::Mode::typeAgnostic :
-                return "typeAgnostic";
-            case Settings::Mode::chemical :
-                return "chemical";
-            case Settings::Mode::alchemical :
-                return "alchemical";
-            default:
-                return "undefined";
-        }
-    }
-
-    std::ostream &operator<<(std::ostream &os, const Mode &mode) {
-        os << toString(mode);
-        return os;
-    }
 
     namespace Alchemical{
         std::map<std::pair<int,int>,double> pairSimilarities = {
                 {{int(Spin::alpha),int(Spin::beta)}, 0.5}
         };
-
-        std::string toString() {
-            std::stringstream ss;
-            ss << "Alchemical Similarities:" << std::endl
-               << "------------------------" << std::endl;
-
-            std::map<std::pair<int,int>, double>::iterator it;
-
-            for (it = pairSimilarities.begin(); it != pairSimilarities.end(); it++)
-            {
-                int type1 = it->first.first;
-                if(type1 < 0) ss << Spins::toString(Spin(type1));
-                else ss << Elements::ElementInfo::symbol(Element(type1));
-
-                ss << " <-> ";
-
-                int type2 = it->first.second;
-                if(type2 < 0) ss << Spins::toString(Spin(type2));
-                else ss << Elements::ElementInfo::symbol(Element(type2));
-
-                ss << ": " << it->second << std::endl;
-            }
-
-            return ss.str();
-        }
     }
 }

@@ -12,14 +12,14 @@ public:
     double regularizationParameter = 1.0;
 
     void SetUp() override {
-        Settings::mode = Settings::Mode::chemical;
+        SOAPExpansion::settings.mode = SOAPExpansion::Mode::chemical;
         ParticleKit::create({{Element::H,2},{Element::He,2}},{2,2});
     }
 };
 
 TEST_F(AStructuralSimilarityTest , Identity) {
     auto A = TestMolecules::H2::ElectronsInCores::normal;
-    Settings::mode = Settings::Mode::chemical;
+    SOAPExpansion::settings.mode = SOAPExpansion::Mode::chemical;
     ParticleKit::create(A);
     
     ASSERT_TRUE(ParticleKit::isSubsetQ(A));
@@ -29,7 +29,7 @@ TEST_F(AStructuralSimilarityTest , Identity) {
 TEST_F(AStructuralSimilarityTest , nmax2) {
     auto A = TestMolecules::H2::ElectronsInCores::normal;
     Radial::settings.nmax = 2;
-    Settings::mode = Settings::Mode::chemical;
+    SOAPExpansion::settings.mode = SOAPExpansion::Mode::chemical;
     ParticleKit::create(A);
 
     ASSERT_TRUE(ParticleKit::isSubsetQ(A));
@@ -39,7 +39,7 @@ TEST_F(AStructuralSimilarityTest , nmax2) {
 TEST_F(AStructuralSimilarityTest , TranslationalSymmetry) {
     auto A = TestMolecules::H2::ElectronsInCores::normal;
     auto B = TestMolecules::H2::ElectronsInCores::translated;
-    Settings::mode = Settings::Mode::chemical;
+    SOAPExpansion::settings.mode = SOAPExpansion::Mode::chemical;
     ParticleKit::create(A);
     
     ASSERT_TRUE(ParticleKit::isSubsetQ(A));
@@ -50,7 +50,7 @@ TEST_F(AStructuralSimilarityTest , TranslationalSymmetry) {
 TEST_F(AStructuralSimilarityTest, PermutationalSymmetry_ReversedOrder) {
     auto A = TestMolecules::twoElectrons::oppositeSpin;
     auto B = TestMolecules::twoElectrons::oppositeSpinReversedOrder;
-    Settings::mode = Settings::Mode::chemical;
+    SOAPExpansion::settings.mode = SOAPExpansion::Mode::chemical;
     ParticleKit::create(A);
 
     ASSERT_TRUE(ParticleKit::isSubsetQ(A));
@@ -61,7 +61,7 @@ TEST_F(AStructuralSimilarityTest, PermutationalSymmetry_ReversedOrder) {
 TEST_F(AStructuralSimilarityTest, PermutationalSymmetry_FlippedSpins) {
     auto A = TestMolecules::H2::ElectronsInCores::normal;
     auto B = TestMolecules::H2::ElectronsInCores::flippedSpins;
-    Settings::mode = Settings::Mode::chemical;
+    SOAPExpansion::settings.mode = SOAPExpansion::Mode::chemical;
     ParticleKit::create(A);
 
     ASSERT_TRUE(ParticleKit::isSubsetQ(A));
@@ -71,7 +71,7 @@ TEST_F(AStructuralSimilarityTest, PermutationalSymmetry_FlippedSpins) {
 
 TEST_F(AStructuralSimilarityTest, RotationalSymmetry) {
     auto A = TestMolecules::H2::ElectronsOutsideCores::offCenter;
-    Settings::mode = Settings::Mode::chemical;
+    SOAPExpansion::settings.mode = SOAPExpansion::Mode::chemical;
     ParticleKit::create(A);
 
     unsigned n = 13;
@@ -95,11 +95,11 @@ TEST_F(AStructuralSimilarityTest, AlchemicalSimilarity) {
     ASSERT_TRUE(ParticleKit::isSubsetQ(A));
     ASSERT_TRUE(ParticleKit::isSubsetQ(B));
 
-    Settings::mode = Settings::Mode::chemical;
+    SOAPExpansion::settings.mode = SOAPExpansion::Mode::chemical;
     auto chemical = StructuralSimilarity::kernel(A, B, regularizationParameter);
     ASSERT_NEAR(chemical, 0.0, eps);
 
-    Settings::mode = Settings::Mode::alchemical;
+    SOAPExpansion::settings.mode = SOAPExpansion::Mode::alchemical;
     auto alchemicalSim = StructuralSimilarity::kernel(A, B, regularizationParameter);
     ASSERT_GT(alchemicalSim, 0.0);
     ASSERT_LT(alchemicalSim, 1.0);
@@ -112,17 +112,17 @@ TEST_F(AStructuralSimilarityTest, HeH_H2_Comparison) {
     ASSERT_TRUE(ParticleKit::isSubsetQ(A));
     ASSERT_TRUE(ParticleKit::isSubsetQ(B));
 
-    Settings::mode = Settings::Mode::typeAgnostic;
+    SOAPExpansion::settings.mode = SOAPExpansion::Mode::typeAgnostic;
     auto generic = StructuralSimilarity::kernel(A, B, regularizationParameter);
     ASSERT_LT(generic, 1.0);
     ASSERT_GT(generic, 0.0);
 
-    Settings::mode = Settings::Mode::chemical;
+    SOAPExpansion::settings.mode = SOAPExpansion::Mode::chemical;
     auto chemical = StructuralSimilarity::kernel(A, B, regularizationParameter);
     ASSERT_LT(chemical, 1.0);
     ASSERT_GT(chemical, 0.0);
 
-    Settings::mode = Settings::Mode::alchemical;
+    SOAPExpansion::settings.mode = SOAPExpansion::Mode::alchemical;
     auto alchemical = StructuralSimilarity::kernel(A, B, regularizationParameter);
     ASSERT_LT(alchemical, 1.0);
     ASSERT_GT(alchemical, 0.0);
@@ -143,7 +143,7 @@ TEST_F(AStructuralSimilarityTest, AlchemicalIdentity) {
     // Force alchemical identity
     Settings::Alchemical::pairSimilarities[{int(Spin::alpha),int(Spin::beta)}] = 1.0;
 
-    Settings::mode = Settings::Mode::alchemical;
+    SOAPExpansion::settings.mode = SOAPExpansion::Mode::alchemical;
     auto ab = StructuralSimilarity::kernel(A, B, regularizationParameter);
     ASSERT_NEAR(ab, 1.0, eps);
 

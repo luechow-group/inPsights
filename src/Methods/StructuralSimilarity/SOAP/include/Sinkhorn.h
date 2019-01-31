@@ -10,10 +10,10 @@
 namespace Sinkhorn{
 
     Eigen::MatrixXd Pgamma(const Eigen::MatrixXd &C,
-                           double gamma = Settings::gamma,
+                           double gamma = SOAPExpansion::settings.gamma.get(),
                            double eps = std::numeric_limits<double>::epsilon());
 
-    double distance(Eigen::MatrixXd correlationMatrix, double gamma = Settings::gamma, double eps = std::numeric_limits<double>::epsilon());
+    double distance(Eigen::MatrixXd correlationMatrix, double gamma = SOAPExpansion::settings.gamma.get(), double eps = std::numeric_limits<double>::epsilon());
 }
 
 #endif //INPSIGHTS_SINKHORN_H

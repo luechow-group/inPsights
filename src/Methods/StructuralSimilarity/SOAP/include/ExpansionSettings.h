@@ -13,6 +13,32 @@
 #include <ISettings.h>
 
 namespace Settings{
+    namespace Alchemical{
+        extern std::map<std::pair<int,int>,double> pairSimilarities;
+        std::string toString();
+    }
+};
+
+namespace SOAPExpansion {
+    enum class Mode {
+        undefined = -1,
+        typeAgnostic = 0, chemical = 1, alchemical = 2
+    };
+}
+
+namespace Settings{
+    class SOAPExpansion : public ISettings {
+        inline static const std::string className = {VARNAME(SOAPExpansion)};
+    public:
+        Property<::SOAPExpansion::Mode> mode = {::SOAPExpansion::Mode::typeAgnostic, VARNAME(mode)};
+        Property<double> zeta = {2.0, VARNAME(zeta)};
+        Property<double> gamma = {0.1, VARNAME(gamma)};
+
+        SOAPExpansion() = default;
+        explicit SOAPExpansion(const YAML::Node &node);
+        void appendToNode(YAML::Node &node) const override;
+    };
+
     class Angular : public ISettings {
         inline static const std::string className = {VARNAME(Angular)};
     public:
@@ -57,6 +83,18 @@ namespace Settings{
 YAML_SETTINGS_DECLARATION(Settings::Angular)
 YAML_SETTINGS_DECLARATION(Settings::Radial)
 YAML_SETTINGS_DECLARATION(Settings::Cutoff)
+YAML_SETTINGS_DECLARATION(Settings::SOAPExpansion)
+
+
+namespace SOAPExpansion{
+    extern Settings::SOAPExpansion settings;
+
+    void checkBounds(unsigned n, unsigned l, int m);
+
+    std::string toString(Mode mode);
+
+    Mode fromString(std::string string);
+}
 
 namespace Angular {
     extern Settings::Angular settings;
@@ -84,28 +122,5 @@ namespace Cutoff{
 }
 
 
-namespace Settings{
-
-    namespace Alchemical{
-        extern std::map<std::pair<int,int>,double> pairSimilarities;
-        std::string toString();
-    }
-
-    enum class Mode {
-        typeAgnostic = 0, chemical, alchemical
-    };
-
-    extern Mode mode;
-    extern double zeta;
-    extern double gamma;
-
-    void checkBounds(unsigned n, unsigned l, int m);
-
-    std::string toString(const Mode& mode);
-
-    std::ostream& operator<<(std::ostream& os, const Mode& mode);
-
-    std::string toString();
-};
 
 #endif //INPSIGHTS_EXPANSIONSETTINGS_H

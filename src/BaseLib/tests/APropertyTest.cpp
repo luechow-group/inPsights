@@ -19,3 +19,15 @@ TEST(APropertyTest, YamlConversion) {
     ASSERT_STREQ(decodedInteger.name().c_str(), integer.name().c_str());
     ASSERT_EQ(decodedInteger.get(), integer.get());
 }
+
+enum TestEnum{
+    a=0, b=1
+};
+
+TEST(APropertyTest, Enum) {
+    Property<TestEnum> enumProperty = {TestEnum::a};
+    ASSERT_EQ(enumProperty.get(),TestEnum::a);
+
+    enumProperty = TestEnum::b;
+    ASSERT_EQ(enumProperty.get(),TestEnum::b);
+}

@@ -12,7 +12,7 @@ NeighborhoodExpansion::NeighborhoodExpansion()
 {}
 
 std::complex<double> NeighborhoodExpansion::getCoefficient(unsigned n, unsigned l, int m) const {
-    Settings::checkBounds(n,l,m);
+    SOAPExpansion::checkBounds(n,l,m);
     return coefficients_[(n-1)*angularEntityLength_ + (angularEntityLength(l-1)) + (m+l)];
 }
 
@@ -34,7 +34,7 @@ unsigned  NeighborhoodExpansion::angularSubEntityLength(unsigned l) const {
 }
 
 void NeighborhoodExpansion::storeCoefficient(unsigned n, unsigned l, int m, const std::complex<double> &coefficient) {
-    Settings::checkBounds(n,l,m);
+    SOAPExpansion::checkBounds(n,l,m);
     assert(coefficient == coefficient && "Value cannot be NaN!");
     coefficients_[(n-1)*angularEntityLength_ + (angularEntityLength(l-1)) + (m+l)] += coefficient;
 }
