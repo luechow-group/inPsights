@@ -12,9 +12,9 @@
 #include <utility>
 #include <MaximaProcessingSettings.h>
 #include <VoxelCubeGeneration.h>
+#include <spdlog/spdlog.h>
 
 using namespace YAML;
-using namespace Logger;
 
 int main(int argc, char *argv[]) {
 
@@ -24,8 +24,8 @@ int main(int argc, char *argv[]) {
     emitter << inputYaml;
 
     YAML::Emitter outputYaml;
-    console->info("Executable: {}", argv[0]);
-    console->info("Input file {}:\n{}", inputFilename, emitter.c_str());
+    spdlog::info("Executable: {}", argv[0]);
+    spdlog::info("Input file {}:\n{}", inputFilename, emitter.c_str());
 
     // Apply settings from inputYaml
     Settings::MaximaProcessing settings(inputYaml);
@@ -40,18 +40,18 @@ int main(int argc, char *argv[]) {
     reader.read(settings.binaryFileBasename.get(), settings.samplesToAnalyze.get());
     auto atoms = reader.getAtoms();
 
-    console->info("number of inital refs {}", globallyIdenticalMaxima.size());
+    spdlog::info("number of inital refs {}", globallyIdenticalMaxima.size());
     auto results = GeneralStatistics::calculate(globallyIdenticalMaxima, samples, atoms);
 
     auto valueStandardError = results.valueStats_.standardError()(0,0);
 
     if(settings.identitySearch.get()) {
-        console->info("Start identity search");
+        spdlog::info("Start identity search");
         GlobalIdentitySorter globalIdentiySorter(globallyIdenticalMaxima,samples);
         if(!inputYaml["GlobalIdentitySorter"]["identityValueIncrement"])
             GlobalIdentitySorter::settings.identityValueIncrement = valueStandardError*1e-4;
         globalIdentiySorter.sort();
-        console->info("number of elements after identity sort {}", globallyIdenticalMaxima.size());
+        spdlog::info("number of elements after identity sort {}", globallyIdenticalMaxima.size());
     }
 
     std::vector<SimilarReferences> globallySimilarMaxima;
@@ -60,7 +60,7 @@ int main(int argc, char *argv[]) {
     if(!inputYaml["GlobalSimilaritySorter"]["similarityValueIncrement"])
         GlobalSimilaritySorter::settings.similarityValueIncrement = valueStandardError*1e-2;
     globalSimilaritySorter.sort();
-    console->info("number of elements after similarity sort {}", globallySimilarMaxima.size());
+    spdlog::info("number of elements after similarity sort {}", globallySimilarMaxima.size());
 
     std::vector<std::vector<SimilarReferences>> globallyClusteredMaxima;
     GlobalClusterSorter globalClusterSorter(
@@ -68,7 +68,7 @@ int main(int argc, char *argv[]) {
             globallySimilarMaxima,
             globallyClusteredMaxima);
     globalClusterSorter.sort();
-    console->info("number of elements after cluster sort {}", globallyClusteredMaxima.size());
+    spdlog::info("number of elements after cluster sort {}", globallyClusteredMaxima.size());
 
     // Permutation sort
     /*std::vector<std::vector<SimilarReferences>> globallyPermutationallyInvariantClusteredMaxima;
@@ -90,7 +90,7 @@ int main(int argc, char *argv[]) {
                << Key << "Atoms" << Value << atoms << Comment("[a0]")
                << Key << "NSamples" << Value << samples.size()
                << Key << "OverallResults" << Value << results;
-    console->info("Calculating statistics...");
+    spdlog::info("Calculating statistics...");
 
     EnergyCalculator energyCalculator(outputYaml, samples,atoms);
     energyCalculator.calculateStatistics(globallyClusteredMaxima);
@@ -98,13 +98,13 @@ int main(int argc, char *argv[]) {
     outputYaml << EndMap << EndDoc;
 
     std::string resultsFilename = settings.binaryFileBasename.get() + ".yml";
-    console->info("Writing results into file \"{}\"", resultsFilename);
+    spdlog::info("Writing results into file \"{}\"", resultsFilename);
 
     std::ofstream yamlFile(resultsFilename);
     yamlFile << outputYaml.c_str();
     yamlFile.close();
 
-    console->info("Done! Bye bye.");
+    spdlog::info("Done! Bye bye.");
 
     return 0;
 
