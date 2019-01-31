@@ -130,8 +130,6 @@ public:
 
     std::string name() const { return name_; }
 
-    //void setName(const std::string& name) { name_ = name; }
-
 private:
     T value_;
     Property<T> const *connection_;
@@ -141,44 +139,6 @@ private:
     Signal<T> onChange_;
     Signal<T> beforeChange_;
 };
-
-// specialization for built-in default contructors
-template<>
-inline Property<double>::Property(std::string name)
-        : value_(0.0), connection_(nullptr), connectionId_(-1), name_(std::move(name)) {}
-
-template<>
-inline Property<float>::Property(std::string name)
-        : value_(0.f), connection_(nullptr), connectionId_(-1), name_(std::move(name)) {}
-
-template<>
-inline Property<short>::Property(std::string name)
-        :  value_(0), connection_(nullptr), connectionId_(-1), name_(std::move(name)) {}
-
-template<>
-inline Property<int>::Property(std::string name)
-        :  value_(0), connection_(nullptr), connectionId_(-1),name_(std::move(name)) {}
-
-template<>
-inline Property<char>::Property(std::string name)
-        :  value_(0), connection_(nullptr), connectionId_(-1), name_(std::move(name)) {}
-
-template<>
-inline Property<std::string>::Property(std::string name)
-        :  value_(""), connection_(nullptr), connectionId_(-1), name_(std::move(name)) {}
-
-template<>
-inline Property<unsigned>::Property(std::string name)
-        : value_(0), connection_(nullptr), connectionId_(-1), name_(std::move(name)) {}
-
-template<>
-inline Property<unsigned short>::Property(std::string name)
-        : value_(0), connection_(nullptr), connectionId_(-1), name_(std::move(name)) {}
-
-
-template<>
-inline Property<bool>::Property(std::string name)
-        : value_(false), connection_(nullptr), connectionId_(-1), name_(std::move(name)) {}
 
 // stream operators
 template<typename T>
