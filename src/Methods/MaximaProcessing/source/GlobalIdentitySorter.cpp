@@ -32,6 +32,8 @@ namespace Settings {
 }
 YAML_SETTINGS_DEFINITION(Settings::GlobalIdentitySorter)
 
+Settings::GlobalIdentitySorter GlobalIdentitySorter::settings = Settings::GlobalIdentitySorter();
+
 GlobalIdentitySorter::GlobalIdentitySorter(
         std::vector<Reference> &references,
         std::vector<Sample> &samples)

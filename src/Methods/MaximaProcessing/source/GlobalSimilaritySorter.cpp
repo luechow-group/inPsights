@@ -30,6 +30,8 @@ namespace Settings {
 }
 YAML_SETTINGS_DEFINITION(Settings::GlobalSimilaritySorter)
 
+Settings::GlobalSimilaritySorter GlobalSimilaritySorter::settings = Settings::GlobalSimilaritySorter();
+
 GlobalSimilaritySorter::GlobalSimilaritySorter(
         std::vector<Sample> &samples,
         std::vector<Reference> &references,

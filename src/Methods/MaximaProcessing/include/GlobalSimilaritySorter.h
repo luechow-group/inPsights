@@ -27,7 +27,7 @@ YAML_SETTINGS_DECLARATION(Settings::GlobalSimilaritySorter)
 
 class GlobalSimilaritySorter {
 public:
-    inline static Settings::GlobalSimilaritySorter settings {};
+    static Settings::GlobalSimilaritySorter settings;
 
     GlobalSimilaritySorter(
             std::vector<Sample> &samples,

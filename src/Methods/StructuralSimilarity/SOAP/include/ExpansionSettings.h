@@ -21,12 +21,12 @@ namespace ExpansionSettings{
 
         const double radiusZero = 1e-10;
 
-        inline unsigned nmax = {5};
-        inline BasisType basisType = {BasisType::equispaced};
-        inline double sigmaAtom = {0.5*ConversionFactors::angstrom2bohr};
+        extern unsigned nmax;
+        extern BasisType basisType;
+        extern double sigmaAtom;
 
-        inline unsigned integrationSteps = {100};
-        inline double desiredAbsoluteError = {0.0}, desiredRelativeError = {std::numeric_limits<double>::epsilon()*1e2};
+        extern unsigned integrationSteps;
+        extern double desiredAbsoluteError;
 
         void checkBounds(unsigned n);
 
@@ -34,7 +34,7 @@ namespace ExpansionSettings{
     };
 
     namespace Angular {
-        inline unsigned lmax = {5};
+        extern unsigned lmax;
 
         void checkBounds(unsigned l, int m = 0);
 
@@ -42,9 +42,9 @@ namespace ExpansionSettings{
     };
 
     namespace Cutoff {
-        inline double radius = {4.0*ConversionFactors::angstrom2bohr};
-        inline double width = {1.0*ConversionFactors::angstrom2bohr};
-        inline double centerWeight = {1.0}; //TODO
+        extern double radius;
+        extern double width;
+        extern double centerWeight; //TODO
 
         double innerPlateauRadius();
 
@@ -52,9 +52,7 @@ namespace ExpansionSettings{
     }
 
     namespace Alchemical{
-        inline std::map<std::pair<int,int>,double> pairSimilarities = {
-                {{int(Spin::alpha),int(Spin::beta)}, 0.5}
-        };
+        extern std::map<std::pair<int,int>,double> pairSimilarities;
         std::string toString();
     }
 
@@ -62,9 +60,9 @@ namespace ExpansionSettings{
         typeAgnostic = 0, chemical, alchemical
     };
 
-    inline Mode mode = ExpansionSettings::Mode::chemical;
-    inline double zeta = 2; // LocalSimilarity exponent
-    inline double gamma = 0.1; // StructuralSimilarity regularization parameter
+    extern Mode mode;
+    extern double zeta;
+    extern double gamma;
 
     void checkBounds(unsigned n, unsigned l, int m);
 

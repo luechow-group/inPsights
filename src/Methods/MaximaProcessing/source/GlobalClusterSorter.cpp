@@ -27,6 +27,7 @@ namespace Settings {
 }
 YAML_SETTINGS_DEFINITION(Settings::GlobalClusterSorter)
 
+Settings::GlobalClusterSorter GlobalClusterSorter::settings = Settings::GlobalClusterSorter();
 
 GlobalClusterSorter::GlobalClusterSorter(
         std::vector<Sample> &samples,

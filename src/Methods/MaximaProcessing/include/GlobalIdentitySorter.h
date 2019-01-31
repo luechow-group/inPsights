@@ -28,7 +28,7 @@ YAML_SETTINGS_DECLARATION(Settings::GlobalIdentitySorter)
 
 class GlobalIdentitySorter {
 public:
-    inline static Settings::GlobalIdentitySorter settings {};
+    static Settings::GlobalIdentitySorter settings;
 
     GlobalIdentitySorter(
             std::vector<Reference> &references,
