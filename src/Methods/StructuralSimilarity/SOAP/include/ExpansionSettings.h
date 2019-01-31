@@ -26,6 +26,13 @@ namespace SOAPExpansion {
     };
 }
 
+namespace Radial{
+    enum class BasisType {
+        undefined = -1,
+        equispaced = 0, adaptive = 1,
+    };
+}
+
 namespace Settings{
     class SOAPExpansion : public ISettings {
         inline static const std::string className = {VARNAME(SOAPExpansion)};
@@ -55,8 +62,9 @@ namespace Settings{
     public:
         Property<double> radiusZero = 1e-10;
 
+        Property<::Radial::BasisType> basisType = {::Radial::BasisType::equispaced, VARNAME(mode)};
+
         Property<unsigned> nmax = {5, VARNAME(nmax)};
-        //extern BasisType basisType;
         Property<double> sigmaAtom = {0.5*ConversionFactors::angstrom2bohr, VARNAME(sigmaAtom)};
         Property<unsigned> integrationSteps = {100, VARNAME(integrationSteps)};
         Property<double> desiredAbsoluteError = {0.0, VARNAME(desiredAbsoluteError)};
@@ -92,8 +100,7 @@ namespace SOAPExpansion{
     void checkBounds(unsigned n, unsigned l, int m);
 
     std::string toString(Mode mode);
-
-    Mode fromString(std::string string);
+    Mode fromString(const std::string& string);
 }
 
 namespace Angular {
@@ -104,12 +111,8 @@ namespace Angular {
 namespace Radial {
     extern Settings::Radial settings;
 
-    enum class BasisType {
-        equispaced = 0, adaptive = 1,
-    };
-    extern BasisType basisType;
-
-    std::string toString(const BasisType &type);
+    std::string toString(BasisType type);
+    BasisType fromString(const std::string& string);
 
     std::ostream &operator<<(std::ostream &os, const BasisType &type);
 

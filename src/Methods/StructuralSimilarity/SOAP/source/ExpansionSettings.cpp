@@ -39,6 +39,13 @@ namespace Settings {
 
 
     Radial::Radial(const YAML::Node &node) {
+        auto basisTypeNode = node[className][basisType.name()];
+        if(!basisTypeNode)
+            spdlog::info("Property \"{0}\" was not found. Using preset value: {1}",
+                         basisType.name(), ::Radial::toString(basisType.get()));
+        else
+            basisType = ::Radial::fromString(basisTypeNode.as<std::string>());
+
         unsignedProperty::decode(node[className], nmax);
         doubleProperty::decode(node[className], sigmaAtom);
         unsignedProperty::decode(node[className], integrationSteps);
@@ -47,6 +54,7 @@ namespace Settings {
     }
 
     void Radial::appendToNode(YAML::Node &node) const {
+        node[className][basisType.name()] = ::Radial::toString(::Radial::BasisType(basisType.get()));
         node[className][nmax.name()] = nmax.get();
         node[className][sigmaAtom.name()] = sigmaAtom.get();
         node[className][integrationSteps.name()] = integrationSteps.get();
@@ -88,7 +96,7 @@ namespace SOAPExpansion{
         }
     }
 
-    Mode fromString(std::string string) {
+    Mode fromString(const std::string& string) {
         if(string == "chemical")
             return SOAPExpansion::Mode::chemical;
         else if (string == "alchemical")
@@ -116,14 +124,13 @@ namespace Angular{
 
 namespace Radial{
     Settings::Radial settings = Settings::Radial();
-    BasisType basisType = BasisType::equispaced;
 
     void checkBounds(unsigned n) {
         assert(n <= settings.nmax.get() && "n must be smaller than nmax");
         assert(n >= 1 && "n must greater than or equal to 1");
     }
 
-    std::string toString(const BasisType &type) {
+    std::string toString(BasisType type) {
         switch(type) {
             case BasisType::equispaced :
                 return "equispaced";
@@ -134,9 +141,13 @@ namespace Radial{
         }
     }
 
-    std::ostream &operator<<(std::ostream &os, const BasisType &type) {
-        os << toString(type);
-        return os;
+    BasisType fromString(const std::string& string) {
+        if(string == "equispaced")
+            return Radial::BasisType::equispaced;
+        else if (string == "adaptive")
+            return Radial::BasisType::adaptive;
+        else
+            return Radial::BasisType::undefined;
     }
 }
 
