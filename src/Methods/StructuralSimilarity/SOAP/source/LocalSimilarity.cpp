@@ -174,12 +174,12 @@ namespace LocalSimilarity {
         if (typeA == typeB)
             return 1.0;
         else if (typeA < typeB)
-            it = Settings::Alchemical::pairSimilarities.find({typeA, typeB});
+            it = SOAPExpansion::settings.pairSimilarities.find({typeA, typeB});
         else
-            it = Settings::Alchemical::pairSimilarities.find({typeB, typeA});
+            it = SOAPExpansion::settings.pairSimilarities.find({typeB, typeA});
 
 
-        if (it != Settings::Alchemical::pairSimilarities.end())
+        if (it != SOAPExpansion::settings.pairSimilarities.end())
             return (*it).second;
         else
             return 0.0;

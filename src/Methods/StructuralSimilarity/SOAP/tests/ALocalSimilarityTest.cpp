@@ -2,7 +2,7 @@
 // Created by Michael Heuer on 09.05.18.
 //
 
-#include <gtest/gtest.h>
+#include <gmock/gmock.h>
 #include <ParticlesVector.h>
 #include <MolecularSpectrum.h>
 #include "LocalSimilarity.h"

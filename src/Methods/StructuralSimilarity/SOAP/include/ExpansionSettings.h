@@ -12,13 +12,6 @@
 
 #include <ISettings.h>
 
-namespace Settings{
-    namespace Alchemical{
-        extern std::map<std::pair<int,int>,double> pairSimilarities;
-        std::string toString();
-    }
-};
-
 namespace SOAPExpansion {
     enum class Mode {
         undefined = -1,
@@ -40,6 +33,10 @@ namespace Settings{
         Property<::SOAPExpansion::Mode> mode = {::SOAPExpansion::Mode::typeAgnostic, VARNAME(mode)};
         Property<double> zeta = {2.0, VARNAME(zeta)};
         Property<double> gamma = {0.1, VARNAME(gamma)};
+
+        std::map<std::pair<int,int>,double> pairSimilarities = {
+                {{int(Spin::alpha),int(Spin::beta)}, 0.5}
+        };
 
         SOAPExpansion() = default;
         explicit SOAPExpansion(const YAML::Node &node);

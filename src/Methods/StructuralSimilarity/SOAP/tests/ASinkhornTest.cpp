@@ -2,7 +2,7 @@
 // Created by Michael Heuer on 17.05.18.
 //
 
-#include <gtest/gtest.h>
+#include <gmock/gmock.h>
 #include <Eigen/Core>
 #include "Sinkhorn.h"
 

@@ -2,7 +2,7 @@
 // Created by Michael Heuer on 08.05.18.
 //
 
-#include <gtest/gtest.h>
+#include <gmock/gmock.h>
 #include "ParticleKit.h"
 #include <TestMolecules.h>
 #include <iomanip>

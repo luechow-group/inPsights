@@ -1,7 +1,7 @@
 //
 // Created by Michael Heuer on 23.05.18.
 //
-#include <gtest/gtest.h>
+#include <gmock/gmock.h>
 #include "StructuralSimilarity.h"
 #include "TestMolecules.h"
 #include "PositionsVectorTransformer.h"
@@ -141,7 +141,7 @@ TEST_F(AStructuralSimilarityTest, AlchemicalIdentity) {
     ASSERT_TRUE(ParticleKit::isSubsetQ(B));
 
     // Force alchemical identity
-    Settings::Alchemical::pairSimilarities[{int(Spin::alpha),int(Spin::beta)}] = 1.0;
+    SOAPExpansion::settings.pairSimilarities[{int(Spin::alpha),int(Spin::beta)}] = 1.0;
 
     SOAPExpansion::settings.mode = SOAPExpansion::Mode::alchemical;
     auto ab = StructuralSimilarity::kernel(A, B, regularizationParameter);

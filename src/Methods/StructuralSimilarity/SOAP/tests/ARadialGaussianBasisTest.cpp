@@ -2,8 +2,7 @@
 // Created by Michael Heuer on 16.05.18.
 //
 
-
-#include <gtest/gtest.h>
+#include <gmock/gmock.h>
 #include <RadialBasis.h>
 #include "ExpansionSettings.h"
 

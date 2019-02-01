@@ -2,7 +2,7 @@
 // Created by heuer on 02.07.18.
 //
 
-#include <gtest/gtest.h>
+#include <gmock/gmock.h>
 #include "StructuralSimilarity.h"
 #include "TestMolecules.h"
 #include <omp.h>

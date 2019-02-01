@@ -18,11 +18,72 @@ namespace Settings {
         else
             mode = ::SOAPExpansion::fromString(modeNode.as<std::string>());
 
+        auto mapNode = node[className][VARNAME(pairSimilarities)];
+        if(!mapNode){
+            spdlog::info("Property \"{0}\" was not found. Using preset values:");
+            for(const auto& kv : pairSimilarities) {
+                if (kv.first.first < 0)
+                    spdlog::info("\t{0},{1} : {2}", Spins::toString(Spins::SpinType(kv.first.first)));
+                else
+                    spdlog::info("\t{0},{1} : {2}", Elements::ElementInfo::symbol(Elements::ElementType(kv.first.first)));
+
+                if (kv.first.second < 0)
+                    spdlog::info("\t{0},{1} : {2}", Spins::toString(Spins::SpinType(kv.first.second)));
+                else
+                    spdlog::info("\t{0},{1} : {2}", Elements::ElementInfo::symbol(Elements::ElementType(kv.first.second)));
+            }
+
+
+        } else {
+            pairSimilarities.clear();
+            for (const auto &kv : mapNode) {
+                auto symbolPair = kv.first.as<std::vector<std::string>>();
+
+                int type1;
+                if (symbolPair[0] == Spins::toString(Spins::SpinType::alpha))
+                    type1 = int(Spins::SpinType::alpha);
+                else if (symbolPair[0] == Spins::toString(Spins::SpinType::beta))
+                    type1 = int(Spins::SpinType::beta);
+                else
+                    type1 = int(Elements::ElementInfo::elementTypeFromSymbol(symbolPair[0]));
+
+                int type2;
+                if (symbolPair[1] == Spins::toString(Spins::SpinType::alpha))
+                    type2 = int(Spins::SpinType::alpha);
+                else if (symbolPair[1] == Spins::toString(Spins::SpinType::beta))
+                    type2 = int(Spins::SpinType::beta);
+                else
+                    type2 = int(Elements::ElementInfo::elementTypeFromSymbol(symbolPair[1]));
+
+                pairSimilarities.emplace(std::pair<int, int>(type1, type2), kv.second.as<double>());
+            }
+        }
+
+
         doubleProperty::decode(node[className], zeta);
         doubleProperty::decode(node[className], gamma);
     }
 
     void SOAPExpansion::appendToNode(YAML::Node &node) const {
+        YAML::Node mapNode;
+
+        for(const auto& pair : pairSimilarities) {
+            std::vector<std::string> symbolPair;
+
+            if(pair.first.first < 0)
+                symbolPair.emplace_back(Spins::toString(Spins::SpinType (pair.first.first)));
+            else
+                symbolPair.emplace_back(Elements::ElementInfo::symbol(Elements::ElementType(pair.first.first)));
+
+            if(pair.first.second < 0)
+                symbolPair.emplace_back(Spins::toString(Spins::SpinType (pair.first.second)));
+            else
+                symbolPair.emplace_back(Elements::ElementInfo::symbol(Elements::ElementType(pair.first.second)));
+
+            mapNode[symbolPair] = pair.second;
+        }
+
+        node[className][VARNAME(pairSimilarities)] = mapNode;
         node[className][mode.name()] = ::SOAPExpansion::toString(::SOAPExpansion::Mode(mode.get()));
         node[className][zeta.name()] = zeta.get();
         node[className][gamma.name()] = gamma.get();
@@ -156,15 +217,5 @@ namespace Cutoff{
 
     double innerPlateauRadius() {
         return settings.radius.get() - settings.width.get();
-    }
-}
-
-
-namespace Settings {
-
-    namespace Alchemical{
-        std::map<std::pair<int,int>,double> pairSimilarities = {
-                {{int(Spin::alpha),int(Spin::beta)}, 0.5}
-        };
     }
 }
