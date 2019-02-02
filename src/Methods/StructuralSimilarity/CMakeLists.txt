@@ -13,12 +13,14 @@ set(HEADER_FILES
         include/Hungarian.h
         include/SimpleSorter.h
         include/HungarianHelper.h
+        include/GraphAnalysis.h
         )
 
 set(SOURCE_FILES
         source/QuaternionFit.cpp
         source/SimpleSorter.cpp
         source/HungarianHelper.cpp
+        source/GraphAnalysis.cpp
         )
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES})
