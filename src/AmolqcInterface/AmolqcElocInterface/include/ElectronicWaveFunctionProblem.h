@@ -9,6 +9,11 @@
 #include "problem.h"
 #include <ParticlesVectorCollection.h>
 
+namespace Eigen {
+    using MatrixXb = Matrix<bool, Eigen::Dynamic, Eigen::Dynamic>;
+    using VectorXb = Matrix<bool, Eigen::Dynamic, 1>;
+}
+
 class ElectronicWaveFunctionProblem : public cppoptlib::Problem<double,Eigen::Dynamic>
 {
 public:
@@ -59,7 +64,7 @@ private:
     unsigned valueCallCount_, gradientCallCount_;
     ElectronicWaveFunction& wf_;
     ElectronsVectorCollection optimizationPath_;
-    Eigen::Matrix<bool,Eigen::Dynamic,1> electronCoordinateIndicesThatWereNaN_;
+    Eigen::VectorXb electronCoordinateIndicesThatWereNaN_;
     std::vector<unsigned long> indicesOfElectronsNotAtNuclei_;
     std::vector<unsigned long> indicesOfElectronsAtNuclei_;
 
