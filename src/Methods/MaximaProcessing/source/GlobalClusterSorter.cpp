@@ -7,13 +7,15 @@
 
 namespace Settings {
     GlobalClusterSorter::GlobalClusterSorter() {
-        clusterRadius.onChange().connect([&](double value) {
-            if(value > ::GlobalSimilaritySorter::settings.similarityRadius.get())
-                throw std::invalid_argument(
-                        "The " + clusterRadius.name() + " with " + std::to_string(clusterRadius.get())
-                        + " is greater than the "+ ::GlobalSimilaritySorter::settings.similarityRadius.name() + " with "
-                        + std::to_string(::GlobalSimilaritySorter::settings.similarityRadius.get()));
-        });
+        clusterRadius.onChange_.connect(
+                [&](double value) {
+                    if(value > ::GlobalSimilaritySorter::settings.similarityRadius.get())
+                        throw std::invalid_argument(
+                                "The " + clusterRadius.name() + " with " + std::to_string(clusterRadius.get())
+                                + " is greater than the "+ ::GlobalSimilaritySorter::settings.similarityRadius.name() 
+                                + " with "
+                                + std::to_string(::GlobalSimilaritySorter::settings.similarityRadius.get()));
+                });
     }
 
     GlobalClusterSorter::GlobalClusterSorter(const YAML::Node &node)

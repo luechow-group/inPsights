@@ -6,7 +6,7 @@
 #define INPSIGHTS_PROPERTY_H
 
 #include <utility>
-#include "Signal.h"
+#include <boost/signals2/signal.hpp>
 #include <iostream>
 #include <Eigen/Core>
 #include <yaml-cpp/yaml.h>
@@ -36,21 +36,14 @@ public:
     Property(Property<T> &&toCopy, std::string name = "")
             : value_(std::move(toCopy.value_)), connection_(nullptr), connectionId_(-1), name_(std::move(name)) {}
 
-    // returns a Signal which is fired when the internal value
-    // will be changed. The old value is passed as parameter.
-    virtual Signal<T> const &beforeChange() const { return beforeChange_; }
-
-    // returns a Signal which is fired when the internal value
-    // has been changed. The new value is passed as parameter.
-    virtual Signal<T> const &onChange() const { return onChange_; }
 
     // sets the Property to a new value. beforeChange() and
     // onChange() will be emitted.
     virtual void set(T const &value) {
         if (value != value_) {
-            beforeChange_.emit(value_);
+            beforeChange_(value_);
             value_ = value;
-            onChange_.emit(value_);
+            onChange_(value_);
         }
     }
 
@@ -63,40 +56,18 @@ public:
     // emits beforeChange() and onChange() even if the value
     // did not change
     void touch() {
-        beforeChange_.emit(value_);
-        onChange_.emit(value_);
+        beforeChange_(value_);
+        onChange_(value_);
     }
 
     // returns the internal value
     virtual T const &get() const { return value_; }
-
-    // connects two Properties to each other. If the source's
-    // value is changed, this' value will be changed as well
-    virtual void connect_from(Property<T> const &source) {
-        disconnect();
-        connection_ = &source;
-        connectionId_ = source.onChange().connect([this](T const &value) {
-            set(value);
-            return true;
-        });
-        set(source.get());
-    }
-
-    // if this Property is connected from another property,
-    // it will be disconnected
-    virtual void disconnect() {
-        if (connection_) {
-            connection_->onChange().disconnect(connectionId_);
-            connectionId_ = -1;
-            connection_ = nullptr;
-        }
-    }
-
+    
     // if there are any Properties connected to this Property,
     // they won't be notified of any further changes
     virtual void disconnect_auditors() {
-        onChange_.disconnectAll();
-        beforeChange_.disconnectAll();
+        onChange_.disconnect_all_slots();
+        beforeChange_.disconnect_all_slots();
     }
 
     // assigns the value of another Property
@@ -135,9 +106,9 @@ private:
     Property<T> const *connection_;
     int connectionId_;
     std::string name_;
-
-    Signal<T> onChange_;
-    Signal<T> beforeChange_;
+public:
+    boost::signals2::signal<void(T)> onChange_;
+    boost::signals2::signal<void(T)>beforeChange_;
 };
 
 // stream operators

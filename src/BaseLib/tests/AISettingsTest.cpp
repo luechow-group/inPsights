@@ -13,16 +13,18 @@ namespace Settings {
         Property<int> number = {1234567890, VARNAME(number)};
         Property<double> threshold = {1.234567890, VARNAME(threshold)};
 
+        void onThresholdChanged(double val){
+            assert(val > 0 && "The threshold cannot be negative.");
+        };
+
         TestSettings() {
-            threshold.onChange().connect([&](double val) {
-                assert(val > 0 && "The threshold cannot be negative.");
-            });
-        }
+            threshold.onChange_.connect(boost::bind(&TestSettings::onThresholdChanged, this, _1));
+        };
 
         explicit TestSettings(const YAML::Node &node) {
             intProperty::decode(node[className], number);
             doubleProperty::decode(node[className], threshold);
-        }
+        };
 
         void appendToNode(YAML::Node &node) const override {
             node[className][number.name()] = number.get();

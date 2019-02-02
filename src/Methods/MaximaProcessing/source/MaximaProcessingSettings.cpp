@@ -8,15 +8,17 @@
 
 namespace Settings {
     MaximaProcessing::MaximaProcessing() {
-        samplesToAnalyze.onChange().connect([&](unsigned value) {
-            if(value > 0 && value < std::numeric_limits<unsigned>::max())
-                spdlog::info("Analyzing {} samples.", value);
-            else if (value == 0)
-                spdlog::info("Analyzing all samples.");
-            else
-                throw std::invalid_argument("The number of samples to analyze is negative.");
-        });
+        samplesToAnalyze.onChange_.connect(
+                [&](unsigned value) {
+                    if(value > 0 && value < std::numeric_limits<unsigned>::max())
+                        spdlog::info("Analyzing {} samples.", value);
+                    else if (value == 0)
+                        spdlog::info("Analyzing all samples.");
+                    else
+                        throw std::invalid_argument("The number of samples to analyze is negative.");
+                });
     }
+
 
     MaximaProcessing::MaximaProcessing(const YAML::Node &node)
     : MaximaProcessing() {

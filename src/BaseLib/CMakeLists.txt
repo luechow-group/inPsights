@@ -47,7 +47,6 @@ set(HEADER_FILES
         include/AtomsVectorLinkedElectronsVector.h
         include/ISettings.h
         include/Property.h
-        include/Signal.h
         )
 
 set(SOURCE_FILES
