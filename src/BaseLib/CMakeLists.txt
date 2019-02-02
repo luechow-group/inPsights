@@ -44,6 +44,7 @@ set(HEADER_FILES
         include/InsertableVector.h
         include/Statistics.h
         include/SpinCorrelation.h
+        include/LinkedParticle.h
         include/AtomsVectorLinkedElectronsVector.h
         include/ISettings.h
         include/Property.h

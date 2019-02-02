@@ -9,9 +9,9 @@
 #include "Particle.h"
 #include "PositionsVector.h"
 #include "TypesVector.h"
-#include <vector>
 #include <yaml-cpp/yaml.h>
 #include <vector>
+#include <memory>
 
 template<typename Type>
 class ParticlesVector : public AbstractVector{
@@ -143,6 +143,10 @@ public:
 using TypedParticlesVector = ParticlesVector<int>;
 using ElectronsVector = ParticlesVector<Spin>;
 using AtomsVector = ParticlesVector<Element>;
+
+using LinkedTypedParticle = LinkedParticle<int>;
+using LinkedElectron = LinkedParticle<Spin>;
+using LinkedAtoms = LinkedParticle<Element>;
 
 namespace YAML {
     template<typename Type> struct convert<ParticlesVector<Type>> {
