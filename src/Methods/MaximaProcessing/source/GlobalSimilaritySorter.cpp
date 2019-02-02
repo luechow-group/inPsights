@@ -10,12 +10,12 @@ namespace Settings {
     GlobalSimilaritySorter::GlobalSimilaritySorter() {
         similarityRadius.onChange_.connect(
                 [&](double value) {
-                    if(value < ::GlobalIdentitySorter::settings.identityRadius.get())
+                    if(value < ::GlobalIdentitySorter::settings.identityRadius())
                         throw std::invalid_argument(
-                                "The " + similarityRadius.name() + " with " + std::to_string(similarityRadius.get())
+                                "The " + similarityRadius.name() + " with " + std::to_string(similarityRadius())
                                 + " is smaller than the "+ ::GlobalIdentitySorter::settings.identityRadius.name() 
                                 + " with "
-                                + std::to_string(::GlobalIdentitySorter::settings.identityRadius.get()));
+                                + std::to_string(::GlobalIdentitySorter::settings.identityRadius()));
                 });
     }
 
@@ -26,8 +26,8 @@ namespace Settings {
     }
 
     void GlobalSimilaritySorter::appendToNode(YAML::Node &node) const {
-        node[className][similarityRadius.name()] = similarityRadius.get();
-        node[className][similarityValueIncrement.name()] = similarityValueIncrement.get();
+        node[className][similarityRadius.name()] = similarityRadius();
+        node[className][similarityValueIncrement.name()] = similarityValueIncrement();
     }
 }
 YAML_SETTINGS_DEFINITION(Settings::GlobalSimilaritySorter)
@@ -45,8 +45,8 @@ GlobalSimilaritySorter::GlobalSimilaritySorter(
         
 // assumes a sorted reference vector
 bool GlobalSimilaritySorter::sort() {
-    auto similarityRadius = settings.similarityRadius.get();
-    auto valueIncrement = settings.similarityValueIncrement.get();
+    auto similarityRadius = settings.similarityRadius();
+    auto valueIncrement = settings.similarityValueIncrement();
 
     // first, sort references by value
     ValueSorter::sortReferencesByValue(references_);

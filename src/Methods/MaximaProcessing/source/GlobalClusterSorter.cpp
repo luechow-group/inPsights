@@ -9,12 +9,12 @@ namespace Settings {
     GlobalClusterSorter::GlobalClusterSorter() {
         clusterRadius.onChange_.connect(
                 [&](double value) {
-                    if(value > ::GlobalSimilaritySorter::settings.similarityRadius.get())
+                    if(value > ::GlobalSimilaritySorter::settings.similarityRadius())
                         throw std::invalid_argument(
-                                "The " + clusterRadius.name() + " with " + std::to_string(clusterRadius.get())
+                                "The " + clusterRadius.name() + " with " + std::to_string(clusterRadius())
                                 + " is greater than the "+ ::GlobalSimilaritySorter::settings.similarityRadius.name() 
                                 + " with "
-                                + std::to_string(::GlobalSimilaritySorter::settings.similarityRadius.get()));
+                                + std::to_string(::GlobalSimilaritySorter::settings.similarityRadius()));
                 });
     }
 
@@ -24,7 +24,7 @@ namespace Settings {
     }
 
     void GlobalClusterSorter::appendToNode(YAML::Node &node) const {
-        node[className][clusterRadius.name()] = clusterRadius.get();
+        node[className][clusterRadius.name()] = clusterRadius();
     }
 }
 YAML_SETTINGS_DEFINITION(Settings::GlobalClusterSorter)
@@ -42,7 +42,7 @@ GlobalClusterSorter::GlobalClusterSorter(
 }
 
 void GlobalClusterSorter::sort() {
-    auto threshold = settings.clusterRadius.get() * 2 + 0.01; // TODO WHY IS THIS CORRECTIONS NECESSARY?
+    auto threshold = settings.clusterRadius() * 2 + 0.01; // TODO WHY IS THIS CORRECTIONS NECESSARY?
 
     DensityBasedScan<double, SimilarReferences, GlobalClusterSorter::wrapper> dbscan(globallySimilarMaxima_);
     auto nClusters = dbscan.findClusters(threshold, 1); // why multiplication by 2 is needed?

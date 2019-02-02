@@ -37,7 +37,7 @@ int main(int argc, char *argv[]) {
     std::vector<Reference> globallyIdenticalMaxima;
     std::vector<Sample> samples;
     RawDataReader reader(globallyIdenticalMaxima, samples);
-    reader.read(settings.binaryFileBasename.get(), settings.samplesToAnalyze.get());
+    reader.read(settings.binaryFileBasename(), settings.samplesToAnalyze());
     auto atoms = reader.getAtoms();
 
     spdlog::info("number of inital refs {}", globallyIdenticalMaxima.size());
@@ -45,7 +45,7 @@ int main(int argc, char *argv[]) {
 
     auto valueStandardError = results.valueStats_.standardError()(0,0);
 
-    if(settings.identitySearch.get()) {
+    if(settings.identitySearch()) {
         spdlog::info("Start identity search");
         GlobalIdentitySorter globalIdentiySorter(globallyIdenticalMaxima,samples);
         if(!inputYaml["GlobalIdentitySorter"]["identityValueIncrement"])
@@ -97,7 +97,7 @@ int main(int argc, char *argv[]) {
 
     outputYaml << EndMap << EndDoc;
 
-    std::string resultsFilename = settings.binaryFileBasename.get() + ".yml";
+    std::string resultsFilename = settings.binaryFileBasename() + ".yml";
     spdlog::info("Writing results into file \"{}\"", resultsFilename);
 
     std::ofstream yamlFile(resultsFilename);

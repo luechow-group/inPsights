@@ -8,8 +8,8 @@
 //function to calculate p_ab(X_i)
 Eigen::VectorXcd PowerSpectrum::partialPowerSpectrum(const NeighborhoodExpansion& n1a,
                                                      const NeighborhoodExpansion& n1b) {
-    const auto nmax = Radial::settings.nmax.get();
-    const auto lmax = Angular::settings.lmax.get();
+    const auto nmax = Radial::settings.nmax();
+    const auto lmax = Angular::settings.lmax();
 
     unsigned angularEntityLength = 2 * lmax + 1;
     unsigned entityLength = nmax * nmax * angularEntityLength;

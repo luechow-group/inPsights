@@ -14,7 +14,7 @@ namespace Settings {
         auto modeNode = node[className][mode.name()];
         if(!modeNode)
             spdlog::info("Property \"{0}\" was not found. Using preset value: {1}",
-                    mode.name(), ::SOAPExpansion::toString(mode.get()));
+                    mode.name(), ::SOAPExpansion::toString(mode()));
         else
             mode = ::SOAPExpansion::fromString(modeNode.as<std::string>());
 
@@ -84,9 +84,9 @@ namespace Settings {
         }
 
         node[className][VARNAME(pairSimilarities)] = mapNode;
-        node[className][mode.name()] = ::SOAPExpansion::toString(::SOAPExpansion::Mode(mode.get()));
-        node[className][zeta.name()] = zeta.get();
-        node[className][gamma.name()] = gamma.get();
+        node[className][mode.name()] = ::SOAPExpansion::toString(::SOAPExpansion::Mode(mode()));
+        node[className][zeta.name()] = zeta();
+        node[className][gamma.name()] = gamma();
     }
 
 
@@ -95,7 +95,7 @@ namespace Settings {
     }
 
     void Angular::appendToNode(YAML::Node &node) const {
-        node[className][lmax.name()] = lmax.get();
+        node[className][lmax.name()] = lmax();
     }
 
 
@@ -103,7 +103,7 @@ namespace Settings {
         auto basisTypeNode = node[className][basisType.name()];
         if(!basisTypeNode)
             spdlog::info("Property \"{0}\" was not found. Using preset value: {1}",
-                         basisType.name(), ::Radial::toString(basisType.get()));
+                         basisType.name(), ::Radial::toString(basisType()));
         else
             basisType = ::Radial::fromString(basisTypeNode.as<std::string>());
 
@@ -115,12 +115,12 @@ namespace Settings {
     }
 
     void Radial::appendToNode(YAML::Node &node) const {
-        node[className][basisType.name()] = ::Radial::toString(::Radial::BasisType(basisType.get()));
-        node[className][nmax.name()] = nmax.get();
-        node[className][sigmaAtom.name()] = sigmaAtom.get();
-        node[className][integrationSteps.name()] = integrationSteps.get();
-        node[className][desiredAbsoluteError.name()] = desiredAbsoluteError.get();
-        node[className][desiredRelativeError.name()] = desiredRelativeError.get();
+        node[className][basisType.name()] = ::Radial::toString(::Radial::BasisType(basisType()));
+        node[className][nmax.name()] = nmax();
+        node[className][sigmaAtom.name()] = sigmaAtom();
+        node[className][integrationSteps.name()] = integrationSteps();
+        node[className][desiredAbsoluteError.name()] = desiredAbsoluteError();
+        node[className][desiredRelativeError.name()] = desiredRelativeError();
     }
 
 
@@ -131,9 +131,9 @@ namespace Settings {
     }
 
     void Cutoff::appendToNode(YAML::Node &node) const {
-        node[className][radius.name()] = radius.get();
-        node[className][width.name()] = width.get();
-        node[className][centerWeight.name()] = centerWeight.get();
+        node[className][radius.name()] = radius();
+        node[className][width.name()] = width();
+        node[className][centerWeight.name()] = centerWeight();
     }
 }
 YAML_SETTINGS_DEFINITION(Settings::Angular)
@@ -178,8 +178,8 @@ namespace Angular{
     Settings::Angular settings = Settings::Angular();
 
     void checkBounds(unsigned l, int m) {
-        assert(l <= settings.lmax.get() && "l must be less than or equal to lmax");
-        assert(unsigned(abs(m)) <= settings.lmax.get() && "abs(m) must be smaller than lmax");
+        assert(l <= settings.lmax() && "l must be less than or equal to lmax");
+        assert(unsigned(abs(m)) <= settings.lmax() && "abs(m) must be smaller than lmax");
     }
 }
 
@@ -187,7 +187,7 @@ namespace Radial{
     Settings::Radial settings = Settings::Radial();
 
     void checkBounds(unsigned n) {
-        assert(n <= settings.nmax.get() && "n must be smaller than nmax");
+        assert(n <= settings.nmax() && "n must be smaller than nmax");
         assert(n >= 1 && "n must greater than or equal to 1");
     }
 
@@ -216,6 +216,6 @@ namespace Cutoff{
     Settings::Cutoff settings = Settings::Cutoff();
 
     double innerPlateauRadius() {
-        return settings.radius.get() - settings.width.get();
+        return settings.radius() - settings.width();
     }
 }

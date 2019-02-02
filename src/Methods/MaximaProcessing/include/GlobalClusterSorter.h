@@ -16,7 +16,7 @@ namespace Settings {
         inline static const std::string className = {VARNAME(GlobalClusterSorter)};
     public:
         Property<double> clusterRadius = {
-                ::GlobalSimilaritySorter::settings.similarityRadius.get(), VARNAME(clusterRadius)};
+                ::GlobalSimilaritySorter::settings.similarityRadius(), VARNAME(clusterRadius)};
 
         GlobalClusterSorter();
         explicit GlobalClusterSorter(const YAML::Node &node);

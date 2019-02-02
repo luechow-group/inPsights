@@ -12,12 +12,12 @@ namespace Settings {
     GlobalIdentitySorter::GlobalIdentitySorter() {
         identityRadius.onChange_.connect(
                 [&](double value) {
-                    if(value > ::GlobalSimilaritySorter::settings.similarityRadius.get())
+                    if(value > ::GlobalSimilaritySorter::settings.similarityRadius())
                         throw std::invalid_argument(
-                                "The " + identityRadius.name() + " with " + std::to_string(identityRadius.get())
+                                "The " + identityRadius.name() + " with " + std::to_string(identityRadius())
                                 + " is greater than the "+ ::GlobalSimilaritySorter::settings.similarityRadius.name() 
                                 + " with "
-                                + std::to_string(::GlobalSimilaritySorter::settings.similarityRadius.get()));
+                                + std::to_string(::GlobalSimilaritySorter::settings.similarityRadius()));
                 });
     }
 
@@ -28,8 +28,8 @@ namespace Settings {
     }
 
     void GlobalIdentitySorter::appendToNode(YAML::Node &node) const {
-        node[className][identityRadius.name()] = identityRadius.get();
-        node[className][identityValueIncrement.name()] = identityValueIncrement.get();
+        node[className][identityRadius.name()] = identityRadius();
+        node[className][identityValueIncrement.name()] = identityValueIncrement();
     }
 }
 YAML_SETTINGS_DEFINITION(Settings::GlobalIdentitySorter)
@@ -45,8 +45,8 @@ GlobalIdentitySorter::GlobalIdentitySorter(
 
 
 bool GlobalIdentitySorter::sort() {
-    auto identityRadius = settings.identityRadius.get();
-    auto valueIncrement = settings.identityValueIncrement.get();
+    auto identityRadius = settings.identityRadius();
+    auto valueIncrement = settings.identityValueIncrement();
 
     // first, sort references by value
     ValueSorter::sortReferencesByValue(references_);

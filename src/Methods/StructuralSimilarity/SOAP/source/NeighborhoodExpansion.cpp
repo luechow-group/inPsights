@@ -6,8 +6,8 @@
 #include "ExpansionSettings.h"
 
 NeighborhoodExpansion::NeighborhoodExpansion()
-        : angularEntityLength_(angularEntityLength(Angular::settings.lmax.get())), //lmax*lmax+ 2*lmax+1
-          entityLength_(Radial::settings.nmax.get() * angularEntityLength_),//TODO rename
+        : angularEntityLength_(angularEntityLength(Angular::settings.lmax())), //lmax*lmax+ 2*lmax+1
+          entityLength_(Radial::settings.nmax() * angularEntityLength_),//TODO rename
           coefficients_(Eigen::VectorXcd::Zero(entityLength_))
 {}
 
@@ -48,9 +48,9 @@ void NeighborhoodExpansion::operator*=(double weight){
 }
 
 std::ostream& operator<<(std::ostream& os, const NeighborhoodExpansion & ne){
-    for (unsigned n = 1; n <= Radial::settings.nmax.get(); ++n) {
+    for (unsigned n = 1; n <= Radial::settings.nmax(); ++n) {
         os << " n: "<< n << std::endl;
-        for (unsigned l = 0; l <= Angular::settings.lmax.get(); ++l) {
+        for (unsigned l = 0; l <= Angular::settings.lmax(); ++l) {
             os << "  l: "<< l << std::endl;
             for (int m = -int(l); m <= int(l); ++m) {
                 os << "   m: " << m << " " << ne.getCoefficient(n,l,m) << std::endl;

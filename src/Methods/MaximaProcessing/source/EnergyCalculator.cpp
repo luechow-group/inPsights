@@ -74,7 +74,7 @@ void EnergyCalculator::calculateStatistics(const std::vector<std::vector<Similar
 
 
         std::vector<VoxelCube> voxelCubes;
-        if(VoxelCubeGeneration::settings.generateVoxelCubesQ.get())
+        if(VoxelCubeGeneration::settings.generateVoxelCubesQ())
             voxelCubes = VoxelCubeGeneration::fromCluster(cluster, samples_);
 
         yamlDocument_ <<  ClusterData(TeStats_.getTotalWeight(), structures, valueStats_, TeStats_, EeStats_,

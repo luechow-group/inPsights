@@ -14,11 +14,11 @@ NeighborhoodExpander::NeighborhoodExpander()
 NeighborhoodExpansion NeighborhoodExpander::expandEnvironment(const Environment& e, int expansionTypeId) const {
     NeighborhoodExpansion neighborhoodExpansion;
 
-    auto nmax = Radial::settings.nmax.get();
-    auto lmax = Angular::settings.lmax.get();
-    auto sigmaAtom  = Radial::settings.sigmaAtom.get();
-    auto radiusZero = Radial::settings.radiusZero.get();
-    auto centerWeight = Cutoff::settings.centerWeight.get();
+    auto nmax = Radial::settings.nmax();
+    auto lmax = Angular::settings.lmax();
+    auto sigmaAtom  = Radial::settings.sigmaAtom();
+    auto radiusZero = Radial::settings.radiusZero();
+    auto centerWeight = Cutoff::settings.centerWeight();
 
     for (const auto& neighborCoordsPair : e.selectParticles(expansionTypeId)) {
 
@@ -53,7 +53,7 @@ TypeSpecificNeighborhoodsAtOneCenter
 NeighborhoodExpander::computeParticularExpansions(const Environment &e) { // WORKS!
     TypeSpecificNeighborhoodsAtOneCenter expansions;
 
-    auto mode = SOAPExpansion::settings.mode.get();
+    auto mode = SOAPExpansion::settings.mode();
     switch (mode) {
         case SOAPExpansion::Mode::typeAgnostic: {
             auto noneTypeId = 0;
@@ -84,7 +84,7 @@ NeighborhoodExpander::computeMolecularExpansions(MolecularGeometry molecule) {
            && "The molecule must be composable from the set of particles specified in the particle kit");
     MolecularCenters exp;
 
-    auto radiusZero = Radial::settings.radiusZero.get();
+    auto radiusZero = Radial::settings.radiusZero();
 
     //TODO CHECK HERE FOR IDENTICAL CENTERS!
     for (unsigned k = 0; k < unsigned(molecule.numberOfEntities()); ++k) {

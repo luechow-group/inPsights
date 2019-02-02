@@ -30,7 +30,7 @@ namespace StructuralSimilarity{
                 if (!B.molecule_.findIndexByNumberedType(numberedType_j).first)
                     continue;
                 expB = B.molecularCenters_.find(numberedType_j)->second;
-                C(i, j) = LocalSimilarity::kernel(expA, expB, SOAPExpansion::settings.zeta.get());
+                C(i, j) = LocalSimilarity::kernel(expA, expB, SOAPExpansion::settings.zeta());
             }
         }
         return C;
@@ -57,7 +57,7 @@ namespace StructuralSimilarity{
                 if (!A.molecule_.findIndexByNumberedType(numberedType_j).first) continue;
                 expB = A.molecularCenters_.find(numberedType_j)->second;
 
-                C(i,j) = LocalSimilarity::kernel(expA, expB, SOAPExpansion::settings.zeta.get());
+                C(i,j) = LocalSimilarity::kernel(expA, expB, SOAPExpansion::settings.zeta());
             }
         }
         // symmetrize the matrix

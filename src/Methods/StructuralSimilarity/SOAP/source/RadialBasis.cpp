@@ -12,24 +12,24 @@
 
 RadialBasis::RadialBasis()
         : basis_(createBasis()),
-          Sab_(Sab(Radial::settings.nmax.get())),
+          Sab_(Sab(Radial::settings.nmax())),
           radialTransform_(calculateRadialTransform(Sab_))
 {}
 
 std::vector<Gaussian> RadialBasis::createBasis() {
-    const auto& nmax = Radial::settings.nmax.get();
-    const auto& lmax = Angular::settings.lmax.get();
-    const auto& sigmaAtom = Radial::settings.sigmaAtom.get();
+    const auto& nmax = Radial::settings.nmax();
+    const auto& lmax = Angular::settings.lmax();
+    const auto& sigmaAtom = Radial::settings.sigmaAtom();
 
     assert(nmax > 1 && "nmax must be greater than 1");
 
     std::vector<Gaussian> basis;
     double basisFunctionCenter = 0;
 
-    switch (Radial::settings.basisType.get()){
+    switch (Radial::settings.basisType()){
         case Radial::BasisType::equispaced : {
             for (unsigned i = 0; i < nmax; ++i) {
-                basisFunctionCenter = (Cutoff::settings.radius.get()*double(i)) /double(nmax-1);
+                basisFunctionCenter = (Cutoff::settings.radius()*double(i)) /double(nmax-1);
                 basis.emplace_back(basisFunctionCenter, sigmaAtom);
             }
             return basis;
@@ -59,7 +59,7 @@ std::vector<Gaussian> RadialBasis::createBasis() {
 
 
 double RadialBasis::operator()(double r, unsigned n) const{
-    const auto& nmax  = Radial::settings.nmax.get();
+    const auto& nmax  = Radial::settings.nmax();
     assert(n > 0 && "The radial basis function index must be positive");
     assert(n <= nmax && "The radial basis function index must be smaller than or equal to nmax");
 
@@ -114,8 +114,8 @@ Eigen::MatrixXd RadialBasis::calculateRadialTransform(const Eigen::MatrixXd &Sab
 // Compute integrals S r^2 dr i_l(2*ai*ri*r) exp(-beta_ik*(r-rho_ik)^2) //TODO what is the difference between r and ri
 std::vector<double> RadialBasis::calculateIntegrals(double ai, double ri, double rho_ik,double beta_ik) const {
 
-    auto lmax = Angular::settings.lmax.get();
-    auto n_steps = Radial::settings.integrationSteps.get();
+    auto lmax = Angular::settings.lmax();
+    auto n_steps = Radial::settings.integrationSteps();
 
     double sigma_ik = sqrt(0.5/beta_ik);
     double r_min = rho_ik - 4*sigma_ik;
@@ -162,13 +162,13 @@ std::vector<double> RadialBasis::calculateIntegrals(double ai, double ri, double
 
 /* Copied code from soapxx */
 Eigen::MatrixXd RadialBasis::computeCoefficients(double centerToNeighborDistance, double neighborSigma) const {
-    const auto lmax = Angular::settings.lmax.get();
-    const auto nmax = Radial::settings.nmax.get();
+    const auto lmax = Angular::settings.lmax();
+    const auto nmax = Radial::settings.nmax();
 
     //TODO just resize?
     Eigen::MatrixXd radialCoeffsGnl = Eigen::MatrixXd::Zero(nmax,lmax+1);
 
-    if (neighborSigma < Radial::settings.radiusZero.get()) {
+    if (neighborSigma < Radial::settings.radiusZero()) {
 
         for (unsigned n = 0; n < nmax; ++n) {
             double gn_at_r = basis_[n].value(centerToNeighborDistance);

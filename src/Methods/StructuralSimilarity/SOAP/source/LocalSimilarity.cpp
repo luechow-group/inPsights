@@ -59,7 +59,7 @@ namespace LocalSimilarity {
             const TypeSpecificNeighborhoodsAtOneCenter &expansions2) {
 
         double similarityValue = 0;
-        auto mode = SOAPExpansion::settings.mode.get();
+        auto mode = SOAPExpansion::settings.mode();
         switch (mode) {
             case SOAPExpansion::Mode::typeAgnostic: {
                 similarityValue = internal::typeAgnostic(expansions1, expansions2);
@@ -83,7 +83,7 @@ namespace LocalSimilarity {
 
     double unnormalizedSelfKernel(const TypeSpecificNeighborhoodsAtOneCenter &expansions) {
         double similarityValue = 0;
-        auto mode = SOAPExpansion::settings.mode.get();
+        auto mode = SOAPExpansion::settings.mode();
         switch (mode) {
             case SOAPExpansion::Mode::typeAgnostic: {
                 similarityValue = internal::typeAgnostic(expansions);

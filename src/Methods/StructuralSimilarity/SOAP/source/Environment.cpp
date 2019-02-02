@@ -19,7 +19,7 @@ center_(std::move(center)){}
 
 std::vector<std::pair<Particle<int>,SphericalCoordinates>> Environment::selectParticles(int expansionTypeId) const {
 
-    auto mode = SOAPExpansion::settings.mode.get();
+    auto mode = SOAPExpansion::settings.mode();
     std::vector<std::pair<Particle<int>,SphericalCoordinates>> selectedParticles;
 
     for (unsigned j = 0; j < unsigned(molecularGeometry_.numberOfEntities()); ++j) {
