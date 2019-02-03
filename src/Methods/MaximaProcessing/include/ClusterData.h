@@ -8,6 +8,7 @@
 #include <Statistics.h>
 #include <ParticlesVector.h>
 #include <VoxelCube.h>
+#include <EnergyStatistics.h>
 
 class ClusterData {
 public:
@@ -28,9 +29,9 @@ public:
 
     unsigned N_;
     std::vector<ElectronsVector> exemplaricStructures_;
-    SingleParticlesStatistics valueStats_,TeStats_, EeStats_;
-    IntraParticlesStatistics SeeStats_, VeeStats_;
-    InterParticlesStatistics VenStats_;
+    SingleParticlesStatistics valueStats_, EeStats_; //TODO remove EeStats
+    IntraParticlesStatistics SeeStats_;
+    EnergyStatistics::ElectronicEnergy electronicEnergyStats_;
     std::vector<VoxelCube> voxelCubes_;
 };
 

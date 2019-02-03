@@ -23,6 +23,7 @@ set(HEADER_FILES
         include/MaximaProcessingSettings.h
         include/VoxelCubeGeneration.h
         include/EnergyPartitioning.h
+        include/EnergyStatistics.h
         )
 
 set(SOURCE_FILES
@@ -38,6 +39,7 @@ set(SOURCE_FILES
         source/MaximaProcessingSettings.cpp
         source/VoxelCubeGeneration.cpp
         source/EnergyPartitioning.cpp
+        source/EnergyStatistics.cpp
         )
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES})
