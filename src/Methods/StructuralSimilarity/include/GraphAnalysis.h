@@ -15,10 +15,12 @@ namespace Eigen {
     using VectorXb = Matrix<bool, Eigen::Dynamic, 1>;
 }
 namespace GraphAnalysis {
+    // filter to obtain an adjacency matrix
+    Eigen::MatrixXb filter(const Eigen::MatrixXd & matrix, double threshold = 1.0);
+
     std::list<Eigen::Index> findConnectedVertices(const Eigen::MatrixXb &adjacencyMatrix, Eigen::Index startVertex);
-    
+
     std::vector<std::list<Eigen::Index>> findGraphClusters(const Eigen::MatrixXb &adjacencyMatrix);
 }
-
 
 #endif //INPSIGHTS_GRAPHANALYSIS_H

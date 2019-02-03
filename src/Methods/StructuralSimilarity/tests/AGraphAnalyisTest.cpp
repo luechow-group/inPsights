@@ -57,3 +57,17 @@ TEST_F(AGraphAnalysisTest, IsolatedAndSelfconnected) {
     ASSERT_THAT(clusters[2], ElementsAre(2));
     ASSERT_THAT(clusters[3], ElementsAre(3));
 }
+
+TEST_F(AGraphAnalysisTest, Filter) {
+    Eigen::MatrixXd m(2,2);
+    m << 0,0.45,0.5,1;
+
+    Eigen::MatrixXb expected(2,2);
+    expected << 0,0,1,1;
+
+    ASSERT_EQ(GraphAnalysis::filter(m,0.5), expected);
+
+    EXPECT_DEATH(GraphAnalysis::filter(m,1.1),"");
+    m = m.array() - 1.0;
+    EXPECT_DEATH(GraphAnalysis::filter(m,0.5),"");
+}
