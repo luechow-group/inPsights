@@ -16,18 +16,17 @@ set(HEADER_FILES
         include/GlobalClusterSorter.h
         include/EnergyCalculator.h
         include/SimilarReferences.h
-        include/OneParticleEnergies.h
         include/ClusterData.h
         #include/GlobalPermutationSorter.h
         include/GeneralStatistics.h
         include/ValueSorter.h
         include/MaximaProcessingSettings.h
         include/VoxelCubeGeneration.h
+        include/EnergyPartitioning.h
         )
 
 set(SOURCE_FILES
         source/RawDataReader.cpp
-        source/OneParticleEnergies.cpp
         source/ClusterData.cpp
         source/GlobalClusterSorter.cpp
         source/GlobalIdentitySorter.cpp
@@ -38,6 +37,7 @@ set(SOURCE_FILES
         source/ValueSorter.cpp
         source/MaximaProcessingSettings.cpp
         source/VoxelCubeGeneration.cpp
+        source/EnergyPartitioning.cpp
         )
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES})

@@ -5,8 +5,9 @@
 #include <ClusterData.h>
 #include <SpinCorrelation.h>
 #include <CoulombPotential.h>
-#include <OneParticleEnergies.h>
+#include <EnergyPartitioning.h>
 #include <VoxelCubeGeneration.h>
+#include <EnergyPartitioning.h>
 #include <spdlog/spdlog.h>
 
 EnergyCalculator::EnergyCalculator(YAML::Emitter& yamlDocument, const std::vector<Sample>& samples, AtomsVector atoms)
@@ -18,7 +19,7 @@ EnergyCalculator::EnergyCalculator(YAML::Emitter& yamlDocument, const std::vecto
 {
 
     VnnStats_.add(Vnn_);
-    EnStats_.add(OneParticleEnergies::oneAtomEnergies(Vnn_));
+    EnStats_.add(EnergyPartitioning::ParticleBased::oneAtomEnergies(Vnn_));
 }
 
 unsigned long EnergyCalculator::addReference(const Reference &reference) {
@@ -35,7 +36,7 @@ unsigned long EnergyCalculator::addReference(const Reference &reference) {
         Eigen::VectorXd Te = samples_[id].kineticEnergies_;
         Eigen::MatrixXd Vee = CoulombPotential::energies(samples_[id].sample_);
         Eigen::MatrixXd Ven = CoulombPotential::energies(samples_[id].sample_,atoms_);
-        Eigen::VectorXd Ee = OneParticleEnergies::oneElectronEnergies(Te, Vee, Ven, Vnn_);
+        Eigen::VectorXd Ee = EnergyPartitioning::ParticleBased::oneElectronEnergies(Te, Vee, Ven, Vnn_);
         TeStats_.add(Te,1);
         VeeStats_.add(Vee,1);
         VenStats_.add(Ven,1);

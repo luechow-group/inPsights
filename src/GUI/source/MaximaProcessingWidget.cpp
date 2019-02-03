@@ -6,7 +6,6 @@
 #include <MaximaProcessingWidget.h>
 #include <QHeaderView>
 #include <ClusterData.h>
-#include <OneParticleEnergies.h>
 #include <IntegerSortedTreeWidgetItem.h>
 
 MaximaProcessingWidget::MaximaProcessingWidget(QWidget *parent)
