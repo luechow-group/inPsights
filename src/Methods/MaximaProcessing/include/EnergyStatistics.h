@@ -15,6 +15,7 @@ namespace EnergyStatistics {
                          const IntraParticlesStatistics &Vee,
                          const InterParticlesStatistics &Ven);
 
+        Eigen::Index numberOfElectrons() const;
 
         const SingleParticlesStatistics &Te() const;
 
@@ -23,6 +24,7 @@ namespace EnergyStatistics {
         const InterParticlesStatistics &Ven() const;
 
     private:
+        Eigen::Index numberOfElectrons_;
         SingleParticlesStatistics Te_; // kinetic energy
         IntraParticlesStatistics Vee_; // electron-electron interaction energy
         InterParticlesStatistics Ven_; // electron-core interaction energy

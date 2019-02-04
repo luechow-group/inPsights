@@ -2,9 +2,65 @@
 // Created by Michael Heuer on 2019-02-03.
 //
 
-#include "EnergyPartitioning.h"
+#include <EnergyPartitioning.h>
+#include <MotifAnalysis.h>
+#include <algorithm>
 
 namespace EnergyPartitioning {
+
+    namespace MotifBased{
+
+        MotifEnergies calculateInterationEnergies(const MotifAnalysis::Motifs &motifs,
+                                                  const EnergyStatistics::ElectronicEnergy &electronicEnergy) {
+
+            MotifEnergies motifEnergies{};
+
+            for(auto motif = motifs.motifVector.begin(); motif != motifs.motifVector.end(); ++motif) {
+                // self-interaction
+                auto intraEnergy = calculateSelfInteractionEnergy(*motif, electronicEnergy);
+                motifEnergies.addPair({*motif, *motif}, intraEnergy);
+
+                // interaction with other motifs
+                std::map<Eigen::Index, double> interEnergies;
+                for (auto otherMotif = motif; otherMotif != motifs.motifVector.end(); ++otherMotif) {
+                    auto interEnergy = caclulateInteractionEnergy(*motif, *otherMotif, electronicEnergy);
+                    motifEnergies.addPair({*motif, *otherMotif}, interEnergy);
+                }
+            }
+
+            return motifEnergies;
+        }
+
+        double caclulateInteractionEnergy(const MotifAnalysis::Motif &motif, const MotifAnalysis::Motif &otherMotif,
+                                          const EnergyStatistics::ElectronicEnergy &electronicEnergy) {
+            double inter = 0;
+            for (auto i : motif.electronIndices)
+                for (auto j : otherMotif.electronIndices)
+                    inter += electronicEnergy.Vee().mean()(i,j);
+
+            return inter;
+        }
+
+        double calculateSelfInteractionEnergy(
+                const MotifAnalysis::Motif &motif,
+                const EnergyStatistics::ElectronicEnergy &electronicEnergy
+                ) {
+
+            double intra = 0;
+
+            for (auto i = motif.electronIndices.begin(); i != prev(motif.electronIndices.end()); ++i) {
+                intra += electronicEnergy.Te().mean()(*i)
+                        + electronicEnergy.Ven().mean().row(*i).sum();
+
+                for (auto j = next(i); j != motif.electronIndices.end(); ++j)
+                    intra += electronicEnergy.Vee().mean()(*i, *j);
+            }
+            return intra;
+        }
+    }
+
+
+
     namespace ParticleBased {
         Eigen::VectorXd oneAtomEnergies(const Eigen::MatrixXd &Vnn) {
             auto nAtoms = Vnn.rows();

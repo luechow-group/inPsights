@@ -11,6 +11,7 @@ namespace EnergyStatistics {
             const IntraParticlesStatistics &Vee,
             const InterParticlesStatistics &Ven)
             :
+            numberOfElectrons_(Te.mean().size()),
             Te_(Te), Vee_(Vee), Ven_(Ven) {}
 
     const SingleParticlesStatistics &ElectronicEnergy::Te() const {
@@ -23,5 +24,9 @@ namespace EnergyStatistics {
 
     const InterParticlesStatistics &ElectronicEnergy::Ven() const {
         return Ven_;
+    }
+
+    Eigen::Index ElectronicEnergy::numberOfElectrons() const {
+        return numberOfElectrons_;
     }
 }
