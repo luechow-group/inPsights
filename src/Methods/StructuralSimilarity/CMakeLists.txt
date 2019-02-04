@@ -14,6 +14,7 @@ set(HEADER_FILES
         include/SimpleSorter.h
         include/HungarianHelper.h
         include/GraphAnalysis.h
+        include/MotifAnalysis.h
         )
 
 set(SOURCE_FILES
@@ -21,6 +22,7 @@ set(SOURCE_FILES
         source/SimpleSorter.cpp
         source/HungarianHelper.cpp
         source/GraphAnalysis.cpp
+        source/MotifAnalysis.cpp
         )
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES})
