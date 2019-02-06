@@ -7,7 +7,7 @@
 #include <GraphAnalysis.h>
 #include <MotifAnalysis.h>
 
-TEST(AEnergyPartitioningTest, Test){
+TEST(AEnergyPartitioningTest, TwoPairs){
     auto electronsCount = 4;
 
     SingleParticlesStatistics TeStats;
@@ -41,10 +41,4 @@ TEST(AEnergyPartitioningTest, Test){
 
     ASSERT_EQ(motifEnergies.interactionEnergies()[std::make_pair(
             MotifAnalysis::Motif({2,3}), MotifAnalysis::Motif({2,3}))], 401.01);
-
-    /* TODO
-     * KERNELEKTRONEN PER DISTANZKRITERIUM DEN ATOMEN ZUWEISEN
-     * KERN-WW-ENERGIEN MIT VERRECHNEN
-     */
-
 };
