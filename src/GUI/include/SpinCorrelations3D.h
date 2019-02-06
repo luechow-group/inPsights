@@ -6,7 +6,7 @@
 #define INPSIGHTS_SPINCORRELATIONS3D_H
 
 #include "ParticlesVector3D.h"
-#include "SpinClassification.h"
+#include "SpinPairClassification.h"
 #include "IConnection.h"
 #include <Statistics.h>
 

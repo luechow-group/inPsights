@@ -15,7 +15,7 @@ set(HEADER_FILES
         include/HungarianHelper.h
         include/GraphAnalysis.h
         include/MotifAnalysis.h
-        include/SpinClassification.h
+        include/SpinPairClassification.h
         )
 
 set(SOURCE_FILES
@@ -24,7 +24,7 @@ set(SOURCE_FILES
         source/HungarianHelper.cpp
         source/GraphAnalysis.cpp
         source/MotifAnalysis.cpp
-        source/SpinClassification.cpp
+        source/SpinPairClassification.cpp
         )
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES})

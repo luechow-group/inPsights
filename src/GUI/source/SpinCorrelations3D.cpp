@@ -18,15 +18,15 @@ void SpinCorrelations3D::createConnections(const ElectronsVector &electronsVecto
                                            const IntraParticlesStatistics &SeeStats,
                                            double spinCorrelationThreshold)  {
 
-    auto pairTypes = SpinClassification::classify(electronsVector);
+    auto pairTypes = SpinPairClassification::classify(electronsVector);
 
     for (auto &idxPair : pairTypes) {
         auto i = idxPair.first.first;
         auto j = idxPair.first.second;
 
-        if (idxPair.second == SpinClassification::PairType::closeBy
-        && !SpinClassification::isAtSamePositionQ(pairTypes,i)
-        && !SpinClassification::isAtSamePositionQ(pairTypes,j)
+        if (idxPair.second == SpinPairClassification::PairType::closeBy
+        && !SpinPairClassification::isAtSamePositionQ(pairTypes,i)
+        && !SpinPairClassification::isAtSamePositionQ(pairTypes,j)
         ) {
 
             auto corr = SeeStats.mean()(i, j);

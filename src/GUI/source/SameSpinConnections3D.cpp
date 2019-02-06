@@ -3,7 +3,7 @@
 //
 
 #include <SameSpinConnections3D.h>
-#include <SpinClassification.h>
+#include <SpinPairClassification.h>
 #include <Metrics.h>
 #include <Cylinder.h>
 #include <Line3D.h>
@@ -21,15 +21,15 @@ SameSpinConnections3D::SameSpinConnections3D(
 void SameSpinConnections3D::createConnections(const ElectronsVector &electronsVector, double maxDistance,
                                               double identicalThreshold) {
 
-    auto pairTypes = SpinClassification::classify(electronsVector, maxDistance, identicalThreshold );
+    auto pairTypes = SpinPairClassification::classify(electronsVector, maxDistance, identicalThreshold );
 
     for (auto &idxPair : pairTypes) {
         auto i = idxPair.first.first;
         auto j = idxPair.first.second;
 
-        if (idxPair.second == SpinClassification::PairType::closeBy
-            && !SpinClassification::isAtSamePositionQ(pairTypes,i)
-            && !SpinClassification::isAtSamePositionQ(pairTypes,j)
+        if (idxPair.second == SpinPairClassification::PairType::closeBy
+            && !SpinPairClassification::isAtSamePositionQ(pairTypes,i)
+            && !SpinPairClassification::isAtSamePositionQ(pairTypes,j)
             ) {
 
             auto e1 = electronsVector[i];
