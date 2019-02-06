@@ -18,7 +18,11 @@ public:
         interactionEnergies_.emplace(std::make_pair(pair, energy));
     }
 
-    const std::map<std::pair<MotifAnalysis::Motif, MotifAnalysis::Motif>, double>& interactionEnergies(){
+    const std::map<std::pair<MotifAnalysis::Motif, MotifAnalysis::Motif>, double>& interactionEnergies() const{
+        return interactionEnergies_;
+    }
+
+    std::map<std::pair<MotifAnalysis::Motif, MotifAnalysis::Motif>, double>& interactionEnergies(){
         return interactionEnergies_;
     }
 
