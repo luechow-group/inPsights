@@ -5,7 +5,7 @@
 #include <gmock/gmock.h>
 #include <EnergyPartitioning.h>
 #include <GraphAnalysis.h>
-#include <MotifAnalysis.h>
+#include <Motifs.h>
 
 TEST(AEnergyPartitioningTest, TwoPairs){
     auto electronsCount = 4;
@@ -27,18 +27,18 @@ TEST(AEnergyPartitioningTest, TwoPairs){
     0, 0, 0, 1, \
     0, 0, 1, 0;
 
-    MotifAnalysis::Motifs motifs(A);
+    Motifs motifs(A);
 
     EnergyStatistics::ElectronicEnergy electronicEnergy(TeStats, VeeStats, VenStats);
 
     auto motifEnergies = EnergyPartitioning::MotifBased::calculateInterationEnergies(motifs, electronicEnergy);
 
     ASSERT_EQ(motifEnergies.interactionEnergies()[std::make_pair(
-            MotifAnalysis::Motif({0,1}), MotifAnalysis::Motif({0,1}))], 401.01);
+            Motif({0,1}), Motif({0,1}))], 401.01);
 
     ASSERT_EQ(motifEnergies.interactionEnergies()[std::make_pair(
-            MotifAnalysis::Motif({0,1}), MotifAnalysis::Motif({2,3}))], 4);
+            Motif({0,1}), Motif({2,3}))], 4);
 
     ASSERT_EQ(motifEnergies.interactionEnergies()[std::make_pair(
-            MotifAnalysis::Motif({2,3}), MotifAnalysis::Motif({2,3}))], 401.01);
+            Motif({2,3}), Motif({2,3}))], 401.01);
 };

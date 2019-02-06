@@ -66,6 +66,14 @@ std::pair<bool,long> MolecularGeometry::findIndexByNumberedType(const NumberedTy
     }
 }
 
+bool MolecularGeometry::coreElectronQ(long i, double threshold) const {
+    for (Eigen::Index k = 0; k < atoms_.numberOfEntities(); ++k)
+        if(Metrics::distance(electrons_[i].position(), atoms_[k].position()) <= threshold)
+            return true;
+
+    return false;
+}
+
 std::list<long> MolecularGeometry::coreElectronsIndices(long k, double threshold) const {
     std::list<long> indices{};
 

@@ -12,7 +12,6 @@
 #include <Bond3D.h>
 #include <Cylinder.h>
 #include <Particle3D.h>
-#include <AtomsVectorLinkedElectronsVector.h>
 
 #include <SpinCorrelations3D.h>
 

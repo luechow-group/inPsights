@@ -24,6 +24,7 @@ set(HEADER_FILES
         include/VoxelCubeGeneration.h
         include/EnergyPartitioning.h
         include/EnergyStatistics.h
+        include/MotifEnergies.h
         )
 
 set(SOURCE_FILES
@@ -40,6 +41,7 @@ set(SOURCE_FILES
         source/VoxelCubeGeneration.cpp
         source/EnergyPartitioning.cpp
         source/EnergyStatistics.cpp
+        source/MotifEnergies.cpp
         )
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES})

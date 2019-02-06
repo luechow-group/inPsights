@@ -3,13 +3,12 @@
 //
 
 #include <EnergyPartitioning.h>
-#include <MotifAnalysis.h>
 #include <algorithm>
+#include <Motif.h>
 
 namespace EnergyPartitioning {
-
     namespace MotifBased{
-        MotifEnergies calculateInterationEnergies(const MotifAnalysis::Motifs &motifs,
+        MotifEnergies calculateInterationEnergies(const Motifs &motifs,
                                                   const EnergyStatistics::ElectronicEnergy &electronicEnergy) {
             MotifEnergies motifEnergies{};
 
@@ -28,28 +27,28 @@ namespace EnergyPartitioning {
             return motifEnergies;
         }
 
-        double caclulateInteractionEnergy(const MotifAnalysis::Motif &motif, const MotifAnalysis::Motif &otherMotif,
+        double caclulateInteractionEnergy(const Motif &motif, const Motif &otherMotif,
                                           const EnergyStatistics::ElectronicEnergy &electronicEnergy) {
             double inter = 0;
-            for (auto i : motif.electronIndices)
-                for (auto j : otherMotif.electronIndices)
+            for (auto i : motif.electronIndices())
+                for (auto j : otherMotif.electronIndices())
                     inter += electronicEnergy.Vee().mean()(i,j);
 
             return inter;
         }
 
         double calculateSelfInteractionEnergy(
-                const MotifAnalysis::Motif &motif,
+                const Motif &motif,
                 const EnergyStatistics::ElectronicEnergy &electronicEnergy
                 ) {
 
             double intra = 0;
 
-            for (auto i = motif.electronIndices.begin(); i != prev(motif.electronIndices.end()); ++i) {
+            for (auto i = motif.electronIndices().begin(); i != prev(motif.electronIndices().end()); ++i) {
                 intra += electronicEnergy.Te().mean()(*i)
                         + electronicEnergy.Ven().mean().row(*i).sum();
 
-                for (auto j = next(i); j != motif.electronIndices.end(); ++j)
+                for (auto j = next(i); j != motif.electronIndices().end(); ++j)
                     intra += electronicEnergy.Vee().mean()(*i, *j);
             }
             return intra;

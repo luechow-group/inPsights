@@ -27,6 +27,9 @@ public:
 
     long numberOfEntities() const;
 
+    //TODO refactor Motifs::classifyMotifs since it is the only user of the method
+    bool coreElectronQ(long i, double threshold = 0.01) const ;
+
     std::list<long> coreElectronsIndices(long k, double threshold = 0.01) const;
 
     std::list<long> coreElectronsIndices(double threshold = 0.01) const;

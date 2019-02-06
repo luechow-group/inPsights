@@ -9,40 +9,22 @@
 #include <MolecularGeometry.h>
 #include <EnergyStatistics.h>
 #include <GraphAnalysis.h>
-#include <MotifAnalysis.h>
+#include <MotifEnergies.h>
+#include <Motifs.h>
 #include <Eigen/Core>
-
-class MotifEnergies{
-public:
-    void addPair(const std::pair<MotifAnalysis::Motif, MotifAnalysis::Motif>& pair, double energy){
-        interactionEnergies_.emplace(std::make_pair(pair, energy));
-    }
-
-    const std::map<std::pair<MotifAnalysis::Motif, MotifAnalysis::Motif>, double>& interactionEnergies() const{
-        return interactionEnergies_;
-    }
-
-    std::map<std::pair<MotifAnalysis::Motif, MotifAnalysis::Motif>, double>& interactionEnergies(){
-        return interactionEnergies_;
-    }
-
-private:
-    std::map<std::pair<MotifAnalysis::Motif, MotifAnalysis::Motif>, double> interactionEnergies_;
-};
-
 
 namespace EnergyPartitioning {
 
     // Better Use
     namespace MotifBased {
 
-        double calculateSelfInteractionEnergy(const MotifAnalysis::Motif &motif,
+        double calculateSelfInteractionEnergy(const Motif &motif,
                                               const EnergyStatistics::ElectronicEnergy &electronicEnergy);
 
-        double caclulateInteractionEnergy(const MotifAnalysis::Motif &motif, const MotifAnalysis::Motif &otherMotif,
+        double caclulateInteractionEnergy(const Motif &motif, const Motif &otherMotif,
                                           const EnergyStatistics::ElectronicEnergy &electronicEnergy);
 
-        MotifEnergies calculateInterationEnergies(const MotifAnalysis::Motifs& motif,const EnergyStatistics::ElectronicEnergy& electronicEnergy);
+        MotifEnergies calculateInterationEnergies(const Motifs& motif,const EnergyStatistics::ElectronicEnergy& electronicEnergy);
 
     }
 
