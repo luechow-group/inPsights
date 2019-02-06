@@ -18,8 +18,8 @@ ClusterData::ClusterData(unsigned totalNumberOfStructures,
         N_(totalNumberOfStructures),
         exemplaricStructures_(exemplaricStructures),
         valueStats_(valueStats),
-        electronicEnergyStats_(TeStats,VeeStats, VenStats),
         EeStats_(EeStats),
+        electronicEnergyStats_(TeStats,VeeStats, VenStats),
         SeeStats_(SeeStats),
         voxelCubes_(voxelCubes)
         {};

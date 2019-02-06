@@ -30,8 +30,8 @@ public:
     unsigned N_;
     std::vector<ElectronsVector> exemplaricStructures_;
     SingleParticlesStatistics valueStats_, EeStats_; //TODO remove EeStats
-    IntraParticlesStatistics SeeStats_;
     EnergyStatistics::ElectronicEnergy electronicEnergyStats_;
+    IntraParticlesStatistics SeeStats_;
     std::vector<VoxelCube> voxelCubes_;
 };
 

@@ -140,7 +140,7 @@ void MaximaProcessingWidget::setAtomEnergies(SingleParticlesStatistics EnStats) 
 void MaximaProcessingWidget::updateData(const ClusterData &clusterData) {
     assert(Ee_.topLevelItemCount() == static_cast<int>(clusterData.EeStats_.rows())
     && "The number of tree items and electrons must match.");
-    assert(En_.topLevelItemCount() == static_cast<int>(clusterData.VenStats_.cols())
+    assert(En_.topLevelItemCount() == static_cast<int>(clusterData.electronicEnergyStats_.Ven().cols())
     && "The number of tree items and atoms must match.");
 
     updateEnergies(Ee_, clusterData.EeStats_.mean(), clusterData.EeStats_.standardError());
