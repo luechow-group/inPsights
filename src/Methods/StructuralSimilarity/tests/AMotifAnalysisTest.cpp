@@ -38,9 +38,7 @@ public:
 
 TEST_F(AMotifAnalysisTest, Test){
 
-    MotifAnalysis::Motifs motifs(B);
-    motifs.classifyMotifs(molecule);
-    motifs.splitCoreMotifs(molecule);
+    MotifAnalysis::Motifs motifs(B, molecule);
 
     ASSERT_THAT(motifs.motifVector[0].electronIndices(), ElementsAre(0,1));
     ASSERT_EQ(motifs.motifVector[0].type(), MotifAnalysis::MotifType::Core);

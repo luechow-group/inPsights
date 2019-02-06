@@ -43,8 +43,6 @@ namespace MotifAnalysis{
     private:
         MotifType type_;
         std::list<Eigen::Index> electronIndices_;
-    public:
-
     };
 
     bool coreElectronQ(const Electron& e, const AtomsVector& atoms, double threshold = 0.01);
@@ -53,8 +51,10 @@ namespace MotifAnalysis{
     class Motifs{
     public:
         Motifs(const Eigen::MatrixXb &adjacencyMatrix);
+        Motifs(const Eigen::MatrixXb &adjacencyMatrix, const MolecularGeometry& molecule);
 
         Motifs(std::vector<Motif> motifs);
+
 
         void classifyMotifs(const MolecularGeometry& molecule);
 
@@ -63,6 +63,8 @@ namespace MotifAnalysis{
         void sort();
 
         std::vector<Motif> motifVector;
+
+    static std::vector<Motif> motifsFromAdjacencyMatrix(const Eigen::MatrixXb &adjacencyMatrix);
     };
 
     //TODO classification thresholds into settings

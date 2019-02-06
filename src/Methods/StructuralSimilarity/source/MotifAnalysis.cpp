@@ -2,6 +2,8 @@
 // Created by Michael Heuer on 2019-02-02.
 //
 
+#include <MotifAnalysis.h>
+
 #include "MotifAnalysis.h"
 
 
@@ -76,16 +78,26 @@ namespace MotifAnalysis {
     }
 
     Motifs::Motifs(const Eigen::MatrixXb &adjacencyMatrix)
-            : motifVector() {
-        auto electronIndicesLists = GraphAnalysis::findGraphClusters(adjacencyMatrix);
-
-        for (const auto &list : electronIndicesLists)
-            motifVector.emplace_back(list);
-    };
+            : Motifs(motifsFromAdjacencyMatrix(adjacencyMatrix)) {};
 
     Motifs::Motifs(std::vector<Motif> motifs)
-            : motifVector(std::move(motifs)) {
+            : motifVector(std::move(motifs)) {};
+
+    Motifs::Motifs(const Eigen::MatrixXb &adjacencyMatrix, const MolecularGeometry & molecule)
+            : Motifs(adjacencyMatrix) {
+        classifyMotifs(molecule);
+        splitCoreMotifs(molecule);
     };
+
+    std::vector<Motif> Motifs::motifsFromAdjacencyMatrix(const Eigen::MatrixXb &adjacencyMatrix){
+        auto lists = GraphAnalysis::findGraphClusters(adjacencyMatrix);
+
+        std::vector<Motif> motifVector;
+        for (const auto &list : lists)
+            motifVector.emplace_back(list);
+
+        return motifVector;
+    }
 
     void Motifs::classifyMotifs(const MolecularGeometry& molecule) {
         for(auto& motif : motifVector) {
