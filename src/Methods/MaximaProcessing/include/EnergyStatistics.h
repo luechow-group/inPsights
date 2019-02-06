@@ -11,6 +11,7 @@ namespace EnergyStatistics {
 
     class ElectronicEnergy {
     public:
+        ElectronicEnergy() = default;
         ElectronicEnergy(const SingleParticlesStatistics &Te,
                          const IntraParticlesStatistics &Vee,
                          const InterParticlesStatistics &Ven);

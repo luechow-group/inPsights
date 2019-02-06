@@ -6,8 +6,7 @@
 #define INPSIGHTS_ISETTINGS_H
 
 #include <Property.h>
-
-#define VARNAME(name) #name
+#include <Varname.h>
 
 #define YAML_SETTINGS_DECLARATION(classename)                   \
 namespace YAML {                                                \

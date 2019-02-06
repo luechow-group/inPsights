@@ -25,13 +25,13 @@ SpinPairClassification::classify(const ElectronsVector& electronsVector, double 
 }
 
 bool SpinPairClassification::atSamePositionQ(const std::pair<Eigen::Index, Eigen::Index>& pair,
-                                         const ElectronsVector &electronsVector, double identicalThreshold) {
+                                         const ElectronsVector &electrons, double identicalThreshold) {
     auto dist = Metrics::distance(
-            electronsVector[pair.first].position(),
-            electronsVector[pair.second].position());
+            electrons[pair.first].position(),
+            electrons[pair.second].position());
 
     if(dist <= identicalThreshold){
-        assert(electronsVector[pair.first].type() != electronsVector[pair.second].type()
+        assert(electrons[pair.first].type() != electrons[pair.second].type()
                && "Antisymmetry violation! Two same spin electrons cannot have the same position.");
         return true;
     } else {

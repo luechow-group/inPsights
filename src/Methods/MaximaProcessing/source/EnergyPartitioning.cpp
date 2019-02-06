@@ -9,10 +9,8 @@
 namespace EnergyPartitioning {
 
     namespace MotifBased{
-
         MotifEnergies calculateInterationEnergies(const MotifAnalysis::Motifs &motifs,
                                                   const EnergyStatistics::ElectronicEnergy &electronicEnergy) {
-
             MotifEnergies motifEnergies{};
 
             for(auto motif = motifs.motifVector.begin(); motif != motifs.motifVector.end(); ++motif) {
@@ -27,7 +25,6 @@ namespace EnergyPartitioning {
                     motifEnergies.addPair({*motif, *otherMotif}, interEnergy);
                 }
             }
-
             return motifEnergies;
         }
 
@@ -58,7 +55,6 @@ namespace EnergyPartitioning {
             return intra;
         }
     }
-
 
 
     namespace ParticleBased {

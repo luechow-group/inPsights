@@ -17,7 +17,7 @@ namespace SpinPairClassification{
             double identicalThreshold = 0.01);
 
     bool atSamePositionQ(const std::pair<Eigen::Index, Eigen::Index>& pair,
-            const ElectronsVector& electronsVector, double identicalThreshold = 0.01);
+            const ElectronsVector& electrons, double identicalThreshold = 0.01);
 
     bool closeByQ(const std::pair<Eigen::Index, Eigen::Index>& pair,
                          const ElectronsVector& electronsVector, double maxDistance = 1.6);

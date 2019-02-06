@@ -6,7 +6,6 @@
 
 using namespace testing;
 
-
 class AGraphAnalysisTest : public ::testing::Test {
 public:
     Eigen::MatrixXb A, B, C;

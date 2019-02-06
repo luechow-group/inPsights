@@ -48,7 +48,7 @@ set(HEADER_FILES
         include/AtomsVectorLinkedElectronsVector.h
         include/ISettings.h
         include/Property.h
-        )
+        include/Varname.h)
 
 set(SOURCE_FILES
         source/pElementInfo.cpp

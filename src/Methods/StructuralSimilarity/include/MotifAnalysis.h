@@ -9,8 +9,17 @@
 #include "ParticlesVector.h"
 #include <GraphAnalysis.h>
 #include <list>
+#include <Metrics.h>
+#include <MolecularGeometry.h>
+#include <SpinPairClassification.h>
+#include <Varname.h>
+#include <spdlog/spdlog.h>
 
 namespace MotifAnalysis{
+    enum MotifType {unassigned=0, Core, Valence};
+
+   std::string toString(MotifType type);
+   MotifType fromString(const std::string& string);
 
 
     class Motif{
@@ -25,8 +34,12 @@ namespace MotifAnalysis{
         bool operator<=(const Motif &rhs) const;
         bool operator>=(const Motif &rhs) const;
 
+        MotifType type;
         std::list<Eigen::Index> electronIndices;
     };
+
+    bool coreElectronQ(const Electron& e, const AtomsVector& atoms, double threshold = 0.01);
+
 
     class Motifs{
     public:
@@ -34,8 +47,16 @@ namespace MotifAnalysis{
 
         Motifs(std::vector<Motif> motifs);
 
+        void classifyMotifs(const MolecularGeometry& molecule);
+
+        void splitCoreMotifs(const MolecularGeometry& molecule);
+
+        void sort();
+
         std::vector<Motif> motifVector;
     };
+
+    //TODO classification thresholds into settings
 }
 
 namespace YAML {
