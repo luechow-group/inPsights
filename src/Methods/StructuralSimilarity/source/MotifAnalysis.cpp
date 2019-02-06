@@ -28,15 +28,15 @@ namespace MotifAnalysis {
     }
 
 
-    Motif::Motif(const std::list<Eigen::Index> &electronIndices)
-            : type(MotifType::unassigned), electronIndices(electronIndices) {};
+    Motif::Motif(const std::list<Eigen::Index> &electronIndices, MotifType type)
+            : type_(type), electronIndices_(electronIndices) {};
 
     bool Motif::containsQ(Eigen::Index i) const {
-        return std::find(electronIndices.begin(), electronIndices.end(), i) != electronIndices.end();
+        return std::find(electronIndices_.begin(), electronIndices_.end(), i) != electronIndices_.end();
     }
 
     bool Motif::operator<(const Motif &rhs) const {
-        return electronIndices < rhs.electronIndices;
+        return electronIndices_ < rhs.electronIndices_;
     }
 
     bool Motif::operator>(const Motif &rhs) const {
@@ -49,6 +49,22 @@ namespace MotifAnalysis {
 
     bool Motif::operator>=(const Motif &rhs) const {
         return !(*this < rhs);
+    }
+
+    MotifType Motif::type() const {
+        return type_;
+    }
+
+    void Motif::setType(MotifType type_) {
+        Motif::type_ = type_;
+    }
+
+    const std::list<Eigen::Index> &Motif::electronIndices() const {
+        return electronIndices_;
+    }
+
+    void Motif::setElectronIndices(const std::list<Eigen::Index> &electronIndices_) {
+        Motif::electronIndices_ = electronIndices_;
     }
 
     bool coreElectronQ(const Electron& e, const AtomsVector& atoms, double threshold) {
@@ -68,20 +84,20 @@ namespace MotifAnalysis {
     };
 
     Motifs::Motifs(std::vector<Motif> motifs)
-            : motifVector(motifs) {
+            : motifVector(std::move(motifs)) {
     };
 
     void Motifs::classifyMotifs(const MolecularGeometry& molecule) {
         for(auto& motif : motifVector) {
             std::vector<bool> atCore;
 
-            for(auto i : motif.electronIndices)
+            for(auto i : motif.electronIndices())
                 atCore.emplace_back(coreElectronQ(molecule.electrons()[i], molecule.atoms()));
 
             if(std::all_of(atCore.begin(), atCore.end(), [](bool b){ return b; }))
-                motif.type = MotifType::Core;
+                motif.setType(MotifType::Core);
             else if(std::none_of(atCore.begin(), atCore.end(), [](bool b){ return b; }))
-                motif.type = MotifType::Valence;
+                motif.setType(MotifType::Valence);
             else {
                 YAML::Emitter out; out << molecule.electrons() <<  motif;
                 spdlog::warn("Found a motif that is not clearly separable into Valence and Core. "
@@ -91,31 +107,32 @@ namespace MotifAnalysis {
     }
 
     void Motifs::splitCoreMotifs(const MolecularGeometry& molecule) {
-        for(auto motif = motifVector.begin(); motif != motifVector.end(); ++motif) {
-            if((*motif).type == MotifType::Core){
+        std::vector<Motif> newMotifVector{};
 
-                for(auto i = (*motif).electronIndices.begin(); i != std::prev((*motif).electronIndices.end()); ++i) {
-                    auto nexti = std::next(i);
-                    for (auto j = nexti; j != (*motif).electronIndices.end(); ++j) {
-                        auto atSamePosition = SpinPairClassification::atSamePositionQ({*i, *j}, molecule.electrons());
+        for(const auto& m : motifVector) {
+            if(m.type() == MotifType::Core){
+                for (Eigen::Index k = 0; k < molecule.atoms().numberOfEntities(); ++k) {
+                    auto atCoreK = molecule.coreElectronsIndices(k);
 
-                        if (atSamePosition) {
-                            //TODO
-                            //motifVector.emplace_back(Motif{{i, j}});
-                            //(*motif).electronIndices.erase(i);
-                            //(*motif).electronIndices.erase(j);
-                        }
-                    }
+                    std::list<Eigen::Index> intersection;
+                    std::set_intersection(
+                            m.electronIndices().begin(), m.electronIndices().end(),
+                            atCoreK.begin(), atCoreK.end(), std::back_inserter(intersection));
+                    assert(intersection.size() <= 2
+                    && "The number of electrons at a nuclear cusp must be less than 2 due to the antisymmetry principle.");
+
+                    newMotifVector.emplace_back(Motif(intersection, MotifType::Core));
                 }
-
-            }
+            } else
+                newMotifVector.emplace_back(m);
         }
+        motifVector = newMotifVector;
     }
 
     void Motifs::sort(){
         std::sort(std::begin(motifVector), std::end(motifVector),
                   [] (const auto& lhs, const auto& rhs) {
-                      return lhs.type < rhs.type;
+                      return lhs.type() < rhs.type();
                   });
     }
 
@@ -125,8 +142,8 @@ namespace MotifAnalysis {
 namespace YAML {
     Node convert<MotifAnalysis::Motif>::encode(const MotifAnalysis::Motif &rhs) {
         Node node;
-        node["Type"] = MotifAnalysis::toString(rhs.type);
-        node["Indices"] = rhs.electronIndices;
+        node["Type"] = MotifAnalysis::toString(rhs.type());
+        node["Indices"] = rhs.electronIndices();
         return node;
     }
 
@@ -134,16 +151,16 @@ namespace YAML {
         if (!node.IsSequence())
             return false;
 
-        rhs.type = MotifAnalysis::fromString(node["Type"].as<std::string>());
-        rhs.electronIndices = node["Indices"].as<std::list<Eigen::Index>>();
+        rhs.setType(MotifAnalysis::fromString(node["Type"].as<std::string>()));
+        rhs.setElectronIndices(node["Indices"].as<std::list<Eigen::Index>>());
         return true;
     }
 
     Emitter &operator<<(Emitter &out, const MotifAnalysis::Motif &rhs) {
         out << YAML::Flow << BeginMap
-        << Key << "Type" << Value << MotifAnalysis::toString(rhs.type)
+        << Key << "Type" << Value << MotifAnalysis::toString(rhs.type())
         << Key << "Indices" << Value << BeginSeq;
-        for(auto i : rhs.electronIndices)
+        for(auto i : rhs.electronIndices())
             out <<  i;
         auto copy = rhs;
         out << EndSeq << EndMap;

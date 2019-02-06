@@ -24,7 +24,7 @@ namespace MotifAnalysis{
 
     class Motif{
     public:
-        Motif(const std::list<Eigen::Index>& electronIndices);
+        Motif(const std::list<Eigen::Index>& electronIndices, MotifType type = MotifType::unassigned);
 
         bool containsQ(Eigen::Index i) const;
 
@@ -34,8 +34,17 @@ namespace MotifAnalysis{
         bool operator<=(const Motif &rhs) const;
         bool operator>=(const Motif &rhs) const;
 
-        MotifType type;
-        std::list<Eigen::Index> electronIndices;
+        MotifType type() const;
+        void setType(MotifType type_);
+
+        const std::list<Eigen::Index> &electronIndices() const;
+        void setElectronIndices(const std::list<Eigen::Index> &electronIndices_);
+
+    private:
+        MotifType type_;
+        std::list<Eigen::Index> electronIndices_;
+    public:
+
     };
 
     bool coreElectronQ(const Electron& e, const AtomsVector& atoms, double threshold = 0.01);

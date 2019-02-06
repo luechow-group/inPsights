@@ -39,24 +39,19 @@ public:
 TEST_F(AMotifAnalysisTest, Test){
 
     MotifAnalysis::Motifs motifs(B);
-
     motifs.classifyMotifs(molecule);
-
-    std::cout << std::endl;
-    for(auto m : motifs.motifVector) {
-        auto test = MotifAnalysis::toString(m.type);
-        std::cout << test << std::endl;
-
-        for (auto i : m.electronIndices) {
-            std::cout << i << std::endl;
-        }
-    }
-
-
     motifs.splitCoreMotifs(molecule);
 
-    YAML::Emitter out;
-    out << motifs.motifVector;
-    std::cout << out.c_str() << std::endl;
+    ASSERT_THAT(motifs.motifVector[0].electronIndices(), ElementsAre(0,1));
+    ASSERT_EQ(motifs.motifVector[0].type(), MotifAnalysis::MotifType::Core);
 
+    ASSERT_THAT(motifs.motifVector[1].electronIndices(), ElementsAre(2));
+    ASSERT_EQ(motifs.motifVector[1].type(), MotifAnalysis::MotifType::Core);
+
+    ASSERT_THAT(motifs.motifVector[2].electronIndices(), ElementsAre(3));
+    ASSERT_EQ(motifs.motifVector[2].type(), MotifAnalysis::MotifType::Valence);
+
+    //YAML::Emitter out;
+    //out << motifs.motifVector;
+    //std::cout << out.c_str() << std::endl;
 }
