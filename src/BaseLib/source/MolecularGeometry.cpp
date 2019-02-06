@@ -4,6 +4,9 @@
 
 #include <utility>
 #include "MolecularGeometry.h"
+#include <Metrics.h>
+#include <algorithm>
+#include <numeric>
 
 MolecularGeometry::MolecularGeometry()
         : atoms_(),electrons_()
@@ -62,6 +65,38 @@ std::pair<bool,long> MolecularGeometry::findIndexByNumberedType(const NumberedTy
         return {false,0};
     }
 }
+
+std::list<long> MolecularGeometry::coreElectronsIndices(long k, double threshold) const {
+    std::list<long> indices{};
+
+    for (long i = 0; i < electrons().numberOfEntities(); ++i)
+        if (Metrics::distance(electrons_[i].position(), atoms_[k].position()) <= threshold)
+            indices.emplace_back(i);
+
+    return indices;
+}
+
+std::list<long> MolecularGeometry::coreElectronsIndices(double threshold) const {
+    std::list<long> indices{};
+
+    for (long k = 0; k < atoms_.numberOfEntities(); ++k)
+        indices.splice(indices.end(), coreElectronsIndices(k, threshold));
+
+    indices.sort();
+    indices.erase(std::unique( indices.begin(), indices.end() ), indices.end()); // erase duplicates
+    return indices;
+}
+
+std::list<long> MolecularGeometry::valenceElectronsIndices(double threshold) const {
+    std::list<long> diff{}, indices = std::list<long>(size_t(electrons().numberOfEntities()));
+    std::iota(indices.begin(), indices.end(), 0);
+
+    auto coreIndices = coreElectronsIndices(threshold);
+    std::set_difference(indices.begin(), indices.end(), coreIndices.begin(), coreIndices.end(),
+                        std::inserter(diff, diff.begin()));
+    return diff;
+}
+
 
 namespace YAML {
     Node convert<MolecularGeometry>::encode(const MolecularGeometry &rhs) {

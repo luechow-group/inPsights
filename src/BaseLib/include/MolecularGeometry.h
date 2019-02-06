@@ -6,6 +6,7 @@
 #define INPSIGHTS_MOLECULARGEOMETRY_H
 
 #include "ParticlesVector.h"
+#include <list>
 
 class MolecularGeometry{
 public:
@@ -26,12 +27,19 @@ public:
 
     long numberOfEntities() const;
 
+    std::list<long> coreElectronsIndices(long k, double threshold = 0.01) const;
+
+    std::list<long> coreElectronsIndices(double threshold = 0.01) const;
+
+    std::list<long> valenceElectronsIndices(double threshold = 0.01) const;
+
+
     friend std::ostream& operator<<(std::ostream &os, const MolecularGeometry &mol) {
         os << mol.atoms() << std::endl;
         os << mol.electrons() << std::endl;
         return os;
     }
-    
+
 private:
     AtomsVector atoms_;
     ElectronsVector electrons_;
