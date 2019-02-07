@@ -12,9 +12,10 @@
 class Motifs{
 public:
     Motifs(const Eigen::MatrixXb &adjacencyMatrix);
-    Motifs(const Eigen::MatrixXb &adjacencyMatrix, const MolecularGeometry& molecule);
+    Motifs(const Eigen::MatrixXb &adjacencyMatrix,
+            const MolecularGeometry& molecule);
 
-    Motifs(std::vector<Motif> motifs);
+    Motifs(const std::vector<Motif>& motifs);
 
 
     void classifyMotifs(const MolecularGeometry& molecule);
@@ -23,7 +24,7 @@ public:
 
     void sort();
 
-    std::vector<Motif> motifVector;
+    std::vector<Motif> motifVector_;
 
     static std::vector<Motif> motifsFromAdjacencyMatrix(const Eigen::MatrixXb &adjacencyMatrix);
 };

@@ -33,6 +33,11 @@ MotifType fromString(const std::string& string) {
 Motif::Motif(const std::list<Eigen::Index> &electronIndices, MotifType type)
         : type_(type), electronIndices_(electronIndices) {};
 
+Motif::Motif(const std::list<Eigen::Index> &electronIndices,
+             const std::list<Eigen::Index> &atomIndices,
+            MotifType type)
+        : type_(type), electronIndices_(electronIndices), atomIndices_(atomIndices) {};
+
 bool Motif::containsQ(Eigen::Index i) const {
     return std::find(electronIndices_.begin(), electronIndices_.end(), i) != electronIndices_.end();
 }
@@ -69,11 +74,20 @@ void Motif::setElectronIndices(const std::list<Eigen::Index> &electronIndices) {
     electronIndices_ = electronIndices;
 }
 
+const std::list<Eigen::Index> &Motif::atomIndices() const {
+    return atomIndices_;
+}
+
+void Motif::setAtomIndices(const std::list<Eigen::Index> &atomIndices) {
+    Motif::atomIndices_ = atomIndices;
+}
+
 namespace YAML {
     Node convert<Motif>::encode(const Motif &rhs) {
         Node node;
         node["Type"] = toString(rhs.type());
-        node["Indices"] = rhs.electronIndices();
+        node["ElectronIndices"] = rhs.electronIndices();
+        node["AtomIndices"] = rhs.atomIndices();
         return node;
     }
 
@@ -82,17 +96,22 @@ namespace YAML {
             return false;
 
         rhs.setType(fromString(node["Type"].as<std::string>()));
-        rhs.setElectronIndices(node["Indices"].as<std::list<Eigen::Index>>());
+        rhs.setElectronIndices(node["ElectronIndices"].as<std::list<Eigen::Index>>());
+        rhs.setElectronIndices(node["AtomIndices"].as<std::list<Eigen::Index>>());
         return true;
     }
 
     Emitter &operator<<(Emitter &out, const Motif &rhs) {
         out << YAML::Flow << BeginMap
             << Key << "Type" << Value << toString(rhs.type())
-            << Key << "Indices" << Value << BeginSeq;
+            << Key << "ElectronIndices" << Value << BeginSeq;
         for(auto i : rhs.electronIndices())
             out <<  i;
-        auto copy = rhs;
+
+        out << EndSeq << Key << "AtomIndices" << Value << BeginSeq;
+        for(auto i : rhs.atomIndices())
+            out <<  i;
+
         out << EndSeq << EndMap;
         return out;
     };

@@ -9,7 +9,7 @@ using namespace testing;
 
 class AMotifsTest : public ::testing::Test {
 public:
-    Eigen::MatrixXb A,B;
+    Eigen::MatrixXb A;
     MolecularGeometry molecule;
     void SetUp() override {
 
@@ -23,13 +23,7 @@ public:
                 })};
 
         A = Eigen::MatrixXb(4, 4);
-        // Two pairs: (0-1,) (2-3)
-        A << 0, 1, 0, 0, \
-             1, 0, 0, 0, \
-             0, 0, 0, 1, \
-             0, 0, 1, 0;
-        B = Eigen::MatrixXb(4, 4);
-        B << 0, 1, 1, 0, \
+        A << 0, 1, 1, 0, \
              1, 0, 1, 0, \
              1, 1, 0, 0, \
              0, 0, 0, 0;
@@ -38,16 +32,16 @@ public:
 
 TEST_F(AMotifsTest, Test){
 
-    Motifs motifs(B, molecule);
+    Motifs motifs(A, molecule);
 
-    ASSERT_THAT(motifs.motifVector[0].electronIndices(), ElementsAre(0,1));
-    ASSERT_EQ(motifs.motifVector[0].type(), MotifType::Core);
+    ASSERT_THAT(motifs.motifVector_[0].electronIndices(), ElementsAre(0,1));
+    ASSERT_EQ(motifs.motifVector_[0].type(), MotifType::Core);
 
-    ASSERT_THAT(motifs.motifVector[1].electronIndices(), ElementsAre(2));
-    ASSERT_EQ(motifs.motifVector[1].type(), MotifType::Core);
+    ASSERT_THAT(motifs.motifVector_[1].electronIndices(), ElementsAre(2));
+    ASSERT_EQ(motifs.motifVector_[1].type(), MotifType::Core);
 
-    ASSERT_THAT(motifs.motifVector[2].electronIndices(), ElementsAre(3));
-    ASSERT_EQ(motifs.motifVector[2].type(), MotifType::Valence);
+    ASSERT_THAT(motifs.motifVector_[2].electronIndices(), ElementsAre(3));
+    ASSERT_EQ(motifs.motifVector_[2].type(), MotifType::Valence);
 
     //YAML::Emitter out;
     //out << motifs.motifVector;

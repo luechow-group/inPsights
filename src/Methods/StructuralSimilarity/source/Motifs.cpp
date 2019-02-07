@@ -8,8 +8,8 @@
 Motifs::Motifs(const Eigen::MatrixXb &adjacencyMatrix)
         : Motifs(motifsFromAdjacencyMatrix(adjacencyMatrix)) {};
 
-Motifs::Motifs(std::vector<Motif> motifs)
-        : motifVector(std::move(motifs)) {};
+Motifs::Motifs(const std::vector<Motif>& motifs)
+        : motifVector_(motifs) {};
 
 Motifs::Motifs(const Eigen::MatrixXb &adjacencyMatrix, const MolecularGeometry & molecule)
         : Motifs(adjacencyMatrix) {
@@ -28,7 +28,7 @@ std::vector<Motif> Motifs::motifsFromAdjacencyMatrix(const Eigen::MatrixXb &adja
 }
 
 void Motifs::classifyMotifs(const MolecularGeometry& molecule) {
-    for(auto& motif : motifVector) {
+    for(auto& motif : motifVector_) {
         std::vector<bool> atCore;
 
         for(auto i : motif.electronIndices())
@@ -49,7 +49,7 @@ void Motifs::classifyMotifs(const MolecularGeometry& molecule) {
 void Motifs::splitCoreMotifs(const MolecularGeometry& molecule) {
     std::vector<Motif> newMotifVector{};
 
-    for(const auto& m : motifVector) {
+    for(const auto& m : motifVector_) {
         if(m.type() == MotifType::Core){
             for (Eigen::Index k = 0; k < molecule.atoms().numberOfEntities(); ++k) {
                 auto atCoreK = molecule.coreElectronsIndices(k);
@@ -59,18 +59,18 @@ void Motifs::splitCoreMotifs(const MolecularGeometry& molecule) {
                         m.electronIndices().begin(), m.electronIndices().end(),
                         atCoreK.begin(), atCoreK.end(), std::back_inserter(intersection));
                 assert(intersection.size() <= 2
-                       && "The number of electrons at a nuclear cusp must be less than 2 due to the antisymmetry principle.");
+                       && "The number of electrons at a nuclear cusp must be less than or equal to 2 due to the antisymmetry principle.");
 
-                newMotifVector.emplace_back(Motif(intersection, MotifType::Core));
+                newMotifVector.emplace_back(Motif(intersection, {k}, MotifType::Core));
             }
         } else
             newMotifVector.emplace_back(m);
     }
-    motifVector = newMotifVector;
+    motifVector_ = newMotifVector;
 }
 
 void Motifs::sort(){
-    std::sort(std::begin(motifVector), std::end(motifVector),
+    std::sort(std::begin(motifVector_), std::end(motifVector_),
               [] (const auto& lhs, const auto& rhs) {
                   return lhs.type() < rhs.type();
               });

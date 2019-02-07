@@ -18,6 +18,9 @@ MotifType fromString(const std::string& string);
 class Motif{
 public:
     Motif(const std::list<Eigen::Index>& electronIndices, MotifType type = MotifType::unassigned);
+    Motif(const std::list<Eigen::Index>& electronIndices,
+          const std::list<Eigen::Index>& atomIndices,
+          MotifType type = MotifType::unassigned);
 
     bool containsQ(Eigen::Index i) const;
 
@@ -33,9 +36,13 @@ public:
     const std::list<Eigen::Index> &electronIndices() const;
     void setElectronIndices(const std::list<Eigen::Index> &electronIndices);
 
+    const std::list<Eigen::Index> &atomIndices() const;
+    void setAtomIndices(const std::list<Eigen::Index> &atomIndices);
+
 private:
     MotifType type_;
     std::list<Eigen::Index> electronIndices_;
+    std::list<Eigen::Index> atomIndices_;
 };
 
 namespace YAML {
