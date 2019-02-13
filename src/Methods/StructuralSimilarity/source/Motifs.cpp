@@ -67,11 +67,17 @@ void Motifs::splitCoreMotifs(const MolecularGeometry& molecule) {
             newMotifVector.emplace_back(m);
     }
     motifVector_ = newMotifVector;
+    sort();
 }
 
 void Motifs::sort(){
     std::sort(std::begin(motifVector_), std::end(motifVector_),
               [] (const auto& lhs, const auto& rhs) {
-                  return lhs.type() < rhs.type();
-              });
+        if(lhs.type() < rhs.type())
+            return true;
+        else if (lhs.type() > rhs.type())
+            return false;
+        else
+            return lhs.electronIndices().size() >= rhs.electronIndices().size();
+    });
 }
