@@ -8,50 +8,47 @@
 
 namespace EnergyPartitioning {
     namespace MotifBased{
-        MotifEnergies calculateInterationEnergies(const Motifs &motifs,
-                                                  const EnergyStatistics::ElectronicEnergy &electronicEnergy,
-                                                  const Eigen::MatrixXd &Vnn) {
-            MotifEnergies motifEnergies{};
+        std::pair<Eigen::VectorXd, Eigen::MatrixXd> calculateInterationEnergies(const Motifs &motifs,
+                                                  const Eigen::VectorXd &Te, const Eigen::MatrixXd &Vee,
+                                                  const Eigen::MatrixXd &Ven, const Eigen::MatrixXd &Vnn) {
+
+            Eigen::VectorXd intraEnergies = Eigen::VectorXd::Zero(motifs.motifVector_.size());
+            Eigen::MatrixXd interEnergies = Eigen::MatrixXd::Zero(motifs.motifVector_.size(), motifs.motifVector_.size());
 
             for(auto motif = motifs.motifVector_.begin(); motif != motifs.motifVector_.end(); ++motif) {
                 auto motifId = std::distance(motifs.motifVector_.begin(), motif);
 
                 // self-interaction
-                auto intraEnergy = calculateSelfInteractionEnergy(*motif, electronicEnergy, Vnn);
+                intraEnergies(motifId) = calculateSelfInteractionEnergy(*motif, Te, Vee, Ven, Vnn);
 
-                motifEnergies.addPair(std::vector<long>{motifId}, intraEnergy);
-
-                // interaction with other motifs
-                std::map<Eigen::Index, double> interEnergies;
                 for (auto otherMotif = std::next(motif); otherMotif != motifs.motifVector_.end(); ++otherMotif) {
                     auto otherMotifId = std::distance(motifs.motifVector_.begin(), otherMotif);
 
-                    auto interEnergy = caclulateInteractionEnergy(*motif, *otherMotif, electronicEnergy, Vnn);
-                    motifEnergies.addPair(std::vector<long>{motifId, otherMotifId}, interEnergy);
+                    // interaction with other motifs
+                    interEnergies(motifId, otherMotifId) = caclulateInteractionEnergy(*motif, *otherMotif, Te, Vee, Ven, Vnn);
                 }
             }
-            return motifEnergies;
+            return {intraEnergies, interEnergies};
         }
 
         double caclulateInteractionEnergy(const Motif &motif, const Motif &otherMotif,
-                                          const EnergyStatistics::ElectronicEnergy &electronicEnergy,
-                                          const Eigen::MatrixXd &Vnn) {
+                                          const Eigen::VectorXd &Te, const Eigen::MatrixXd &Vee,
+                                          const Eigen::MatrixXd &Ven, const Eigen::MatrixXd &Vnn) {
             double inter = 0;
 
             for (auto i : motif.electronIndices())
                 for (auto j : otherMotif.electronIndices())
-                    inter += electronicEnergy.Vee().mean()(i, j); // Vee
+                    inter += Vee(i, j); // Vee
 
 
             for (auto i : motif.electronIndices())
                 for (auto l : otherMotif.atomIndices()) {
-
-                    inter += electronicEnergy.Ven().mean()(i, l); // Ven ->
+                    inter += Ven(i, l); // Ven ->
                 }
 
             for (auto j : otherMotif.electronIndices())
                 for (auto k : motif.atomIndices())
-                    inter += electronicEnergy.Ven().mean()(j, k); // Ven <-
+                    inter += Ven(j, k); // Ven <-
 
 
             for (auto k : motif.atomIndices())
@@ -61,30 +58,29 @@ namespace EnergyPartitioning {
             return inter;
         }
 
-        double calculateSelfInteractionEnergy(
-                const Motif &motif,
-                const EnergyStatistics::ElectronicEnergy &electronicEnergy,
-                const Eigen::MatrixXd &Vnn
+        double calculateSelfInteractionEnergy(const Motif &motif,
+                const Eigen::VectorXd &Te, const Eigen::MatrixXd &Vee,
+                const Eigen::MatrixXd &Ven, const Eigen::MatrixXd &Vnn
                 ) {
 
             double intra = 0;
 
             for (auto i = motif.electronIndices().begin(); i != motif.electronIndices().end(); ++i) {
-                intra += electronicEnergy.Te().mean()(*i); // Te
+                intra += Te(*i); // Te
 
                 for (auto k = motif.atomIndices().begin(); k != motif.atomIndices().end(); ++k)
-                    intra += electronicEnergy.Ven().mean()(*i, *k); // Ven
+                    intra += Ven(*i, *k); // Ven
 
             }
 
-            for (auto i = motif.electronIndices().begin(); i != std::prev(motif.electronIndices().end()); ++i) {
-                for (auto j = next(i); j != motif.electronIndices().end(); ++j)
-                    intra += electronicEnergy.Vee().mean()(*i, *j); // Vee
+            for (auto i = motif.electronIndices().begin(); i != motif.electronIndices().end(); ++i) {
+                for (auto j = std::next(i); j != motif.electronIndices().end(); ++j)
+                    intra += Vee(*i, *j); // Vee
             }
 
             // atoms in motif ( zero contribution if zero or one atom is present)
-            for (auto k = motif.atomIndices().begin(); k != std::prev(motif.atomIndices().end()); ++k)
-                for (auto l = std::next(motif.atomIndices().begin()); l != motif.atomIndices().end(); ++l)
+            for (auto k = motif.atomIndices().begin(); k != motif.atomIndices().end(); ++k)
+                for (auto l = std::next(k); l != motif.atomIndices().end(); ++l)
                     intra += Vnn(*k, *l); // Vnn
 
             return intra;

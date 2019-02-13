@@ -154,11 +154,11 @@ void MaximaProcessingWidget::updateData(const ClusterData &clusterData) {
     auto electrons = clusterData.representativeStructure();
     auto Vnn = CoulombPotential::energies(atoms_);
 
-    Motifs motifs(adjacencyMatrix, MolecularGeometry{atoms_, electrons});
-    auto motifEnergies = EnergyPartitioning::MotifBased::calculateInterationEnergies(motifs, clusterData.electronicEnergyStats_, Vnn);
-
     YAML::Emitter out;
-    out << motifs.motifVector_ << motifEnergies;
+    out
+    << clusterData.motifs_.motifVector_
+    << clusterData.intraMotifEnergyStats_
+    << clusterData.interMotifEnergyStats_;
     std::cout << out.c_str()<< "\n" << std::endl;
 
     updateEnergies(Ee_, clusterData.EeStats_.mean(), clusterData.EeStats_.standardError());

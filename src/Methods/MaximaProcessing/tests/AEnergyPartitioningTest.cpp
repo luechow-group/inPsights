@@ -23,15 +23,7 @@ TEST(AEnergyPartitioningTest, TwoPairs){
                              {Spin::beta,  {0, 0,-1}},
                             })};
 
-    SingleParticlesStatistics TeStats;
-    IntraParticlesStatistics VeeStats;
-    InterParticlesStatistics VenStats;
 
-    TeStats.add(Eigen::VectorXd::Constant(mol.electrons().numberOfEntities(), 0.01));
-    VeeStats.add(Eigen::MatrixXd::Constant(mol.electrons().numberOfEntities(), mol.electrons().numberOfEntities(), 1));
-    VenStats.add(Eigen::MatrixXd::Constant(mol.electrons().numberOfEntities(), mol.atoms().numberOfEntities(),100));
-
-    Eigen::MatrixXd Vnn = Eigen::MatrixXd::Constant(4,4,10000);
 
     Eigen::MatrixXb A(4, 4);
     //all pairs // Two pairs: (0-1,) (2-3)
@@ -43,10 +35,6 @@ TEST(AEnergyPartitioningTest, TwoPairs){
 
     Motifs motifs(A, mol);
 
-    EnergyStatistics::ElectronicEnergy electronicEnergy(TeStats, VeeStats, VenStats);
-
-    auto motifEnergies = EnergyPartitioning::MotifBased::calculateInterationEnergies(motifs, electronicEnergy, Vnn);
-
     ASSERT_THAT(motifs.motifVector_[0].electronIndices(), ElementsAre(0,1));
     ASSERT_THAT(motifs.motifVector_[0].atomIndices(), ElementsAre(0));
     ASSERT_EQ(motifs.motifVector_[0].type(), MotifType::Core);
@@ -55,22 +43,20 @@ TEST(AEnergyPartitioningTest, TwoPairs){
     ASSERT_THAT(motifs.motifVector_[1].atomIndices(), ElementsAre(1));
     ASSERT_EQ(motifs.motifVector_[1].type(), MotifType::Core);
 
-    ASSERT_EQ(motifEnergies.interactionEnergies()[std::vector<long>({0})], 201.02);
-    ASSERT_EQ(motifEnergies.interactionEnergies()[std::vector<long>({0,1})], 10404);
-    ASSERT_EQ(motifEnergies.interactionEnergies()[std::vector<long>({1})], 201.02);
+    Eigen::VectorXd Te = Eigen::VectorXd::Constant(4,0.01);
+    Eigen::MatrixXd Vee = Eigen::MatrixXd::Constant(4,4,1);
+    Eigen::MatrixXd Ven = Eigen::MatrixXd::Constant(4,2,100);
+    Eigen::MatrixXd Vnn = Eigen::MatrixXd::Constant(2,2,10000);
+    auto motifEnergies = EnergyPartitioning::MotifBased::calculateInterationEnergies(motifs, Te, Vee, Ven, Vnn);
 
-    auto node = YAML::convert<MotifEnergies>::encode(motifEnergies);
+    Eigen::VectorXd intraExpected = Eigen::VectorXd::Zero(motifs.motifVector_.size());
+    intraExpected << 201.02, 201.02;
 
-    ASSERT_THAT(node[0]["MotifIds"].as<std::vector<long>>(), ElementsAre(0));
-    ASSERT_THAT(node[1]["MotifIds"].as<std::vector<long>>(), ElementsAre(0,1));
-    ASSERT_THAT(node[2]["MotifIds"].as<std::vector<long>>(), ElementsAre(1));
+    Eigen::MatrixXd interExpected = Eigen::MatrixXd::Zero(motifs.motifVector_.size(),motifs.motifVector_.size());
+    interExpected << 0, 10404, 0, 0;
 
-    MotifEnergies decodedMotifEnergies;
-    YAML::convert<MotifEnergies>::decode(node, decodedMotifEnergies);
-
-    ASSERT_EQ(decodedMotifEnergies.interactionEnergies()[std::vector<long>({0})], 201.02);
-    ASSERT_EQ(decodedMotifEnergies.interactionEnergies()[std::vector<long>({0,1})], 10404);
-    ASSERT_EQ(decodedMotifEnergies.interactionEnergies()[std::vector<long>({1})], 201.02);
+    ASSERT_TRUE(motifEnergies.first.isApprox(intraExpected));
+    ASSERT_TRUE(motifEnergies.second.isApprox(interExpected));
 };
 
 TEST(AEnergyPartitioningTest, TripleAndIsolated){
@@ -91,20 +77,6 @@ TEST(AEnergyPartitioningTest, TripleAndIsolated){
 
     Motifs motifs(A, mol);
 
-    SingleParticlesStatistics TeStats;
-    IntraParticlesStatistics VeeStats;
-    InterParticlesStatistics VenStats;
-
-    TeStats.add(Eigen::VectorXd::Constant(mol.electrons().numberOfEntities(), 0.01));
-    VeeStats.add(Eigen::MatrixXd::Constant(mol.electrons().numberOfEntities(), mol.electrons().numberOfEntities(), 1));
-    VenStats.add(Eigen::MatrixXd::Constant(mol.electrons().numberOfEntities(), mol.atoms().numberOfEntities(),100));
-
-    Eigen::MatrixXd Vnn = Eigen::MatrixXd::Constant(4,4,10000);
-
-    EnergyStatistics::ElectronicEnergy electronicEnergy(TeStats, VeeStats, VenStats);
-
-    auto motifEnergies = EnergyPartitioning::MotifBased::calculateInterationEnergies(motifs, electronicEnergy, Vnn);
-
     ASSERT_THAT(motifs.motifVector_[0].electronIndices(), ElementsAre(0,1));
     ASSERT_THAT(motifs.motifVector_[0].atomIndices(), ElementsAre(0));
     ASSERT_EQ(motifs.motifVector_[0].type(), MotifType::Core);
@@ -117,32 +89,24 @@ TEST(AEnergyPartitioningTest, TripleAndIsolated){
     ASSERT_THAT(motifs.motifVector_[2].atomIndices(), ElementsAre());
     ASSERT_EQ(motifs.motifVector_[2].type(), MotifType::Valence);
 
-    ASSERT_EQ(motifEnergies.interactionEnergies()[std::vector<long>({0})], 201.02);
-    ASSERT_EQ(motifEnergies.interactionEnergies()[std::vector<long>({0,1})], 10302);
-    ASSERT_EQ(motifEnergies.interactionEnergies()[std::vector<long>({0,2})], 102);
-    ASSERT_EQ(motifEnergies.interactionEnergies()[std::vector<long>({1})], 100.01);
-    ASSERT_EQ(motifEnergies.interactionEnergies()[std::vector<long>({1,2})], 101);
-    ASSERT_EQ(motifEnergies.interactionEnergies()[std::vector<long>({2})], 0.01);
+
+    Eigen::VectorXd Te = Eigen::VectorXd::Constant(4,0.01);
+    Eigen::MatrixXd Vee = Eigen::MatrixXd::Constant(4,4,1);
+    Eigen::MatrixXd Ven = Eigen::MatrixXd::Constant(4,2,100);
+    Eigen::MatrixXd Vnn = Eigen::MatrixXd::Constant(2,2,10000);
+    auto motifEnergies = EnergyPartitioning::MotifBased::calculateInterationEnergies(motifs, Te, Vee, Ven, Vnn);
 
 
-    auto node = YAML::convert<MotifEnergies>::encode(motifEnergies);
+    Eigen::VectorXd intraExpected = Eigen::VectorXd::Zero(motifs.motifVector_.size());
+    intraExpected << 201.02, 100.01, 0.01;
 
-    ASSERT_THAT(node[0]["MotifIds"].as<std::vector<long>>(), ElementsAre(0));
-    ASSERT_THAT(node[1]["MotifIds"].as<std::vector<long>>(), ElementsAre(0,1));
-    ASSERT_THAT(node[2]["MotifIds"].as<std::vector<long>>(), ElementsAre(0,2));
-    ASSERT_THAT(node[3]["MotifIds"].as<std::vector<long>>(), ElementsAre(1));
-    ASSERT_THAT(node[4]["MotifIds"].as<std::vector<long>>(), ElementsAre(1,2));
-    ASSERT_THAT(node[5]["MotifIds"].as<std::vector<long>>(), ElementsAre(2));
+    Eigen::MatrixXd interExpected = Eigen::MatrixXd::Zero(motifs.motifVector_.size(),motifs.motifVector_.size());
+    interExpected <<
+    0, 10302, 102,
+    0, 0, 101,
+    0,0,0;
 
-
-    MotifEnergies decodedMotifEnergies;
-    YAML::convert<MotifEnergies>::decode(node, decodedMotifEnergies);
-
-    ASSERT_EQ(decodedMotifEnergies.interactionEnergies()[std::vector<long>({0})], 201.02);
-    ASSERT_EQ(decodedMotifEnergies.interactionEnergies()[std::vector<long>({0,1})], 10302);
-    ASSERT_EQ(decodedMotifEnergies.interactionEnergies()[std::vector<long>({0,2})], 102);
-    ASSERT_EQ(decodedMotifEnergies.interactionEnergies()[std::vector<long>({1})], 100.01);
-    ASSERT_EQ(decodedMotifEnergies.interactionEnergies()[std::vector<long>({1,2})], 101);
-    ASSERT_EQ(decodedMotifEnergies.interactionEnergies()[std::vector<long>({2})], 0.01);
+    ASSERT_TRUE(motifEnergies.first.isApprox(intraExpected));
+    ASSERT_TRUE(motifEnergies.second.isApprox(interExpected));
 };
 

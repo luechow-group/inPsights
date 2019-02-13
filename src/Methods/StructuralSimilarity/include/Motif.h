@@ -17,6 +17,7 @@ MotifType fromString(const std::string& string);
 
 class Motif{
 public:
+    Motif() = default;
     Motif(const std::list<Eigen::Index>& electronIndices, MotifType type = MotifType::unassigned);
     Motif(const std::list<Eigen::Index>& electronIndices,
           const std::list<Eigen::Index>& atomIndices,

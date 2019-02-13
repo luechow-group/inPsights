@@ -4,6 +4,11 @@
 
 #include "Motifs.h"
 #include <spdlog/spdlog.h>
+#include <Motifs.h>
+
+
+Motifs::Motifs()
+: motifVector_({}) {}
 
 Motifs::Motifs(const Eigen::MatrixXb &adjacencyMatrix)
         : Motifs(motifsFromAdjacencyMatrix(adjacencyMatrix)) {};
@@ -78,6 +83,6 @@ void Motifs::sort(){
         else if (lhs.type() > rhs.type())
             return false;
         else
-            return lhs.electronIndices().size() >= rhs.electronIndices().size();
+            return lhs.electronIndices().size() > rhs.electronIndices().size();
     });
 }

@@ -92,11 +92,11 @@ namespace YAML {
     }
 
     bool convert<Motif>::decode(const Node &node, Motif &rhs) {
-        if (!node.IsSequence())
+        if (!node.IsMap())
             return false;
 
         rhs.setElectronIndices(node["ElectronIndices"].as<std::list<Eigen::Index>>());
-        rhs.setElectronIndices(node["AtomIndices"].as<std::list<Eigen::Index>>());
+        rhs.setAtomIndices(node["AtomIndices"].as<std::list<Eigen::Index>>());
         rhs.setType(fromString(node["Type"].as<std::string>()));
         return true;
     }

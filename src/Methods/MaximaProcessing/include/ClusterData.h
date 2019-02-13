@@ -8,6 +8,7 @@
 #include <Statistics.h>
 #include <ParticlesVector.h>
 #include <VoxelCube.h>
+#include <Motifs.h>
 #include <EnergyStatistics.h>
 
 class ClusterData {
@@ -22,6 +23,9 @@ public:
                 const IntraParticlesStatistics & SeeStats,
                 const IntraParticlesStatistics & VeeStats,
                 const InterParticlesStatistics & VenStats,
+                const Motifs& motifs,
+                const SingleParticlesStatistics & intraMotifEnergyStats,
+                const IntraParticlesStatistics & interMotifEnergyStats,
                 const std::vector<VoxelCube>& voxelCubes
                 );
 
@@ -29,9 +33,11 @@ public:
 
     unsigned N_;
     std::vector<ElectronsVector> exemplaricStructures_;
-    SingleParticlesStatistics valueStats_, EeStats_; //TODO remove EeStats
+    Motifs motifs_;
+    SingleParticlesStatistics valueStats_, EeStats_, intraMotifEnergyStats_; //TODO remove EeStats
     EnergyStatistics::ElectronicEnergy electronicEnergyStats_;
     IntraParticlesStatistics SeeStats_;
+    IntraParticlesStatistics interMotifEnergyStats_;
     std::vector<VoxelCube> voxelCubes_;
 };
 

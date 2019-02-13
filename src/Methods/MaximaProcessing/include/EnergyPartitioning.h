@@ -17,16 +17,16 @@ namespace EnergyPartitioning {
 
     namespace MotifBased {
         double calculateSelfInteractionEnergy(const Motif &motif,
-                                              const EnergyStatistics::ElectronicEnergy &electronicEnergy,
-                                              const Eigen::MatrixXd &nuclearEnergy);
+                                              const Eigen::VectorXd &Te, const Eigen::MatrixXd &Vee,
+                                              const Eigen::MatrixXd &Ven, const Eigen::MatrixXd &Vnn);
 
         double caclulateInteractionEnergy(const Motif &motif, const Motif &otherMotif,
-                                          const EnergyStatistics::ElectronicEnergy &electronicEnergy,
-                                          const Eigen::MatrixXd &nuclearEnergy);
+                                          const Eigen::VectorXd &Te, const Eigen::MatrixXd &Vee,
+                                          const Eigen::MatrixXd &Ven, const Eigen::MatrixXd &Vnn);
 
-        MotifEnergies calculateInterationEnergies(const Motifs& motif,const
-                                                  EnergyStatistics::ElectronicEnergy& electronicEnergy,
-                                                  const Eigen::MatrixXd &nuclearEnergy);
+        std::pair<Eigen::VectorXd, Eigen::MatrixXd> calculateInterationEnergies(const Motifs& motifs,
+                                                  const Eigen::VectorXd &Te, const Eigen::MatrixXd &Vee,
+                                                  const Eigen::MatrixXd &Ven, const Eigen::MatrixXd &Vnn);
 
     }
 

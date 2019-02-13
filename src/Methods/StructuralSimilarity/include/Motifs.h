@@ -11,6 +11,8 @@
 
 class Motifs{
 public:
+
+    Motifs();
     Motifs(const Eigen::MatrixXb &adjacencyMatrix);
     Motifs(const Eigen::MatrixXb &adjacencyMatrix,
             const MolecularGeometry& molecule);

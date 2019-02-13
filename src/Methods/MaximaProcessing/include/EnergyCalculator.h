@@ -8,6 +8,7 @@
 #include "Reference.h"
 #include "SimilarReferences.h"
 #include "Sample.h"
+#include <Motifs.h>
 #include <Statistics.h>
 #include <VoxelCube.h>
 
@@ -17,6 +18,8 @@ public:
     EnergyCalculator(YAML::Emitter& yamlDocument, const std::vector<Sample> &samples, AtomsVector atoms);
 
     unsigned long addReference(const Reference &reference);
+
+    void doMotifBasedEnergyPartitioning(const Reference &reference);
 
     void calculateStatistics(const std::vector<std::vector<SimilarReferences>> &clusteredGloballySimilarMaxima);
 
@@ -31,9 +34,10 @@ private:
     YAML::Emitter& yamlDocument_;
     const std::vector<Sample> &samples_;
     AtomsVector atoms_;
+    Motifs motifs_;
 
-    SingleParticlesStatistics valueStats_, TeStats_, EeStats_, EnStats_;
-    IntraParticlesStatistics SeeStats_, VeeStats_, VnnStats_;
+    SingleParticlesStatistics valueStats_, TeStats_, EeStats_, EnStats_, intraMotifEnergyStats_;
+    IntraParticlesStatistics SeeStats_, VeeStats_, VnnStats_, interMotifEnergyStats_;
     InterParticlesStatistics VenStats_;
 
     Eigen::MatrixXd Vnn_;

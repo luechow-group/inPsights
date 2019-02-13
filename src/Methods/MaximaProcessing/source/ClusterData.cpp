@@ -12,15 +12,21 @@ ClusterData::ClusterData(unsigned totalNumberOfStructures,
             const IntraParticlesStatistics & SeeStats,
             const IntraParticlesStatistics & VeeStats,
             const InterParticlesStatistics & VenStats,
+            const Motifs& motifs,
+            const SingleParticlesStatistics & intraMotifEnergyStats,
+            const IntraParticlesStatistics & interMotifEnergyStats,
             const std::vector<VoxelCube> &voxelCubes
             )
         :
         N_(totalNumberOfStructures),
         exemplaricStructures_(exemplaricStructures),
+        motifs_(motifs),
         valueStats_(valueStats),
         EeStats_(EeStats),
+        intraMotifEnergyStats_(intraMotifEnergyStats),
         electronicEnergyStats_(TeStats,VeeStats, VenStats),
         SeeStats_(SeeStats),
+        interMotifEnergyStats_(interMotifEnergyStats),
         voxelCubes_(voxelCubes)
         {};
 
@@ -33,6 +39,9 @@ namespace YAML {
         Node node;
         node["N"] = rhs.N_;
         node["ValueRange"] = rhs.valueStats_;
+        node["Motifs"] = rhs.motifs_.motifVector_;
+        node["IntraMotifEnergies"] = rhs.intraMotifEnergyStats_;
+        node["InterMotifEnergies"] = rhs.interMotifEnergyStats_;
         node["Structures"] = rhs.exemplaricStructures_;
         node["SpinCorrelations"] = rhs.SeeStats_;
         node["Te"] = rhs.electronicEnergyStats_.Te();
@@ -52,6 +61,8 @@ namespace YAML {
             if (node["VoxelCubes"].IsSequence() && node["VoxelCubes"].size() > 0)
                 cubes = node["VoxelCubes"].as<std::vector<VoxelCube>>();
 
+        auto motifVector = node["Motifs"].as<std::vector<Motif>>();
+
         rhs = ClusterData(
                 node["N"].as<unsigned>(),
                 node["Structures"].as<std::vector<ElectronsVector>>(),
@@ -61,8 +72,11 @@ namespace YAML {
                 node["SpinCorrelations"].as<IntraParticlesStatistics>(),
                 node["Vee"].as<IntraParticlesStatistics>(),
                 node["Ven"].as<InterParticlesStatistics>(),
-                        cubes
-                        );
+                Motifs(motifVector),
+                node["IntraMotifEnergies"].as<SingleParticlesStatistics>(),
+                node["InterMotifEnergies"].as<IntraParticlesStatistics>(),
+                cubes
+                );
         
         return true;
     }
@@ -71,6 +85,9 @@ namespace YAML {
         out << BeginMap
             << Key << "N" << Value << rhs.N_
             << Key << "ValueRange" << Value << Comment("[]") << rhs.valueStats_
+            << Key << "Motifs" << Value << rhs.motifs_.motifVector_
+            << Key << "IntraMotifEnergies" << Comment("[Eh]") << Value << rhs.intraMotifEnergyStats_
+            << Key << "InterMotifEnergies" << Comment("[Eh]") << Value << rhs.interMotifEnergyStats_
             << Key << "Structures" << Comment("[a0]") << Value << rhs.exemplaricStructures_ << Newline
             << Key << "SpinCorrelations" << Comment("[]") << Value << rhs.SeeStats_
             << Key << "Te" << Comment("[Eh]") << Value << rhs.electronicEnergyStats_.Te()
