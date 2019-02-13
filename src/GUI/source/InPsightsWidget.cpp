@@ -24,7 +24,7 @@ InPsightsWidget::InPsightsWidget(QWidget *parent)
         :
         QWidget(parent),
         moleculeWidget(new MoleculeWidget(this)),
-        energyPartitioningWidget(new MaximaProcessingWidget(this)), // TODO refator, should it be an additional window?
+        maximaProcessingWidget(new MaximaProcessingWidget(this)), // TODO refator, should it be an additional window?
         atomsCheckBox(new QCheckBox("Atoms", this)),
         bondsCheckBox(new QCheckBox("Bonds", this)),
         spinConnectionsCheckBox(new QCheckBox("Spin Connections", this)),
@@ -63,7 +63,7 @@ void InPsightsWidget::createWidget() {
     maximaList->header()->setStretchLastSection(false);
 
     vboxOuter->addWidget(maximaList, 1);
-    vboxOuter->addWidget(energyPartitioningWidget,1);
+    vboxOuter->addWidget(maximaProcessingWidget,1);
     vboxOuter->addWidget(gbox);
     gbox->setLayout(vboxInner);
 
@@ -107,14 +107,14 @@ void InPsightsWidget::connectSignals() {
     connect(spinCorrelationSlider, &QSlider::valueChanged,
             this, &InPsightsWidget::onSpinCorrelationsSliderChanged);
 
-    connect(energyPartitioningWidget, &MaximaProcessingWidget::atomsChecked,
+    connect(maximaProcessingWidget, &MaximaProcessingWidget::atomsChecked,
             moleculeWidget, &MoleculeWidget::onAtomsChecked);
-    connect(energyPartitioningWidget, &MaximaProcessingWidget::electronsChecked,
+    connect(maximaProcessingWidget, &MaximaProcessingWidget::electronsChecked,
             moleculeWidget, &MoleculeWidget::onElectronsChecked);
 
-    connect(energyPartitioningWidget, &MaximaProcessingWidget::atomsHighlighted,
+    connect(maximaProcessingWidget, &MaximaProcessingWidget::atomsHighlighted,
             moleculeWidget, &MoleculeWidget::onAtomsHighlighted);
-    connect(energyPartitioningWidget, &MaximaProcessingWidget::electronsHighlighted,
+    connect(maximaProcessingWidget, &MaximaProcessingWidget::electronsHighlighted,
             moleculeWidget, &MoleculeWidget::onElectronsHighlighted);
 }
 
@@ -142,7 +142,7 @@ void InPsightsWidget::selectedStructure(QTreeWidgetItem *item, int column) {
 
     if (createQ) {
         moleculeWidget->addElectronsVector(clusterCollection_[clusterId].exemplaricStructures_[structureId], clusterId, structureId);
-        energyPartitioningWidget->updateData(clusterCollection_[clusterId]);
+        maximaProcessingWidget->updateData(clusterCollection_[clusterId]);
     } else {
         moleculeWidget->removeElectronsVector(clusterId, structureId);
     }
@@ -211,13 +211,19 @@ void InPsightsWidget::loadData() {
     moleculeWidget->infoText_->setText(fileName);
 
     YAML::Node doc = YAML::LoadAllFromFile(fileName.toStdString())[1]; // load results
-    auto nAtoms = doc["Atoms"].as<AtomsVector>().numberOfEntities();
+    auto atoms = doc["Atoms"].as<AtomsVector>();
+
     auto nElectrons = doc["Clusters"][0]["Structures"][0].as<ElectronsVector>().numberOfEntities();
 
     auto EnStats = doc["En"].as<SingleParticlesStatistics>();
-    energyPartitioningWidget->setAtomEnergies(EnStats);
-    energyPartitioningWidget->initializeTreeItems(energyPartitioningWidget->atomsTreeWidget(),int(nAtoms));
-    energyPartitioningWidget->initializeTreeItems(energyPartitioningWidget->electronsTreeWidget(),int(nElectrons));
+    maximaProcessingWidget->setAtomEnergies(EnStats);
+    maximaProcessingWidget->setAtomsVector(atoms);
+    maximaProcessingWidget->initializeTreeItems(maximaProcessingWidget->atomsTreeWidget(), int(atoms.numberOfEntities()));
+    maximaProcessingWidget->initializeTreeItems(maximaProcessingWidget->electronsTreeWidget(), int(nElectrons));
+
+
+    moleculeWidget->setSharedAtomsVector(atoms);
+
 
     for (int clusterId = 0; clusterId < static_cast<int>(doc["Clusters"].size()); ++clusterId) {
 
@@ -250,7 +256,7 @@ void InPsightsWidget::loadData() {
             maximaList->resizeColumnToContents(i);
         }
     }
-    moleculeWidget->setSharedAtomsVector(doc["Atoms"].as<AtomsVector>());
+
 
     /*auto voxelData = doc["Clusters"][0]["VoxelCubes"].as<std::vector<VoxelCube>>();
     for (int j = 0; j < nElectrons; ++j) {

@@ -15,15 +15,7 @@
 
 namespace EnergyPartitioning {
 
-    // Better Use
     namespace MotifBased {
-
-        // TODO  gets list of indices referencing to electrons and atoms
-
-
-        // Motif must contain atom indices => if valence -> list is empty{} else lists contains one single index
-
-
         double calculateSelfInteractionEnergy(const Motif &motif,
                                               const EnergyStatistics::ElectronicEnergy &electronicEnergy,
                                               const Eigen::MatrixXd &nuclearEnergy);

@@ -14,16 +14,20 @@ namespace EnergyPartitioning {
             MotifEnergies motifEnergies{};
 
             for(auto motif = motifs.motifVector_.begin(); motif != motifs.motifVector_.end(); ++motif) {
+                auto motifId = std::distance(motifs.motifVector_.begin(), motif);
 
                 // self-interaction
                 auto intraEnergy = calculateSelfInteractionEnergy(*motif, electronicEnergy, Vnn);
-                motifEnergies.addPair({*motif, *motif}, intraEnergy);
+
+                motifEnergies.addPair(std::vector<long>{motifId}, intraEnergy);
 
                 // interaction with other motifs
                 std::map<Eigen::Index, double> interEnergies;
-                for (auto otherMotif = motif; otherMotif != motifs.motifVector_.end(); ++otherMotif) {
+                for (auto otherMotif = std::next(motif); otherMotif != motifs.motifVector_.end(); ++otherMotif) {
+                    auto otherMotifId = std::distance(motifs.motifVector_.begin(), otherMotif);
+
                     auto interEnergy = caclulateInteractionEnergy(*motif, *otherMotif, electronicEnergy, Vnn);
-                    motifEnergies.addPair({*motif, *otherMotif}, interEnergy);
+                    motifEnergies.addPair(std::vector<long>{motifId, otherMotifId}, interEnergy);
                 }
             }
             return motifEnergies;

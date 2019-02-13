@@ -7,6 +7,8 @@
 #include <QHeaderView>
 #include <ClusterData.h>
 #include <IntegerSortedTreeWidgetItem.h>
+#include <EnergyPartitioning.h>
+#include <CoulombPotential.h>
 
 MaximaProcessingWidget::MaximaProcessingWidget(QWidget *parent)
         :
@@ -33,6 +35,10 @@ MaximaProcessingWidget::MaximaProcessingWidget(QWidget *parent)
             this, &MaximaProcessingWidget::onElectronSelectionChanged);
     connect(&Ee_, SIGNAL(itemChanged(QTreeWidgetItem*,int)),
             this, SLOT(onElectronItemChanged()));
+}
+
+void MaximaProcessingWidget::setAtomsVector(const AtomsVector &atoms) {
+    atoms_ = atoms;
 }
 
 void MaximaProcessingWidget::initializeTree(QTreeWidget &tree, const QString& particleSymbol) const {
@@ -137,11 +143,23 @@ void MaximaProcessingWidget::setAtomEnergies(SingleParticlesStatistics EnStats) 
     EnStats_ = std::move(EnStats);
 }
 
+
 void MaximaProcessingWidget::updateData(const ClusterData &clusterData) {
     assert(Ee_.topLevelItemCount() == static_cast<int>(clusterData.EeStats_.rows())
     && "The number of tree items and electrons must match.");
     assert(En_.topLevelItemCount() == static_cast<int>(clusterData.electronicEnergyStats_.Ven().cols())
     && "The number of tree items and atoms must match.");
+
+    auto adjacencyMatrix = GraphAnalysis::filter(clusterData.SeeStats_.mean().cwiseAbs());
+    auto electrons = clusterData.representativeStructure();
+    auto Vnn = CoulombPotential::energies(atoms_);
+
+    Motifs motifs(adjacencyMatrix, MolecularGeometry{atoms_, electrons});
+    auto motifEnergies = EnergyPartitioning::MotifBased::calculateInterationEnergies(motifs, clusterData.electronicEnergyStats_, Vnn);
+
+    YAML::Emitter out;
+    out << motifs.motifVector_ << motifEnergies;
+    std::cout << out.c_str()<< "\n" << std::endl;
 
     updateEnergies(Ee_, clusterData.EeStats_.mean(), clusterData.EeStats_.standardError());
     updateEnergies(En_, EnStats_.mean(), EnStats_.standardError());

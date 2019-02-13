@@ -10,6 +10,7 @@
 #include <Statistics.h>
 #include <QLabel>
 #include <QGridLayout>
+#include <ParticlesVector.h>
 
 class ClusterData;
 
@@ -19,6 +20,7 @@ public:
     explicit MaximaProcessingWidget(QWidget* parent = nullptr);
 
     void initializeTreeItems(QTreeWidget &tree, int numberOfParticles);
+    void setAtomsVector(const AtomsVector& atoms);
     void setAtomEnergies(SingleParticlesStatistics EnStats);
     void updateData(const ClusterData& clusterData);
 
@@ -38,6 +40,7 @@ public Q_SLOTS:
     void onElectronSelectionChanged();
 
 private:
+    AtomsVector atoms_;
     bool initializedQ_;
     SingleParticlesStatistics EnStats_;
     QGridLayout grid_;

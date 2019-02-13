@@ -95,24 +95,23 @@ namespace YAML {
         if (!node.IsSequence())
             return false;
 
-        rhs.setType(fromString(node["Type"].as<std::string>()));
         rhs.setElectronIndices(node["ElectronIndices"].as<std::list<Eigen::Index>>());
         rhs.setElectronIndices(node["AtomIndices"].as<std::list<Eigen::Index>>());
+        rhs.setType(fromString(node["Type"].as<std::string>()));
         return true;
     }
 
     Emitter &operator<<(Emitter &out, const Motif &rhs) {
         out << YAML::Flow << BeginMap
-            << Key << "Type" << Value << toString(rhs.type())
             << Key << "ElectronIndices" << Value << BeginSeq;
         for(auto i : rhs.electronIndices())
             out <<  i;
-
         out << EndSeq << Key << "AtomIndices" << Value << BeginSeq;
         for(auto i : rhs.atomIndices())
             out <<  i;
-
-        out << EndSeq << EndMap;
+        out << EndSeq
+        << Key << "Type" << Value << toString(rhs.type())
+        << EndMap;
         return out;
     };
 }

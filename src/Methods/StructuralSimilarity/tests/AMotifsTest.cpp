@@ -30,20 +30,18 @@ public:
     };
 };
 
-TEST_F(AMotifsTest, Test){
-
+TEST_F(AMotifsTest, Assignment) {
     Motifs motifs(A, molecule);
 
     ASSERT_THAT(motifs.motifVector_[0].electronIndices(), ElementsAre(0,1));
+    ASSERT_THAT(motifs.motifVector_[0].atomIndices(), ElementsAre(0));
     ASSERT_EQ(motifs.motifVector_[0].type(), MotifType::Core);
 
     ASSERT_THAT(motifs.motifVector_[1].electronIndices(), ElementsAre(2));
+    ASSERT_THAT(motifs.motifVector_[1].atomIndices(), ElementsAre(1));
     ASSERT_EQ(motifs.motifVector_[1].type(), MotifType::Core);
 
     ASSERT_THAT(motifs.motifVector_[2].electronIndices(), ElementsAre(3));
+    ASSERT_THAT(motifs.motifVector_[2].atomIndices(), ElementsAre());
     ASSERT_EQ(motifs.motifVector_[2].type(), MotifType::Valence);
-
-    //YAML::Emitter out;
-    //out << motifs.motifVector;
-    //std::cout << out.c_str() << std::endl;
 }

@@ -28,7 +28,7 @@ public slots:
 
 private:
     MoleculeWidget *moleculeWidget;
-    MaximaProcessingWidget *energyPartitioningWidget;
+    MaximaProcessingWidget *maximaProcessingWidget;
     QCheckBox *atomsCheckBox, *bondsCheckBox, *spinConnectionsCheckBox, *spinCorrelationsCheckBox;
     QSlider *spinCorrelationSlider;
     QLabel *spinCorrelationSliderLabel;
