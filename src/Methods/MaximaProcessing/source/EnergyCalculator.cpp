@@ -112,7 +112,7 @@ void EnergyCalculator::calculateStatistics(const std::vector<std::vector<Similar
 // selects nWanted structures and prints the statistic data
 void EnergyCalculator::printCluster(std::vector<ElectronsVector>& structures, std::vector<VoxelCube> voxelCubes){
 
-    size_t nWanted = 8;
+    size_t nWanted = 16;
     std::vector<ElectronsVector> selectedStructures;
 
     if(structures.size() < nWanted){
