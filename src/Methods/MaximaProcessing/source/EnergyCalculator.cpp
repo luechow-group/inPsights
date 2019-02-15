@@ -100,15 +100,33 @@ void EnergyCalculator::calculateStatistics(const std::vector<std::vector<Similar
         if(VoxelCubeGeneration::settings.generateVoxelCubesQ())
             voxelCubes = VoxelCubeGeneration::fromCluster(cluster, samples_);
 
-        yamlDocument_ <<  ClusterData(TeStats_.getTotalWeight(), structures, valueStats_, TeStats_, EeStats_,
-                                      SeeStats_, VeeStats_, VenStats_,
-                                      motifs_, intraMotifEnergyStats_, interMotifEnergyStats_, voxelCubes);
+        printCluster(structures, voxelCubes);
     }
     spdlog::info("overall count {}", totalCount);
     assert(totalCount == samples_.size() && "The total count must match the sample size.");
 
     yamlDocument_ << EndSeq;
     assert(yamlDocument_.good());
+}
+
+// selects nWanted structures and prints the statistic data
+void EnergyCalculator::printCluster(std::vector<ElectronsVector>& structures, std::vector<VoxelCube> voxelCubes){
+
+    size_t nWanted = 8;
+    std::vector<ElectronsVector> selectedStructures;
+
+    if(structures.size() < nWanted){
+        for (auto& i : structures) selectedStructures.push_back(i);
+    } else {
+        size_t skipLength = (structures.size()-1) / (nWanted-1);
+
+        for (size_t i = 0; i < nWanted; ++i)
+            selectedStructures.push_back(structures[i*skipLength]);
+    }
+
+    yamlDocument_ <<  ClusterData(TeStats_.getTotalWeight(), selectedStructures, valueStats_, TeStats_, EeStats_,
+                                  SeeStats_, VeeStats_, VenStats_,
+                                  motifs_, intraMotifEnergyStats_, interMotifEnergyStats_, voxelCubes);
 }
 
 YAML::Node EnergyCalculator::getYamlNode(){
