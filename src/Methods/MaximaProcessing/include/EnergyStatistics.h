@@ -12,23 +12,23 @@ namespace EnergyStatistics {
     class ElectronicEnergy {
     public:
         ElectronicEnergy() = default;
-        ElectronicEnergy(const SingleParticlesStatistics &Te,
-                         const IntraParticlesStatistics &Vee,
-                         const InterParticlesStatistics &Ven);
+        ElectronicEnergy(const VectorStatistics &Te,
+                         const TriangularMatrixStatistics &Vee,
+                         const MatrixStatistics &Ven);
 
         Eigen::Index numberOfElectrons() const;
 
-        const SingleParticlesStatistics &Te() const;
+        const VectorStatistics &Te() const;
 
-        const IntraParticlesStatistics &Vee() const;
+        const TriangularMatrixStatistics &Vee() const;
 
-        const InterParticlesStatistics &Ven() const;
+        const MatrixStatistics &Ven() const;
 
     private:
         Eigen::Index numberOfElectrons_;
-        SingleParticlesStatistics Te_; // kinetic energy
-        IntraParticlesStatistics Vee_; // electron-electron interaction energy
-        InterParticlesStatistics Ven_; // electron-core interaction energy
+        VectorStatistics Te_; // kinetic energy
+        TriangularMatrixStatistics Vee_; // electron-electron interaction energy
+        MatrixStatistics Ven_; // electron-core interaction energy
     };
 
 

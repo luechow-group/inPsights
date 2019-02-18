@@ -21,7 +21,7 @@ public:
 
     void initializeTreeItems(QTreeWidget &tree, int numberOfParticles);
     void setAtomsVector(const AtomsVector& atoms);
-    void setAtomEnergies(SingleParticlesStatistics EnStats);
+    void setAtomEnergies(VectorStatistics EnStats);
     void updateData(const ClusterData& clusterData);
 
     QTreeWidget& atomsTreeWidget();
@@ -42,7 +42,7 @@ public Q_SLOTS:
 private:
     AtomsVector atoms_;
     bool initializedQ_;
-    SingleParticlesStatistics EnStats_;
+    VectorStatistics EnStats_;
     QGridLayout grid_;
     QTreeWidget Ee_, En_;
     QLabel Eintra_, Einter_,EintraErr_, EinterErr_;

@@ -35,10 +35,10 @@ private:
     const std::vector<Sample> &samples_;
     AtomsVector atoms_;
     Motifs motifs_;
-
-    SingleParticlesStatistics valueStats_, TeStats_, EeStats_, EnStats_, EtotalStats_, intraMotifEnergyStats_;
-    IntraParticlesStatistics SeeStats_, VeeStats_, VnnStats_, interMotifEnergyStats_;
-    InterParticlesStatistics VenStats_;
+    SingleValueStatistics valueStats_, EtotalStats_;
+    VectorStatistics TeStats_, EeStats_, EnStats_, intraMotifEnergyStats_;
+    TriangularMatrixStatistics SeeStats_, VeeStats_, VnnStats_, interMotifEnergyStats_;
+    MatrixStatistics VenStats_;
 
     Eigen::MatrixXd Vnn_;
 };

@@ -6,7 +6,7 @@
 #include <Line3D.h>
 
 SpinCorrelations3D::SpinCorrelations3D(ElectronsVector3D *electronsVector3D,
-                                       const IntraParticlesStatistics& SeeStats,
+                                       const TriangularMatrixStatistics& SeeStats,
                                        double spinCorrelationThreshold)
         :
         IConnection(electronsVector3D->correlations_) {
@@ -15,7 +15,7 @@ SpinCorrelations3D::SpinCorrelations3D(ElectronsVector3D *electronsVector3D,
 }
 
 void SpinCorrelations3D::createConnections(const ElectronsVector &electronsVector,
-                                           const IntraParticlesStatistics &SeeStats,
+                                           const TriangularMatrixStatistics &SeeStats,
                                            double spinCorrelationThreshold)  {
 
     auto pairTypes = SpinPairClassification::classify(electronsVector);

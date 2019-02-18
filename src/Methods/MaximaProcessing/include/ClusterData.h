@@ -17,16 +17,16 @@ public:
 
     ClusterData(unsigned totalNumberOfStructures,
                 const std::vector<ElectronsVector> & exemplaricStructures,
-                const SingleParticlesStatistics & valueStats,
-                const SingleParticlesStatistics & TeStats,
-                const SingleParticlesStatistics & EeStats,
-                const IntraParticlesStatistics & SeeStats,
-                const IntraParticlesStatistics & VeeStats,
-                const InterParticlesStatistics & VenStats,
+                const SingleValueStatistics & valueStats,
+                const VectorStatistics & TeStats,
+                const VectorStatistics & EeStats,
+                const TriangularMatrixStatistics & SeeStats,
+                const TriangularMatrixStatistics & VeeStats,
+                const MatrixStatistics & VenStats,
                 const Motifs& motifs,
-                const SingleParticlesStatistics & EtotalStats,
-                const SingleParticlesStatistics & intraMotifEnergyStats,
-                const IntraParticlesStatistics & interMotifEnergyStats,
+                const SingleValueStatistics & EtotalStats,
+                const VectorStatistics & intraMotifEnergyStats,
+                const TriangularMatrixStatistics & interMotifEnergyStats,
                 const std::vector<VoxelCube>& voxelCubes
                 );
 
@@ -35,10 +35,11 @@ public:
     unsigned N_;
     std::vector<ElectronsVector> exemplaricStructures_;
     Motifs motifs_;
-    SingleParticlesStatistics valueStats_, EeStats_, EtotalStats_, intraMotifEnergyStats_; //TODO remove EeStats
+    SingleValueStatistics valueStats_, EtotalStats_;
+    VectorStatistics EeStats_, intraMotifEnergyStats_; //TODO remove EeStats
     EnergyStatistics::ElectronicEnergy electronicEnergyStats_;
-    IntraParticlesStatistics SeeStats_;
-    IntraParticlesStatistics interMotifEnergyStats_;
+    TriangularMatrixStatistics SeeStats_;
+    TriangularMatrixStatistics interMotifEnergyStats_;
     std::vector<VoxelCube> voxelCubes_;
 };
 

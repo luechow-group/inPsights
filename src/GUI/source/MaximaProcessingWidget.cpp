@@ -139,7 +139,7 @@ void MaximaProcessingWidget::initializeTreeItems(QTreeWidget &tree, int numberOf
     }
 }
 
-void MaximaProcessingWidget::setAtomEnergies(SingleParticlesStatistics EnStats) {
+void MaximaProcessingWidget::setAtomEnergies(VectorStatistics EnStats) {
     EnStats_ = std::move(EnStats);
 }
 

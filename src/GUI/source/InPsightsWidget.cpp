@@ -215,7 +215,7 @@ void InPsightsWidget::loadData() {
 
     auto nElectrons = doc["Clusters"][0]["Structures"][0].as<ElectronsVector>().numberOfEntities();
 
-    auto EnStats = doc["En"].as<SingleParticlesStatistics>();
+    auto EnStats = doc["En"].as<VectorStatistics>();
     maximaProcessingWidget->setAtomEnergies(EnStats);
     maximaProcessingWidget->setAtomsVector(atoms);
     maximaProcessingWidget->initializeTreeItems(maximaProcessingWidget->atomsTreeWidget(), int(atoms.numberOfEntities()));

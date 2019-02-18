@@ -14,11 +14,11 @@
 class SpinCorrelations3D : public IConnection {
 public:
     SpinCorrelations3D(ElectronsVector3D *electronsVector3D,
-                       const IntraParticlesStatistics& SeeStats,
+                       const TriangularMatrixStatistics& SeeStats,
                        double spinCorrelationThreshold);
 
     void createConnections(const ElectronsVector &electronsVector,
-                           const IntraParticlesStatistics &SeeStats,
+                           const TriangularMatrixStatistics &SeeStats,
                            double spinCorrelationThreshold);
 };
 

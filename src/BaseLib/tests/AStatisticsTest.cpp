@@ -261,7 +261,7 @@ TEST_F(AStatisticsTest, YAMLVectorConversion){
 }
 
 TEST_F(AStatisticsTest, YAMLConversionTriangularExport){
-    IntraParticlesStatistics stats;
+    TriangularMatrixStatistics stats;
     stats.add(mat1);
     stats.add(mat2);
     stats.add(mat3);
@@ -279,7 +279,7 @@ TEST_F(AStatisticsTest, YAMLConversionTriangularExport){
                           "N: 3";
     ASSERT_STREQ(out.c_str(), expectedString);
     auto loaded = YAML::Load(out.c_str());
-    auto emitterStats = loaded.as<IntraParticlesStatistics>();
+    auto emitterStats = loaded.as<TriangularMatrixStatistics>();
 
     ASSERT_TRUE(emitterStats.mean().isApprox(expectedMean));
     ASSERT_TRUE(emitterStats.standardDeviation().isApprox(expectedStandardDeviation));
@@ -290,7 +290,7 @@ TEST_F(AStatisticsTest, YAMLConversionTriangularExport){
 
     YAML::Node node;
     node = stats;
-    auto nodeStats = node.as<IntraParticlesStatistics>();
+    auto nodeStats = node.as<TriangularMatrixStatistics>();
 
     ASSERT_TRUE(nodeStats.mean().isApprox(expectedMean));
     ASSERT_TRUE(nodeStats.standardDeviation().isApprox(expectedStandardDeviation));

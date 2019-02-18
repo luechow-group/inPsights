@@ -7,22 +7,22 @@
 
 namespace EnergyStatistics {
     ElectronicEnergy::ElectronicEnergy(
-            const SingleParticlesStatistics &Te,
-            const IntraParticlesStatistics &Vee,
-            const InterParticlesStatistics &Ven)
+            const VectorStatistics &Te,
+            const TriangularMatrixStatistics &Vee,
+            const MatrixStatistics &Ven)
             :
             numberOfElectrons_(Te.mean().size()),
             Te_(Te), Vee_(Vee), Ven_(Ven) {}
 
-    const SingleParticlesStatistics &ElectronicEnergy::Te() const {
+    const VectorStatistics &ElectronicEnergy::Te() const {
         return Te_;
     }
 
-    const IntraParticlesStatistics &ElectronicEnergy::Vee() const {
+    const TriangularMatrixStatistics &ElectronicEnergy::Vee() const {
         return Vee_;
     }
 
-    const InterParticlesStatistics &ElectronicEnergy::Ven() const {
+    const MatrixStatistics &ElectronicEnergy::Ven() const {
         return Ven_;
     }
 
