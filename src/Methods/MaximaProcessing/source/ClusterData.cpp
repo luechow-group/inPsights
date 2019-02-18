@@ -13,6 +13,7 @@ ClusterData::ClusterData(unsigned totalNumberOfStructures,
             const IntraParticlesStatistics & VeeStats,
             const InterParticlesStatistics & VenStats,
             const Motifs& motifs,
+            const SingleParticlesStatistics & EtotalStats,
             const SingleParticlesStatistics & intraMotifEnergyStats,
             const IntraParticlesStatistics & interMotifEnergyStats,
             const std::vector<VoxelCube> &voxelCubes
@@ -23,8 +24,9 @@ ClusterData::ClusterData(unsigned totalNumberOfStructures,
         motifs_(motifs),
         valueStats_(valueStats),
         EeStats_(EeStats),
+        EtotalStats_(EtotalStats),
         intraMotifEnergyStats_(intraMotifEnergyStats),
-        electronicEnergyStats_(TeStats,VeeStats, VenStats),
+        electronicEnergyStats_(TeStats, VeeStats, VenStats),
         SeeStats_(SeeStats),
         interMotifEnergyStats_(interMotifEnergyStats),
         voxelCubes_(voxelCubes)
@@ -40,6 +42,7 @@ namespace YAML {
         node["N"] = rhs.N_;
         node["ValueRange"] = rhs.valueStats_;
         node["Motifs"] = rhs.motifs_.motifVector_;
+        node["Etotal"] = rhs.EtotalStats_;
         node["IntraMotifEnergies"] = rhs.intraMotifEnergyStats_;
         node["InterMotifEnergies"] = rhs.interMotifEnergyStats_;
         node["Structures"] = rhs.exemplaricStructures_;
@@ -53,7 +56,6 @@ namespace YAML {
     }
 
     bool convert<ClusterData>::decode(const Node &node, ClusterData &rhs) {
-
 
         // TODO temporary - remove
         std::vector<VoxelCube> cubes = {};
@@ -73,6 +75,7 @@ namespace YAML {
                 node["Vee"].as<IntraParticlesStatistics>(),
                 node["Ven"].as<InterParticlesStatistics>(),
                 Motifs(motifVector),
+                node["Etotal"].as<SingleParticlesStatistics>(),
                 node["IntraMotifEnergies"].as<SingleParticlesStatistics>(),
                 node["InterMotifEnergies"].as<IntraParticlesStatistics>(),
                 cubes
@@ -86,6 +89,7 @@ namespace YAML {
             << Key << "N" << Value << rhs.N_
             << Key << "ValueRange" << Value << Comment("[]") << rhs.valueStats_
             << Key << "Motifs" << Value << rhs.motifs_.motifVector_
+            << Key << "Etotal" << Comment("[Eh]") << Value << rhs.EtotalStats_
             << Key << "IntraMotifEnergies" << Comment("[Eh]") << Value << rhs.intraMotifEnergyStats_
             << Key << "InterMotifEnergies" << Comment("[Eh]") << Value << rhs.interMotifEnergyStats_
             << Key << "Structures" << Comment("[a0]") << Value << rhs.exemplaricStructures_ << Newline

@@ -24,6 +24,7 @@ public:
                 const IntraParticlesStatistics & VeeStats,
                 const InterParticlesStatistics & VenStats,
                 const Motifs& motifs,
+                const SingleParticlesStatistics & EtotalStats,
                 const SingleParticlesStatistics & intraMotifEnergyStats,
                 const IntraParticlesStatistics & interMotifEnergyStats,
                 const std::vector<VoxelCube>& voxelCubes
@@ -34,7 +35,7 @@ public:
     unsigned N_;
     std::vector<ElectronsVector> exemplaricStructures_;
     Motifs motifs_;
-    SingleParticlesStatistics valueStats_, EeStats_, intraMotifEnergyStats_; //TODO remove EeStats
+    SingleParticlesStatistics valueStats_, EeStats_, EtotalStats_, intraMotifEnergyStats_; //TODO remove EeStats
     EnergyStatistics::ElectronicEnergy electronicEnergyStats_;
     IntraParticlesStatistics SeeStats_;
     IntraParticlesStatistics interMotifEnergyStats_;

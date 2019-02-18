@@ -157,6 +157,7 @@ void MaximaProcessingWidget::updateData(const ClusterData &clusterData) {
     YAML::Emitter out;
     out
     << clusterData.motifs_.motifVector_
+    << clusterData.EtotalStats_
     << clusterData.intraMotifEnergyStats_
     << clusterData.interMotifEnergyStats_;
     std::cout << out.c_str()<< "\n" << std::endl;

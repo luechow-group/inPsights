@@ -36,7 +36,7 @@ private:
     AtomsVector atoms_;
     Motifs motifs_;
 
-    SingleParticlesStatistics valueStats_, TeStats_, EeStats_, EnStats_, intraMotifEnergyStats_;
+    SingleParticlesStatistics valueStats_, TeStats_, EeStats_, EnStats_, EtotalStats_, intraMotifEnergyStats_;
     IntraParticlesStatistics SeeStats_, VeeStats_, VnnStats_, interMotifEnergyStats_;
     InterParticlesStatistics VenStats_;
 

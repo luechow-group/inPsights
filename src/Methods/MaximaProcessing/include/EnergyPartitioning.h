@@ -15,6 +15,9 @@
 
 namespace EnergyPartitioning {
 
+    double calculateTotalEnergy(const Eigen::VectorXd &Te, const Eigen::MatrixXd &Vee,
+                                const Eigen::MatrixXd &Ven, const Eigen::MatrixXd &Vnn);
+
     namespace MotifBased {
         double calculateSelfInteractionEnergy(const Motif &motif,
                                               const Eigen::VectorXd &Te, const Eigen::MatrixXd &Vee,
@@ -27,7 +30,6 @@ namespace EnergyPartitioning {
         std::pair<Eigen::VectorXd, Eigen::MatrixXd> calculateInterationEnergies(const Motifs& motifs,
                                                   const Eigen::VectorXd &Te, const Eigen::MatrixXd &Vee,
                                                   const Eigen::MatrixXd &Ven, const Eigen::MatrixXd &Vnn);
-
     }
 
     namespace ParticleBased {

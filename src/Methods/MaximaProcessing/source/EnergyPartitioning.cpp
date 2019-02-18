@@ -7,6 +7,32 @@
 #include <Motif.h>
 
 namespace EnergyPartitioning {
+
+    double calculateTotalEnergy(const Eigen::VectorXd &Te, const Eigen::MatrixXd &Vee,
+                                const Eigen::MatrixXd &Ven, const Eigen::MatrixXd &Vnn) {
+
+        double totalEnergy = 0;
+
+        auto nElectrons = Ven.rows();
+        auto nAtoms = Ven.cols();
+
+        for (Eigen::Index i = 0; i < nElectrons; ++i) {
+            totalEnergy += Te[i];
+
+            for (Eigen::Index k = 0; k < nAtoms; ++k)
+                totalEnergy += Ven(i, k);
+
+            for (Eigen::Index j = i + 1; j < nElectrons; ++j)
+                totalEnergy += Vee(i, j);
+        }
+
+        for (Eigen::Index k = 0; k < nAtoms; ++k)
+            for (Eigen::Index l = k+1; l < nAtoms; ++l)
+                totalEnergy += Vnn(k, l);
+
+        return totalEnergy;
+    }
+
     namespace MotifBased{
         std::pair<Eigen::VectorXd, Eigen::MatrixXd> calculateInterationEnergies(const Motifs &motifs,
                                                   const Eigen::VectorXd &Te, const Eigen::MatrixXd &Vee,

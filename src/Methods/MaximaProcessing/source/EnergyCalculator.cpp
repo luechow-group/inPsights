@@ -41,6 +41,10 @@ unsigned long EnergyCalculator::addReference(const Reference &reference) {
         VeeStats_.add(Vee,1);
         VenStats_.add(Ven,1);
         EeStats_.add(Ee,1);
+        Eigen::VectorXd Etot(1);
+
+        Etot << EnergyPartitioning::calculateTotalEnergy(Te,Vee,Ven, Vnn_);
+        EtotalStats_.add(Etot);
     }
     return count;
 }
@@ -73,6 +77,7 @@ void EnergyCalculator::calculateStatistics(const std::vector<std::vector<Similar
         EeStats_.reset();
         VeeStats_.reset();
         VenStats_.reset();
+        EtotalStats_.reset();
         intraMotifEnergyStats_.reset();
         interMotifEnergyStats_.reset();
 
@@ -126,7 +131,7 @@ void EnergyCalculator::printCluster(std::vector<ElectronsVector>& structures, st
 
     yamlDocument_ <<  ClusterData(TeStats_.getTotalWeight(), selectedStructures, valueStats_, TeStats_, EeStats_,
                                   SeeStats_, VeeStats_, VenStats_,
-                                  motifs_, intraMotifEnergyStats_, interMotifEnergyStats_, voxelCubes);
+                                  motifs_, EtotalStats_, intraMotifEnergyStats_, interMotifEnergyStats_, voxelCubes);
 }
 
 YAML::Node EnergyCalculator::getYamlNode(){
