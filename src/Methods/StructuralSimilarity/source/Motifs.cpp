@@ -34,15 +34,44 @@ std::vector<Motif> Motifs::motifsFromAdjacencyMatrix(const Eigen::MatrixXb &adja
 
 void Motifs::classifyMotifs(const MolecularGeometry& molecule) {
     for(auto& motif : motifVector_) {
-        std::vector<bool> atCore;
+        std::list<bool> atCore;
+        std::list<Eigen::Index> coreIds;
 
-        for(auto i : motif.electronIndices())
-            atCore.emplace_back(molecule.coreElectronQ(i));
+        for(auto i : motif.electronIndices()){
+            auto [b, k] = molecule.coreElectronQ(i);
+            atCore.emplace_back(b);
+            if(b) coreIds.emplace_back(k);
+        }
+        // delete duplicates
+        coreIds.sort();
+        coreIds.unique();
 
-        if(std::all_of(atCore.begin(), atCore.end(), [](bool b){ return b; }))
+
+        if(std::all_of(atCore.begin(), atCore.end(), [](bool b){ return b; })) {
             motif.setType(MotifType::Core);
+            motif.setAtomIndices(coreIds);
+        }
+        else if(std::any_of(atCore.begin(), atCore.end(), [](bool b){ return b; })) {
+            motif.setType(MotifType::CoreValence);
+
+            std::list<Eigen::Index> involvedCores;
+
+            for (const auto & e : motif.electronIndices()) {
+                auto [atCoreQ, k] = molecule.coreElectronQ(e);
+                if(atCoreQ)
+                    involvedCores.push_back(k);
+            }
+
+            // delete duplicates
+            involvedCores.sort();
+            involvedCores.unique();
+            // add to motif
+            motif.setAtomIndices(involvedCores);
+
+        }
         else if(std::none_of(atCore.begin(), atCore.end(), [](bool b){ return b; }))
             motif.setType(MotifType::Valence);
+
         else {
             YAML::Emitter out; out << molecule.electrons() <<  motif;
             spdlog::warn("Found a motif that is not clearly separable into Valence and Core. "
@@ -51,12 +80,12 @@ void Motifs::classifyMotifs(const MolecularGeometry& molecule) {
     }
 }
 
-void Motifs::splitCoreMotifs(const MolecularGeometry& molecule) {
+void Motifs::splitCoreMotifs(const MolecularGeometry &molecule) {
     std::vector<Motif> newMotifVector{};
 
-    for(const auto& m : motifVector_) {
-        if(m.type() == MotifType::Core){
-            for (Eigen::Index k = 0; k < molecule.atoms().numberOfEntities(); ++k) {
+    for(auto& m : motifVector_) {
+        if(m.type() == MotifType::Core) {
+            for (const auto & k : m.atomIndices()) {
                 auto atCoreK = molecule.coreElectronsIndices(k);
 
                 std::list<Eigen::Index> intersection;

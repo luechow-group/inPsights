@@ -15,6 +15,8 @@ std::string toString(MotifType type) {
             return "Core";
         case MotifType::Valence :
             return "Valence";
+        case MotifType::CoreValence :
+            return "CoreValence";
         default:
             return "unassigned";
     }
@@ -25,6 +27,8 @@ MotifType fromString(const std::string& string) {
         return MotifType::Core;
     else if (string == "Valence")
         return MotifType::Valence;
+    else if (string == "CoreValence")
+        return MotifType::CoreValence;
     else
         return MotifType::unassigned;
 }

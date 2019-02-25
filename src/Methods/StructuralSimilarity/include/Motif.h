@@ -10,7 +10,7 @@
 #include <Eigen/Core>
 #include <yaml-cpp/yaml.h>
 
-enum MotifType {unassigned=0, Core, Valence};
+enum MotifType {unassigned=0, Core, CoreValence, Valence};
 
 std::string toString(MotifType type);
 MotifType fromString(const std::string& string);
