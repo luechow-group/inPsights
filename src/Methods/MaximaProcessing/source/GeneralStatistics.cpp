@@ -11,9 +11,17 @@ GeneralStatistics::Result GeneralStatistics::calculate(
 
     Result result;
 
+    auto Vnnmat = CoulombPotential::energies(atoms);
+    result.Vnn_ = 0;
+    for (int i = 0; i < atoms.numberOfEntities(); ++i)
+        for (int j = i + 1; j < atoms.numberOfEntities(); ++j)
+            result.Vnn_ += Vnnmat(i, j);
+
     for (const auto& sample : samples) {
+        auto ESample =  result.Vnn_;
+
         auto Te = sample.kineticEnergies_.sum();
-        auto EelSample = Te;
+        ESample += Te;
         result.TeStats_.add(Eigen::Matrix<double,1,1>(sample.kineticEnergies_.sum()));
 
         double Vee = 0;
@@ -23,24 +31,20 @@ GeneralStatistics::Result GeneralStatistics::calculate(
                 Vee += Veemat(i, j);
             }
         }
-        EelSample += Vee;
+        ESample += Vee;
         result.VeeStats_.add(Eigen::Matrix<double,1,1>(Vee));
 
         auto Ven = CoulombPotential::energies(sample.sample_, atoms).sum();
-        EelSample += Ven;
+        ESample += Ven;
         result.VenStats_.add(Eigen::Matrix<double,1,1>(Ven));
-        result.EelStats_.add(Eigen::Matrix<double,1,1>(EelSample));
+        result.EStats_.add(Eigen::Matrix<double,1,1>(ESample));
     }
 
     for (const auto& reference : references) {
         result.valueStats_.add(Eigen::Matrix<double,1,1>(reference.value()));
     }
 
-    auto Vnnmat = CoulombPotential::energies(atoms);
-    result.Vnn_ = 0;
-    for (int i = 0; i < atoms.numberOfEntities(); ++i)
-        for (int j = i + 1; j < atoms.numberOfEntities(); ++j)
-            result.Vnn_ += Vnnmat(i, j);
+
 
     return result;
 }
@@ -50,7 +54,7 @@ namespace YAML {
         Node node;
 
         node["ValueRange"] = rhs.valueStats_;
-        node["Eel"] = rhs.EelStats_;
+        node["Etotal"] = rhs.EStats_;
         node["Te"] = rhs.TeStats_;
         node["Vee"] = rhs.VeeStats_;
         node["Ven"] = rhs.VenStats_;
@@ -62,7 +66,7 @@ namespace YAML {
 
         rhs = GeneralStatistics::Result(//TODO BETTER NAMES
                 node["ValueRange"].as<SingleValueStatistics>(), //TODO rename to -ln|Psi|^2
-                node["Eel"].as<SingleValueStatistics>(),
+                node["Etotal"].as<SingleValueStatistics>(),
                 node["Te"].as<SingleValueStatistics>(),
                 node["Ven"].as<SingleValueStatistics>(),
                 node["Vee"].as<SingleValueStatistics>(),
@@ -75,7 +79,7 @@ namespace YAML {
     Emitter &operator<<(Emitter &out, const GeneralStatistics::Result &rhs) {
         out << BeginMap
             << Key << "ValueRange" << Value << Comment("[]") << rhs.valueStats_
-            << Key << "Eel" << Comment("[Eh]") << Value << rhs.EelStats_
+            << Key << "Etotal" << Comment("[Eh]") << Value << rhs.EStats_
             << Key << "Te" << Comment("[Eh]") << Value << rhs.TeStats_
             << Key << "Vee" << Comment("[Eh]") << Value << rhs.VeeStats_
             << Key << "Ven" << Comment("[Eh]") << Value << rhs.VenStats_

@@ -23,13 +23,13 @@ namespace GeneralStatistics{
                 double Vnn)
                 :
                 valueStats_(std::move(valueStats)),
-                EelStats_(std::move(EelStats)),
+                EStats_(std::move(EelStats)),
                 TeStats_(std::move(TeStats)),
                 VeeStats_(std::move(VeeStats)),
                 VenStats_(std::move(VenStats)),
                 Vnn_(Vnn) {};
 
-        SingleValueStatistics valueStats_, EelStats_, TeStats_,VeeStats_, VenStats_;
+        SingleValueStatistics valueStats_, EStats_, TeStats_,VeeStats_, VenStats_;
         double Vnn_;
     };
 
