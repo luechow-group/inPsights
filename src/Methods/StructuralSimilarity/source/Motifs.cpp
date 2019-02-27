@@ -5,6 +5,7 @@
 #include "Motifs.h"
 #include <spdlog/spdlog.h>
 #include <Motifs.h>
+#include <ElementInfo.h>
 
 
 Motifs::Motifs()
@@ -76,7 +77,8 @@ void Motifs::classifyMotifs(const MolecularGeometry& molecule) {
                         newMotifVector.emplace_back(Motif({}, {k}, MotifType::Core));
                         newMotifVector.emplace_back(Motif(motif.electronIndices(), {}, MotifType::Valence));
                     } else {
-                        spdlog::warn("Unexpected motif");
+                        spdlog::warn("Unexpected motif: only one electron at non-hydrogen core {}",
+                                Elements::ElementInfo::symbol(molecule.atoms()[k].type()));
                     }
                 }
             }
