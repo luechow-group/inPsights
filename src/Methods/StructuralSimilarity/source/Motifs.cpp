@@ -19,7 +19,6 @@ Motifs::Motifs(const std::vector<Motif>& motifs)
 Motifs::Motifs(const Eigen::MatrixXb &adjacencyMatrix, const MolecularGeometry & molecule)
         : Motifs(adjacencyMatrix) {
     classifyMotifs(molecule);
-    splitCoreMotifs(molecule);
 };
 
 std::vector<Motif> Motifs::motifsFromAdjacencyMatrix(const Eigen::MatrixXb &adjacencyMatrix){
@@ -33,72 +32,55 @@ std::vector<Motif> Motifs::motifsFromAdjacencyMatrix(const Eigen::MatrixXb &adja
 }
 
 void Motifs::classifyMotifs(const MolecularGeometry& molecule) {
-    for(auto& motif : motifVector_) {
-        std::list<bool> atCore;
-        std::list<Eigen::Index> coreIds;
 
-        for(auto i : motif.electronIndices()){
-            auto [b, k] = molecule.coreElectronQ(i);
-            atCore.emplace_back(b);
-            if(b) coreIds.emplace_back(k);
-        }
-        // delete duplicates
-        coreIds.sort();
-        coreIds.unique();
-
-
-        if(std::all_of(atCore.begin(), atCore.end(), [](bool b){ return b; })) {
-            motif.setType(MotifType::Core);
-            motif.setAtomIndices(coreIds);
-        }
-        else if(std::any_of(atCore.begin(), atCore.end(), [](bool b){ return b; })) {
-            motif.setType(MotifType::CoreValence);
-
-            std::list<Eigen::Index> involvedCores;
-
-            for (const auto & e : motif.electronIndices()) {
-                auto [atCoreQ, k] = molecule.coreElectronQ(e);
-                if(atCoreQ)
-                    involvedCores.push_back(k);
-            }
-
-            // delete duplicates
-            involvedCores.sort();
-            involvedCores.unique();
-            // add to motif
-            motif.setAtomIndices(involvedCores);
-
-        }
-        else if(std::none_of(atCore.begin(), atCore.end(), [](bool b){ return b; }))
-            motif.setType(MotifType::Valence);
-
-        else {
-            YAML::Emitter out; out << molecule.electrons() <<  motif;
-            spdlog::warn("Found a motif that is not clearly separable into Valence and Core. "
-                         "ElectronsVector:\n{0} Motif:\n{1}", out.c_str());
-        }
-    }
-}
-
-void Motifs::splitCoreMotifs(const MolecularGeometry &molecule) {
     std::vector<Motif> newMotifVector{};
 
-    for(auto& m : motifVector_) {
-        if(m.type() == MotifType::Core) {
-            for (const auto & k : m.atomIndices()) {
-                auto atCoreK = molecule.coreElectronsIndices(k);
+    for(auto& motif : motifVector_) {
+        std::list<Eigen::Index> involvedCores;
 
-                std::list<Eigen::Index> intersection;
-                std::set_intersection(
-                        m.electronIndices().begin(), m.electronIndices().end(),
-                        atCoreK.begin(), atCoreK.end(), std::back_inserter(intersection));
-                assert(intersection.size() <= 2
-                       && "The number of electrons at a nuclear cusp must be less than or equal to 2 due to the antisymmetry principle.");
+        for (const auto & e : motif.electronIndices()) {
+            auto[atCoreQ, coreIndex] = molecule.coreElectronQ(e);
 
-                newMotifVector.emplace_back(Motif(intersection, {k}, MotifType::Core));
+            if (atCoreQ)
+                involvedCores.push_back(coreIndex);
+        }
+        involvedCores.sort();
+        involvedCores.unique();
+
+        motif.setAtomIndices(involvedCores);
+    }
+
+    for(auto& motif : motifVector_) {
+
+        if(motif.atomIndices().empty()) {
+            motif.setType(MotifType::Valence);
+            newMotifVector.emplace_back(motif);
+        } else {
+            for(const auto & k : motif.atomIndices()) {
+                auto electronsAtCore = molecule.coreElectronsIndices(k);
+
+                //! assert that electronsAtCore is subset of motif.electronIndices()
+                if(electronsAtCore.size() == 2) {
+                    if (molecule.atoms()[k].type() == Elements::ElementType::H
+                    || molecule.atoms()[k].type() == Elements::ElementType::He) {
+
+                        newMotifVector.emplace_back(Motif({}, {k}, MotifType::Core));
+                        newMotifVector.emplace_back(Motif(electronsAtCore, {}, MotifType::Valence));
+                    } else {
+                        newMotifVector.emplace_back(Motif(electronsAtCore, {k}, MotifType::Core));
+                    }
+                } else if(electronsAtCore.size() == 1) {
+                    if (molecule.atoms()[k].type() == Elements::ElementType::H
+                    || molecule.atoms()[k].type() == Elements::ElementType::He) {
+
+                        newMotifVector.emplace_back(Motif({}, {k}, MotifType::Core));
+                        newMotifVector.emplace_back(Motif(motif.electronIndices(), {}, MotifType::Valence));
+                    } else {
+                        spdlog::warn("Unexpected motif");
+                    }
+                }
             }
-        } else
-            newMotifVector.emplace_back(m);
+        }
     }
     motifVector_ = newMotifVector;
     sort();

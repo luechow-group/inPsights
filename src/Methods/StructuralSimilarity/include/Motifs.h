@@ -22,8 +22,6 @@ public:
 
     void classifyMotifs(const MolecularGeometry& molecule);
 
-    void splitCoreMotifs(const MolecularGeometry &molecule);
-
     void sort();
 
     std::vector<Motif> motifVector_;
