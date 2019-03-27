@@ -9,7 +9,6 @@
 #include <MolecularGeometry.h>
 #include <EnergyStatistics.h>
 #include <GraphAnalysis.h>
-#include <MotifEnergies.h>
 #include <Motifs.h>
 #include <Eigen/Core>
 
