@@ -2,8 +2,8 @@
 // Created by Michael Heuer on 02.10.18.
 //
 
-#ifndef INPSIGHTS_ENERGYCALCULATOR_H
-#define INPSIGHTS_ENERGYCALCULATOR_H
+#ifndef INPSIGHTS_MAXIMAPROCESSOR_H
+#define INPSIGHTS_MAXIMAPROCESSOR_H
 
 #include "Reference.h"
 #include "SimilarReferences.h"
@@ -43,4 +43,4 @@ private:
     Eigen::MatrixXd Vnn_;
 };
 
-#endif //INPSIGHTS_ENERGYCALCULATOR_H
+#endif //INPSIGHTS_MAXIMAPROCESSOR_H
