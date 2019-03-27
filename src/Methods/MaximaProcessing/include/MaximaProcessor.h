@@ -37,8 +37,8 @@ private:
     Motifs motifs_;
     SingleValueStatistics valueStats_, EtotalStats_;
     VectorStatistics TeStats_, EeStats_, EnStats_, intraMotifEnergyStats_;
-    TriangularMatrixStatistics SeeStats_, VeeStats_, VnnStats_, interMotifEnergyStats_;
-    MatrixStatistics VenStats_;
+    TriangularMatrixStatistics SeeStats_, VeeStats_, VnnStats_, interMotifEnergyStats_, ReeStats_;
+    MatrixStatistics VenStats_, RenStats_;
 
     Eigen::MatrixXd Vnn_;
 };

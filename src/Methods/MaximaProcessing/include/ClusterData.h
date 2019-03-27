@@ -27,6 +27,8 @@ public:
                 const SingleValueStatistics & EtotalStats,
                 const VectorStatistics & intraMotifEnergyStats,
                 const TriangularMatrixStatistics & interMotifEnergyStats,
+                const TriangularMatrixStatistics & ReeStats,
+                const MatrixStatistics RenStats,
                 const std::vector<VoxelCube>& voxelCubes
                 );
 
@@ -38,8 +40,8 @@ public:
     SingleValueStatistics valueStats_, EtotalStats_;
     VectorStatistics EeStats_, intraMotifEnergyStats_; //TODO remove EeStats
     EnergyStatistics::ElectronicEnergy electronicEnergyStats_;
-    TriangularMatrixStatistics SeeStats_;
-    TriangularMatrixStatistics interMotifEnergyStats_;
+    TriangularMatrixStatistics SeeStats_, interMotifEnergyStats_, ReeStats_;
+    MatrixStatistics RenStats_;
     std::vector<VoxelCube> voxelCubes_;
 };
 
