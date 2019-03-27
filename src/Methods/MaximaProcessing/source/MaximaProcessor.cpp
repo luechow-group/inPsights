@@ -37,12 +37,17 @@ unsigned long MaximaProcessor::addReference(const Reference &reference) {
         Eigen::MatrixXd Vee = CoulombPotential::energies(samples_[id].sample_);
         Eigen::MatrixXd Ven = CoulombPotential::energies(samples_[id].sample_,atoms_);
         Eigen::VectorXd Ee = EnergyPartitioning::ParticleBased::oneElectronEnergies(Te, Vee, Ven, Vnn_);
+        Eigen::MatrixXd Ree = Metrics::positionalDistances(samples_[id].sample_.positionsVector());
+        Eigen::MatrixXd Ren = Metrics::positionalDistances(samples_[id].sample_.positionsVector(), atoms_.positionsVector());
+
         TeStats_.add(Te,1);
         VeeStats_.add(Vee,1);
         VenStats_.add(Ven,1);
         EeStats_.add(Ee,1);
-        Eigen::VectorXd Etot(1);
+        ReeStats_.add(Ree,1);
+        RenStats_.add(Ren,1);
 
+        Eigen::VectorXd Etot(1);
         Etot << EnergyPartitioning::calculateTotalEnergy(Te,Vee,Ven, Vnn_);
         EtotalStats_.add(Etot);
     }
@@ -80,6 +85,8 @@ void MaximaProcessor::calculateStatistics(const std::vector<std::vector<SimilarR
         EtotalStats_.reset();
         intraMotifEnergyStats_.reset();
         interMotifEnergyStats_.reset();
+        ReeStats_.reset();
+        RenStats_.reset();
 
         std::vector<ElectronsVector> structures;
         for (auto &simRefVector : cluster) {
@@ -131,7 +138,8 @@ void MaximaProcessor::printCluster(std::vector<ElectronsVector>& structures, std
 
     yamlDocument_ <<  ClusterData(TeStats_.getTotalWeight(), selectedStructures, valueStats_, TeStats_, EeStats_,
                                   SeeStats_, VeeStats_, VenStats_,
-                                  motifs_, EtotalStats_, intraMotifEnergyStats_, interMotifEnergyStats_, voxelCubes);
+                                  motifs_, EtotalStats_, intraMotifEnergyStats_, interMotifEnergyStats_,
+                                  ReeStats_, RenStats_, voxelCubes);
 }
 
 YAML::Node MaximaProcessor::getYamlNode(){

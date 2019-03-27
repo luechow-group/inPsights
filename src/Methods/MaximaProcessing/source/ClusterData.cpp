@@ -16,6 +16,8 @@ ClusterData::ClusterData(unsigned totalNumberOfStructures,
             const SingleValueStatistics & EtotalStats,
             const VectorStatistics & intraMotifEnergyStats,
             const TriangularMatrixStatistics & interMotifEnergyStats,
+            const TriangularMatrixStatistics & ReeStats,
+            const MatrixStatistics RenStats,
             const std::vector<VoxelCube> &voxelCubes
             )
         :
@@ -29,6 +31,8 @@ ClusterData::ClusterData(unsigned totalNumberOfStructures,
         electronicEnergyStats_(TeStats, VeeStats, VenStats),
         SeeStats_(SeeStats),
         interMotifEnergyStats_(interMotifEnergyStats),
+        ReeStats_(ReeStats),
+        RenStats_(RenStats),
         voxelCubes_(voxelCubes)
         {};
 
@@ -47,6 +51,8 @@ namespace YAML {
         node["InterMotifEnergies"] = rhs.interMotifEnergyStats_;
         node["Structures"] = rhs.exemplaricStructures_;
         node["SpinCorrelations"] = rhs.SeeStats_;
+        node["Ree"] = rhs.ReeStats_;
+        node["Ren"] = rhs.RenStats_;
         node["Te"] = rhs.electronicEnergyStats_.Te();
         node["Vee"] = rhs.electronicEnergyStats_.Vee();
         node["Ven"] = rhs.electronicEnergyStats_.Ven();
@@ -78,6 +84,8 @@ namespace YAML {
                 node["Etotal"].as<SingleValueStatistics>(),
                 node["IntraMotifEnergies"].as<VectorStatistics>(),
                 node["InterMotifEnergies"].as<TriangularMatrixStatistics>(),
+                node["Ree"].as<TriangularMatrixStatistics>(),
+                node["Ren"].as<MatrixStatistics>(),
                 cubes
                 );
         
@@ -94,6 +102,8 @@ namespace YAML {
             << Key << "InterMotifEnergies" << Comment("[Eh]") << Value << rhs.interMotifEnergyStats_
             << Key << "Structures" << Comment("[a0]") << Value << rhs.exemplaricStructures_ << Newline
             << Key << "SpinCorrelations" << Comment("[]") << Value << rhs.SeeStats_
+            << Key << "Ree" << Comment("[a0]") << Value << rhs.ReeStats_
+            << Key << "Ren" << Comment("[a0]") << Value << rhs.RenStats_
             << Key << "Te" << Comment("[Eh]") << Value << rhs.electronicEnergyStats_.Te()
             << Key << "Ee" << Comment("[Eh]") << Value << rhs.EeStats_
             << Key << "Vee" << Comment("[Eh]") << Value << rhs.electronicEnergyStats_.Vee()

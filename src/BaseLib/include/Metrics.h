@@ -50,10 +50,7 @@ namespace Metrics{
 
     template <int Norm = 2>
     Eigen::MatrixXd positionalDistances(const PositionsVector &positions1, const PositionsVector &positions2){
-        assert(positions1.numberOfEntities() == positions2.numberOfEntities()
-               && "Both PositionVectors must have the same size.");
-
-        Eigen::MatrixXd d = Eigen::MatrixXd::Zero(positions1.numberOfEntities(),positions1.numberOfEntities());
+        Eigen::MatrixXd d = Eigen::MatrixXd::Zero(positions1.numberOfEntities(),positions2.numberOfEntities());
 
         for (Eigen::Index  i = 0; i < d.rows(); i++)
             for (Eigen::Index j = 0; j < d.cols(); j++)
