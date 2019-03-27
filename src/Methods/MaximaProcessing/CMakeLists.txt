@@ -14,7 +14,7 @@ set(HEADER_FILES
         include/GlobalIdentitySorter.h
         include/GlobalSimilaritySorter.h
         include/GlobalClusterSorter.h
-        include/EnergyCalculator.h
+        include/MaximaProcessor.h
         include/SimilarReferences.h
         include/ClusterData.h
         #include/GlobalPermutationSorter.h
@@ -32,7 +32,7 @@ set(SOURCE_FILES
         source/GlobalClusterSorter.cpp
         source/GlobalIdentitySorter.cpp
         source/GlobalSimilaritySorter.cpp
-        source/EnergyCalculator.cpp
+        source/MaximaProcessor.cpp
         #source/GlobalPermutationSorter.cpp
         source/GeneralStatistics.cpp
         source/ValueSorter.cpp

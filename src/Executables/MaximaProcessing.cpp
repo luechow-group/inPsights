@@ -6,7 +6,7 @@
 #include <GlobalIdentitySorter.h>
 #include <GlobalSimilaritySorter.h>
 #include <GlobalClusterSorter.h>
-#include <EnergyCalculator.h>
+#include <MaximaProcessor.h>
 #include <GeneralStatistics.h>
 #include <algorithm>
 #include <utility>
@@ -92,7 +92,7 @@ int main(int argc, char *argv[]) {
                << Key << "OverallResults" << Value << results;
     spdlog::info("Calculating statistics...");
 
-    EnergyCalculator energyCalculator(outputYaml, samples,atoms);
+    MaximaProcessor energyCalculator(outputYaml, samples,atoms);
     energyCalculator.calculateStatistics(globallyClusteredMaxima);
 
     outputYaml << EndMap << EndDoc;

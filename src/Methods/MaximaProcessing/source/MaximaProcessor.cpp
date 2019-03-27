@@ -1,7 +1,7 @@
 //
 // Created by heuer on 12.12.18.
 //
-#include <EnergyCalculator.h>
+#include <MaximaProcessor.h>
 #include <ClusterData.h>
 #include <MolecularGeometry.h>
 #include <SpinCorrelation.h>
@@ -11,7 +11,7 @@
 #include <EnergyPartitioning.h>
 #include <spdlog/spdlog.h>
 
-EnergyCalculator::EnergyCalculator(YAML::Emitter& yamlDocument, const std::vector<Sample>& samples, AtomsVector atoms)
+MaximaProcessor::MaximaProcessor(YAML::Emitter& yamlDocument, const std::vector<Sample>& samples, AtomsVector atoms)
         :
         yamlDocument_(yamlDocument),
         samples_(samples),
@@ -22,7 +22,7 @@ EnergyCalculator::EnergyCalculator(YAML::Emitter& yamlDocument, const std::vecto
     EnStats_.add(EnergyPartitioning::ParticleBased::oneAtomEnergies(Vnn_));
 }
 
-unsigned long EnergyCalculator::addReference(const Reference &reference) {
+unsigned long MaximaProcessor::addReference(const Reference &reference) {
     auto count = unsigned(reference.count());
 
     Eigen::VectorXd value(1); value[0] = reference.value();
@@ -49,7 +49,7 @@ unsigned long EnergyCalculator::addReference(const Reference &reference) {
     return count;
 }
 
-void EnergyCalculator::doMotifBasedEnergyPartitioning(const Reference &reference) {
+void MaximaProcessor::doMotifBasedEnergyPartitioning(const Reference &reference) {
     // Sample related statistics
     for (auto & id : reference.sampleIds()) {
         Eigen::VectorXd Te = samples_[id].kineticEnergies_;
@@ -63,7 +63,7 @@ void EnergyCalculator::doMotifBasedEnergyPartitioning(const Reference &reference
     }
 }
 
-void EnergyCalculator::calculateStatistics(const std::vector<std::vector<SimilarReferences>>& clusteredGloballySimilarMaxima){
+void MaximaProcessor::calculateStatistics(const std::vector<std::vector<SimilarReferences>>& clusteredGloballySimilarMaxima){
     using namespace YAML;
 
     yamlDocument_ << Key << "En" << Comment("[Eh]") << Value << EnStats_
@@ -115,7 +115,7 @@ void EnergyCalculator::calculateStatistics(const std::vector<std::vector<Similar
 }
 
 // selects nWanted structures and prints the statistic data
-void EnergyCalculator::printCluster(std::vector<ElectronsVector>& structures, std::vector<VoxelCube> voxelCubes){
+void MaximaProcessor::printCluster(std::vector<ElectronsVector>& structures, std::vector<VoxelCube> voxelCubes){
 
     size_t nWanted = 16;
     std::vector<ElectronsVector> selectedStructures;
@@ -134,10 +134,10 @@ void EnergyCalculator::printCluster(std::vector<ElectronsVector>& structures, st
                                   motifs_, EtotalStats_, intraMotifEnergyStats_, interMotifEnergyStats_, voxelCubes);
 }
 
-YAML::Node EnergyCalculator::getYamlNode(){
+YAML::Node MaximaProcessor::getYamlNode(){
     return YAML::Load(yamlDocument_.c_str());
 }
 
-std::string EnergyCalculator::getYamlDocumentString(){
+std::string MaximaProcessor::getYamlDocumentString(){
     return std::string(yamlDocument_.c_str());
 }

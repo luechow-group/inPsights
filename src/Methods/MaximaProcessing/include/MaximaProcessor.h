@@ -12,10 +12,10 @@
 #include <Statistics.h>
 #include <VoxelCube.h>
 
-class EnergyCalculator {
+class MaximaProcessor {
 public:
 
-    EnergyCalculator(YAML::Emitter& yamlDocument, const std::vector<Sample> &samples, AtomsVector atoms);
+    MaximaProcessor(YAML::Emitter& yamlDocument, const std::vector<Sample> &samples, AtomsVector atoms);
 
     unsigned long addReference(const Reference &reference);
 
