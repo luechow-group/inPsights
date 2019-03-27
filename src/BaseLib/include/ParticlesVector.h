@@ -9,16 +9,16 @@
 #include "Particle.h"
 #include "PositionsVector.h"
 #include "TypesVector.h"
-#include <vector>
 #include <yaml-cpp/yaml.h>
 #include <vector>
+#include <memory>
 
 template<typename Type>
-class ParticlesVector : public ISliceable{
+class ParticlesVector : public AbstractVector{
 public:
 
     ParticlesVector()
-            : ISliceable(0),
+            : AbstractVector(0),
               positionsVector_(),
               typesVector_(0),
               linkedParticles_(0) {
@@ -26,7 +26,7 @@ public:
     }
 
     ParticlesVector(const PositionsVector &positionsVector)
-            : ISliceable(positionsVector.numberOfEntities()),
+            : AbstractVector(positionsVector.numberOfEntities()),//ISliceable(positionsVector.numberOfEntities()),
               positionsVector_(positionsVector),
               typesVector_(numberOfEntities()),
               linkedParticles_(0) {
@@ -35,7 +35,7 @@ public:
 
     ParticlesVector(const PositionsVector &positionsVector,
                     const TypesVector<Type> &typesVector)
-            : ISliceable(positionsVector.numberOfEntities()),
+            : AbstractVector(positionsVector.numberOfEntities()),//ISliceable(positionsVector.numberOfEntities()),
               positionsVector_(positionsVector),
               typesVector_(typesVector),
               linkedParticles_(0) {
@@ -48,25 +48,11 @@ public:
     ParticlesVector(const ParticlesVector& pv)
             : ParticlesVector(pv.positionsVector(),pv.typesVector()) {}
 
-
-    ParticlesVector& slice(const Interval& interval, const Reset& resetType = Reset::Automatic /*TODO makes no sense here*/) {
-        setSlice(interval,resetType);
-        typesVector().slice(interval,resetType);
-        positionsVector().slice(interval,resetType);
-
-        //TODO CAREFUL WITH RESET
-        return *this;
-    }
-
     void initializeLinkedParticles(){
         for (long i = 0; i < numberOfEntities(); ++i) {
             linkedParticles_.emplace_back(std::make_shared<LinkedParticle<Type>>(
                     positionsVector_.dataRef(i), &typesVector_.dataRef(i)[0]));//TODO or give LinkedParticle a VectorXi(1) ref?
         }
-    }
-
-    ParticlesVector& entity(long i, const Reset& resetType = Reset::Automatic) {
-        return slice(Interval(i), resetType);
     }
 
     ParticlesVector(std::vector<Particle<Type>> particles)
@@ -124,11 +110,6 @@ public:
         this->insert(particle,numberOfEntities());
     }
 
-    void permute(const Eigen::PermutationMatrix<Eigen::Dynamic> &permutation, const Usage &usage) {
-        positionsVector_.permute(permutation,usage);
-        typesVector_.permute(permutation,usage);
-    }
-
     void permute(const Eigen::PermutationMatrix<Eigen::Dynamic> &permutation) override {
         positionsVector_.permute(permutation);
         typesVector_.permute(permutation);
@@ -144,9 +125,8 @@ public:
     }
 
     bool operator==(const ParticlesVector<Type> &other) const {
-        return ISliceable::operator==(other)
-                && (typesVector() == other.typesVector())
-                && (positionsVector() == other.positionsVector());
+        return (typesVector() == other.typesVector())
+        && (positionsVector() == other.positionsVector());
     }
 
     bool operator!=(const ParticlesVector<Type> &other) const {
@@ -163,6 +143,10 @@ public:
 using TypedParticlesVector = ParticlesVector<int>;
 using ElectronsVector = ParticlesVector<Spin>;
 using AtomsVector = ParticlesVector<Element>;
+
+using LinkedTypedParticle = LinkedParticle<int>;
+using LinkedElectron = LinkedParticle<Spin>;
+using LinkedAtoms = LinkedParticle<Element>;
 
 namespace YAML {
     template<typename Type> struct convert<ParticlesVector<Type>> {

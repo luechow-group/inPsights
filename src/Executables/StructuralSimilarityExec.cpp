@@ -50,11 +50,10 @@ int main(int argc, char *argv[]) {
     std::cout << atomsVector<< std::endl;
 
     // Settings
-    ExpansionSettings::defaults();
-    ExpansionSettings::mode = ExpansionSettings::Mode::alchemical;
-    ExpansionSettings::Alchemical::pairSimilarities[{int(Spin::alpha),int(Spin::beta)}] = 0.5;
+    Settings::mode = Settings::Mode::alchemical;
+    Settings::Alchemical::pairSimilarities[{int(Spin::alpha),int(Spin::beta)}] = 0.5;
     ParticleKit::create(atomsVector,importer.getMaximaStructure(1,1));
-    std::cout << ExpansionSettings::toString() << "\n" << ParticleKit::toString() << std::endl;
+    std::cout << Settings::toString() << "\n" << ParticleKit::toString() << std::endl;
 
     // Benchmark
     /*for (unsigned i = 1; i <= 14; ++i) {
@@ -81,13 +80,12 @@ int main(int argc, char *argv[]) {
     std::cout << electronsVectors << std::endl;
 
     // Settings
-    ExpansionSettings::defaults();
-    ExpansionSettings::Radial::nmax = nmax;
-    ExpansionSettings::Angular::lmax = lmax;
-    ExpansionSettings::mode = ExpansionSettings::Mode::alchemical;
-    ExpansionSettings::Alchemical::pairSimilarities[{int(Spin::alpha),int(Spin::beta)}] = 0.5;
+    Settings::Radial::nmax = nmax;
+    Settings::Angular::lmax = lmax;
+    Settings::mode = Settings::Mode::alchemical;
+    Settings::Alchemical::pairSimilarities[{int(Spin::alpha),int(Spin::beta)}] = 0.5;
     ParticleKit::create(atomsVector,importer.getMaximaStructure(1,1));
-    std::cout << ExpansionSettings::toString() << "\n" << ParticleKit::toString() << std::endl;
+    std::cout << Settings::toString() << "\n" << ParticleKit::toString() << std::endl;
 
     std::vector<MolecularSpectrum> spectra(numberOfSuperstructures);
     printf("Spectra to calculate: %lu\n",spectra.size());

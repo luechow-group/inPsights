@@ -4,7 +4,8 @@
 
 #include <InPsightsWidget.h>
 #include <QApplication>
-#include <Logger.h>
+#include <memory>
+#include <spdlog/spdlog.h>
 
 int main(int argc, char *argv[]) {
 
@@ -15,29 +16,25 @@ int main(int argc, char *argv[]) {
     app.setWindowIcon(QIcon(":inPsightsIcon.png"));
     app.setApplicationName("inPsights");
 
-    Logger::initialize();
-    spdlog::get(Logger::name)->info("Welcome to inPsights!");
+    spdlog::info("Welcome to inPsights!");
 
-
-    new InPsightsWidget();
+    auto widget = std::make_unique<InPsightsWidget>();
 
     return QApplication::exec();
 
     /* TODO
-     * METHOD
-     * - spatial permutations (by value range or struct sim)
-     * BASELIB
-     * - test linkedParticles
-     * GUI
-     * - state machine for buttons
-     * - energy view
-     * - mouse events
-     *  - energy view triggers atom hightlight
-     * - dotted and dashed lines
-     * - show energies
-     * - show eigenvectors (.wf needed)
-     * - load menu
-     * - screenshot button
-     * - camera reset and settings in MoleculeWidget
+     *  METHOD
+     *  - spatial permutations (by value range or struct sim)
+     *  BASELIB
+     *  - test linkedParticles
+     *  GUI
+     *  - bonds and spinCorrelations together lead to program crash (selecting correlations when bonds are displayed and vice versa)
+     *  - state machine for buttons
+     *  - mouse events
+     *  - dotted and dashed lines
+     *  - show eigenvectors (.wf needed)
+     *  - load menu
+     *  - screenshot button
+     *  - axis, camera reset and settings in MoleculeWidget
      */
 }

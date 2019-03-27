@@ -5,16 +5,13 @@
 #ifndef INPSIGHTS_INPSIGHTSWIDGET_H
 #define INPSIGHTS_INPSIGHTSWIDGET_H
 
-#include <Logger.h>
 #include <MoleculeWidget.h>
-#include <QWidget>
+#include <MaximaProcessingWidget.h>
 
 #include <QCheckBox>
 #include <QSlider>
 #include <QTreeWidget>
 #include <ClusterData.h>
-
-class QSplashScreen;
 
 class InPsightsWidget : public QWidget {
 Q_OBJECT
@@ -25,13 +22,13 @@ public slots:
     void selectedStructure(QTreeWidgetItem *item, int column);
     void onAtomsChecked(int stateId);
     void onBondsChecked(int stateId);
-    void onSpinConnectionsChecked(int stateId);
-    void onSpinCorrelationsChecked(int stateId);
+    void onSpinConnectionsChecked(int stateId = 0);
+    void onSpinCorrelationsChecked(int stateId= 0);
     void onSpinCorrelationsSliderChanged(int value);
 
 private:
-    std::shared_ptr<spdlog::logger> console;
     MoleculeWidget *moleculeWidget;
+    MaximaProcessingWidget *maximaProcessingWidget;
     QCheckBox *atomsCheckBox, *bondsCheckBox, *spinConnectionsCheckBox, *spinCorrelationsCheckBox;
     QSlider *spinCorrelationSlider;
     QLabel *spinCorrelationSliderLabel;
@@ -45,6 +42,7 @@ private:
     void updateSpinCorrelationSliderLabel(int value);
     void connectSignals();
     void createWidget();
+    void redrawSpinDecorations();
 };
 
 #endif //INPSIGHTS_INPSIGHTSWIDGET_H

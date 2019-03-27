@@ -9,12 +9,15 @@
 #include "Hungarian.h"
 #include <Metrics.h>
 #include <ParticlesVector.h>
+#include <Interval.h>
 
 namespace HungarianHelper{
 
     Eigen::PermutationMatrix<Eigen::Dynamic> combinePermutations(
             const Eigen::PermutationMatrix<Eigen::Dynamic>& p1,
             const Eigen::PermutationMatrix<Eigen::Dynamic>& p2, bool flipSpinsQ = false);
+
+
 
     template <int positionalNorm = 2>
     Eigen::PermutationMatrix<Eigen::Dynamic> spinSpecificBestMatch(
@@ -45,16 +48,16 @@ namespace HungarianHelper{
             // flip slice intervals
             rhsAlpha = lhsBeta;
             rhsBeta = lhsAlpha;
-        }
+        };
 
         auto costMatrixAlpha = Metrics::positionalDistances<positionalNorm>(
-                PositionsVector(lhsCopy.slice(lhsAlpha).dataRef()),
-                PositionsVector(rhsCopy.slice(rhsAlpha).dataRef()));
+                PositionsVector(lhsCopy.asEigenVector().segment(lhsAlpha.start()*3,lhsAlpha.numberOfEntities()*3)),
+                PositionsVector(rhsCopy.asEigenVector().segment(rhsAlpha.start()*3,rhsAlpha.numberOfEntities()*3)));
         auto bestMatchAlpha = Hungarian<double>::findMatching(costMatrixAlpha);
 
         auto costMatrixBeta = Metrics::positionalDistances<positionalNorm>(
-                PositionsVector(lhsCopy.slice(lhsBeta).dataRef()),
-                PositionsVector(rhsCopy.slice(rhsBeta).dataRef()));
+                PositionsVector(lhsCopy.asEigenVector().segment(lhsBeta.start()*3,lhsBeta.numberOfEntities()*3)),
+                PositionsVector(rhsCopy.asEigenVector().segment(rhsBeta.start()*3,rhsBeta.numberOfEntities()*3)));
         auto bestMatchBeta = Hungarian<double>::findMatching(costMatrixBeta);
 
         if(!flipSpinsQ)
@@ -62,7 +65,6 @@ namespace HungarianHelper{
         else
             return combinePermutations(bestMatchBeta, bestMatchAlpha, true);
     };
-
 };
 
 namespace Metrics{
@@ -89,7 +91,7 @@ namespace Metrics{
         auto costMatrix = Metrics::positionalDistances<positionalNorm>(permutee,reference);
         Eigen::PermutationMatrix<Eigen::Dynamic> bestMatch = Hungarian<double>::findMatching(costMatrix);
 
-        return {bestMatchNorm<overallNorm, positionalNorm>(permutee, bestMatch, reference), bestMatch};
+        return {bestMatchNorm<overallNorm, positionalNorm>(permutee, bestMatch, reference), std::move(bestMatch)};
     }
 
     template<int overallNorm = Eigen::Infinity, int positionalNorm = 2>
@@ -120,7 +122,7 @@ namespace Metrics{
         return {bestMatchNorm<overallNorm, positionalNorm>(
                 permutee.positionsVector(), spinSpecificBestMatch,
                 reference.positionsVector()),
-                spinSpecificBestMatch};
+                std::move(spinSpecificBestMatch)};
     }
 
     template<int overallNorm = Eigen::Infinity, int positionalNorm = 2>

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.11)
 
 project(GUI CXX)
 
@@ -45,10 +45,12 @@ set(HEADER_FILES
         include/ParticlesVector3D.h
         include/IConnection.h
         include/Bonds3D.h
-        include/SpinConnections3D.h
         include/SpinCorrelations3D.h
         include/SameSpinConnections3D.h
-        include/MaximaTreeWidgetItem.h
+        include/IntegerSortedTreeWidgetItem.h
+        include/MaximaProcessingWidget.h
+        include/SurfaceMesh.h
+        include/Surface.h
         )
 
 set(SOURCE_FILES
@@ -66,11 +68,13 @@ set(SOURCE_FILES
         source/ParticlesVector3D.cpp
         source/Line3D.cpp
         source/Bonds3D.cpp
-        source/SpinConnections3D.cpp
         source/SpinCorrelations3D.cpp
         source/InPsightsWidget.cpp
         source/SameSpinConnections3D.cpp
-        source/MaximaTreeWidgetItem.cpp
+        source/IntegerSortedTreeWidgetItem.cpp
+        source/MaximaProcessingWidget.cpp
+        source/SurfaceMesh.cpp
+        source/Surface.cpp
         )
 
 add_library(${PROJECT_NAME} STATIC
@@ -84,8 +88,9 @@ target_include_directories(${PROJECT_NAME}
         )
 
 target_link_libraries(${PROJECT_NAME}
-        BaseLib #includes eigen already
-        EnergyPartitioning
+        BaseLib # includes eigen
+        MaximaProcessing
+        VoxelProcessing # includes dualmc
         Qt5::Core
         Qt5::Gui
         Qt5::Widgets
@@ -95,4 +100,4 @@ target_link_libraries(${PROJECT_NAME}
         Qt5::Charts
         )
 
-add_gtest_subdirectory_with_dependency(tests "gtest;pthread")
+add_gtest_subdirectory_with_dependency(tests "gmock;pthread")

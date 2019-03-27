@@ -2,7 +2,7 @@
 // Created by Michael Heuer on 17.05.18.
 //
 
-#include <gtest/gtest.h>
+#include <gmock/gmock.h>
 #include <Eigen/Core>
 #include "Sinkhorn.h"
 
@@ -14,7 +14,7 @@ public:
     double eps = std::numeric_limits<double>::epsilon()*1e2;
 
     Eigen::MatrixXd sinkhornSoapxxReference(const Eigen::MatrixXd& matrix,
-                                            double gamma = ExpansionSettings::gamma,
+                                            double gamma = SOAPExpansion::settings.gamma(),
                                             double eps = std::numeric_limits<double>::epsilon()) {
         long nx = matrix.rows();
         long ny = matrix.cols();
@@ -65,7 +65,7 @@ public:
     }
 
     Eigen::MatrixXd sinkhornSoapPythonReference(const Eigen::MatrixXd& matrix,
-                                                double gamma = ExpansionSettings::gamma,
+                                                double gamma = SOAPExpansion::settings.gamma(),
                                                 double eps = std::numeric_limits<double>::epsilon()) {
 /* Sinkhorn algorithm */
         auto MAX_TOTAL = matrix.rows();
@@ -121,7 +121,6 @@ void doublyStochasticCheck(const Eigen::MatrixXd& regularizedMatrix,
     long N = regularizedMatrix.rows();
     long M = regularizedMatrix.cols();
 
-    double totalSum = 0;
     for (unsigned i = 0; i < N; ++i) {
         ASSERT_NEAR(regularizedMatrix.row(i).sum(), 1./double(N), eps);
     }

@@ -8,23 +8,20 @@
 #include "InsertableVector.h"
 #include <Eigen/Core>
 
-
 class PositionsVector : public InsertableVector<double>{
 public:
     PositionsVector();
     explicit PositionsVector(const Eigen::VectorXd& positions);
 
-    PositionsVector& entity(long i, const Reset& resetType = Reset::Automatic);
-    PositionsVector& slice(const Interval& interval, const Reset& resetType = Reset::Automatic);
-
     void insert(const Eigen::Vector3d& position, long i);
     void append(const Eigen::Vector3d& position);
     void prepend(const Eigen::Vector3d& position);
 
-    Eigen::Vector3d position(long i, const Usage& usage = Usage::Standard);
-    void translate(const Eigen::Vector3d& shift, const Usage& usage = Usage::Standard);
-    void rotateAroundOrigin(double angle, const Eigen::Vector3d &axisDirection, const Usage& usage = Usage::Standard);
-    void rotate(double angle, const Eigen::Vector3d &center, const Eigen::Vector3d &axisDirection, const Usage& usage = Usage::Standard);
+    Eigen::Vector3d position(long i);
+
+    void translate(const Eigen::Vector3d& shift);
+    void rotateAroundOrigin(double angle, const Eigen::Vector3d &axisDirection);
+    void rotate(double angle, const Eigen::Vector3d &center, const Eigen::Vector3d &axisDirection);
 
     Eigen::Vector3d operator[](long i) const;
 

@@ -139,6 +139,11 @@ namespace Statistics {
     };
 }
 
+using SingleValueStatistics = Statistics::RunningStatistics<Eigen::Matrix<double,1,1>, unsigned>;
+using VectorStatistics = Statistics::RunningStatistics<Eigen::VectorXd, unsigned>;
+using MatrixStatistics = Statistics::RunningStatistics<Eigen::MatrixXd, unsigned>;
+using TriangularMatrixStatistics = Statistics::RunningStatistics<Eigen::MatrixXd, unsigned, true>;
+
 namespace YAML {
 
     template<typename Derived, typename WeightType, bool triangularExport = false>

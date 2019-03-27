@@ -2,7 +2,8 @@
 // Created by Michael Heuer on 03.05.18.
 //
 
-#include "AngularBasis.h"
+#include <AngularBasis.h>
+#include <ExpansionSettings.h>
 #include <SpecialMathFunctions/BoostSphericalHarmonics.h>
 #include <boost/math/special_functions/spherical_harmonic.hpp>
 
@@ -18,8 +19,8 @@ std::complex<double> AngularBasis::computeCoefficient(unsigned l, int m, double 
     assert(theta >= 0. && theta <= M_PI && "theta must be in the interval [0,pi]");
     assert(phi >= 0. && phi <= 2*M_PI && "phi must be in the interval [0,2*pi]");
 
-    assert(l <= ExpansionSettings::Angular::lmax && l >=0 && "l must be in the interval [0,lmax]");
-    assert(unsigned(abs(m)) <= ExpansionSettings::Angular::lmax && "l must be in the interval [-lmax,lmax]");
+    assert(l <= Angular::settings.lmax() && l >=0 && "l must be in the interval [0,lmax]");
+    assert(unsigned(abs(m)) <= Angular::settings.lmax() && "l must be in the interval [-lmax,lmax]");
 
 
     //TODO? use real spherical harmonic?

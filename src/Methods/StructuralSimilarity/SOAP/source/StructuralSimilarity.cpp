@@ -7,11 +7,17 @@
 namespace StructuralSimilarity{
 
     Eigen::MatrixXd correlationMatrix(const MolecularSpectrum& A, const MolecularSpectrum& B) {
+        assert(ParticleKit::isSubsetQ(A.molecule_)
+               && "The underlying molecule must be a subset of the selected particle kit.");
+        assert(ParticleKit::isSubsetQ(B.molecule_)
+               && "The underlying molecule must be a subset of the selected particle kit.");
+
         auto N = ParticleKit::numberOfParticles();
         Eigen::MatrixXd C = Eigen::MatrixXd::Zero(N, N);
         NumberedType<int> numberedType_i, numberedType_j;
         TypeSpecificNeighborhoodsAtOneCenter expA,expB;
-        #pragma omp parallel for default(none) shared(N,A,B,C,ExpansionSettings::zeta) private(numberedType_i,numberedType_j,expA,expB)
+
+        #pragma omp parallel for default(none) shared(N,A,B,C,SOAPExpansion::settings) private(numberedType_i,numberedType_j,expA,expB)
         for (unsigned i = 0; i < N; ++i) {
             //printf("Thread %d calculates correlation matrix elements\n", omp_get_thread_num());
             numberedType_i = ParticleKit::getNumberedTypeByIndex(i);
@@ -24,19 +30,22 @@ namespace StructuralSimilarity{
                 if (!B.molecule_.findIndexByNumberedType(numberedType_j).first)
                     continue;
                 expB = B.molecularCenters_.find(numberedType_j)->second;
-                C(i, j) = LocalSimilarity::kernel(expA, expB,ExpansionSettings::zeta);
+                C(i, j) = LocalSimilarity::kernel(expA, expB, SOAPExpansion::settings.zeta());
             }
         }
         return C;
     }
 
     Eigen::MatrixXd selfCorrelationMatrix(const MolecularSpectrum &A) {
+        assert(ParticleKit::isSubsetQ(A.molecule_)
+               && "The underlying molecule must be a subset of the selected particle kit.");
+
         auto N = ParticleKit::numberOfParticles();
         Eigen::MatrixXd C = Eigen::MatrixXd::Zero(N, N);
 
         NumberedType<int> numberedType_i, numberedType_j;
         TypeSpecificNeighborhoodsAtOneCenter expA,expB;
-        #pragma omp parallel for default(none) shared(N,A,C,ExpansionSettings::zeta) private(numberedType_i,numberedType_j,expA,expB)
+        #pragma omp parallel for default(none) shared(N,A,C, SOAPExpansion::settings) private(numberedType_i,numberedType_j,expA,expB)
         for (unsigned i = 0; i < N; ++i) {
             //printf("Thread %d calculates selfcorrelation matrix elements\n", omp_get_thread_num());
             numberedType_i = ParticleKit::getNumberedTypeByIndex(i);
@@ -48,7 +57,7 @@ namespace StructuralSimilarity{
                 if (!A.molecule_.findIndexByNumberedType(numberedType_j).first) continue;
                 expB = A.molecularCenters_.find(numberedType_j)->second;
 
-                C(i,j) = LocalSimilarity::kernel(expA, expB,ExpansionSettings::zeta);
+                C(i,j) = LocalSimilarity::kernel(expA, expB, SOAPExpansion::settings.zeta());
             }
         }
         // symmetrize the matrix

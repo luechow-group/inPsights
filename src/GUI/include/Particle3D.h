@@ -9,6 +9,7 @@
 #include <ElementInfo.h>
 #include "Sphere.h"
 #include "GuiHelper.h"
+#include <memory>
 
 template <typename Type>
 class Particle3D : public LinkedParticle<Type>, public Sphere {

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.11)
 
 project(SOAP CXX)
 
@@ -50,4 +50,4 @@ target_link_libraries(${PROJECT_NAME}
         BaseLib
         )
 
-add_gtest_subdirectory_with_dependency(tests "gtest;pthread")
+add_gtest_subdirectory_with_dependency(tests "gmock;pthread")

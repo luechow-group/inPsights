@@ -18,10 +18,17 @@ public:
 
     // unsigned long dummy is there to be specialized in TypesVector<Spin::SpinTypes>
     TypesVector(unsigned long size = 0, unsigned long dummy = 0)
-    : InsertableVector<int>(long(size))
-    {
-        resetRef();
+    : InsertableVector<int>(long(size)) {}
+
+    TypesVector(const Eigen::VectorXi &types)
+            : TypesVector() {
+        auto size = types.size();
+        assert(size >= 0 && "Vector cannot be empty");
+
+        AbstractVector::setNumberOfEntities(size);
+        data_ = types;
     }
+
 
     TypesVector(std::vector<Type> types)
     : InsertableVector<int>(0)
@@ -31,15 +38,6 @@ public:
             assert(int(type) <= int(Elements::last()));
             this->append(type);
         }
-        resetRef();
-    }
-
-    TypesVector<Type>& slice(const Interval& interval, const Reset& resetType = Reset::Automatic) {
-        SliceableDataVector<int>::slice(interval,resetType); // template specialization necessary?
-        return *this;
-    }
-    TypesVector<Type>& entity(long i, const Reset& resetType = Reset::Automatic) {
-        return slice(Interval(i), resetType);
     }
 
     void prepend(const Type& type) { insert(type,0); }
@@ -50,21 +48,16 @@ public:
         InsertableVector<int>::insert(elem,i);
     }
 
-    Type type(long i, const Usage& usage = Usage::NotFinished){
-        if( resetType_ == Reset::Automatic
-            || (resetType_ == Reset::OnFinished && usage == Usage::Finished))
-            return RETURN_AND_RESET<TypesVector<Type>,Type>(*this,dataRef().segment(calculateIndex(i),entityLength())).returnAndReset();
-        else
-            return dataRef().segment(calculateIndex(i),entityLength());
+    Type type(long i) {
+        return operator[](i);
     }
 
     Type operator[](long i) const {
         return static_cast<Type>(data_[calculateIndex(i)]);
     }
-
-    //TODO make double template?
+    
     bool operator==(const TypesVector<Type> &other) const {
-        return SliceableDataVector<int>::operator==(other);
+        return DataVector<int>::operator==(other);
     }
 
     bool operator!=(const TypesVector<Type> &other) const {
@@ -129,7 +122,7 @@ public:
                 if (currentType == lastType)
                     count++;
                 else {
-                    typeCountsPair.push_back({Type(lastType), count}); // cast redundant?
+                    typeCountsPair.push_back({Type(lastType), count});
                     count = 1;
                 }
                 // treat last element

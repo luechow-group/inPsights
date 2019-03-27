@@ -18,7 +18,7 @@ namespace LocalSimilarity {
 
     double kernel(const Environment &e1,
                   const Environment &e2,
-                  double zeta = ExpansionSettings::zeta);
+                  double zeta = SOAPExpansion::settings.zeta());
 
     double unnormalizedSelfKernel(const TypeSpecificNeighborhoodsAtOneCenter &expansions);
     double unnormalizedKernel(const TypeSpecificNeighborhoodsAtOneCenter &expansions1,
@@ -26,11 +26,11 @@ namespace LocalSimilarity {
 
     double kernel(const TypeSpecificNeighborhoodsAtOneCenter &expansions1,
                   const TypeSpecificNeighborhoodsAtOneCenter &expansions2,
-                  double zeta = ExpansionSettings::zeta);
+                  double zeta = SOAPExpansion::settings.zeta());
 
     double kernelDistance(const TypeSpecificNeighborhoodsAtOneCenter &expansions1,
                           const TypeSpecificNeighborhoodsAtOneCenter &expansions2,
-                          double zeta = ExpansionSettings::zeta);
+                          double zeta = SOAPExpansion::settings.zeta());
 
     namespace internal {
         double typeAgnostic(const TypeSpecificNeighborhoodsAtOneCenter &expansions);

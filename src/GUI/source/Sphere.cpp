@@ -1,16 +1,15 @@
-#include <utility>
-#include <Sphere.h>
-
-
 //
 // Created by heuer on 06.12.16.
 //
 
-#include "Sphere.h"
+#include <utility>
+#include <Sphere.h>
 
 Sphere::Sphere(Qt3DCore::QEntity *root, QColor color, const QVector3D location, const float radius)
         :
         Abstract3dObject(root, std::move(color), location),
+        highlightedQ_(false),
+        selectedQ_(false),
         radius_(radius),
         mesh_(new Qt3DExtras::QSphereMesh(this)) {
 
@@ -20,15 +19,28 @@ Sphere::Sphere(Qt3DCore::QEntity *root, QColor color, const QVector3D location, 
 
     addComponent(mesh_);
 
-    QObject::connect(picker, &Qt3DRender::QObjectPicker::containsMouseChanged, this, &Sphere::highlight);
+    //QObject::connect(picker, &Qt3DRender::QObjectPicker::containsMouseChanged, this, &Sphere::onHighlighted);
 }
 
-void Sphere::highlight(bool highlightQ) {
-    if(highlightQ) {
-        oldAlpha_ = material->alpha();
-        material->setAlpha(1.0f);
-    } else {
-        material->setAlpha(oldAlpha_);
-    }
+void Sphere::onHighlighted(bool highlightQ) {
+    highlightedQ_ = highlightQ;
+    update();
+}
 
+void Sphere::onSelected(bool selectedQ) {
+    selectedQ_ = selectedQ;
+    update();
+}
+
+void Sphere::update() {
+    if(highlightedQ_) {
+        mesh_->setRadius(radius_ * 1.25f);
+        material->setAmbient(QColor(0, 255, 255));
+    } else if (selectedQ_) {
+        mesh_->setRadius(radius_);
+        material->setAmbient(QColor(255, 255, 0));
+    } else {
+        mesh_->setRadius(radius_);
+        material->setAmbient(color());
+    }
 }

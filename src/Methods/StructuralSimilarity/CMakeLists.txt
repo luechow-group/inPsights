@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.11)
 
 project(StructuralSimilarity CXX)
 
@@ -13,12 +13,20 @@ set(HEADER_FILES
         include/Hungarian.h
         include/SimpleSorter.h
         include/HungarianHelper.h
+        include/GraphAnalysis.h
+        include/SpinPairClassification.h
+        include/Motif.h
+        include/Motifs.h
         )
 
 set(SOURCE_FILES
         source/QuaternionFit.cpp
         source/SimpleSorter.cpp
         source/HungarianHelper.cpp
+        source/GraphAnalysis.cpp
+        source/SpinPairClassification.cpp
+        source/Motif.cpp
+        source/Motifs.cpp
         )
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES})

@@ -2,7 +2,7 @@
 // Created by heuer on 06.04.17.
 //
 
-#include "../include/ElectronicWaveFunctionProblem.h"
+#include <ElectronicWaveFunctionProblem.h>
 #include <iomanip>
 
 ElectronicWaveFunctionProblem::ElectronicWaveFunctionProblem()
@@ -11,7 +11,7 @@ ElectronicWaveFunctionProblem::ElectronicWaveFunctionProblem()
         gradientCallCount_(0),
         wf_(ElectronicWaveFunction::getEmpty()),
         optimizationPath_(wf_.getSpinTypesVector()),
-        electronCoordinateIndicesThatWereNaN_(Eigen::Matrix<bool,Eigen::Dynamic,1>(wf_.getNumberOfElectrons()*3).setConstant(false)),
+        electronCoordinateIndicesThatWereNaN_(Eigen::VectorXb(wf_.getNumberOfElectrons()*3).setConstant(false)),
         indicesOfElectronsNotAtNuclei_(0),
         indicesOfElectronsAtNuclei_(0)
 {}
@@ -22,7 +22,7 @@ ElectronicWaveFunctionProblem::ElectronicWaveFunctionProblem(const std::string &
         gradientCallCount_(0),
         wf_(ElectronicWaveFunction::getInstance(fileName)),
         optimizationPath_(wf_.getSpinTypesVector()),
-        electronCoordinateIndicesThatWereNaN_(Eigen::Matrix<bool,Eigen::Dynamic,1>(wf_.getNumberOfElectrons()*3).setConstant(false)),
+        electronCoordinateIndicesThatWereNaN_(Eigen::VectorXb(wf_.getNumberOfElectrons()*3).setConstant(false)),
         indicesOfElectronsNotAtNuclei_(0),
         indicesOfElectronsAtNuclei_(0),
         putElectronsIntoNuclei_(putElectronsIntoNuclei),

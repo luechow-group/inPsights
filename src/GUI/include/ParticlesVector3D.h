@@ -8,7 +8,6 @@
 #include <Qt3DCore/QEntity>
 #include <ParticlesVector.h>
 #include "Particle3D.h"
-#include <IConnection.h>
 
 template <typename Type>
 class ParticlesVector3D : public ParticlesVector<Type>, public Qt3DCore::QEntity {
@@ -47,7 +46,6 @@ public slots:
 
     Qt3DCore::QEntity* connections_, *correlations_;
     std::vector<std::shared_ptr<Particle3D<Type>>> particles3D_;
-    std::vector<IConnection*> iConnections_;//TODO manage creation of connections
 };
 
 using AtomsVector3D = ParticlesVector3D<Element>;

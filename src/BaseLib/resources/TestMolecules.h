@@ -34,6 +34,11 @@ namespace TestMolecules {
                 ElectronsVector({{Spin::alpha, {0, 0, 0.37}},
                                  {Spin::alpha, {0, 0, 0.0}},
                                  {Spin::beta,  {0, 0,-0.37}}})};
+        const MolecularGeometry spinFlipped = {
+                AtomsVector(),
+                ElectronsVector({{Spin::beta,  {0, 0, 0.37}},
+                                 {Spin::beta,  {0, 0, 0.0}},
+                                 {Spin::alpha, {0, 0,-0.37}}})};
     }
 
     namespace eightElectrons {
@@ -47,6 +52,41 @@ namespace TestMolecules {
                                  {Spin::beta,  {-1,-1, 0}},
                                  {Spin::beta,  { 0,-1, 0}},
                                  {Spin::beta,  { 1,-1, 0}}})};
+
+
+        const MolecularGeometry cube = {
+                AtomsVector(),
+                ElectronsVector({{Spin::alpha, { 1, 1, 1}},
+                                 {Spin::beta,  { 1, 1,-1}},
+                                 {Spin::alpha, {-1,-1, 1}},
+                                 {Spin::beta,  {-1,-1,-1}},
+                                 {Spin::alpha, { 1,-1,-1}},
+                                 {Spin::beta,  { 1,-1, 1}},
+                                 {Spin::alpha, {-1, 1,-1}},
+                                 {Spin::beta,  {-1, 1, 1}}
+                                })};
+    }
+    namespace sixteenElectrons {
+        const MolecularGeometry twoNestedCubes = {
+                AtomsVector(),
+                ElectronsVector({{Spin::alpha,{ 1, 1, 1}},
+                                 {Spin::beta, { 1, 1,-1}},
+                                 {Spin::alpha,{-1,-1, 1}},
+                                 {Spin::beta, {-1,-1,-1}},
+                                 {Spin::alpha,{ 1,-1,-1}},
+                                 {Spin::beta, { 1,-1, 1}},
+                                 {Spin::alpha,{-1, 1,-1}},
+                                 {Spin::beta, {-1, 1, 1}},
+
+                                 {Spin::beta, { 2, 2, 2}},
+                                 {Spin::alpha,{ 2, 2,-2}},
+                                 {Spin::beta, {-2,-2, 2}},
+                                 {Spin::alpha,{-2,-2,-2}},
+                                 {Spin::beta, { 2,-2,-2}},
+                                 {Spin::alpha,{ 2,-2, 2}},
+                                 {Spin::beta, {-2, 2,-2}},
+                                 {Spin::alpha,{-2, 2, 2}}
+                })};
     }
 
 
@@ -115,6 +155,13 @@ namespace TestMolecules {
                              {Element::O,{0,0, 1}},
                              {Element::O,{0,0,-1}}}),
                 ElectronsVector()};
+
+        const MolecularGeometry nucleiPermuted = {
+                AtomsVector({{Element::O,{0,0,-1}},
+                             {Element::C,{0,0, 0}},
+                             {Element::O,{0,0, 1}}}),
+                ElectronsVector()};
+
         const MolecularGeometry isolatedNuclei = {
                 AtomsVector({{Element::C,{0,0, 0}},
                              {Element::O,{0,0, 10}},

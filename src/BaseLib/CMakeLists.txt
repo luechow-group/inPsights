@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.11)
 
 project(BaseLib CXX)
 
@@ -40,13 +40,14 @@ set(HEADER_FILES
         include/CoulombPotential.h
         include/BinaryFileReader.h
         include/Interval.h
-        include/ReturnAndReset.h
-        include/SliceableDataVector.h
+        include/DataVector.h
         include/InsertableVector.h
-        include/Logger.h
         include/Statistics.h
         include/SpinCorrelation.h
-        include/AtomsVectorLinkedElectronsVector.h
+        include/LinkedParticle.h
+        include/ISettings.h
+        include/Property.h
+        include/Varname.h
         )
 
 set(SOURCE_FILES
@@ -68,9 +69,7 @@ set(SOURCE_FILES
         source/SpecialMathFunctions/BoostSphericalHarmonics.cpp
         source/SpecialMathFunctions/ModifiedSphericalBesser1stKind.cpp
         source/SpecialMathFunctions/Gaussian.cpp
-        source/Logger.cpp
         source/BinaryFileReader.cpp
-        source/AtomsVectorLinkedElectronsVector.cpp
         )
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES})

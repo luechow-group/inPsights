@@ -2,6 +2,8 @@
 // Created by Michael Heuer on 15.05.18.
 //
 
+#include <ParticleKit.h>
+
 #include "ParticleKit.h"
 #include "ElementInfo.h"
 
@@ -112,6 +114,64 @@ namespace ParticleKit {
         ParticleKit::electronKit.second = numberOfBetaElectrons;
     };
 
+    SpinTypesVector toSpinTypesVector() {
+        return {ParticleKit::electronKit.first, ParticleKit::electronKit.second};
+    }
+
+    ElementTypesVector toElementTypesVector() {
+        ElementTypesVector elementTypesVector;
+        for (const auto &elementCount : atomKit)
+            for (unsigned i = 0; i < elementCount.second; ++i)
+                elementTypesVector.append(elementCount.first);
+        return elementTypesVector;
+    }
+
+
+    Eigen::PermutationMatrix<Eigen::Dynamic> fromKitPermutation(const ElectronsVector &electronsVector) {
+        assert(ParticleKit::isSubsetQ(electronsVector));
+
+        Eigen::VectorXi indices(electronsVector.numberOfEntities());
+
+        int index = 0;
+        for (long i = 0; i < electronsVector.numberOfEntities(); ++i)
+            if (electronsVector[i].type() == Spin::alpha) {
+                indices[index] = i;
+                index++;
+            }
+
+        for (long i = 0; i < electronsVector.numberOfEntities(); ++i)
+            if( electronsVector[i].type() == Spin::beta) {
+                indices[index] = i;
+                index++;
+            }
+
+        return Eigen::PermutationMatrix<Eigen::Dynamic>(indices);
+    }
+
+    Eigen::PermutationMatrix<Eigen::Dynamic> toKitPermutation(const ElectronsVector &electronsVector) {
+        return fromKitPermutation(electronsVector).inverse();
+    }
+
+    Eigen::PermutationMatrix<Eigen::Dynamic> fromKitPermutation(const AtomsVector &atomsVector) {
+        assert(ParticleKit::isSubsetQ(atomsVector));
+
+        Eigen::VectorXi indices(atomsVector.numberOfEntities());
+        auto typeCounts = atomsVector.typesVector().countTypes();
+
+        int index = 0;
+        for (const auto &typeCount : typeCounts)
+            for (long i = 0; i < atomsVector.numberOfEntities(); ++i)
+                if (atomsVector[i].type() == typeCount.first) {
+                    indices[index] = i;
+                    index++;
+                }
+
+        return Eigen::PermutationMatrix<Eigen::Dynamic>(indices);
+    }
+
+    Eigen::PermutationMatrix<Eigen::Dynamic> toKitPermutation(const AtomsVector &atomsVector) {
+        return fromKitPermutation(atomsVector).inverse();
+    }
 
     bool isSubsetQ(const AtomsVector &atomsVector) {
         auto countedTypes = atomsVector.typesVector().countTypes();
@@ -132,10 +192,8 @@ namespace ParticleKit {
     bool isSubsetQ(const ElectronsVector &electronsVector) {
         if (electronsVector.typesVector().countOccurence(Spin::alpha) > ParticleKit::electronKit.first)
             return false;
-        else if (electronsVector.typesVector().countOccurence(Spin::beta) > ParticleKit::electronKit.second)
-            return false;
         else
-            return true;
+            return electronsVector.typesVector().countOccurence(Spin::beta) <= ParticleKit::electronKit.second;
     }
 
     bool isSubsetQ(const MolecularGeometry &molecularGeometry) {

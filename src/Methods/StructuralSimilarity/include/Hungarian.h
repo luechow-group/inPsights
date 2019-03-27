@@ -49,7 +49,7 @@ template<typename Scalar>
 class Hungarian {
 public:
     static Eigen::PermutationMatrix<Eigen::Dynamic>
-    findMatching(Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic> &m, Matchtype type = Matchtype::MIN) {
+    findMatching(const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic> &m, Matchtype type = Matchtype::MIN) {
         Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic> n = m; // make a copy of m for reducing
         Eigen::Index dim = n.rows(); // dimension of matrix, used for checking if we've reduced the matrix enough yet
 

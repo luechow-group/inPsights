@@ -4,13 +4,6 @@
 #include "VantagePointTree.h"
 #include <HungarianHelper.h>
 
-namespace Metrics {
-    template <typename Scalar, typename VectorType>
-    Scalar euclideanDistance(const VectorType &p1, const VectorType &p2) {
-        return (p1 - p2).norm();
-    }
-}
-
 template<typename Scalar,
         typename VectorType,
         Scalar (*distance)(const VectorType &,const VectorType &)>

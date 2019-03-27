@@ -199,8 +199,8 @@ TEST_F(AStatisticsTest, YAMLMatrixConversion){
     YAML::Emitter out;
     out << stats;
 
-    auto expectedString = "0:\n  0: [4, 1.154700538379252, 2, 6]\n  1: [8, 2.309401076758503, 4, 12]\n"\
-                          "1:\n  0: [12, 3.464101615137755, 6, 18]\n  1: [16, 4.618802153517007, 8, 24]\n"\
+    auto expectedString = "0:\n  0: [4, 1.1547005383792517, 2, 6]\n  1: [8, 2.3094010767585034, 4, 12]\n"\
+                          "1:\n  0: [12, 3.4641016151377548, 6, 18]\n  1: [16, 4.6188021535170067, 8, 24]\n"\
                           "N: 3";
     ASSERT_STREQ(out.c_str(), expectedString);
     auto loaded = YAML::Load(out.c_str());
@@ -233,10 +233,10 @@ TEST_F(AStatisticsTest, YAMLVectorConversion){
     YAML::Emitter out;
     out << stats;
 
-    auto expectedString = "0: [4, 1.154700538379252, 2, 6]\n"\
-                          "1: [8, 2.309401076758503, 4, 12]\n"\
-                          "2: [12, 3.464101615137755, 6, 18]\n"\
-                          "3: [16, 4.618802153517007, 8, 24]\n"\
+    auto expectedString = "0: [4, 1.1547005383792517, 2, 6]\n"\
+                          "1: [8, 2.3094010767585034, 4, 12]\n"\
+                          "2: [12, 3.4641016151377548, 6, 18]\n"\
+                          "3: [16, 4.6188021535170067, 8, 24]\n"\
                           "N: 3";
     ASSERT_STREQ(out.c_str(), expectedString);
     auto loaded = YAML::Load(out.c_str());
@@ -261,7 +261,7 @@ TEST_F(AStatisticsTest, YAMLVectorConversion){
 }
 
 TEST_F(AStatisticsTest, YAMLConversionTriangularExport){
-    Statistics::RunningStatistics<Eigen::MatrixXd,unsigned,true> stats;
+    TriangularMatrixStatistics stats;
     stats.add(mat1);
     stats.add(mat2);
     stats.add(mat3);
@@ -275,11 +275,11 @@ TEST_F(AStatisticsTest, YAMLConversionTriangularExport){
     YAML::Emitter out;
     out << stats;
     auto expectedString = "0:\n"\
-                          "  1: [8, 2.309401076758503, 4, 12]\n"\
+                          "  1: [8, 2.3094010767585034, 4, 12]\n"\
                           "N: 3";
     ASSERT_STREQ(out.c_str(), expectedString);
     auto loaded = YAML::Load(out.c_str());
-    auto emitterStats = loaded.as<Statistics::RunningStatistics<Eigen::MatrixXd,unsigned,true>>();
+    auto emitterStats = loaded.as<TriangularMatrixStatistics>();
 
     ASSERT_TRUE(emitterStats.mean().isApprox(expectedMean));
     ASSERT_TRUE(emitterStats.standardDeviation().isApprox(expectedStandardDeviation));
@@ -290,7 +290,7 @@ TEST_F(AStatisticsTest, YAMLConversionTriangularExport){
 
     YAML::Node node;
     node = stats;
-    auto nodeStats = node.as<Statistics::RunningStatistics<Eigen::MatrixXd,unsigned,true>>();
+    auto nodeStats = node.as<TriangularMatrixStatistics>();
 
     ASSERT_TRUE(nodeStats.mean().isApprox(expectedMean));
     ASSERT_TRUE(nodeStats.standardDeviation().isApprox(expectedStandardDeviation));

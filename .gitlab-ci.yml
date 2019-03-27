@@ -1,5 +1,4 @@
 
-
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
 
@@ -9,7 +8,7 @@ stages:
 
 
 GNU build:
-  image: registry.git.rwth-aachen.de/luechow-group/inpsights:gnu
+  image: registry.git.rwth-aachen.de/luechow-group/inpsights/gnu:7.3.0
   stage: build
   before_script:
   - export CC=/usr/bin/gcc
@@ -20,7 +19,7 @@ GNU build:
   - mkdir -p cmake-build-debug-gnu
   - cd cmake-build-debug-gnu
   - cmake .. -DCMAKE_BUILD_TYPE=DEBUG -DBUILD_GUI=OFF  -DPFUNIT=OFF
-  - cmake --build . --target inPsightsTests -- -j4
+  - cmake --build . --target inPsightsTests -- -j2
   cache:
     key: "$CI_COMMIT_REF_SLUG-GNU"
     paths:
@@ -28,7 +27,7 @@ GNU build:
     policy: pull-push
 
 Intel build:
-  image: registry.git.rwth-aachen.de/luechow-group/inpsights:intel
+  image: registry.git.rwth-aachen.de/luechow-group/inpsights/intel:19.0.1.144
   stage: build
   before_script:
   - source /opt/intel/parallel_studio_xe_2019/psxevars.sh intel64
@@ -41,7 +40,7 @@ Intel build:
   - mkdir -p cmake-build-debug-intel
   - cd cmake-build-debug-intel
   - cmake .. -DCMAKE_BUILD_TYPE=DEBUG -DBUILD_GUI=OFF -DPFUNIT=OFF
-  - cmake --build . --target inPsightsTests -- -j4
+  - cmake --build . --target inPsightsTests -- -j2
   cache:
     key: "$CI_COMMIT_REF_SLUG-Intel"
     paths:
@@ -49,7 +48,7 @@ Intel build:
     policy: pull-push
 
 GNU test:
-  image: registry.git.rwth-aachen.de/luechow-group/inpsights:gnu
+  image: registry.git.rwth-aachen.de/luechow-group/inpsights/gnu:7.3.0
   stage: test
   cache:
     key: "$CI_COMMIT_REF_SLUG-GNU"
@@ -64,7 +63,7 @@ GNU test:
   - GNU build
 
 Intel test:
-  image: registry.git.rwth-aachen.de/luechow-group/inpsights:intel
+  image: registry.git.rwth-aachen.de/luechow-group/inpsights/intel:19.0.1.144
   stage: test
   cache:
     key: "$CI_COMMIT_REF_SLUG-Intel"

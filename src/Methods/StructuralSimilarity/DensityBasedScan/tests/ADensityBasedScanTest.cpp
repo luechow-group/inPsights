@@ -2,7 +2,6 @@
 // Created by Michael Heuer on 10.09.18.
 //
 
-
 #include <gtest/gtest.h>
 #include <DensityBasedScan.h>
 #include <sstream>
@@ -10,6 +9,11 @@
 
 using namespace testing;
 using namespace Eigen;
+
+template <typename Scalar, typename VectorType>
+Scalar euclideanDistance(const VectorType &p1, const VectorType &p2) {
+    return (p1 - p2).norm();
+}
 
 class ADensityBasedScanTest : public Test {
 public:
@@ -37,7 +41,7 @@ public:
 };
 
 TEST_F(ADensityBasedScanTest, Float) {
-    DensityBasedScan<float, Eigen::VectorXf, Metrics::euclideanDistance<float, Eigen::VectorXf>>  dbscan(dataFloat);
+    DensityBasedScan<float, Eigen::VectorXf, euclideanDistance<float, Eigen::VectorXf>>  dbscan(dataFloat);
 
     auto nClusters = dbscan.findClusters(0.20001, 5);// TODO WHY?
     ASSERT_EQ(nClusters,5);
@@ -55,7 +59,7 @@ TEST_F(ADensityBasedScanTest, Float) {
 }
 
 TEST_F(ADensityBasedScanTest, Double) {
-    DensityBasedScan<double, Eigen::VectorXd, Metrics::euclideanDistance<double, Eigen::VectorXd>>  dbscan(dataDouble);
+    DensityBasedScan<double, Eigen::VectorXd, euclideanDistance<double, Eigen::VectorXd>>  dbscan(dataDouble);
 
     auto nClusters = dbscan.findClusters(0.20001, 5);// TODO WHY?
     ASSERT_EQ(nClusters,5);
@@ -73,7 +77,7 @@ TEST_F(ADensityBasedScanTest, Double) {
 }
 
 TEST_F(ADensityBasedScanTest, MinSizeTooLarge) {
-    DensityBasedScan<float, Eigen::VectorXf, Metrics::euclideanDistance<float, Eigen::VectorXf>> dbscan(dataFloat);
+    DensityBasedScan<float, Eigen::VectorXf, euclideanDistance<float, Eigen::VectorXf>> dbscan(dataFloat);
 
     auto nClusters = dbscan.findClusters(0.20001, 6);// TODO WHY?
     ASSERT_EQ(nClusters,0);
@@ -91,7 +95,7 @@ TEST_F(ADensityBasedScanTest, MinSizeTooLarge) {
 }
 
 TEST_F(ADensityBasedScanTest, PredictEps) {
-    DensityBasedScan<float, Eigen::VectorXf, Metrics::euclideanDistance<float, Eigen::VectorXf>>  dbscan(dataFloat);
+    DensityBasedScan<float, Eigen::VectorXf, euclideanDistance<float, Eigen::VectorXf>>  dbscan(dataFloat);
 
     auto result = dbscan.predictEps(4); // careful => cluster indices start with 0
 

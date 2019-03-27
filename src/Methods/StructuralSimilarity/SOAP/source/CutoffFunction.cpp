@@ -7,14 +7,14 @@
 #include "ExpansionSettings.h"
 
 bool CutoffFunction::withinCutoffRadiusQ(double distance) {
-    return distance < ExpansionSettings::Cutoff::radius;
+    return distance < Cutoff::settings.radius();
 }
 
 
 double CutoffFunction::getWeight(double distanceFromExpansionCenter) {
-    const auto innerPlateauRadius = ExpansionSettings::Cutoff::innerPlateauRadius();
-    const auto & cutoffWidth = ExpansionSettings::Cutoff::width;
-    const auto & cutoffRadius = ExpansionSettings::Cutoff::radius;
+    const auto innerPlateauRadius = Cutoff::innerPlateauRadius();
+    const auto cutoffWidth = Cutoff::settings.width();
+    const auto cutoffRadius = Cutoff::settings.radius();
 
     //TODO delete centerWeight and use: 'if (0 <= distanceFromExpansionCenter...' instead?
     if (0 < distanceFromExpansionCenter && distanceFromExpansionCenter <= innerPlateauRadius)
@@ -32,10 +32,10 @@ double CutoffFunction::getWeight(const Eigen::Vector3d& position,
 }
 
 Eigen::Vector3d CutoffFunction::getWeightGradient(const Eigen::Vector3d&position ) {
-    const auto innerPlateauRadius = ExpansionSettings::Cutoff::innerPlateauRadius();
-    const auto & cutoffWidth = ExpansionSettings::Cutoff::width;
+    const auto innerPlateauRadius = Cutoff::innerPlateauRadius();
+    const auto cutoffWidth = Cutoff::settings.width();
     //const auto & centerWeight = ExpansionSettings::Cutoff::centerWeight;
-    const auto & cutoffRadius = ExpansionSettings::Cutoff::radius;
+    const auto cutoffRadius = Cutoff::settings.radius();
 
     double distanceFromExpansionCenter =position .norm();
     Eigen::Vector3d direction =position .normalized();

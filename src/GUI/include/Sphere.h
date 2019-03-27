@@ -2,8 +2,8 @@
 // Created by heuer on 06.12.16.
 //
 
-#ifndef TEST_SPHERE_H
-#define TEST_SPHERE_H
+#ifndef INPSIGHTS_SPHERE_H
+#define INPSIGHTS_SPHERE_H
 
 #include <Qt3DExtras/QSphereMesh>
 #include "Abstract3dObject.h"
@@ -20,11 +20,15 @@ public:
     };
 
 public slots:
-    void highlight(bool highlightQ);
+    void onHighlighted(bool highlightQ);
+    void onSelected(bool selectedQ);
 
 private:
-    float radius_, oldAlpha_;
+    bool highlightedQ_, selectedQ_;
+    float radius_;
     Qt3DExtras::QSphereMesh* mesh_;
+
+    void update();
 };
 
-#endif //TEST_SPHERE_H
+#endif //INPSIGHTS_SPHERE_H

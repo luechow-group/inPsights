@@ -8,9 +8,9 @@
 //function to calculate p_ab(X_i)
 Eigen::VectorXcd PowerSpectrum::partialPowerSpectrum(const NeighborhoodExpansion& n1a,
                                                      const NeighborhoodExpansion& n1b) {
+    const auto nmax = Radial::settings.nmax();
+    const auto lmax = Angular::settings.lmax();
 
-    const auto & nmax = ExpansionSettings::Radial::nmax;
-    const auto & lmax = ExpansionSettings::Angular::lmax;
     unsigned angularEntityLength = 2 * lmax + 1;
     unsigned entityLength = nmax * nmax * angularEntityLength;
     Eigen::VectorXcd expansionCoefficients = Eigen::VectorXcd::Zero(entityLength);
@@ -39,9 +39,9 @@ std::complex<double> PowerSpectrum::powerSpectrumCoefficient(const NeighborhoodE
 std::complex<double> PowerSpectrum::powerSpectrumCoefficient(const NeighborhoodExpansion& speciesA,
                                                              const NeighborhoodExpansion& speciesB,
                                                              unsigned n1, unsigned n2, unsigned l ) {
-    ExpansionSettings::Radial::checkBounds(n1);
-    ExpansionSettings::Radial::checkBounds(n2);
-    ExpansionSettings::Angular::checkBounds(l);
+    Radial::checkBounds(n1);
+    Radial::checkBounds(n2);
+    Angular::checkBounds(l);
 
     std::complex<double> sum = (speciesA.getCoefficients_nl(n1, l).array().conjugate()
                   * speciesB.getCoefficients_nl(n2, l).array()).sum();

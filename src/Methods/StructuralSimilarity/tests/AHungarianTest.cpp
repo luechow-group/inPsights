@@ -6,7 +6,7 @@
 #include <Hungarian.h>
 #include <Metrics.h>
 #include <TestMolecules.h>
-
+#include <Interval.h>
 #include <algorithm>
 #include <random>
 
@@ -91,8 +91,6 @@ TEST(AHungarianTest, IntegrationTest_IdenticalPermutation) {
     Interval alphaElectrons({0,nAlpha}), betaElectrons({nAlpha,nBeta});
     // add noise
 
-    auto evp = ev;
-
     // Add random noise
     //double scalingFactor = 0.01;
     //evp.positionsVector().dataRef() += (Eigen::VectorXd::Random(evp.numberOfEntities()*3)*scalingFactor);
@@ -108,30 +106,46 @@ TEST(AHungarianTest, IntegrationTest_IdenticalPermutation) {
     std::shuffle(permAlpha.indices().data(), permAlpha.indices().data()+permAlpha.indices().size(),g);
     std::shuffle(permBeta.indices().data(), permBeta.indices().data()+permBeta.indices().size(),g);
 
+
+    auto pAlpha = PositionsVector(ev.positionsVector().asEigenVector().segment(0*3,nAlpha*3));
+    auto tAlpha = SpinTypesVector(ev.typesVector().asEigenVector().segment(0,nAlpha));
+    auto pBeta = PositionsVector(ev.positionsVector().asEigenVector().segment(nAlpha*3,nBeta*3));
+    auto tBeta = SpinTypesVector(ev.typesVector().asEigenVector().segment(nAlpha,nBeta));
+
+    auto evAlpha = ElectronsVector(pAlpha, tAlpha);
+    auto evBeta = ElectronsVector(pBeta, tBeta);
+
     // Permute
-    evp.slice(alphaElectrons).permute(permAlpha);
-    evp.slice(betaElectrons).permute(permBeta);
-    //std::cout << evp << std::endl;
+    pAlpha.permute(permAlpha);
+    tAlpha.permute(permAlpha);
+    pBeta.permute(permBeta);
+    tBeta.permute(permBeta);
+
+    auto evpAlpha = ElectronsVector(pAlpha, tAlpha);
+    auto evpBeta = ElectronsVector(pBeta, tBeta);
 
     // Find bestmatch permutation to permute ev to evp
-    auto costMatrixAlpha = Metrics::positionalDistances(
-            PositionsVector(ev.positionsVector().slice(alphaElectrons).dataRef()),
-            PositionsVector(evp.positionsVector().slice(alphaElectrons).dataRef()));
-    auto costMatrixBeta = Metrics::positionalDistances(
-            PositionsVector(ev.positionsVector().slice(betaElectrons).dataRef()),
-            PositionsVector(evp.positionsVector().slice(betaElectrons).dataRef()));
-
+    auto costMatrixAlpha = Metrics::positionalDistances(evAlpha.positionsVector(),evpAlpha.positionsVector());
+    auto costMatrixBeta = Metrics::positionalDistances(evBeta.positionsVector(),evpBeta.positionsVector());
 
     auto bestMatchAlpha = Hungarian<double>::findMatching(costMatrixAlpha);
     auto bestMatchBeta = Hungarian<double>::findMatching(costMatrixBeta);
 
-    // permute evp to match original ev
-    evp.slice(alphaElectrons).permute(bestMatchAlpha.inverse());
-    evp.slice(betaElectrons).permute(bestMatchBeta.inverse());
+    // Permute
+    pAlpha.permute(bestMatchAlpha.inverse());
+    tAlpha.permute(bestMatchAlpha.inverse());
+    pBeta.permute(bestMatchBeta.inverse());
+    tBeta.permute(bestMatchBeta.inverse());
 
-    ev.resetSlice(); //TODO WHY DO WE NEED TO DO THIS MANUALLY?
-    evp.resetSlice();//TODO WHY DO WE NEED TO DO THIS MANUALLY?
+    Eigen::VectorXd combinedp = Eigen::VectorXd(ev.numberOfEntities()*3);
+    Eigen::VectorXi combinedt = Eigen::VectorXi(ev.numberOfEntities());
 
+    combinedp.head(nAlpha*3) = pAlpha.asEigenVector();
+    combinedp.tail(nBeta*3) = pBeta.asEigenVector();
+
+    combinedt.head(nAlpha) = tAlpha.asEigenVector();
+    combinedt.tail(nBeta) = tBeta.asEigenVector();
+
+    auto evp = ElectronsVector(PositionsVector(combinedp),SpinTypesVector(combinedt));
     ASSERT_EQ(ev,evp);
-
 }

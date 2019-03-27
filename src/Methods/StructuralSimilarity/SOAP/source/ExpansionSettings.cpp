@@ -2,194 +2,220 @@
 // Created by Michael Heuer on 04.05.18.
 //
 
-#include "ExpansionSettings.h"
+#include <ExpansionSettings.h>
 #include <cassert>
 #include <limits>
 #include <SpinType.h>
 #include <sstream>
 #include <ElementInfo.h>
 
-namespace ExpansionSettings {
+namespace Settings {
+    SOAPExpansion::SOAPExpansion(const YAML::Node &node) {
+        auto modeNode = node[className][mode.name()];
+        if(!modeNode)
+            spdlog::info("Property \"{0}\" was not found. Using preset value: {1}",
+                    mode.name(), ::SOAPExpansion::toString(mode()));
+        else
+            mode = ::SOAPExpansion::fromString(modeNode.as<std::string>());
 
-    ExpansionSettings::Mode mode = ExpansionSettings::Mode::chemical;
-    double zeta = 2;
-    double gamma = 0.1;
+        auto mapNode = node[className][VARNAME(pairSimilarities)];
+        if(!mapNode){
+            spdlog::info("Property \"{0}\" was not found. Using preset values:");
+            for(const auto& kv : pairSimilarities) {
+                if (kv.first.first < 0)
+                    spdlog::info("\t{0},{1} : {2}", Spins::toString(Spins::SpinType(kv.first.first)));
+                else
+                    spdlog::info("\t{0},{1} : {2}", Elements::ElementInfo::symbol(Elements::ElementType(kv.first.first)));
 
-    void checkBounds(unsigned n, unsigned l, int m) {
-        Radial::checkBounds(n);
-        Angular::checkBounds(l, m);
+                if (kv.first.second < 0)
+                    spdlog::info("\t{0},{1} : {2}", Spins::toString(Spins::SpinType(kv.first.second)));
+                else
+                    spdlog::info("\t{0},{1} : {2}", Elements::ElementInfo::symbol(Elements::ElementType(kv.first.second)));
+            }
+
+
+        } else {
+            pairSimilarities.clear();
+            for (const auto &kv : mapNode) {
+                auto symbolPair = kv.first.as<std::vector<std::string>>();
+
+                int type1;
+                if (symbolPair[0] == Spins::toString(Spins::SpinType::alpha))
+                    type1 = int(Spins::SpinType::alpha);
+                else if (symbolPair[0] == Spins::toString(Spins::SpinType::beta))
+                    type1 = int(Spins::SpinType::beta);
+                else
+                    type1 = int(Elements::ElementInfo::elementTypeFromSymbol(symbolPair[0]));
+
+                int type2;
+                if (symbolPair[1] == Spins::toString(Spins::SpinType::alpha))
+                    type2 = int(Spins::SpinType::alpha);
+                else if (symbolPair[1] == Spins::toString(Spins::SpinType::beta))
+                    type2 = int(Spins::SpinType::beta);
+                else
+                    type2 = int(Elements::ElementInfo::elementTypeFromSymbol(symbolPair[1]));
+
+                pairSimilarities.emplace(std::pair<int, int>(type1, type2), kv.second.as<double>());
+            }
+        }
+
+
+        doubleProperty::decode(node[className], zeta);
+        doubleProperty::decode(node[className], gamma);
     }
 
-    void defaults() {
-        Radial::defaults();
-        Angular::defaults();
-        Cutoff::defaults();
-        mode = ExpansionSettings::Mode::chemical;
-        zeta = 2;
-        gamma = 0.1; // small values yields an efficient Best-Match approximation
+    void SOAPExpansion::appendToNode(YAML::Node &node) const {
+        YAML::Node mapNode;
 
-    };
+        for(const auto& pair : pairSimilarities) {
+            std::vector<std::string> symbolPair;
 
-    std::string toString(const Mode &mode) {
+            if(pair.first.first < 0)
+                symbolPair.emplace_back(Spins::toString(Spins::SpinType (pair.first.first)));
+            else
+                symbolPair.emplace_back(Elements::ElementInfo::symbol(Elements::ElementType(pair.first.first)));
+
+            if(pair.first.second < 0)
+                symbolPair.emplace_back(Spins::toString(Spins::SpinType (pair.first.second)));
+            else
+                symbolPair.emplace_back(Elements::ElementInfo::symbol(Elements::ElementType(pair.first.second)));
+
+            mapNode[symbolPair] = pair.second;
+        }
+
+        node[className][VARNAME(pairSimilarities)] = mapNode;
+        node[className][mode.name()] = ::SOAPExpansion::toString(::SOAPExpansion::Mode(mode()));
+        node[className][zeta.name()] = zeta();
+        node[className][gamma.name()] = gamma();
+    }
+
+
+    Angular::Angular(const YAML::Node &node) {
+        unsignedProperty::decode(node[className], lmax);
+    }
+
+    void Angular::appendToNode(YAML::Node &node) const {
+        node[className][lmax.name()] = lmax();
+    }
+
+
+    Radial::Radial(const YAML::Node &node) {
+        auto basisTypeNode = node[className][basisType.name()];
+        if(!basisTypeNode)
+            spdlog::info("Property \"{0}\" was not found. Using preset value: {1}",
+                         basisType.name(), ::Radial::toString(basisType()));
+        else
+            basisType = ::Radial::fromString(basisTypeNode.as<std::string>());
+
+        unsignedProperty::decode(node[className], nmax);
+        doubleProperty::decode(node[className], sigmaAtom);
+        unsignedProperty::decode(node[className], integrationSteps);
+        doubleProperty::decode(node[className], desiredAbsoluteError);
+        doubleProperty::decode(node[className], desiredRelativeError);
+    }
+
+    void Radial::appendToNode(YAML::Node &node) const {
+        node[className][basisType.name()] = ::Radial::toString(::Radial::BasisType(basisType()));
+        node[className][nmax.name()] = nmax();
+        node[className][sigmaAtom.name()] = sigmaAtom();
+        node[className][integrationSteps.name()] = integrationSteps();
+        node[className][desiredAbsoluteError.name()] = desiredAbsoluteError();
+        node[className][desiredRelativeError.name()] = desiredRelativeError();
+    }
+
+
+    Cutoff::Cutoff(const YAML::Node &node) {
+        doubleProperty::decode(node[className], radius);
+        doubleProperty::decode(node[className], width);
+        doubleProperty::decode(node[className], centerWeight);
+    }
+
+    void Cutoff::appendToNode(YAML::Node &node) const {
+        node[className][radius.name()] = radius();
+        node[className][width.name()] = width();
+        node[className][centerWeight.name()] = centerWeight();
+    }
+}
+YAML_SETTINGS_DEFINITION(Settings::Angular)
+YAML_SETTINGS_DEFINITION(Settings::Radial)
+YAML_SETTINGS_DEFINITION(Settings::Cutoff)
+YAML_SETTINGS_DEFINITION(Settings::SOAPExpansion)
+
+namespace SOAPExpansion{
+    Settings::SOAPExpansion settings = Settings::SOAPExpansion();
+
+    std::string toString(SOAPExpansion::Mode mode) {
         switch(mode) {
-            case ExpansionSettings::Mode::typeAgnostic :
-                return "typeAgnostic";
-            case ExpansionSettings::Mode::chemical :
+            case SOAPExpansion::Mode::chemical :
                 return "chemical";
-            case ExpansionSettings::Mode::alchemical :
+            case SOAPExpansion::Mode::alchemical :
                 return "alchemical";
+            case SOAPExpansion::Mode::typeAgnostic :
+                return "typeAgnostic";
             default:
                 return "undefined";
         }
     }
 
-    std::ostream &operator<<(std::ostream &os, const Mode &mode) {
-        os << toString(mode);
-        return os;
+    Mode fromString(const std::string& string) {
+        if(string == "chemical")
+            return SOAPExpansion::Mode::chemical;
+        else if (string == "alchemical")
+            return SOAPExpansion::Mode::alchemical;
+        else if (string == "typeAgnostic")
+            return SOAPExpansion::Mode::typeAgnostic;
+        else
+            return SOAPExpansion::Mode::undefined;
     }
 
-    std::string toString() {
-        std::stringstream ss;
-        ss << "General:" << std::endl
-           << "--------" << std::endl
-           << "Expansion mode\t\t: "<< ExpansionSettings::mode << std::endl
-           << "Sharpness zeta\t\t: "<< zeta << std::endl
-           << "Regularization gamma: "<< gamma << std::endl
-           << std::endl
-           << Radial::toString() << std::endl
-           << Angular::toString() << std::endl
-           << Cutoff::toString() << std::endl
-           << Alchemical::toString() << std::endl;
-        return ss.str();
+    void checkBounds(unsigned n, unsigned l, int m) {
+        ::Radial::checkBounds(n);
+        ::Angular::checkBounds(l, m);
+    }
+}
+
+namespace Angular{
+    Settings::Angular settings = Settings::Angular();
+
+    void checkBounds(unsigned l, int m) {
+        assert(l <= settings.lmax() && "l must be less than or equal to lmax");
+        assert(unsigned(abs(m)) <= settings.lmax() && "abs(m) must be smaller than lmax");
+    }
+}
+
+namespace Radial{
+    Settings::Radial settings = Settings::Radial();
+
+    void checkBounds(unsigned n) {
+        assert(n <= settings.nmax() && "n must be smaller than nmax");
+        assert(n >= 1 && "n must greater than or equal to 1");
     }
 
-    namespace Radial {
-        unsigned nmax = 5;
-        BasisType basisType = BasisType::equispaced;
-        double sigmaAtom = 0.5;
-
-        unsigned integrationSteps = 100;
-        double desiredAbsoluteError = 0.0;// TODO Deprecated delete
-        double desiredRelativeError = 1e-6;// TODO Deprecated delete
-
-        void defaults() {
-            nmax = 5;
-            basisType = BasisType::equispaced;
-            sigmaAtom = 1.0;//0.5*ConversionFactors::angstrom2bohr;
-            integrationSteps = 100;
-            desiredAbsoluteError = 0.0;
-            desiredRelativeError = std::numeric_limits<double>::epsilon()*1e2;
-        };
-
-        void checkBounds(unsigned n) {
-            assert(n <= nmax && "n must be smaller than nmax");
-            assert(n >= 1 && "n must greater than or equal to 1");
-        }
-
-        std::string toString(const BasisType &type) {
-            switch(type) {
-                case BasisType::equispaced :
-                    return "equispaced";
-                case BasisType::adaptive :
-                    return "adaptive";
-                default:
-                    return "undefined";
-            }
-        }
-
-        std::ostream &operator<<(std::ostream &os, const BasisType &type) {
-            os << toString(type);
-            return os;
-        }
-
-        std::string toString() {
-            std::stringstream ss;
-            ss << "Radial:" << std::endl
-               << "-------" << std::endl
-               << "BasisType\t\t\t: " << basisType << std::endl
-               << "n_max\t\t\t\t: " << nmax << std::endl
-               << "sigma_atom\t\t\t: " << sigmaAtom << " angstrom" << std::endl
-               << "Integration steps\t: " << integrationSteps << std::endl
-               << "Desired abs. err\t: " << desiredAbsoluteError << std::endl
-               << "Desired rel. err\t: " << desiredRelativeError << std::endl;
-            return ss.str();
+    std::string toString(BasisType type) {
+        switch(type) {
+            case BasisType::equispaced :
+                return "equispaced";
+            case BasisType::adaptive :
+                return "adaptive";
+            default:
+                return "undefined";
         }
     }
 
-    namespace Angular {
-        unsigned lmax = 5;
-
-        void defaults() {
-            lmax = 5;
-        };
-
-        void checkBounds(unsigned l, int m) {
-            assert(l <= lmax && "l must be less than or equal to lmax");
-            assert(unsigned(abs(m)) <= lmax && "abs(m) must be smaller than lmax");
-        }
-
-        std::string toString() {
-            std::stringstream ss;
-            ss << "Angular:" << std::endl
-               << "--------" << std::endl
-               << "l_max\t\t\t\t: " << lmax  << std::endl;
-            return ss.str();
-        }
+    BasisType fromString(const std::string& string) {
+        if(string == "equispaced")
+            return Radial::BasisType::equispaced;
+        else if (string == "adaptive")
+            return Radial::BasisType::adaptive;
+        else
+            return Radial::BasisType::undefined;
     }
-    
-    namespace Cutoff {
-        double radius = 8.0;//4.0*ConversionFactors::angstrom2bohr;
-        double width = 2.0;//1.0*ConversionFactors::angstrom2bohr; //TODO
-        double centerWeight = 1.0; //TODO
+}
 
-        void defaults() {
-            radius = 8.0;//4.0*ConversionFactors::angstrom2bohr;
-            width = 2.0;//1.0*ConversionFactors::angstrom2bohr;
-            centerWeight = 1.0;
-        }
+namespace Cutoff{
+    Settings::Cutoff settings = Settings::Cutoff();
 
-        double innerPlateauRadius() {
-            return radius - width;
-        }
-
-        std::string toString() {
-            std::stringstream ss;
-            ss << "Cutoff:" << std::endl
-               << "-------" << std::endl
-               << "Radius\t\t\t\t: " << radius << " angstrom" << std::endl
-               << "Width\t\t\t\t: " << width << " angstrom" << std::endl
-               << "Center weight\t\t: " << centerWeight << std::endl;
-            return ss.str();
-        }
-    }
-    namespace Alchemical{
-        std::map<std::pair<int,int>,double> pairSimilarities = {
-                {{int(Spin::alpha),int(Spin::beta)}, 0.5} //pairs start with the smaller typeId
-        };
-
-        std::string toString() {
-            std::stringstream ss;
-            ss << "Alchemical Similarities:" << std::endl
-               << "------------------------" << std::endl;
-
-            std::map<std::pair<int,int>, double>::iterator it;
-
-            for (it = pairSimilarities.begin(); it != pairSimilarities.end(); it++)
-            {
-                int type1 = it->first.first;
-                if(type1 < 0) ss << Spins::toString(Spin(type1));
-                else ss << Elements::ElementInfo::symbol(Element(type1));
-
-                ss << " <-> ";
-
-                int type2 = it->first.second;
-                if(type2 < 0) ss << Spins::toString(Spin(type2));
-                else ss << Elements::ElementInfo::symbol(Element(type2));
-
-                ss << ": " << it->second << std::endl;
-            }
-
-            return ss.str();
-        }
+    double innerPlateauRadius() {
+        return settings.radius() - settings.width();
     }
 }

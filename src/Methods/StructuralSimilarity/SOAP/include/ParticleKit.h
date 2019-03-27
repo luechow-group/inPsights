@@ -8,6 +8,7 @@
 #include <vector>
 #include <ParticlesVector.h>
 #include <MolecularGeometry.h>
+#include <Eigen/Core>
 
 using AtomKit = std::vector<std::pair<Element,unsigned>>;
 using ElectronKit = std::pair<unsigned,unsigned>; // alpha, beta
@@ -34,6 +35,16 @@ namespace ParticleKit{
 
         void createElectronKitFromElectronsVector(const ElectronsVector &electronsVector);
     }
+
+    ElementTypesVector toElementTypesVector();
+
+    SpinTypesVector toSpinTypesVector();
+
+    Eigen::PermutationMatrix<Eigen::Dynamic> fromKitPermutation(const AtomsVector &atomsVector);
+    Eigen::PermutationMatrix<Eigen::Dynamic> toKitPermutation(const AtomsVector &atomsVector);
+
+    Eigen::PermutationMatrix<Eigen::Dynamic> fromKitPermutation(const ElectronsVector &electronsVector);
+    Eigen::PermutationMatrix<Eigen::Dynamic> toKitPermutation(const ElectronsVector &electronsVector);
 
     bool isSubsetQ(const AtomsVector& atomsVector);
 
