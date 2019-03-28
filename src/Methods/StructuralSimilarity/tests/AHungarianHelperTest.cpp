@@ -171,9 +171,10 @@ TEST(AHungarianHelperTest, RealMaxima){
 
 
 TEST(AHungarianHelperTest, BestMatchSimilarity){
-    auto A = TestMolecules::H2::ElectronsInCores::ionicLeft;
-    auto B = TestMolecules::H2::ElectronsInCores::ionicRight;
+    auto A = TestMolecules::BH3::ionic1;//TestMolecules::H2::ElectronsInCores::ionicLeft;
+    auto B = TestMolecules::BH3::ionic2;//TestMolecules::H2::ElectronsInCores::ionicRight;
     ParticleKit::create(A);
+    std::cout << ParticleKit::toString() << std::endl;
     SOAPExpansion::settings.mode = SOAPExpansion::Mode::alchemical;
     SOAPExpansion::settings.pairSimilarities = {{{Spins::spinToInt(Spin::alpha),Spins::spinToInt(Spin::beta)}, 1.0}};
     

@@ -142,6 +142,9 @@ namespace Metrics{
         assert(ParticleKit::isSubsetQ(reference.molecule_) && "The reference must be a subset of the particle kit.");
 
         auto costMatrix = StructuralSimilarity::correlationMatrix(permutee, reference);
+
+        std::cout << costMatrix << std::endl;
+
         Eigen::PermutationMatrix<Eigen::Dynamic> bestMatch = Hungarian<double>::findMatching(costMatrix, Matchtype::MAX);
 
         // best-match permute columns and sum diagonal elements
