@@ -6,14 +6,9 @@
 #define INPSIGHTS_STRUCTURALSIMILARITY_H
 
 #include <Eigen/Core>
-#include "ParticleKit.h"
 #include "MolecularGeometry.h"
-#include "LocalSimilarity.h"
-#include "Sinkhorn.h"
-#include "Environment.h"
-#include <vector>
-#include "NeighborhoodExpander.h"
 #include "MolecularSpectrum.h"
+#include "ExpansionSettings.h"
 
 namespace StructuralSimilarity{
 

@@ -3,6 +3,8 @@
 //
 #include <omp.h>
 #include "StructuralSimilarity.h"
+#include "LocalSimilarity.h"
+#include "Sinkhorn.h"
 
 namespace StructuralSimilarity{
 

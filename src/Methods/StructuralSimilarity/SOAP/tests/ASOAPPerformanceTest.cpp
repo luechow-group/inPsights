@@ -6,6 +6,7 @@
 #include "StructuralSimilarity.h"
 #include "TestMolecules.h"
 #include <omp.h>
+#include "LocalSimilarity.h"
 
 class ASOAPPerformanceTest : public ::testing::Test {
 public:
