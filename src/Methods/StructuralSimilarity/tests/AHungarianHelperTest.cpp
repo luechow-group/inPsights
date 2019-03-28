@@ -168,3 +168,20 @@ TEST(AHungarianHelperTest, RealMaxima){
     ASSERT_LT(norm, 0.1);
     ASSERT_TRUE(perm.indices().isApprox(expectedPerm));
 }
+
+
+TEST(AHungarianHelperTest, BestMatchSimilarity){
+    auto A = TestMolecules::H2::ElectronsInCores::ionicLeft;
+    auto B = TestMolecules::H2::ElectronsInCores::ionicRight;
+    ParticleKit::create(A);
+    SOAPExpansion::settings.mode = SOAPExpansion::Mode::alchemical;
+    SOAPExpansion::settings.pairSimilarities = {{{Spins::spinToInt(Spin::alpha),Spins::spinToInt(Spin::beta)}, 1.0}};
+    
+    auto specA = MolecularSpectrum(A);
+    auto specB = MolecularSpectrum(B);
+
+    auto [norm, perm] = Metrics::bestMatchSimilarity(specA, specB);
+
+    std::cout << norm << std::endl<< std::endl;;
+    std::cout << perm.indices() << std::endl;
+}

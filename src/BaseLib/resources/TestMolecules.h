@@ -98,6 +98,18 @@ namespace TestMolecules {
                     ElectronsVector({{Spin::alpha, {0, 0, 0.37}},
                                      {Spin::beta,  {0, 0,-0.37}}})};
 
+            const MolecularGeometry ionicLeft = {
+                    AtomsVector({{Element::H, {0, 0, 0.37}},
+                                 {Element::H, {0, 0, -0.37}}}),
+                    ElectronsVector({{Spin::alpha, {0, 0,-0.37}},
+                                     {Spin::beta,  {0, 0,-0.37}}})};
+
+            const MolecularGeometry ionicRight = {
+                    AtomsVector({{Element::H, {0, 0, 0.37}},
+                                 {Element::H, {0, 0, -0.37}}}),
+                    ElectronsVector({{Spin::alpha, {0, 0, 0.37}},
+                                     {Spin::beta,  {0, 0, 0.37}}})};
+
             const MolecularGeometry translated = {
                     AtomsVector({{Element::H, {0+1, 0+1, 0.37+1}},
                                  {Element::H, {0+1, 0+1, -0.37+1}}}),
