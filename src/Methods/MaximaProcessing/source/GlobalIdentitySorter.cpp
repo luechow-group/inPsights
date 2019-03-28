@@ -84,23 +84,23 @@ void GlobalIdentitySorter::subLoop(
         double valueIncrement) {
 
     //TODO calculate only alpha electron distances and skip beta electron hungarian if dist is too large
-    auto bestMatch = Metrics::spinSpecificBestMatch((*it).maximum(), (*beginIt).maximum());
+       auto [norm, perm] = Metrics::spinSpecificBestMatch((*it).maximum(), (*beginIt).maximum());
 
     if ((*beginIt).maximum().typesVector().multiplicity() == 1) { // consider spin flip
 
-        auto bestMatchFlipped =
+        auto [normFlipped, permFlipped] =
                 Metrics::spinSpecificBestMatch<Eigen::Infinity, 2>((*it).maximum(), (*beginIt).maximum(), true);
 
-        if ((bestMatch.first <= distThresh) || (bestMatchFlipped.first <= distThresh)) {
-            if (bestMatch.first <= bestMatchFlipped.first)
-                addReference(beginIt, it, bestMatch.second);
+        if ((norm <= distThresh) || (normFlipped <= distThresh)) {
+            if (norm <= normFlipped)
+                addReference(beginIt, it, perm);
             else
-                addReference(beginIt, it, bestMatchFlipped.second);
+                addReference(beginIt, it, permFlipped);
             endIt = std::upper_bound(beginIt, references_.end(), Reference((*beginIt).value() + valueIncrement));
         } else it++;
     } else {  // don't consider spin flip
-        if ((bestMatch.first <= distThresh)) {
-            addReference(beginIt, it, bestMatch.second);
+        if (norm <= distThresh) {
+            addReference(beginIt, it, perm);
             endIt = std::upper_bound(beginIt, references_.end(), Reference((*beginIt).value() + valueIncrement));
         } else it++;
     }

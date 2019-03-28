@@ -52,17 +52,17 @@ TEST(AHungarianHelperTest, BestMatchNorm) {
     Eigen::VectorXi expectedPerm(2);
     expectedPerm << 1,0;
 
-    auto d2 = Metrics::bestMatch<2, 2>(v1, v2);
-    ASSERT_EQ(d2.first,5.0);
-    ASSERT_TRUE(d2.second.indices().isApprox(expectedPerm));
+    auto [norm2, perm2] = Metrics::bestMatch<2, 2>(v1, v2);
+    ASSERT_EQ(norm2, 5.0);
+    ASSERT_TRUE(perm2.indices().isApprox(expectedPerm));
 
-    auto dInf = Metrics::bestMatch<Eigen::Infinity, 2>(v1, v2);
-    ASSERT_EQ(dInf.first,5.0);
-    ASSERT_TRUE(dInf.second.indices().isApprox(expectedPerm));
+    auto [normInf, permInf] = Metrics::bestMatch<Eigen::Infinity, 2>(v1, v2);
+    ASSERT_EQ(normInf,5.0);
+    ASSERT_TRUE(permInf.indices().isApprox(expectedPerm));
 
-    auto dInfInf = Metrics::bestMatch<Eigen::Infinity, Eigen::Infinity>(v1, v2);
-    ASSERT_EQ(dInfInf.first,4.0);
-    ASSERT_TRUE(dInfInf.second.indices().isApprox(expectedPerm));
+    auto [normInfInf, permInfInf] = Metrics::bestMatch<Eigen::Infinity, Eigen::Infinity>(v1, v2);
+    ASSERT_EQ(normInfInf, 4.0);
+    ASSERT_TRUE(permInfInf.indices().isApprox(expectedPerm));
 
 }
 
@@ -79,17 +79,17 @@ TEST(AHungarianHelperTest, SpinSpecificBestMatchNormSameSpin) {
     Eigen::VectorXi expectedPerm(2);
     expectedPerm << 1,0;
 
-    auto d2 = Metrics::spinSpecificBestMatch<2, 2>(v1, v2);
-    ASSERT_EQ(d2.first,5.0);
-    ASSERT_TRUE(d2.second.indices().isApprox(expectedPerm));
+    auto [norm2, perm2] = Metrics::spinSpecificBestMatch<2, 2>(v1, v2);
+    ASSERT_EQ(norm2, 5.0);
+    ASSERT_TRUE(perm2. indices().isApprox(expectedPerm));
 
-    auto dInf = Metrics::spinSpecificBestMatch<Eigen::Infinity, 2>(v1, v2);
-    ASSERT_EQ(dInf.first,5.0);
-    ASSERT_TRUE(dInf.second.indices().isApprox(expectedPerm));
+    auto [normInf, permInf] = Metrics::spinSpecificBestMatch<Eigen::Infinity, 2>(v1, v2);
+    ASSERT_EQ(normInf,5.0);
+    ASSERT_TRUE(permInf.indices().isApprox(expectedPerm));
 
-    auto dInfInf = Metrics::spinSpecificBestMatch<Eigen::Infinity, Eigen::Infinity>(v1, v2);
-    ASSERT_EQ(dInfInf.first,4.0);
-    ASSERT_TRUE(dInfInf.second.indices().isApprox(expectedPerm));
+    auto [normInfInf, permInfInf] = Metrics::spinSpecificBestMatch<Eigen::Infinity, Eigen::Infinity>(v1, v2);
+    ASSERT_EQ(normInfInf, 4.0);
+    ASSERT_TRUE(permInfInf.indices().isApprox(expectedPerm));
 }
 
 TEST(AHungarianHelperTest, SpinSpecificBestMatchNormDifferentSpin) {
@@ -106,17 +106,17 @@ TEST(AHungarianHelperTest, SpinSpecificBestMatchNormDifferentSpin) {
 
     auto eps = std::numeric_limits<double>::epsilon()*10;
 
-    auto d2 = Metrics::spinSpecificBestMatch<2, 2>(v1, v2);
-    ASSERT_NEAR(d2.first,std::sqrt(1+2*2+4*4+6*6), eps);
-    ASSERT_TRUE(d2.second.indices().isApprox(expectedPerm));
+    auto [norm2, perm2] = Metrics::spinSpecificBestMatch<2, 2>(v1, v2);
+    ASSERT_NEAR(norm2, std::sqrt(1+2*2+4*4+6*6), eps);
+    ASSERT_TRUE(perm2.indices().isApprox(expectedPerm));
 
-    auto dinf = Metrics::spinSpecificBestMatch<Eigen::Infinity, 2>(v1, v2);
-    ASSERT_NEAR(dinf.first,std::sqrt(4*4+6*6), eps);
-    ASSERT_TRUE(dinf.second.indices().isApprox(expectedPerm));
+    auto [normInf, permInf] = Metrics::spinSpecificBestMatch<Eigen::Infinity, 2>(v1, v2);
+    ASSERT_NEAR(normInf, std::sqrt(4*4+6*6), eps);
+    ASSERT_TRUE(permInf.indices().isApprox(expectedPerm));
 
-    auto dInfInf = Metrics::spinSpecificBestMatch<Eigen::Infinity, Eigen::Infinity>(v1, v2);
-    ASSERT_EQ(dInfInf.first,6);
-    ASSERT_TRUE(dInfInf.second.indices().isApprox(expectedPerm));
+    auto [normInfInf, permInfInf] = Metrics::spinSpecificBestMatch<Eigen::Infinity, Eigen::Infinity>(v1, v2);
+    ASSERT_EQ(normInfInf, 6);
+    ASSERT_TRUE(permInfInf.indices().isApprox(expectedPerm));
 }
 
 TEST(AHungarianHelperTest, RealMaxima){

@@ -70,12 +70,12 @@ bool GlobalSimilaritySorter::sort() {
                 SimilarReferences(upperRef.begin()));
 
         for (auto simRefs = simRefLowerBoundIt; simRefs != simRefUpperBoundIt; ++simRefs) {
-            auto bestMatch = Metrics::bestMatch<Eigen::Infinity, 2>(
+            auto [norm, perm] = Metrics::bestMatch<Eigen::Infinity, 2>(
                     (*ref).maximum(),
                     (*simRefs).representativeReference().maximum());
 
-            if (bestMatch.first < similarityRadius) {
-                (*ref).permute(bestMatch.second, samples_);
+            if (norm < similarityRadius) {
+                (*ref).permute(perm, samples_);
                 (*simRefs).add(ref);
                 isSimilarQ = true;
                 break;
