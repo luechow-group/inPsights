@@ -81,7 +81,7 @@ TEST(AHungarianHelperTest, SpinSpecificBestMatchNormSameSpin) {
 
     auto [norm2, perm2] = Metrics::spinSpecificBestMatch<2, 2>(v1, v2);
     ASSERT_EQ(norm2, 5.0);
-    ASSERT_TRUE(perm2. indices().isApprox(expectedPerm));
+    ASSERT_TRUE(perm2.indices().isApprox(expectedPerm));
 
     auto [normInf, permInf] = Metrics::spinSpecificBestMatch<Eigen::Infinity, 2>(v1, v2);
     ASSERT_EQ(normInf,5.0);
