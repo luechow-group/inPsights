@@ -28,12 +28,12 @@ namespace ParticleKit {
             ParticleKit::kit.push_back({Elements::elementToInt(type), numberOfAtoms});
 
         auto [numberOfAlphaSpins, numberOfBetaSpins] = electronKit;
-        
+
         if (numberOfAlphaSpins > 0)
-            ParticleKit::kit.push_back({int(Spin::alpha), numberOfAlphaSpins});
+            ParticleKit::kit.push_back({Spins::spinToInt(Spin::alpha), numberOfAlphaSpins});
 
         if (numberOfBetaSpins > 0)
-            ParticleKit::kit.push_back({int(Spin::beta), numberOfBetaSpins});
+            ParticleKit::kit.push_back({Spins::spinToInt(Spin::beta), numberOfBetaSpins});
     }
 
     void create(const AtomKit &atomKit, int charge, unsigned multiplicity) {
@@ -94,12 +94,9 @@ namespace ParticleKit {
                                                 int charge, unsigned multiplicity) {
         unsigned numberOfElectrons = 0;
 
-        for (auto const &elemenTypeNumberPair : atomKit) {
-            auto elementType = elemenTypeNumberPair.first;
-            auto numberOfAtoms = elemenTypeNumberPair.second;
-
+        for (auto const &[elementType, numberOfAtoms] : atomKit)
             numberOfElectrons += Elements::ElementInfo::Z(elementType) * numberOfAtoms;
-        }
+
         numberOfElectrons -= charge;
 
         unsigned numberOfUnpairedElectrons = multiplicity - 1;
@@ -112,8 +109,7 @@ namespace ParticleKit {
         unsigned numberOfAlphaElectrons = numberOfUnpairedElectrons + numberOfElectronPairs;
         unsigned numberOfBetaElectrons = numberOfElectronPairs;
 
-        ParticleKit::electronKit.first = numberOfAlphaElectrons;
-        ParticleKit::electronKit.second = numberOfBetaElectrons;
+        ParticleKit::electronKit = {numberOfAlphaElectrons, numberOfBetaElectrons};
     };
 
     SpinTypesVector toSpinTypesVector() {
@@ -161,9 +157,9 @@ namespace ParticleKit {
         auto typeCounts = atomsVector.typesVector().countTypes();
 
         int index = 0;
-        for (const auto &typeCount : typeCounts)
+        for (const auto &[type, counts] : typeCounts)
             for (long i = 0; i < atomsVector.numberOfEntities(); ++i)
-                if (atomsVector[i].type() == typeCount.first) {
+                if (atomsVector[i].type() == type) {
                     indices[index] = i;
                     index++;
                 }
