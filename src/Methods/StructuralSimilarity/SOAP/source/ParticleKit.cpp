@@ -24,14 +24,16 @@ namespace ParticleKit {
     void createKit(const AtomKit &atomKit, const ElectronKit &electronKit) {
         ParticleKit::kit = {};
 
-        for (const auto &i : atomKit)
-            ParticleKit::kit.push_back({int(i.first), i.second});
+        for (const auto &[type, numberOfAtoms] : atomKit)
+            ParticleKit::kit.push_back({Elements::elementToInt(type), numberOfAtoms});
 
-        if (electronKit.first > 0)
-            ParticleKit::kit.push_back({int(Spin::alpha), electronKit.first});
+        auto [numberOfAlphaSpins, numberOfBetaSpins] = electronKit;
+        
+        if (numberOfAlphaSpins > 0)
+            ParticleKit::kit.push_back({int(Spin::alpha), numberOfAlphaSpins});
 
-        if (electronKit.second > 0)
-            ParticleKit::kit.push_back({int(Spin::beta), electronKit.second});
+        if (numberOfBetaSpins > 0)
+            ParticleKit::kit.push_back({int(Spin::beta), numberOfBetaSpins});
     }
 
     void create(const AtomKit &atomKit, int charge, unsigned multiplicity) {
