@@ -10,6 +10,7 @@
 #include <Metrics.h>
 #include <ParticlesVector.h>
 #include <Interval.h>
+#include <StructuralSimilarity.h>
 
 namespace HungarianHelper{
 
@@ -129,6 +130,23 @@ namespace Metrics{
     double spinSpecificBestMatchNorm(
             const ElectronsVector &permutee, const ElectronsVector &reference, bool flipSpinsQ = false){
         return spinSpecificBestMatch<overallNorm,positionalNorm>(permutee,reference,flipSpinsQ).first;
+    }
+
+
+    template<int overallNorm = Eigen::Infinity, int positionalNorm = 2>
+    std::pair<double,Eigen::PermutationMatrix<Eigen::Dynamic>> bestMatchSimilarity(
+            const MolecularSpectrum &permutee,
+            const MolecularSpectrum &reference
+            ) {
+        assert(ParticleKit::isSubsetQ(permutee.molecule_) && "The permutee must be a subset of the particle kit.");
+        assert(ParticleKit::isSubsetQ(reference.molecule_) && "The reference must be a subset of the particle kit.");
+
+        auto costMatrix = StructuralSimilarity::correlationMatrix(permutee, reference);
+        Eigen::PermutationMatrix<Eigen::Dynamic> bestMatch = Hungarian<double>::findMatching(costMatrix, Matchtype::MAX);
+
+        // best-match permute columns and sum diagonal elements
+        double simMetric = (costMatrix * bestMatch).diagonal().sum();
+        return {simMetric, std::move(bestMatch)};
     }
 }
 
