@@ -97,7 +97,7 @@ TEST_F(AParticleKitTest, isSubsetQFalse) {
 }
 
 
-TEST_F(AParticleKitTest, NumberedType) {
+TEST_F(AParticleKitTest, EnumeratedNumberedType) {
     ParticleKit::create({{Element::H,2},{Element::Ca,2},{Element::He,2}},{2,3});
 
     ASSERT_EQ(ParticleKit::getEnumeratedElementByIndex(0), NumberedElement (Element::H,0));
