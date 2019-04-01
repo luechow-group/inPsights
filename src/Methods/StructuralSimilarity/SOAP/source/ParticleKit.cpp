@@ -243,7 +243,7 @@ namespace ParticleKit {
         return {0, 0}; //TODO undefined behavior
     }
 
-    NumberedElement getEnumeratedElementByIndex(unsigned idx) {
+    EnumeratedElement getEnumeratedElementByIndex(unsigned idx) {
         assert(idx < numberOfAtoms());
 
         unsigned count = 0;
@@ -257,7 +257,7 @@ namespace ParticleKit {
         return {Element::none, 0}; //TODO undefined behavior
     }
 
-    NumberedSpin getEnumeratedSpinByIndex(unsigned idx) {
+    EnumeratedSpin getEnumeratedSpinByIndex(unsigned idx) {
         assert(idx < numberOfElectrons());
 
         if (idx < electronKit.first)

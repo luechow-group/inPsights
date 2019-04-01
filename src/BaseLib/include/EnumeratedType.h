@@ -43,7 +43,7 @@ public:
     unsigned number_;
 };
 
-using NumberedElement = EnumeratedType<Element >;
-using NumberedSpin = EnumeratedType<Spin>;
+using EnumeratedElement = EnumeratedType<Element >;
+using EnumeratedSpin = EnumeratedType<Spin>;
 
 #endif //INPSIGHTS_ENUMERATEDTYPE_H

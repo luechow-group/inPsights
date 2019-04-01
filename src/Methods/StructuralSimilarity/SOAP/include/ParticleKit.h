@@ -52,9 +52,9 @@ namespace ParticleKit{
 
     bool isSubsetQ(const MolecularGeometry& molecularGeometry);
 
-    NumberedElement getEnumeratedElementByIndex(unsigned idx);
+    EnumeratedElement getEnumeratedElementByIndex(unsigned idx);
 
-    NumberedSpin getEnumeratedSpinByIndex(unsigned idx);
+    EnumeratedSpin getEnumeratedSpinByIndex(unsigned idx);
 
     EnumeratedType<int> getEnumeratedTypeByIndex(unsigned idx);
 

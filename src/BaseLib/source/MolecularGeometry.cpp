@@ -54,13 +54,13 @@ EnumeratedType<int> MolecularGeometry::findEnumeratedTypeByIndex(unsigned idx) c
 std::pair<bool,long> MolecularGeometry::findIndexByEnumeratedType(const EnumeratedType<int> &enumeratedType) const {
     if(enumeratedType.type_ >= int(Spins::first()) && enumeratedType.type_ <= int(Spins::last())) {
         auto boolIdx = electrons().typesVector().findIndexOfEnumeratedType(
-                NumberedSpin(Spins::spinFromInt(enumeratedType.type_), enumeratedType.number_));
+                EnumeratedSpin(Spins::spinFromInt(enumeratedType.type_), enumeratedType.number_));
 
         boolIdx.second += atoms().numberOfEntities(); // TODO is this the way it should be?
         return boolIdx;
     } else if(enumeratedType.type_ >= int(Elements::first()) && enumeratedType.type_ <= int(Elements::last())) {
         return atoms().typesVector().findIndexOfEnumeratedType(
-                NumberedElement(Elements::elementFromInt(enumeratedType.type_), enumeratedType.number_));
+                EnumeratedElement(Elements::elementFromInt(enumeratedType.type_), enumeratedType.number_));
     } else {
         return {false,0};
     }

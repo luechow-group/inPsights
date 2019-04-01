@@ -100,13 +100,13 @@ TEST_F(AParticleKitTest, isSubsetQFalse) {
 TEST_F(AParticleKitTest, EnumeratedNumberedType) {
     ParticleKit::create({{Element::H,2},{Element::Ca,2},{Element::He,2}},{2,3});
 
-    ASSERT_EQ(ParticleKit::getEnumeratedElementByIndex(0), NumberedElement (Element::H,0));
-    ASSERT_EQ(ParticleKit::getEnumeratedElementByIndex(1), NumberedElement (Element::H,1));
-    ASSERT_EQ(ParticleKit::getEnumeratedElementByIndex(4), NumberedElement (Element::He,0));
-    ASSERT_EQ(ParticleKit::getEnumeratedElementByIndex(5), NumberedElement (Element::He,1));
+    ASSERT_EQ(ParticleKit::getEnumeratedElementByIndex(0), EnumeratedElement (Element::H,0));
+    ASSERT_EQ(ParticleKit::getEnumeratedElementByIndex(1), EnumeratedElement (Element::H,1));
+    ASSERT_EQ(ParticleKit::getEnumeratedElementByIndex(4), EnumeratedElement (Element::He,0));
+    ASSERT_EQ(ParticleKit::getEnumeratedElementByIndex(5), EnumeratedElement (Element::He,1));
 
-    ASSERT_EQ(ParticleKit::getEnumeratedSpinByIndex(1), NumberedSpin(Spin::alpha,1));
-    ASSERT_EQ(ParticleKit::getEnumeratedSpinByIndex(4), NumberedSpin(Spin::beta,2));
+    ASSERT_EQ(ParticleKit::getEnumeratedSpinByIndex(1), EnumeratedSpin(Spin::alpha,1));
+    ASSERT_EQ(ParticleKit::getEnumeratedSpinByIndex(4), EnumeratedSpin(Spin::beta,2));
 
     ASSERT_EQ(ParticleKit::getEnumeratedTypeByIndex(0), EnumeratedType<int>(int(Element::H),0));
     ASSERT_EQ(ParticleKit::getEnumeratedTypeByIndex(1), EnumeratedType<int>(int(Element::H),1));

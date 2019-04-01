@@ -39,19 +39,19 @@ TEST_F(AMolecularGeometryTest, CorrectBraceInitialization) {
 TEST_F(AMolecularGeometryTest, EnumeratedTypeByIndex) {
     auto molecule = TestMolecules::H2::ElectronsInCores::normal;
 
-    ASSERT_EQ(molecule.findEnumeratedTypeByIndex(0),NumberedElement(Element::H,0).toIntType());
-    ASSERT_EQ(molecule.findEnumeratedTypeByIndex(1),NumberedElement(Element::H,1).toIntType());
-    ASSERT_EQ(molecule.findEnumeratedTypeByIndex(2),NumberedSpin(Spin::alpha,0).toIntType());
-    ASSERT_EQ(molecule.findEnumeratedTypeByIndex(3),NumberedSpin(Spin::beta,0).toIntType());
+    ASSERT_EQ(molecule.findEnumeratedTypeByIndex(0),EnumeratedElement(Element::H,0).toIntType());
+    ASSERT_EQ(molecule.findEnumeratedTypeByIndex(1),EnumeratedElement(Element::H,1).toIntType());
+    ASSERT_EQ(molecule.findEnumeratedTypeByIndex(2),EnumeratedSpin(Spin::alpha,0).toIntType());
+    ASSERT_EQ(molecule.findEnumeratedTypeByIndex(3),EnumeratedSpin(Spin::beta,0).toIntType());
 }
 
 TEST_F(AMolecularGeometryTest, IndexFromEnumeratedType) {
     auto molecule = TestMolecules::H2::ElectronsInCores::normal;
 
-    ASSERT_EQ(molecule.findIndexByEnumeratedType(NumberedElement(Element::H, 0).toIntType()).second, 0);
-    ASSERT_EQ(molecule.findIndexByEnumeratedType(NumberedElement(Element::H, 1).toIntType()).second, 1);
-    ASSERT_EQ(molecule.findIndexByEnumeratedType(NumberedSpin(Spin::alpha, 0).toIntType()).second, 2);//TODO ! IS THIS WANTED?
-    ASSERT_EQ(molecule.findIndexByEnumeratedType(NumberedSpin(Spin::beta, 0).toIntType()).second, 3); // TODO ! IS THIS WANTED?
+    ASSERT_EQ(molecule.findIndexByEnumeratedType(EnumeratedElement(Element::H, 0).toIntType()).second, 0);
+    ASSERT_EQ(molecule.findIndexByEnumeratedType(EnumeratedElement(Element::H, 1).toIntType()).second, 1);
+    ASSERT_EQ(molecule.findIndexByEnumeratedType(EnumeratedSpin(Spin::alpha, 0).toIntType()).second, 2);//TODO ! IS THIS WANTED?
+    ASSERT_EQ(molecule.findIndexByEnumeratedType(EnumeratedSpin(Spin::beta, 0).toIntType()).second, 3); // TODO ! IS THIS WANTED?
 }
 
 TEST_F(AMolecularGeometryTest, CoreElectrons) {
