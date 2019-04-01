@@ -16,22 +16,22 @@ namespace StructuralSimilarity{
 
         auto N = ParticleKit::numberOfParticles();
         Eigen::MatrixXd C = Eigen::MatrixXd::Zero(N, N);
-        NumberedType<int> numberedType_i, numberedType_j;
+        EnumeratedType<int> enumeratedType_i, enumeratedType_j;
         TypeSpecificNeighborhoodsAtOneCenter expA,expB;
 
-        #pragma omp parallel for default(none) shared(N,A,B,C,SOAPExpansion::settings) private(numberedType_i,numberedType_j,expA,expB)
+        #pragma omp parallel for default(none) shared(N,A,B,C,SOAPExpansion::settings) private(enumeratedType_i,enumeratedType_j,expA,expB)
         for (unsigned i = 0; i < N; ++i) {
             //printf("Thread %d calculates correlation matrix elements\n", omp_get_thread_num());
-            numberedType_i = ParticleKit::getNumberedTypeByIndex(i);
-            if (!A.molecule_.findIndexByNumberedType(numberedType_i).first)
+            enumeratedType_i = ParticleKit::getEnumeratedTypeByIndex(i);
+            if (!A.molecule_.findIndexByEnumeratedType(enumeratedType_i).first)
                 continue;
-            expA = A.molecularCenters_.find(numberedType_i)->second;
+            expA = A.molecularCenters_.find(enumeratedType_i)->second;
 
             for (unsigned j = 0; j < N; ++j) {
-                numberedType_j = ParticleKit::getNumberedTypeByIndex(j);
-                if (!B.molecule_.findIndexByNumberedType(numberedType_j).first)
+                enumeratedType_j = ParticleKit::getEnumeratedTypeByIndex(j);
+                if (!B.molecule_.findIndexByEnumeratedType(enumeratedType_j).first)
                     continue;
-                expB = B.molecularCenters_.find(numberedType_j)->second;
+                expB = B.molecularCenters_.find(enumeratedType_j)->second;
                 C(i, j) = LocalSimilarity::kernel(expA, expB, SOAPExpansion::settings.zeta());
             }
         }
@@ -45,19 +45,19 @@ namespace StructuralSimilarity{
         auto N = ParticleKit::numberOfParticles();
         Eigen::MatrixXd C = Eigen::MatrixXd::Zero(N, N);
 
-        NumberedType<int> numberedType_i, numberedType_j;
+        EnumeratedType<int> enumeratedType_i, enumeratedType_j;
         TypeSpecificNeighborhoodsAtOneCenter expA,expB;
-        #pragma omp parallel for default(none) shared(N,A,C, SOAPExpansion::settings) private(numberedType_i,numberedType_j,expA,expB)
+        #pragma omp parallel for default(none) shared(N,A,C, SOAPExpansion::settings) private(enumeratedType_i,enumeratedType_j,expA,expB)
         for (unsigned i = 0; i < N; ++i) {
             //printf("Thread %d calculates selfcorrelation matrix elements\n", omp_get_thread_num());
-            numberedType_i = ParticleKit::getNumberedTypeByIndex(i);
-            if (!A.molecule_.findIndexByNumberedType(numberedType_i).first) continue;
-            expA = A.molecularCenters_.find(numberedType_i)->second;
+            enumeratedType_i = ParticleKit::getEnumeratedTypeByIndex(i);
+            if (!A.molecule_.findIndexByEnumeratedType(enumeratedType_i).first) continue;
+            expA = A.molecularCenters_.find(enumeratedType_i)->second;
 
             for (unsigned j = i; j < N; ++j) {
-                numberedType_j = ParticleKit::getNumberedTypeByIndex(j);
-                if (!A.molecule_.findIndexByNumberedType(numberedType_j).first) continue;
-                expB = A.molecularCenters_.find(numberedType_j)->second;
+                enumeratedType_j = ParticleKit::getEnumeratedTypeByIndex(j);
+                if (!A.molecule_.findIndexByEnumeratedType(enumeratedType_j).first) continue;
+                expB = A.molecularCenters_.find(enumeratedType_j)->second;
 
                 C(i,j) = LocalSimilarity::kernel(expA, expB, SOAPExpansion::settings.zeta());
             }

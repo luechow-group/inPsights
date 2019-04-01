@@ -40,27 +40,27 @@ long MolecularGeometry::numberOfEntities() const {
 }
 
 
-NumberedType<int> MolecularGeometry::findNumberedTypeByIndex(unsigned idx) const {
+EnumeratedType<int> MolecularGeometry::findEnumeratedTypeByIndex(unsigned idx) const {
     assert(idx < numberOfEntities() && "The index cannot be greater than the number of particles - 1");
 
     auto M = atoms().numberOfEntities();
     if(idx < M) {
-        return atoms().typesVector().getNumberedTypeByIndex(idx).toIntType();
+        return atoms().typesVector().getEnumeratedTypeByIndex(idx).toIntType();
     } else {
-        return electrons().typesVector().getNumberedTypeByIndex(idx-M).toIntType();
+        return electrons().typesVector().getEnumeratedTypeByIndex(idx-M).toIntType();
     }
 }
 
-std::pair<bool,long> MolecularGeometry::findIndexByNumberedType(const NumberedType<int> &numberedType) const {
-    if(numberedType.type_ >= int(Spins::first()) && numberedType.type_ <= int(Spins::last())) {
-        auto boolIdx = electrons().typesVector().findIndexOfNumberedType(
-                NumberedSpin(Spins::spinFromInt(numberedType.type_), numberedType.number_));
+std::pair<bool,long> MolecularGeometry::findIndexByEnumeratedType(const EnumeratedType<int> &enumeratedType) const {
+    if(enumeratedType.type_ >= int(Spins::first()) && enumeratedType.type_ <= int(Spins::last())) {
+        auto boolIdx = electrons().typesVector().findIndexOfEnumeratedType(
+                NumberedSpin(Spins::spinFromInt(enumeratedType.type_), enumeratedType.number_));
 
         boolIdx.second += atoms().numberOfEntities(); // TODO is this the way it should be?
         return boolIdx;
-    } else if(numberedType.type_ >= int(Elements::first()) && numberedType.type_ <= int(Elements::last())) {
-        return atoms().typesVector().findIndexOfNumberedType(
-                NumberedElement(Elements::elementFromInt(numberedType.type_), numberedType.number_));
+    } else if(enumeratedType.type_ >= int(Elements::first()) && enumeratedType.type_ <= int(Elements::last())) {
+        return atoms().typesVector().findIndexOfEnumeratedType(
+                NumberedElement(Elements::elementFromInt(enumeratedType.type_), enumeratedType.number_));
     } else {
         return {false,0};
     }

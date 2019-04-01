@@ -36,22 +36,22 @@ TEST_F(AMolecularGeometryTest, CorrectBraceInitialization) {
     ASSERT_EQ(molecule.electrons().numberOfEntities(),2);
 }
 
-TEST_F(AMolecularGeometryTest, NumberedTypeByIndex) {
+TEST_F(AMolecularGeometryTest, EnumeratedTypeByIndex) {
     auto molecule = TestMolecules::H2::ElectronsInCores::normal;
 
-    ASSERT_EQ(molecule.findNumberedTypeByIndex(0),NumberedElement(Element::H,0).toIntType());
-    ASSERT_EQ(molecule.findNumberedTypeByIndex(1),NumberedElement(Element::H,1).toIntType());
-    ASSERT_EQ(molecule.findNumberedTypeByIndex(2),NumberedSpin(Spin::alpha,0).toIntType());
-    ASSERT_EQ(molecule.findNumberedTypeByIndex(3),NumberedSpin(Spin::beta,0).toIntType());
+    ASSERT_EQ(molecule.findEnumeratedTypeByIndex(0),NumberedElement(Element::H,0).toIntType());
+    ASSERT_EQ(molecule.findEnumeratedTypeByIndex(1),NumberedElement(Element::H,1).toIntType());
+    ASSERT_EQ(molecule.findEnumeratedTypeByIndex(2),NumberedSpin(Spin::alpha,0).toIntType());
+    ASSERT_EQ(molecule.findEnumeratedTypeByIndex(3),NumberedSpin(Spin::beta,0).toIntType());
 }
 
-TEST_F(AMolecularGeometryTest, IndexFromNumberedType) {
+TEST_F(AMolecularGeometryTest, IndexFromEnumeratedType) {
     auto molecule = TestMolecules::H2::ElectronsInCores::normal;
 
-    ASSERT_EQ(molecule.findIndexByNumberedType(NumberedElement(Element::H, 0).toIntType()).second, 0);
-    ASSERT_EQ(molecule.findIndexByNumberedType(NumberedElement(Element::H, 1).toIntType()).second, 1);
-    ASSERT_EQ(molecule.findIndexByNumberedType(NumberedSpin(Spin::alpha, 0).toIntType()).second, 2);//TODO ! IS THIS WANTED?
-    ASSERT_EQ(molecule.findIndexByNumberedType(NumberedSpin(Spin::beta, 0).toIntType()).second, 3); // TODO ! IS THIS WANTED?
+    ASSERT_EQ(molecule.findIndexByEnumeratedType(NumberedElement(Element::H, 0).toIntType()).second, 0);
+    ASSERT_EQ(molecule.findIndexByEnumeratedType(NumberedElement(Element::H, 1).toIntType()).second, 1);
+    ASSERT_EQ(molecule.findIndexByEnumeratedType(NumberedSpin(Spin::alpha, 0).toIntType()).second, 2);//TODO ! IS THIS WANTED?
+    ASSERT_EQ(molecule.findIndexByEnumeratedType(NumberedSpin(Spin::beta, 0).toIntType()).second, 3); // TODO ! IS THIS WANTED?
 }
 
 TEST_F(AMolecularGeometryTest, CoreElectrons) {

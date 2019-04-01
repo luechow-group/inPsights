@@ -234,7 +234,7 @@ namespace ParticleKit {
         return numberOfSpinTypes;
     }
 
-    NumberedType<int> getNumberedTypeByIndex(unsigned idx) {
+    EnumeratedType<int> getEnumeratedTypeByIndex(unsigned idx) {
         assert(idx < ParticleKit::numberOfParticles());
 
         unsigned count = 0;
@@ -248,7 +248,7 @@ namespace ParticleKit {
         return {0, 0}; //TODO undefined behavior
     }
 
-    NumberedElement getNumberedElementByIndex(unsigned idx) {
+    NumberedElement getEnumeratedElementByIndex(unsigned idx) {
         assert(idx < numberOfAtoms());
 
         unsigned count = 0;
@@ -262,7 +262,7 @@ namespace ParticleKit {
         return {Element::none, 0}; //TODO undefined behavior
     }
 
-    NumberedSpin getNumberedSpinByIndex(unsigned idx) {
+    NumberedSpin getEnumeratedSpinByIndex(unsigned idx) {
         assert(idx < numberOfElectrons());
 
         if (idx < electronKit.first)

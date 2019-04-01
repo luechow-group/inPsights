@@ -11,7 +11,7 @@
 
 using TypeSpecificNeighborhoodsAtOneCenter = std::map<int, NeighborhoodExpansion>; // expansion coeffs related to an int type
 
-using MolecularCenters = std::map<NumberedType<int>,TypeSpecificNeighborhoodsAtOneCenter>;
+using MolecularCenters = std::map<EnumeratedType<int>,TypeSpecificNeighborhoodsAtOneCenter>;
 
 class NeighborhoodExpander{
 public:

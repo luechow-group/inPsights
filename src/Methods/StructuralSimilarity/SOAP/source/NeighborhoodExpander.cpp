@@ -93,20 +93,20 @@ NeighborhoodExpander::computeMolecularExpansions(MolecularGeometry molecule) {
         // TODO: not possible, if type specific center value is chosen which currently isn't the case;
         bool computedAlreadyQ = false;
 
-        NumberedType<int> existingNumberedType;
+        EnumeratedType<int> existingEnumeratedType;
         for (unsigned i = 0; i < k; ++i) {
             if((molecule[i].position()-molecule[k].position()).norm() <= radiusZero){
-                existingNumberedType = molecule.findNumberedTypeByIndex(i);
+                existingEnumeratedType = molecule.findEnumeratedTypeByIndex(i);
                 computedAlreadyQ = true;
-                //std::cout << "found " << existingNumberedType << std::endl;
+                //std::cout << "found " << existingEnumeratedType << std::endl;
                 break;
             }
         }
-        auto newNumberedType = molecule.findNumberedTypeByIndex(k);
+        auto newEnumeratedType = molecule.findEnumeratedTypeByIndex(k);
         if(computedAlreadyQ){
-            exp[newNumberedType] = exp[existingNumberedType];
+            exp[newEnumeratedType] = exp[existingEnumeratedType];
         } else {
-            exp[newNumberedType] = computeParticularExpansions(Environment(molecule, molecule[k].position()));
+            exp[newEnumeratedType] = computeParticularExpansions(Environment(molecule, molecule[k].position()));
         }
     }
 

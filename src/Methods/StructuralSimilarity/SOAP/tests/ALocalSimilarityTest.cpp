@@ -183,14 +183,14 @@ TEST_F(ALocalSimilarityTest, twoOppositeSpinElectronsComparisionMs) {
     MolecularSpectrum ms1(mol1);
     MolecularSpectrum ms2(mol2);
 
-    ASSERT_NEAR(LocalSimilarity::kernel(ms1.molecularCenters_[NumberedType<int>(int(Spin::alpha), 0)],
-                                        ms2.molecularCenters_[NumberedType<int>(int(Spin::alpha), 0)]), 1.0, eps);
-    ASSERT_NEAR(LocalSimilarity::kernel(ms1.molecularCenters_[NumberedType<int>(int(Spin::beta), 0)],
-                                        ms2.molecularCenters_[NumberedType<int>(int(Spin::beta), 0)]), 1.0, eps);
-    ASSERT_NEAR(LocalSimilarity::kernel(ms1.molecularCenters_[NumberedType<int>(int(Spin::alpha), 0)],
-                                        ms2.molecularCenters_[NumberedType<int>(int(Spin::beta), 0)]), 0.0, eps);
-    ASSERT_NEAR(LocalSimilarity::kernel(ms1.molecularCenters_[NumberedType<int>(int(Spin::beta), 0)],
-                                        ms2.molecularCenters_[NumberedType<int>(int(Spin::alpha), 0)]), 0.0, eps);
+    ASSERT_NEAR(LocalSimilarity::kernel(ms1.molecularCenters_[EnumeratedType<int>(int(Spin::alpha), 0)],
+                                        ms2.molecularCenters_[EnumeratedType<int>(int(Spin::alpha), 0)]), 1.0, eps);
+    ASSERT_NEAR(LocalSimilarity::kernel(ms1.molecularCenters_[EnumeratedType<int>(int(Spin::beta), 0)],
+                                        ms2.molecularCenters_[EnumeratedType<int>(int(Spin::beta), 0)]), 1.0, eps);
+    ASSERT_NEAR(LocalSimilarity::kernel(ms1.molecularCenters_[EnumeratedType<int>(int(Spin::alpha), 0)],
+                                        ms2.molecularCenters_[EnumeratedType<int>(int(Spin::beta), 0)]), 0.0, eps);
+    ASSERT_NEAR(LocalSimilarity::kernel(ms1.molecularCenters_[EnumeratedType<int>(int(Spin::beta), 0)],
+                                        ms2.molecularCenters_[EnumeratedType<int>(int(Spin::alpha), 0)]), 0.0, eps);
 }
 
 TEST_F(ALocalSimilarityTest, twoAlphaElectrons) {

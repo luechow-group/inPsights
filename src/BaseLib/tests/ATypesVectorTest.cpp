@@ -60,32 +60,32 @@ TEST_F(ATypesVectorTest, SpecializedConstructor){
 }
 
 TEST_F(ATypesVectorTest,GetIndexedTypeFromIndex){
-    auto indexedType = etv.getNumberedTypeByIndex(3);
+    auto indexedType = etv.getEnumeratedTypeByIndex(3);
 
     ASSERT_EQ(indexedType.number_,1);
     ASSERT_EQ(indexedType.type_, Element::He);
 }
 
 TEST_F(ATypesVectorTest,CheckIndexedType_Present){
-    auto indexedType = NumberedType<Element>(Element::He,1);
+    auto indexedType = EnumeratedType<Element>(Element::He,1);
 
-    auto foundIndexPair = etv.findIndexOfNumberedType(indexedType);
+    auto foundIndexPair = etv.findIndexOfEnumeratedType(indexedType);
     ASSERT_TRUE(foundIndexPair.first);
     ASSERT_EQ(foundIndexPair.second,3);
 }
 
 TEST_F(ATypesVectorTest,CheckIndexedTypePresentBut_WrongIndex){
-    auto wrongIndexedType = NumberedType<Element>(Element::He,3);
+    auto wrongIndexedType = EnumeratedType<Element>(Element::He,3);
 
-    auto foundIndexPair = etv.findIndexOfNumberedType(wrongIndexedType);
+    auto foundIndexPair = etv.findIndexOfEnumeratedType(wrongIndexedType);
     ASSERT_FALSE(foundIndexPair.first);
     ASSERT_EQ(foundIndexPair.second,0);
 }
 
 TEST_F(ATypesVectorTest,CheckIndexedType_MissingType){
-    auto indexedType = NumberedType<Element>(Element::Ca,1);
+    auto indexedType = EnumeratedType<Element>(Element::Ca,1);
 
-    auto foundIndexPair = etv.findIndexOfNumberedType(indexedType);
+    auto foundIndexPair = etv.findIndexOfEnumeratedType(indexedType);
     ASSERT_FALSE(foundIndexPair.first);
     ASSERT_EQ(foundIndexPair.second,0);
 }

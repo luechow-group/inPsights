@@ -32,7 +32,7 @@ set(HEADER_FILES
         include/TypesVector.h
         include/Metrics.h
         include/MolecularGeometry.h
-        include/NumberedType.h
+        include/EnumeratedType.h
         include/EigenYamlConversion.h
         include/SpecialMathFunctions/BoostSphericalHarmonics.h
         include/SpecialMathFunctions/ModifiedSphericalBesser1stKind.h
