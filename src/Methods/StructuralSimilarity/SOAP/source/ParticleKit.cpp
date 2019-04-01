@@ -152,7 +152,7 @@ namespace ParticleKit {
         auto typeCounts = atomsVector.typesVector().countTypes();
 
         int index = 0;
-        for (const auto &[type, counts] : typeCounts)
+        for (const auto &[type, count] : typeCounts)
             for (long i = 0; i < atomsVector.numberOfEntities(); ++i)
                 if (atomsVector[i].type() == type) {
                     indices[index] = i;

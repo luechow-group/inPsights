@@ -61,14 +61,14 @@ NeighborhoodExpander::computeParticularExpansions(const Environment &e) { // WOR
             break;
         }
         case SOAPExpansion::Mode::chemical: {
-            for(auto & type : ParticleKit::kit){
-                expansions.emplace(type.first, expandEnvironment(e, type.first));
+            for(auto & [type, count] : ParticleKit::kit){
+                expansions.emplace(type, expandEnvironment(e, type));
             }
             break;
         }
         case SOAPExpansion::Mode::alchemical: {
-            for(auto & type : ParticleKit::kit){
-                expansions.emplace(type.first, expandEnvironment(e, type.first));
+            for(auto & [type, count] : ParticleKit::kit){
+                expansions.emplace(type, expandEnvironment(e, type));
             }
             break;
         }
