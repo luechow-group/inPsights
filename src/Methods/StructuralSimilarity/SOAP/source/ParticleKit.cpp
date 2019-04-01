@@ -8,11 +8,6 @@
 #include "ElementInfo.h"
 
 namespace ParticleKit {
-    AtomKit atomKit = {};
-
-    ElectronKit electronKit = {0, 0};
-    TypeKit kit = {};
-
     void create(const AtomKit &atomKit, const ElectronKit &electronKit) {
         ParticleKit::atomKit = atomKit;
         ParticleKit::electronKit.first = electronKit.first;

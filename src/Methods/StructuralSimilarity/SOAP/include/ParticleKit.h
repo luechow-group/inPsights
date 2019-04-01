@@ -72,9 +72,9 @@ namespace ParticleKit{
 
     std::string toString();
 
-    extern AtomKit atomKit;
-    extern ElectronKit electronKit;
-    extern TypeKit kit;
+    inline AtomKit atomKit = {};
+    inline ElectronKit electronKit = {0, 0};
+    inline TypeKit kit = {};
 };
 
 #endif //INPSIGHTS_PARTICLEKIT_H
