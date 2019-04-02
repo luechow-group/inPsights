@@ -135,14 +135,11 @@ namespace Metrics{
     }
 
 
-    template<int overallNorm = Eigen::Infinity, int positionalNorm = 2>
     std::pair<double,Eigen::PermutationMatrix<Eigen::Dynamic>> bestMatchSimilarity(
             const MolecularSpectrum &permutee,
             const MolecularSpectrum &reference) {
         assert(ParticleKit::isSubsetQ(permutee.molecule_) && "The permutee must be a subset of the particle kit.");
         assert(ParticleKit::isSubsetQ(reference.molecule_) && "The reference must be a subset of the particle kit.");
-
-        //auto costMatrix = StructuralSimilarity::correlationMatrix(permutee, reference);
 
         // TODO assert that identical number of electrons and same atom geometry? Is this constraint needed? What happens with rows/cols of zero?
 
