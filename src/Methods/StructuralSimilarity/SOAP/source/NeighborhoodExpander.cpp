@@ -49,6 +49,7 @@ NeighborhoodExpansion NeighborhoodExpander::expandEnvironment(const Environment&
     return neighborhoodExpansion;
 }
 
+#include <tuple>
 TypeSpecificNeighborhoodsAtOneCenter
 NeighborhoodExpander::computeParticularExpansions(const Environment &e) { // WORKS!
     TypeSpecificNeighborhoodsAtOneCenter expansions;
@@ -89,11 +90,11 @@ NeighborhoodExpander::computeMolecularExpansions(MolecularGeometry molecule) {
     //TODO CHECK HERE FOR IDENTICAL CENTERS!
     for (unsigned k = 0; k < unsigned(molecule.numberOfEntities()); ++k) {
 
-        // check if center was calculated already ;
+        // check if center was calculated already;
         // TODO: not possible, if type specific center value is chosen which currently isn't the case;
         bool computedAlreadyQ = false;
 
-        EnumeratedType<int> existingEnumeratedType;
+        EnumeratedType<int> existingEnumeratedType = {};
         for (unsigned i = 0; i < k; ++i) {
             if((molecule[i].position()-molecule[k].position()).norm() <= radiusZero){
                 existingEnumeratedType = molecule.findEnumeratedTypeByIndex(i);

@@ -138,6 +138,36 @@ TEST_F(AParticleKitTest, electronsToKitPermutation) {
     ASSERT_EQ(copy, original);
 }
 
+TEST_F(AParticleKitTest, CombinedPermutations) {
+
+    ParticleKit::create(TestMolecules::threeElectrons::spinFlipped);
+    auto original = TestMolecules::threeElectrons::spinFlipped.electrons();
+    auto ref = original;
+    auto test = original;
+
+    Eigen::VectorXi indices(original.numberOfEntities());
+    indices << 2,0,1;
+    auto myperm = Eigen::PermutationMatrix<Eigen::Dynamic>(indices);
+    auto tokit = ParticleKit::toKitPermutation(original);
+    auto fromkit = ParticleKit::fromKitPermutation(original);
+
+    // to kit
+    ref.permute(tokit);
+    test.permute(tokit);
+
+    // both perms in sequence
+    ref.permute(myperm);
+    ref.permute(fromkit);
+
+    // combined perm
+    test.permute(fromkit*myperm);
+
+    std::cout << std::endl;
+    std::cout << original << std::endl;
+    std::cout << ref << std::endl;
+    std::cout << test << std::endl;
+}
+
 TEST_F(AParticleKitTest, atomsToKitPermutation) {
     ParticleKit::create(TestMolecules::CO2::nucleiPermuted);
     auto original = TestMolecules::CO2::nucleiPermuted.atoms();
