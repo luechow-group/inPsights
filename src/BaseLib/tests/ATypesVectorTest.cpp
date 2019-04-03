@@ -130,3 +130,19 @@ TEST_F(ATypesVectorTest, Multiplicity) {
     ASSERT_EQ(stv.multiplicity(),1);
     ASSERT_EQ(stvsmall.multiplicity(),2);
 }
+
+TEST_F(ATypesVectorTest, FlipSpins){
+    
+    auto stvFlipped = stv;
+    stvFlipped.flipSpins();
+    
+    SpinTypesVector reference({
+        Spin::beta,
+        Spin::beta,
+        Spin::alpha,
+        Spin::beta,
+        Spin::alpha,
+        Spin::alpha});
+    
+    ASSERT_EQ(stvFlipped, reference);
+}

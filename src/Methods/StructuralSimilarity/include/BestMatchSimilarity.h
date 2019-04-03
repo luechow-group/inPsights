@@ -10,6 +10,10 @@
 
 namespace BestMatch {
     namespace Similarity {
+        Result compare(
+                MolecularGeometry permutee, const MolecularGeometry &reference,
+                bool spinSpecificQ = false, bool flipSpinsQ = false);
+
         Result compare(const MolecularSpectrum &permutee, const MolecularSpectrum &reference);
     }
 }

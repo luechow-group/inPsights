@@ -134,7 +134,7 @@ public:
     }
 
     unsigned multiplicity() = delete;
-
+    void flipSpins() = delete;
 };
 
 using IntegerTypesVector = TypesVector<int>;
@@ -152,11 +152,11 @@ SpinTypesVector::TypesVector(std::vector<Spin> types);
 template<>
 unsigned SpinTypesVector::multiplicity();
 
+template<>
+void SpinTypesVector::flipSpins();
 
 template<>
 ElementTypesVector::TypesVector(std::vector<Element> types);
-
-
 
 namespace YAML {
     template<typename Type> struct convert<TypesVector<Type>> {
