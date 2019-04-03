@@ -70,7 +70,7 @@ bool GlobalSimilaritySorter::sort() {
                 SimilarReferences(upperRef.begin()));
 
         for (auto simRefs = simRefLowerBoundIt; simRefs != simRefUpperBoundIt; ++simRefs) {
-            auto [norm, perm] = Metrics::bestMatch<Eigen::Infinity, 2>(
+            auto [norm, perm] = BestMatch::Distance::compare<Eigen::Infinity, 2>(
                     (*ref).maximum(),
                     (*simRefs).representativeReference().maximum());
 

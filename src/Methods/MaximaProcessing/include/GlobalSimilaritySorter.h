@@ -6,7 +6,7 @@
 #define INPSIGHTS_GLOBALSIMILARITYSORTER_H
 
 #include "SimilarReferences.h"
-#include <HungarianHelper.h>
+#include <BestMatch.h>
 #include <ISettings.h>
 #include <vector>
 

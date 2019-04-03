@@ -2,7 +2,7 @@
 #define DENSITYBASEDSCAN_H
 
 #include "VantagePointTree.h"
-#include <HungarianHelper.h>
+#include <BestMatch.h>
 
 template<typename Scalar,
         typename VectorType,

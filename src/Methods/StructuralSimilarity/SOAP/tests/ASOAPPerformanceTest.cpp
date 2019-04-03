@@ -132,7 +132,7 @@ TEST_F(ASOAPPerformanceTest, DISABLED_LocalSimPerformance){
         for (unsigned i = 0; i < nParticles; i=i+nSkip) {
             for (unsigned j = 1; j <= nSkip; ++j) {
                 double angle = 2. * M_PI * double(i+j) / (nParticles - 1);
-                mol.atoms().append({Element(i + j), {cos(angle), sin(angle), 0}});
+                mol.atoms().append({Element(i + j), {radius*cos(angle), radius*sin(angle), 0}});
             }
             ParticleKit::create(mol);
 
@@ -145,19 +145,19 @@ TEST_F(ASOAPPerformanceTest, DISABLED_LocalSimPerformance){
             SOAPExpansion::settings.mode = SOAPExpansion::Mode::typeAgnostic;
             e1 = Environment(mol,mol.atoms()[0].position());
             start = omp_get_wtime();
-            double generic = LocalSimilarity::kernel(e1,e1);
+            [[maybe_unused]]double generic = LocalSimilarity::kernel(e1,e1);
             double t1 = omp_get_wtime() - start;
 
             SOAPExpansion::settings.mode = SOAPExpansion::Mode::chemical;
             e1 = Environment(mol,mol.atoms()[0].position());
             start = omp_get_wtime();
-            double chemical = LocalSimilarity::kernel(e1,e1);
+            [[maybe_unused]]double chemical = LocalSimilarity::kernel(e1,e1);
             double t2 = omp_get_wtime() - start;
 
             SOAPExpansion::settings.mode = SOAPExpansion::Mode::alchemical;
             e1 = Environment(mol,mol.atoms()[0].position());
             start = omp_get_wtime();
-            double alchemical = LocalSimilarity::kernel(e1,e1);
+            [[maybe_unused]]double alchemical = LocalSimilarity::kernel(e1,e1);
             double t3 = omp_get_wtime() - start;
 
             //printf(" SS=%f, elapsed time: %fs\n",K,omp_get_wtime()-start);

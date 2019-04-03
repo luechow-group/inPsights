@@ -3,11 +3,11 @@
 //
 
 #include <gmock/gmock.h>
-#include <HungarianHelper.h>
+#include <BestMatch.h>
 #include <TestMolecules.h>
 #include <limits>
 
-TEST(AHungarianHelperTest, CombinePermutations){
+TEST(ABestMatchTest, CombinePermutations){
     Eigen::PermutationMatrix<Eigen::Dynamic>p1,p2;
     p1.setIdentity(4);
     p2.setIdentity(4);
@@ -18,11 +18,11 @@ TEST(AHungarianHelperTest, CombinePermutations){
     ASSERT_TRUE(p1.indices().base().isApprox(expected.segment(0,4)));
     ASSERT_TRUE(p2.indices().base().isApprox(expected.segment(0,4)));
 
-    auto p = HungarianHelper::combinePermutations(p1,p2);
+    auto p = BestMatch::combinePermutations(p1,p2);
     ASSERT_TRUE(p.indices().base().isApprox(expected));
 }
 
-TEST(AHungarianHelperTest, SpinSpecificHungarian){
+TEST(ABestMatchTest, SpinSpecificHungarian){
     auto eNormal = TestMolecules::eightElectrons::square.electrons();
 
     Eigen::VectorXi alphaBetaPositionFlip(8);
@@ -32,14 +32,13 @@ TEST(AHungarianHelperTest, SpinSpecificHungarian){
     auto eFlipped = eNormal;
     eFlipped.positionsVector().permute(p);
 
-    //auto bestMatch = HungarianHelper::spinSpecificHungarian(eNormal, eFlipped, false);
-    auto bestMatchFlipped = HungarianHelper::spinSpecificBestMatch(eNormal, eFlipped, true);
+    auto bestMatchFlipped = BestMatch::Distance::SpinSpecific::findPermutation(eNormal, eFlipped, true);
     auto bestMatchFlippedInverse = Eigen::PermutationMatrix<Eigen::Dynamic>(bestMatchFlipped.inverse());
 
     ASSERT_TRUE(bestMatchFlippedInverse.indices().base().isApprox(p.indices().base()));
 }
 
-TEST(AHungarianHelperTest, BestMatchNorm) {
+TEST(ABestMatchTest, BestMatchNorm) {
     ElectronsVector v1({
         {Spin::alpha, {0,1,2}},
         {Spin::alpha, {0,0,0}}});
@@ -52,21 +51,21 @@ TEST(AHungarianHelperTest, BestMatchNorm) {
     Eigen::VectorXi expectedPerm(2);
     expectedPerm << 1,0;
 
-    auto [norm2, perm2] = Metrics::bestMatch<2, 2>(v1, v2);
+    auto [norm2, perm2] = BestMatch::Distance::compare<2, 2>(v1, v2);
     ASSERT_EQ(norm2, 5.0);
     ASSERT_TRUE(perm2.indices().isApprox(expectedPerm));
 
-    auto [normInf, permInf] = Metrics::bestMatch<Eigen::Infinity, 2>(v1, v2);
+    auto [normInf, permInf] = BestMatch::Distance::compare<Eigen::Infinity, 2>(v1, v2);
     ASSERT_EQ(normInf,5.0);
     ASSERT_TRUE(permInf.indices().isApprox(expectedPerm));
 
-    auto [normInfInf, permInfInf] = Metrics::bestMatch<Eigen::Infinity, Eigen::Infinity>(v1, v2);
+    auto [normInfInf, permInfInf] = BestMatch::Distance::compare<Eigen::Infinity, Eigen::Infinity>(v1, v2);
     ASSERT_EQ(normInfInf, 4.0);
     ASSERT_TRUE(permInfInf.indices().isApprox(expectedPerm));
 
 }
 
-TEST(AHungarianHelperTest, SpinSpecificBestMatchNormSameSpin) {
+TEST(ABestMatchTest, SpinSpecificBestMatchNormSameSpin) {
     ElectronsVector v1({
         {Spin::alpha, {0,1,2}},
         {Spin::alpha, {0,0,0}}});
@@ -79,20 +78,21 @@ TEST(AHungarianHelperTest, SpinSpecificBestMatchNormSameSpin) {
     Eigen::VectorXi expectedPerm(2);
     expectedPerm << 1,0;
 
-    auto [norm2, perm2] = Metrics::spinSpecificBestMatch<2, 2>(v1, v2);
+    auto [norm2, perm2] = BestMatch::Distance::compare<2, 2>(v1, v2);
     ASSERT_EQ(norm2, 5.0);
     ASSERT_TRUE(perm2.indices().isApprox(expectedPerm));
 
-    auto [normInf, permInf] = Metrics::spinSpecificBestMatch<Eigen::Infinity, 2>(v1, v2);
+    auto [normInf, permInf] = BestMatch::Distance::compare<Eigen::Infinity, 2>(v1, v2);
     ASSERT_EQ(normInf,5.0);
     ASSERT_TRUE(permInf.indices().isApprox(expectedPerm));
 
-    auto [normInfInf, permInfInf] = Metrics::spinSpecificBestMatch<Eigen::Infinity, Eigen::Infinity>(v1, v2);
+    auto [normInfInf, permInfInf] = BestMatch::Distance::compare<Eigen::Infinity, Eigen::Infinity>(
+            v1, v2);
     ASSERT_EQ(normInfInf, 4.0);
     ASSERT_TRUE(permInfInf.indices().isApprox(expectedPerm));
 }
 
-TEST(AHungarianHelperTest, SpinSpecificBestMatchNormDifferentSpin) {
+TEST(ABestMatchTest, SpinSpecificBestMatchNormDifferentSpin) {
     ElectronsVector v1({
         {Spin::alpha, {0,1,2}},
         {Spin::beta, {0,0,0}}});
@@ -106,20 +106,21 @@ TEST(AHungarianHelperTest, SpinSpecificBestMatchNormDifferentSpin) {
 
     auto eps = std::numeric_limits<double>::epsilon()*10;
 
-    auto [norm2, perm2] = Metrics::spinSpecificBestMatch<2, 2>(v1, v2);
+    auto [norm2, perm2] = BestMatch::Distance::SpinSpecific::compare<2, 2>(v1, v2);
     ASSERT_NEAR(norm2, std::sqrt(1+2*2+4*4+6*6), eps);
     ASSERT_TRUE(perm2.indices().isApprox(expectedPerm));
 
-    auto [normInf, permInf] = Metrics::spinSpecificBestMatch<Eigen::Infinity, 2>(v1, v2);
+    auto [normInf, permInf] = BestMatch::Distance::SpinSpecific::compare<Eigen::Infinity, 2>(v1, v2);
     ASSERT_NEAR(normInf, std::sqrt(4*4+6*6), eps);
     ASSERT_TRUE(permInf.indices().isApprox(expectedPerm));
 
-    auto [normInfInf, permInfInf] = Metrics::spinSpecificBestMatch<Eigen::Infinity, Eigen::Infinity>(v1, v2);
+    auto [normInfInf, permInfInf] = BestMatch::Distance::SpinSpecific::compare<Eigen::Infinity, Eigen::Infinity>(
+            v1, v2);
     ASSERT_EQ(normInfInf, 6);
     ASSERT_TRUE(permInfInf.indices().isApprox(expectedPerm));
 }
 
-TEST(AHungarianHelperTest, RealMaxima){
+TEST(ABestMatchTest, RealMaxima){
     ElectronsVector v1({
     {Spin::alpha,{-1.924799,-0.000888,-2.199093}},
     {Spin::alpha,{-0.425365,-0.687079, 1.739155}},
@@ -160,7 +161,7 @@ TEST(AHungarianHelperTest, RealMaxima){
     {Spin::beta ,{-1.924799,-0.000888,-2.199093}},
     {Spin::beta ,{-0.019967,-0.034674,-0.660818}}});
 
-    auto [norm, perm] = Metrics::bestMatch<Eigen::Infinity, 2>(v1, v2);
+    auto [norm, perm] = BestMatch::Distance::compare<Eigen::Infinity, 2>(v1, v2);
 
     Eigen::VectorXi expectedPerm(v1.numberOfEntities());
     expectedPerm << 16,2,15,3,6,5,17,1,4,13,10,9,11,14,7,8,12,0;
@@ -169,8 +170,7 @@ TEST(AHungarianHelperTest, RealMaxima){
     ASSERT_TRUE(perm.indices().isApprox(expectedPerm));
 }
 
-
-TEST(AHungarianHelperTest, BestMatchSimilarity_threeElectrons){
+TEST(ABestMatchTest, BestMatchSimilarity_threeElectrons){
     MolecularGeometry A = {
             AtomsVector(),
             ElectronsVector({{Spin::alpha, {0, 0,-0.5}},
@@ -208,87 +208,87 @@ TEST(AHungarianHelperTest, BestMatchSimilarity_threeElectrons){
     idPerm.setIdentity();
 
 
-    auto [normAtoA, permAtoA] = Metrics::bestMatchSimilarity(specA, specA);
+    auto [normAtoA, permAtoA] = BestMatch::Similarity::compare(specA, specA);
     ASSERT_EQ(normAtoA,1);
     ASSERT_TRUE(permAtoA.indices().isApprox(idPerm.indices()));
 
-    auto [normBtoA, permBtoA] = Metrics::bestMatchSimilarity(specB, specA);
+    auto [normBtoA, permBtoA] = BestMatch::Similarity::compare(specB, specA);
     Eigen::PermutationMatrix<Eigen::Dynamic> refPermBtoA(Eigen::Vector3i(2,1,0));
     ASSERT_EQ(normBtoA,1);
     ASSERT_TRUE(permBtoA.indices().isApprox(refPermBtoA.indices()));
 
-    auto [normCtoA, permCtoA] = Metrics::bestMatchSimilarity(specC, specA);
+    auto [normCtoA, permCtoA] = BestMatch::Similarity::compare(specC, specA);
     Eigen::PermutationMatrix<Eigen::Dynamic> refPermCtoA(Eigen::Vector3i(1,0,2));
     ASSERT_EQ(normCtoA,1);
     ASSERT_TRUE(permCtoA.indices().isApprox(refPermCtoA.indices()));
 
-    auto [normDtoA, permDtoA] = Metrics::bestMatchSimilarity(specD, specA);
+    auto [normDtoA, permDtoA] = BestMatch::Similarity::compare(specD, specA);
     Eigen::PermutationMatrix<Eigen::Dynamic> refPermDtoA(Eigen::Vector3i(1,2,0));
     ASSERT_EQ(normDtoA,1);
     ASSERT_TRUE(permDtoA.indices().isApprox(refPermDtoA.indices()));
 
 
-    auto [normAtoB, permAtoB] = Metrics::bestMatchSimilarity(specA, specB);
+    auto [normAtoB, permAtoB] = BestMatch::Similarity::compare(specA, specB);
     Eigen::PermutationMatrix<Eigen::Dynamic> refPermAtoB(Eigen::Vector3i(2,1,0));
     ASSERT_EQ(normAtoB,1);
     ASSERT_TRUE(permAtoB.indices().isApprox(refPermAtoB.indices()));
 
-    auto [normBtoB, permBtoB] = Metrics::bestMatchSimilarity(specB, specB);
+    auto [normBtoB, permBtoB] = BestMatch::Similarity::compare(specB, specB);
     ASSERT_EQ(normBtoB,1);
     ASSERT_TRUE(permBtoB.indices().isApprox(idPerm.indices()));
 
-    auto [normCtoB, permCtoB] = Metrics::bestMatchSimilarity(specC, specB);
+    auto [normCtoB, permCtoB] = BestMatch::Similarity::compare(specC, specB);
     Eigen::PermutationMatrix<Eigen::Dynamic> refPermCtoB(Eigen::Vector3i(1,2,0));
     ASSERT_EQ(normCtoB,1);
     ASSERT_TRUE(permCtoB.indices().isApprox(refPermCtoB.indices()));
 
-    auto [normDtoB, permDtoB] = Metrics::bestMatchSimilarity(specD, specB);
+    auto [normDtoB, permDtoB] = BestMatch::Similarity::compare(specD, specB);
     Eigen::PermutationMatrix<Eigen::Dynamic> refPermDtoB(Eigen::Vector3i(1,0,2));
     ASSERT_EQ(normDtoB,1);
     ASSERT_TRUE(permDtoB.indices().isApprox(refPermDtoB.indices()));
 
 
-    auto [normAtoC, permAtoC] = Metrics::bestMatchSimilarity(specA, specC);
+    auto [normAtoC, permAtoC] = BestMatch::Similarity::compare(specA, specC);
     Eigen::PermutationMatrix<Eigen::Dynamic> refPermAtoC(Eigen::Vector3i(1,0,2));
     ASSERT_EQ(normAtoC,1);
     ASSERT_TRUE(permAtoC.indices().isApprox(refPermAtoC.indices()));
 
-    auto [normBtoC, permBtoC] = Metrics::bestMatchSimilarity(specB, specC);
+    auto [normBtoC, permBtoC] = BestMatch::Similarity::compare(specB, specC);
     Eigen::PermutationMatrix<Eigen::Dynamic> refPermBtoC(Eigen::Vector3i(2,0,1));
     ASSERT_EQ(normBtoC,1);
     ASSERT_TRUE(permBtoC.indices().isApprox(refPermBtoC.indices()));
 
-    auto [normCtoC, permCtoC] = Metrics::bestMatchSimilarity(specC, specC);
+    auto [normCtoC, permCtoC] = BestMatch::Similarity::compare(specC, specC);
     ASSERT_EQ(normCtoC,1);
     ASSERT_TRUE(permCtoC.indices().isApprox(idPerm.indices()));
 
-    auto [normDtoC, permDtoC] = Metrics::bestMatchSimilarity(specD, specC);
+    auto [normDtoC, permDtoC] = BestMatch::Similarity::compare(specD, specC);
     Eigen::PermutationMatrix<Eigen::Dynamic> refPermDtoC(Eigen::Vector3i(0,2,1));
     ASSERT_EQ(normDtoC,1);
     ASSERT_TRUE(permDtoC.indices().isApprox(refPermDtoC.indices()));
 
 
-    auto [normAtoD, permAtoD] = Metrics::bestMatchSimilarity(specA, specD);
+    auto [normAtoD, permAtoD] = BestMatch::Similarity::compare(specA, specD);
     Eigen::PermutationMatrix<Eigen::Dynamic> refPermAtoD(Eigen::Vector3i(2,0,1));
     ASSERT_EQ(normAtoD,1);
     ASSERT_TRUE(permAtoD.indices().isApprox(refPermAtoD.indices()));
 
-    auto [normBtoD, permBtoD] = Metrics::bestMatchSimilarity(specB, specD);
+    auto [normBtoD, permBtoD] = BestMatch::Similarity::compare(specB, specD);
     Eigen::PermutationMatrix<Eigen::Dynamic> refPermBtoD(Eigen::Vector3i(1,0,2));
     ASSERT_EQ(normBtoD,1);
     ASSERT_TRUE(permBtoD.indices().isApprox(refPermBtoD.indices()));
 
-    auto [normCtoD, permCtoD] = Metrics::bestMatchSimilarity(specC, specD);
+    auto [normCtoD, permCtoD] = BestMatch::Similarity::compare(specC, specD);
     Eigen::PermutationMatrix<Eigen::Dynamic> refPermCtoD(Eigen::Vector3i(0,2,1));
     ASSERT_EQ(normCtoD,1);
     ASSERT_TRUE(permCtoD.indices().isApprox(refPermCtoD.indices()));
 
-    auto [normDtoD, permDtoD] = Metrics::bestMatchSimilarity(specD, specD);
+    auto [normDtoD, permDtoD] = BestMatch::Similarity::compare(specD, specD);
     ASSERT_EQ(normDtoD,1);
     ASSERT_TRUE(permDtoD.indices().isApprox(idPerm.indices()));
 }
 
-TEST(AHungarianHelperTest, BestMatchSimilarity_BH3){
+TEST(ABestMatchTest, BestMatchSimilarity_BH3){
 
     auto A = TestMolecules::BH3::ionicMirrored;
     auto B = TestMolecules::BH3::ionic;
@@ -302,17 +302,15 @@ TEST(AHungarianHelperTest, BestMatchSimilarity_BH3){
     auto idPerm = Eigen::PermutationMatrix<Eigen::Dynamic>(A.electrons().numberOfEntities());
     idPerm.setIdentity();
 
-     auto [normAA, permAA] = Metrics::bestMatchSimilarity(specB, specB);
+     auto [normAA, permAA] = BestMatch::Similarity::compare(specB, specB);
     ASSERT_EQ(normAA,1);
     ASSERT_TRUE(permAA.indices().isApprox(idPerm.indices()));
 
-    auto [normBB, permBB] = Metrics::bestMatchSimilarity(specB, specB);
+    auto [normBB, permBB] = BestMatch::Similarity::compare(specB, specB);
     ASSERT_EQ(normBB,1);
     ASSERT_TRUE(permBB.indices().isApprox(idPerm.indices()));
 
-    auto [normAB, permAB] = Metrics::bestMatchSimilarity(specA, specB);
-    std::cout << normAB << std::endl;
-    std::cout << permAB.indices().transpose() << std::endl;
+    auto [normAB, permAB] = BestMatch::Similarity::compare(specA, specB);
     Eigen::VectorXi indices(A.electrons().numberOfEntities());
     indices << 0, 1, 4, 5, 2, 3, 6, 7;
     Eigen::PermutationMatrix<Eigen::Dynamic> refPermAB(indices);

@@ -43,12 +43,12 @@ private:
     
     struct SortElement {
         SortElement(
-                std::pair<double, Eigen::PermutationMatrix<Eigen::Dynamic>> bestMatch,
+                BestMatch::Result bestMatch,
                 std::vector<SimilarReferences>::iterator it);
 
         bool operator<(const SortElement &rhs) const;
 
-        std::pair<double, Eigen::PermutationMatrix<Eigen::Dynamic>> bestMatch_;
+        BestMatch::Result bestMatch_;
         std::vector<SimilarReferences>::iterator it_;
     };
 
