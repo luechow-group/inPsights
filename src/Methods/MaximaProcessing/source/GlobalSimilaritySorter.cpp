@@ -4,6 +4,7 @@
 
 #include <GlobalIdentitySorter.h>
 #include <GlobalSimilaritySorter.h>
+#include <BestMatchDistance.h>
 #include <ValueSorter.h>
 
 namespace Settings {

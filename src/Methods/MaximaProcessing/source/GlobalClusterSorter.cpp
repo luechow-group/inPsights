@@ -4,6 +4,7 @@
 
 #include <GlobalClusterSorter.h>
 #include <GlobalSimilaritySorter.h>
+#include <BestMatchDistance.h>
 
 namespace Settings {
     GlobalClusterSorter::GlobalClusterSorter() {

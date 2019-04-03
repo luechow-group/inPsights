@@ -4,7 +4,7 @@
 
 #include <GlobalIdentitySorter.h>
 #include <GlobalSimilaritySorter.h>
-#include <BestMatch.h>
+#include <BestMatchDistance.h>
 #include <ValueSorter.h>
 #include <spdlog/spdlog.h>
 
@@ -75,7 +75,6 @@ bool GlobalIdentitySorter::sort() {
     return true;
 }
 
-
 void GlobalIdentitySorter::subLoop(
         std::vector<Reference>::iterator &beginIt,
         std::vector<Reference>::iterator &it,
@@ -84,13 +83,12 @@ void GlobalIdentitySorter::subLoop(
         double valueIncrement) {
 
     //TODO calculate only alpha electron distances and skip beta electron hungarian if dist is too large
-       auto [norm, perm] = BestMatch::Distance::SpinSpecific::compare((*it).maximum(), (*beginIt).maximum());
+       auto [norm, perm] = BestMatch::Distance::compare((*it).maximum(), (*beginIt).maximum(), true);
 
     if ((*beginIt).maximum().typesVector().multiplicity() == 1) { // consider spin flip
 
         auto [normFlipped, permFlipped] =
-        BestMatch::Distance::SpinSpecific::compare<Eigen::Infinity, 2>((*it).maximum(), (*beginIt).maximum(),
-                                                                       true);
+        BestMatch::Distance::compare<Eigen::Infinity, 2>((*it).maximum(), (*beginIt).maximum(), true, true);
 
         if ((norm <= distThresh) || (normFlipped <= distThresh)) {
             if (norm <= normFlipped)

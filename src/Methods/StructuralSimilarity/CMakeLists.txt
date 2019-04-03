@@ -17,6 +17,8 @@ set(HEADER_FILES
         include/SpinPairClassification.h
         include/Motif.h
         include/Motifs.h
+        include/BestMatchSimilarity.h
+        include/BestMatchDistance.h
         )
 
 set(SOURCE_FILES
@@ -27,6 +29,7 @@ set(SOURCE_FILES
         source/SpinPairClassification.cpp
         source/Motif.cpp
         source/Motifs.cpp
+        source/BestMatchSimilarity.cpp
         )
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES})

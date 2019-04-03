@@ -4,8 +4,8 @@
 
 #include <gtest/gtest.h>
 #include <DensityBasedScan.h>
+#include <BestMatchDistance.h>
 #include <sstream>
-#include <BestMatch.h>
 
 using namespace testing;
 using namespace Eigen;
