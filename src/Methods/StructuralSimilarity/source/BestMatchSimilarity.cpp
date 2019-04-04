@@ -83,31 +83,42 @@ BestMatch::Result
 BestMatch::Similarity::compare(MolecularGeometry permutee, const MolecularGeometry& reference,
                                bool spinSpecificQ, bool flipSpinsQ) {
 
-
     SOAPExpansion::settings.mode = SOAPExpansion::Mode::chemical;
     spdlog::info("The settings stored in '{0} were altered by '{1}'.",
                  VARNAME(SOAPExpansion::settings), VARNAME(BestMatch::Similarity::compare));
 
+    ParticleKit::create(reference);
     MolecularSpectrum permuteeSpectrum, referenceSpectrum;
 
-    if(spinSpecificQ) {
-        if(flipSpinsQ){
-            permutee.electrons().typesVector().flipSpins();
-            permuteeSpectrum = MolecularSpectrum(permutee);
-        } else
-            permuteeSpectrum = MolecularSpectrum(permutee);
 
+
+    if(spinSpecificQ) {
+        ParticleKit::create(reference);
         referenceSpectrum = MolecularSpectrum(reference);
+
+        if(flipSpinsQ)
+            permutee.electrons().typesVector().flipSpins();
+
+        assert(ParticleKit::isSubsetQ(permutee) && "The permutee must be a subset of the particle kit.");
+        permuteeSpectrum = MolecularSpectrum(permutee);
+
     } else {
+        // slower variant
         /*SOAPExpansion::settings.mode = SOAPExpansion::Mode::alchemical;
         // make alpha and beta spins identical
         SOAPExpansion::settings.pairSimilarities[{int(Spin::alpha), int(Spin::beta)}] = 1.0;*/
 
-        // Trick: Instead of using SOAPExpansion::Mode::alchemical construct a new MolecularGeometry with an ElectronsVector with SpinType::None
-        permuteeSpectrum = MolecularSpectrum({permutee.atoms(), {permutee.electrons().positionsVector()}});
-        referenceSpectrum = MolecularSpectrum({reference.atoms(), {reference.electrons().positionsVector()}});
+        // Trick: Instead of using SOAPExpansion::Mode::alchemical construct a new MolecularGeometry with an
+        // ElectronsVector where all spins are alpha electrons
+        auto permuteeUnspecific = MolecularGeometry(permutee.atoms(), {permutee.electrons().positionsVector()});
+        auto referenceUnspecific = MolecularGeometry(reference.atoms(), {reference.electrons().positionsVector()});
+
+        ParticleKit::create(referenceUnspecific);
+        referenceSpectrum = MolecularSpectrum(referenceUnspecific);
+
+        assert(ParticleKit::isSubsetQ(permuteeUnspecific)&& "The permutee must be a subset of the particle kit.");
+        permuteeSpectrum = MolecularSpectrum(permuteeUnspecific);
     }
-    ParticleKit::create(reference);
 
     return compare(permuteeSpectrum,referenceSpectrum);
 }

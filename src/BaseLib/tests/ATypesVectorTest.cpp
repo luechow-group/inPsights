@@ -52,11 +52,23 @@ TEST_F(ATypesVectorTest, ElementTypesStream){
     ASSERT_EQ(stringstream.str(), "H\nHe\nOg\nHe\nHe\n");
 }
 
+TEST_F(ATypesVectorTest, EigenVectorConstructor){
+    SpinTypesVector stv(Eigen::VectorXi::Zero(5));
+    std::stringstream stringstream;
+    stringstream << stv;
+    ASSERT_EQ(stringstream.str(), "-\n-\n-\n-\n-\n");
+}
+
 TEST_F(ATypesVectorTest, SpecializedConstructor){
     SpinTypesVector stv(2,3);
     std::stringstream stringstream;
     stringstream << stv;
     ASSERT_EQ(stringstream.str(), "a\na\nb\nb\nb\n");
+
+    SpinTypesVector stv2(5);
+    std::stringstream stringstream2;
+    stringstream2 << stv2;
+    ASSERT_EQ(stringstream2.str(), "a\na\na\na\na\n");
 }
 
 TEST_F(ATypesVectorTest,GetIndexedTypeFromIndex){
