@@ -14,10 +14,10 @@ set(HEADER_FILES
         include/GlobalIdentitySorter.h
         include/GlobalSimilaritySorter.h
         include/GlobalClusterSorter.h
+        include/GlobalSpatialSymmetrySorter.h
         include/MaximaProcessor.h
         include/SimilarReferences.h
         include/ClusterData.h
-        #include/GlobalPermutationSorter.h
         include/GeneralStatistics.h
         include/ValueSorter.h
         include/MaximaProcessingSettings.h
@@ -32,8 +32,8 @@ set(SOURCE_FILES
         source/GlobalClusterSorter.cpp
         source/GlobalIdentitySorter.cpp
         source/GlobalSimilaritySorter.cpp
+        source/GlobalSpatialSymmetrySorter.cpp
         source/MaximaProcessor.cpp
-        #source/GlobalPermutationSorter.cpp
         source/GeneralStatistics.cpp
         source/ValueSorter.cpp
         source/MaximaProcessingSettings.cpp
