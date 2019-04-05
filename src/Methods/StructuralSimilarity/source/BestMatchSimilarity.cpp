@@ -12,19 +12,19 @@ BestMatch::Result BestMatch::Similarity::compare(
         const MolecularSpectrum &reference) {
 
     assert(ParticleKit::isSubsetQ(permutee.molecule_)
-    && "The permutee must be a subset of the particle kit.");
+           && "The permutee must be a subset of the particle kit.");
     assert(ParticleKit::isSubsetQ(reference.molecule_)
-    && "The reference must be a subset of the particle kit.");
+           && "The reference must be a subset of the particle kit.");
 
     // TODO assert that identical number of electrons and same atom geometry? Is this constraint needed? What happens with rows/cols of zero?
 
     assert(permutee.molecule_.electrons().typesVector().countOccurence(Spin::alpha)
-    == reference.molecule_.electrons().typesVector().countOccurence(Spin::alpha)
-    && "The number of alpha electrons has to match.");
+           == reference.molecule_.electrons().typesVector().countOccurence(Spin::alpha)
+           && "The number of alpha electrons has to match.");
 
     assert(permutee.molecule_.electrons().typesVector().countOccurence(Spin::beta)
-    == reference.molecule_.electrons().typesVector().countOccurence(Spin::beta)
-    && "The number of beta electrons has to match.");
+           == reference.molecule_.electrons().typesVector().countOccurence(Spin::beta)
+           && "The number of beta electrons has to match.");
 
     auto nAlpha = reference.molecule_.electrons().typesVector().countOccurence(Spin::alpha);
     auto nBeta = reference.molecule_.electrons().typesVector().countOccurence(Spin::beta);
@@ -47,7 +47,8 @@ BestMatch::Result BestMatch::Similarity::compare(
         for (unsigned j = 0; j < nBeta; ++j) {
             EnumeratedType<int> enumeratedType_j(Spins::spinToInt(Spin::beta), j);
             expB = reference.molecularCenters_.find(enumeratedType_j)->second;
-            environmentalSimilarities(i, nAlpha + j) = LocalSimilarity::kernel(expA, expB, SOAPExpansion::settings.zeta());
+            environmentalSimilarities(i, nAlpha + j) = LocalSimilarity::kernel(expA, expB,
+                                                                               SOAPExpansion::settings.zeta());
         }
     }
     for (unsigned i = 0; i < nBeta; ++i) {
@@ -57,12 +58,14 @@ BestMatch::Result BestMatch::Similarity::compare(
         for (unsigned j = 0; j < nAlpha; ++j) {
             EnumeratedType<int> enumeratedType_j(Spins::spinToInt(Spin::alpha), j);
             expB = reference.molecularCenters_.find(enumeratedType_j)->second;
-            environmentalSimilarities(nAlpha + i, j) = LocalSimilarity::kernel(expA, expB, SOAPExpansion::settings.zeta());
+            environmentalSimilarities(nAlpha + i, j) = LocalSimilarity::kernel(expA, expB,
+                                                                               SOAPExpansion::settings.zeta());
         }
         for (unsigned j = 0; j < nBeta; ++j) {
             EnumeratedType<int> enumeratedType_j(Spins::spinToInt(Spin::beta), j);
             expB = reference.molecularCenters_.find(enumeratedType_j)->second;
-            environmentalSimilarities(nAlpha + i, nAlpha + j) =LocalSimilarity::kernel(expA, expB, SOAPExpansion::settings.zeta());
+            environmentalSimilarities(nAlpha + i, nAlpha + j) = LocalSimilarity::kernel(expA, expB,
+                                                                                        SOAPExpansion::settings.zeta());
         }
     }
 
@@ -79,9 +82,9 @@ BestMatch::Result BestMatch::Similarity::compare(
     return {simMetric, referenceFromKit * bestMatch * permuteeToKit};
 }
 
-BestMatch::Result
-BestMatch::Similarity::compare(MolecularGeometry permutee, const MolecularGeometry& reference,
-                               bool spinSpecificQ, bool flipSpinsQ) {
+BestMatch::Result BestMatch::Similarity::compare(
+        MolecularGeometry permutee, const MolecularGeometry &reference,
+        bool spinSpecificQ, bool flipSpinsQ) {
 
     SOAPExpansion::settings.mode = SOAPExpansion::Mode::chemical;
     spdlog::info("The settings stored in '{0} were altered by '{1}'.",
@@ -91,12 +94,11 @@ BestMatch::Similarity::compare(MolecularGeometry permutee, const MolecularGeomet
     MolecularSpectrum permuteeSpectrum, referenceSpectrum;
 
 
-
-    if(spinSpecificQ) {
+    if (spinSpecificQ) {
         ParticleKit::create(reference);
         referenceSpectrum = MolecularSpectrum(reference);
 
-        if(flipSpinsQ)
+        if (flipSpinsQ)
             permutee.electrons().typesVector().flipSpins();
 
         assert(ParticleKit::isSubsetQ(permutee) && "The permutee must be a subset of the particle kit.");
@@ -116,9 +118,9 @@ BestMatch::Similarity::compare(MolecularGeometry permutee, const MolecularGeomet
         ParticleKit::create(referenceUnspecific);
         referenceSpectrum = MolecularSpectrum(referenceUnspecific);
 
-        assert(ParticleKit::isSubsetQ(permuteeUnspecific)&& "The permutee must be a subset of the particle kit.");
+        assert(ParticleKit::isSubsetQ(permuteeUnspecific) && "The permutee must be a subset of the particle kit.");
         permuteeSpectrum = MolecularSpectrum(permuteeUnspecific);
     }
 
-    return compare(permuteeSpectrum,referenceSpectrum);
+    return compare(permuteeSpectrum, referenceSpectrum);
 }

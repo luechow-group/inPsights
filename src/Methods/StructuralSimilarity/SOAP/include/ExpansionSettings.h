@@ -19,6 +19,7 @@ namespace SOAPExpansion {
     };
 }
 
+//TODO move into SOAPExpansion namespace
 namespace Radial{
     enum class BasisType {
         undefined = -1,

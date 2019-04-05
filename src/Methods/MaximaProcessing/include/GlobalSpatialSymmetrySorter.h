@@ -10,6 +10,8 @@
 #include <StructuralSimilarity.h>
 #include <spdlog/spdlog.h>
 
+#include <ExpansionSettings.h>
+
 class GlobalPermutationSorter{
 public:
     GlobalPermutationSorter(
@@ -72,6 +74,10 @@ public:
         //#pragma acc kernels
 
 
+
+        Radial::settings.nmax = 3;
+        Angular::settings.lmax = 3;
+        SOAPExpansion::settings.mode = SOAPExpansion::Mode::chemical;
 
         #pragma omp parallel for default(none) shared(start, spectra, atoms_, globallyClusteredMaxima_)
         for (auto it = globallyClusteredMaxima_.begin(); it < globallyClusteredMaxima_.end(); ++it) {
