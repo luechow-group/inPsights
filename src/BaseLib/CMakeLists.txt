@@ -48,6 +48,7 @@ set(HEADER_FILES
         include/ISettings.h
         include/Property.h
         include/Varname.h
+        include/Enumerate.h
         )
 
 set(SOURCE_FILES
