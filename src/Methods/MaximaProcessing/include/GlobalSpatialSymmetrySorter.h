@@ -9,12 +9,12 @@
 #include "SimilarReferences.h"
 #include <StructuralSimilarity.h>
 #include <spdlog/spdlog.h>
-
+#include <BestMatchSimilarity.h>
 #include <ExpansionSettings.h>
 
-class GlobalPermutationSorter{
+class GlobalSpatialSymmetrySorter{
 public:
-    GlobalPermutationSorter(
+    GlobalSpatialSymmetrySorter(
             const AtomsVector& atoms,
             std::vector<Sample> &samples,
             std::vector<std::vector<SimilarReferences>> &globallyClusteredMaxima,
@@ -31,14 +31,6 @@ public:
 
 
     void sort(){
-        /*// compare all electron positions regardless of spin
-        ExpansionSettings::defaults();
-        //ExpansionSettings::Radial::nmax = 3;
-        //ExpansionSettings::Angular::lmax = 3;
-        ExpansionSettings::mode = ExpansionSettings::Mode::typeAgnostic;
-         */
-
-
         auto numberOfClusters = globallyClusteredMaxima_.size();
 
         std::vector<ClusterSpectrum> spectra(numberOfClusters);
@@ -61,12 +53,28 @@ public:
          *   - better performance by expanding only atomic centers w.r.t. alpha and beta spins
          *  Rings:
          *   - calculate average over ring-like clusters
+         *   - or pick maximum with highest function value
          */
 
-        //collect representative structures before loop
-        //std::vector<ElectronsVector> representativeClusterStructures(numberOfClusters);
-        //for (size_t i = 0; i < globallyClusteredMaxima_.size(); ++i)
-        //    representativeClusterStructures[i] = globallyClusteredMaxima_[i][0].representativeReference().maximum();
+        //find structure with highest function value
+        std::vector<ElectronsVector> mostProbableClusterStructure(numberOfClusters);
+
+        for(size_t i = 0; i < globallyClusteredMaxima_.size(); ++i) {
+
+            auto mostProbableRef = globallyClusteredMaxima_[i][0].representativeReference();
+
+            for(auto simRefs : globallyClusteredMaxima_[i]){
+                simRefs.sort();
+
+                if(simRefs.representativeReference().value() < mostProbableRef.value())
+                    mostProbableRef = simRefs.representativeReference();
+            }
+
+            mostProbableClusterStructure[i] = mostProbableRef.maximum();
+        }
+
+
+        //TODO !!! use representativeClusterStructures
 
 
         double start = omp_get_wtime();
@@ -108,19 +116,18 @@ public:
         //spdlog::info("Size after  = {}", globallyPermutationallyInvariantClusteredMaxima_.size());
 
 
-
         auto it =  spectra.begin();
         while (it !=  spectra.end()) {
-
             // compare spectra
-            //  first spectrum of
 
             // compare with all in list
             for(auto jt = identicalSpectra.begin(); jt != identicalSpectra.end(); jt++) {
-                auto kdist = StructuralSimilarity::kernel((*it).second,(*jt).second);
-                if (kdist <= identityThreshold) {
 
-                    auto permutationallySimilarReferences = jt.base()->first.base();
+                auto res = BestMatch::Similarity::compare((*jt).spectrum, (*it).spectrum);
+                //auto kdist = StructuralSimilarity::kernel((*it).second,(*jt).second);
+                if (res.metric <= identityThreshold) {
+
+                    auto permutationallySimilarReferences = (*jt).clusterIterator.base();
                     // apply transformation that accounts for spatial symmetry to all similar refs and contained samples
 
                 }

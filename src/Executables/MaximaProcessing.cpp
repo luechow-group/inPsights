@@ -72,7 +72,7 @@ int main(int argc, char *argv[]) {
 
     // Permutation sort
     /*std::vector<std::vector<SimilarReferences>> globallyPermutationallyInvariantClusteredMaxima;
-    GlobalPermutationSorter globalPermutationSorter(atoms, samples, globallyClusteredMaxima, globallyPermutationallyInvariantClusteredMaxima);
+    GlobalSpatialSymmetrySorter globalPermutationSorter(atoms, samples, globallyClusteredMaxima, globallyPermutationallyInvariantClusteredMaxima);
     globalPermutationSorter.sort();
     */
 

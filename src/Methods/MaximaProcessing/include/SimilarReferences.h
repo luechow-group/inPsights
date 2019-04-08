@@ -56,12 +56,13 @@ public:
     }
 
     bool operator<(const SimilarReferences& rhs) const {
-        //std::cout << valueStats_.cwiseMin()[0] << ", " << rhs.valueStats().cwiseMin()[0] << std::endl;
         return representativeReference().value() < rhs.representativeReference().value();
-        //return valueStats_.cwiseMin()[0] < rhs.valueStats().cwiseMin()[0];
     }
 
-    //TODO REPLACE THIS BY CENTROID LIKE REF
+    void sort(){
+        std::sort(similarReferences_.begin(), similarReferences_.end());
+    }
+
 private:
     std::vector<std::vector<Reference>::iterator> similarReferences_;
     Statistics::RunningStatistics<Eigen::Matrix<double,1,1>> valueStats_;
