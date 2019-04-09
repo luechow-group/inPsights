@@ -51,7 +51,7 @@ public:
         return similarReferences_;
     }
 
-    const Statistics::RunningStatistics<Eigen::Matrix<double,1,1>>& valueStats() const {
+    const SingleValueStatistics& valueStats() const {
         return valueStats_;
     }
 
@@ -65,7 +65,7 @@ public:
 
 private:
     std::vector<std::vector<Reference>::iterator> similarReferences_;
-    Statistics::RunningStatistics<Eigen::Matrix<double,1,1>> valueStats_;
+    SingleValueStatistics valueStats_;
 };
 
 #endif //INPSIGHTS_SIMILARREFERENCES_H
