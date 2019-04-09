@@ -51,6 +51,8 @@ set(HEADER_FILES
         include/MaximaProcessingWidget.h
         include/SurfaceMesh.h
         include/Surface.h
+        include/Arrow.h
+        include/CartesianAxes.h
         )
 
 set(SOURCE_FILES
@@ -75,6 +77,8 @@ set(SOURCE_FILES
         source/MaximaProcessingWidget.cpp
         source/SurfaceMesh.cpp
         source/Surface.cpp
+        source/Arrow.cpp
+        source/CartesianAxes.cpp
         )
 
 add_library(${PROJECT_NAME} STATIC

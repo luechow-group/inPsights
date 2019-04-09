@@ -16,6 +16,8 @@
 #include <ClusterData.h>
 #include <SurfaceData.h>
 #include <Surface.h>
+#include <Polyline.h>
+#include <CartesianAxes.h>
 
 class MoleculeWidget : public QWidget{
     Q_OBJECT
@@ -30,6 +32,7 @@ public:
         new Surface(moleculeEntity_,data, color, alpha);
     };
 
+    void drawAxes(bool drawQ = true);;
     void drawAtoms(bool drawQ = true);
     void drawBonds(bool drawQ = true);
     void drawSpinConnections(bool drawQ = true);
@@ -58,7 +61,9 @@ public:
     QLabel* infoText_;
 private:
     std::shared_ptr<AtomsVector> sharedAtomsVector_;
-    AtomsVector3D* atomsVector3D_;
+    AtomsVector3D *atomsVector3D_;
+    CartesianAxes *cartesianAxes_;
+
 public:
     std::map<int, std::map<int,ElectronsVector3D*>> activeElectronsVectorsMap_;
 

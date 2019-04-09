@@ -47,13 +47,23 @@ MoleculeWidget::MoleculeWidget(QWidget *parent)
     connect(screenshotButton_, &QPushButton::clicked, this, &MoleculeWidget::onScreenshot);
 
     setMouseTracking(true);
+    drawAxes(true);
 }
 
 Qt3DCore::QEntity *MoleculeWidget::getMoleculeEntity() {
     return moleculeEntity_;
 }
 
-#include <SurfaceMesh.h>
+
+void MoleculeWidget::drawAxes(bool drawQ) {
+    if (drawQ) {
+        cartesianAxes_ = new CartesianAxes(moleculeEntity_);
+    } else {
+        cartesianAxes_->deleteLater();
+        delete cartesianAxes_;
+    }
+}
+
 void MoleculeWidget::drawAtoms(bool drawQ) {
     if (drawQ) {
         atomsVector3D_ = new AtomsVector3D(moleculeEntity_, *sharedAtomsVector_);
