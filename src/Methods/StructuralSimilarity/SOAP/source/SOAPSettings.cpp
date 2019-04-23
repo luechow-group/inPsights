@@ -25,19 +25,21 @@ namespace Settings {
 
             auto mapNode = node[className][VARNAME(pairSimilarities)];
             if (!mapNode) {
-                spdlog::info("Property \"{0}\" was not found. Using preset values:");
+                spdlog::info("Property \"{0}\" was not found. Using preset values:", VARNAME(pairSimilarities));
+
+                std::string a,b;
                 for (const auto &kv : pairSimilarities) {
                     if (kv.first.first < 0)
-                        spdlog::info("\t{0},{1} : {2}", Spins::toString(Spins::SpinType(kv.first.first)));
+                        a = Spins::toString(Spins::SpinType(kv.first.first));
                     else
-                        spdlog::info("\t{0},{1} : {2}",
-                                     Elements::ElementInfo::symbol(Elements::ElementType(kv.first.first)));
+                        a = Elements::ElementInfo::symbol(Elements::ElementType(kv.first.first));
 
                     if (kv.first.second < 0)
-                        spdlog::info("\t{0},{1} : {2}", Spins::toString(Spins::SpinType(kv.first.second)));
+                        b = Spins::toString(Spins::SpinType(kv.first.second));
                     else
-                        spdlog::info("\t{0},{1} : {2}",
-                                     Elements::ElementInfo::symbol(Elements::ElementType(kv.first.second)));
+                        b = Elements::ElementInfo::symbol(Elements::ElementType(kv.first.second));
+
+                    spdlog::info("\t{0},{1} : {2}", a, b, kv.second);
                 }
             } else {
                 pairSimilarities.clear();
