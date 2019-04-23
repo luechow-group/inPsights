@@ -45,6 +45,8 @@ namespace Settings{
     public:
         ISettings(const std::string& className);
 
+        std::string getClassname() const;
+
     protected:
         std::string className;
         virtual void appendToNode(YAML::Node &node) const = 0;

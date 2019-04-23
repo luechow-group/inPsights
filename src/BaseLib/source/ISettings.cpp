@@ -6,3 +6,7 @@
 
 Settings::ISettings::ISettings(const std::string& className)
 : className(className){}
+
+std::string Settings::ISettings::getClassname() const {
+    return className;
+}
