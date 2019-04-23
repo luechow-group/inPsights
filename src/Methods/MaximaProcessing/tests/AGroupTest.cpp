@@ -8,6 +8,7 @@
 #include <Reference.h>
 #include <TestMolecules.h>
 #include <Enumerate.h>
+#include <sstream>
 
 using namespace testing;
 
@@ -227,6 +228,8 @@ TEST_F(AGroupTest, AllSampleIds) {
 
 TEST_F(AGroupTest, Print) {
     Group g({g1,{g2,g3}});
-    
-    std::cout << g << std::endl;
+    std::stringstream ss;
+    ss << g;
+
+    ASSERT_EQ(ss.str(), std::string("{{0},{{1},{2}}}"));
 }

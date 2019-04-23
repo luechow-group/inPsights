@@ -74,7 +74,7 @@ TEST_F(ABestMatchDistanceDensityBasedClustererTest, RotationallySymmetricCluster
 }
 
 
-TEST_F(ABestMatchDistanceDensityBasedClustererTest, RotationallyAndPointSymmetricCluster){
+TEST_F(ABestMatchDistanceDensityBasedClustererTest, RotationallySymmetricAndPointLikeCluster){
     BestMatchDistanceDensityBasedClusterer::settings.clusterRadius = 0.1;
 
     const auto &normal = TestMolecules::threeElectrons::normal.electrons();
@@ -86,12 +86,11 @@ TEST_F(ABestMatchDistanceDensityBasedClustererTest, RotationallyAndPointSymmetri
     std::vector<Sample> samples;
     Group references, cluster0Expected, cluster1Expected;
 
-    auto rng = std::default_random_engine(static_cast<unsigned long>(std::clock()));
+    auto rng = std::default_random_engine(12345);//static_cast<unsigned long>(std::clock()));
 
     // emplace first element
-    cluster0Expected.emplace_back(Reference(0,normal));
+    cluster0Expected.emplace_back(Reference(0, normal));
     references.emplace_back(Reference(0,normal));
-
 
     Eigen::PermutationMatrix<Eigen::Dynamic> perm(normal.numberOfEntities());
     perm.setIdentity();
@@ -116,12 +115,12 @@ TEST_F(ABestMatchDistanceDensityBasedClustererTest, RotationallyAndPointSymmetri
     ASSERT_EQ(references.size(), n);
     ASSERT_EQ(references.size(), cluster0Expected.size());
 
-    references.emplace_back(Reference(0, ionic));
-    cluster1Expected.emplace_back(Reference(0, ionic));
 
+    references.emplace_back(Reference(10, ionic));
+    cluster1Expected.emplace_back(Reference(10, ionic));
     unsigned m = 5;
     for (unsigned i = 1; i < m; ++i) {
-        auto maxDev = 1./std::sqrt(3.0)*BestMatchDistanceSimilarityClusterer::settings.similarityRadius.get();
+        auto maxDev = 1./std::sqrt(3.0)*BestMatchDistanceDensityBasedClusterer::settings.clusterRadius.get();
 
         Eigen::Vector3d randomTranslation; //= Eigen::Vector3d::Random(-maxDev, maxDev);
         std::uniform_real_distribution<double> uniformRealDistribution(-maxDev, maxDev);
@@ -131,12 +130,12 @@ TEST_F(ABestMatchDistanceDensityBasedClustererTest, RotationallyAndPointSymmetri
 
         auto evCopy = ionic;
         evCopy.positionsVector().translate(randomTranslation);
-        cluster0Expected.emplace_back(Reference(0, evCopy));
+        cluster1Expected.emplace_back(Reference(10, evCopy));
 
         // random permuation
         std::shuffle(perm.indices().data(), perm.indices().data()+perm.indices().size(), rng);
         evCopy.permute(perm);
-        references.emplace_back(Reference(0 ,evCopy));
+        references.emplace_back(Reference(10 ,evCopy));
 
         Sample s(evCopy, Eigen::VectorXd::Random(normal.numberOfEntities()));
         samples.emplace_back(std::move(s));
@@ -145,7 +144,7 @@ TEST_F(ABestMatchDistanceDensityBasedClustererTest, RotationallyAndPointSymmetri
     ASSERT_EQ(references.size(), n+m);
     ASSERT_EQ(references.size(), cluster0Expected.size() + cluster1Expected.size());
     ASSERT_EQ(references[0].size(), cluster0Expected[0].size());
-    ASSERT_EQ(references[1].size(), cluster0Expected[1].size());
+    ASSERT_EQ(references[1].size(), cluster1Expected[1].size());
 
     // don't shuffle the first element
     std::shuffle(references.begin()+1, references.end(), rng);
