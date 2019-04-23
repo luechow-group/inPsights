@@ -39,6 +39,11 @@ namespace TestMolecules {
                 ElectronsVector({{Spin::beta,  {0, 0, 0.37}},
                                  {Spin::beta,  {0, 0, 0.0}},
                                  {Spin::alpha, {0, 0,-0.37}}})};
+        const MolecularGeometry ionic = {
+                AtomsVector(),
+                ElectronsVector({{Spin::alpha, {0, 0, 0.37}},
+                                 {Spin::alpha, {0, 0,-0.37}},
+                                 {Spin::beta,  {0, 0,-0.37}}})};
     }
 
     namespace eightElectrons {

@@ -7,6 +7,8 @@
 #include <Hungarian.h>
 #include <BestMatchSimilarity.h>
 
+using namespace SOAP;
+
 BestMatch::Result BestMatch::Similarity::compare(
         const MolecularSpectrum &permutee,
         const MolecularSpectrum &reference) {
@@ -42,13 +44,12 @@ BestMatch::Result BestMatch::Similarity::compare(
         for (unsigned j = 0; j < nAlpha; ++j) {
             EnumeratedType<int> enumeratedType_j(Spins::spinToInt(Spin::alpha), j);
             expB = reference.molecularCenters_.find(enumeratedType_j)->second;
-            environmentalSimilarities(i, j) = LocalSimilarity::kernel(expA, expB, SOAPExpansion::settings.zeta());
+            environmentalSimilarities(i, j) = LocalSimilarity::kernel(expA, expB, General::settings.zeta());
         }
         for (unsigned j = 0; j < nBeta; ++j) {
             EnumeratedType<int> enumeratedType_j(Spins::spinToInt(Spin::beta), j);
             expB = reference.molecularCenters_.find(enumeratedType_j)->second;
-            environmentalSimilarities(i, nAlpha + j) = LocalSimilarity::kernel(expA, expB,
-                                                                               SOAPExpansion::settings.zeta());
+            environmentalSimilarities(i, nAlpha + j) = LocalSimilarity::kernel(expA, expB, General::settings.zeta());
         }
     }
     for (unsigned i = 0; i < nBeta; ++i) {
@@ -58,14 +59,13 @@ BestMatch::Result BestMatch::Similarity::compare(
         for (unsigned j = 0; j < nAlpha; ++j) {
             EnumeratedType<int> enumeratedType_j(Spins::spinToInt(Spin::alpha), j);
             expB = reference.molecularCenters_.find(enumeratedType_j)->second;
-            environmentalSimilarities(nAlpha + i, j) = LocalSimilarity::kernel(expA, expB,
-                                                                               SOAPExpansion::settings.zeta());
+            environmentalSimilarities(nAlpha + i, j) = LocalSimilarity::kernel(expA, expB, General::settings.zeta());
         }
         for (unsigned j = 0; j < nBeta; ++j) {
             EnumeratedType<int> enumeratedType_j(Spins::spinToInt(Spin::beta), j);
             expB = reference.molecularCenters_.find(enumeratedType_j)->second;
             environmentalSimilarities(nAlpha + i, nAlpha + j) = LocalSimilarity::kernel(expA, expB,
-                                                                                        SOAPExpansion::settings.zeta());
+                    General::settings.zeta());
         }
     }
 
@@ -86,9 +86,9 @@ BestMatch::Result BestMatch::Similarity::compare(
         MolecularGeometry permutee, const MolecularGeometry &reference,
         bool spinSpecificQ, bool flipSpinsQ) {
 
-    SOAPExpansion::settings.mode = SOAPExpansion::Mode::chemical;
+    General::settings.mode = General::Mode::chemical;
     spdlog::info("The settings stored in '{0} were altered by '{1}'.",
-                 VARNAME(SOAPExpansion::settings), VARNAME(BestMatch::Similarity::compare));
+                 VARNAME(SOAP::settings), VARNAME(BestMatch::Similarity::compare));
 
     ParticleKit::create(reference);
     MolecularSpectrum permuteeSpectrum, referenceSpectrum;

@@ -54,9 +54,12 @@ unsigned long MaximaProcessor::addReference(const Reference &reference) {
     return count;
 }
 
-void MaximaProcessor::doMotifBasedEnergyPartitioning(const Reference &reference) {
+void MaximaProcessor::doMotifBasedEnergyPartitioning(const Group& group) {
+
+    auto allSampleIds = group.allSampleIds();
+    
     // Sample related statistics
-    for (auto & id : reference.sampleIds()) {
+    for (auto id : allSampleIds) {
         Eigen::VectorXd Te = samples_[id].kineticEnergies_;
         Eigen::MatrixXd Vee = CoulombPotential::energies(samples_[id].sample_);
         Eigen::MatrixXd Ven = CoulombPotential::energies(samples_[id].sample_,atoms_);
@@ -68,14 +71,43 @@ void MaximaProcessor::doMotifBasedEnergyPartitioning(const Reference &reference)
     }
 }
 
-void MaximaProcessor::calculateStatistics(const std::vector<std::vector<SimilarReferences>>& clusteredGloballySimilarMaxima){
+size_t  MaximaProcessor::addAllReferences(const Group &group) {
+    unsigned long totalCount = 0;
+    if(group.isLeaf())
+        totalCount += addReference(*group.representative());
+    else
+        for(const auto &subgroup : group)
+            totalCount += addAllReferences(subgroup);
+
+    return totalCount;
+}
+
+std::vector<ElectronsVector> MaximaProcessor::getAllRepresentativeMaxima(const Group &group) {
+    if(group.isLeaf()) {
+        return {}; // leaves are not printed
+    } else {
+        if(group.front().isLeaf()) {
+            return {group.representative()->maximum()};
+        } else {
+            std::vector<ElectronsVector> representativeMaxima;
+            for(auto & i : group) {
+                auto res = getAllRepresentativeMaxima(i);
+                representativeMaxima.insert(representativeMaxima.end(), res.begin(), res.end());
+            }
+            return representativeMaxima;
+        }
+    }
+}
+
+void MaximaProcessor::calculateStatistics(const Group &maxima){
     using namespace YAML;
 
     yamlDocument_ << Key << "En" << Comment("[Eh]") << Value << EnStats_
                   << Key << "Clusters" << BeginSeq;
 
     size_t totalCount = 0;
-    for (auto& cluster : clusteredGloballySimilarMaxima) {
+    for (auto& group : maxima) {
+
         valueStats_.reset();
         SeeStats_.reset();
         TeStats_.reset();
@@ -88,58 +120,31 @@ void MaximaProcessor::calculateStatistics(const std::vector<std::vector<SimilarR
         ReeStats_.reset();
         RenStats_.reset();
 
-        std::vector<ElectronsVector> structures;
-        for (auto &simRefVector : cluster) {
 
-            // Iterate over references being similar to the representative reference.
-            for (const auto &ref : simRefVector.similarReferencesIterators()){
-                totalCount += addReference(*ref);
-            }
-            structures.push_back(simRefVector.representativeReference().maximum());
-        }
-
+        totalCount += addAllReferences(group);
+        auto structures = getAllRepresentativeMaxima(group);
+        
         // Motif analysis (requires spin correlation data)
         auto adjacencyMatrix = GraphAnalysis::filter(SeeStats_.mean().cwiseAbs(), 1.00);
-        motifs_ = Motifs(adjacencyMatrix, MolecularGeometry(atoms_, cluster[0].representativeReference().maximum()));
-        for (auto &simRefVector : cluster) {
-            for (const auto &ref : simRefVector.similarReferencesIterators()){
-                doMotifBasedEnergyPartitioning(*ref);
-            }
-        }
-
-
+        motifs_ = Motifs(adjacencyMatrix, MolecularGeometry(atoms_, group.representative()->maximum()));
+        
+        doMotifBasedEnergyPartitioning(group);
+      
         std::vector<VoxelCube> voxelCubes;
         if(VoxelCubeGeneration::settings.generateVoxelCubesQ())
-            voxelCubes = VoxelCubeGeneration::fromCluster(cluster, samples_);
+            voxelCubes = VoxelCubeGeneration::fromCluster(group, samples_);
 
-        printCluster(structures, voxelCubes);
+
+        yamlDocument_ <<  ClusterData(TeStats_.getTotalWeight(), structures, valueStats_, TeStats_, EeStats_,
+                                      SeeStats_, VeeStats_, VenStats_,
+                                      motifs_, EtotalStats_, intraMotifEnergyStats_, interMotifEnergyStats_,
+                                      ReeStats_, RenStats_, voxelCubes);
     }
     spdlog::info("overall count {}", totalCount);
     assert(totalCount == samples_.size() && "The total count must match the sample size.");
 
     yamlDocument_ << EndSeq;
     assert(yamlDocument_.good());
-}
-
-// selects nWanted structures and prints the statistic data
-void MaximaProcessor::printCluster(std::vector<ElectronsVector>& structures, std::vector<VoxelCube> voxelCubes){
-
-    size_t nWanted = 16;
-    std::vector<ElectronsVector> selectedStructures;
-
-    if(structures.size() < nWanted){
-        for (auto& i : structures) selectedStructures.push_back(i);
-    } else {
-        size_t skipLength = (structures.size()-1) / (nWanted-1);
-
-        for (size_t i = 0; i < nWanted; ++i)
-            selectedStructures.push_back(structures[i*skipLength]);
-    }
-
-    yamlDocument_ <<  ClusterData(TeStats_.getTotalWeight(), selectedStructures, valueStats_, TeStats_, EeStats_,
-                                  SeeStats_, VeeStats_, VenStats_,
-                                  motifs_, EtotalStats_, intraMotifEnergyStats_, interMotifEnergyStats_,
-                                  ReeStats_, RenStats_, voxelCubes);
 }
 
 YAML::Node MaximaProcessor::getYamlNode(){

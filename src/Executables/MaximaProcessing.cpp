@@ -3,9 +3,11 @@
 //
 
 #include <RawDataReader.h>
-#include <GlobalIdentitySorter.h>
-#include <GlobalSimilaritySorter.h>
-#include <GlobalClusterSorter.h>
+#include <Group.h>
+#include <BestMatchDistanceIdentityClusterer.h>
+#include <BestMatchDistanceSimilarityClusterer.h>
+#include <BestMatchDistanceDensityBasedClusterer.h>
+#include <BestMatchSOAPSimilarityClusterer.h>
 #include <MaximaProcessor.h>
 #include <GeneralStatistics.h>
 #include <algorithm>
@@ -28,61 +30,82 @@ int main(int argc, char *argv[]) {
     spdlog::info("Input file {}:\n{}", inputFilename, emitter.c_str());
 
     // Apply settings from inputYaml
-    Settings::MaximaProcessing settings(inputYaml);
-    GlobalIdentitySorter::settings = Settings::GlobalIdentitySorter(inputYaml);
-    GlobalSimilaritySorter::settings = Settings::GlobalSimilaritySorter(inputYaml);
-    GlobalClusterSorter::settings = Settings::GlobalClusterSorter(inputYaml);
-    VoxelCubeGeneration::settings = Settings::VoxelCubeGeneration(inputYaml);
+    Settings::MaximaProcessing maximaProcessingSettings(inputYaml);
 
-    std::vector<Reference> globallyIdenticalMaxima;
+    // Read maxima and samples
+    Group maxima;
     std::vector<Sample> samples;
-    RawDataReader reader(globallyIdenticalMaxima, samples);
-    reader.read(settings.binaryFileBasename(), settings.samplesToAnalyze());
+    RawDataReader reader(maxima, samples);
+    reader.read(maximaProcessingSettings.binaryFileBasename(), maximaProcessingSettings.samplesToAnalyze());
     auto atoms = reader.getAtoms();
 
-    spdlog::info("number of inital refs {}", globallyIdenticalMaxima.size());
-    auto results = GeneralStatistics::calculate(globallyIdenticalMaxima, samples, atoms);
+    spdlog::info("number of inital refs {}", maxima.size());
+    auto results = GeneralStatistics::calculate(maxima, samples, atoms);
 
     auto valueStandardError = results.valueStats_.standardError()(0,0);
 
-    if(settings.identitySearch()) {
-        spdlog::info("Start identity search");
-        GlobalIdentitySorter globalIdentiySorter(globallyIdenticalMaxima,samples);
-        if(!inputYaml["GlobalIdentitySorter"]["identityValueIncrement"])
-            GlobalIdentitySorter::settings.identityValueIncrement = valueStandardError*1e-4;
-        globalIdentiySorter.sort();
-        spdlog::info("number of elements after identity sort {}", globallyIdenticalMaxima.size());
-    }
-
-    std::vector<SimilarReferences> globallySimilarMaxima;
-
-    GlobalSimilaritySorter globalSimilaritySorter(samples,globallyIdenticalMaxima, globallySimilarMaxima);
-    if(!inputYaml["GlobalSimilaritySorter"]["similarityValueIncrement"])
-        GlobalSimilaritySorter::settings.similarityValueIncrement = valueStandardError*1e-2;
-    globalSimilaritySorter.sort();
-    spdlog::info("number of elements after similarity sort {}", globallySimilarMaxima.size());
-
-    std::vector<std::vector<SimilarReferences>> globallyClusteredMaxima;
-    GlobalClusterSorter globalClusterSorter(
-            samples,
-            globallySimilarMaxima,
-            globallyClusteredMaxima);
-    globalClusterSorter.sort();
-    spdlog::info("number of elements after cluster sort {}", globallyClusteredMaxima.size());
-
-    // Permutation sort
-    /*std::vector<std::vector<SimilarReferences>> globallyPermutationallyInvariantClusteredMaxima;
-    GlobalSpatialSymmetrySorter globalPermutationSorter(atoms, samples, globallyClusteredMaxima, globallyPermutationallyInvariantClusteredMaxima);
-    globalPermutationSorter.sort();
-    */
-
     // write used settings
-    YAML::Node usedSettings;
-    settings.appendToNode(usedSettings);
-    GlobalIdentitySorter::settings.appendToNode(usedSettings);
-    GlobalSimilaritySorter::settings.appendToNode(usedSettings);
-    GlobalClusterSorter::settings.appendToNode(usedSettings);
+    YAML::Node usedSettings, usedClusteringSettings;
+    maximaProcessingSettings.appendToNode(usedSettings);
+
+    for(auto node : inputYaml["Clustering"]){
+        auto methodName = node.first.as<std::string>();
+        spdlog::info("Starting {}...", methodName);
+
+        switch (IClusterer::typeFromString(methodName)) {
+            case IClusterer::Type::BestMatchDistanceIdentityClusterer: {
+                BestMatchDistanceIdentityClusterer::settings =
+                        Settings::BestMatchDistanceIdentityClusterer(inputYaml["Clustering"]);
+
+                BestMatchDistanceIdentityClusterer bestMatchDistanceIdentityClusterer(samples);
+                if(!inputYaml["BestMatchDistanceIdentityClusterer"]["identityValueIncrement"])
+                    BestMatchDistanceIdentityClusterer::settings.identityValueIncrement = valueStandardError*1e-4;
+                bestMatchDistanceIdentityClusterer.cluster(maxima);
+
+                BestMatchDistanceIdentityClusterer::settings.appendToNode(usedClusteringSettings);
+                break;
+            }
+            case IClusterer::Type::BestMatchDistanceSimilarityClusterer: {
+                BestMatchDistanceSimilarityClusterer::settings =
+                        Settings::BestMatchDistanceSimilarityClusterer(inputYaml["Clustering"]);
+                BestMatchDistanceSimilarityClusterer bestMatchDistanceSimilarityClusterer(samples);
+                if(!inputYaml["BestMatchDistanceSimilarityClusterer"]["similarityValueIncrement"])
+                    BestMatchDistanceSimilarityClusterer::settings.similarityValueIncrement = valueStandardError*1e-2;
+                bestMatchDistanceSimilarityClusterer.cluster(maxima);
+
+                BestMatchDistanceSimilarityClusterer::settings.appendToNode(usedClusteringSettings);
+                break;
+            }
+            case IClusterer::Type::BestMatchDistanceDensityBasedClusterer: {
+                BestMatchDistanceSimilarityClusterer::settings =
+                        Settings::BestMatchDistanceSimilarityClusterer(inputYaml["Clustering"]);
+                BestMatchDistanceDensityBasedClusterer bestMatchDistanceDensityBasedClusterer(samples);
+                bestMatchDistanceDensityBasedClusterer.cluster(maxima);
+
+                BestMatchDistanceDensityBasedClusterer::settings.appendToNode(usedClusteringSettings);
+                break;
+            }
+            case IClusterer::Type::BestMatchSOAPSimilarityClusterer: {
+                BestMatchSOAPSimilarityClusterer::settings =
+                        Settings::BestMatchSOAPSimilarityClusterer(inputYaml["Clustering"]);
+                BestMatchSOAPSimilarityClusterer bestMatchSOAPSimilarityClusterer(atoms, samples);
+                bestMatchSOAPSimilarityClusterer.cluster(maxima);
+
+                BestMatchSOAPSimilarityClusterer::settings.appendToNode(usedClusteringSettings);
+                break;
+            }
+            default:
+                throw std::invalid_argument("Unknown clustering method \"" + methodName +  "\".");
+        }
+        spdlog::info("number of elements after {}: {}", methodName, maxima.size());
+    }
+    maxima.sortAll();
+
+    usedSettings["Clustering"] = usedClusteringSettings;
+
+    VoxelCubeGeneration::settings = Settings::VoxelCubeGeneration(inputYaml);
     VoxelCubeGeneration::settings.appendToNode(usedSettings);
+
     outputYaml << BeginDoc << Comment("used settings") << usedSettings << EndDoc;
 
     // write results
@@ -92,12 +115,12 @@ int main(int argc, char *argv[]) {
                << Key << "OverallResults" << Value << results;
     spdlog::info("Calculating statistics...");
 
-    MaximaProcessor energyCalculator(outputYaml, samples,atoms);
-    energyCalculator.calculateStatistics(globallyClusteredMaxima);
+    MaximaProcessor maximaProcessor(outputYaml, samples,atoms);
+    maximaProcessor.calculateStatistics(maxima);
 
     outputYaml << EndMap << EndDoc;
 
-    std::string resultsFilename = settings.binaryFileBasename() + ".yml";
+    std::string resultsFilename = maximaProcessingSettings.binaryFileBasename() + ".yml";
     spdlog::info("Writing results into file \"{}\"", resultsFilename);
 
     std::ofstream yamlFile(resultsFilename);
@@ -109,8 +132,6 @@ int main(int argc, char *argv[]) {
     return 0;
 
     /*TODO
-     * - make similar ref a nested structure
-     *  - has a first/representative structure
      *  - has an averagedStructure
      *  - similarity attribute (enum) - spatially|permutationally|rotationally + similar|identical,
      * - use averaged structure for permutation sort, store best match permutation to add energies

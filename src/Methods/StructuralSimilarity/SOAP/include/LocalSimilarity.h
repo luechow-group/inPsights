@@ -7,44 +7,50 @@
 
 #include <complex>
 #include "NeighborhoodExpander.h"
-#include "ExpansionSettings.h"
+#include "SOAPSettings.h"
 
-namespace LocalSimilarity {
+namespace SOAP {
+    namespace LocalSimilarity {
 
-    double unnormalizedKernel(const Environment &e1,
-                              const Environment &e2);
+        double unnormalizedKernel(const Environment &e1,
+                                  const Environment &e2);
 
-    double unnormalizedSelfKernel(const Environment &e);
+        double unnormalizedSelfKernel(const Environment &e);
 
-    double kernel(const Environment &e1,
-                  const Environment &e2,
-                  double zeta = SOAPExpansion::settings.zeta());
+        double kernel(const Environment &e1,
+                      const Environment &e2,
+                      double zeta = General::settings.zeta());
 
-    double unnormalizedSelfKernel(const TypeSpecificNeighborhoodsAtOneCenter &expansions);
-    double unnormalizedKernel(const TypeSpecificNeighborhoodsAtOneCenter &expansions1,
-                              const TypeSpecificNeighborhoodsAtOneCenter &expansions2);
+        double unnormalizedSelfKernel(const TypeSpecificNeighborhoodsAtOneCenter &expansions);
 
-    double kernel(const TypeSpecificNeighborhoodsAtOneCenter &expansions1,
-                  const TypeSpecificNeighborhoodsAtOneCenter &expansions2,
-                  double zeta = SOAPExpansion::settings.zeta());
+        double unnormalizedKernel(const TypeSpecificNeighborhoodsAtOneCenter &expansions1,
+                                  const TypeSpecificNeighborhoodsAtOneCenter &expansions2);
 
-    double kernelDistance(const TypeSpecificNeighborhoodsAtOneCenter &expansions1,
-                          const TypeSpecificNeighborhoodsAtOneCenter &expansions2,
-                          double zeta = SOAPExpansion::settings.zeta());
+        double kernel(const TypeSpecificNeighborhoodsAtOneCenter &expansions1,
+                      const TypeSpecificNeighborhoodsAtOneCenter &expansions2,
+                      double zeta = General::settings.zeta());
 
-    namespace internal {
-        double typeAgnostic(const TypeSpecificNeighborhoodsAtOneCenter &expansions);
-        double typeAgnostic(const TypeSpecificNeighborhoodsAtOneCenter &expansions1,
+        double kernelDistance(const TypeSpecificNeighborhoodsAtOneCenter &expansions1,
+                              const TypeSpecificNeighborhoodsAtOneCenter &expansions2,
+                              double zeta = General::settings.zeta());
+
+        namespace internal {
+            double typeAgnostic(const TypeSpecificNeighborhoodsAtOneCenter &expansions);
+
+            double typeAgnostic(const TypeSpecificNeighborhoodsAtOneCenter &expansions1,
+                                const TypeSpecificNeighborhoodsAtOneCenter &expansions2);
+
+            double chemical(const TypeSpecificNeighborhoodsAtOneCenter &expansions);
+
+            double chemical(const TypeSpecificNeighborhoodsAtOneCenter &expansions1,
                             const TypeSpecificNeighborhoodsAtOneCenter &expansions2);
 
-        double chemical(const TypeSpecificNeighborhoodsAtOneCenter &expansions);
-        double chemical(const TypeSpecificNeighborhoodsAtOneCenter &expansions1,
-                        const TypeSpecificNeighborhoodsAtOneCenter &expansions2);
+            double kroneckerDelta(int typeA, int typeB);
 
-        double kroneckerDelta(int typeA, int typeB);
-        double alchemical(const TypeSpecificNeighborhoodsAtOneCenter &expansions1,
-                          const TypeSpecificNeighborhoodsAtOneCenter &expansions2);
+            double alchemical(const TypeSpecificNeighborhoodsAtOneCenter &expansions1,
+                              const TypeSpecificNeighborhoodsAtOneCenter &expansions2);
+        }
     }
-};
+}
 
 #endif //INPSIGHTS_LOCALSIMILARITY_H

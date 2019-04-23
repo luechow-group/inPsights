@@ -1,5 +1,3 @@
-
-
 //
 // Created by Michael Heuer on 28.08.18.
 //
@@ -8,64 +6,42 @@
 #define INPSIGHTS_REFERENCE_H
 
 #include <ParticlesVector.h>
-#include <Sample.h>
 #include <Statistics.h>
+#include <Group.h>
+#include <MolecularSpectrum.h>
+
+class Sample;
 
 class Reference{
 public:
-    Reference(double negLogSqrdProbabilityDensity, ElectronsVector maximum = {}, size_t id = 0)
-    :
-    negLogSqrdProbabilityDensity_(negLogSqrdProbabilityDensity),
-    maximum_(std::move(maximum)),
-    sampleIds_({id})
-    {}
+    Reference(double negLogSqrdProbabilityDensity = std::numeric_limits<double>::max(),
+              ElectronsVector maximum = {}, size_t id = 0);
 
-    size_t ownId() const {
-        return sampleIds_[0];
-    }
+    size_t ownId() const;
 
     //TODO is this the task of a container?
-    void mergeReference(std::vector<Reference>::iterator &it) {
-        assert((*it).ownId() != ownId() && "Self-associations are not allowed");
+    void mergeReference(Group::iterator &it);
 
-        sampleIds_.insert(
-                sampleIds_.end(),
-                make_move_iterator((*it).sampleIds_.begin()),
-                make_move_iterator((*it).sampleIds_.end()));
-    }
+    void permute(const Eigen::PermutationMatrix<Eigen::Dynamic>& perm, std::vector<Sample>& samples);
 
-    void permute(const Eigen::PermutationMatrix<Eigen::Dynamic>& perm, std::vector<Sample>& samples){
-        maximum_.permute(perm);
+    bool operator<(const Reference& rhs) const;
 
-        for(const auto & i : sampleIds_){
-            samples[i].permute(perm);
-        }
-    }
+    unsigned long count() const;
 
-    bool operator<(const Reference& rhs) const {
-        return negLogSqrdProbabilityDensity_<rhs.negLogSqrdProbabilityDensity_;
-    }
+    double value() const;
 
-    unsigned long count() const {
-        return sampleIds_.size();
-    }
+    ElectronsVector maximum() const;
 
-    double value() const {
-        return negLogSqrdProbabilityDensity_;
-    }
+    std::vector<size_t> sampleIds() const;
 
-    ElectronsVector maximum() const {
-        return maximum_;
-    }
-
-    std::vector<size_t> sampleIds() const {
-        return sampleIds_;
-    }
+    const SOAP::MolecularSpectrum& spectrum() const;
+    void setSpectrum(SOAP::MolecularSpectrum spectrum);
 
 private:
     double negLogSqrdProbabilityDensity_;
     ElectronsVector maximum_;
-    std::vector<size_t> sampleIds_; // contain samples instead?
+    std::vector<size_t> sampleIds_; //TODO use std::list or std::set?
+    SOAP::MolecularSpectrum spectrum_;
 };
 
 

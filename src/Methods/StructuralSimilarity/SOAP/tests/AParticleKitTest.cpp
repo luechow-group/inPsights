@@ -8,6 +8,7 @@
 #include <iomanip>
 
 using namespace testing;
+using namespace SOAP;
 
 class AParticleKitTest : public ::testing::Test {
 public:
@@ -161,11 +162,6 @@ TEST_F(AParticleKitTest, CombinedPermutations) {
 
     // combined perm
     test.permute(fromkit*myperm);
-
-    std::cout << std::endl;
-    std::cout << original << std::endl;
-    std::cout << ref << std::endl;
-    std::cout << test << std::endl;
 }
 
 TEST_F(AParticleKitTest, atomsToKitPermutation) {

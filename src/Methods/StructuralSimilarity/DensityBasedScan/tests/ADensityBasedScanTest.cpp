@@ -47,10 +47,8 @@ public:
 TEST_F(ADensityBasedScanTest, Float) {
     DensityBasedScan<float, Eigen::VectorXf, ADensityBasedScanTest::euclideanDistance<float, Eigen::VectorXf>>  dbscan(dataFloat);
 
-    auto nClusters = dbscan.findClusters(0.20001, 5);// TODO WHY?
-    ASSERT_EQ(nClusters,5);
-
-    auto result = dbscan.getLabels();
+    auto result = dbscan.findClusters(0.20001, 5);// TODO WHY?
+    ASSERT_EQ(result.numberOfClusters,5);
 
     std::vector<int> expected{
         0,0,0,0,0,
@@ -59,16 +57,14 @@ TEST_F(ADensityBasedScanTest, Float) {
         3,3,3,3,3,
         4,4,4,4,4};
 
-    ASSERT_EQ(result, expected);
+    ASSERT_EQ(result.labels, expected);
 }
 
 TEST_F(ADensityBasedScanTest, Double) {
     DensityBasedScan<double, Eigen::VectorXd, ADensityBasedScanTest::euclideanDistance<double, Eigen::VectorXd>>  dbscan(dataDouble);
 
-    auto nClusters = dbscan.findClusters(0.20001, 5);// TODO WHY?
-    ASSERT_EQ(nClusters,5);
-
-    auto result = dbscan.getLabels();
+    auto result = dbscan.findClusters(0.20001, 5);// TODO WHY?
+    ASSERT_EQ(result.numberOfClusters,5);
 
     std::vector<int> expected{
             0,0,0,0,0,
@@ -77,17 +73,16 @@ TEST_F(ADensityBasedScanTest, Double) {
             3,3,3,3,3,
             4,4,4,4,4};
 
-    ASSERT_EQ(result, expected);
+
+    ASSERT_EQ(result.labels, expected);
 }
 
 TEST_F(ADensityBasedScanTest, MinSizeTooLarge) {
     DensityBasedScan<float, Eigen::VectorXf, ADensityBasedScanTest::euclideanDistance<float, Eigen::VectorXf>> dbscan(dataFloat);
 
-    auto nClusters = dbscan.findClusters(0.20001, 6);// TODO WHY?
-    ASSERT_EQ(nClusters,0);
-
-    auto result = dbscan.getLabels();
-
+    auto result = dbscan.findClusters(0.20001, 6);// TODO WHY?
+    ASSERT_EQ(result.numberOfClusters, 0);
+    
     std::vector<int> expected{
             -1,-1,-1,-1,-1,
             -1,-1,-1,-1,-1,
@@ -95,7 +90,7 @@ TEST_F(ADensityBasedScanTest, MinSizeTooLarge) {
             -1,-1,-1,-1,-1,
             -1,-1,-1,-1,-1};
 
-    ASSERT_EQ(result, expected);
+    ASSERT_EQ(result.labels, expected);
 }
 
 TEST_F(ADensityBasedScanTest, PredictEps) {
@@ -122,8 +117,8 @@ TEST_F(ADensityBasedScanTest, BestMatchNormDistanceFunction) {
 
     std::vector<int32_t> expected{0,0};
 
-    auto nClusters = dbscan.findClusters(5.00001, 1); // TODO WHY?
+    auto result = dbscan.findClusters(5.00001, 1); // TODO WHY?
 
-    ASSERT_EQ(nClusters,1);
-    ASSERT_EQ(dbscan.getLabels(),expected);
+    ASSERT_EQ(result.numberOfClusters,1);
+    ASSERT_EQ(result.labels,expected);
 }

@@ -8,26 +8,28 @@
 #include <Eigen/Core>
 #include "MolecularGeometry.h"
 #include "MolecularSpectrum.h"
-#include "ExpansionSettings.h"
+#include "SOAPSettings.h"
 
-namespace StructuralSimilarity{
+namespace SOAP {
+    namespace StructuralSimilarity {
 
-    Eigen::MatrixXd correlationMatrix(const MolecularSpectrum& A,
-                                      const MolecularSpectrum& B);
+        Eigen::MatrixXd correlationMatrix(const MolecularSpectrum &A,
+                                          const MolecularSpectrum &B);
 
-    Eigen::MatrixXd selfCorrelationMatrix(const MolecularSpectrum &A);
+        Eigen::MatrixXd selfCorrelationMatrix(const MolecularSpectrum &A);
 
-    double kernel(const MolecularGeometry &A,
-                  const MolecularGeometry &B, double gamma = SOAPExpansion::settings.gamma());
+        double kernel(const MolecularGeometry &A,
+                      const MolecularGeometry &B, double gamma = General::settings.gamma());
 
-    double kernel(const MolecularSpectrum &spectrumA,
-                  const MolecularSpectrum &spectrumB, double gamma = SOAPExpansion::settings.gamma());
+        double kernel(const MolecularSpectrum &spectrumA,
+                      const MolecularSpectrum &spectrumB, double gamma = General::settings.gamma());
 
-    double kernelDistance(const MolecularGeometry &A,
-                          const MolecularGeometry &B, double gamma = SOAPExpansion::settings.gamma());
+        double kernelDistance(const MolecularGeometry &A,
+                              const MolecularGeometry &B, double gamma = General::settings.gamma());
 
-    double kernelDistance(const MolecularSpectrum &spectrumA,
-                          const MolecularSpectrum &spectrumB, double gamma = SOAPExpansion::settings.gamma());
-};
+        double kernelDistance(const MolecularSpectrum &spectrumA,
+                              const MolecularSpectrum &spectrumB, double gamma = General::settings.gamma());
+    }
+}
 
 #endif //INPSIGHTS_STRUCTURALSIMILARITY_H

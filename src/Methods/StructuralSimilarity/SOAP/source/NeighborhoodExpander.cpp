@@ -3,10 +3,12 @@
 //
 
 #include "NeighborhoodExpander.h"
-#include "CutoffFunction.h"
+#include "Cutoff.h"
 #include "AngularBasis.h"
 #include "ParticleKit.h"
-#include <ExpansionSettings.h>
+#include <SOAPSettings.h>
+
+using namespace SOAP;
 
 NeighborhoodExpander::NeighborhoodExpander()
         : radialGaussianBasis_(){}
@@ -25,7 +27,7 @@ NeighborhoodExpansion NeighborhoodExpander::expandEnvironment(const Environment&
         const auto& neighborCoords = neighborCoordsPair.second;
 
         double weight = 1; //TODO TypeSpecific Value? //const auto& neighbor = neighborCoordsPair.first;
-        double weightScale = CutoffFunction::getWeight(neighborCoords.r);
+        double weightScale = Cutoff::getWeight(neighborCoords.r);
 
         if (neighborCoords.r <= radiusZero)
             weight *= centerWeight; //TODO return something here?
@@ -49,31 +51,30 @@ NeighborhoodExpansion NeighborhoodExpander::expandEnvironment(const Environment&
     return neighborhoodExpansion;
 }
 
-#include <tuple>
 TypeSpecificNeighborhoodsAtOneCenter
 NeighborhoodExpander::computeParticularExpansions(const Environment &e) { // WORKS!
     TypeSpecificNeighborhoodsAtOneCenter expansions;
 
-    auto mode = SOAPExpansion::settings.mode();
+    auto mode = General::settings.mode();
     switch (mode) {
-        case SOAPExpansion::Mode::typeAgnostic: {
+        case General::Mode::typeAgnostic: {
             auto noneTypeId = 0;
             expansions.emplace(noneTypeId, expandEnvironment(e, noneTypeId));
             break;
         }
-        case SOAPExpansion::Mode::chemical: {
+        case General::Mode::chemical: {
             for(auto & [type, count] : ParticleKit::kit){
                 expansions.emplace(type, expandEnvironment(e, type));
             }
             break;
         }
-        case SOAPExpansion::Mode::alchemical: {
+        case General::Mode::alchemical: {
             for(auto & [type, count] : ParticleKit::kit){
                 expansions.emplace(type, expandEnvironment(e, type));
             }
             break;
         }
-        case SOAPExpansion::Mode::undefined:
+        case General::Mode::undefined:
             throw std::exception();
     }
     return expansions;

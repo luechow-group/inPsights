@@ -14,7 +14,7 @@ namespace BestMatch {
                 MolecularGeometry permutee, const MolecularGeometry &reference,
                 bool spinSpecificQ = false, bool flipSpinsQ = false);
 
-        Result compare(const MolecularSpectrum &permutee, const MolecularSpectrum &reference);
+        Result compare(const SOAP::MolecularSpectrum &permutee, const SOAP::MolecularSpectrum &reference);
     }
 }
 

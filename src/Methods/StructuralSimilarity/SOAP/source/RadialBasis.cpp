@@ -7,8 +7,9 @@
 #include <unsupported/Eigen/MatrixFunctions>
 #include <SpecialMathFunctions/ModifiedSphericalBesser1stKind.h>
 #include "RadialBasis.h"
-#include "ExpansionSettings.h"
+#include "SOAPSettings.h"
 
+using namespace SOAP;
 
 RadialBasis::RadialBasis()
         : basis_(createBasis()),
@@ -37,7 +38,7 @@ std::vector<Gaussian> RadialBasis::createBasis() {
         case Radial::BasisType::adaptive :{
             basisFunctionCenter = 0;
             double sigmaStride = 1/2.;
-            
+
             for (unsigned i = 0; i < nmax; ++i) {
                 double sigmaAdaptive = std::sqrt( 4./(2.*lmax + 1) * pow(basisFunctionCenter,2)+ pow(sigmaAtom,2) );
                 basis.emplace_back(basisFunctionCenter, sigmaAdaptive);

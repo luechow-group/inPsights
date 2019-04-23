@@ -9,20 +9,23 @@
 #include <utility>
 #include <MolecularGeometry.h>
 
-class SphericalCoordinates{
-public:
-    SphericalCoordinates(const Eigen::Vector3d& vec);
-    double r, theta, phi;
-};
+namespace SOAP {
+    class SphericalCoordinates {
+    public:
+        SphericalCoordinates(const Eigen::Vector3d &vec);
 
-class Environment{
-public:
-    Environment(MolecularGeometry molecularGeometry, Eigen::Vector3d center);
+        double r, theta, phi;
+    };
 
-    std::vector<std::pair<Particle<int>,SphericalCoordinates>> selectParticles(int expansionTypeId = 0) const;
+    class Environment {
+    public:
+        Environment(MolecularGeometry molecularGeometry, Eigen::Vector3d center);
 
-    MolecularGeometry molecularGeometry_;
-    Eigen::Vector3d center_; //TODO be careful with many particles located at the same center => getCenterWeight?
-};
+        std::vector<std::pair<Particle<int>, SphericalCoordinates>> selectParticles(int expansionTypeId = 0) const;
+
+        MolecularGeometry molecularGeometry_;
+        Eigen::Vector3d center_; //TODO be careful with many particles located at the same center => getCenterWeight?
+    };
+}
 
 #endif //INPSIGHTS_ENVIRONMENT_H

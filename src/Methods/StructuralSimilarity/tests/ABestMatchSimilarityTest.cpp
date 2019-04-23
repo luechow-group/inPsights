@@ -4,10 +4,12 @@
 
 #include <gmock/gmock.h>
 #include <BestMatchSimilarity.h>
-#include <ExpansionSettings.h>
+#include <SOAPSettings.h>
 #include <TestMolecules.h>
 #include <limits>
+
 using namespace testing;
+using namespace SOAP;
 
 class ABestMatchSimilarityTest : public ::testing::Test {
 public:
@@ -37,7 +39,7 @@ public:
 
 TEST_F(ABestMatchSimilarityTest, threeElectrons) {
     ParticleKit::create(A);
-    SOAPExpansion::settings.mode = SOAPExpansion::Mode::chemical;
+    General::settings.mode = General::Mode::chemical;
 
     auto specA = MolecularSpectrum(A);
     auto specB = MolecularSpectrum(B);
@@ -133,7 +135,7 @@ TEST_F(ABestMatchSimilarityTest, BH3) {
     auto b = TestMolecules::BH3::ionic;
 
     ParticleKit::create(a);
-    SOAPExpansion::settings.mode = SOAPExpansion::Mode::chemical;
+    General::settings.mode = General::Mode::chemical;
 
     auto specA = MolecularSpectrum(a);
     auto specB = MolecularSpectrum(b);

@@ -5,6 +5,8 @@
 #include "PowerSpectrum.h"
 #include "NeighborhoodExpansion.h"
 
+using namespace SOAP;
+
 //function to calculate p_ab(X_i)
 Eigen::VectorXcd PowerSpectrum::partialPowerSpectrum(const NeighborhoodExpansion& n1a,
                                                      const NeighborhoodExpansion& n1b) {

@@ -9,6 +9,12 @@ template<typename Scalar,
         Scalar (*distance)(const VectorType &,const VectorType &)>
 class DensityBasedScan {
 public:
+    
+    struct Result{
+        int32_t numberOfClusters;
+        std::vector<int32_t> labels;
+    };
+    
     DensityBasedScan(const DensityBasedScan &) = delete;
 
     DensityBasedScan &operator=(const DensityBasedScan &) = delete;
@@ -18,8 +24,7 @@ public:
     explicit DensityBasedScan(const std::vector<VectorType> &data, Scalar similarityDistance = 1e-7)
             :
             data_(data),
-            vpTree_(data, similarityDistance),
-            labels_(data.size(), -1) {};
+            vpTree_(data, similarityDistance) {};
 
     // predict eps for a fixed number of clusters
     const std::vector<Scalar> predictEps(size_t k) {
@@ -43,28 +48,29 @@ public:
         return std::move(predictedEps);
     }
 
-    int32_t findClusters(Scalar eps, size_t minPts) {
+    Result findClusters(Scalar eps, size_t minPts) {
         std::vector<Eigen::Index> candidates, newCandidates;
         std::vector<std::pair<size_t, Scalar>> neighborIndices;
-
+        std::vector<int32_t> labels(data_.size(), -1);
+        
         int32_t clusterId = 0;
         for (size_t pointIndex = 0; pointIndex < data_.size(); ++pointIndex) {
 
-            if (labels_[pointIndex] >= 0) continue;
+            if (labels[pointIndex] >= 0) continue;
 
             findNeighbors(eps, pointIndex, neighborIndices);
 
             if (neighborIndices.size() < minPts) continue;
 
-            labels_[pointIndex] = clusterId;
+            labels[pointIndex] = clusterId;
 
             candidates.clear();
 
             for (const auto &nn : neighborIndices) {
 
-                if (labels_[nn.first] >= 0) continue;
+                if (labels[nn.first] >= 0) continue;
 
-                labels_[nn.first] = clusterId;
+                labels[nn.first] = clusterId;
                 candidates.push_back(nn.first);
             }
 
@@ -82,8 +88,8 @@ public:
 #pragma omp ordered
                     {
                         for (const auto &nn : candidateNeighbors) {
-                            if (labels_[nn.first] >= 0) continue;
-                            labels_[nn.first] = clusterId;
+                            if (labels[nn.first] >= 0) continue;
+                            labels[nn.first] = clusterId;
                             newCandidates.push_back(nn.first);
                         }
                     }
@@ -94,11 +100,9 @@ public:
             ++clusterId;
         }
 
-        return clusterId;
-    }
-
-    const std::vector<int32_t> &getLabels() const {
-        return labels_;
+        auto nClusters = clusterId;
+        
+        return {nClusters, labels};
     }
 
 private:
@@ -109,7 +113,6 @@ private:
 
     const std::vector<VectorType> &data_;
     VantagePointTree<Scalar,VectorType,distance> vpTree_;
-    std::vector<int32_t> labels_;
 };
 
 #endif // DENSITYBASEDSCAN_H

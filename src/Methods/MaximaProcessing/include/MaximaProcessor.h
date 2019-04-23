@@ -6,25 +6,26 @@
 #define INPSIGHTS_MAXIMAPROCESSOR_H
 
 #include "Reference.h"
-#include "SimilarReferences.h"
 #include "Sample.h"
 #include <Motifs.h>
 #include <Statistics.h>
 #include <VoxelCube.h>
+#include <BestMatchSOAPSimilarityClusterer.h>
 
 class MaximaProcessor {
 public:
 
     MaximaProcessor(YAML::Emitter& yamlDocument, const std::vector<Sample> &samples, AtomsVector atoms);
 
-    unsigned long addReference(const Reference &reference);
+    size_t addReference(const Reference &reference);
 
-    void doMotifBasedEnergyPartitioning(const Reference &reference);
+    size_t addAllReferences(const Group &group);
 
-    void calculateStatistics(const std::vector<std::vector<SimilarReferences>> &clusteredGloballySimilarMaxima);
+    std::vector<ElectronsVector> getAllRepresentativeMaxima(const Group &group);
 
-    // selects nWanted structures and prints the statistic data
-    void printCluster(std::vector<ElectronsVector> &structures, std::vector<VoxelCube> voxelCubes);
+    void doMotifBasedEnergyPartitioning(const Group &group);
+
+    void calculateStatistics(const Group &maxima);
 
     YAML::Node getYamlNode();
 

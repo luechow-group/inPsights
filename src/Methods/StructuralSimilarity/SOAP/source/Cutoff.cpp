@@ -2,16 +2,17 @@
 // Created by Michael Heuer on 03.05.18.
 //
 
-#include "CutoffFunction.h"
+#include "Cutoff.h"
 #include <cmath>
-#include "ExpansionSettings.h"
+#include "SOAPSettings.h"
 
-bool CutoffFunction::withinCutoffRadiusQ(double distance) {
+using namespace SOAP;
+
+bool Cutoff::withinCutoffRadiusQ(double distance) {
     return distance < Cutoff::settings.radius();
 }
 
-
-double CutoffFunction::getWeight(double distanceFromExpansionCenter) {
+double Cutoff::getWeight(double distanceFromExpansionCenter) {
     const auto innerPlateauRadius = Cutoff::innerPlateauRadius();
     const auto cutoffWidth = Cutoff::settings.width();
     const auto cutoffRadius = Cutoff::settings.radius();
@@ -26,12 +27,12 @@ double CutoffFunction::getWeight(double distanceFromExpansionCenter) {
 };
 
 
-double CutoffFunction::getWeight(const Eigen::Vector3d& position,
+double Cutoff::getWeight(const Eigen::Vector3d& position,
                          const Eigen::Vector3d& expansionCenter) {
     return getWeight(distance(position, expansionCenter));
 }
 
-Eigen::Vector3d CutoffFunction::getWeightGradient(const Eigen::Vector3d&position ) {
+Eigen::Vector3d Cutoff::getWeightGradient(const Eigen::Vector3d&position ) {
     const auto innerPlateauRadius = Cutoff::innerPlateauRadius();
     const auto cutoffWidth = Cutoff::settings.width();
     //const auto & centerWeight = ExpansionSettings::Cutoff::centerWeight;
@@ -48,7 +49,7 @@ Eigen::Vector3d CutoffFunction::getWeightGradient(const Eigen::Vector3d&position
         return Eigen::Vector3d::Zero(); //TODO is this the correct behavior?
 };
 
-double CutoffFunction::distance(const Eigen::Vector3d &position,
+double Cutoff::distance(const Eigen::Vector3d &position,
                                 const Eigen::Vector3d &expansionCenter){
     return (position-expansionCenter).eval().norm();
 }

@@ -3,7 +3,9 @@
 //
 
 #include "NeighborhoodExpansion.h"
-#include "ExpansionSettings.h"
+#include "SOAPSettings.h"
+
+using namespace SOAP;
 
 NeighborhoodExpansion::NeighborhoodExpansion()
         : angularEntityLength_(angularEntityLength(Angular::settings.lmax())), //lmax*lmax+ 2*lmax+1
@@ -12,7 +14,7 @@ NeighborhoodExpansion::NeighborhoodExpansion()
 {}
 
 std::complex<double> NeighborhoodExpansion::getCoefficient(unsigned n, unsigned l, int m) const {
-    SOAPExpansion::checkBounds(n,l,m);
+    General::checkBounds(n,l,m);
     return coefficients_[(n-1)*angularEntityLength_ + (angularEntityLength(l-1)) + (m+l)];
 }
 
@@ -34,7 +36,7 @@ unsigned  NeighborhoodExpansion::angularSubEntityLength(unsigned l) const {
 }
 
 void NeighborhoodExpansion::storeCoefficient(unsigned n, unsigned l, int m, const std::complex<double> &coefficient) {
-    SOAPExpansion::checkBounds(n,l,m);
+    General::checkBounds(n,l,m);
     assert(coefficient == coefficient && "Value cannot be NaN!");
     coefficients_[(n-1)*angularEntityLength_ + (angularEntityLength(l-1)) + (m+l)] += coefficient;
 }
