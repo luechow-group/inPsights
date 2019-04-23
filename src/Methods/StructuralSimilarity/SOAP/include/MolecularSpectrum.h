@@ -11,13 +11,16 @@
 #include "NeighborhoodExpander.h"
 #include <vector>
 
-class MolecularSpectrum{
-public:
-    MolecularSpectrum() = default;
-    explicit MolecularSpectrum(MolecularGeometry molecule);
+namespace SOAP {
+    class MolecularSpectrum {
+    public:
+        MolecularSpectrum() = default;
 
-    MolecularGeometry molecule_;
-    MolecularCenters molecularCenters_;
-};
+        explicit MolecularSpectrum(MolecularGeometry molecule);
+
+        MolecularGeometry molecule_;
+        MolecularCenters molecularCenters_;
+    };
+}
 
 #endif //INPSIGHTS_MOLECULARSPECTRUM_H

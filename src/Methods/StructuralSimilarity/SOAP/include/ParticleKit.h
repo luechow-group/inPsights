@@ -10,71 +10,76 @@
 #include <MolecularGeometry.h>
 #include <Eigen/Core>
 
-using AtomKit = std::vector<std::pair<Element,unsigned>>;
-using ElectronKit = std::pair<unsigned,unsigned>; // alpha, beta
-using TypeKit = std::vector<std::pair<int,unsigned>>;
 
-namespace ParticleKit{
+using AtomKit = std::vector<std::pair<Element, unsigned>>;
+using ElectronKit = std::pair<unsigned, unsigned>; // alpha, beta
+using TypeKit = std::vector<std::pair<int, unsigned>>;
 
-    void create(const AtomKit& atomKit, const ElectronKit& electronKit);
+namespace SOAP {
+    namespace ParticleKit {
 
-    void createKit(const AtomKit &atomKit, const ElectronKit &electronKit);
+        void create(const AtomKit &atomKit, const ElectronKit &electronKit);
 
-    void create(const AtomKit& atomKit, int charge = 0, unsigned multiplicity = 1);
+        void createKit(const AtomKit &atomKit, const ElectronKit &electronKit);
 
-    void create(const AtomsVector& atoms, int charge = 0, unsigned multiplicity = 1);
+        void create(const AtomKit &atomKit, int charge = 0, unsigned multiplicity = 1);
 
-    void create(const AtomsVector& atoms, const ElectronsVector& electrons);
+        void create(const AtomsVector &atoms, int charge = 0, unsigned multiplicity = 1);
 
-    void create(const MolecularGeometry& molecularGeometry);
+        void create(const AtomsVector &atoms, const ElectronsVector &electrons);
 
-    namespace internal {
-        void createAtomKitFromAtomsVector(const AtomsVector& atoms);
+        void create(const MolecularGeometry &molecularGeometry);
 
-        void createElectronKitFromAtomKit(const AtomKit &atomKit, int charge, unsigned multiplicity);
+        namespace internal {
+            void createAtomKitFromAtomsVector(const AtomsVector &atoms);
 
-        void createElectronKitFromElectronsVector(const ElectronsVector &electronsVector);
-    }
+            void createElectronKitFromAtomKit(const AtomKit &atomKit, int charge, unsigned multiplicity);
 
-    ElementTypesVector toElementTypesVector();
+            void createElectronKitFromElectronsVector(const ElectronsVector &electronsVector);
+        }
 
-    SpinTypesVector toSpinTypesVector();
+        ElementTypesVector toElementTypesVector();
 
-    Eigen::PermutationMatrix<Eigen::Dynamic> fromKitPermutation(const AtomsVector &atomsVector);
-    Eigen::PermutationMatrix<Eigen::Dynamic> toKitPermutation(const AtomsVector &atomsVector);
+        SpinTypesVector toSpinTypesVector();
 
-    Eigen::PermutationMatrix<Eigen::Dynamic> fromKitPermutation(const ElectronsVector &electronsVector);
-    Eigen::PermutationMatrix<Eigen::Dynamic> toKitPermutation(const ElectronsVector &electronsVector);
+        Eigen::PermutationMatrix<Eigen::Dynamic> fromKitPermutation(const AtomsVector &atomsVector);
 
-    bool isSubsetQ(const AtomsVector& atomsVector);
+        Eigen::PermutationMatrix<Eigen::Dynamic> toKitPermutation(const AtomsVector &atomsVector);
 
-    bool isSubsetQ(const ElectronsVector& electronsVector);
+        Eigen::PermutationMatrix<Eigen::Dynamic> fromKitPermutation(const ElectronsVector &electronsVector);
 
-    bool isSubsetQ(const MolecularGeometry& molecularGeometry);
+        Eigen::PermutationMatrix<Eigen::Dynamic> toKitPermutation(const ElectronsVector &electronsVector);
 
-    NumberedElement getNumberedElementByIndex(unsigned idx);
+        bool isSubsetQ(const AtomsVector &atomsVector);
 
-    NumberedSpin getNumberedSpinByIndex(unsigned idx);
+        bool isSubsetQ(const ElectronsVector &electronsVector);
 
-    NumberedType<int> getNumberedTypeByIndex(unsigned idx);
+        bool isSubsetQ(const MolecularGeometry &molecularGeometry);
 
-    unsigned numberOfElementTypes();
+        EnumeratedElement getEnumeratedElementByIndex(unsigned idx);
 
-    unsigned numberOfSpinTypes();
+        EnumeratedSpin getEnumeratedSpinByIndex(unsigned idx);
 
-    unsigned numberOfTypes();
+        EnumeratedType<int> getEnumeratedTypeByIndex(unsigned idx);
 
-    unsigned numberOfAtoms();
+        unsigned numberOfElementTypes();
 
-    unsigned numberOfElectrons();
+        unsigned numberOfSpinTypes();
 
-    unsigned numberOfParticles();
+        unsigned numberOfTypes();
 
-    std::string toString();
+        unsigned numberOfAtoms();
 
-    extern AtomKit atomKit;
-    extern ElectronKit electronKit;
-    extern TypeKit kit;
-};
+        unsigned numberOfElectrons();
+
+        unsigned numberOfParticles();
+
+        std::string toString();
+
+        extern AtomKit atomKit;
+        extern ElectronKit electronKit;
+        extern TypeKit kit;
+    };
+}
 
 #endif //INPSIGHTS_PARTICLEKIT_H

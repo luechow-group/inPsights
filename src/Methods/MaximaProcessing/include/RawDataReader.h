@@ -12,7 +12,7 @@
 class RawDataReader : public BinaryFileReader{
 public:
     explicit RawDataReader(
-            std::vector<Reference>& references,
+            Group& maxima,
             std::vector<Sample>& samples,
             int recordDelimiterLength = 4);
 
@@ -33,7 +33,7 @@ private:
 
     AtomsVector atoms_;
     SpinTypesVector spins_;
-    std::vector<Reference>& references_;
+    Group& maxima_;
     std::vector<Sample>& samples_;
     size_t id_;
 };

@@ -52,40 +52,52 @@ TEST_F(ATypesVectorTest, ElementTypesStream){
     ASSERT_EQ(stringstream.str(), "H\nHe\nOg\nHe\nHe\n");
 }
 
+TEST_F(ATypesVectorTest, EigenVectorConstructor){
+    SpinTypesVector stv(Eigen::VectorXi::Zero(5));
+    std::stringstream stringstream;
+    stringstream << stv;
+    ASSERT_EQ(stringstream.str(), "-\n-\n-\n-\n-\n");
+}
+
 TEST_F(ATypesVectorTest, SpecializedConstructor){
     SpinTypesVector stv(2,3);
     std::stringstream stringstream;
     stringstream << stv;
     ASSERT_EQ(stringstream.str(), "a\na\nb\nb\nb\n");
+
+    SpinTypesVector stv2(5);
+    std::stringstream stringstream2;
+    stringstream2 << stv2;
+    ASSERT_EQ(stringstream2.str(), "a\na\na\na\na\n");
 }
 
 TEST_F(ATypesVectorTest,GetIndexedTypeFromIndex){
-    auto indexedType = etv.getNumberedTypeByIndex(3);
+    auto indexedType = etv.getEnumeratedTypeByIndex(3);
 
     ASSERT_EQ(indexedType.number_,1);
     ASSERT_EQ(indexedType.type_, Element::He);
 }
 
 TEST_F(ATypesVectorTest,CheckIndexedType_Present){
-    auto indexedType = NumberedType<Element>(Element::He,1);
+    auto indexedType = EnumeratedType<Element>(Element::He,1);
 
-    auto foundIndexPair = etv.findIndexOfNumberedType(indexedType);
+    auto foundIndexPair = etv.findIndexOfEnumeratedType(indexedType);
     ASSERT_TRUE(foundIndexPair.first);
     ASSERT_EQ(foundIndexPair.second,3);
 }
 
 TEST_F(ATypesVectorTest,CheckIndexedTypePresentBut_WrongIndex){
-    auto wrongIndexedType = NumberedType<Element>(Element::He,3);
+    auto wrongIndexedType = EnumeratedType<Element>(Element::He,3);
 
-    auto foundIndexPair = etv.findIndexOfNumberedType(wrongIndexedType);
+    auto foundIndexPair = etv.findIndexOfEnumeratedType(wrongIndexedType);
     ASSERT_FALSE(foundIndexPair.first);
     ASSERT_EQ(foundIndexPair.second,0);
 }
 
 TEST_F(ATypesVectorTest,CheckIndexedType_MissingType){
-    auto indexedType = NumberedType<Element>(Element::Ca,1);
+    auto indexedType = EnumeratedType<Element>(Element::Ca,1);
 
-    auto foundIndexPair = etv.findIndexOfNumberedType(indexedType);
+    auto foundIndexPair = etv.findIndexOfEnumeratedType(indexedType);
     ASSERT_FALSE(foundIndexPair.first);
     ASSERT_EQ(foundIndexPair.second,0);
 }
@@ -129,4 +141,20 @@ TEST_F(ATypesVectorTest, Permute){
 TEST_F(ATypesVectorTest, Multiplicity) {
     ASSERT_EQ(stv.multiplicity(),1);
     ASSERT_EQ(stvsmall.multiplicity(),2);
+}
+
+TEST_F(ATypesVectorTest, FlipSpins){
+    
+    auto stvFlipped = stv;
+    stvFlipped.flipSpins();
+    
+    SpinTypesVector reference({
+        Spin::beta,
+        Spin::beta,
+        Spin::alpha,
+        Spin::beta,
+        Spin::alpha,
+        Spin::alpha});
+    
+    ASSERT_EQ(stvFlipped, reference);
 }

@@ -5,7 +5,7 @@
 #include "SimpleSorter.h"
 #include "MolecularSpectrum.h"
 
-std::vector<std::vector<unsigned >> SimpleSorter::sort(std::vector<MolecularSpectrum> spectra, double threshold){
+std::vector<std::vector<unsigned >> SimpleSorter::sort(std::vector<SOAP::MolecularSpectrum> spectra, double threshold){
     assert(!spectra.empty() && "The vector cannot be empty");
 
     std::vector<std::vector<unsigned >> clusters;
@@ -15,8 +15,7 @@ std::vector<std::vector<unsigned >> SimpleSorter::sort(std::vector<MolecularSpec
         std::vector<std::vector<unsigned >>::iterator it;
         printf("i=%d\n",i);
         for (it = clusters.begin(); it != clusters.end(); ++it){
-            //auto kdist = StructuralSimilarity::kernelDistance(spectra[i],spectra[spectrumIdxOfTheFirstElement]);
-            auto kdist = StructuralSimilarity::kernel(spectra[i],spectra[(*it)[0]]);
+            auto kdist = SOAP::StructuralSimilarity::kernel(spectra[i],spectra[(*it)[0]]);
             if(kdist >= threshold) {
                 (*it).push_back(i);
                 break;

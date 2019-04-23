@@ -9,7 +9,6 @@
 namespace Settings {
     class TestSettings : public ISettings {
     public:
-        inline static const std::string className = {VARNAME(TestSettings)};
         Property<int> number = {1234567890, VARNAME(number)};
         Property<double> threshold = {1.234567890, VARNAME(threshold)};
 
@@ -17,11 +16,13 @@ namespace Settings {
             assert(val > 0 && "The threshold cannot be negative.");
         };
 
-        TestSettings() {
+        TestSettings()
+        : ISettings(VARNAME(TestSettings)) {
             threshold.onChange_.connect(boost::bind(&TestSettings::onThresholdChanged, this, _1));
         };
 
-        explicit TestSettings(const YAML::Node &node) {
+        explicit TestSettings(const YAML::Node &node)
+        : TestSettings() {
             intProperty::decode(node[className], number);
             doubleProperty::decode(node[className], threshold);
         };
@@ -53,10 +54,10 @@ TEST(AISettingsTest, YamlConversion) {
     auto node = YAML::convert<TestSettings>::encode(settings);
 
 
-    ASSERT_TRUE(node[TestSettings::className]["number"]);
-    ASSERT_EQ(node[TestSettings::className]["number"].as<int>(), settings.number.get());
-    ASSERT_TRUE(node[TestSettings::className]["threshold"]);
-    ASSERT_EQ(node[TestSettings::className]["threshold"].as<double>(), settings.threshold.get());
+    ASSERT_TRUE(node[TestMethod::settings.name()][TestMethod::settings.number.name()]);
+    ASSERT_EQ(node[TestMethod::settings.name()][TestMethod::settings.number.name()].as<int>(), settings.number.get());
+    ASSERT_TRUE(node[TestMethod::settings.name()][TestMethod::settings.threshold.name()]);
+    ASSERT_EQ(node[TestMethod::settings.name()][TestMethod::settings.threshold.name()].as<double>(), settings.threshold.get());
 
     TestSettings decodedSettings(node);
 

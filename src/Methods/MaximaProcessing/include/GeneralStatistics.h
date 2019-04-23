@@ -6,8 +6,8 @@
 #define INPSIGHTS_GENERALSTATISTICS_H
 
 #include "Reference.h"
-#include "SimilarReferences.h"
 #include "Sample.h"
+#include "Group.h"
 #include <Statistics.h>
 
 namespace GeneralStatistics{
@@ -33,7 +33,7 @@ namespace GeneralStatistics{
         double Vnn_;
     };
 
-    Result calculate(std::vector<Reference> &references,
+    Result calculate(Group &maxima,
                      std::vector<Sample> &samples,
                      const AtomsVector& atoms);
 }

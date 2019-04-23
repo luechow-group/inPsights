@@ -39,6 +39,11 @@ namespace TestMolecules {
                 ElectronsVector({{Spin::beta,  {0, 0, 0.37}},
                                  {Spin::beta,  {0, 0, 0.0}},
                                  {Spin::alpha, {0, 0,-0.37}}})};
+        const MolecularGeometry ionic = {
+                AtomsVector(),
+                ElectronsVector({{Spin::alpha, {0, 0, 0.37}},
+                                 {Spin::alpha, {0, 0,-0.37}},
+                                 {Spin::beta,  {0, 0,-0.37}}})};
     }
 
     namespace eightElectrons {
@@ -98,6 +103,18 @@ namespace TestMolecules {
                     ElectronsVector({{Spin::alpha, {0, 0, 0.37}},
                                      {Spin::beta,  {0, 0,-0.37}}})};
 
+            const MolecularGeometry ionicLeft = {
+                    AtomsVector({{Element::H, {0, 0, 0.37}},
+                                 {Element::H, {0, 0, -0.37}}}),
+                    ElectronsVector({{Spin::alpha, {0, 0,-0.37}},
+                                     {Spin::beta,  {0, 0,-0.37}}})};
+
+            const MolecularGeometry ionicRight = {
+                    AtomsVector({{Element::H, {0, 0, 0.37}},
+                                 {Element::H, {0, 0, -0.37}}}),
+                    ElectronsVector({{Spin::alpha, {0, 0, 0.37}},
+                                     {Spin::beta,  {0, 0, 0.37}}})};
+
             const MolecularGeometry translated = {
                     AtomsVector({{Element::H, {0+1, 0+1, 0.37+1}},
                                  {Element::H, {0+1, 0+1, -0.37+1}}}),
@@ -147,6 +164,42 @@ namespace TestMolecules {
                                      {Spin::alpha,{0, 0, 0.37}},
                                      {Spin::beta, {0, 0,-0.37}}})};
         }
+    }
+
+    namespace BH3 {
+
+        const MolecularGeometry ionic = {
+                AtomsVector({{Element::B,{ 0, 0, 0}},
+                             {Element::H,{ 0, 2./std::sqrt(3), 0}},
+                             {Element::H,{-1,-1./std::sqrt(3), 0}},
+                             {Element::H,{ 1,-1./std::sqrt(3), 0}},
+                            }),
+                ElectronsVector({{Spin::alpha,{ 0, 0, 0}},
+                                 {Spin::beta ,{ 0, 0, 0}},
+                                 {Spin::alpha,{ 0.0, 2.0/std::sqrt(3), 0}},
+                                 {Spin::beta ,{ 0.0, 1.0/std::sqrt(3), 0}},/**/
+                                 {Spin::alpha,{-1.0,-1.0/std::sqrt(3), 0}},
+                                 {Spin::beta, {-1.0,-1.0/std::sqrt(3), 0}},/**/
+                                 {Spin::alpha,{ 1.0,-1.0/std::sqrt(3), 0}},
+                                 {Spin::beta, { 1.0,-1.0/std::sqrt(3), 0}}
+                                 })};
+
+        const MolecularGeometry ionicMirrored = {
+                AtomsVector({{Element::B,{0, 0, 0}},
+                             {Element::H,{ 0, 2./std::sqrt(3), 0}},
+                             {Element::H,{-1,-1./std::sqrt(3), 0}},
+                             {Element::H,{ 1,-1./std::sqrt(3), 0}},
+                            }),
+                ElectronsVector({{Spin::alpha,{ 0.0, 0.0, 0}},
+                                 {Spin::beta ,{ 0.0, 0.0, 0}},
+                                 {Spin::alpha,{ 0.0, 2.0/std::sqrt(3), 0}},
+                                 {Spin::beta ,{ 0.0, 2.0/std::sqrt(3), 0}},/**/
+                                 {Spin::alpha,{-1.0,-1.0/std::sqrt(3), 0}},
+                                 {Spin::beta, {-0.5,-0.5/std::sqrt(3), 0}},/**/
+                                 {Spin::alpha,{ 1.0,-1.0/std::sqrt(3), 0}},
+                                 {Spin::beta, { 1.0,-1.0/std::sqrt(3), 0}}
+                                })};
+
     }
 
     namespace CO2{

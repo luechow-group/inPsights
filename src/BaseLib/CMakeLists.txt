@@ -32,7 +32,7 @@ set(HEADER_FILES
         include/TypesVector.h
         include/Metrics.h
         include/MolecularGeometry.h
-        include/NumberedType.h
+        include/EnumeratedType.h
         include/EigenYamlConversion.h
         include/SpecialMathFunctions/BoostSphericalHarmonics.h
         include/SpecialMathFunctions/ModifiedSphericalBesser1stKind.h
@@ -71,6 +71,7 @@ set(SOURCE_FILES
         source/SpecialMathFunctions/ModifiedSphericalBesser1stKind.cpp
         source/SpecialMathFunctions/Gaussian.cpp
         source/BinaryFileReader.cpp
+        source/ISettings.cpp
         )
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES})

@@ -21,9 +21,9 @@ public:
 
     Particle<int> operator[](long i) const;
 
-    std::pair<bool,long> findIndexByNumberedType(const NumberedType<int> &numberedType) const;
+    std::pair<bool,long> findIndexByEnumeratedType(const EnumeratedType<int> &enumeratedType) const;
 
-    NumberedType<int> findNumberedTypeByIndex(unsigned idx) const;
+    EnumeratedType<int> findEnumeratedTypeByIndex(unsigned idx) const;
 
     long numberOfEntities() const;
 

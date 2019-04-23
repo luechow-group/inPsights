@@ -9,11 +9,11 @@
 #include <fstream>
 
 RawDataReader::RawDataReader(
-        std::vector<Reference>& references,
+        Group& references,
         std::vector<Sample>& samples, int recordDelimiterLength)
         :
         BinaryFileReader(recordDelimiterLength),
-        references_(references),
+        maxima_(references),
         samples_(samples),
         id_(0)
         {}
@@ -60,7 +60,7 @@ void RawDataReader::readSamplesAndMaxima(std::ifstream &input, int fileLength, s
         auto maximum =  serializedData.segment(4*ne, 3*ne);
         auto value = serializedData[7*ne];
         auto r = Reference(value, ElectronsVector(PositionsVector(maximum), spins_), id_);
-        references_.emplace_back(std::move(r));
+        maxima_.emplace_back(Group(std::move(r)));
 
         id_++;
     }
@@ -84,7 +84,7 @@ void RawDataReader::read(const std::string &basename, size_t numberOfSamples){
 
     auto samplesLimit = (numberOfSamples == 0)? std::numeric_limits<size_t>::max() : numberOfSamples;
 
-    while(input.good() && references_.size() < samplesLimit) {
+    while(input.good() && maxima_.size() < samplesLimit) {
             readSamplesAndMaxima(input, fileLength, samplesLimit);
             input.close();
 

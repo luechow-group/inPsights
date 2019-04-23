@@ -6,26 +6,29 @@
 #define INPSIGHTS_POWERSPECTRUM_H
 
 #include <Eigen/Core>
-#include "ExpansionSettings.h"
+#include "SOAPSettings.h"
 
-class NeighborhoodExpansion;
+namespace SOAP {
+    class NeighborhoodExpansion;
 
-namespace PowerSpectrum {
-    //function to calculate p_ab(X_i)
-    Eigen::VectorXcd partialPowerSpectrum(const NeighborhoodExpansion& n1a,
-                                          const NeighborhoodExpansion& n1b);
+    namespace PowerSpectrum {
+        //function to calculate p_ab(X_i)
+        Eigen::VectorXcd partialPowerSpectrum(const NeighborhoodExpansion &n1a,
+                                              const NeighborhoodExpansion &n1b);
 
-    Eigen::VectorXcd partialPowerSpectrum(const NeighborhoodExpansion& n); //TODO CAN THIS SAFE COMPUTATIONAL TIME?
+        Eigen::VectorXcd partialPowerSpectrum(const NeighborhoodExpansion &n); //TODO CAN THIS SAFE COMPUTATIONAL TIME?
 
-    // PARTICLE-TYPE SPECIFIC
-    std::complex<double> powerSpectrumCoefficient(const NeighborhoodExpansion& speciesA,/*replace by Type typeA*/
-                                                  const NeighborhoodExpansion& speciesB,/*replace by Type typeB*/
-                                                  unsigned n1, unsigned n2, unsigned l );
-    // GENERIC
-    std::complex<double> powerSpectrumCoefficient(const NeighborhoodExpansion& generic,/*replace GenericType generic*/
-                                                  unsigned n1, unsigned n2, unsigned l);
+        // PARTICLE-TYPE SPECIFIC
+        std::complex<double> powerSpectrumCoefficient(const NeighborhoodExpansion &speciesA,/*replace by Type typeA*/
+                                                      const NeighborhoodExpansion &speciesB,/*replace by Type typeB*/
+                                                      unsigned n1, unsigned n2, unsigned l);
 
-};
+        // GENERIC
+        std::complex<double>
+        powerSpectrumCoefficient(const NeighborhoodExpansion &generic,/*replace GenericType generic*/
+                                 unsigned n1, unsigned n2, unsigned l);
 
+    }
+}
 
 #endif //INPSIGHTS_POWERSPECTRUM_H

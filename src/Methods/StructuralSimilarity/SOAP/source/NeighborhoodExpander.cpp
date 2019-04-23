@@ -3,10 +3,12 @@
 //
 
 #include "NeighborhoodExpander.h"
-#include "CutoffFunction.h"
+#include "Cutoff.h"
 #include "AngularBasis.h"
 #include "ParticleKit.h"
-#include <ExpansionSettings.h>
+#include <SOAPSettings.h>
+
+using namespace SOAP;
 
 NeighborhoodExpander::NeighborhoodExpander()
         : radialGaussianBasis_(){}
@@ -25,7 +27,7 @@ NeighborhoodExpansion NeighborhoodExpander::expandEnvironment(const Environment&
         const auto& neighborCoords = neighborCoordsPair.second;
 
         double weight = 1; //TODO TypeSpecific Value? //const auto& neighbor = neighborCoordsPair.first;
-        double weightScale = CutoffFunction::getWeight(neighborCoords.r);
+        double weightScale = Cutoff::getWeight(neighborCoords.r);
 
         if (neighborCoords.r <= radiusZero)
             weight *= centerWeight; //TODO return something here?
@@ -53,26 +55,26 @@ TypeSpecificNeighborhoodsAtOneCenter
 NeighborhoodExpander::computeParticularExpansions(const Environment &e) { // WORKS!
     TypeSpecificNeighborhoodsAtOneCenter expansions;
 
-    auto mode = SOAPExpansion::settings.mode();
+    auto mode = General::settings.mode();
     switch (mode) {
-        case SOAPExpansion::Mode::typeAgnostic: {
+        case General::Mode::typeAgnostic: {
             auto noneTypeId = 0;
             expansions.emplace(noneTypeId, expandEnvironment(e, noneTypeId));
             break;
         }
-        case SOAPExpansion::Mode::chemical: {
-            for(auto & type : ParticleKit::kit){
-                expansions.emplace(type.first, expandEnvironment(e, type.first));
+        case General::Mode::chemical: {
+            for(auto & [type, count] : ParticleKit::kit){
+                expansions.emplace(type, expandEnvironment(e, type));
             }
             break;
         }
-        case SOAPExpansion::Mode::alchemical: {
-            for(auto & type : ParticleKit::kit){
-                expansions.emplace(type.first, expandEnvironment(e, type.first));
+        case General::Mode::alchemical: {
+            for(auto & [type, count] : ParticleKit::kit){
+                expansions.emplace(type, expandEnvironment(e, type));
             }
             break;
         }
-        case SOAPExpansion::Mode::undefined:
+        case General::Mode::undefined:
             throw std::exception();
     }
     return expansions;
@@ -89,24 +91,24 @@ NeighborhoodExpander::computeMolecularExpansions(MolecularGeometry molecule) {
     //TODO CHECK HERE FOR IDENTICAL CENTERS!
     for (unsigned k = 0; k < unsigned(molecule.numberOfEntities()); ++k) {
 
-        // check if center was calculated already ;
+        // check if center was calculated already;
         // TODO: not possible, if type specific center value is chosen which currently isn't the case;
         bool computedAlreadyQ = false;
 
-        NumberedType<int> existingNumberedType;
+        EnumeratedType<int> existingEnumeratedType = {};
         for (unsigned i = 0; i < k; ++i) {
             if((molecule[i].position()-molecule[k].position()).norm() <= radiusZero){
-                existingNumberedType = molecule.findNumberedTypeByIndex(i);
+                existingEnumeratedType = molecule.findEnumeratedTypeByIndex(i);
                 computedAlreadyQ = true;
-                //std::cout << "found " << existingNumberedType << std::endl;
+                //std::cout << "found " << existingEnumeratedType << std::endl;
                 break;
             }
         }
-        auto newNumberedType = molecule.findNumberedTypeByIndex(k);
+        auto newEnumeratedType = molecule.findEnumeratedTypeByIndex(k);
         if(computedAlreadyQ){
-            exp[newNumberedType] = exp[existingNumberedType];
+            exp[newEnumeratedType] = exp[existingEnumeratedType];
         } else {
-            exp[newNumberedType] = computeParticularExpansions(Environment(molecule, molecule[k].position()));
+            exp[newEnumeratedType] = computeParticularExpansions(Environment(molecule, molecule[k].position()));
         }
     }
 

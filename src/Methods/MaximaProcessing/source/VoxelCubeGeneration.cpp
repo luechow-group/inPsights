@@ -4,11 +4,16 @@
 
 #include <VoxelCubeGeneration.h>
 #include <Sample.h>
-#include <SimilarReferences.h>
+#include <Reference.h>
+#include <Group.h>
+
 
 namespace Settings {
+    VoxelCubeGeneration::VoxelCubeGeneration()
+    : ISettings(VARNAME(VoxelCubeGeneration::)) {}
+
     VoxelCubeGeneration::VoxelCubeGeneration(const YAML::Node &node)
-            : VoxelCubeGeneration() {
+    : VoxelCubeGeneration() {
         boolProperty::decode(node[className], generateVoxelCubesQ);
         boolProperty::decode(node[className], centerCubesAtElectronsQ);
         unsignedShortProperty::decode(node[className], dimension);
@@ -24,27 +29,25 @@ namespace Settings {
 }
 YAML_SETTINGS_DEFINITION(Settings::VoxelCubeGeneration)
 
-std::vector<VoxelCube> VoxelCubeGeneration::fromCluster(const std::vector<SimilarReferences> &cluster,
-                                                     const std::vector<Sample> &samples) {
+std::vector<VoxelCube> VoxelCubeGeneration::fromCluster(const Group &maxima, const std::vector<Sample> &samples) {
     auto dimension = settings.dimension.get();
     auto length = settings.length.get();
 
-    ElectronsVector firstMax = cluster[0].representativeReference().maximum(); //TODO use averaged point
-    std::vector<VoxelCube> voxels(static_cast<unsigned long>(firstMax.numberOfEntities()));
+    ElectronsVector representativeMax = maxima.representative()->maximum(); //TODO use averaged point
+    std::vector<VoxelCube> voxels(static_cast<unsigned long>(representativeMax.numberOfEntities()));
 
-    for (long i = 0; i <firstMax.numberOfEntities(); ++i) {
+    for (long i = 0; i <representativeMax.numberOfEntities(); ++i) {
         Eigen::Vector3f cubeOrigin = Eigen::Vector3f::Zero();
         if(settings.centerCubesAtElectronsQ.get())
-            cubeOrigin = firstMax.positionsVector()[i].cast<float>();
+            cubeOrigin = representativeMax.positionsVector()[i].cast<float>();
 
         VoxelCube voxel(dimension, length, cubeOrigin);
-        for (const auto &simRef : cluster) {
-            for (const auto &ref : simRef.similarReferencesIterators()) {
-                for (auto sampleId : ref.base()->sampleIds()) {
-                    voxel.add(samples[sampleId].sample_[i].position());
-                }
-            }
-        }
+
+        auto allSampleIds = maxima.allSampleIds();
+
+        for (auto id : allSampleIds)
+            voxel.add(samples[id].sample_[i].position());
+
         voxels[i] = voxel;
     }
 

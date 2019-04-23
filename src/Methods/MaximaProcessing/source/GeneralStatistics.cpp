@@ -6,8 +6,7 @@
 #include <CoulombPotential.h>
 
 GeneralStatistics::Result GeneralStatistics::calculate(
-        std::vector<Reference> &references,
-        std::vector<Sample> &samples, const AtomsVector& atoms) {
+        Group &maxima, std::vector<Sample> &samples, const AtomsVector& atoms) {
 
     Result result;
 
@@ -40,11 +39,10 @@ GeneralStatistics::Result GeneralStatistics::calculate(
         result.EStats_.add(Eigen::Matrix<double,1,1>(ESample));
     }
 
-    for (const auto& reference : references) {
-        result.valueStats_.add(Eigen::Matrix<double,1,1>(reference.value()));
+    for (const auto& maximum : maxima) {
+        assert(maximum.isLeaf() && "The maxima list used as an input should contain only leaves.");
+        result.valueStats_.add(Eigen::Matrix<double,1,1>(maximum.representative()->value()));
     }
-
-
 
     return result;
 }

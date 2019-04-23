@@ -42,7 +42,13 @@ namespace YAML {
 
 namespace Settings{
     class ISettings {
+    public:
+        ISettings(const std::string& className);
+
+        std::string name() const;
+
     protected:
+        std::string className;
         virtual void appendToNode(YAML::Node &node) const = 0;
     };
 }

@@ -6,14 +6,12 @@
 #define INPSIGHTS_SIMPLESORTER_H
 
 #include <vector>
-
 #include "StructuralSimilarity.h"
-
-class MolecularSpectrum;
+#include "MolecularSpectrum.h"
 
 class SimpleSorter{
 public:
-    std::vector<std::vector<unsigned >> sort(std::vector<MolecularSpectrum> spectra, double threshold = 0.98);
+    std::vector<std::vector<unsigned >> sort(std::vector<SOAP::MolecularSpectrum> spectra, double threshold = 0.98);
 };
 
 

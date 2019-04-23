@@ -34,6 +34,22 @@ unsigned SpinTypesVector::multiplicity() {
     return numberOfUnpairedElectrons + 1;
 }
 
+template<>
+void SpinTypesVector::flipSpins() {
+    for (long i = 0; i < numberOfEntities(); ++i)
+        switch(type(i)) {
+            case Spin::alpha: {
+                data_[i] = Spins::spinToInt(Spin::beta);
+                break;
+            }
+            case Spin::beta: {
+                data_[i] = Spins::spinToInt(Spin::alpha);
+                break;
+            }
+            default: break;
+        }
+}
+
 template<> ElementTypesVector::TypesVector(std::vector<Element> types)
         : InsertableVector<int>(0)
 {

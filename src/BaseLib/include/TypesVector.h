@@ -7,7 +7,7 @@
 
 #include "SpinType.h"
 #include "ElementType.h"
-#include "NumberedType.h"
+#include "EnumeratedType.h"
 #include "InsertableVector.h"
 #include <vector>
 #include <yaml-cpp/yaml.h>
@@ -80,7 +80,7 @@ public:
         return count;
     }
 
-    NumberedType<Type> getNumberedTypeByIndex(long i) const { // cannot handle slices
+    EnumeratedType<Type> getEnumeratedTypeByIndex(long i) const { // cannot handle slices
         auto type = this->operator[](i);
         unsigned count = 0;
 
@@ -91,7 +91,7 @@ public:
         return {type,count};
     };
 
-    std::pair<bool,long> findIndexOfNumberedType(NumberedType<Type> indexedType) const { // cannot handle slices
+    std::pair<bool,long> findIndexOfEnumeratedType(EnumeratedType<Type> indexedType) const { // cannot handle slices
         assert(indexedType.number_ < numberOfEntities() &&
                "This index is out of bounds.");
 
@@ -134,7 +134,7 @@ public:
     }
 
     unsigned multiplicity() = delete;
-
+    void flipSpins() = delete;
 };
 
 using IntegerTypesVector = TypesVector<int>;
@@ -152,11 +152,11 @@ SpinTypesVector::TypesVector(std::vector<Spin> types);
 template<>
 unsigned SpinTypesVector::multiplicity();
 
+template<>
+void SpinTypesVector::flipSpins();
 
 template<>
 ElementTypesVector::TypesVector(std::vector<Element> types);
-
-
 
 namespace YAML {
     template<typename Type> struct convert<TypesVector<Type>> {

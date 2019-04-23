@@ -9,22 +9,23 @@
 #include "NeighborhoodExpansion.h"
 #include "Environment.h"
 
-using TypeSpecificNeighborhoodsAtOneCenter = std::map<int, NeighborhoodExpansion>; // expansion coeffs related to an int type
+namespace SOAP {
+    using TypeSpecificNeighborhoodsAtOneCenter = std::map<int, NeighborhoodExpansion>; // expansion coeffs related to an int type
+    using MolecularCenters = std::map<EnumeratedType<int>, TypeSpecificNeighborhoodsAtOneCenter>;
 
-using MolecularCenters = std::map<NumberedType<int>,TypeSpecificNeighborhoodsAtOneCenter>;
+    class NeighborhoodExpander {
+    public:
+        explicit NeighborhoodExpander();
 
-class NeighborhoodExpander{
-public:
-    explicit NeighborhoodExpander();
+        NeighborhoodExpansion expandEnvironment(const Environment &e, int expansionTypeId = 0) const;
 
-    NeighborhoodExpansion expandEnvironment(const Environment& e, int expansionTypeId = 0) const;
+        TypeSpecificNeighborhoodsAtOneCenter computeParticularExpansions(const Environment &e);
 
-    TypeSpecificNeighborhoodsAtOneCenter computeParticularExpansions(const Environment &e);
+        MolecularCenters computeMolecularExpansions(MolecularGeometry molecule);
 
-    MolecularCenters computeMolecularExpansions(MolecularGeometry molecule);
-
-private:
-    RadialBasis radialGaussianBasis_;
-};
+    private:
+        RadialBasis radialGaussianBasis_;
+    };
+}
 
 #endif //INPSIGHTS_ENVIRONMENTEXPANDER_H

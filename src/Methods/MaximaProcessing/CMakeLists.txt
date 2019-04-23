@@ -11,36 +11,39 @@ set(HEADER_FILES
         include/RawDataReader.h
         include/Sample.h
         include/Reference.h
-        include/GlobalIdentitySorter.h
-        include/GlobalSimilaritySorter.h
-        include/GlobalClusterSorter.h
-        include/MaximaProcessor.h
-        include/SimilarReferences.h
         include/ClusterData.h
-        #include/GlobalPermutationSorter.h
+        include/BestMatchDistanceIdentityClusterer.h
+        include/BestMatchDistanceSimilarityClusterer.h
+        include/BestMatchDistanceDensityBasedClusterer.h
+        include/BestMatchSOAPSimilarityClusterer.h
+        include/MaximaProcessor.h
         include/GeneralStatistics.h
         include/ValueSorter.h
         include/MaximaProcessingSettings.h
         include/VoxelCubeGeneration.h
         include/EnergyPartitioning.h
         include/EnergyStatistics.h
+        include/Group.h
+        include/IClusterer.h
         )
 
 set(SOURCE_FILES
         source/RawDataReader.cpp
+        source/Sample.cpp
+        source/Reference.cpp
         source/ClusterData.cpp
-        source/GlobalClusterSorter.cpp
-        source/GlobalIdentitySorter.cpp
-        source/GlobalSimilaritySorter.cpp
+        source/BestMatchDistanceIdentityClusterer.cpp
+        source/BestMatchDistanceSimilarityClusterer.cpp
+        source/BestMatchDistanceDensityBasedClusterer.cpp
+        source/BestMatchSOAPSimilarityClusterer.cpp
         source/MaximaProcessor.cpp
-        #source/GlobalPermutationSorter.cpp
         source/GeneralStatistics.cpp
-        source/ValueSorter.cpp
         source/MaximaProcessingSettings.cpp
         source/VoxelCubeGeneration.cpp
         source/EnergyPartitioning.cpp
         source/EnergyStatistics.cpp
-        )
+        source/Group.cpp
+        source/IClusterer.cpp)
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES})
 target_include_directories(${PROJECT_NAME}

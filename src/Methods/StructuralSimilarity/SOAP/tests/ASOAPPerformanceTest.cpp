@@ -6,6 +6,9 @@
 #include "StructuralSimilarity.h"
 #include "TestMolecules.h"
 #include <omp.h>
+#include "LocalSimilarity.h"
+
+using namespace SOAP;
 
 class ASOAPPerformanceTest : public ::testing::Test {
 public:
@@ -13,7 +16,7 @@ public:
     double regularizationParameter = 0.5;
 
     void SetUp() override {
-        SOAPExpansion::settings.mode = SOAPExpansion::Mode::alchemical;
+        General::settings.mode = General::Mode::alchemical;
     }
 };
 
@@ -25,7 +28,7 @@ TEST_F(ASOAPPerformanceTest, DISABLED_SingleGlobalSimTiming) {
 
     Radial::settings.nmax = nmax;
     Angular::settings.lmax = lmax;
-    SOAPExpansion::settings.mode = SOAPExpansion::Mode::alchemical;
+    General::settings.mode = General::Mode::alchemical;
     //ExpansionSettings::Alchemical::pairSimilarities[{int(Spin::alpha),int(Spin::beta)}] = 0.5;
 
 
@@ -78,7 +81,7 @@ TEST_F(ASOAPPerformanceTest, DISABLED_GlobalSimPerformance){
             double start;
             MolecularSpectrum ms;
 
-            SOAPExpansion::settings.mode = SOAPExpansion::Mode::typeAgnostic;
+            General::settings.mode = General::Mode::typeAgnostic;
             start = omp_get_wtime();
             ms = MolecularSpectrum(mol);
             double t1a = omp_get_wtime() - start;
@@ -86,7 +89,7 @@ TEST_F(ASOAPPerformanceTest, DISABLED_GlobalSimPerformance){
             double generic = StructuralSimilarity::kernel(ms, ms, regularizationParameter);
             double t1b = omp_get_wtime() - start;
 
-            SOAPExpansion::settings.mode = SOAPExpansion::Mode::chemical;
+            General::settings.mode = General::Mode::chemical;
             start = omp_get_wtime();
             ms = MolecularSpectrum(mol);
             double t2a = omp_get_wtime() - start;
@@ -94,7 +97,7 @@ TEST_F(ASOAPPerformanceTest, DISABLED_GlobalSimPerformance){
             double chemical = StructuralSimilarity::kernel(ms, ms, regularizationParameter);
             double t2b = omp_get_wtime() - start;
 
-            SOAPExpansion::settings.mode = SOAPExpansion::Mode::alchemical;
+            General::settings.mode = General::Mode::alchemical;
             start = omp_get_wtime();
             ms = MolecularSpectrum(mol);
             double t3a = omp_get_wtime() - start;
@@ -131,7 +134,7 @@ TEST_F(ASOAPPerformanceTest, DISABLED_LocalSimPerformance){
         for (unsigned i = 0; i < nParticles; i=i+nSkip) {
             for (unsigned j = 1; j <= nSkip; ++j) {
                 double angle = 2. * M_PI * double(i+j) / (nParticles - 1);
-                mol.atoms().append({Element(i + j), {cos(angle), sin(angle), 0}});
+                mol.atoms().append({Element(i + j), {radius*cos(angle), radius*sin(angle), 0}});
             }
             ParticleKit::create(mol);
 
@@ -141,22 +144,22 @@ TEST_F(ASOAPPerformanceTest, DISABLED_LocalSimPerformance){
 
             MolecularSpectrum ms(mol);
 
-            SOAPExpansion::settings.mode = SOAPExpansion::Mode::typeAgnostic;
+            General::settings.mode = General::Mode::typeAgnostic;
             e1 = Environment(mol,mol.atoms()[0].position());
             start = omp_get_wtime();
-            double generic = LocalSimilarity::kernel(e1,e1);
+            [[maybe_unused]]double generic = LocalSimilarity::kernel(e1,e1);
             double t1 = omp_get_wtime() - start;
 
-            SOAPExpansion::settings.mode = SOAPExpansion::Mode::chemical;
+            General::settings.mode = General::Mode::chemical;
             e1 = Environment(mol,mol.atoms()[0].position());
             start = omp_get_wtime();
-            double chemical = LocalSimilarity::kernel(e1,e1);
+            [[maybe_unused]]double chemical = LocalSimilarity::kernel(e1,e1);
             double t2 = omp_get_wtime() - start;
 
-            SOAPExpansion::settings.mode = SOAPExpansion::Mode::alchemical;
+            General::settings.mode = General::Mode::alchemical;
             e1 = Environment(mol,mol.atoms()[0].position());
             start = omp_get_wtime();
-            double alchemical = LocalSimilarity::kernel(e1,e1);
+            [[maybe_unused]]double alchemical = LocalSimilarity::kernel(e1,e1);
             double t3 = omp_get_wtime() - start;
 
             //printf(" SS=%f, elapsed time: %fs\n",K,omp_get_wtime()-start);

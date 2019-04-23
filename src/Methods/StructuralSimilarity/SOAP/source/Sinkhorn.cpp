@@ -4,6 +4,8 @@
 
 #include "Sinkhorn.h"
 
+using namespace SOAP;
+
 Eigen::MatrixXd Sinkhorn::Pgamma(const Eigen::MatrixXd &C, double gamma, double eps) {
     auto N = C.rows();
     auto M = C.cols();

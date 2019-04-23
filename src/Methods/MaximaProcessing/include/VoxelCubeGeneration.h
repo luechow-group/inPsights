@@ -8,7 +8,7 @@
 #include <VoxelCube.h>
 
 class Sample;
-class SimilarReferences;
+class Group;
 
 #include <ISettings.h>
 #include <Property.h>
@@ -22,7 +22,7 @@ namespace Settings {
         Property<VoxelCube::VertexComponentsType > length = {4, VARNAME(length)};
 
 
-        VoxelCubeGeneration() = default;
+        VoxelCubeGeneration();
         explicit VoxelCubeGeneration(const YAML::Node &node);
         void appendToNode(YAML::Node &node) const override;
     };
@@ -33,9 +33,7 @@ YAML_SETTINGS_DECLARATION(Settings::VoxelCubeGeneration)
 namespace VoxelCubeGeneration{
     inline Settings::VoxelCubeGeneration settings {};
 
-    std::vector<VoxelCube> fromCluster(
-            const std::vector<SimilarReferences> &cluster,
-            const std::vector<Sample> &samples);
+    std::vector<VoxelCube> fromCluster(const Group &maxima, const std::vector<Sample> &samples);
 };
 
 #endif //INPSIGHTS_VOXELCUBEGENERATION_H

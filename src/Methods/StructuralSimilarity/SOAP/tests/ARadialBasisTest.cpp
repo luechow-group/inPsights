@@ -4,14 +4,12 @@
 
 #include <gmock/gmock.h>
 #include <RadialBasis.h>
-#include "ExpansionSettings.h"
+#include "SOAPSettings.h"
 
 using namespace testing;
+using namespace SOAP;
 
-class ARadialGaussianBasisTest : public ::testing::Test {};
-
-
-TEST_F(ARadialGaussianBasisTest, EquispacedCenters) {
+TEST(ARadialBasisTest, DISABLED_EquispacedCenters) {
     //ExpansionSettings::defaults();
     RadialBasis();
 }

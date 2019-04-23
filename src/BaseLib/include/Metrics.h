@@ -58,6 +58,16 @@ namespace Metrics{
 
         return d;
     };
+
+    template<int overallNorm = Eigen::Infinity, int positionalNorm = 2>
+    double positionalNormsVectorNorm(
+            const PositionsVector &p1,
+            const PositionsVector &p2) {
+        assert(p1.numberOfEntities() == p2.numberOfEntities());
+
+        Eigen::VectorXd res = Metrics::positionalNormsVector<positionalNorm>(p1, p2);
+        return res.lpNorm<overallNorm>();
+    }
 }
 
 #endif //INPSIGHTS_METRICS_H
