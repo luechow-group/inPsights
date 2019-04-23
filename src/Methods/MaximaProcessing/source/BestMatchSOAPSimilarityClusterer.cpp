@@ -48,10 +48,6 @@ void BestMatchSOAPSimilarityClusterer::cluster(Group& maxima){
     assert(!maxima.isLeaf() && "The maxima group cannot be a leaf.");
     maxima.sortAll(); // sort, so that most probable structures are the representatives
 
-    Radial::settings.nmax = 2;
-    Angular::settings.lmax = 2;
-    General::settings.mode = General::Mode::chemical;
-
     // Calculate spectra
     spdlog::info("Calculating {} spectra...", maxima.size());
 #pragma omp parallel for default(none) shared(atoms_, maxima)

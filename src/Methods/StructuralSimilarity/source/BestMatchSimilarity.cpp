@@ -86,10 +86,6 @@ BestMatch::Result BestMatch::Similarity::compare(
         MolecularGeometry permutee, const MolecularGeometry &reference,
         bool spinSpecificQ, bool flipSpinsQ) {
 
-    General::settings.mode = General::Mode::chemical;
-    spdlog::info("The settings stored in '{0} were altered by '{1}'.",
-                 VARNAME(SOAP::settings), VARNAME(BestMatch::Similarity::compare));
-
     ParticleKit::create(reference);
     MolecularSpectrum permuteeSpectrum, referenceSpectrum;
 

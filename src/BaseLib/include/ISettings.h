@@ -45,7 +45,7 @@ namespace Settings{
     public:
         ISettings(const std::string& className);
 
-        std::string getClassname() const;
+        std::string name() const;
 
     protected:
         std::string className;
