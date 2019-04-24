@@ -1,7 +1,7 @@
 //
 // Created by Leonard Reuter on 13.03.18.
 //
-#include <gtest/gtest.h>
+#include <gmock/gmock.h>
 
 int main(int ac, char* av[])
 {

@@ -2,7 +2,7 @@
 // Created by Leonard Reuter on 12.03.18.
 //
 
-#include <gtest/gtest.h>
+#include <gmock/gmock.h>
 #include <Eigen/Core>
 #include "LagrangeProblem.h"
 #include "solver/gradientdescentsolver.h"

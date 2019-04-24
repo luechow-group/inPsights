@@ -2,7 +2,7 @@
 // Created by Michael Heuer on 10.09.18.
 //
 
-#include <gtest/gtest.h>
+#include <gmock/gmock.h>
 #include <DensityBasedScan.h>
 #include <BestMatchDistance.h>
 #include <sstream>

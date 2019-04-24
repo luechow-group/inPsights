@@ -31,4 +31,4 @@ target_link_libraries(${PROJECT_NAME}
         BaseLib
         )
 
-add_gtest_subdirectory_with_dependency(tests "gtest;pthread")
+add_gtest_subdirectory_with_dependency(tests "gmock;pthread")

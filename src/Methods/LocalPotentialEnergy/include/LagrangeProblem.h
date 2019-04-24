@@ -15,10 +15,7 @@ template<class ProblemTypeProblem, class ProblemTypeConstraint>
 class LagrangeProblem : public cppoptlib::Problem<double,Eigen::Dynamic>{
 public:
     LagrangeProblem(ProblemTypeProblem &problem, ProblemTypeConstraint &constraint, double equality = 0)
-            : equality_(equality),
-              problem_(problem),
-              constraint_(constraint)
-            {};
+    : constraint_(constraint), problem_(problem), equality_(equality) {};
 
     double value(const Eigen::VectorXd &x) override{
         Eigen::VectorXd x0 = x.head(x.size()-1); // vector for problem and condition
