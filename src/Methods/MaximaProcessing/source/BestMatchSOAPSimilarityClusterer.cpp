@@ -68,7 +68,7 @@ void BestMatchSOAPSimilarityClusterer::cluster(Group& maxima){
             assert(!groupIt->representative()->spectrum().molecularCenters_.empty() && "Spectrum cannot be empty.");
             assert(!subgroupOfSupergroupIt->representative()->spectrum().molecularCenters_.empty() && "Spectrum cannot be empty.");
 
-            auto comparisionResult = BestMatch::Similarity::compare(
+            auto comparisionResult = BestMatch::SOAPSimilarity::compare(
                     groupIt->representative()->spectrum(),
                     subgroupOfSupergroupIt->representative()->spectrum());
 

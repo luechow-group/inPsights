@@ -11,7 +11,7 @@
 namespace SpinCorrelation{
     template<typename Type>
     Eigen::MatrixXi spinCorrelations(const TypesVector<Type> &tv){
-        Eigen::MatrixXi S = Eigen::MatrixXi::Zero(tv.numberOfEntities(),tv.numberOfEntities());
+        Eigen::MatrixXi S = Eigen::MatrixXi::Zero(tv.numberOfEntities(), tv.numberOfEntities());
 
         for (Eigen::Index i = 0; i < S.rows(); i++)
             for (Eigen::Index j = i + 1; j < S.cols(); j++)

@@ -9,7 +9,7 @@
 
 using namespace SOAP;
 
-BestMatch::Result BestMatch::Similarity::compare(
+BestMatch::Result BestMatch::SOAPSimilarity::compare(
         const MolecularSpectrum &permutee,
         const MolecularSpectrum &reference) {
 
@@ -82,7 +82,7 @@ BestMatch::Result BestMatch::Similarity::compare(
     return {simMetric, referenceFromKit * bestMatch * permuteeToKit};
 }
 
-BestMatch::Result BestMatch::Similarity::compare(
+BestMatch::Result BestMatch::SOAPSimilarity::compare(
         MolecularGeometry permutee, const MolecularGeometry &reference,
         bool spinSpecificQ, bool flipSpinsQ) {
 

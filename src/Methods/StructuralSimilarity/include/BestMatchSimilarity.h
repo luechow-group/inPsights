@@ -2,14 +2,14 @@
 // Created by heuer on 03.04.19.
 //
 
-#ifndef INPSIGHTS_BESTMATCHSIMILARITY_H
-#define INPSIGHTS_BESTMATCHSIMILARITY_H
+#ifndef INPSIGHTS_BESTMATCHSOAPSIMILARITY_H
+#define INPSIGHTS_BESTMATCHSOAPSIMILARITY_H
 
 #include "BestMatch.h"
 #include <MolecularSpectrum.h>
 
 namespace BestMatch {
-    namespace Similarity {
+    namespace SOAPSimilarity {
         Result compare(
                 MolecularGeometry permutee, const MolecularGeometry &reference,
                 bool spinSpecificQ = false, bool flipSpinsQ = false);
@@ -18,4 +18,4 @@ namespace BestMatch {
     }
 }
 
-#endif //INPSIGHTS_BESTMATCHSIMILARITY_H
+#endif //INPSIGHTS_BESTMATCHSOAPSIMILARITY_H

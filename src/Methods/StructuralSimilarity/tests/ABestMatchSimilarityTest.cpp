@@ -50,82 +50,82 @@ TEST_F(ABestMatchSimilarityTest, threeElectrons) {
     idPerm.setIdentity();
 
 
-    auto[normAtoA, permAtoA] = BestMatch::Similarity::compare(specA, specA);
+    auto[normAtoA, permAtoA] = BestMatch::SOAPSimilarity::compare(specA, specA);
     ASSERT_NEAR(normAtoA, 1, std::numeric_limits<double>::epsilon());
     ASSERT_TRUE(permAtoA.indices().isApprox(idPerm.indices()));
 
-    auto[normBtoA, permBtoA] = BestMatch::Similarity::compare(specB, specA);
+    auto[normBtoA, permBtoA] = BestMatch::SOAPSimilarity::compare(specB, specA);
     Eigen::PermutationMatrix<Eigen::Dynamic> refPermBtoA(Eigen::Vector3i(2, 1, 0));
     ASSERT_NEAR(normBtoA, 1, std::numeric_limits<double>::epsilon());
     ASSERT_TRUE(permBtoA.indices().isApprox(refPermBtoA.indices()));
 
-    auto[normCtoA, permCtoA] = BestMatch::Similarity::compare(specC, specA);
+    auto[normCtoA, permCtoA] = BestMatch::SOAPSimilarity::compare(specC, specA);
     Eigen::PermutationMatrix<Eigen::Dynamic> refPermCtoA(Eigen::Vector3i(1, 0, 2));
     ASSERT_NEAR(normCtoA, 1, std::numeric_limits<double>::epsilon());
     ASSERT_TRUE(permCtoA.indices().isApprox(refPermCtoA.indices()));
 
-    auto[normDtoA, permDtoA] = BestMatch::Similarity::compare(specD, specA);
+    auto[normDtoA, permDtoA] = BestMatch::SOAPSimilarity::compare(specD, specA);
     Eigen::PermutationMatrix<Eigen::Dynamic> refPermDtoA(Eigen::Vector3i(1, 2, 0));
     ASSERT_NEAR(normDtoA, 1, std::numeric_limits<double>::epsilon());
     ASSERT_TRUE(permDtoA.indices().isApprox(refPermDtoA.indices()));
 
 
-    auto[normAtoB, permAtoB] = BestMatch::Similarity::compare(specA, specB);
+    auto[normAtoB, permAtoB] = BestMatch::SOAPSimilarity::compare(specA, specB);
     Eigen::PermutationMatrix<Eigen::Dynamic> refPermAtoB(Eigen::Vector3i(2, 1, 0));
     ASSERT_NEAR(normAtoB, 1, std::numeric_limits<double>::epsilon());
     ASSERT_TRUE(permAtoB.indices().isApprox(refPermAtoB.indices()));
 
-    auto[normBtoB, permBtoB] = BestMatch::Similarity::compare(specB, specB);
+    auto[normBtoB, permBtoB] = BestMatch::SOAPSimilarity::compare(specB, specB);
     ASSERT_NEAR(normBtoB, 1, std::numeric_limits<double>::epsilon());
     ASSERT_TRUE(permBtoB.indices().isApprox(idPerm.indices()));
 
-    auto[normCtoB, permCtoB] = BestMatch::Similarity::compare(specC, specB);
+    auto[normCtoB, permCtoB] = BestMatch::SOAPSimilarity::compare(specC, specB);
     Eigen::PermutationMatrix<Eigen::Dynamic> refPermCtoB(Eigen::Vector3i(1, 2, 0));
     ASSERT_NEAR(normCtoB, 1, std::numeric_limits<double>::epsilon());
     ASSERT_TRUE(permCtoB.indices().isApprox(refPermCtoB.indices()));
 
-    auto[normDtoB, permDtoB] = BestMatch::Similarity::compare(specD, specB);
+    auto[normDtoB, permDtoB] = BestMatch::SOAPSimilarity::compare(specD, specB);
     Eigen::PermutationMatrix<Eigen::Dynamic> refPermDtoB(Eigen::Vector3i(1, 0, 2));
     ASSERT_NEAR(normDtoB, 1, std::numeric_limits<double>::epsilon());
     ASSERT_TRUE(permDtoB.indices().isApprox(refPermDtoB.indices()));
 
 
-    auto[normAtoC, permAtoC] = BestMatch::Similarity::compare(specA, specC);
+    auto[normAtoC, permAtoC] = BestMatch::SOAPSimilarity::compare(specA, specC);
     Eigen::PermutationMatrix<Eigen::Dynamic> refPermAtoC(Eigen::Vector3i(1, 0, 2));
     ASSERT_NEAR(normAtoC, 1, std::numeric_limits<double>::epsilon());
     ASSERT_TRUE(permAtoC.indices().isApprox(refPermAtoC.indices()));
 
-    auto[normBtoC, permBtoC] = BestMatch::Similarity::compare(specB, specC);
+    auto[normBtoC, permBtoC] = BestMatch::SOAPSimilarity::compare(specB, specC);
     Eigen::PermutationMatrix<Eigen::Dynamic> refPermBtoC(Eigen::Vector3i(2, 0, 1));
     ASSERT_NEAR(normBtoC, 1, std::numeric_limits<double>::epsilon());
     ASSERT_TRUE(permBtoC.indices().isApprox(refPermBtoC.indices()));
 
-    auto[normCtoC, permCtoC] = BestMatch::Similarity::compare(specC, specC);
+    auto[normCtoC, permCtoC] = BestMatch::SOAPSimilarity::compare(specC, specC);
     ASSERT_NEAR(normCtoC, 1, std::numeric_limits<double>::epsilon());
     ASSERT_TRUE(permCtoC.indices().isApprox(idPerm.indices()));
 
-    auto[normDtoC, permDtoC] = BestMatch::Similarity::compare(specD, specC);
+    auto[normDtoC, permDtoC] = BestMatch::SOAPSimilarity::compare(specD, specC);
     Eigen::PermutationMatrix<Eigen::Dynamic> refPermDtoC(Eigen::Vector3i(0, 2, 1));
     ASSERT_NEAR(normDtoC, 1, std::numeric_limits<double>::epsilon());
     ASSERT_TRUE(permDtoC.indices().isApprox(refPermDtoC.indices()));
 
 
-    auto[normAtoD, permAtoD] = BestMatch::Similarity::compare(specA, specD);
+    auto[normAtoD, permAtoD] = BestMatch::SOAPSimilarity::compare(specA, specD);
     Eigen::PermutationMatrix<Eigen::Dynamic> refPermAtoD(Eigen::Vector3i(2, 0, 1));
     ASSERT_NEAR(normAtoD, 1, std::numeric_limits<double>::epsilon());
     ASSERT_TRUE(permAtoD.indices().isApprox(refPermAtoD.indices()));
 
-    auto[normBtoD, permBtoD] = BestMatch::Similarity::compare(specB, specD);
+    auto[normBtoD, permBtoD] = BestMatch::SOAPSimilarity::compare(specB, specD);
     Eigen::PermutationMatrix<Eigen::Dynamic> refPermBtoD(Eigen::Vector3i(1, 0, 2));
     ASSERT_NEAR(normBtoD, 1, std::numeric_limits<double>::epsilon());
     ASSERT_TRUE(permBtoD.indices().isApprox(refPermBtoD.indices()));
 
-    auto[normCtoD, permCtoD] = BestMatch::Similarity::compare(specC, specD);
+    auto[normCtoD, permCtoD] = BestMatch::SOAPSimilarity::compare(specC, specD);
     Eigen::PermutationMatrix<Eigen::Dynamic> refPermCtoD(Eigen::Vector3i(0, 2, 1));
     ASSERT_NEAR(normCtoD, 1, std::numeric_limits<double>::epsilon());
     ASSERT_TRUE(permCtoD.indices().isApprox(refPermCtoD.indices()));
 
-    auto[normDtoD, permDtoD] = BestMatch::Similarity::compare(specD, specD);
+    auto[normDtoD, permDtoD] = BestMatch::SOAPSimilarity::compare(specD, specD);
     ASSERT_NEAR(normDtoD, 1, std::numeric_limits<double>::epsilon());
     ASSERT_TRUE(permDtoD.indices().isApprox(idPerm.indices()));
 }
@@ -143,15 +143,15 @@ TEST_F(ABestMatchSimilarityTest, BH3) {
     auto idPerm = Eigen::PermutationMatrix<Eigen::Dynamic>(a.electrons().numberOfEntities());
     idPerm.setIdentity();
 
-    auto[normAA, permAA] = BestMatch::Similarity::compare(specB, specB);
+    auto[normAA, permAA] = BestMatch::SOAPSimilarity::compare(specB, specB);
     ASSERT_NEAR(normAA, 1, std::numeric_limits<double>::epsilon());
     ASSERT_TRUE(permAA.indices().isApprox(idPerm.indices()));
 
-    auto[normBB, permBB] = BestMatch::Similarity::compare(specB, specB);
+    auto[normBB, permBB] = BestMatch::SOAPSimilarity::compare(specB, specB);
     ASSERT_NEAR(normBB, 1, std::numeric_limits<double>::epsilon());
     ASSERT_TRUE(permBB.indices().isApprox(idPerm.indices()));
 
-    auto[normAB, permAB] = BestMatch::Similarity::compare(specA, specB);
+    auto[normAB, permAB] = BestMatch::SOAPSimilarity::compare(specA, specB);
     Eigen::VectorXi indices(a.electrons().numberOfEntities());
     indices << 0, 1, 4, 5, 2, 3, 6, 7;
     Eigen::PermutationMatrix<Eigen::Dynamic> refPermAB(indices);
@@ -170,7 +170,7 @@ TEST_F(ABestMatchSimilarityTest, ConvenienceMethods_Unspecific) {
     // careful: many permutations are possible here
     Eigen::PermutationMatrix<Eigen::Dynamic> refPerm(indices);
 
-    auto[norm, perm] = BestMatch::Similarity::compare(b, a, false);
+    auto[norm, perm] = BestMatch::SOAPSimilarity::compare(b, a, false);
     ASSERT_NEAR(norm, 1, std::numeric_limits<double>::epsilon());
     ASSERT_TRUE(perm.indices().isApprox(refPerm.indices()));
 
@@ -180,7 +180,7 @@ TEST_F(ABestMatchSimilarityTest, ConvenienceMethods_Unspecific) {
     Eigen::PermutationMatrix<Eigen::Dynamic> otherPerm(otherIndices);
     b.electrons().typesVector().permute(otherPerm);
 
-    auto[norm2, perm2] = BestMatch::Similarity::compare(b, a, false);
+    auto[norm2, perm2] = BestMatch::SOAPSimilarity::compare(b, a, false);
     ASSERT_NEAR(norm2, 1, std::numeric_limits<double>::epsilon());
 }
 
@@ -193,7 +193,7 @@ TEST_F(ABestMatchSimilarityTest, ConvenienceMethods_SpinSpecific) {
 
     Eigen::PermutationMatrix<Eigen::Dynamic> refPerm(indices);
 
-    auto[norm, perm] = BestMatch::Similarity::compare(b, a, false);
+    auto[norm, perm] = BestMatch::SOAPSimilarity::compare(b, a, false);
     ASSERT_NEAR(norm, 1, std::numeric_limits<double>::epsilon());
     ASSERT_TRUE(perm.indices().isApprox(refPerm.indices()));
 }
@@ -203,14 +203,14 @@ TEST_F(ABestMatchSimilarityTest, SpinSpecificWithSpinFlip) {
     auto b = TestMolecules::BH3::ionicMirrored;
     b.electrons().typesVector().flipSpins();
 
-    auto[norm, perm] = BestMatch::Similarity::compare(b, a, true);
+    auto[norm, perm] = BestMatch::SOAPSimilarity::compare(b, a, true);
     ASSERT_LT(norm, 1);
 
     Eigen::VectorXi indices(a.electrons().numberOfEntities());
     indices << 0, 1, 4, 5, 2, 3, 6, 7;
     Eigen::PermutationMatrix<Eigen::Dynamic> refPerm(indices);
 
-    auto[normFlipped, permFlipped] = BestMatch::Similarity::compare(b, a, true, true);
+    auto[normFlipped, permFlipped] = BestMatch::SOAPSimilarity::compare(b, a, true, true);
     ASSERT_NEAR(normFlipped, 1, std::numeric_limits<double>::epsilon());
     ASSERT_TRUE(permFlipped.indices().isApprox(refPerm.indices()));
 }

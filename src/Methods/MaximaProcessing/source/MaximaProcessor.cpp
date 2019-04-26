@@ -25,11 +25,13 @@ MaximaProcessor::MaximaProcessor(YAML::Emitter& yamlDocument, const std::vector<
 unsigned long MaximaProcessor::addReference(const Reference &reference) {
     auto count = unsigned(reference.count());
 
-    Eigen::VectorXd value(1); value[0] = reference.value();
+    Eigen::VectorXd value = Eigen::VectorXd::Constant(1, reference.value());
     Eigen::MatrixXd spinCorrelations_ = SpinCorrelation::spinCorrelations(reference.maximum().typesVector()).cast<double>();
     // Maximum related statistics
+    std::cout << reference.maximum().typesVector() << std::endl;
+    std::cout << spinCorrelations_ << std::endl;
     valueStats_.add(value, count);
-    SeeStats_.add(spinCorrelations_,count);
+    SeeStats_.add(spinCorrelations_, count);
 
     // Sample related statistics
     for (auto & id : reference.sampleIds()) {
@@ -72,6 +74,7 @@ void MaximaProcessor::doMotifBasedEnergyPartitioning(const Group& group) {
 }
 
 size_t  MaximaProcessor::addAllReferences(const Group &group) {
+    std::cout << group << std::endl;
     unsigned long totalCount = 0;
     if(group.isLeaf())
         totalCount += addReference(*group.representative());
@@ -129,7 +132,7 @@ void MaximaProcessor::calculateStatistics(const Group &maxima){
         motifs_ = Motifs(adjacencyMatrix, MolecularGeometry(atoms_, group.representative()->maximum()));
         
         doMotifBasedEnergyPartitioning(group);
-      
+
         std::vector<VoxelCube> voxelCubes;
         if(VoxelCubeGeneration::settings.generateVoxelCubesQ())
             voxelCubes = VoxelCubeGeneration::fromCluster(group, samples_);
