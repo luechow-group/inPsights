@@ -67,7 +67,7 @@ void Group::permuteAll(const Eigen::PermutationMatrix<Eigen::Dynamic> &perm, std
         representative()->permute(perm, samples);
     } else {
         for (auto &i : *this)
-            i.representative()->permute(perm, samples);
+            i.permuteAll(perm, samples);
     }
 }
 
