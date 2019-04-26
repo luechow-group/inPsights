@@ -84,7 +84,7 @@ size_t  MaximaProcessor::addAllReferences(const Group &group) {
 
 std::vector<ElectronsVector> MaximaProcessor::getAllRepresentativeMaxima(const Group &group) {
     if(group.isLeaf()) {
-        return {}; // leaves are not printed
+        return {}; // leaves are not printed directly (only as representative structures one layer above)
     } else {
         if(group.front().isLeaf()) {
             return {group.representative()->maximum()};
