@@ -56,8 +56,7 @@ void BestMatchSOAPSimilarityClusterer::cluster(Group& maxima){
         spdlog::info("calculated spectrum {}", std::distance(maxima.begin(), it));
     }
 
-
-    double identityThreshold = 0.95;
+    auto similarityThreshold = settings.threshold();
 
     Group supergroup({*maxima.begin()});
 
@@ -74,7 +73,7 @@ void BestMatchSOAPSimilarityClusterer::cluster(Group& maxima){
                     subgroupOfSupergroupIt->representative()->spectrum());
 
             // if so, put permute the current group and put it into the supergroup subgroup and stop searching
-            if (comparisionResult.metric > identityThreshold) {
+            if (comparisionResult.metric > similarityThreshold) {
                 groupIt->permuteAll(comparisionResult.permutation, samples_);
 
                 *subgroupOfSupergroupIt += *groupIt;
