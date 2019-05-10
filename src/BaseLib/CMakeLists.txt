@@ -50,6 +50,7 @@ set(HEADER_FILES
         include/Varname.h
         include/Enumerate.h
         include/Combinatorics.h
+        include/AsciiArt.h
         )
 
 set(SOURCE_FILES

@@ -16,6 +16,7 @@
 #include <VoxelCubeGeneration.h>
 #include <spdlog/spdlog.h>
 #include <SOAPSettings.h>
+#include <AsciiArt.h>
 
 using namespace YAML;
 
@@ -195,8 +196,11 @@ int main(int argc, char *argv[]) {
     VoxelCubeGeneration::settings.appendToNode(usedSettings);
 
 
-    outputYaml << BeginDoc << Comment("input from \"" + inputFilename + "\"") << inputYaml << EndDoc;
-    outputYaml << BeginDoc << BeginMap
+    outputYaml << BeginDoc
+    << Comment("input from \"" + inputFilename + "\"") << inputYaml << EndDoc;
+    outputYaml << BeginDoc
+               << BeginMap
+               << Comment(AsciiArt::inPsightsLogo)
                << Key << "Atoms" << Value << atoms << Comment("[a0]")
                << Key << "NSamples" << Value << samples.size()
                << Key << "OverallResults" << Value << results;
