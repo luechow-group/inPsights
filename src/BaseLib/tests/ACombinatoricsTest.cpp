@@ -92,31 +92,31 @@ TEST(ACombinatoricsTest, OutputContainer) {
 
 TEST(ACombinatoricsTest, LengthZeroPermutation) {
     std::vector<int> s{};
-    Combinatorics::Permutations<int> combinations(s);
-    ASSERT_EQ(combinations.get().size(),Combinatorics::factorial(s.size()));
+    Combinatorics::Permutations<int> permutations(s);
+    ASSERT_EQ(permutations.get().size(),Combinatorics::factorial(s.size()));
 }
 
 
 TEST(ACombinatoricsTest, LengthOnePermutation) {
     std::vector<int> s{0};
-    Combinatorics::Permutations<int> combinations(s);
-    ASSERT_EQ(combinations.get().size(),Combinatorics::factorial(s.size()));
-    ASSERT_THAT(combinations.get()[0], ElementsAre(0));
+    Combinatorics::Permutations<int> permutations(s);
+    ASSERT_EQ(permutations.get().size(),Combinatorics::factorial(s.size()));
+    ASSERT_THAT(permutations.get()[0], ElementsAre(0));
 }
 
 
 TEST(ACombinatoricsTest, Permutations) {
     std::vector<int> s{0, 1, 2};
 
-    Combinatorics::Permutations<int> combinations(s);
+    Combinatorics::Permutations<int> permutations(s);
 
-    ASSERT_EQ(combinations.get().size(),Combinatorics::factorial(s.size()));
+    ASSERT_EQ(permutations.get().size(),Combinatorics::factorial(s.size()));
 
-    ASSERT_THAT(combinations.get()[0], ElementsAre(0, 1, 2));
-    ASSERT_THAT(combinations.get()[1], ElementsAre(0, 2, 1));
-    ASSERT_THAT(combinations.get()[2], ElementsAre(1, 0, 2));
-    ASSERT_THAT(combinations.get()[3], ElementsAre(1, 2, 0));
-    ASSERT_THAT(combinations.get()[4], ElementsAre(2, 0, 1));
-    ASSERT_THAT(combinations.get()[5], ElementsAre(2, 1, 0));
+    ASSERT_THAT(permutations.get()[0], ElementsAre(0, 1, 2));
+    ASSERT_THAT(permutations.get()[1], ElementsAre(0, 2, 1));
+    ASSERT_THAT(permutations.get()[2], ElementsAre(1, 0, 2));
+    ASSERT_THAT(permutations.get()[3], ElementsAre(1, 2, 0));
+    ASSERT_THAT(permutations.get()[4], ElementsAre(2, 0, 1));
+    ASSERT_THAT(permutations.get()[5], ElementsAre(2, 1, 0));
 
 }
