@@ -37,6 +37,8 @@ sudo apt-get -y install \
     qtbase5-dev qt3d5-dev 
 
 ```
+Alternatively, Qt5 can be downloaded from the [Qt webpage](https://www.qt.io/download). 
+During the installation make sure to install Qt for the `x86_64` architecture and select `sources`, `Qt3D`, and additionally `QtCharts` (which will be required in future versions as well).
 
 #### Cloning inPsights
 Make sure you are registered for the GitLab service of https://git.rwth-aachen.de and that you have an SSH-Key for your account on the local machine you are using.
@@ -92,6 +94,11 @@ export CMAKE_PREFIX_PATH=/usr/local/Cellar/qt/5.11.2
 ```
 Otherwise the default compilers are used.
 
+If Qt was download from the webpage, the following environment variable must be exported:
+```bash
+export Qt5_DIR=/home/<username>/Qt/5.XX.X/gcc_64
+```
+
 ## Running inPsights from the Command-Line
 
 Create a build directory e.g.
@@ -99,12 +106,17 @@ Create a build directory e.g.
 mkdir cmake-build-release
 cd cmake-build-release
 ```
-and conduct an out-of-source-build:
+and perform an out-of-source release build:
 
 ```bash
 cmake ..
 make
 ```
+To build the GUI, set the following cmake variables:
+```bash
+cmake .. -DBUILD_GUI=ON -DBUILD_EIGEN=OFF
+```
+
 To build only a specific target write
 ```bash
 make TargetName
