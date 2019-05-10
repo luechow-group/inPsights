@@ -49,6 +49,7 @@ set(HEADER_FILES
         include/Property.h
         include/Varname.h
         include/Enumerate.h
+        include/Combinatorics.h
         )
 
 set(SOURCE_FILES
@@ -72,6 +73,7 @@ set(SOURCE_FILES
         source/SpecialMathFunctions/Gaussian.cpp
         source/BinaryFileReader.cpp
         source/ISettings.cpp
+        source/Combinatorics.cpp
         )
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES})
