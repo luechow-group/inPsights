@@ -9,10 +9,10 @@
 #include <Eigen/Core>
 #include <memory>
 #include <Enumerate.h>
+#include <Sample.h>
 
 class Group;
 class Reference;
-class Sample;
 
 class Group : public std::vector<Group> {
 public:
