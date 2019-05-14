@@ -19,6 +19,7 @@ set(HEADER_FILES
         include/Motifs.h
         include/BestMatchSimilarity.h
         include/BestMatchDistance.h
+        include/NearestElectrons.h
         )
 
 set(SOURCE_FILES
@@ -30,6 +31,7 @@ set(SOURCE_FILES
         source/Motif.cpp
         source/Motifs.cpp
         source/BestMatchSimilarity.cpp
+        source/NearestElectrons.cpp
         )
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES})
