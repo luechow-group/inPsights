@@ -8,6 +8,7 @@
 #include <MolecularGeometry.h>
 
 namespace NearestElectrons {
+    Eigen::ArrayXi LongIndexListToPositionArrayXi(std::list<long> list);
 
     std::list<long> getNonValenceIndices(const MolecularGeometry &molecularGeometry, const int &k);
 

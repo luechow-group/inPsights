@@ -8,6 +8,18 @@
 #include <queue>
 #include <algorithm>
 
+Eigen::ArrayXi NearestElectrons::LongIndexListToPositionArrayXi(std::list<long> list) {
+    Eigen::ArrayXi array(3 * list.size());
+    int i = 0;
+    for (auto element : list) {
+        for (int j = 0; j < 3; j++) {
+            array[i] = 3 * element + j;
+            i++;
+        };
+    };
+    return array;
+};
+
 std::list<long> NearestElectrons::getNonValenceIndices(const MolecularGeometry &molecularGeometry, const int &k) {
     const Elements::ElementType &elementType = molecularGeometry.atoms()[k].type();
     const long coreElectronsNumber =

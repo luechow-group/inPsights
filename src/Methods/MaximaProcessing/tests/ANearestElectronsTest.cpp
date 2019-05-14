@@ -7,62 +7,82 @@
 #include <NearestElectrons.h>
 
 using namespace testing;
-using namespace std;
-using namespace NearestElectrons;
 
-class ANearestElectronsTest : public Test {
-};
+class ANearestElectronsTest : public Test {};
 
 TEST_F(ANearestElectronsTest, GetNonValenceIndices) {
-    list<long> indices = getNonValenceIndices(TestMolecules::BH3::ionic, 0);
-    list<long> reference = list<long>({0, 4});
+    std::list<long> indices = NearestElectrons::getNonValenceIndices(TestMolecules::BH3::ionic, 0);
+    std::list<long> reference = std::list<long>({0, 4});
     ASSERT_EQ(reference, indices);
 
-    indices = getNonValenceIndices(TestMolecules::BH3::ionic, 1);
-    reference = list<long>({});
+    indices = NearestElectrons::getNonValenceIndices(TestMolecules::BH3::ionic, 1);
+    reference = std::list<long>({});
     ASSERT_EQ(reference, indices);
 };
 
 TEST_F(ANearestElectronsTest, GetNonValenceIndicesAll) {
-    list<long> indices = getNonValenceIndices(TestMolecules::BH3::ionic);
-    list<long> reference({0, 4});
+    std::list<long> indices = NearestElectrons::getNonValenceIndices(TestMolecules::BH3::ionic);
+    std::list<long> reference({0, 4});
     ASSERT_EQ(reference, indices);
 };
 
 TEST_F(ANearestElectronsTest, GetElectronsByPosition) {
     Eigen::Vector3d position = TestMolecules::inbetween(TestMolecules::BH3::ionic.atoms(), {0, 2}, 0.7);
-    list<long> indices = getNearestElectronsIndices(TestMolecules::BH3::ionic, position, 2);
-    list<long> reference({2, 6});
+    std::list<long> indices = NearestElectrons::getNearestElectronsIndices(TestMolecules::BH3::ionic, position, 2);
+    std::list<long> reference({2, 6});
     ASSERT_EQ(reference, indices);
 };
 
 TEST_F(ANearestElectronsTest, GetElectronsByAtomIndex) {
-    list<long> indices = getNearestElectronsIndices(TestMolecules::BH3::ionic, 2, 2);
-    list<long> reference({2, 6});
+    std::list<long> indices = NearestElectrons::getNearestElectronsIndices(TestMolecules::BH3::ionic, 2, 2);
+    std::list<long> reference({2, 6});
     ASSERT_EQ(reference, indices);
 };
 
 TEST_F(ANearestElectronsTest, GetElectronsByAtomIndices) {
-    list<long> indices = getNearestElectronsIndices(TestMolecules::BH3::ionic, 0, 2, 4);
-    list<long> reference({0, 2, 4, 6});
+    std::list<long> indices = NearestElectrons::getNearestElectronsIndices(TestMolecules::BH3::ionic, 0, 2, 4);
+    std::list<long> reference({0, 2, 4, 6});
     ASSERT_EQ(reference, indices);
 };
 
 TEST_F(ANearestElectronsTest, GetValenceByPosition) {
-    list<long> indices = getNearestValenceIndices(TestMolecules::BH3::ionic,
+    std::list<long> indices = NearestElectrons::getNearestValenceIndices(TestMolecules::BH3::ionic,
                                                   TestMolecules::BH3::ionic.atoms()[0].position(), 2);
-    list<long> reference({6, 7});
+    std::list<long> reference({6, 7});
     ASSERT_EQ(reference, indices);
 };
 
 TEST_F(ANearestElectronsTest, GetValenceByAtomIndex) {
-    list<long> indices = getNearestValenceIndices(TestMolecules::BH3::ionic, 0, 2);
-    list<long> reference({6, 7});
+    std::list<long> indices = NearestElectrons::getNearestValenceIndices(TestMolecules::BH3::ionic, 0, 2);
+    std::list<long> reference({6, 7});
     ASSERT_EQ(reference, indices);
 };
 
 TEST_F(ANearestElectronsTest, GetValenceByAtomIndices) {
-    list<long> indices = getNearestValenceIndices(TestMolecules::BH3::ionic, 0, 2, 2);
-    list<long> reference({2, 6});
+    std::list<long> indices = NearestElectrons::getNearestValenceIndices(TestMolecules::BH3::ionic, 0, 2, 2);
+    std::list<long> reference({2, 6});
     ASSERT_EQ(reference, indices);
+};
+
+TEST_F(ANearestElectronsTest, ConvertIndexList) {
+    Eigen::ArrayXi reference(6);
+    reference << 6,7,8,18,19,20;
+
+    std::list<long> indices = NearestElectrons::getNearestValenceIndices(TestMolecules::BH3::ionic, 0, 2, 2);
+
+    Eigen::ArrayXi indicesArray = NearestElectrons::LongIndexListToPositionArrayXi(indices);
+    ASSERT_EQ(reference.matrix(), indicesArray.matrix());
+};
+
+TEST_F(ANearestElectronsTest, SliceVector) {
+    Eigen::VectorXd reference(6);
+    reference << TestMolecules::BH3::ionic.electrons()[2].position(), TestMolecules::BH3::ionic.electrons()[6].position();
+
+    std::list<long> indices = NearestElectrons::getNearestValenceIndices(TestMolecules::BH3::ionic, 0, 2, 2);
+    Eigen::ArrayXi indicesArray = NearestElectrons::LongIndexListToPositionArrayXi(indices);
+
+    // indexArray.unaryExpr(x) does the same as python/fortran x(indexArray)
+    Eigen::VectorXd positionsVector = indicesArray.unaryExpr(TestMolecules::BH3::ionic.electrons().positionsVector().asEigenVector());
+
+    ASSERT_EQ(reference, positionsVector);
 };
