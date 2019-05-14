@@ -73,7 +73,7 @@ TEST_F(ANearestElectronsTest, ConvertIndexList) {
 
     std::list<long> indices = NearestElectrons::getNearestValenceIndices(BH3, 0, 2, 2);
 
-    Eigen::ArrayXi indicesArray = NearestElectrons::LongIndexListToPositionArrayXi(indices);
+    Eigen::ArrayXi indicesArray = NearestElectrons::longIndexListToPositionArrayXi(indices);
     ASSERT_EQ(reference.matrix(), indicesArray.matrix());
 };
 
@@ -82,10 +82,18 @@ TEST_F(ANearestElectronsTest, SliceVector) {
     reference << BH3.electrons()[2].position(), BH3.electrons()[6].position();
 
     std::list<long> indices = NearestElectrons::getNearestValenceIndices(BH3, 0, 2, 2);
-    Eigen::ArrayXi indicesArray = NearestElectrons::LongIndexListToPositionArrayXi(indices);
+    Eigen::ArrayXi indicesArray = NearestElectrons::longIndexListToPositionArrayXi(indices);
 
     // indexArray.unaryExpr(x) does the same as python/fortran x(indexArray)
     Eigen::VectorXd positionsVector = indicesArray.unaryExpr(BH3.electrons().positionsVector().asEigenVector());
 
+    ASSERT_EQ(reference, positionsVector);
+};
+
+TEST_F(ANearestElectronsTest, SliceVectorMethod) {
+    Eigen::VectorXd reference(6);
+    reference << BH3.electrons()[2].position(), BH3.electrons()[6].position();
+
+    Eigen::VectorXd positionsVector = NearestElectrons::getNearestValencePositions(BH3, 0, 2, 2);
     ASSERT_EQ(reference, positionsVector);
 };
