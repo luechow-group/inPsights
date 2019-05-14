@@ -21,53 +21,59 @@ namespace NearestElectrons {
         return array;
     };
 
-    std::list<long> getNonValenceIndices(const MolecularGeometry &molecularGeometry, const int &k) {
-        const Elements::ElementType &elementType = molecularGeometry.atoms()[k].type();
+    std::list<long>
+    getNonValenceIndices(const PositionsVector &electronPositions, const AtomsVector &nuclei, const int &k) {
+        const Elements::ElementType &elementType = nuclei[k].type();
         const long coreElectronsNumber =
                 Elements::ElementInfo::Z(elementType) - Elements::ElementInfo::valElectrons(elementType);
-        return getNearestElectronsIndices(molecularGeometry, k, coreElectronsNumber);
+        return getNearestElectronsIndices(electronPositions, nuclei, k, coreElectronsNumber);
     };
 
-    std::list<long> getNonValenceIndices(const MolecularGeometry &molecularGeometry) {
+    std::list<long> getNonValenceIndices(const PositionsVector &electronPositions, const AtomsVector &nuclei) {
         std::list<long> indices;
 
-        for (int k = 0; k < molecularGeometry.atoms().numberOfEntities(); ++k)
-            indices.splice(indices.end(), getNonValenceIndices(molecularGeometry, k));
+        for (int k = 0; k < nuclei.numberOfEntities(); ++k)
+            indices.splice(indices.end(), getNonValenceIndices(electronPositions, nuclei, k));
         indices.sort();
         return indices;
     };
 
     Eigen::VectorXd
-    getNearestValencePositions(const MolecularGeometry &molecularGeometry, const Eigen::Vector3d &position,
+    getNearestValencePositions(const PositionsVector &electronPositions, const AtomsVector &nuclei,
+                               const Eigen::Vector3d &position,
                                const long &count) {
-        return longIndexListToPositionArrayXi(getNearestValenceIndices(molecularGeometry, position, count)).unaryExpr(
-                molecularGeometry.electrons().positionsVector().asEigenVector());
+        return longIndexListToPositionArrayXi(
+                getNearestValenceIndices(electronPositions, nuclei, position, count)).unaryExpr(
+                electronPositions.asEigenVector());
     };
 
     Eigen::VectorXd
-    getNearestValencePositions(const MolecularGeometry &molecularGeometry, const int &index, const long &count) {
-        return getNearestValencePositions(molecularGeometry, molecularGeometry.atoms()[index].position(),
+    getNearestValencePositions(const PositionsVector &electronPositions, const AtomsVector &nuclei, const int &index,
+                               const long &count) {
+        return getNearestValencePositions(electronPositions, nuclei, nuclei[index].position(),
                                           count);
     };
 
     Eigen::VectorXd
-    getNearestValencePositions(const MolecularGeometry &molecularGeometry, const int &index1, const int &index2,
+    getNearestValencePositions(const PositionsVector &electronPositions, const AtomsVector &nuclei, const int &index1,
+                               const int &index2,
                                const long &count) {
         Eigen::Vector3d position =
-                (molecularGeometry.atoms()[index1].position() + molecularGeometry.atoms()[index2].position()) / 2;
-        return getNearestValencePositions(molecularGeometry, position, count);
+                (nuclei[index1].position() + nuclei[index2].position()) / 2;
+        return getNearestValencePositions(electronPositions, nuclei, position, count);
     };
 
     std::list<long>
-    getNearestValenceIndices(const MolecularGeometry &molecularGeometry, const Eigen::Vector3d &position,
+    getNearestValenceIndices(const PositionsVector &electronPositions, const AtomsVector &nuclei,
+                             const Eigen::Vector3d &position,
                              const long &count) {
         std::priority_queue<std::pair<double, long>> q;
-        for (long i = 0; i < molecularGeometry.electrons().numberOfEntities(); i++) {
-            q.push(std::pair<double, long>(-Metrics::distance(molecularGeometry.electrons()[i].position(), position),
+        for (long i = 0; i < electronPositions.numberOfEntities(); i++) {
+            q.push(std::pair<double, long>(-Metrics::distance(electronPositions[i], position),
                                            i));
         };
 
-        std::list<long> excludedIndices = getNonValenceIndices(molecularGeometry);
+        std::list<long> excludedIndices = getNonValenceIndices(electronPositions, nuclei);
 
         std::list<long> indices;
         for (long j = 0; j < count; ++j) {
@@ -85,27 +91,27 @@ namespace NearestElectrons {
     };
 
     std::list<long>
-    getNearestValenceIndices(const MolecularGeometry &molecularGeometry, const int &index,
+    getNearestValenceIndices(const PositionsVector &electronPositions, const AtomsVector &nuclei, const int &index,
                              const long &count) {
-        return getNearestValenceIndices(molecularGeometry, molecularGeometry.atoms()[index].position(),
+        return getNearestValenceIndices(electronPositions, nuclei, nuclei[index].position(),
                                         count);
     };
 
     std::list<long>
-    getNearestValenceIndices(const MolecularGeometry &molecularGeometry, const int &index1,
+    getNearestValenceIndices(const PositionsVector &electronPositions, const AtomsVector &nuclei, const int &index1,
                              const int &index2,
                              const long &count) {
         Eigen::Vector3d position =
-                (molecularGeometry.atoms()[index1].position() + molecularGeometry.atoms()[index2].position()) / 2;
-        return getNearestValenceIndices(molecularGeometry, position, count);
+                (nuclei[index1].position() + nuclei[index2].position()) / 2;
+        return getNearestValenceIndices(electronPositions, nuclei, position, count);
     };
 
-    std::list<long> getNearestElectronsIndices(const MolecularGeometry &molecularGeometry,
+    std::list<long> getNearestElectronsIndices(const PositionsVector &electronPositions, const AtomsVector &nuclei,
                                                const Eigen::Vector3d &position,
                                                const long &count) {
         std::priority_queue<std::pair<double, int>> q;
-        for (long i = 0; i < molecularGeometry.electrons().numberOfEntities(); i++) {
-            q.push(std::pair<double, long>(-Metrics::distance(molecularGeometry.electrons()[i].position(), position),
+        for (long i = 0; i < electronPositions.numberOfEntities(); i++) {
+            q.push(std::pair<double, long>(-Metrics::distance(electronPositions[i], position),
                                            i));
         };
 
@@ -121,18 +127,18 @@ namespace NearestElectrons {
     };
 
     std::list<long>
-    getNearestElectronsIndices(const MolecularGeometry &molecularGeometry, const int &index,
+    getNearestElectronsIndices(const PositionsVector &electronPositions, const AtomsVector &nuclei, const int &index,
                                const long &count) {
-        return getNearestElectronsIndices(molecularGeometry, molecularGeometry.atoms()[index].position(),
+        return getNearestElectronsIndices(electronPositions, nuclei, nuclei[index].position(),
                                           count);
     };
 
     std::list<long>
-    getNearestElectronsIndices(const MolecularGeometry &molecularGeometry, const int &index1,
+    getNearestElectronsIndices(const PositionsVector &electronPositions, const AtomsVector &nuclei, const int &index1,
                                const int &index2,
                                const long &count) {
         Eigen::Vector3d position =
-                (molecularGeometry.atoms()[index1].position() + molecularGeometry.atoms()[index2].position()) / 2;
-        return getNearestElectronsIndices(molecularGeometry, position, count);
+                (nuclei[index1].position() + nuclei[index2].position()) / 2;
+        return getNearestElectronsIndices(electronPositions, nuclei, position, count);
     };
 }

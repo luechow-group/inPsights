@@ -10,41 +10,51 @@
 namespace NearestElectrons {
     Eigen::ArrayXi longIndexListToPositionArrayXi(std::list<long> list);
 
-    std::list<long> getNonValenceIndices(const MolecularGeometry &molecularGeometry, const int &k);
+    std::list<long>
+    getNonValenceIndices(const PositionsVector &electronPositions, const AtomsVector &nuclei, const int &k);
 
-    std::list<long> getNonValenceIndices(const MolecularGeometry &molecularGeometry);
+    std::list<long> getNonValenceIndices(const PositionsVector &electronPositions, const AtomsVector &nuclei);
 
     Eigen::VectorXd
-    getNearestValencePositions(const MolecularGeometry &molecularGeometry, const Eigen::Vector3d &position,
-                             const long &count);
+    getNearestValencePositions(const PositionsVector &electronPositions, const AtomsVector &nuclei,
+                               const Eigen::Vector3d &position,
+                               const long &count);
 
     Eigen::VectorXd
-    getNearestValencePositions(const MolecularGeometry &molecularGeometry, const int &index, const long &count);
+    getNearestValencePositions(const PositionsVector &electronPositions, const AtomsVector &nuclei, const int &index,
+                               const long &count);
 
     Eigen::VectorXd
-    getNearestValencePositions(const MolecularGeometry &molecularGeometry, const int &index1, const int &index2,
-                             const long &count);
-
-    std::list<long>
-    getNearestValenceIndices(const MolecularGeometry &molecularGeometry, const Eigen::Vector3d &position,
-                             const long &count);
-
-    std::list<long>
-    getNearestValenceIndices(const MolecularGeometry &molecularGeometry, const int &index, const long &count);
-
-    std::list<long>
-    getNearestValenceIndices(const MolecularGeometry &molecularGeometry, const int &index1, const int &index2,
-                             const long &count);
-
-    std::list<long>
-    getNearestElectronsIndices(const MolecularGeometry &molecularGeometry, const Eigen::Vector3d &position,
+    getNearestValencePositions(const PositionsVector &electronPositions, const AtomsVector &nuclei, const int &index1,
+                               const int &index2,
                                const long &count);
 
     std::list<long>
-    getNearestElectronsIndices(const MolecularGeometry &molecularGeometry, const int &index, const long &count);
+    getNearestValenceIndices(const PositionsVector &electronPositions, const AtomsVector &nuclei,
+                             const Eigen::Vector3d &position,
+                             const long &count);
 
     std::list<long>
-    getNearestElectronsIndices(const MolecularGeometry &molecularGeometry, const int &index1, const int &index2,
+    getNearestValenceIndices(const PositionsVector &electronPositions, const AtomsVector &nuclei, const int &index,
+                             const long &count);
+
+    std::list<long>
+    getNearestValenceIndices(const PositionsVector &electronPositions, const AtomsVector &nuclei, const int &index1,
+                             const int &index2,
+                             const long &count);
+
+    std::list<long>
+    getNearestElectronsIndices(const PositionsVector &electronPositions, const AtomsVector &nuclei,
+                               const Eigen::Vector3d &position,
+                               const long &count);
+
+    std::list<long>
+    getNearestElectronsIndices(const PositionsVector &electronPositions, const AtomsVector &nuclei, const int &index,
+                               const long &count);
+
+    std::list<long>
+    getNearestElectronsIndices(const PositionsVector &electronPositions, const AtomsVector &nuclei, const int &index1,
+                               const int &index2,
                                const long &count);
 }
 
