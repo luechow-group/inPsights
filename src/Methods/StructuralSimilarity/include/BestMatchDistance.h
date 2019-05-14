@@ -27,7 +27,7 @@ namespace BestMatch {
 
         template<int positionalNorm = 2>
         Eigen::PermutationMatrix<Eigen::Dynamic>
-        findSpinSpecificPermutation(ElectronsVector permutee, ElectronsVector reference, bool flipSpinsQ = false) {
+        findSpinSpecificPermutation(const ElectronsVector &permutee, const ElectronsVector &reference, bool flipSpinsQ = false) {
                 assert(permutee.typesVector() == reference.typesVector()
                        && "The typesvectors must be identical as we assume ordered alpha and beta electrons.");
                 assert(permutee.positionsVector().numberOfEntities() == reference.positionsVector().numberOfEntities()
