@@ -20,6 +20,7 @@ namespace Settings {
     public:
         Property<std::string> binaryFileBasename = {"raw", VARNAME(binaryFileBasename)};
         Property<unsigned> samplesToAnalyze = {unsigned(SamplesToAnalyze::small), VARNAME(samplesToAnalyze)};
+        Property<unsigned> minimalClusterSize = {samplesToAnalyze.get()/1000, VARNAME(samplesToAnalyze)};
 
         MaximaProcessing();
         explicit MaximaProcessing(const YAML::Node &node);
@@ -27,5 +28,9 @@ namespace Settings {
     };
 }
 YAML_SETTINGS_DECLARATION(Settings::MaximaProcessing)
+
+namespace MaximaProcessing {
+    extern Settings::MaximaProcessing settings;
+}
 
 #endif //INPSIGHTS_MAXIMAPROCESSINGSETTINGS_H

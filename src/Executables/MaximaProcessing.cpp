@@ -89,13 +89,13 @@ int main(int argc, char *argv[]) {
 
 
     // Apply settings from inputYaml
-    Settings::MaximaProcessing maximaProcessingSettings(inputYaml);
+    MaximaProcessing::settings = Settings::MaximaProcessing(inputYaml);
 
     // Read maxima and samples
     Group maxima;
     std::vector<Sample> samples;
     RawDataReader reader(maxima, samples);
-    reader.read(maximaProcessingSettings.binaryFileBasename(), maximaProcessingSettings.samplesToAnalyze());
+    reader.read(MaximaProcessing::settings.binaryFileBasename(), MaximaProcessing::settings.samplesToAnalyze());
     auto atoms = reader.getAtoms();
 
     spdlog::info("number of inital refs {}", maxima.size());
@@ -106,7 +106,7 @@ int main(int argc, char *argv[]) {
 
     // write used settings
     YAML::Node usedSettings, usedClusteringSettings;
-    maximaProcessingSettings.appendToNode(usedSettings);
+    MaximaProcessing::settings.appendToNode(usedSettings);
 
     auto clusteringNode = inputYaml["Clustering"];
 
@@ -212,7 +212,7 @@ int main(int argc, char *argv[]) {
     outputYaml << EndMap << EndDoc;
     outputYaml << BeginDoc << Comment("final settings") << usedSettings << EndDoc;
 
-    std::string resultsFilename = maximaProcessingSettings.binaryFileBasename() + ".yml";
+    std::string resultsFilename = MaximaProcessing::settings.binaryFileBasename() + ".yml";
     spdlog::info("Writing results into file \"{}\"", resultsFilename);
 
     std::ofstream yamlFile(resultsFilename);
