@@ -5,6 +5,7 @@
 #include <gmock/gmock.h>
 #include <TestMolecules.h>
 #include <NearestElectrons.h>
+#include <BestMatchDistance.h>
 
 using namespace testing;
 
@@ -12,6 +13,8 @@ class ANearestElectronsTest : public Test {
 public:
     const MolecularGeometry &BH3 = TestMolecules::BH3::ionic;
     const ElectronsVector &electrons = BH3.electrons();
+    const ElectronsVector &electrons2 = TestMolecules::BH3::ionicMirrored.electrons();
+    const ElectronsVector &electrons3 = TestMolecules::BH3::ionicMirrored2.electrons();
     const AtomsVector &nuclei = BH3.atoms();
 };
 
@@ -69,7 +72,7 @@ TEST_F(ANearestElectronsTest, GetValenceByAtomIndices) {
     ASSERT_EQ(reference, indices);
 };
 
-TEST_F(ANearestElectronsTest, SliceVector) {
+TEST_F(ANearestElectronsTest, PickElements) {
     ElectronsVector reference;
     reference.append(electrons[2]);
     reference.append(electrons[6]);
@@ -79,11 +82,28 @@ TEST_F(ANearestElectronsTest, SliceVector) {
     ASSERT_EQ(reference, electrons[indices]);
 };
 
-TEST_F(ANearestElectronsTest, SliceVectorMethod) {
+TEST_F(ANearestElectronsTest, PickElementsMethod) {
     ElectronsVector reference;
     reference.append(electrons[2]);
     reference.append(electrons[6]);
 
     ElectronsVector slicedVector = NearestElectrons::getNearestValenceElectrons(electrons, nuclei, 0, 2, 2);
     ASSERT_EQ(reference, slicedVector);
+};
+
+TEST_F(ANearestElectronsTest, BestMatch) {
+    std::list<long> indices1 = NearestElectrons::getNearestValenceIndices(electrons.positionsVector(), nuclei, 0, 2, 2);
+    std::list<long> indices2 = NearestElectrons::getNearestValenceIndices(electrons3.positionsVector(), nuclei, 0, 2, 2);
+
+    auto[norm, perm] = BestMatch::Distance::compare<Eigen::Infinity, 2>(electrons[indices1], electrons3[indices2]);
+    std::cout << std::endl << perm.indices().transpose() << std::endl;
+    ASSERT_EQ(norm,0);
+};
+
+TEST_F(ANearestElectronsTest, BestMatch2) {
+    std::list<long> indices1 = NearestElectrons::getNearestValenceIndices(electrons.positionsVector(), nuclei, 0, 1, 2);
+    std::list<long> indices2 = NearestElectrons::getNearestValenceIndices(electrons2.positionsVector(), nuclei, 0, 1, 2);
+
+    auto[norm, perm] = BestMatch::Distance::compare<Eigen::Infinity, 2>(electrons[indices1], electrons2[indices2]);
+    ASSERT_NE(norm,0);
 };

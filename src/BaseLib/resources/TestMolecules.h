@@ -232,6 +232,19 @@ namespace TestMolecules {
                                  {Spin::beta , inbetween(nuclei.atoms(),{0,1},0.25)},
                                  {Spin::beta , inbetween(nuclei.atoms(),{0,2},0.25)}
                                 })};
+
+        const MolecularGeometry ionicMirrored2 = {
+                nuclei.atoms(),
+                ElectronsVector({
+                    ionicMirrored.electrons()[0],
+                    ionicMirrored.electrons()[1],
+                    ionicMirrored.electrons()[2],
+                    ionicMirrored.electrons()[7],
+                    ionicMirrored.electrons()[4],
+                    ionicMirrored.electrons()[5],
+                    ionicMirrored.electrons()[6],
+                    ionicMirrored.electrons()[3]
+                                })};
     }
 
     namespace CO2{
