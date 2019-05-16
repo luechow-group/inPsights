@@ -124,7 +124,7 @@ int main(int argc, char *argv[]) {
                 settings = Settings::BestMatchDistanceIdentityClusterer(clusteringNode);
 
                 BestMatchDistanceIdentityClusterer bestMatchDistanceIdentityClusterer(samples);
-                if (!inputYaml[settings.name()][settings.identityValueIncrement.name()])
+                if (!clusteringNode[settings.name()][settings.identityValueIncrement.name()])
                     settings.identityValueIncrement = valueStandardError * 1e-4;
 
                 bestMatchDistanceIdentityClusterer.cluster(maxima);
@@ -138,7 +138,7 @@ int main(int argc, char *argv[]) {
                 settings = Settings::BestMatchDistanceSimilarityClusterer(clusteringNode);
 
                 BestMatchDistanceSimilarityClusterer bestMatchDistanceSimilarityClusterer(samples);
-                if (!inputYaml[settings.name()][settings.similarityValueIncrement.name()])
+                if (!clusteringNode[settings.name()][settings.similarityValueIncrement.name()])
                     settings.similarityValueIncrement = valueStandardError * 1e-2;
                 bestMatchDistanceSimilarityClusterer.cluster(maxima);
 
