@@ -76,7 +76,10 @@ void validateInput(const YAML::Node &inputYaml) {
 }
 
 int main(int argc, char *argv[]) {
-
+    if (argc < 2) {
+        std::cerr << "Usage: " << argv[0] << " input.yml" << std::endl;
+        return 1;
+    }
     std::string inputFilename = argv[1];
     YAML::Node inputYaml = YAML::LoadFile(argv[1]);
     YAML::Emitter emitter;
