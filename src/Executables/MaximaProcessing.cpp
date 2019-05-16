@@ -124,10 +124,10 @@ int main(int argc, char *argv[]) {
             case IClusterer::Type::BestMatchDistanceIdentityClusterer: {
                 auto &settings = BestMatchDistanceIdentityClusterer::settings;
 
-                settings = Settings::BestMatchDistanceIdentityClusterer(clusteringNode);
+                settings = Settings::BestMatchDistanceIdentityClusterer(node.second);
 
                 BestMatchDistanceIdentityClusterer bestMatchDistanceIdentityClusterer(samples);
-                if (!clusteringNode[settings.name()][settings.identityValueIncrement.name()])
+                if (!node.second[settings.identityValueIncrement.name()])
                     settings.identityValueIncrement = valueStandardError * 1e-4;
 
                 bestMatchDistanceIdentityClusterer.cluster(maxima);
@@ -138,10 +138,10 @@ int main(int argc, char *argv[]) {
             case IClusterer::Type::BestMatchDistanceSimilarityClusterer: {
                 auto &settings = BestMatchDistanceSimilarityClusterer::settings;
 
-                settings = Settings::BestMatchDistanceSimilarityClusterer(clusteringNode);
+                settings = Settings::BestMatchDistanceSimilarityClusterer(node.second);
 
                 BestMatchDistanceSimilarityClusterer bestMatchDistanceSimilarityClusterer(samples);
-                if (!clusteringNode[settings.name()][settings.similarityValueIncrement.name()])
+                if (!node.second[settings.similarityValueIncrement.name()])
                     settings.similarityValueIncrement = valueStandardError * 1e-2;
                 bestMatchDistanceSimilarityClusterer.cluster(maxima);
 
@@ -151,7 +151,7 @@ int main(int argc, char *argv[]) {
             case IClusterer::Type::BestMatchDistanceDensityBasedClusterer: {
                 auto &settings = BestMatchDistanceDensityBasedClusterer::settings;
 
-                settings = Settings::BestMatchDistanceDensityBasedClusterer(clusteringNode);
+                settings = Settings::BestMatchDistanceDensityBasedClusterer(node.second);
 
                 BestMatchDistanceDensityBasedClusterer bestMatchDistanceDensityBasedClusterer(samples);
                 bestMatchDistanceDensityBasedClusterer.cluster(maxima);
@@ -162,7 +162,7 @@ int main(int argc, char *argv[]) {
             case IClusterer::Type::BestMatchSOAPSimilarityClusterer: {
                 auto &settings = BestMatchSOAPSimilarityClusterer::settings;
 
-                settings = Settings::BestMatchSOAPSimilarityClusterer(clusteringNode);
+                settings = Settings::BestMatchSOAPSimilarityClusterer(node.second);
 
                 auto soapSettings = node.second["SOAP"];
                 if (soapSettings[SOAP::General::settings.name()])

@@ -24,8 +24,8 @@ namespace Settings {
 
     BestMatchDistanceIdentityClusterer::BestMatchDistanceIdentityClusterer(const YAML::Node &node)
             : BestMatchDistanceIdentityClusterer() {
-        doubleProperty::decode(node[className], identityRadius);
-        doubleProperty::decode(node[className], identityValueIncrement);
+        doubleProperty::decode(node, identityRadius);
+        doubleProperty::decode(node, identityValueIncrement);
     }
 
     void BestMatchDistanceIdentityClusterer::appendToNode(YAML::Node &node) const {

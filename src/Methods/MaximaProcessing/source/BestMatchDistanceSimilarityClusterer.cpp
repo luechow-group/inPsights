@@ -23,8 +23,8 @@ namespace Settings {
 
     BestMatchDistanceSimilarityClusterer::BestMatchDistanceSimilarityClusterer(const YAML::Node &node)
             : BestMatchDistanceSimilarityClusterer() {
-        doubleProperty::decode(node[className], similarityRadius);
-        doubleProperty::decode(node[className], similarityValueIncrement);
+        doubleProperty::decode(node, similarityRadius);
+        doubleProperty::decode(node, similarityValueIncrement);
     }
 
     void BestMatchDistanceSimilarityClusterer::appendToNode(YAML::Node &node) const {

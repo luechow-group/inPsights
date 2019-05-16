@@ -24,7 +24,7 @@ namespace Settings {
 
     BestMatchDistanceDensityBasedClusterer::BestMatchDistanceDensityBasedClusterer(const YAML::Node &node)
             : BestMatchDistanceDensityBasedClusterer() {
-        doubleProperty::decode(node[className], clusterRadius);
+        doubleProperty::decode(node, clusterRadius);
     }
 
     void BestMatchDistanceDensityBasedClusterer::appendToNode(YAML::Node &node) const {
