@@ -8,6 +8,7 @@
 #include <BestMatchDistanceSimilarityClusterer.h>
 #include <BestMatchDistanceDensityBasedClusterer.h>
 #include <BestMatchSOAPSimilarityClusterer.h>
+#include <LocalBondSimilarityClusterer.h>
 #include <MaximaProcessor.h>
 #include <GeneralStatistics.h>
 #include <algorithm>
@@ -41,6 +42,11 @@ void validateClusteringSettings(const YAML::Node &inputYaml) {
             case IClusterer::Type::BestMatchDistanceDensityBasedClusterer: {
                 BestMatchDistanceDensityBasedClusterer::settings
                         = Settings::BestMatchDistanceDensityBasedClusterer(clusteringNode);
+                break;
+            }
+            case IClusterer::Type::LocalBondSimilarityClusterer: {
+                LocalBondSimilarityClusterer::settings
+                        = Settings::LocalBondSimilarityClusterer(clusteringNode);
                 break;
             }
             case IClusterer::Type::BestMatchSOAPSimilarityClusterer: {
@@ -155,6 +161,17 @@ int main(int argc, char *argv[]) {
 
                 BestMatchDistanceDensityBasedClusterer bestMatchDistanceDensityBasedClusterer(samples);
                 bestMatchDistanceDensityBasedClusterer.cluster(maxima);
+
+                settings.appendToNode(usedClusteringSettings);
+                break;
+            }
+            case IClusterer::Type::LocalBondSimilarityClusterer: {
+                auto &settings = LocalBondSimilarityClusterer::settings;
+
+                settings = Settings::LocalBondSimilarityClusterer(node.second);
+
+                LocalBondSimilarityClusterer localBondSimilarityClusterer(samples, atoms);
+                localBondSimilarityClusterer.cluster(maxima);
 
                 settings.appendToNode(usedClusteringSettings);
                 break;

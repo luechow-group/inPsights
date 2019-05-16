@@ -11,6 +11,9 @@
 #include <Enumerate.h>
 #include <Sample.h>
 
+// In order to use Group class,
+// <Reference.h> has to be included as well, due to forward declaration
+
 class Group;
 class Reference;
 

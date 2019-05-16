@@ -162,6 +162,7 @@ using doubleProperty        = YAML::convert<Property<double>>;
 using floatProperty         = YAML::convert<Property<float>>;
 using shortProperty         = YAML::convert<Property<short>>;
 using intProperty           = YAML::convert<Property<int>>;
+using longProperty          = YAML::convert<Property<long>>;
 using charProperty          = YAML::convert<Property<char>>;
 using stringProperty        = YAML::convert<Property<std::string>>;
 using unsignedProperty      = YAML::convert<Property<unsigned>>;
