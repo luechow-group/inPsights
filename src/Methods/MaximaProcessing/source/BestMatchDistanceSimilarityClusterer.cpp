@@ -50,7 +50,7 @@ void BestMatchDistanceSimilarityClusterer::cluster(Group& group) {
 
 
     // insert first element
-    Group supergroup({*group.begin()});
+    Group supergroup({{*group.begin()}});
 
     // start with the second subgroup
     for (auto subgroup = group.begin()+1; subgroup != group.end(); ++subgroup) {
@@ -79,13 +79,13 @@ void BestMatchDistanceSimilarityClusterer::cluster(Group& group) {
 
             if (norm < similarityRadius) {
                 subgroup->permuteAll(perm, samples_);
-                *subgroupFromSupergroupBoundaries += *subgroup;
+                subgroupFromSupergroupBoundaries->emplace_back(*subgroup);
                 isSimilarQ = true;
                 break;
             }
         }
         if (!isSimilarQ) {
-            supergroup.emplace_back(*subgroup);
+            supergroup.emplace_back(Group({*subgroup}));
         }
     }
     group = supergroup;
