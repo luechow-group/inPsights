@@ -27,9 +27,8 @@ unsigned long MaximaProcessor::addReference(const Reference &reference) {
 
     Eigen::VectorXd value = Eigen::VectorXd::Constant(1, reference.value());
     Eigen::MatrixXd spinCorrelations_ = SpinCorrelation::spinCorrelations(reference.maximum().typesVector()).cast<double>();
+
     // Maximum related statistics
-    std::cout << reference.maximum().typesVector() << std::endl;
-    std::cout << spinCorrelations_ << std::endl;
     valueStats_.add(value, count);
     SeeStats_.add(spinCorrelations_, count);
 
@@ -74,7 +73,6 @@ void MaximaProcessor::doMotifBasedEnergyPartitioning(const Group& group) {
 }
 
 size_t  MaximaProcessor::addAllReferences(const Group &group) {
-    std::cout << group << std::endl;
     unsigned long totalCount = 0;
     if(group.isLeaf())
         totalCount += addReference(*group.representative());
