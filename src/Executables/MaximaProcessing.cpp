@@ -215,7 +215,7 @@ int main(int argc, char *argv[]) {
     outputYaml << EndMap << EndDoc;
     outputYaml << BeginDoc << Comment("final settings") << usedSettings << EndDoc;
 
-    std::string resultsFilename = maximaProcessingSettings.binaryFileBasename() + ".yml";
+    std::string resultsFilename = inputFilename.substr(0,inputFilename.find('.')) + "-out.yml";
     spdlog::info("Writing results into file \"{}\"", resultsFilename);
 
     std::ofstream yamlFile(resultsFilename);
