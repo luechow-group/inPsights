@@ -85,20 +85,11 @@ size_t  MaximaProcessor::addAllReferences(const Group &group) {
 }
 
 std::vector<ElectronsVector> MaximaProcessor::getAllRepresentativeMaxima(const Group &group) {
-    if(group.isLeaf()) {
-        return {}; // leaves are not printed directly (only as representative structures one layer above)
-    } else {
-        if(group.front().isLeaf()) {
-            return {group.representative()->maximum()};
-        } else {
-            std::vector<ElectronsVector> representativeMaxima;
-            for(auto & i : group) {
-                auto res = getAllRepresentativeMaxima(i);
-                representativeMaxima.insert(representativeMaxima.end(), res.begin(), res.end());
-            }
-            return representativeMaxima;
-        }
+    std::vector<ElectronsVector> representativeMaxima;
+    for(auto & i : group) {
+        representativeMaxima.emplace_back(i.representative()->maximum());
     }
+    return representativeMaxima;
 }
 
 void MaximaProcessor::calculateStatistics(const Group &maxima){
