@@ -2,6 +2,7 @@
 // Created by heuer on 12.12.18.
 //
 #include <MaximaProcessor.h>
+#include <MaximaProcessingSettings.h>
 #include <ClusterData.h>
 #include <MolecularGeometry.h>
 #include <SpinCorrelation.h>
@@ -136,10 +137,12 @@ void MaximaProcessor::calculateStatistics(const Group &maxima){
             voxelCubes = VoxelCubeGeneration::fromCluster(group, samples_);
 
 
-        yamlDocument_ <<  ClusterData(TeStats_.getTotalWeight(), structures, valueStats_, TeStats_, EeStats_,
-                                      SeeStats_, VeeStats_, VenStats_,
-                                      motifs_, EtotalStats_, intraMotifEnergyStats_, interMotifEnergyStats_,
-                                      ReeStats_, RenStats_, voxelCubes);
+        if(TeStats_.getTotalWeight() >= MaximaProcessing::settings.minimalClusterSize.get()) {
+            yamlDocument_ << ClusterData(TeStats_.getTotalWeight(), structures, valueStats_, TeStats_, EeStats_,
+                                         SeeStats_, VeeStats_, VenStats_,
+                                         motifs_, EtotalStats_, intraMotifEnergyStats_, interMotifEnergyStats_,
+                                         ReeStats_, RenStats_, voxelCubes);
+        }
     }
     spdlog::info("overall count {}", totalCount);
     assert(totalCount == samples_.size() && "The total count must match the sample size.");
