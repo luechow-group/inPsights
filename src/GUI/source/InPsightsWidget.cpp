@@ -20,9 +20,10 @@
 #include <spdlog/spdlog.h>
 
 
-InPsightsWidget::InPsightsWidget(QWidget *parent)
+InPsightsWidget::InPsightsWidget(QWidget *parent, const std::string& filename)
         :
         QWidget(parent),
+        filename_(filename),
         moleculeWidget(new MoleculeWidget(this)),
         maximaProcessingWidget(new MaximaProcessingWidget(this)), // TODO refator, should it be an additional window?
         atomsCheckBox(new QCheckBox("Atoms", this)),
@@ -203,14 +204,16 @@ void InPsightsWidget::showSplashScreen() {
 
 void InPsightsWidget::loadData() {
 
-    auto fileName = QFileDialog::getOpenFileName(this,
-            QString("Open results file"),
-            QDir::currentPath(),
-            QString("YAML files (*.yml *.yaml *.json)"));
+    if(filename_.empty()) {
+        filename_ = QFileDialog::getOpenFileName(this,
+                                                QString("Open results file"),
+                                                QDir::currentPath(),
+                                                QString("YAML files (*.yml *.yaml *.json)")).toStdString();
+    }
 
-    moleculeWidget->infoText_->setText(fileName);
+    moleculeWidget->infoText_->setText(filename_.c_str());
 
-    YAML::Node doc = YAML::LoadAllFromFile(fileName.toStdString())[1]; // load results
+    YAML::Node doc = YAML::LoadAllFromFile(filename_)[1]; // load results
     auto atoms = doc["Atoms"].as<AtomsVector>();
 
     auto nElectrons = doc["Clusters"][0]["Structures"][0].as<ElectronsVector>().numberOfEntities();

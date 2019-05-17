@@ -16,7 +16,7 @@
 class InPsightsWidget : public QWidget {
 Q_OBJECT
 public:
-    explicit InPsightsWidget(QWidget *parent = nullptr);
+    explicit InPsightsWidget(QWidget *parent = nullptr, const std::string &filename = "");
 
 public slots:
     void selectedStructure(QTreeWidgetItem *item, int column);
@@ -27,6 +27,7 @@ public slots:
     void onSpinCorrelationsSliderChanged(int value);
 
 private:
+    std::string filename_;
     MoleculeWidget *moleculeWidget;
     MaximaProcessingWidget *maximaProcessingWidget;
     QCheckBox *atomsCheckBox, *bondsCheckBox, *spinConnectionsCheckBox, *spinCorrelationsCheckBox;
