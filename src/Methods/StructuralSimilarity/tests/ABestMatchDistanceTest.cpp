@@ -6,6 +6,23 @@
 #include <BestMatchDistance.h>
 #include <TestMolecules.h>
 
+TEST(ABestMatchDistanceTest, findTypeSeparatingPermutation) {
+
+    AtomsVector nuclei({{Element::H, {0, 0, 0}},
+                        {Element::He,{0, 0, 0}},
+                        {Element::Li,{0, 0, 0}},
+                        {Element::He,{0, 0, 0}},
+                        {Element::H, {0, 0, 0}}});
+    
+
+    auto result = BestMatch::Distance::findTypeSeparatingPermutation<Element>(nuclei);
+    
+    Eigen::VectorXi expected(5);
+    expected << 0,4,1,3,2;
+    
+    ASSERT_TRUE(result.indices().isApprox(expected));
+}
+
 TEST(ABestMatchDistanceTest, SpinSpecificHungarian) {
     auto eNormal = TestMolecules::eightElectrons::square.electrons();
 
