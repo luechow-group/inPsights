@@ -71,6 +71,14 @@ public:
         return {typesVector_[i],positionsVector_[i]};
     }
 
+    ParticlesVector<Type> operator[](std::list<long> indices) const {
+        ParticlesVector newVector;
+        for (long index : indices) {
+            newVector.append(Particle<Type>{typesVector_[index],positionsVector_[index]});
+        }
+        return newVector;
+    }
+
     const PositionsVector & positionsVector() const {
         return positionsVector_;
     }

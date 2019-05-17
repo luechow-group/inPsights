@@ -23,8 +23,8 @@ namespace Settings {
 
     BestMatchDistanceSimilarityClusterer::BestMatchDistanceSimilarityClusterer(const YAML::Node &node)
             : BestMatchDistanceSimilarityClusterer() {
-        doubleProperty::decode(node[className], similarityRadius);
-        doubleProperty::decode(node[className], similarityValueIncrement);
+        doubleProperty::decode(node, similarityRadius);
+        doubleProperty::decode(node, similarityValueIncrement);
     }
 
     void BestMatchDistanceSimilarityClusterer::appendToNode(YAML::Node &node) const {
@@ -42,18 +42,20 @@ BestMatchDistanceSimilarityClusterer::BestMatchDistanceSimilarityClusterer(std::
         
 // assumes a sorted reference vector
 void BestMatchDistanceSimilarityClusterer::cluster(Group& group) {
+    assert(!group.empty() && "The group cannot be empty.");
+
     auto similarityRadius = settings.similarityRadius();
     auto valueIncrement = settings.similarityValueIncrement();
+
 
     // first, make sure group is sorted
     group.sort();
 
-
     // insert first element
-    Group supergroup({*group.begin()});
+    Group supergroup({Group({*group.begin()})});
 
     // start with the second subgroup
-    for (auto subgroup = group.begin()+1; subgroup != group.end(); ++subgroup) {
+    for (auto subgroup = std::next(group.begin()); subgroup != group.end(); ++subgroup) {
         bool isSimilarQ = false;
 
         // Define value range of the supergroup
@@ -79,13 +81,13 @@ void BestMatchDistanceSimilarityClusterer::cluster(Group& group) {
 
             if (norm < similarityRadius) {
                 subgroup->permuteAll(perm, samples_);
-                *subgroupFromSupergroupBoundaries += *subgroup;
+                subgroupFromSupergroupBoundaries->emplace_back(*subgroup);
                 isSimilarQ = true;
                 break;
             }
         }
         if (!isSimilarQ) {
-            supergroup.emplace_back(*subgroup);
+            supergroup.emplace_back(Group({*subgroup}));
         }
     }
     group = supergroup;

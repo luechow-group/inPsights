@@ -80,6 +80,32 @@ TEST_F(AGroupTest, ListInitialization_Constructor){
     ASSERT_EQ(supergroup[2].representative()->value(), 1.0);
 }
 
+TEST_F(AGroupTest, DISABLED_NestedListInitializationWithOneObject_Constructor_Death){
+    Group supergroup({{g1}});
+
+    EXPECT_DEATH(supergroup.isLeaf(),"");
+}
+
+TEST_F(AGroupTest, NestedListInitializationWithOneObject_Constructor){
+    Group supergroup({Group({g1})});
+    ASSERT_FALSE(supergroup.isLeaf());
+
+    ASSERT_EQ(supergroup.representative()->value(), 1.1);
+    ASSERT_EQ(supergroup[0].representative()->value(), 1.1);
+    ASSERT_EQ(supergroup[0][0].representative()->value(), 1.1);
+}
+
+TEST_F(AGroupTest, NestedListInitialization_Constructor){
+    Group supergroup({{g1, g2, g3}});
+    ASSERT_FALSE(supergroup.isLeaf());
+
+    ASSERT_EQ(supergroup.representative()->value(), 1.1);
+    ASSERT_EQ(supergroup[0].representative()->value(), 1.1);
+    ASSERT_EQ(supergroup[0][0].representative()->value(), 1.1);
+    ASSERT_EQ(supergroup[0][1].representative()->value(), 1.2);
+    ASSERT_EQ(supergroup[0][2].representative()->value(), 1.0);
+}
+
 TEST_F(AGroupTest, ListInitialization_Empty){
     Group supergroup({});
     ASSERT_EQ(supergroup.representative(), nullptr);

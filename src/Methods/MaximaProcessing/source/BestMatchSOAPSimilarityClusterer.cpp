@@ -44,23 +44,25 @@ BestMatchSOAPSimilarityClusterer::BestMatchSOAPSimilarityClusterer(
     ParticleKit::create(atoms_, (*samples.begin()).sample_);
 };
 
-void BestMatchSOAPSimilarityClusterer::cluster(Group& maxima){
-    assert(!maxima.isLeaf() && "The maxima group cannot be a leaf.");
-    maxima.sortAll(); // sort, so that most probable structures are the representatives
+void BestMatchSOAPSimilarityClusterer::cluster(Group& group){
+    assert(!group.empty() && "The group cannot be empty.");
+    assert(!group.isLeaf() && "The group cannot be a leaf.");
+
+    group.sortAll(); // sort, so that most probable structures are the representatives
 
     // Calculate spectra
-    spdlog::info("Calculating {} spectra...", maxima.size());
-#pragma omp parallel for default(none) shared(atoms_, maxima)
-    for (auto it = maxima.begin(); it < maxima.end(); ++it) {
+    spdlog::info("Calculating {} spectra...", group.size());
+#pragma omp parallel for default(none) shared(atoms_, group)
+    for (auto it = group.begin(); it < group.end(); ++it) {
         it->representative()->setSpectrum(MolecularSpectrum({atoms_, it->representative()->maximum()}));
-        spdlog::info("calculated spectrum {}", std::distance(maxima.begin(), it));
+        spdlog::info("calculated spectrum {}", std::distance(group.begin(), it));
     }
 
     auto similarityThreshold = settings.threshold();
 
-    Group supergroup({*maxima.begin()});
+    Group supergroup({*group.begin()});
 
-    for(auto groupIt = maxima.begin()+1; groupIt !=maxima.end(); groupIt++) {
+    for(auto groupIt = group.begin()+1; groupIt !=group.end(); groupIt++) {
         bool foundMatchQ = false;
 
         // check if current group matches any of the supergroup subgroups
@@ -88,5 +90,5 @@ void BestMatchSOAPSimilarityClusterer::cluster(Group& maxima){
     }
     spdlog::info("done");
     // TODO add assert checking if the size of overall references chagned.
-    maxima = supergroup;
+    group = supergroup;
 }

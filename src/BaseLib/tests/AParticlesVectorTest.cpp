@@ -145,3 +145,14 @@ TEST_F(AParticlesVectorTest, LinkedParticles){
     ASSERT_EQ(e[1].position(),changed);
     ASSERT_EQ(e[2].position(),l2->position());
 }
+
+TEST_F(AParticlesVectorTest, AccessWithIndexList){
+    std::list<long> indices({0,2});
+
+    auto newVector = electrons[indices];
+    ASSERT_EQ(newVector.numberOfEntities(), 2);
+    ASSERT_EQ(newVector[0].position(), electrons[0].position());
+    ASSERT_EQ(newVector[0].type(), electrons[0].type());
+    ASSERT_EQ(newVector[1].position(), electrons[2].position());
+    ASSERT_EQ(newVector[1].type(), electrons[2].type());
+}

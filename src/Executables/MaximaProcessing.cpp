@@ -8,6 +8,7 @@
 #include <BestMatchDistanceSimilarityClusterer.h>
 #include <BestMatchDistanceDensityBasedClusterer.h>
 #include <BestMatchSOAPSimilarityClusterer.h>
+#include <LocalBondSimilarityClusterer.h>
 #include <MaximaProcessor.h>
 #include <GeneralStatistics.h>
 #include <algorithm>
@@ -43,6 +44,11 @@ void validateClusteringSettings(const YAML::Node &inputYaml) {
                         = Settings::BestMatchDistanceDensityBasedClusterer(clusteringNode);
                 break;
             }
+            case IClusterer::Type::LocalBondSimilarityClusterer: {
+                LocalBondSimilarityClusterer::settings
+                        = Settings::LocalBondSimilarityClusterer(clusteringNode);
+                break;
+            }
             case IClusterer::Type::BestMatchSOAPSimilarityClusterer: {
                 BestMatchSOAPSimilarityClusterer::settings
                         = Settings::BestMatchSOAPSimilarityClusterer(clusteringNode);
@@ -76,7 +82,10 @@ void validateInput(const YAML::Node &inputYaml) {
 }
 
 int main(int argc, char *argv[]) {
-
+    if (argc < 2) {
+        std::cerr << "Usage: " << argv[0] << " input.yml" << std::endl;
+        return 1;
+    }
     std::string inputFilename = argv[1];
     YAML::Node inputYaml = YAML::LoadFile(argv[1]);
     YAML::Emitter emitter;
@@ -121,10 +130,10 @@ int main(int argc, char *argv[]) {
             case IClusterer::Type::BestMatchDistanceIdentityClusterer: {
                 auto &settings = BestMatchDistanceIdentityClusterer::settings;
 
-                settings = Settings::BestMatchDistanceIdentityClusterer(clusteringNode);
+                settings = Settings::BestMatchDistanceIdentityClusterer(node.second);
 
                 BestMatchDistanceIdentityClusterer bestMatchDistanceIdentityClusterer(samples);
-                if (!clusteringNode[settings.name()][settings.identityValueIncrement.name()])
+                if (!node.second[settings.identityValueIncrement.name()])
                     settings.identityValueIncrement = valueStandardError * 1e-4;
 
                 bestMatchDistanceIdentityClusterer.cluster(maxima);
@@ -135,10 +144,10 @@ int main(int argc, char *argv[]) {
             case IClusterer::Type::BestMatchDistanceSimilarityClusterer: {
                 auto &settings = BestMatchDistanceSimilarityClusterer::settings;
 
-                settings = Settings::BestMatchDistanceSimilarityClusterer(clusteringNode);
+                settings = Settings::BestMatchDistanceSimilarityClusterer(node.second);
 
                 BestMatchDistanceSimilarityClusterer bestMatchDistanceSimilarityClusterer(samples);
-                if (!clusteringNode[settings.name()][settings.similarityValueIncrement.name()])
+                if (!node.second[settings.similarityValueIncrement.name()])
                     settings.similarityValueIncrement = valueStandardError * 1e-2;
                 bestMatchDistanceSimilarityClusterer.cluster(maxima);
 
@@ -148,7 +157,7 @@ int main(int argc, char *argv[]) {
             case IClusterer::Type::BestMatchDistanceDensityBasedClusterer: {
                 auto &settings = BestMatchDistanceDensityBasedClusterer::settings;
 
-                settings = Settings::BestMatchDistanceDensityBasedClusterer(clusteringNode);
+                settings = Settings::BestMatchDistanceDensityBasedClusterer(node.second);
 
                 BestMatchDistanceDensityBasedClusterer bestMatchDistanceDensityBasedClusterer(samples);
                 bestMatchDistanceDensityBasedClusterer.cluster(maxima);
@@ -156,10 +165,21 @@ int main(int argc, char *argv[]) {
                 settings.appendToNode(usedClusteringSettings);
                 break;
             }
+            case IClusterer::Type::LocalBondSimilarityClusterer: {
+                auto &settings = LocalBondSimilarityClusterer::settings;
+
+                settings = Settings::LocalBondSimilarityClusterer(node.second);
+
+                LocalBondSimilarityClusterer localBondSimilarityClusterer(samples, atoms);
+                localBondSimilarityClusterer.cluster(maxima);
+
+                settings.appendToNode(usedClusteringSettings);
+                break;
+            }
             case IClusterer::Type::BestMatchSOAPSimilarityClusterer: {
                 auto &settings = BestMatchSOAPSimilarityClusterer::settings;
 
-                settings = Settings::BestMatchSOAPSimilarityClusterer(clusteringNode);
+                settings = Settings::BestMatchSOAPSimilarityClusterer(node.second);
 
                 auto soapSettings = node.second["SOAP"];
                 if (soapSettings[SOAP::General::settings.name()])
@@ -212,7 +232,7 @@ int main(int argc, char *argv[]) {
     outputYaml << EndMap << EndDoc;
     outputYaml << BeginDoc << Comment("final settings") << usedSettings << EndDoc;
 
-    std::string resultsFilename = MaximaProcessing::settings.binaryFileBasename() + ".yml";
+    std::string resultsFilename = inputFilename.substr(0,inputFilename.find('.')) + "-out.yml";
     spdlog::info("Writing results into file \"{}\"", resultsFilename);
 
     std::ofstream yamlFile(resultsFilename);

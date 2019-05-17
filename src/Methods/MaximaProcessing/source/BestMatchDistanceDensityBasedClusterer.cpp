@@ -24,7 +24,7 @@ namespace Settings {
 
     BestMatchDistanceDensityBasedClusterer::BestMatchDistanceDensityBasedClusterer(const YAML::Node &node)
             : BestMatchDistanceDensityBasedClusterer() {
-        doubleProperty::decode(node[className], clusterRadius);
+        doubleProperty::decode(node, clusterRadius);
     }
 
     void BestMatchDistanceDensityBasedClusterer::appendToNode(YAML::Node &node) const {
@@ -54,6 +54,8 @@ BestMatchDistanceDensityBasedClusterer::SortElement::SortElement(BestMatch::Resu
         : bestMatch_(std::move(bestMatch)), it_(it) {}
         
 void BestMatchDistanceDensityBasedClusterer::cluster(Group& group) {
+    assert(!group.empty() && "The group cannot be empty.");
+
     group.sortAll();
     auto threshold = settings.clusterRadius() * 2 + 0.01; // TODO WHY IS THIS CORRECTION NECESSARY?
 

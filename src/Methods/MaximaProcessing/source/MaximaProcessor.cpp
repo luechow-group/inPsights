@@ -28,9 +28,8 @@ unsigned long MaximaProcessor::addReference(const Reference &reference) {
 
     Eigen::VectorXd value = Eigen::VectorXd::Constant(1, reference.value());
     Eigen::MatrixXd spinCorrelations_ = SpinCorrelation::spinCorrelations(reference.maximum().typesVector()).cast<double>();
+
     // Maximum related statistics
-    std::cout << reference.maximum().typesVector() << std::endl;
-    std::cout << spinCorrelations_ << std::endl;
     valueStats_.add(value, count);
     SeeStats_.add(spinCorrelations_, count);
 
@@ -75,7 +74,6 @@ void MaximaProcessor::doMotifBasedEnergyPartitioning(const Group& group) {
 }
 
 size_t  MaximaProcessor::addAllReferences(const Group &group) {
-    std::cout << group << std::endl;
     unsigned long totalCount = 0;
     if(group.isLeaf())
         totalCount += addReference(*group.representative());
@@ -87,20 +85,11 @@ size_t  MaximaProcessor::addAllReferences(const Group &group) {
 }
 
 std::vector<ElectronsVector> MaximaProcessor::getAllRepresentativeMaxima(const Group &group) {
-    if(group.isLeaf()) {
-        return {}; // leaves are not printed directly (only as representative structures one layer above)
-    } else {
-        if(group.front().isLeaf()) {
-            return {group.representative()->maximum()};
-        } else {
-            std::vector<ElectronsVector> representativeMaxima;
-            for(auto & i : group) {
-                auto res = getAllRepresentativeMaxima(i);
-                representativeMaxima.insert(representativeMaxima.end(), res.begin(), res.end());
-            }
-            return representativeMaxima;
-        }
+    std::vector<ElectronsVector> representativeMaxima;
+    for(auto & i : group) {
+        representativeMaxima.emplace_back(i.representative()->maximum());
     }
+    return representativeMaxima;
 }
 
 void MaximaProcessor::calculateStatistics(const Group &maxima){
