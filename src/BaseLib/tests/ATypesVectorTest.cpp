@@ -105,24 +105,24 @@ TEST_F(ATypesVectorTest,CheckIndexedType_MissingType){
 TEST_F(ATypesVectorTest, CountTypes_ElementTypes){
     auto result = etv.countTypes();
 
-    ASSERT_EQ(result[0].first, Element::H);
-    ASSERT_EQ(result[0].second, 1);
+    ASSERT_EQ(result[0].type_, Element::H);
+    ASSERT_EQ(result[0].number_, 1);
 
-    ASSERT_EQ(result[1].first, Element::He);
-    ASSERT_EQ(result[1].second, 3);
+    ASSERT_EQ(result[1].type_, Element::He);
+    ASSERT_EQ(result[1].number_, 3);
 
-    ASSERT_EQ(result[2].first, Element::Og);
-    ASSERT_EQ(result[2].second, 1);
+    ASSERT_EQ(result[2].type_, Element::Og);
+    ASSERT_EQ(result[2].number_, 1);
 }
 
 TEST_F(ATypesVectorTest, CountTypes_SpinTypes){
     auto result = stv.countTypes();
 
-    ASSERT_EQ(result[0].first, Spin::alpha);
-    ASSERT_EQ(result[0].second, 3);
+    ASSERT_EQ(result[0].type_, Spin::alpha);
+    ASSERT_EQ(result[0].number_, 3);
 
-    ASSERT_EQ(result[1].first, Spin::beta);
-    ASSERT_EQ(result[1].second, 3);
+    ASSERT_EQ(result[1].type_, Spin::beta);
+    ASSERT_EQ(result[1].number_, 3);
 }
 
 

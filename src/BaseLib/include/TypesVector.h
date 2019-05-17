@@ -104,9 +104,9 @@ public:
     }
 
     //TODO dirty - refactor
-    std::vector<std::pair<Type,unsigned>> countTypes() const {
+    std::vector<EnumeratedType<Type>> countTypes() const {
 
-        std::vector<std::pair<Type,unsigned>> typeCountsPair;
+        std::vector<EnumeratedType<Type>> typeCountsPair;
         if(numberOfEntities() > 0) {
             if(numberOfEntities() == 1) {
                 return {{this->operator[](0),1}};

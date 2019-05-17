@@ -9,7 +9,6 @@
 #include "SpinType.h"
 #include <iostream>
 
-// A numbered type is used to enumerate of d as the n-th particles
 template <typename Type>
 class EnumeratedType{
 public:
