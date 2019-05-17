@@ -46,6 +46,47 @@ namespace BestMatch {
             return Eigen::PermutationMatrix<Eigen::Dynamic>(typeSerparatingPermutationIndices);
         }
 
+        template<typename Type, int positionalNorm = 2>
+        Eigen::PermutationMatrix<Eigen::Dynamic>
+        findTypeSpecificPermutation(ParticlesVector<Type> permutee, ParticlesVector<Type> reference) {
+            //TODO//assert(permutee.typesVector() == reference.typesVector()
+            //       && "The type vectors must be identical as we assume ordered alpha and beta electrons.");
+
+            assert(permutee.numberOfEntities() == reference.numberOfEntities()
+                   && "The number of particles must be identical.");
+
+            auto countedTypes = permutee.typesVector().countTypes();
+
+            auto permuteeSeparatingPermutation = findTypeSeparatingPermutation<Type>(permutee);
+            auto referenceSeparatingPermutation = findTypeSeparatingPermutation<Type>(reference);
+
+
+            Eigen::PermutationMatrix<Eigen::Dynamic> combinedPerm(0);
+            Eigen::Index accumulatedCounts = 0;
+
+            for(const auto &typeCount : countedTypes) {
+
+                // Construct cost matrices
+                std::list<long> selectedPermuteeIndices,selectedReferenceIndices;
+
+                for (Eigen::Index i = 0; i < typeCount.number_; ++i) {
+                    selectedPermuteeIndices.emplace_back(permuteeSeparatingPermutation.indices()[accumulatedCounts+i]);
+                    selectedReferenceIndices.emplace_back(referenceSeparatingPermutation.indices()[accumulatedCounts+i]);
+                }
+
+                auto costMatrix = Metrics::positionalDistances<positionalNorm>(
+                        permutee[selectedPermuteeIndices].positionsVector(),
+                        reference[selectedReferenceIndices].positionsVector());
+
+                // find best match and combine it
+                combinedPerm = combinePermutations(combinedPerm, Hungarian<double>::findMatching(costMatrix));
+
+                accumulatedCounts += typeCount.number_;
+            }
+
+            return referenceSeparatingPermutation * combinedPerm * permuteeSeparatingPermutation.inverse();
+        };
+
         template<int positionalNorm = 2>
         Eigen::PermutationMatrix<Eigen::Dynamic>
         findSpinSpecificPermutation(const ElectronsVector &permutee, const ElectronsVector &reference, bool flipSpinsQ = false) {

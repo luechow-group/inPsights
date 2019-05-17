@@ -8,18 +8,74 @@
 
 TEST(ABestMatchDistanceTest, findTypeSeparatingPermutation) {
 
-    AtomsVector nuclei({{Element::H, {0, 0, 0}},
-                        {Element::He,{0, 0, 0}},
+    AtomsVector nuclei({{Element::H, {0, 0,-2}},
+                        {Element::He,{0, 0,-1}},
                         {Element::Li,{0, 0, 0}},
-                        {Element::He,{0, 0, 0}},
-                        {Element::H, {0, 0, 0}}});
-    
+                        {Element::He,{0, 0, 1}},
+                        {Element::H, {0, 0, 2}}});
+
 
     auto result = BestMatch::Distance::findTypeSeparatingPermutation<Element>(nuclei);
-    
+
     Eigen::VectorXi expected(5);
     expected << 0,4,1,3,2;
-    
+
+    ASSERT_TRUE(result.indices().isApprox(expected));
+}
+
+TEST(ABestMatchDistanceTest, TypeSpecificHungarian) {
+    AtomsVector B({
+        {Element::H, {0, 0,-3}},
+        {Element::He,{0, 0,-2}},
+        {Element::Li,{0, 0,-1}},
+        {Element::Li,{0, 0, 0}},
+        {Element::Li,{0, 0, 1}},
+        {Element::He,{0, 0, 2}},
+        {Element::H, {0, 0, 3}}});
+
+    AtomsVector A({
+        B[6],
+        B[5],
+        B[4],
+        B[3],
+        B[2],
+        B[1],
+        B[0]
+    });
+
+    Eigen::VectorXi expected(7);
+    expected << 6,5,4,3,2,1,0;
+
+    auto result = BestMatch::Distance::findTypeSpecificPermutation<Element>(A,B);
+
+    ASSERT_TRUE(result.indices().isApprox(expected));
+}
+
+TEST(ABestMatchDistanceTest, TypeSpecificHungarian2) {
+    AtomsVector B({
+        {Element::Li,{0, 0,-3}},
+        {Element::Li,{0, 0,-2}},
+        {Element::Li,{0, 0,-1}},
+        {Element::He,{0, 0, 0}},
+        {Element::He,{0, 0, 1}},
+        {Element::He,{0, 0, 2}},
+        {Element::H, {0, 0, 3}}});
+
+    AtomsVector A({
+        B[3],
+        B[2],
+        B[0],
+        B[1],
+        B[4],
+        B[5],
+        B[6]
+    });
+
+    Eigen::VectorXi expected(7);
+    expected << 3,2,0,1,4,5,6;
+
+    auto result = BestMatch::Distance::findTypeSpecificPermutation<Element>(A,B);
+
     ASSERT_TRUE(result.indices().isApprox(expected));
 }
 

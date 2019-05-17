@@ -19,3 +19,18 @@ TEST(ABestMatchTest, CombinePermutations){
     auto p = BestMatch::combinePermutations(p1,p2);
     ASSERT_TRUE(p.indices().base().isApprox(expected));
 }
+
+TEST(ABestMatchTest, CombinePermutationsWithZeroLength){
+    Eigen::PermutationMatrix<Eigen::Dynamic>p1,p2;
+    p1.setIdentity(0);
+    p2.setIdentity(4);
+
+    Eigen::VectorXi expected(4);
+    expected << 0,1,2,3;
+
+    ASSERT_TRUE(p1.indices().base().isApprox(expected.segment(0,0)));
+    ASSERT_TRUE(p2.indices().base().isApprox(expected.segment(0,4)));
+
+    auto p = BestMatch::combinePermutations(p1,p2);
+    ASSERT_TRUE(p.indices().base().isApprox(expected));
+}
