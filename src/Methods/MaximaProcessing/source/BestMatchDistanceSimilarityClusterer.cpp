@@ -48,12 +48,11 @@ void BestMatchDistanceSimilarityClusterer::cluster(Group& group) {
     // first, make sure group is sorted
     group.sort();
 
-
     // insert first element
-    Group supergroup({{*group.begin()}});
+    Group supergroup({Group({*group.begin()})});
 
     // start with the second subgroup
-    for (auto subgroup = group.begin()+1; subgroup != group.end(); ++subgroup) {
+    for (auto subgroup = std::next(group.begin()); subgroup != group.end(); ++subgroup) {
         bool isSimilarQ = false;
 
         // Define value range of the supergroup

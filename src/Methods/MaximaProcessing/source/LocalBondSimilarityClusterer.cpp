@@ -42,13 +42,13 @@ void LocalBondSimilarityClusterer::cluster(Group &group) {
 
     group.sort();
 
-    Group superGroup({{*group.begin()}});
+    Group superGroup({Group({*group.begin()})});
 
     std::list<long> subIndices;
     std::list<long> sortedIndices;
     bool isSimilarQ;
 
-    for (auto subGroup = group.begin() + 1; subGroup != group.end(); ++subGroup) {
+    for (auto subGroup = std::next(group.begin()); subGroup != group.end(); ++subGroup) {
         isSimilarQ = false;
         for (auto sortedGroup = superGroup.begin(); sortedGroup != superGroup.end(); ++sortedGroup) {
             subIndices = LocalBondSimilarityClusterer::getRelevantIndices(subGroup->representative()->maximum());
