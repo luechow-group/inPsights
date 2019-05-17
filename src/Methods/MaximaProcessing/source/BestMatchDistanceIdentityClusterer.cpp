@@ -42,6 +42,8 @@ BestMatchDistanceIdentityClusterer::BestMatchDistanceIdentityClusterer(std::vect
         : samples_(samples) {}
 
 void BestMatchDistanceIdentityClusterer::cluster(Group& group) {
+    assert(!group.empty() && "The group cannot be empty.");
+
     auto identityRadius = settings.identityRadius();
     auto valueIncrement = settings.identityValueIncrement();
 

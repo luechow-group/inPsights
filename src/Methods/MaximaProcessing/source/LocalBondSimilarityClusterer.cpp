@@ -38,6 +38,8 @@ LocalBondSimilarityClusterer::LocalBondSimilarityClusterer(std::vector<Sample> &
 
 
 void LocalBondSimilarityClusterer::cluster(Group &group) {
+    assert(!group.empty() && "The group cannot be empty.");
+
     auto similarityRadius = settings.similarityRadius();
 
     group.sort();

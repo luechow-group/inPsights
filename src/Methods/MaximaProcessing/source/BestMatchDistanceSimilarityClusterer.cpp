@@ -42,8 +42,11 @@ BestMatchDistanceSimilarityClusterer::BestMatchDistanceSimilarityClusterer(std::
         
 // assumes a sorted reference vector
 void BestMatchDistanceSimilarityClusterer::cluster(Group& group) {
+    assert(!group.empty() && "The group cannot be empty.");
+
     auto similarityRadius = settings.similarityRadius();
     auto valueIncrement = settings.similarityValueIncrement();
+
 
     // first, make sure group is sorted
     group.sort();
