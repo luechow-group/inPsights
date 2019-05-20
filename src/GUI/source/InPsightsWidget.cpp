@@ -58,10 +58,14 @@ void InPsightsWidget::createWidget() {
     hbox->addLayout(vboxOuter, 1);
 
     // put into MaximaTreeWidget class
-    auto headerLabels = QList<QString>({"ID", "N", "min(-ln(|Ψ|²))", "max(-ln(|Ψ|²))"});
+    auto headerLabels = QList<QString>({"ID", "Weight", "min(-ln|Ψ|²)", "max(-ln|Ψ|²)"});
     maximaList->setColumnCount(headerLabels.size());
     maximaList->setHeaderLabels(headerLabels);
     maximaList->header()->setStretchLastSection(false);
+    maximaList-> header() -> setSectionResizeMode(0,QHeaderView::Stretch);
+    maximaList-> header() -> setSectionResizeMode(1,QHeaderView::ResizeToContents);
+    maximaList-> header() -> setSectionResizeMode(2,QHeaderView::ResizeToContents);
+    maximaList-> header() -> setSectionResizeMode(3,QHeaderView::ResizeToContents);
 
     vboxOuter->addWidget(maximaList, 1);
     vboxOuter->addWidget(maximaProcessingWidget,1);
@@ -233,10 +237,11 @@ void InPsightsWidget::loadData() {
         ClusterData clusterData = doc["Clusters"][clusterId].as<ClusterData>();
 
         clusterCollection_.emplace_back(clusterData);
-        auto item = new IntegerSortedTreeWidgetItem(maximaList,{QString::number(clusterId),
-                                                         QString::number(clusterData.N_),
-                                                         QString::number(clusterData.valueStats_.cwiseMin()[0]),
-                                                         QString::number(clusterData.valueStats_.cwiseMax()[0])});
+        auto item = new IntegerSortedTreeWidgetItem(
+                maximaList, {QString::number(clusterId),
+                 QString::number(1.0 * clusterData.N_ / doc["NSamples"].as<unsigned>(), 'f', 4),
+                 QString::number(clusterData.valueStats_.cwiseMin()[0], 'f', 3),
+                 QString::number(clusterData.valueStats_.cwiseMax()[0], 'f', 3)});
 
         item->setCheckState(0, Qt::CheckState::Unchecked);
 
