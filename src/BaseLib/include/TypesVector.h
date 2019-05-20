@@ -122,12 +122,12 @@ public:
                 if (currentType == lastType)
                     count++;
                 else {
-                    typeCountsPair.push_back({Type(lastType), count});
+                    typeCountsPair.emplace_back(EnumeratedType<Type>(Type(lastType), count));
                     count = 1;
                 }
                 // treat last element
                 if(i == numberOfEntities()-1)
-                    typeCountsPair.push_back({Type(currentType), count});
+                    typeCountsPair.emplace_back(EnumeratedType<Type>(Type(currentType), count));
             }
         }
         return typeCountsPair;

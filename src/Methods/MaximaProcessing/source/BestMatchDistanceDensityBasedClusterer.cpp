@@ -41,8 +41,8 @@ BestMatchDistanceDensityBasedClusterer::BestMatchDistanceDensityBasedClusterer(s
 
 double BestMatchDistanceDensityBasedClusterer::wrapper(const Group &g1, const Group &g2) {
     return BestMatch::Distance::compare<Eigen::Infinity, 2>(
-            g1.representative()->maximum(),
-            g2.representative()->maximum()).metric;
+            g1.representative()->maximum().positionsVector(),
+            g2.representative()->maximum().positionsVector()).metric;
 };
 
 bool BestMatchDistanceDensityBasedClusterer::SortElement::operator<(const SortElement &rhs) const {
@@ -87,8 +87,8 @@ void BestMatchDistanceDensityBasedClusterer::orderByBestMatchDistance(Group &sup
             for (auto j = i + 1; j != subgroup.end(); ++j) {
                 bestMatchDistances.emplace_back(
                         SortElement(BestMatch::Distance::compare<Eigen::Infinity, 2>(
-                                j.base()->representative()->maximum(),
-                                i.base()->representative()->maximum()), j)
+                                j.base()->representative()->maximum().positionsVector(),
+                                i.base()->representative()->maximum().positionsVector()), j)
                 );
             }
 

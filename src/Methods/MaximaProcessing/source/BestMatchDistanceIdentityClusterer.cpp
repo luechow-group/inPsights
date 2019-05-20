@@ -81,15 +81,17 @@ void BestMatchDistanceIdentityClusterer::subLoop(Group& group,
         double valueIncrement) {
 
     //TODO calculate only alpha electron distances and skip beta electron hungarian if dist is too large
-    auto [norm, perm] = BestMatch::Distance::compare(it->representative()->maximum(),
-            (*beginIt).representative()->maximum(), true);
+    auto [norm, perm] = BestMatch::Distance::compare<Spin, Eigen::Infinity, 2>(
+            it->representative()->maximum(),
+            (*beginIt).representative()->maximum());
 
     if (beginIt->representative()->maximum().typesVector().multiplicity() == 1) { // consider spin flip
 
+        auto permuteeSpinFlipped = it->representative()->maximum();
+        permuteeSpinFlipped.typesVector().flipSpins();
+
         auto [normFlipped, permFlipped] =
-        BestMatch::Distance::compare<Eigen::Infinity, 2>(
-                it->representative()->maximum(),
-                beginIt->representative()->maximum(), true, true);
+        BestMatch::Distance::compare<Spin, Eigen::Infinity, 2>(permuteeSpinFlipped, beginIt->representative()->maximum());
 
         if ((norm <= distThresh) || (normFlipped <= distThresh)) {
             if (norm <= normFlipped)

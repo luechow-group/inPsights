@@ -57,8 +57,8 @@ void LocalBondSimilarityClusterer::cluster(Group &group) {
             sortedIndices = LocalBondSimilarityClusterer::getRelevantIndices(sortedGroup->representative()->maximum());
 
             auto[norm, perm] = BestMatch::Distance::compare<Eigen::Infinity, 2>(
-                    subGroup->representative()->maximum()[subIndices],
-                    sortedGroup->representative()->maximum()[sortedIndices]);
+                    subGroup->representative()->maximum()[subIndices].positionsVector(),
+                    sortedGroup->representative()->maximum()[sortedIndices].positionsVector());
 
             if (norm < similarityRadius) {
                 sortedGroup->emplace_back(*subGroup);

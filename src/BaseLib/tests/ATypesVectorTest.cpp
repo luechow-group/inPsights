@@ -158,3 +158,27 @@ TEST_F(ATypesVectorTest, FlipSpins){
     
     ASSERT_EQ(stvFlipped, reference);
 }
+
+TEST_F(ATypesVectorTest, CountedTypes_EqualityOperator){
+    SpinTypesVector stvSwap({
+        stv[0],
+        stv[3],
+        stv[2],
+        stv[1],
+        stv[4],
+        stv[5]});
+
+    auto countedTypes1 = stv.countTypes();
+    auto countedTypes2 = stvSwap.countTypes();
+
+    ASSERT_EQ(stv.countTypes(),stvSwap.countTypes());
+
+    SpinTypesVector stvDifferent({
+        Spin::beta,
+        stv[1],
+        stv[2],
+        stv[3],
+        stv[4],
+        stv[5]});
+    ASSERT_TRUE(stv.countTypes() != stvDifferent.countTypes());
+}

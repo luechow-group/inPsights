@@ -23,7 +23,7 @@ TEST(ABestMatchDistanceTest, findTypeSeparatingPermutation) {
     ASSERT_TRUE(result.indices().isApprox(expected));
 }
 
-TEST(ABestMatchDistanceTest, TypeSpecificHungarian) {
+TEST(ABestMatchDistanceTest, TypeSpecificHungarian_Case1) {
     AtomsVector B({
         {Element::H, {0, 0,-3}},
         {Element::He,{0, 0,-2}},
@@ -51,7 +51,7 @@ TEST(ABestMatchDistanceTest, TypeSpecificHungarian) {
     ASSERT_TRUE(result.indices().isApprox(expected));
 }
 
-TEST(ABestMatchDistanceTest, TypeSpecificHungarian2) {
+TEST(ABestMatchDistanceTest, TypeSpecificHungarian_Case2) {
     AtomsVector B({
         {Element::Li,{0, 0,-3}},
         {Element::Li,{0, 0,-2}},
@@ -79,7 +79,7 @@ TEST(ABestMatchDistanceTest, TypeSpecificHungarian2) {
     ASSERT_TRUE(result.indices().isApprox(expected));
 }
 
-TEST(ABestMatchDistanceTest, SpinSpecificHungarian) {
+TEST(ABestMatchDistanceTest, TypeSpecificHungarian_Odrered) {
     auto eNormal = TestMolecules::eightElectrons::square.electrons();
 
     Eigen::VectorXi alphaBetaPositionFlip(8);
@@ -88,8 +88,9 @@ TEST(ABestMatchDistanceTest, SpinSpecificHungarian) {
 
     auto eFlipped = eNormal;
     eFlipped.positionsVector().permute(p);
+    eFlipped.typesVector().flipSpins();
 
-    auto bestMatchFlipped = BestMatch::Distance::findSpinSpecificPermutation(eNormal, eFlipped, true);
+    auto bestMatchFlipped = BestMatch::Distance::findTypeSpecificPermutation(eNormal, eFlipped);
     auto bestMatchFlippedInverse = Eigen::PermutationMatrix<Eigen::Dynamic>(bestMatchFlipped.inverse());
 
     ASSERT_TRUE(bestMatchFlippedInverse.indices().base().isApprox(p.indices().base()));
@@ -108,20 +109,23 @@ TEST(ABestMatchDistanceTest, BestMatchNorm) {
     Eigen::VectorXi expectedPerm(2);
     expectedPerm << 1, 0;
 
-    auto[norm2, perm2] = BestMatch::Distance::compare<2, 2>(v1, v2);
+    auto[norm2, perm2] = BestMatch::Distance::compare<2,2>(
+            v1.positionsVector(), v2.positionsVector());
     ASSERT_EQ(norm2, 5.0);
     ASSERT_TRUE(perm2.indices().isApprox(expectedPerm));
 
-    auto[normInf, permInf] = BestMatch::Distance::compare<Eigen::Infinity, 2>(v1, v2);
+    auto[normInf, permInf] = BestMatch::Distance::compare<Eigen::Infinity, 2>(
+            v1.positionsVector(), v2.positionsVector());
     ASSERT_EQ(normInf, 5.0);
     ASSERT_TRUE(permInf.indices().isApprox(expectedPerm));
 
-    auto[normInfInf, permInfInf] = BestMatch::Distance::compare<Eigen::Infinity, Eigen::Infinity>(v1, v2);
+    auto[normInfInf, permInfInf] = BestMatch::Distance::compare<Eigen::Infinity, Eigen::Infinity>(
+            v1.positionsVector(), v2.positionsVector());
     ASSERT_EQ(normInfInf, 4.0);
     ASSERT_TRUE(permInfInf.indices().isApprox(expectedPerm));
 }
 
-TEST(ABestMatchDistanceTest, SpinSpecificBestMatchNormSameSpin) {
+TEST(ABestMatchDistanceTest, TypeSpecificBestMatchNorm_SameSpin) {
     ElectronsVector v1({
         {Spin::alpha, {0, 1, 2}},
         {Spin::alpha, {0, 0, 0}}});
@@ -133,21 +137,20 @@ TEST(ABestMatchDistanceTest, SpinSpecificBestMatchNormSameSpin) {
     Eigen::VectorXi expectedPerm(2);
     expectedPerm << 1, 0;
 
-    auto[norm2, perm2] = BestMatch::Distance::compare<2, 2>(v1, v2);
+    auto[norm2, perm2] = BestMatch::Distance::compare<Spin,2, 2>(v1, v2);
     ASSERT_EQ(norm2, 5.0);
     ASSERT_TRUE(perm2.indices().isApprox(expectedPerm));
 
-    auto[normInf, permInf] = BestMatch::Distance::compare<Eigen::Infinity, 2>(v1, v2);
+    auto[normInf, permInf] = BestMatch::Distance::compare<Spin,Eigen::Infinity, 2>(v1, v2);
     ASSERT_EQ(normInf, 5.0);
     ASSERT_TRUE(permInf.indices().isApprox(expectedPerm));
 
-    auto[normInfInf, permInfInf] = BestMatch::Distance::compare<Eigen::Infinity, Eigen::Infinity>(
-            v1, v2);
+    auto[normInfInf, permInfInf] = BestMatch::Distance::compare<Spin,Eigen::Infinity, Eigen::Infinity>(v1, v2);
     ASSERT_EQ(normInfInf, 4.0);
     ASSERT_TRUE(permInfInf.indices().isApprox(expectedPerm));
 }
 
-TEST(ABestMatchDistanceTest, SpinSpecificBestMatchNormDifferentSpin) {
+TEST(ABestMatchDistanceTest, TypeSpecificBestMatchNorm_DifferentSpin) {
     ElectronsVector v1({
         {Spin::alpha, {0, 1, 2}},
         {Spin::beta,  {0, 0, 0}}});
@@ -161,20 +164,20 @@ TEST(ABestMatchDistanceTest, SpinSpecificBestMatchNormDifferentSpin) {
 
     auto eps = std::numeric_limits<double>::epsilon() * 10;
 
-    auto[norm2, perm2] = BestMatch::Distance::compare<2, 2>(v1, v2, true);
+    auto[norm2, perm2] = BestMatch::Distance::compare<Spin, 2, 2>(v1, v2);
     ASSERT_NEAR(norm2, std::sqrt(1 + 2 * 2 + 4 * 4 + 6 * 6), eps);
     ASSERT_TRUE(perm2.indices().isApprox(expectedPerm));
 
-    auto[normInf, permInf] = BestMatch::Distance::compare<Eigen::Infinity, 2>(v1, v2, true);
+    auto[normInf, permInf] = BestMatch::Distance::compare<Spin,Eigen::Infinity, 2>(v1, v2);
     ASSERT_NEAR(normInf, std::sqrt(4 * 4 + 6 * 6), eps);
     ASSERT_TRUE(permInf.indices().isApprox(expectedPerm));
 
-    auto[normInfInf, permInfInf] = BestMatch::Distance::compare<Eigen::Infinity, Eigen::Infinity>(v1, v2, true);
+    auto[normInfInf, permInfInf] = BestMatch::Distance::compare<Spin,Eigen::Infinity, Eigen::Infinity>(v1, v2);
     ASSERT_EQ(normInfInf, 6);
     ASSERT_TRUE(permInfInf.indices().isApprox(expectedPerm));
 }
 
-TEST(ABestMatchDistanceTest, RealMaxima) {
+TEST(ABestMatchDistanceTest, TypeUnspecific_RealMaxima) {
     ElectronsVector v1({
         {Spin::alpha, {-1.924799, -0.000888, -2.199093}},
         {Spin::alpha, {-0.425365, -0.687079, 1.739155}},
@@ -215,7 +218,9 @@ TEST(ABestMatchDistanceTest, RealMaxima) {
         {Spin::beta,  {-1.924799, -0.000888, -2.199093}},
         {Spin::beta,  {-0.019967, -0.034674, -0.660818}}});
 
-    auto[norm, perm] = BestMatch::Distance::compare<Eigen::Infinity, 2>(v1, v2);
+    auto[norm, perm] = BestMatch::Distance::compare<Eigen::Infinity, 2>(
+            v1.positionsVector(),
+            v2.positionsVector());
 
     Eigen::VectorXi expectedPerm(v1.numberOfEntities());
     expectedPerm << 16, 2, 15, 3, 6, 5, 17, 1, 4, 13, 10, 9, 11, 14, 7, 8, 12, 0;

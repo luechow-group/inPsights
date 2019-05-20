@@ -40,7 +40,7 @@ public:
     }
 
     static double bestMatchDistance(const ElectronsVector &e1, const ElectronsVector &e2) {
-        return BestMatch::Distance::compare<Eigen::Infinity, 2>(e1, e2).metric;
+        return BestMatch::Distance::compare<Eigen::Infinity, 2>(e1.positionsVector(), e2.positionsVector()).metric;
     };
 };
 
