@@ -275,10 +275,6 @@ void InPsightsWidget::loadData() {
 }
 
 void InPsightsWidget::initialView() {
-    maximaList->resizeColumnToContents(0);
-    maximaList->resizeColumnToContents(1);
-    maximaList->resizeColumnToContents(2);
-    maximaList->resizeColumnToContents(3);
     maximaList->sortItems(0,Qt::SortOrder::AscendingOrder);
     atomsCheckBox->setCheckState(Qt::CheckState::Checked);
     bondsCheckBox->setCheckState(Qt::CheckState::Checked);
