@@ -76,8 +76,8 @@ void BestMatchDistanceSimilarityClusterer::cluster(Group& group) {
         subgroupFromSupergroupBoundaries != supergroupUpperBoundIt; ++subgroupFromSupergroupBoundaries) {
 
             auto [norm, perm] = BestMatch::Distance::compare<Eigen::Infinity, 2>(
-                    subgroup->representative()->maximum(),
-                    subgroupFromSupergroupBoundaries->representative()->maximum());
+                    subgroup->representative()->maximum().positionsVector(),
+                    subgroupFromSupergroupBoundaries->representative()->maximum().positionsVector());
 
             if (norm < similarityRadius) {
                 subgroup->permuteAll(perm, samples_);
