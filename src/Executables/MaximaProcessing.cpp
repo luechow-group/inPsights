@@ -18,6 +18,7 @@
 #include <spdlog/spdlog.h>
 #include <SOAPSettings.h>
 #include <AsciiArt.h>
+#include <fstream>
 
 using namespace YAML;
 
@@ -232,7 +233,16 @@ int main(int argc, char *argv[]) {
     outputYaml << EndMap << EndDoc;
     outputYaml << BeginDoc << Comment("final settings") << usedSettings << EndDoc;
 
-    std::string resultsFilename = inputFilename.substr(0,inputFilename.find('.')) + "-out.yml";
+    std::string resultsBaseName = inputFilename.substr(0,inputFilename.find('.')) + "-out";
+    std::string resultsFilename = resultsBaseName + ".yml";
+    if (std::ifstream(resultsFilename).good()){
+        for (int i = 1; i < 100; i++){
+            resultsFilename = resultsBaseName + "-" + std::to_string(i) + ".yml";
+            if (not std::ifstream(resultsFilename).good()){
+                break;
+            }
+        }
+    }
     spdlog::info("Writing results into file \"{}\"", resultsFilename);
 
     std::ofstream yamlFile(resultsFilename);
