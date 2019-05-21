@@ -58,6 +58,22 @@ namespace TestMolecules {
                                  {Spin::beta,  {0, 0,-0.37}}})};
     }
 
+    namespace fourElectrons {
+        const MolecularGeometry normal = {
+                AtomsVector(),
+                ElectronsVector({{Spin::alpha, { 0, 1, 0}},
+                                 {Spin::alpha, { 0,-1, 0}},
+                                 {Spin::beta,  { 1, 0, 0}},
+                                 {Spin::beta,  {-1, 0, 0}}})};
+        const MolecularGeometry ionic = {
+                AtomsVector(),
+                ElectronsVector({{Spin::alpha, { 1, 0, 0}},
+                                 {Spin::alpha, { 0, 0, 0}},
+                                 {Spin::beta,  { 0, 0, 0}},
+                                 {Spin::beta,  {-1, 0, 0}}})};
+    }
+
+
     namespace eightElectrons {
         const MolecularGeometry square = {
                 AtomsVector(),
