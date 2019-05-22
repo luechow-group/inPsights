@@ -30,6 +30,9 @@ else()
     include_directories(${EIGEN3_INCLUDE_DIR})
 endif()
 
+# putting all executables in cmake-build-*/bin
+set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR}/bin)
+
 # Ctest related
 enable_testing()
 add_custom_target(inPsightsTests COMMAND "")
