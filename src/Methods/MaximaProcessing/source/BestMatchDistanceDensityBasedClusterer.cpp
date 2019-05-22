@@ -45,14 +45,6 @@ double BestMatchDistanceDensityBasedClusterer::wrapper(const Group &g1, const Gr
             g1.representative()->maximum().positionsVector(),
             g2.representative()->maximum().positionsVector()).metric;
 };
-
-bool BestMatchDistanceDensityBasedClusterer::SortElement::operator<(const SortElement &rhs) const {
-    return bestMatch_.metric < rhs.bestMatch_.metric;
-}
-
-
-BestMatchDistanceDensityBasedClusterer::SortElement::SortElement(BestMatch::Result bestMatch, Group::iterator it)
-        : bestMatch_(std::move(bestMatch)), it_(it) {}
         
 void BestMatchDistanceDensityBasedClusterer::cluster(Group& group) {
     assert(!group.empty() && "The group cannot be empty.");
