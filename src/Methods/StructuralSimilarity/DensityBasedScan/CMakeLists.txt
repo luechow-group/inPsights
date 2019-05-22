@@ -12,14 +12,9 @@ set(HEADER_FILES
         include/VantagePointTree.h
         )
 
-set(SOURCE_FILES
-        source/Helper.cpp
-        )
-
-add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES})
+add_library(${PROJECT_NAME} STATIC ${HEADER_FILES})
 target_include_directories(${PROJECT_NAME}
         PUBLIC include
-        PRIVATE source
         )
 
 target_link_libraries(${PROJECT_NAME}
