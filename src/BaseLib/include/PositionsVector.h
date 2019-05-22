@@ -30,6 +30,8 @@ public:
     bool operator!=(const PositionsVector& other) const;
 
     friend std::ostream& operator<<(std::ostream& os, const PositionsVector& pc);
+
+    void shake(double radius);
 };
 
 namespace YAML {

@@ -8,13 +8,51 @@
 #include "BestMatch.h"
 #include <MolecularSpectrum.h>
 
+
+#include <vector>
+#include <deque>
+
 namespace BestMatch {
     namespace SOAPSimilarity {
-        Result compare(
-                MolecularGeometry permutee, const MolecularGeometry &reference,
-                bool spinSpecificQ = false, bool flipSpinsQ = false);
 
-        Result compare(const SOAP::MolecularSpectrum &permutee, const SOAP::MolecularSpectrum &reference);
+
+        Eigen::MatrixXd calculateEnvironmentalSimilarityMatrix(
+                const SOAP::MolecularSpectrum &permutee,
+                const SOAP::MolecularSpectrum &reference);
+
+        Result compare(
+                const SOAP::MolecularSpectrum &permutee,
+                const SOAP::MolecularSpectrum &reference,
+                double similarityRadius, double soapThreshold);
+
+        std::vector<Result> getAllBestMatchResults(
+                const SOAP::MolecularSpectrum &permutee,
+                const SOAP::MolecularSpectrum &reference,
+                double similarityRadius, double soapThreshold);
+
+        std::vector<std::deque<Eigen::Index>> getListOfDependentIndicesLists(
+                const Eigen::MatrixXd &environmentalSimilarities, double soapThreshold);
+
+        void varySimilarEnvironments(
+                const MolecularGeometry &permutee,
+                const MolecularGeometry &reference,
+                std::deque<Eigen::Index> remaining,
+                std::deque<Eigen::Index> surviving,
+                std::vector<std::deque<Eigen::Index>> &allPerms,
+                double similarityRadius);
+
+        std::vector<std::deque<Eigen::Index>> combineBlocks(
+                const MolecularGeometry &permutee,
+                const MolecularGeometry &reference,
+                const std::deque<std::vector<std::deque<Eigen::Index>>> &distancePreservingEnvironmentCombinationsOfRemainingBlocks,
+                double similarityRadius);
+
+        std::vector<Eigen::Index> obtainIndexReorderingPermutationOverAllBlocks(
+                const std::deque<std::vector<std::deque<Eigen::Index>>> &distancePreservingEnvironmentCombinationsOfRemainingBlocks);
+
+        Eigen::MatrixXd indicesBlockCovariance(
+                const MolecularGeometry &molecularGeometry,
+                std::deque<Eigen::Index> indices);
     }
 }
 

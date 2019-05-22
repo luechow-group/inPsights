@@ -7,6 +7,7 @@
 #include <EigenYamlConversion.h>
 #include <PositionsVectorTransformer.h>
 #include <yaml-cpp/yaml.h>
+#include <random>
 
 using namespace Eigen;
 
@@ -63,7 +64,7 @@ void PositionsVector::rotate(double angle,const Eigen::Vector3d &center,const Ei
 };
 
 std::ostream& operator<<(std::ostream& os, const PositionsVector& pc){
-    for (long i = 0; i < pc.numberOfEntities(); i++){
+    for (Eigen::Index i = 0; i < pc.numberOfEntities(); i++){
         os << ToString::longToString(i + 1) << " " << ToString::vector3dToString(pc[i]) << std::endl;
     }
     return os;
@@ -76,6 +77,20 @@ bool PositionsVector::operator==(const PositionsVector& other) const {
 bool PositionsVector::operator!=(const PositionsVector&other) const {
     return !(*this == other);
 }
+
+
+void PositionsVector::shake(double radius){
+    auto rng = std::default_random_engine(static_cast<unsigned long>(clock()));
+    auto maxDev = 1./std::sqrt(3.0)*radius;
+    std::uniform_real_distribution<double> uniformRealDistribution(-maxDev, maxDev);
+
+    auto eLength = entityLength();
+    for (long i = 0; i < numberOfEntities(); ++i) {
+        data_[i*eLength+0] += uniformRealDistribution(rng);
+        data_[i*eLength+1] += uniformRealDistribution(rng);
+        data_[i*eLength+2] += uniformRealDistribution(rng);
+    }
+};
 
 
 namespace YAML {

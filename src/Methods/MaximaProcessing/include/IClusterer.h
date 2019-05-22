@@ -14,7 +14,8 @@ public:
         BestMatchDistanceSimilarityClusterer,
         BestMatchDistanceDensityBasedClusterer,
         BestMatchSOAPSimilarityClusterer,
-        LocalBondSimilarityClusterer
+        LocalBondSimilarityClusterer,
+        invalid
     };
 
     virtual void cluster(Group& group) = 0;

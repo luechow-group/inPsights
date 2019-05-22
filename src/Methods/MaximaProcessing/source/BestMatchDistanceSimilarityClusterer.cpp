@@ -49,7 +49,7 @@ void BestMatchDistanceSimilarityClusterer::cluster(Group& group) {
 
 
     // first, make sure group is sorted
-    group.sort();
+    group.sort(); // TODO use sortAll?
 
     // insert first element
     Group supergroup({Group({*group.begin()})});

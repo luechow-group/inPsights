@@ -6,27 +6,21 @@
 #include <LocalSimilarity.h>
 #include <Hungarian.h>
 #include <BestMatchSimilarity.h>
+#include <Metrics.h>
+#include <Combinatorics.h>
+#include <limits>
+#include <deque>
+#include <set>
+#include <vector>
+#include <numeric> //std::iota
+
+#include <iomanip>
 
 using namespace SOAP;
 
-BestMatch::Result BestMatch::SOAPSimilarity::compare(
+Eigen::MatrixXd BestMatch::SOAPSimilarity::calculateEnvironmentalSimilarityMatrix(
         const MolecularSpectrum &permutee,
         const MolecularSpectrum &reference) {
-
-    assert(ParticleKit::isSubsetQ(permutee.molecule_)
-           && "The permutee must be a subset of the particle kit.");
-    assert(ParticleKit::isSubsetQ(reference.molecule_)
-           && "The reference must be a subset of the particle kit.");
-
-    // TODO assert that identical number of electrons and same atom geometry? Is this constraint needed? What happens with rows/cols of zero?
-
-    assert(permutee.molecule_.electrons().typesVector().countOccurence(Spin::alpha)
-           == reference.molecule_.electrons().typesVector().countOccurence(Spin::alpha)
-           && "The number of alpha electrons has to match.");
-
-    assert(permutee.molecule_.electrons().typesVector().countOccurence(Spin::beta)
-           == reference.molecule_.electrons().typesVector().countOccurence(Spin::beta)
-           && "The number of beta electrons has to match.");
 
     auto nAlpha = reference.molecule_.electrons().typesVector().countOccurence(Spin::alpha);
     auto nBeta = reference.molecule_.electrons().typesVector().countOccurence(Spin::beta);
@@ -65,58 +59,275 @@ BestMatch::Result BestMatch::SOAPSimilarity::compare(
             EnumeratedType<int> enumeratedType_j(Spins::spinToInt(Spin::beta), j);
             expB = reference.molecularCenters_.find(enumeratedType_j)->second;
             environmentalSimilarities(nAlpha + i, nAlpha + j) = LocalSimilarity::kernel(expA, expB,
-                    General::settings.zeta());
+                                                                                        General::settings.zeta());
         }
     }
+    return environmentalSimilarities;
+}
 
-    Eigen::PermutationMatrix<Eigen::Dynamic> bestMatch = Hungarian<double>::findMatching(
-            environmentalSimilarities, Matchtype::MAX);
+std::vector<BestMatch::Result> BestMatch::SOAPSimilarity::getAllBestMatchResults(
+        const MolecularSpectrum &permutee,
+        const MolecularSpectrum &reference,
+        double similarityRadius, double soapThreshold) {
 
-    // best-match permute columns and sum diagonal elements
-    double simMetric = (environmentalSimilarities * bestMatch).diagonal().sum() / N;
+    assert(ParticleKit::isSubsetQ(permutee.molecule_)
+           && "The permutee must be a subset of the particle kit.");
+    assert(ParticleKit::isSubsetQ(reference.molecule_)
+           && "The reference must be a subset of the particle kit.");
 
-    //restore the original order before the particle kit permutations
     auto permuteeToKit = ParticleKit::toKitPermutation(permutee.molecule_.electrons());
+    auto permuteeFromKit = ParticleKit::toKitPermutation(permutee.molecule_.electrons());
     auto referenceFromKit = ParticleKit::fromKitPermutation(reference.molecule_.electrons());
 
-    return {simMetric, referenceFromKit * bestMatch * permuteeToKit};
+    // TODO assert that identical number of electrons and same atom geometry? Is this constraint needed? What happens with rows/cols of zero?
+    auto N = permutee.molecule_.electrons().numberOfEntities();
+
+    assert(permutee.molecule_.electrons().typesVector().countOccurence(Spin::alpha)
+           == reference.molecule_.electrons().typesVector().countOccurence(Spin::alpha)
+           && "The number of alpha electrons must match.");
+    assert(permutee.molecule_.electrons().typesVector().countOccurence(Spin::beta)
+           == reference.molecule_.electrons().typesVector().countOccurence(Spin::beta)
+           && "The number of beta electrons must match.");
+
+    Eigen::MatrixXd environmentalSimilarities = calculateEnvironmentalSimilarityMatrix(permutee, reference);
+
+
+    Eigen::PermutationMatrix<Eigen::Dynamic> bestMatch
+            = Hungarian<double>::findMatching(environmentalSimilarities, Matchtype::MAX);
+
+    auto dependentIndicesLists =
+            BestMatch::SOAPSimilarity::getListOfDependentIndicesLists(environmentalSimilarities, soapThreshold);
+    // transform them into the lab system
+
+    std::deque<std::vector<std::deque<Eigen::Index>>> distancePreseringEnvironmentCombinationsOfAllBlocks;
+
+    for(const auto& list : dependentIndicesLists) {
+        std::vector<std::deque<Eigen::Index>> distancePreseringEnvironmentCombinations;
+        BestMatch::SOAPSimilarity::varySimilarEnvironments(permutee.molecule_, reference.molecule_,list, {}, //list,
+                                                           distancePreseringEnvironmentCombinations, similarityRadius);
+        if(distancePreseringEnvironmentCombinations.empty()) {
+            // no distant preserving permutation could be found f
+            auto soapMetric = environmentalSimilarities.diagonal().sum() / N;
+            return {{soapMetric, bestMatch}};
+        }
+        distancePreseringEnvironmentCombinationsOfAllBlocks.emplace_back(distancePreseringEnvironmentCombinations);
+    }
+
+    auto survivingDistancePreseringEnvironmentCombinations = combineBlocks(
+            permutee.molecule_, reference.molecule_,
+            distancePreseringEnvironmentCombinationsOfAllBlocks,
+            similarityRadius);
+
+    if(survivingDistancePreseringEnvironmentCombinations.empty()) {
+        // no distant preserving permutation could be found
+        auto soapMetric = environmentalSimilarities.diagonal().sum() / N;
+        return {{soapMetric, bestMatch}};
+    }
+
+    auto indexReorderingPermutation
+            = obtainIndexReorderingPermutationOverAllBlocks(distancePreseringEnvironmentCombinationsOfAllBlocks);
+
+    // bring the surviving distance presering environment combinations back to the original order
+    for(auto& indices : survivingDistancePreseringEnvironmentCombinations) {
+        auto copy = indices;
+        for (std::size_t i = 0; i < indices.size(); ++i)
+            indices[i] = copy[indexReorderingPermutation[i]];
+    }
+
+    std::vector<Eigen::PermutationMatrix<Eigen::Dynamic>> finalEigenPermutationsInLabSystem;
+
+    std::vector<BestMatch::Result> results;
+
+    for(auto& foundIndicesOrder : survivingDistancePreseringEnvironmentCombinations) {
+        assert(foundIndicesOrder.size() == N && "The found index ordering size must match the number of electrons.");
+
+        Eigen::VectorXi permIndices(N);
+        for (std::size_t i = 0; i < foundIndicesOrder.size(); ++i) {
+            permIndices[i] = foundIndicesOrder[i];
+        }
+        Eigen::PermutationMatrix<Eigen::Dynamic> perm(permIndices);
+
+        // calculate sim
+        double soapSim = 0;
+        for (std::size_t i = 0; i < foundIndicesOrder.size(); ++i) {
+            soapSim += environmentalSimilarities(foundIndicesOrder[i],i);
+        }
+        soapSim /= N;
+
+        results.emplace_back(BestMatch::Result({soapSim, referenceFromKit * perm * permuteeToKit}));
+    }
+    std::sort(results.begin(), results.end());
+
+    return results;
 }
 
 BestMatch::Result BestMatch::SOAPSimilarity::compare(
-        MolecularGeometry permutee, const MolecularGeometry &reference,
-        bool spinSpecificQ, bool flipSpinsQ) {
+        const MolecularSpectrum &permutee,
+        const MolecularSpectrum &reference,
+        double similarityRadius, double soapThreshold) {
 
-    ParticleKit::create(reference);
-    MolecularSpectrum permuteeSpectrum, referenceSpectrum;
+    return BestMatch::SOAPSimilarity::getAllBestMatchResults(permutee,reference,similarityRadius, soapThreshold).back();
+}
 
+std::vector<std::deque<Eigen::Index>> BestMatch::SOAPSimilarity::combineBlocks(
+        const MolecularGeometry &permutee,
+        const MolecularGeometry &reference,
+        const std::deque<std::vector<std::deque<Eigen::Index>>> &distancePreservingEnvironmentCombinationsOfRemainingBlocks,
+        double similarityRadius){
 
-    if (spinSpecificQ) {
-        ParticleKit::create(reference);
-        referenceSpectrum = MolecularSpectrum(reference);
+    assert(!distancePreservingEnvironmentCombinationsOfRemainingBlocks.empty());
 
-        if (flipSpinsQ)
-            permutee.electrons().typesVector().flipSpins();
+    std::vector<std::deque<Eigen::Index>> survivors = distancePreservingEnvironmentCombinationsOfRemainingBlocks.front();
 
-        assert(ParticleKit::isSubsetQ(permutee) && "The permutee must be a subset of the particle kit.");
-        permuteeSpectrum = MolecularSpectrum(permutee);
+    for(auto blockIt = std::next(distancePreservingEnvironmentCombinationsOfRemainingBlocks.begin()); blockIt != distancePreservingEnvironmentCombinationsOfRemainingBlocks.end(); ++blockIt){
 
-    } else {
-        // slower variant
-        /*SOAPExpansion::settings.mode = SOAPExpansion::Mode::alchemical;
-        // make alpha and beta spins identical
-        SOAPExpansion::settings.pairSimilarities[{int(Spin::alpha), int(Spin::beta)}] = 1.0;*/
+        std::vector<std::deque<Eigen::Index>> newSurvivors;
 
-        // Trick: Instead of using SOAPExpansion::Mode::alchemical construct a new MolecularGeometry with an
-        // ElectronsVector where all spins are alpha electrons
-        auto permuteeUnspecific = MolecularGeometry(permutee.atoms(), {permutee.electrons().positionsVector()});
-        auto referenceUnspecific = MolecularGeometry(reference.atoms(), {reference.electrons().positionsVector()});
+        // for every remaining distance preserving environment combinations
+        for (auto potentialSurvivorIt = survivors.begin(); potentialSurvivorIt != survivors.end(); ++potentialSurvivorIt) {
 
-        ParticleKit::create(referenceUnspecific);
-        referenceSpectrum = MolecularSpectrum(referenceUnspecific);
+            // check all combinations in the current block
+            for (auto &distancePreservingEnvironmentCombination : *blockIt) {
 
-        assert(ParticleKit::isSubsetQ(permuteeUnspecific) && "The permutee must be a subset of the particle kit.");
-        permuteeSpectrum = MolecularSpectrum(permuteeUnspecific);
+                // TRICK
+                // the potential survivor is already distance preserving, now store the add the new candidates original index order
+                // appending the new indices is fine since they are independent from the ones before
+
+                auto newPotentialSurvivor = *potentialSurvivorIt;
+                auto originalIndexOrder = *potentialSurvivorIt;
+
+                newPotentialSurvivor.insert(newPotentialSurvivor.end(),
+                                              distancePreservingEnvironmentCombination.begin(),
+                                              distancePreservingEnvironmentCombination.end()); //hacky: this uses the fact, that the original index order is ascending
+                auto newCandidateOriginalOrder = distancePreservingEnvironmentCombination;
+
+                std::sort(newCandidateOriginalOrder.begin(),
+                          newCandidateOriginalOrder.end()); //hacky: this uses the fact, that the original index order is ascending
+                originalIndexOrder.insert(originalIndexOrder.end(),
+                                          newCandidateOriginalOrder.begin(),
+                                          newCandidateOriginalOrder.end());
+
+                auto covA = indicesBlockCovariance(permutee, newPotentialSurvivor);
+                auto covB = indicesBlockCovariance(reference, originalIndexOrder);
+
+                auto conservingQ = (covB - covA).array().abs().maxCoeff() < similarityRadius;
+
+                if (conservingQ)
+                    newSurvivors.emplace_back(newPotentialSurvivor);
+            }
+        }
+        survivors = newSurvivors;
+    }
+    return survivors;
+}
+
+std::vector<Eigen::Index> BestMatch::SOAPSimilarity::obtainIndexReorderingPermutationOverAllBlocks(
+        const std::deque<std::vector<std::deque<Eigen::Index>>> &distancePreservingEnvironmentCombinationsOfRemainingBlocks) {
+
+    // extract blockwise ordered indices
+    std::vector<Eigen::Index> blockWiseReorderedIndices;
+    for (std::size_t i = 0; i < distancePreservingEnvironmentCombinationsOfRemainingBlocks.size(); ++i) {
+
+        auto examplaricOrder = distancePreservingEnvironmentCombinationsOfRemainingBlocks[i].front();
+        std::sort(examplaricOrder.begin(), examplaricOrder.end());
+
+        for (auto index : examplaricOrder) {
+            blockWiseReorderedIndices.emplace_back(index);
+        }
     }
 
-    return compare(permuteeSpectrum, referenceSpectrum);
+    // initialize identity permutation
+    std::vector<Eigen::Index> overallReorderedIndices(blockWiseReorderedIndices.size());
+    std::iota(overallReorderedIndices.begin(), overallReorderedIndices.end(), 0);
+
+    // sort and stor index permutation
+    sort(overallReorderedIndices.begin(), overallReorderedIndices.end(),
+         [&](const int &a, const int &b) {
+             return (blockWiseReorderedIndices[a] < blockWiseReorderedIndices[b]);
+         }
+    );
+
+    return overallReorderedIndices;
+};
+
+void BestMatch::SOAPSimilarity::varySimilarEnvironments(
+        const MolecularGeometry &permutee,
+        const MolecularGeometry &reference,
+        std::deque<Eigen::Index> remaining,
+        std::deque<Eigen::Index> surviving,
+        std::vector<std::deque<Eigen::Index>> &allPerms,
+        double similarityRadius) {
+
+    if(remaining.size() == 1) {
+        surviving.emplace_back(remaining.front());
+        allPerms.emplace_back(surviving);
+        return;
+    }
+
+    for (auto it = remaining.begin(); it != remaining.end(); ++it){
+        auto potentialSurvivor = surviving;
+
+        potentialSurvivor.emplace_back(*it);
+
+        auto covA = indicesBlockCovariance(permutee, potentialSurvivor);
+
+        auto originalIndexOrder = potentialSurvivor;
+        std::sort(originalIndexOrder.begin(),originalIndexOrder.end()); //hacky: this uses the fact, that the original index order is ascending
+
+        auto covB = indicesBlockCovariance(reference, originalIndexOrder);
+
+        auto conservingQ = (covB-covA).array().abs().maxCoeff() < similarityRadius;// TODO careful: <=?
+
+
+        if(conservingQ) { // go deeper
+            auto remainingCopy = remaining;
+
+            remainingCopy.erase(remainingCopy.begin() + std::distance(remaining.begin(), it));
+
+            varySimilarEnvironments(permutee, reference, remainingCopy, potentialSurvivor, //original,
+                    allPerms, similarityRadius);
+        }
+    }
+};
+
+std::vector<std::deque<Eigen::Index>>
+BestMatch::SOAPSimilarity::getListOfDependentIndicesLists(
+        const Eigen::MatrixXd &environmentalSimilarities, double soapThreshold) {
+    std::vector<std::deque<Eigen::Index>> listOfDependentIndicesLists;
+
+    auto numberOfEnvironments = environmentalSimilarities.rows();
+
+    std::set<Eigen::Index> indicesToSkip;
+    auto epsilon = sqrt(std::numeric_limits<double>::epsilon());
+
+    for (Eigen::Index i = 0; i < numberOfEnvironments; ++i) {
+
+        if (indicesToSkip.find(i) == indicesToSkip.end()) {
+            listOfDependentIndicesLists.emplace_back(std::deque({i}));
+
+            for (Eigen::Index j = i + 1; j < numberOfEnvironments; ++j) {
+                if (environmentalSimilarities(i, j) >= soapThreshold - epsilon) {
+                    indicesToSkip.emplace(j);
+                    listOfDependentIndicesLists.back().emplace_back(j);
+                }
+            }
+        }
+    }
+    return listOfDependentIndicesLists;
 }
+
+Eigen::MatrixXd BestMatch::SOAPSimilarity::indicesBlockCovariance(const MolecularGeometry &molecularGeometry,
+                                                                  std::deque<Eigen::Index> indices){
+    Eigen::MatrixXd distDiffBlock(indices.size(), indices.size());
+
+    const auto& positions = molecularGeometry.electrons().positionsVector();
+
+    // the toKit permutation is needed to find the indices in the Kit system
+    auto permIndices = ParticleKit::toKitPermutation(molecularGeometry.electrons()).indices();
+
+    for (Eigen::size_t i = 0; i < indices.size(); ++i)
+        for (Eigen::size_t j = 0; j < indices.size(); ++j)
+            distDiffBlock(i,j) = (positions[permIndices[indices[j]]] - positions[permIndices[indices[i]]]).norm();
+
+    return distDiffBlock;
+};

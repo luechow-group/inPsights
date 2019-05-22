@@ -97,14 +97,14 @@ void BestMatchDistanceDensityBasedClusterer::orderByBestMatchDistance(Group &sup
                                     j->representative()->maximum().positionsVector(),
                                     i->representative()->maximum().positionsVector());
 
-                    if (norm <= settings.clusterRadius() * 2){
+                    if (norm <= settings.clusterRadius() * 2) {
                         j->permuteAll(perm, samples_);
 
                         // moving j from subgroup to newGroups
                         newGroups.emplace_back(*j);
                         subgroup.erase(j);
-                        j -= 1;
-                    };
+                        std::prev(j);
+                    }
                 };
             };
 

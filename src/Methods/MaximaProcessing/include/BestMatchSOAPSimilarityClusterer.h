@@ -28,7 +28,7 @@ public:
 
     BestMatchSOAPSimilarityClusterer(const AtomsVector& atoms, std::vector<Sample> &samples);
 
-    void cluster(Group &group);
+    void cluster(Group &group) override;
 
 private:
     AtomsVector atoms_;
