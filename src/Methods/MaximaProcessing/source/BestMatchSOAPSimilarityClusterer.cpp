@@ -56,7 +56,9 @@ void BestMatchSOAPSimilarityClusterer::cluster(Group& group){
     spdlog::info("Calculating {} spectra...", group.size());
 #pragma omp parallel for default(none) shared(atoms_, group)
     for (auto it = group.begin(); it < group.end(); ++it) {
-        it->representative()->setSpectrum(MolecularSpectrum({atoms_, it->representative()->maximum()}));
+
+        // use average structure to facilitate obtaining better soap similarities
+        it->representative()->setSpectrum(MolecularSpectrum({atoms_, it->averagedRepresentativeElectronsVector()}));
         spdlog::info("calculated spectrum {}", std::distance(group.begin(), it));
     }
 

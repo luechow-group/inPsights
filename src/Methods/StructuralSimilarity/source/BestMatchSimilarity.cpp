@@ -93,8 +93,6 @@ std::vector<BestMatch::Result> BestMatch::SOAPSimilarity::getAllBestMatchResults
 
     Eigen::MatrixXd environmentalSimilarities = calculateEnvironmentalSimilarityMatrix(permutee, reference);
 
-    std::cout << std::endl<< std::setprecision(2)<< environmentalSimilarities << std::endl;
-
     Eigen::PermutationMatrix<Eigen::Dynamic> bestMatch
             = Hungarian<double>::findMatching(environmentalSimilarities, Matchtype::MAX);
 
@@ -149,14 +147,16 @@ std::vector<BestMatch::Result> BestMatch::SOAPSimilarity::getAllBestMatchResults
         }
         Eigen::PermutationMatrix<Eigen::Dynamic> perm(permIndices);
 
-        // calculate sim
-        double soapSim = 0;
-        for (std::size_t i = 0; i < foundIndicesOrder.size(); ++i) {
-            soapSim += environmentalSimilarities(foundIndicesOrder[i],i);
+        // find smallest element
+        assert(foundIndicesOrder.size() > 0);
+        double smallestEnvironmentalBestMatchSimilarity = environmentalSimilarities(foundIndicesOrder[0],0);
+        for (std::size_t i = 1; i < foundIndicesOrder.size(); ++i) {
+            auto ithEnvironmentalBestMatchSimilarity = environmentalSimilarities(foundIndicesOrder[i],i);
+            if(ithEnvironmentalBestMatchSimilarity < smallestEnvironmentalBestMatchSimilarity)
+                smallestEnvironmentalBestMatchSimilarity = ithEnvironmentalBestMatchSimilarity;
         }
-        soapSim /= N;
 
-        results.emplace_back(BestMatch::Result({soapSim, referenceFromKit * perm * permuteeToKit}));
+        results.emplace_back(BestMatch::Result({smallestEnvironmentalBestMatchSimilarity, referenceFromKit * perm * permuteeToKit}));
     }
     std::sort(results.begin(), results.end());
 

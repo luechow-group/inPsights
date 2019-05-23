@@ -39,6 +39,14 @@ public:
 
     void permuteAll(const Eigen::PermutationMatrix<Eigen::Dynamic>& perm, std::vector<Sample>& samples);
 
+    struct AveragedPositionsVector {
+        PositionsVector positions;
+        unsigned weight;
+    };
+
+    AveragedPositionsVector averagedPositionsVector() const;
+    ElectronsVector averagedRepresentativeElectronsVector() const;
+
     std::shared_ptr<const Reference> representative() const;
     std::shared_ptr<Reference> representative();
 

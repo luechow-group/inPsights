@@ -80,7 +80,7 @@ bool PositionsVector::operator!=(const PositionsVector&other) const {
 
 
 void PositionsVector::shake(double radius){
-    auto rng = std::default_random_engine(static_cast<unsigned long>(clock()));
+    auto rng = std::default_random_engine(static_cast<unsigned long>(0));
     auto maxDev = 1./std::sqrt(3.0)*radius;
     std::uniform_real_distribution<double> uniformRealDistribution(-maxDev, maxDev);
 

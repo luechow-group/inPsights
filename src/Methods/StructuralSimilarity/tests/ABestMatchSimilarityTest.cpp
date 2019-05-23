@@ -233,6 +233,7 @@ TEST_F(ABestMatchSimilarityTest, FindDistanceConservingPermutations_Alchemical_S
     Angular::settings.lmax = 3;
     Cutoff::settings.radius = 4.0;
     Cutoff::settings.width = 1.0;
+    //Cutoff::settings.centerWeight = 0.1;
 
     auto specA = MolecularSpectrum(A);
     auto specB = MolecularSpectrum(B);

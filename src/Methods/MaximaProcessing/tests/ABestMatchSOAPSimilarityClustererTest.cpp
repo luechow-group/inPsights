@@ -30,22 +30,22 @@ public:
         atoms = AtomsVector({{Elements::ElementType::H, {0, 0, -a}},
                              {Elements::ElementType::H, {0, 0, +a}}});
 
-        A = Group({1.0, ElectronsVector({{Spin::alpha, {0, 0, -a}},
+        A = Group({1.0, ElectronsVector({{Spin::alpha, {0, 0,-a}},
                                          {Spin::alpha, {0, 0, a}},
                                          {Spin::beta,  {0, b, 0}}}), 0}); // covalent
         B = Group({1.1, ElectronsVector({{Spin::beta,  {0, b, 0}},
-                                         {Spin::alpha, {0, 0, a}},
-                                         {Spin::alpha, {0, 0, -a}}}), 1}); // A permuted
-        C = Group({1.2, ElectronsVector({{Spin::alpha, {0, 0,  -a}},
-                                         {Spin::alpha, {0, 0,  a}},
-                                         {Spin::beta,  {0, -b, 0}}}), 2}); // A reflected
-        D = Group({1.3, ElectronsVector({{Spin::alpha, {0, 0,  -a}},
-                                         {Spin::beta,  {0, -b, 0}},
-                                         {Spin::alpha, {0, 0,  a}}}), 3}); // A reflected and permuted
-        E = Group({1.4, ElectronsVector({{Spin::alpha, {0, 0, -a}},
+                                         {Spin::alpha, {0, 0, a-0.05}},
+                                         {Spin::alpha, {0, 0,-a+0.05}}}), 1}); // A permuted and shifted
+        C = Group({1.1, ElectronsVector({{Spin::beta,  {0, b, 0}},
+                                         {Spin::alpha, {0, 0, a+0.05}},
+                                         {Spin::alpha, {0, 0,-a-0.05}}}), 2}); // A permuted and shifted
+        D = Group({1.3, ElectronsVector({{Spin::alpha, {0, 0,-a}},
+                                         {Spin::beta,  {0,-b, 0}},
+                                         {Spin::alpha, {0, 0, a}}}), 3}); // A reflected and permuted
+        E = Group({1.4, ElectronsVector({{Spin::alpha, {0, 0,-a}},
                                          {Spin::beta,  {0, c, 0}},
                                          {Spin::alpha, {0, 0, a}}}), 4}); // ionic
-        F = Group({1.5, ElectronsVector({{Spin::alpha, {0, 0, -a}},
+        F = Group({1.5, ElectronsVector({{Spin::alpha, {0, 0,-a}},
                                          {Spin::beta,  {0, c, 0}},
                                          {Spin::alpha, {0, 0, a}}}), 5}); // E reflected
         ekin = Eigen::VectorXd::Zero(3);
@@ -75,22 +75,14 @@ TEST_F(ABestMatchSOAPSimilarityClustererTest, VerifyTestCluster) {
     Radial::settings.nmax = 3;
 
     auto specA = MolecularSpectrum({atoms, A.representative()->maximum()});
-    auto specB = MolecularSpectrum({atoms, B.representative()->maximum()});
-    auto specC = MolecularSpectrum({atoms, C.representative()->maximum()});
+    auto specBCavg = MolecularSpectrum({atoms, Group({B, C}).averagedRepresentativeElectronsVector()});
     auto specD = MolecularSpectrum({atoms, D.representative()->maximum()});
     auto specE = MolecularSpectrum({atoms, E.representative()->maximum()});
     auto specF = MolecularSpectrum({atoms, F.representative()->maximum()});
-
-    auto resAB = BestMatch::SOAPSimilarity::compare(specA, specB,
-                                                    BestMatchSOAPSimilarityClusterer::settings.soapSimilarityThreshold(),
-                                                    BestMatchSOAPSimilarityClusterer::settings.distanceToleranceRadius());
-
-    auto
-
+    
     ASSERT_EQ(BestMatch::SOAPSimilarity::compare(
-                      specA, specB, soapThreshold, distanceTolerance ).metric, 1);
-    ASSERT_EQ(BestMatch::SOAPSimilarity::compare(
-            specA, specC, soapThreshold, distanceTolerance).metric, 1);
+            specA, specBCavg, soapThreshold, distanceTolerance).metric, 1);
+
     ASSERT_EQ(BestMatch::SOAPSimilarity::compare(
             specA, specD, soapThreshold, distanceTolerance).metric, 1);
 

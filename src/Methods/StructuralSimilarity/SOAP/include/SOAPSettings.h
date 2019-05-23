@@ -71,8 +71,7 @@ namespace Settings{
             Property<double> sigmaAtom = {0.5 * ConversionFactors::angstrom2bohr, VARNAME(sigmaAtom)};
             Property<unsigned> integrationSteps = {100, VARNAME(integrationSteps)};
             Property<double> desiredAbsoluteError = {0.0, VARNAME(desiredAbsoluteError)};
-            Property<double> desiredRelativeError = {std::numeric_limits<double>::epsilon() * 1e2,
-                                                     VARNAME(desiredRelativeError)};
+            Property<double> desiredRelativeError = {1e-6, VARNAME(desiredRelativeError)};
 
             Radial();
 
