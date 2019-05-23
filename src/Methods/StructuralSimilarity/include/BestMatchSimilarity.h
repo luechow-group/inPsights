@@ -51,7 +51,7 @@ namespace BestMatch {
                 const std::deque<std::vector<std::deque<Eigen::Index>>> &distancePreservingEnvironmentCombinationsOfRemainingBlocks);
 
         Eigen::MatrixXd indicesBlockCovariance(
-                const MolecularGeometry &molecularGeometry,
+                const ElectronsVector &electronsVector,
                 std::deque<Eigen::Index> indices);
     }
 }

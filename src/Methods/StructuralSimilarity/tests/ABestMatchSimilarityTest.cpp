@@ -257,7 +257,7 @@ TEST_F(ABestMatchSimilarityTest, FindDistanceConservingPermutations_Alchemical_S
     }
 }
 
-TEST_F(ABestMatchSimilarityTest, FindDistanceConservingPermutations_Chemical_BoraneDoublyIonic) {
+TEST_F(ABestMatchSimilarityTest, FindDistanceConservingPermutations_Chemical_BoraneIonic) {
     auto B = TestMolecules::BH3::ionicMinimal;
     auto A = TestMolecules::BH3::ionicMinimalRotated;
     ParticleKit::create(A);

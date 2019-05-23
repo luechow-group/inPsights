@@ -211,8 +211,8 @@ std::vector<std::deque<Eigen::Index>> BestMatch::SOAPSimilarity::combineBlocks(
                                           newCandidateOriginalOrder.begin(),
                                           newCandidateOriginalOrder.end());
 
-                auto covA = indicesBlockCovariance(permutee, newPotentialSurvivor);
-                auto covB = indicesBlockCovariance(reference, originalIndexOrder);
+                auto covA = indicesBlockCovariance(permutee.electrons(), newPotentialSurvivor);
+                auto covB = indicesBlockCovariance(reference.electrons(), originalIndexOrder);
 
                 auto conservingQ = (covB - covA).array().abs().maxCoeff() <= similarityRadius;
 
@@ -273,14 +273,14 @@ void BestMatch::SOAPSimilarity::varySimilarEnvironments(
 
         potentialSurvivor.emplace_back(*it);
 
-        auto covA = indicesBlockCovariance(permutee, potentialSurvivor);
+        auto covA = indicesBlockCovariance(permutee.electrons(), potentialSurvivor);
 
         auto originalIndexOrder = potentialSurvivor;
         std::sort(originalIndexOrder.begin(),originalIndexOrder.end()); //hacky: this uses the fact, that the original index order is ascending
 
-        auto covB = indicesBlockCovariance(reference, originalIndexOrder);
+        auto covB = indicesBlockCovariance(reference.electrons(), originalIndexOrder);
 
-        auto conservingQ = (covB-covA).array().abs().maxCoeff() < similarityRadius;// TODO careful: <=?
+        auto conservingQ = (covB-covA).array().abs().maxCoeff() <= similarityRadius;
 
 
         if(conservingQ) { // go deeper
@@ -319,14 +319,14 @@ BestMatch::SOAPSimilarity::getListOfDependentIndicesLists(
     return listOfDependentIndicesLists;
 }
 
-Eigen::MatrixXd BestMatch::SOAPSimilarity::indicesBlockCovariance(const MolecularGeometry &molecularGeometry,
+Eigen::MatrixXd BestMatch::SOAPSimilarity::indicesBlockCovariance(const ElectronsVector &electronsVector,
                                                                   std::deque<Eigen::Index> indices){
     Eigen::MatrixXd distDiffBlock(indices.size(), indices.size());
 
-    const auto& positions = molecularGeometry.electrons().positionsVector();
+    const auto& positions = electronsVector.positionsVector();
 
     // the toKit permutation is needed to find the indices in the Kit system
-    auto permIndices = ParticleKit::toKitPermutation(molecularGeometry.electrons()).indices();
+    auto permIndices = ParticleKit::toKitPermutation(electronsVector).indices();
 
     for (Eigen::size_t i = 0; i < indices.size(); ++i)
         for (Eigen::size_t j = 0; j < indices.size(); ++j)
