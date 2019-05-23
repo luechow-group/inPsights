@@ -6,6 +6,7 @@
 #include <Eigen/Cholesky>
 #include <unsupported/Eigen/MatrixFunctions>
 #include <SpecialMathFunctions/ModifiedSphericalBesser1stKind.h>
+#include <NaturalConstants.h>
 #include "RadialBasis.h"
 #include "SOAPSettings.h"
 
@@ -95,7 +96,7 @@ Eigen::MatrixXd RadialBasis::Sab(unsigned nmax) const{
             double s = 1./(4.*pow(w, 2.5));
             s *= exp(-a*rCenterA*rCenterA-b*rCenterB*rCenterB);
             s *= 2.0*sqrt(w)*W0
-                 + sqrt(M_PI)*exp(std::pow(W0,2)/w)*(w+2*std::pow(W0,2))
+                 + sqrt(Constant::pi)*exp(std::pow(W0,2)/w)*(w+2*std::pow(W0,2))
                  * erfc(-W0/sqrt(w)); // TODO which one is faster (with MKL)
                  //*boost::math::erfc<double>(-W0/sqrt(w));
             s *= basis_[i].normalizationConstant_g2_r2()*basis_[j].normalizationConstant_g2_r2();
@@ -194,7 +195,7 @@ Eigen::MatrixXd RadialBasis::computeCoefficients(double centerToNeighborDistance
             double beta_ik = ai + basisFunctionAlpha;
             double rho_ik = basisFunctionAlpha * basisFunctionCenter / beta_ik;
             double prefac =
-                    4 * M_PI *
+                    4 * Constant::pi *
                     norm_r2_g2_dr_rad_k * norm_g_dV_sph_i *
                     exp(-ai * ri * ri) *
                     exp(-basisFunctionAlpha * pow(basisFunctionCenter, 2) *

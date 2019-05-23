@@ -103,7 +103,7 @@ void BestMatchDistanceDensityBasedClusterer::orderByBestMatchDistance(Group &sup
                         // moving j from subgroup to newGroups
                         newGroups.emplace_back(*j);
                         subgroup.erase(j);
-                        std::prev(j);
+                        j -= 1;
                     }
                 };
             };

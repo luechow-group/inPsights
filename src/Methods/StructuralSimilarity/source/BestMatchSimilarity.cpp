@@ -28,6 +28,8 @@ Eigen::MatrixXd BestMatch::SOAPSimilarity::calculateEnvironmentalSimilarityMatri
     auto N = nAlpha + nBeta;
     Eigen::MatrixXd environmentalSimilarities(N, N);
 
+    auto zeta = General::settings.zeta();
+
     // TODO consider identical spin flip?
 
     TypeSpecificNeighborhoodsAtOneCenter expA, expB;
@@ -38,12 +40,12 @@ Eigen::MatrixXd BestMatch::SOAPSimilarity::calculateEnvironmentalSimilarityMatri
         for (unsigned j = 0; j < nAlpha; ++j) {
             EnumeratedType<int> enumeratedType_j(Spins::spinToInt(Spin::alpha), j);
             expB = reference.molecularCenters_.find(enumeratedType_j)->second;
-            environmentalSimilarities(i, j) = LocalSimilarity::kernel(expA, expB, General::settings.zeta());
+            environmentalSimilarities(i, j) = LocalSimilarity::kernel(expA, expB, zeta);
         }
         for (unsigned j = 0; j < nBeta; ++j) {
             EnumeratedType<int> enumeratedType_j(Spins::spinToInt(Spin::beta), j);
             expB = reference.molecularCenters_.find(enumeratedType_j)->second;
-            environmentalSimilarities(i, nAlpha + j) = LocalSimilarity::kernel(expA, expB, General::settings.zeta());
+            environmentalSimilarities(i, nAlpha + j) = LocalSimilarity::kernel(expA, expB, zeta);
         }
     }
     for (unsigned i = 0; i < nBeta; ++i) {
@@ -53,18 +55,18 @@ Eigen::MatrixXd BestMatch::SOAPSimilarity::calculateEnvironmentalSimilarityMatri
         for (unsigned j = 0; j < nAlpha; ++j) {
             EnumeratedType<int> enumeratedType_j(Spins::spinToInt(Spin::alpha), j);
             expB = reference.molecularCenters_.find(enumeratedType_j)->second;
-            environmentalSimilarities(nAlpha + i, j) = LocalSimilarity::kernel(expA, expB, General::settings.zeta());
+            environmentalSimilarities(nAlpha + i, j) = LocalSimilarity::kernel(expA, expB, zeta);
         }
         for (unsigned j = 0; j < nBeta; ++j) {
             EnumeratedType<int> enumeratedType_j(Spins::spinToInt(Spin::beta), j);
             expB = reference.molecularCenters_.find(enumeratedType_j)->second;
-            environmentalSimilarities(nAlpha + i, nAlpha + j) = LocalSimilarity::kernel(expA, expB,
-                                                                                        General::settings.zeta());
+            environmentalSimilarities(nAlpha + i, nAlpha + j) = LocalSimilarity::kernel(expA, expB, zeta);
         }
     }
     return environmentalSimilarities;
 }
 
+#include <iomanip>
 std::vector<BestMatch::Result> BestMatch::SOAPSimilarity::getAllBestMatchResults(
         const MolecularSpectrum &permutee,
         const MolecularSpectrum &reference,
@@ -91,19 +93,19 @@ std::vector<BestMatch::Result> BestMatch::SOAPSimilarity::getAllBestMatchResults
 
     Eigen::MatrixXd environmentalSimilarities = calculateEnvironmentalSimilarityMatrix(permutee, reference);
 
+    std::cout << std::endl<< std::setprecision(2)<< environmentalSimilarities << std::endl;
 
     Eigen::PermutationMatrix<Eigen::Dynamic> bestMatch
             = Hungarian<double>::findMatching(environmentalSimilarities, Matchtype::MAX);
 
     auto dependentIndicesLists =
             BestMatch::SOAPSimilarity::getListOfDependentIndicesLists(environmentalSimilarities, soapThreshold);
-    // transform them into the lab system
 
     std::deque<std::vector<std::deque<Eigen::Index>>> distancePreseringEnvironmentCombinationsOfAllBlocks;
 
     for(const auto& list : dependentIndicesLists) {
         std::vector<std::deque<Eigen::Index>> distancePreseringEnvironmentCombinations;
-        BestMatch::SOAPSimilarity::varySimilarEnvironments(permutee.molecule_, reference.molecule_,list, {}, //list,
+        BestMatch::SOAPSimilarity::varySimilarEnvironments(permutee.molecule_, reference.molecule_,list, {},
                                                            distancePreseringEnvironmentCombinations, similarityRadius);
         if(distancePreseringEnvironmentCombinations.empty()) {
             // no distant preserving permutation could be found f
@@ -113,12 +115,12 @@ std::vector<BestMatch::Result> BestMatch::SOAPSimilarity::getAllBestMatchResults
         distancePreseringEnvironmentCombinationsOfAllBlocks.emplace_back(distancePreseringEnvironmentCombinations);
     }
 
-    auto survivingDistancePreseringEnvironmentCombinations = combineBlocks(
+    auto survivingDistancePreservingEnvironmentCombinations = combineBlocks(
             permutee.molecule_, reference.molecule_,
             distancePreseringEnvironmentCombinationsOfAllBlocks,
             similarityRadius);
 
-    if(survivingDistancePreseringEnvironmentCombinations.empty()) {
+    if(survivingDistancePreservingEnvironmentCombinations.empty()) {
         // no distant preserving permutation could be found
         auto soapMetric = environmentalSimilarities.diagonal().sum() / N;
         return {{soapMetric, bestMatch}};
@@ -127,8 +129,8 @@ std::vector<BestMatch::Result> BestMatch::SOAPSimilarity::getAllBestMatchResults
     auto indexReorderingPermutation
             = obtainIndexReorderingPermutationOverAllBlocks(distancePreseringEnvironmentCombinationsOfAllBlocks);
 
-    // bring the surviving distance presering environment combinations back to the original order
-    for(auto& indices : survivingDistancePreseringEnvironmentCombinations) {
+    // bring the surviving distance preserving environment combinations back to the original order
+    for(auto& indices : survivingDistancePreservingEnvironmentCombinations) {
         auto copy = indices;
         for (std::size_t i = 0; i < indices.size(); ++i)
             indices[i] = copy[indexReorderingPermutation[i]];
@@ -138,7 +140,7 @@ std::vector<BestMatch::Result> BestMatch::SOAPSimilarity::getAllBestMatchResults
 
     std::vector<BestMatch::Result> results;
 
-    for(auto& foundIndicesOrder : survivingDistancePreseringEnvironmentCombinations) {
+    for(auto& foundIndicesOrder : survivingDistancePreservingEnvironmentCombinations) {
         assert(foundIndicesOrder.size() == N && "The found index ordering size must match the number of electrons.");
 
         Eigen::VectorXi permIndices(N);
@@ -190,8 +192,10 @@ std::vector<std::deque<Eigen::Index>> BestMatch::SOAPSimilarity::combineBlocks(
             for (auto &distancePreservingEnvironmentCombination : *blockIt) {
 
                 // TRICK
-                // the potential survivor is already distance preserving, now store the add the new candidates original index order
+                // the potential survivor is already distance preserving, now add the new candidates original index order
                 // appending the new indices is fine since they are independent from the ones before
+
+                //TODO calculate type separating perm and store it?
 
                 auto newPotentialSurvivor = *potentialSurvivorIt;
                 auto originalIndexOrder = *potentialSurvivorIt;
@@ -210,7 +214,7 @@ std::vector<std::deque<Eigen::Index>> BestMatch::SOAPSimilarity::combineBlocks(
                 auto covA = indicesBlockCovariance(permutee, newPotentialSurvivor);
                 auto covB = indicesBlockCovariance(reference, originalIndexOrder);
 
-                auto conservingQ = (covB - covA).array().abs().maxCoeff() < similarityRadius;
+                auto conservingQ = (covB - covA).array().abs().maxCoeff() <= similarityRadius;
 
                 if (conservingQ)
                     newSurvivors.emplace_back(newPotentialSurvivor);
@@ -240,7 +244,7 @@ std::vector<Eigen::Index> BestMatch::SOAPSimilarity::obtainIndexReorderingPermut
     std::vector<Eigen::Index> overallReorderedIndices(blockWiseReorderedIndices.size());
     std::iota(overallReorderedIndices.begin(), overallReorderedIndices.end(), 0);
 
-    // sort and stor index permutation
+    // sort and store index permutation
     sort(overallReorderedIndices.begin(), overallReorderedIndices.end(),
          [&](const int &a, const int &b) {
              return (blockWiseReorderedIndices[a] < blockWiseReorderedIndices[b]);
@@ -284,8 +288,7 @@ void BestMatch::SOAPSimilarity::varySimilarEnvironments(
 
             remainingCopy.erase(remainingCopy.begin() + std::distance(remaining.begin(), it));
 
-            varySimilarEnvironments(permutee, reference, remainingCopy, potentialSurvivor, //original,
-                    allPerms, similarityRadius);
+            varySimilarEnvironments(permutee, reference, remainingCopy, potentialSurvivor, allPerms, similarityRadius);
         }
     }
 };

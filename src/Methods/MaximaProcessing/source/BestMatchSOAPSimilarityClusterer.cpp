@@ -15,22 +15,24 @@ using namespace SOAP;
 namespace Settings {
     BestMatchSOAPSimilarityClusterer::BestMatchSOAPSimilarityClusterer()
             : ISettings(VARNAME(BestMatchSOAPSimilarityClusterer)) {
-        threshold.onChange_.connect(
+        soapSimilarityThreshold.onChange_.connect(
                 [&](double value) {
                     if(value <= 0 || value > 1)
                         throw std::invalid_argument(
-                                "The " + threshold.name() + " with " + std::to_string(threshold())
+                                "The " + soapSimilarityThreshold.name() + " with " + std::to_string(soapSimilarityThreshold())
                                 + " must be within the range (0,1].");
                 });
     }
 
     BestMatchSOAPSimilarityClusterer::BestMatchSOAPSimilarityClusterer(const YAML::Node &node)
             : BestMatchSOAPSimilarityClusterer() {
-        doubleProperty::decode(node, threshold);
+        doubleProperty::decode(node, soapSimilarityThreshold);
+        doubleProperty::decode(node, distanceToleranceRadius);
     }
 
     void BestMatchSOAPSimilarityClusterer::appendToNode(YAML::Node &node) const {
-        node[className][threshold.name()] = threshold();
+        node[className][soapSimilarityThreshold.name()] = soapSimilarityThreshold();
+        node[className][distanceToleranceRadius.name()] = distanceToleranceRadius();
     }
 }
 YAML_SETTINGS_DEFINITION(Settings::BestMatchSOAPSimilarityClusterer)
@@ -58,7 +60,8 @@ void BestMatchSOAPSimilarityClusterer::cluster(Group& group){
         spdlog::info("calculated spectrum {}", std::distance(group.begin(), it));
     }
 
-    auto similarityThreshold = settings.threshold();
+    auto similarityThreshold = settings.soapSimilarityThreshold();
+    auto toleranceRadius = settings.distanceToleranceRadius();
 
     Group supergroup({{*group.begin()}});
 
@@ -68,17 +71,20 @@ void BestMatchSOAPSimilarityClusterer::cluster(Group& group){
 
         // check if current group matches any of the supergroup subgroups
         for(auto subgroupOfSupergroupIt = supergroup.begin(); subgroupOfSupergroupIt != supergroup.end(); ++subgroupOfSupergroupIt) {
-            spdlog::info("  comparing it with {} out of {}",
-                    std::distance(supergroup.begin(), subgroupOfSupergroupIt),
-                    std::distance(supergroup.begin(), supergroup.end()));
+
             assert(!groupIt->representative()->spectrum().molecularCenters_.empty() && "Spectrum cannot be empty.");
             assert(!subgroupOfSupergroupIt->representative()->spectrum().molecularCenters_.empty() && "Spectrum cannot be empty.");
 
             auto comparisionResult = BestMatch::SOAPSimilarity::compare(
                     groupIt->representative()->spectrum(),
                     subgroupOfSupergroupIt->representative()->spectrum(),
-                    BestMatchDistanceSimilarityClusterer::settings.similarityRadius(),//TODO  CAREFUL!!! ADD OWN PARAMETER FOR TOLSIM RADIUS
-                    settings.threshold());
+                    toleranceRadius,
+                    similarityThreshold);
+
+            spdlog::info("  comparing it with {} out of {}: {}",
+                    std::distance(supergroup.begin(), subgroupOfSupergroupIt),
+                    std::distance(supergroup.begin(), supergroup.end()),
+                    comparisionResult.metric);
 
             // if so, put permute the current group and put it into the supergroup subgroup and stop searching
             if (comparisionResult.metric >= similarityThreshold) {

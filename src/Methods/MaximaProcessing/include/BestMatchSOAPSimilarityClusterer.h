@@ -13,8 +13,8 @@
 namespace Settings {
     class BestMatchSOAPSimilarityClusterer : public ISettings {
     public:
-        Property<double> threshold = {0.95, VARNAME(threshold)};
-
+        Property<double> soapSimilarityThreshold = {0.95, VARNAME(soapSimilarityThreshold)};
+        Property<double> distanceToleranceRadius = {0.2, VARNAME(distanceToleranceRadius)};
         BestMatchSOAPSimilarityClusterer();
         explicit BestMatchSOAPSimilarityClusterer(const YAML::Node &node);
         void appendToNode(YAML::Node &node) const override;

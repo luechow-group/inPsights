@@ -6,6 +6,7 @@
 #include <sstream>
 #include <PositionsVector.h>
 #include <NaturalConstants.h>
+#include <Metrics.h>
 
 using namespace testing;
 using namespace Eigen;
@@ -195,4 +196,15 @@ TEST_F(APositionsVectorTest, RotateAllClockwise) {
     1,0,0;
 
     ASSERT_TRUE(p.asEigenVector().isApprox(expectedPositions));
+}
+
+TEST_F(APositionsVectorTest, Shake) {
+    PositionsVector p(positions);
+
+    auto pcopy = p;
+    double shakeDist = 0.1;
+    pcopy.shake(shakeDist);
+    
+    auto maxDev = Metrics::positionalNormsVectorNorm<Eigen::Infinity,2>(p,pcopy);
+    ASSERT_LE(maxDev,shakeDist);
 }
