@@ -256,3 +256,34 @@ TEST_F(ABestMatchSimilarityTest, FindDistanceConservingPermutations_Alchemical_S
         ASSERT_THAT(i.permutation.indices(), AnyOfArray(permsIndices));
     }
 }
+
+TEST_F(ABestMatchSimilarityTest, FindDistanceConservingPermutations_Chemical_BoraneDoublyIonic) {
+    auto B = TestMolecules::BH3::ionicMinimal;
+    auto A = TestMolecules::BH3::ionicMinimalRotated;
+    ParticleKit::create(A);
+    General::settings.mode = General::Mode::chemical;
+    General::settings.pairSimilarities[{int(Spin::alpha),int(Spin::beta)}] = 1.0;
+
+    Radial::settings.nmax = 3;
+    Radial::settings.sigmaAtom = 2.0;
+    Angular::settings.lmax = 3;
+    Cutoff::settings.radius = 4.0;
+    Cutoff::settings.width = 1.0;
+    //Cutoff::settings.centerWeight = 0.1;
+
+    auto specA = MolecularSpectrum(A);
+    auto specB = MolecularSpectrum(B);
+
+    std::vector<Eigen::VectorXi> permsIndices(2,Eigen::VectorXi(4));
+    permsIndices[0] << 0,1,2,3;
+    permsIndices[1] << 1,0,3,2;
+
+    auto results = BestMatch::SOAPSimilarity::getAllBestMatchResults(specA,specB, distanceTolerance, soapThreshold);
+
+    ASSERT_EQ(results.size(), permsIndices.size());
+    for (auto& i : results) {
+        std::cout << i.metric << ", " << i.permutation.indices().transpose() << std::endl;
+        ASSERT_EQ(i.metric, 1.0);
+        ASSERT_THAT(i.permutation.indices(), AnyOfArray(permsIndices));
+    }
+}
