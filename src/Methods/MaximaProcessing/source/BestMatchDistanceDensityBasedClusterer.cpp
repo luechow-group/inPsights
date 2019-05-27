@@ -14,10 +14,10 @@ namespace Settings {
     : ISettings(VARNAME(BestMatchDistanceDensityBasedClusterer)) {
         clusterRadius.onChange_.connect(
                 [&](double value) {
-                    if(value > ::BestMatchDistanceSimilarityClusterer::settings.similarityRadius())
+                    if(value < ::BestMatchDistanceSimilarityClusterer::settings.similarityRadius())
                         throw std::invalid_argument(
                                 "The " + clusterRadius.name() + " with " + std::to_string(clusterRadius())
-                                + " is greater than the "+ ::BestMatchDistanceSimilarityClusterer::settings.similarityRadius.name() 
+                                + " is smaller than the "+ ::BestMatchDistanceSimilarityClusterer::settings.similarityRadius.name()
                                 + " with "
                                 + std::to_string(::BestMatchDistanceSimilarityClusterer::settings.similarityRadius()));
                 });
@@ -50,10 +50,9 @@ void BestMatchDistanceDensityBasedClusterer::cluster(Group& group) {
     assert(!group.empty() && "The group cannot be empty.");
 
     group.sortAll();
-    auto threshold = settings.clusterRadius() * 2;
 
     DensityBasedScan<double, Group, BestMatchDistanceDensityBasedClusterer::wrapper> dbscan(group);
-    auto result = dbscan.findClusters(threshold, 1); // why multiplication by 2 is needed?
+    auto result = dbscan.findClusters(settings.clusterRadius()*2, 1);// why multiplication by 2 is needed?
 
     Group supergroup(static_cast<Group::size_type>(result.numberOfClusters));
 
