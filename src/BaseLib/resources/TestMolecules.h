@@ -228,8 +228,8 @@ namespace TestMolecules {
         const MolecularGeometry nuclei = {
                 AtomsVector({
                     {Element::H,{ a, 0, 0}},
-                    {Element::H,{ 0, a, 0}},
                     {Element::H,{-a, 0, 0}},
+                    {Element::H,{ 0, a, 0}},
                     {Element::H,{ 0,-a, 0}}}),
                 {}
         };
@@ -238,10 +238,8 @@ namespace TestMolecules {
                 nuclei.atoms(),
                 ElectronsVector({
                     {Spin::alpha, nuclei.atoms().positionsVector()[0]},
-                    {Spin::beta,  {0,0,0}},
                     {Spin::alpha, nuclei.atoms().positionsVector()[1]},
                     {Spin::alpha, nuclei.atoms().positionsVector()[2]},
-                    {Spin::alpha, {0,0,0}},
                     {Spin::alpha, nuclei.atoms().positionsVector()[3]}
                                 })
         };
@@ -427,8 +425,20 @@ namespace TestMolecules {
                                  {Spin::alpha/*16*/,inbetween(nuclei.atoms(),{1,6},0.25)},
                                  {Spin::alpha/*17*/,inbetween(nuclei.atoms(),{1,7},0.25)}
                                  })};
+        const MolecularGeometry doublyIonicMinimal = {
+                nuclei.atoms(),
+                ElectronsVector({
+                    doublyIonic.electrons()[5],
+                    doublyIonic.electrons()[6],
+                    doublyIonic.electrons()[10],
+                    doublyIonic.electrons()[11],
+                    doublyIonic.electrons()[14],
+                    doublyIonic.electrons()[15],
+                    doublyIonic.electrons()[16],
+                    doublyIonic.electrons()[17]}
+                                        )};
 
-        const MolecularGeometry doublyIonicDoublyRotated = {
+        const MolecularGeometry doublyIonicRotated = {
                 nuclei.atoms(),
                 ElectronsVector({// C Cores
                                  {Spin::alpha/* 0*/,nuclei.atoms().positionsVector()[0]},
@@ -440,7 +450,6 @@ namespace TestMolecules {
                                  {Spin::alpha/* 5*/,nuclei.atoms().positionsVector()[4]},
                                  {Spin::alpha/* 6*/,nuclei.atoms().positionsVector()[2]},
                                  {Spin::alpha/* 7*/,nuclei.atoms().positionsVector()[6]},
-
                                  {Spin::beta /* 8*/,nuclei.atoms().positionsVector()[3]},
                                  {Spin::beta /* 9*/,nuclei.atoms().positionsVector()[6]},
                                  {Spin::beta /*10*/,nuclei.atoms().positionsVector()[7]},
@@ -454,6 +463,18 @@ namespace TestMolecules {
                                  {Spin::alpha/*16*/,inbetween(nuclei.atoms(),{1,7},0.25)},
                                  {Spin::alpha/*17*/,inbetween(nuclei.atoms(),{1,5},0.25)}
                                 })};
+        const MolecularGeometry doublyIonicMinimalDoublyRotated = {
+                nuclei.atoms(),
+                ElectronsVector({
+                     doublyIonicRotated.electrons()[5],
+                     doublyIonicRotated.electrons()[6],
+                     doublyIonicRotated.electrons()[10],
+                     doublyIonicRotated.electrons()[11],
+                     doublyIonicRotated.electrons()[14],
+                     doublyIonicRotated.electrons()[15],
+                     doublyIonicRotated.electrons()[16],
+                     doublyIonicRotated.electrons()[17]}
+                )};
         const MolecularGeometry doublyIonicDoublyRotatedPermuted = { // swap els at core 2 with those at 4 and 5 with 7
                 nuclei.atoms(),
                 ElectronsVector({// C Cores
