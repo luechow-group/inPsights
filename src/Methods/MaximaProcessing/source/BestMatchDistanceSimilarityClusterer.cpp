@@ -79,7 +79,7 @@ void BestMatchDistanceSimilarityClusterer::cluster(Group& group) {
                     subgroup->representative()->maximum().positionsVector(),
                     subgroupFromSupergroupBoundaries->representative()->maximum().positionsVector());
 
-            if (norm < similarityRadius) {
+            if (norm <= similarityRadius) {
                 subgroup->permuteAll(perm, samples_);
                 subgroupFromSupergroupBoundaries->emplace_back(*subgroup);
                 isSimilarQ = true;
