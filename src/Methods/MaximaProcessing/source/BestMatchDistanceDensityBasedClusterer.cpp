@@ -59,8 +59,9 @@ void BestMatchDistanceDensityBasedClusterer::cluster(Group& group) {
 
     group.sortAll();
 
+    auto threshold = settings.clusterRadius()*2;
     DensityBasedScan<double, Group, BestMatchDistanceDensityBasedClusterer::wrapper> dbscan(group);
-    auto result = dbscan.findClusters(settings.clusterRadius()*2, 1);// why multiplication by 2 is needed?
+    auto result = dbscan.findClusters(threshold, 1);// why multiplication by 2 is needed?
 
     Group supergroup(static_cast<Group::size_type>(result.numberOfClusters));
 
@@ -69,12 +70,12 @@ void BestMatchDistanceDensityBasedClusterer::cluster(Group& group) {
             if (result.labels[j] == i)
                 supergroup[i].emplace_back(std::move(g));
 
-    orderByBestMatchDistance(supergroup);
+    orderByBestMatchDistance(supergroup, threshold);
 
     group = supergroup;
 }
 
-void BestMatchDistanceDensityBasedClusterer::orderByBestMatchDistance(Group &supergroup) const {
+void BestMatchDistanceDensityBasedClusterer::orderByBestMatchDistance(Group &supergroup, double threshold) const {
     for (auto &subgroup : supergroup) {
         sort(subgroup.begin(), subgroup.end());
 
@@ -96,7 +97,7 @@ void BestMatchDistanceDensityBasedClusterer::orderByBestMatchDistance(Group &sup
                                     j->representative()->maximum().positionsVector(),
                                     i->representative()->maximum().positionsVector());
 
-                    if (norm <= settings.clusterRadius() * 2) {
+                    if (norm <= threshold) {
                         j->permuteAll(perm, samples_);
 
                         // moving j from subgroup to newGroups

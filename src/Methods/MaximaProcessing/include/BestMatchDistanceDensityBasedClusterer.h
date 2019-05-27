@@ -49,7 +49,7 @@ private:
         Group::iterator it_;
     };
 
-    void orderByBestMatchDistance(Group &supergroup) const;
+    void orderByBestMatchDistance(Group &supergroup, double threshold) const;
 };
 
 #endif //INPSIGHTS_BESTMATCHDISTANCEDENSITYBASEDCLUSTERER_H
