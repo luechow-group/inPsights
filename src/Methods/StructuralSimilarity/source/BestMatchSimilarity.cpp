@@ -66,7 +66,6 @@ Eigen::MatrixXd BestMatch::SOAPSimilarity::calculateEnvironmentalSimilarityMatri
     return environmentalSimilarities;
 }
 
-#include <iomanip>
 std::vector<BestMatch::Result> BestMatch::SOAPSimilarity::getAllBestMatchResults(
         const MolecularSpectrum &permutee,
         const MolecularSpectrum &reference,
@@ -99,23 +98,24 @@ std::vector<BestMatch::Result> BestMatch::SOAPSimilarity::getAllBestMatchResults
     auto dependentIndicesLists =
             BestMatch::SOAPSimilarity::getListOfDependentIndicesLists(environmentalSimilarities, soapThreshold);
 
-    std::deque<std::vector<std::deque<Eigen::Index>>> distancePreseringEnvironmentCombinationsOfAllBlocks;
+    std::deque<std::vector<std::deque<Eigen::Index>>> distancePreservingEnvironmentCombinationsOfAllBlocks;
 
     for(const auto& list : dependentIndicesLists) {
-        std::vector<std::deque<Eigen::Index>> distancePreseringEnvironmentCombinations;
+        std::vector<std::deque<Eigen::Index>> distancePreservingEnvironmentCombinations;
         BestMatch::SOAPSimilarity::varySimilarEnvironments(permutee.molecule_, reference.molecule_,list, {},
-                                                           distancePreseringEnvironmentCombinations, similarityRadius);
-        if(distancePreseringEnvironmentCombinations.empty()) {
+                                                           distancePreservingEnvironmentCombinations, similarityRadius);
+
+        if(distancePreservingEnvironmentCombinations.empty()) {
             // no distant preserving permutation could be found f
             auto soapMetric = environmentalSimilarities.diagonal().sum() / N;
             return {{soapMetric, bestMatch}};
         }
-        distancePreseringEnvironmentCombinationsOfAllBlocks.emplace_back(distancePreseringEnvironmentCombinations);
+        distancePreservingEnvironmentCombinationsOfAllBlocks.emplace_back(distancePreservingEnvironmentCombinations);
     }
 
     auto survivingDistancePreservingEnvironmentCombinations = combineBlocks(
             permutee.molecule_, reference.molecule_,
-            distancePreseringEnvironmentCombinationsOfAllBlocks,
+            distancePreservingEnvironmentCombinationsOfAllBlocks,
             similarityRadius);
 
     if(survivingDistancePreservingEnvironmentCombinations.empty()) {
@@ -125,7 +125,7 @@ std::vector<BestMatch::Result> BestMatch::SOAPSimilarity::getAllBestMatchResults
     }
 
     auto indexReorderingPermutation
-            = obtainIndexReorderingPermutationOverAllBlocks(distancePreseringEnvironmentCombinationsOfAllBlocks);
+            = obtainIndexReorderingPermutationOverAllBlocks(distancePreservingEnvironmentCombinationsOfAllBlocks);
 
     // bring the surviving distance preserving environment combinations back to the original order
     for(auto& indices : survivingDistancePreservingEnvironmentCombinations) {
@@ -195,21 +195,26 @@ std::vector<std::deque<Eigen::Index>> BestMatch::SOAPSimilarity::combineBlocks(
                 // the potential survivor is already distance preserving, now add the new candidates original index order
                 // appending the new indices is fine since they are independent from the ones before
 
-                //TODO calculate type separating perm and store it?
 
                 auto newPotentialSurvivor = *potentialSurvivorIt;
                 auto originalIndexOrder = *potentialSurvivorIt;
 
+                // append the new distance preserving combination of the current block
                 newPotentialSurvivor.insert(newPotentialSurvivor.end(),
                                               distancePreservingEnvironmentCombination.begin(),
-                                              distancePreservingEnvironmentCombination.end()); //hacky: this uses the fact, that the original index order is ascending
+                                              distancePreservingEnvironmentCombination.end());
+                //hacky: this uses the fact, that the original index order is ascending
+
+
+                // compare the potential survivor with the unpermuted reference.
+                // The distance matrix differences should be zero.
                 auto newCandidateOriginalOrder = distancePreservingEnvironmentCombination;
 
-                std::sort(newCandidateOriginalOrder.begin(),
-                          newCandidateOriginalOrder.end()); //hacky: this uses the fact, that the original index order is ascending
                 originalIndexOrder.insert(originalIndexOrder.end(),
                                           newCandidateOriginalOrder.begin(),
                                           newCandidateOriginalOrder.end());
+                std::sort(originalIndexOrder.begin(),
+                          originalIndexOrder.end());
 
                 auto covA = indicesBlockCovariance(permutee.electrons(), newPotentialSurvivor);
                 auto covB = indicesBlockCovariance(reference.electrons(), originalIndexOrder);
@@ -276,7 +281,7 @@ void BestMatch::SOAPSimilarity::varySimilarEnvironments(
         auto covA = indicesBlockCovariance(permutee.electrons(), potentialSurvivor);
 
         auto originalIndexOrder = potentialSurvivor;
-        std::sort(originalIndexOrder.begin(),originalIndexOrder.end()); //hacky: this uses the fact, that the original index order is ascending
+        std::sort(originalIndexOrder.begin(),originalIndexOrder.end()); //TODO hacky: this uses the fact, that the original index order is ascending
 
         auto covB = indicesBlockCovariance(reference.electrons(), originalIndexOrder);
 

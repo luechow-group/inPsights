@@ -282,7 +282,6 @@ TEST_F(ABestMatchSimilarityTest, FindDistanceConservingPermutations_Chemical_Bor
 
     ASSERT_EQ(results.size(), permsIndices.size());
     for (auto& i : results) {
-        std::cout << i.metric << ", " << i.permutation.indices().transpose() << std::endl;
         ASSERT_EQ(i.metric, 1.0);
         ASSERT_THAT(i.permutation.indices(), AnyOfArray(permsIndices));
     }
