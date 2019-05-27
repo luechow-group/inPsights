@@ -7,6 +7,7 @@
 
 #include <Eigen/Core>
 #include <deque>
+#include <ParticlesVector.h>
 
 namespace BestMatch {
     Eigen::PermutationMatrix<Eigen::Dynamic> combinePermutations( // TODO rename to "concatenatePermutations" ?
@@ -21,6 +22,27 @@ namespace BestMatch {
     Eigen::PermutationMatrix<Eigen::Dynamic>
     concatenateSwaps(std::deque<Swap> swaps, unsigned permutationSize);
 
+
+    template<typename Type>
+    Eigen::PermutationMatrix<Eigen::Dynamic> findTypeSeparatingPermutation(
+            const ParticlesVector<Type> &particlesVector) {
+
+        Eigen::VectorXi typeSerparatingPermutationIndices(particlesVector.numberOfEntities());
+
+        Eigen::Index i = 0;
+
+        for (const auto&[type, count] : particlesVector.typesVector().countTypes()) {
+
+            for (std::size_t j = 0; j < count; ++j) {
+                auto[foundQ, index] = particlesVector.typesVector().findIndexOfEnumeratedType(
+                        EnumeratedType<Type>(type, j));
+                assert(foundQ);
+                typeSerparatingPermutationIndices[i] = index;
+                ++i;
+            }
+        }
+        return Eigen::PermutationMatrix<Eigen::Dynamic>(typeSerparatingPermutationIndices);
+    }
 
     struct Result {
         double metric;

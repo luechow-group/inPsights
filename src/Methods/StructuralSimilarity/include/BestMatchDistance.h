@@ -9,8 +9,6 @@
 #include <BestMatch.h>
 #include "BestMatchDistance.h"
 #include <Metrics.h>
-#include <ParticlesVector.h>
-#include <Interval.h>
 
 namespace BestMatch {
     namespace Distance {
@@ -23,28 +21,6 @@ namespace BestMatch {
             return Hungarian<double>::findMatching(costMatrix);
         }
 
-        namespace {
-            template<typename Type>
-            Eigen::PermutationMatrix<Eigen::Dynamic> findTypeSeparatingPermutation(
-                    const ParticlesVector<Type> &particlesVector) {
-
-                Eigen::VectorXi typeSerparatingPermutationIndices(particlesVector.numberOfEntities());
-
-                Eigen::Index i = 0;
-
-                for (const auto&[type, count] : particlesVector.typesVector().countTypes()) {
-
-                    for (std::size_t j = 0; j < count; ++j) {
-                        auto[foundQ, index] = particlesVector.typesVector().findIndexOfEnumeratedType(
-                                EnumeratedType<Type>(type, j));
-                        assert(foundQ);
-                        typeSerparatingPermutationIndices[i] = index;
-                        ++i;
-                    }
-                }
-                return Eigen::PermutationMatrix<Eigen::Dynamic>(typeSerparatingPermutationIndices);
-            }
-        }
 
         template<typename Type, int positionalNorm = 2>
         Eigen::PermutationMatrix<Eigen::Dynamic>
