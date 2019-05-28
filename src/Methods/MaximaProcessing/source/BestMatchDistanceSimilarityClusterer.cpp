@@ -72,6 +72,11 @@ void BestMatchDistanceSimilarityClusterer::cluster(Group& group) {
                 upperRef);
 
         // iterate over all supergroup members within the value range
+
+        auto overallBestMatchNorm = std::numeric_limits<double>::max();
+        auto overallBestMatchPerm =
+                Eigen::PermutationMatrix<Eigen::Dynamic>(group.representative()->maximum().numberOfEntities());
+        auto bestMatchSubgroupFromSupergroupBoundaries = supergroupLowerBoundIt;
         for (auto subgroupFromSupergroupBoundaries = supergroupLowerBoundIt;
         subgroupFromSupergroupBoundaries != supergroupUpperBoundIt; ++subgroupFromSupergroupBoundaries) {
 
@@ -79,14 +84,18 @@ void BestMatchDistanceSimilarityClusterer::cluster(Group& group) {
                     subgroup->representative()->maximum().positionsVector(),
                     subgroupFromSupergroupBoundaries->representative()->maximum().positionsVector());
 
-            if (norm < similarityRadius) {
-                subgroup->permuteAll(perm, samples_);
-                subgroupFromSupergroupBoundaries->emplace_back(*subgroup);
-                isSimilarQ = true;
-                break;
+            if (norm <= overallBestMatchNorm) {
+                overallBestMatchNorm = norm;
+                overallBestMatchPerm = perm;
+                bestMatchSubgroupFromSupergroupBoundaries = subgroupFromSupergroupBoundaries;
             }
+
         }
-        if (!isSimilarQ) {
+        if (overallBestMatchNorm <= similarityRadius) {
+            subgroup->permuteAll(overallBestMatchPerm, samples_);
+            bestMatchSubgroupFromSupergroupBoundaries->emplace_back(*subgroup);
+        }
+        else {
             supergroup.emplace_back(Group({*subgroup}));
         }
     }
