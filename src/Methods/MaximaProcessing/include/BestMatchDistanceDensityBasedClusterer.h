@@ -40,7 +40,7 @@ private:
 
     static double wrapper(const Group &g1, const Group &g2);
 
-    void orderByBestMatchDistance(Group &supergroup) const;
+    void orderByBestMatchDistance(Group &supergroup, double threshold) const;
 };
 
 #endif //INPSIGHTS_BESTMATCHDISTANCEDENSITYBASEDCLUSTERER_H
