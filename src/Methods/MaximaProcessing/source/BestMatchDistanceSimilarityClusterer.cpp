@@ -53,10 +53,33 @@ void BestMatchDistanceSimilarityClusterer::cluster(Group& group) {
 
     // insert first element
     Group supergroup({Group({*group.begin()})});
+    group.erase(group.begin());
+
+    //Presort
+    for (auto subgroup = group.begin(); subgroup != group.end(); ++subgroup) {
+
+        // iterate over all supergroup members within the value range
+        std::list<bool> outsideQ;
+        for(auto subgroupFromSuperGroup = supergroup.begin();
+        subgroupFromSuperGroup != supergroup.end(); ++subgroupFromSuperGroup) {
+
+            auto[norm, perm] = BestMatch::Distance::compare<Eigen::Infinity, 2>(
+                    subgroup->representative()->maximum().positionsVector(),
+                    subgroupFromSuperGroup->representative()->maximum().positionsVector());
+            if(norm > similarityRadius)
+                outsideQ.emplace_back(true);
+            else
+                outsideQ.emplace_back(false);
+        }
+        if(std::all_of(outsideQ.begin(), outsideQ.end(), [](bool b){return b;})) {
+            supergroup.emplace_back(Group({*subgroup}));
+            group.erase(subgroup);
+            subgroup -= 1;
+        }
+    }
 
     // start with the second subgroup
-    for (auto subgroup = std::next(group.begin()); subgroup != group.end(); ++subgroup) {
-        bool isSimilarQ = false;
+    for (auto subgroup = group.begin(); subgroup != group.end(); ++subgroup) {
 
         // Define value range of the supergroup
         Group lowerRef(Reference(subgroup->representative()->value() - valueIncrement));
@@ -72,7 +95,6 @@ void BestMatchDistanceSimilarityClusterer::cluster(Group& group) {
                 upperRef);
 
         // iterate over all supergroup members within the value range
-
         auto overallBestMatchNorm = std::numeric_limits<double>::max();
         auto overallBestMatchPerm =
                 Eigen::PermutationMatrix<Eigen::Dynamic>(group.representative()->maximum().numberOfEntities());
@@ -89,14 +111,13 @@ void BestMatchDistanceSimilarityClusterer::cluster(Group& group) {
                 overallBestMatchPerm = perm;
                 bestMatchSubgroupFromSupergroupBoundaries = subgroupFromSupergroupBoundaries;
             }
-
         }
         if (overallBestMatchNorm <= similarityRadius) {
             subgroup->permuteAll(overallBestMatchPerm, samples_);
             bestMatchSubgroupFromSupergroupBoundaries->emplace_back(*subgroup);
         }
         else {
-            supergroup.emplace_back(Group({*subgroup}));
+            throw std::exception();
         }
     }
     group = supergroup;
