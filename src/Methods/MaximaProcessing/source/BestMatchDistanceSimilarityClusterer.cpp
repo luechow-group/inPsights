@@ -58,14 +58,26 @@ void BestMatchDistanceSimilarityClusterer::cluster(Group& group) {
     //Presort
     for (auto subgroup = group.begin(); subgroup != group.end(); ++subgroup) {
 
+        Group lowerRef(Reference(subgroup->representative()->value() - valueIncrement));
+        Group upperRef(Reference(subgroup->representative()->value() + valueIncrement));
+
+        auto supergroupLowerBoundIt = std::lower_bound(
+                supergroup.begin(),
+                supergroup.end(),
+                lowerRef);
+        auto supergroupUpperBoundIt = std::upper_bound(
+                supergroup.begin(),
+                supergroup.end(),
+                upperRef);
+
         // iterate over all supergroup members within the value range
         std::list<bool> outsideQ;
-        for(auto subgroupFromSuperGroup = supergroup.begin();
-        subgroupFromSuperGroup != supergroup.end(); ++subgroupFromSuperGroup) {
+        for(auto subgroupFromSupergroupBoundaries = supergroupLowerBoundIt;
+            subgroupFromSupergroupBoundaries != supergroupUpperBoundIt; ++subgroupFromSupergroupBoundaries) {
 
             auto[norm, perm] = BestMatch::Distance::compare<Eigen::Infinity, 2>(
                     subgroup->representative()->maximum().positionsVector(),
-                    subgroupFromSuperGroup->representative()->maximum().positionsVector());
+                    subgroupFromSupergroupBoundaries->representative()->maximum().positionsVector());
             if(norm > similarityRadius)
                 outsideQ.emplace_back(true);
             else
