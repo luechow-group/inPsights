@@ -253,13 +253,11 @@ int main(int argc, char *argv[]) {
 
     return 0;
 
-    /*TODO
-     * - add similarity attribute (enum - spatially|permutationally|rotationally + similar|identical ) to group
+    /* TODO
+     * - refactor best match clusterer
      * - make single value statistics class
-     * - test naive standard deviatino
+     * - test naive standard deviation
      * - test choice of function value increment
-     * - validate that ring-like clusters are ordered correctly
      * - split identity sort into batches that can be compared in parallel using OpenMP
-     * - improve spinSpecificHungarian (low priority)
      * */
 };
