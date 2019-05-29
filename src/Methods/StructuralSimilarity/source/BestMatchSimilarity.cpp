@@ -66,7 +66,7 @@ Eigen::MatrixXd BestMatch::SOAPSimilarity::calculateEnvironmentalSimilarityMatri
     return environmentalSimilarities;
 }
 
-std::vector<BestMatch::Result> BestMatch::SOAPSimilarity::getAllBestMatchResults(
+std::vector<BestMatch::Result> BestMatch::SOAPSimilarity::getBestMatchResults(
         const MolecularSpectrum &permutee,
         const MolecularSpectrum &reference,
         double similarityRadius, double soapThreshold) {
@@ -91,6 +91,7 @@ std::vector<BestMatch::Result> BestMatch::SOAPSimilarity::getAllBestMatchResults
            && "The number of beta electrons must match.");
 
     Eigen::MatrixXd environmentalSimilarities = calculateEnvironmentalSimilarityMatrix(permutee, reference);
+    std::cout<< std::endl << std::setprecision(2) << environmentalSimilarities << std::endl;
 
     Eigen::PermutationMatrix<Eigen::Dynamic> bestMatch
             = Hungarian<double>::findMatching(environmentalSimilarities, Matchtype::MAX);
@@ -168,7 +169,7 @@ BestMatch::Result BestMatch::SOAPSimilarity::compare(
         const MolecularSpectrum &reference,
         double similarityRadius, double soapThreshold) {
 
-    return BestMatch::SOAPSimilarity::getAllBestMatchResults(permutee,reference,similarityRadius, soapThreshold).back();
+    return BestMatch::SOAPSimilarity::getBestMatchResults(permutee, reference, similarityRadius, soapThreshold).back();
 }
 
 std::vector<std::deque<Eigen::Index>> BestMatch::SOAPSimilarity::combineBlocks(
@@ -207,18 +208,16 @@ std::vector<std::deque<Eigen::Index>> BestMatch::SOAPSimilarity::combineBlocks(
 
 
                 // compare the potential survivor with the unpermuted reference.
-                // The distance matrix differences should be zero.
-                auto newCandidateOriginalOrder = distancePreservingEnvironmentCombination;
-
                 originalIndexOrder.insert(originalIndexOrder.end(),
-                                          newCandidateOriginalOrder.begin(),
-                                          newCandidateOriginalOrder.end());
+                                          distancePreservingEnvironmentCombination.begin(),
+                                          distancePreservingEnvironmentCombination.end());
                 std::sort(originalIndexOrder.begin(),
                           originalIndexOrder.end());
 
                 auto covA = indicesBlockCovariance(permutee.electrons(), newPotentialSurvivor);
                 auto covB = indicesBlockCovariance(reference.electrons(), originalIndexOrder);
 
+                // The maximal distance matrix differences should be smaller than the similarity radius.
                 auto conservingQ = (covB - covA).array().abs().maxCoeff() <= similarityRadius;
 
                 if (conservingQ)
@@ -270,7 +269,6 @@ void BestMatch::SOAPSimilarity::varySimilarEnvironments(
 
 
     if(dependentIndices.size() == 0) {
-        //surviving.emplace_back(dependentIndices.front());
         allPerms.emplace_back(surviving);
         return;
     }

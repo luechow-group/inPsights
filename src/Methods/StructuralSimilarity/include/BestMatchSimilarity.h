@@ -25,7 +25,7 @@ namespace BestMatch {
                 const SOAP::MolecularSpectrum &reference,
                 double similarityRadius, double soapThreshold);
 
-        std::vector<Result> getAllBestMatchResults(
+        std::vector<Result> getBestMatchResults(
                 const SOAP::MolecularSpectrum &permutee,
                 const SOAP::MolecularSpectrum &reference,
                 double similarityRadius, double soapThreshold);

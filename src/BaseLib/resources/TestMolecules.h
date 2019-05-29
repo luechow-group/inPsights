@@ -400,31 +400,60 @@ namespace TestMolecules {
                              {Element::H,{-d,   c, b}}}
                              ),{}};
 
+        const MolecularGeometry covalent = {
+                nuclei.atoms(),
+                ElectronsVector({
+                    // C Cores
+                    {Spin::alpha/* 0*/,nuclei.atoms().positionsVector()[0]},
+                    {Spin::beta /* 1*/,nuclei.atoms().positionsVector()[0]},
+                    {Spin::alpha/* 2*/,nuclei.atoms().positionsVector()[1]},
+                    {Spin::beta /* 3*/,nuclei.atoms().positionsVector()[1]},
+                    // H Cores
+                    {Spin::alpha/* 4*/,nuclei.atoms().positionsVector()[2]},
+                    {Spin::alpha/* 5*/,nuclei.atoms().positionsVector()[3]},
+                    {Spin::alpha/* 6*/,nuclei.atoms().positionsVector()[4]},
+                    {Spin::beta /* 7*/,nuclei.atoms().positionsVector()[5]},
+                    {Spin::beta /* 8*/,nuclei.atoms().positionsVector()[6]},
+                    {Spin::beta /* 9*/,nuclei.atoms().positionsVector()[7]},
+                    // C-C Bond
+                    {Spin::alpha/*10*/,inbetween(nuclei.atoms(),{0,1},0.25)},
+                    {Spin::beta /*11*/,inbetween(nuclei.atoms(),{1,0},0.25)},
+                    // C-H Bonds
+                    {Spin::beta /*12*/,inbetween(nuclei.atoms(),{0,2},0.25)},
+                    {Spin::beta /*13*/,inbetween(nuclei.atoms(),{0,3},0.25)},
+                    {Spin::beta /*14*/,inbetween(nuclei.atoms(),{0,4},0.25)},
+                    {Spin::alpha/*15*/,inbetween(nuclei.atoms(),{1,5},0.25)},
+                    {Spin::alpha/*16*/,inbetween(nuclei.atoms(),{1,6},0.25)},
+                    {Spin::alpha/*17*/,inbetween(nuclei.atoms(),{1,7},0.25)}
+                })};
+
         const MolecularGeometry doublyIonic = {
                 nuclei.atoms(),
-                ElectronsVector({// C Cores
-                                 {Spin::alpha/* 0*/,nuclei.atoms().positionsVector()[0]},
-                                 {Spin::beta /* 1*/,nuclei.atoms().positionsVector()[0]},
-                                 {Spin::alpha/* 2*/,nuclei.atoms().positionsVector()[1]},
-                                 {Spin::beta /* 3*/,nuclei.atoms().positionsVector()[1]},
-                                 // H Cores
-                                 {Spin::alpha/* 4*/,nuclei.atoms().positionsVector()[2]},
-                                 {Spin::alpha/* 5*/,nuclei.atoms().positionsVector()[3]},
-                                 {Spin::alpha/* 6*/,nuclei.atoms().positionsVector()[4]},
-                                 {Spin::alpha/* 7*/,nuclei.atoms().positionsVector()[5]},
-                                 {Spin::beta /* 8*/,nuclei.atoms().positionsVector()[2]},
-                                 {Spin::beta /* 9*/,nuclei.atoms().positionsVector()[5]},
-                                 {Spin::beta /*10*/,nuclei.atoms().positionsVector()[6]},
-                                 {Spin::beta /*11*/,nuclei.atoms().positionsVector()[7]},
-                                 // C-C Bond
-                                 {Spin::alpha/*12*/,inbetween(nuclei.atoms(),{0,1},0.25)},
-                                 {Spin::beta /*13*/,inbetween(nuclei.atoms(),{1,0},0.25)},
-                                 // C-H Bonds
-                                 {Spin::beta /*14*/,inbetween(nuclei.atoms(),{0,3},0.25)},
-                                 {Spin::beta /*15*/,inbetween(nuclei.atoms(),{0,4},0.25)},
-                                 {Spin::alpha/*16*/,inbetween(nuclei.atoms(),{1,6},0.25)},
-                                 {Spin::alpha/*17*/,inbetween(nuclei.atoms(),{1,7},0.25)}
-                                 })};
+                ElectronsVector({
+                    // C Cores
+                    {Spin::alpha/* 0*/,nuclei.atoms().positionsVector()[0]},
+                    {Spin::beta /* 1*/,nuclei.atoms().positionsVector()[0]},
+                    {Spin::alpha/* 2*/,nuclei.atoms().positionsVector()[1]},
+                    {Spin::beta /* 3*/,nuclei.atoms().positionsVector()[1]},
+                    // H Cores
+                    {Spin::alpha/* 4*/,nuclei.atoms().positionsVector()[2]},
+                    {Spin::alpha/* 5*/,nuclei.atoms().positionsVector()[3]},
+                    {Spin::alpha/* 6*/,nuclei.atoms().positionsVector()[4]},
+                    {Spin::alpha/* 7*/,nuclei.atoms().positionsVector()[5]},
+                    {Spin::beta /* 8*/,nuclei.atoms().positionsVector()[2]},
+                    {Spin::beta /* 9*/,nuclei.atoms().positionsVector()[5]},
+                    {Spin::beta /*10*/,nuclei.atoms().positionsVector()[6]},
+                    {Spin::beta /*11*/,nuclei.atoms().positionsVector()[7]},
+                    // C-C Bond
+                    {Spin::alpha/*12*/,inbetween(nuclei.atoms(),{0,1},0.25)},
+                    {Spin::beta /*13*/,inbetween(nuclei.atoms(),{1,0},0.25)},
+                    // C-H Bonds
+                    {Spin::beta /*14*/,inbetween(nuclei.atoms(),{0,3},0.25)},
+                    {Spin::beta /*15*/,inbetween(nuclei.atoms(),{0,4},0.25)},
+                    {Spin::alpha/*16*/,inbetween(nuclei.atoms(),{1,6},0.25)},
+                    {Spin::alpha/*17*/,inbetween(nuclei.atoms(),{1,7},0.25)}
+                })};
+
         const MolecularGeometry doublyIonicMinimal = {
                 nuclei.atoms(),
                 ElectronsVector({
@@ -435,8 +464,8 @@ namespace TestMolecules {
                     doublyIonic.electrons()[14],
                     doublyIonic.electrons()[15],
                     doublyIonic.electrons()[16],
-                    doublyIonic.electrons()[17]}
-                                        )};
+                    doublyIonic.electrons()[17]
+                })};
 
         const MolecularGeometry doublyIonicRotated = {
                 nuclei.atoms(),
