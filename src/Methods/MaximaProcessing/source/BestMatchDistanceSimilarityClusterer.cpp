@@ -85,8 +85,8 @@ void BestMatchDistanceSimilarityClusterer::cluster(Group& group) {
         }
         if(std::all_of(outsideQ.begin(), outsideQ.end(), [](bool b){return b;})) {
             supergroup.emplace_back(Group({*subgroup}));
-            group.erase(subgroup);
-            subgroup -= 1;
+            subgroup = group.erase(subgroup);
+            --subgroup;
         }
     }
 
