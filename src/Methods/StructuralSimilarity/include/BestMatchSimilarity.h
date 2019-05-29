@@ -36,7 +36,7 @@ namespace BestMatch {
         void varySimilarEnvironments(
                 const MolecularGeometry &permutee,
                 const MolecularGeometry &reference,
-                std::deque<Eigen::Index> remaining,
+                std::deque<Eigen::Index> dependentIndices,
                 std::deque<Eigen::Index> surviving,
                 std::vector<std::deque<Eigen::Index>> &allPerms,
                 double similarityRadius);

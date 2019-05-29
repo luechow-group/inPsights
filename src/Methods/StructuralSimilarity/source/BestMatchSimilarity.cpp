@@ -130,11 +130,11 @@ std::vector<BestMatch::Result> BestMatch::SOAPSimilarity::getAllBestMatchResults
     // bring the surviving distance preserving environment combinations back to the original order
     for(auto& indices : survivingDistancePreservingEnvironmentCombinations) {
         auto copy = indices;
-        for (std::size_t i = 0; i < indices.size(); ++i)
-            indices[i] = copy[indexReorderingPermutation[i]];
-    }
 
-    std::vector<Eigen::PermutationMatrix<Eigen::Dynamic>> finalEigenPermutationsInLabSystem;
+        for (std::size_t i = 0; i < indices.size(); ++i) {
+            indices[i] = copy[indexReorderingPermutation[i]];
+        }
+    }
 
     std::vector<BestMatch::Result> results;
 
@@ -259,21 +259,23 @@ std::vector<Eigen::Index> BestMatch::SOAPSimilarity::obtainIndexReorderingPermut
     return overallReorderedIndices;
 };
 
+
 void BestMatch::SOAPSimilarity::varySimilarEnvironments(
         const MolecularGeometry &permutee,
         const MolecularGeometry &reference,
-        std::deque<Eigen::Index> remaining,
-        std::deque<Eigen::Index> surviving,
+        std::deque<Eigen::Index> dependentIndices, // contains list of dependent indices
+        std::deque<Eigen::Index> surviving, // is empty in the beginning
         std::vector<std::deque<Eigen::Index>> &allPerms,
         double similarityRadius) {
 
-    if(remaining.size() == 1) {
-        surviving.emplace_back(remaining.front());
+
+    if(dependentIndices.size() == 0) {
+        //surviving.emplace_back(dependentIndices.front());
         allPerms.emplace_back(surviving);
         return;
     }
 
-    for (auto it = remaining.begin(); it != remaining.end(); ++it){
+    for (auto it = dependentIndices.begin(); it != dependentIndices.end(); ++it){
         auto potentialSurvivor = surviving;
 
         potentialSurvivor.emplace_back(*it);
@@ -287,11 +289,10 @@ void BestMatch::SOAPSimilarity::varySimilarEnvironments(
 
         auto conservingQ = (covB-covA).array().abs().maxCoeff() <= similarityRadius;
 
-
         if(conservingQ) { // go deeper
-            auto remainingCopy = remaining;
+            auto remainingCopy = dependentIndices;
 
-            remainingCopy.erase(remainingCopy.begin() + std::distance(remaining.begin(), it));
+            remainingCopy.erase(remainingCopy.begin() + std::distance(dependentIndices.begin(), it));
 
             varySimilarEnvironments(permutee, reference, remainingCopy, potentialSurvivor, allPerms, similarityRadius);
         }

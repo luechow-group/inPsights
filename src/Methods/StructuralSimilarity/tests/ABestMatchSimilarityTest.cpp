@@ -15,8 +15,6 @@ using namespace SOAP;
 
 class ABestMatchSimilarityTest : public ::testing::Test {
 public:
-    MolecularGeometry A, B, C, D;
-
     double distanceTolerance, soapThreshold, shakeSoapThreshold, eps;
 
     void SetUp() override {
@@ -25,29 +23,32 @@ public:
         distanceTolerance = 0.1;
         soapThreshold = 1.0;
         shakeSoapThreshold = 0.90;
-        eps = 1E-10;
+        eps = 1E-9;
+
+        Radial::settings.nmax = 3;
+        Radial::settings.sigmaAtom = 2.0;
+        Angular::settings.lmax = 3;
+        Cutoff::settings.radius = 4.0;
+        Cutoff::settings.width = 1.0;
+        General::settings.pairSimilarities[{int(Spin::alpha),int(Spin::beta)}] = 1.0;
     };
 };
 
 
 TEST_F(ABestMatchSimilarityTest, PrermuteEnvironmentsToLabSystem) {
-
-    auto b = TestMolecules::BH3::ionicMinimal;
-    auto a = TestMolecules::BH3::ionicMinimalRotatedPermuted;
-
-    ParticleKit::create(a);
     General::settings.mode = General::Mode::chemical;
 
-    Radial::settings.nmax = 2;
-    Angular::settings.lmax = 2;
+    auto B = TestMolecules::BH3::ionicMinimal;
+    auto A = TestMolecules::BH3::ionicMinimalRotatedPermuted;
+    ParticleKit::create(A);
 
-    auto specA = MolecularSpectrum(a);
-    auto specB = MolecularSpectrum(b);
+    auto specA = MolecularSpectrum(A);
+    auto specB = MolecularSpectrum(B);
 
     auto environmentalSimilarities = BestMatch::SOAPSimilarity::calculateEnvironmentalSimilarityMatrix(specA,specB);
 
-    auto fromKitA = ParticleKit::fromKitPermutation(a.electrons());
-    auto fromKitB = ParticleKit::fromKitPermutation(b.electrons());
+    auto fromKitA = ParticleKit::fromKitPermutation(A.electrons());
+    auto fromKitB = ParticleKit::fromKitPermutation(B.electrons());
 
     auto environmentalSimilaritiesInLabSystem = fromKitA*environmentalSimilarities*fromKitB;
 
@@ -102,71 +103,53 @@ TEST_F(ABestMatchSimilarityTest, IndexReordering) {
 }
 
 TEST_F(ABestMatchSimilarityTest, FindDistanceConservingPermutations_Chemical) {
-    auto B = TestMolecules::H4::sixElectrons;
-    auto A = B;
-
-    ParticleKit::create(A);
     General::settings.mode = General::Mode::chemical;
 
-    Radial::settings.nmax = 2;
-    Angular::settings.lmax = 2;
+    auto B = TestMolecules::H4::fourAlpha;
+    auto A = B;
+    ParticleKit::create(A);
+
 
     auto specA = MolecularSpectrum(A);
     auto specB = MolecularSpectrum(B);
 
     auto results = BestMatch::SOAPSimilarity::getAllBestMatchResults(specA,specB, distanceTolerance, soapThreshold);
 
-    std::vector<Eigen::VectorXi> permsIndices(8,Eigen::VectorXi(B.electrons().numberOfEntities()));
+    std::vector<Eigen::VectorXi> permsIndices(4,Eigen::VectorXi(B.electrons().numberOfEntities()));
     permsIndices[0] << 0,1,2,3;
     permsIndices[1] << 0,1,3,2;
-    permsIndices[2] << 0,2,3,1;
-    permsIndices[3] << 0,3,2,1;
-    permsIndices[4] << 1,0,2,3;
-    permsIndices[5] << 1,0,3,2;
-    permsIndices[6] << 1,2,3,0;
-    permsIndices[7] << 1,3,2,0;
+    permsIndices[2] << 1,0,2,3;
+    permsIndices[3] << 1,0,3,2;
 
-    //ASSERT_EQ(results.size(), permsIndices.size());
-    std::cout << std::endl;
+    ASSERT_EQ(results.size(), permsIndices.size());
     for (auto& i : results) {
-        std::cout << i.metric << ", "<< i.permutation.indices().transpose() << std::endl;
-        //ASSERT_NEAR(i.metric, 1.0, eps);
-        //ASSERT_THAT(i.permutation.indices(), AnyOfArray(permsIndices));
+        ASSERT_NEAR(i.metric, 1.0, eps);
+        ASSERT_THAT(i.permutation.indices(), AnyOfArray(permsIndices));
     }
 }
 
 TEST_F(ABestMatchSimilarityTest, FindDistanceConservingPermutations_Chemical_Shaked) {
-    auto B = TestMolecules::H4::sixElectrons;
+    General::settings.mode = General::Mode::chemical;
+
+    auto B = TestMolecules::H4::fourAlpha;
     auto A = B;
+    ParticleKit::create(A);
 
     while(Metrics::positionalNormsVectorNorm<Eigen::Dynamic,2>(
             A.electrons().positionsVector(),
             B.electrons().positionsVector()) == 0.0)
         A.electrons().positionsVector().shake(distanceTolerance/2.0);
 
-    ParticleKit::create(A);
-    General::settings.mode = General::Mode::chemical;
-
-    Radial::settings.nmax = 3;
-    Radial::settings.sigmaAtom = 2.0;
-    Angular::settings.lmax = 3;
-    Cutoff::settings.radius = 4.0;
-    Cutoff::settings.width = 1.0;
-
     auto specA = MolecularSpectrum(A);
     auto specB = MolecularSpectrum(B);
 
     auto results = BestMatch::SOAPSimilarity::getAllBestMatchResults(specA,specB, distanceTolerance, shakeSoapThreshold);
 
-    std::vector<Eigen::VectorXi> permsIndices(8,Eigen::VectorXi(6));
-    permsIndices[0] << 0,1,2,3,4,5;
-    permsIndices[1] << 0,1,2,5,4,3;
-    permsIndices[2] << 0,1,3,5,4,2;
-    permsIndices[3] << 2,1,0,3,4,5;
-    permsIndices[4] << 2,1,3,5,4,0;
-    permsIndices[5] << 5,1,2,0,4,3;
-    permsIndices[6] << 5,1,3,0,4,2;
-    permsIndices[7] << 5,1,3,2,4,0;
+    std::vector<Eigen::VectorXi> permsIndices(4,Eigen::VectorXi(B.electrons().numberOfEntities()));
+    permsIndices[0] << 0,1,2,3;
+    permsIndices[1] << 0,1,3,2;
+    permsIndices[2] << 1,0,2,3;
+    permsIndices[3] << 1,0,3,2;
 
     ASSERT_EQ(results.size(), permsIndices.size());
     for (auto& i : results) {
@@ -176,31 +159,23 @@ TEST_F(ABestMatchSimilarityTest, FindDistanceConservingPermutations_Chemical_Sha
 }
 
 TEST_F(ABestMatchSimilarityTest, FindDistanceConservingPermutations_Alchemical) {
-    auto B = TestMolecules::H4::sixElectrons;
-    auto A = B;
-
-    ParticleKit::create(A);
     General::settings.mode = General::Mode::alchemical;
-    General::settings.pairSimilarities[{int(Spin::alpha),int(Spin::beta)}] = 1.0;
 
+    auto B = TestMolecules::H4::fourAlpha;
+    auto A = B;
+    ParticleKit::create(A);
 
-    Radial::settings.nmax = 2;
-    Angular::settings.lmax = 2;
 
     auto specA = MolecularSpectrum(A);
     auto specB = MolecularSpectrum(B);
 
     auto results = BestMatch::SOAPSimilarity::getAllBestMatchResults(specA,specB, distanceTolerance, soapThreshold);
 
-    std::vector<Eigen::VectorXi> permsIndices(8,Eigen::VectorXi(6));
-    permsIndices[0] << 0,1,2,3,4,5;
-    permsIndices[1] << 0,1,2,5,4,3;
-    permsIndices[2] << 0,1,3,5,4,2;
-    permsIndices[3] << 2,1,0,3,4,5;
-    permsIndices[4] << 2,1,3,5,4,0;
-    permsIndices[5] << 5,1,2,0,4,3;
-    permsIndices[6] << 5,1,3,0,4,2;
-    permsIndices[7] << 5,1,3,2,4,0;
+    std::vector<Eigen::VectorXi> permsIndices(4,Eigen::VectorXi(B.electrons().numberOfEntities()));
+    permsIndices[0] << 0,1,2,3;
+    permsIndices[1] << 0,1,3,2;
+    permsIndices[2] << 1,0,2,3;
+    permsIndices[3] << 1,0,3,2;
 
     ASSERT_EQ(results.size(), permsIndices.size());
     for (auto& i : results) {
@@ -210,8 +185,11 @@ TEST_F(ABestMatchSimilarityTest, FindDistanceConservingPermutations_Alchemical) 
 }
 
 TEST_F(ABestMatchSimilarityTest, FindDistanceConservingPermutations_Alchemical_Shaked) {
-    auto B = TestMolecules::H4::sixElectrons;
+    General::settings.mode = General::Mode::alchemical;
+
+    auto B = TestMolecules::H4::fourAlpha;
     auto A = B;
+    ParticleKit::create(A);
 
     while(Metrics::positionalNormsVectorNorm<Eigen::Dynamic,2>(
             A.electrons().positionsVector(),
@@ -226,31 +204,16 @@ TEST_F(ABestMatchSimilarityTest, FindDistanceConservingPermutations_Alchemical_S
     //std::shuffle(perm.indices().data(), perm.indices().data()+perm.indices().size(), rng);
     //A.electrons().permute(perm);
 
-    ParticleKit::create(A);
-    General::settings.mode = General::Mode::alchemical;
-    General::settings.pairSimilarities[{int(Spin::alpha),int(Spin::beta)}] = 1.0;
-
-    Radial::settings.nmax = 3;
-    Radial::settings.sigmaAtom = 2.0;
-    Angular::settings.lmax = 3;
-    Cutoff::settings.radius = 4.0;
-    Cutoff::settings.width = 1.0;
-    //Cutoff::settings.centerWeight = 0.1;
-
     auto specA = MolecularSpectrum(A);
     auto specB = MolecularSpectrum(B);
 
     auto results = BestMatch::SOAPSimilarity::getAllBestMatchResults(specA,specB, distanceTolerance, shakeSoapThreshold);
 
-    std::vector<Eigen::VectorXi> permsIndices(8,Eigen::VectorXi(6));
-    permsIndices[0] << 0,1,2,3,4,5;
-    permsIndices[1] << 0,1,2,5,4,3;
-    permsIndices[2] << 0,1,3,5,4,2;
-    permsIndices[3] << 2,1,0,3,4,5;
-    permsIndices[4] << 2,1,3,5,4,0;
-    permsIndices[5] << 5,1,2,0,4,3;
-    permsIndices[6] << 5,1,3,0,4,2;
-    permsIndices[7] << 5,1,3,2,4,0;
+    std::vector<Eigen::VectorXi> permsIndices(4,Eigen::VectorXi(B.electrons().numberOfEntities()));
+    permsIndices[0] << 0,1,2,3;
+    permsIndices[1] << 0,1,3,2;
+    permsIndices[2] << 1,0,2,3;
+    permsIndices[3] << 1,0,3,2;
 
     ASSERT_EQ(results.size(), permsIndices.size());
     for (auto& i : results) {
@@ -260,18 +223,11 @@ TEST_F(ABestMatchSimilarityTest, FindDistanceConservingPermutations_Alchemical_S
 }
 
 TEST_F(ABestMatchSimilarityTest, FindDistanceConservingPermutations_Chemical_BoraneIonic) {
+    General::settings.mode = General::Mode::chemical;
+
     auto B = TestMolecules::BH3::ionicMinimal;
     auto A = TestMolecules::BH3::ionicMinimalRotated;
     ParticleKit::create(A);
-    General::settings.mode = General::Mode::chemical;
-    General::settings.pairSimilarities[{int(Spin::alpha),int(Spin::beta)}] = 1.0;
-
-    Radial::settings.nmax = 3;
-    Radial::settings.sigmaAtom = 2.0;
-    Angular::settings.lmax = 3;
-    Cutoff::settings.radius = 4.0;
-    Cutoff::settings.width = 1.0;
-    //Cutoff::settings.centerWeight = 0.1;
 
     auto specA = MolecularSpectrum(A);
     auto specB = MolecularSpectrum(B);
@@ -290,32 +246,22 @@ TEST_F(ABestMatchSimilarityTest, FindDistanceConservingPermutations_Chemical_Bor
 }
 
 TEST_F(ABestMatchSimilarityTest, FindDistanceConservingPermutations_Chemical_EthaneIonic) {
+    General::settings.mode = General::Mode::chemical;
+
     auto B = TestMolecules::Ethane::doublyIonicMinimal;
     auto A = TestMolecules::Ethane::doublyIonicMinimalDoublyRotated;
     ParticleKit::create(A);
-    General::settings.mode = General::Mode::chemical;
-    General::settings.pairSimilarities[{int(Spin::alpha),int(Spin::beta)}] = 1.0;
-
-    Radial::settings.nmax = 3;
-    Radial::settings.sigmaAtom = 2.0;
-    Angular::settings.lmax = 3;
-    Cutoff::settings.radius = 4.0;
-    Cutoff::settings.width = 1.0;
-    //Cutoff::settings.centerWeight = 0.1;
 
     auto specA = MolecularSpectrum(A);
     auto specB = MolecularSpectrum(B);
 
     std::vector<Eigen::VectorXi> permsIndices(2, Eigen::VectorXi(B.electrons().numberOfEntities()));
     permsIndices[0] << 0,1, 2,3, 4,5, 6,7;
-  //permsIndices[2] << 0,1, 3,2, 4,5, 7,6;// 2,3+6,7 are at one side of ethane
     permsIndices[1] << 1,0, 3,2, 5,4, 7,6;
-  //permsIndices[3] << 1,0, 2,3, 5,4, 6,7;// 0,1+4,5 are at one side of ethane
     auto results = BestMatch::SOAPSimilarity::getAllBestMatchResults(specA,specB, distanceTolerance, soapThreshold);
 
     ASSERT_EQ(results.size(), permsIndices.size());
     for (auto& i : results) {
-        std::cout << i.metric << ", "<< i.permutation.indices().transpose() << std::endl;
         ASSERT_NEAR(i.metric, 1.0, eps);
         ASSERT_THAT(i.permutation.indices(), AnyOfArray(permsIndices));
     }

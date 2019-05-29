@@ -234,7 +234,7 @@ namespace TestMolecules {
                 {}
         };
 
-        const MolecularGeometry sixElectrons = {
+        const MolecularGeometry fourAlpha = {
                 nuclei.atoms(),
                 ElectronsVector({
                     {Spin::alpha, nuclei.atoms().positionsVector()[0]},
