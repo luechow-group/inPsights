@@ -85,30 +85,30 @@ NeighborhoodExpander::computeMolecularExpansions(MolecularGeometry molecule) {
            && "The molecule must be composable from the set of particles specified in the particle kit");
     MolecularCenters exp;
 
-    auto radiusZero = Radial::settings.radiusZero();
+    //auto radiusZero = Radial::settings.radiusZero();
 
     //TODO CHECK HERE FOR IDENTICAL CENTERS!
     for (unsigned k = 0; k < unsigned(molecule.numberOfEntities()); ++k) {
 
         // check if center was calculated already;
         // TODO: not possible, if type specific center value is chosen which currently isn't the case;
-        bool computedAlreadyQ = false;
-
-        EnumeratedType<int> existingEnumeratedType = {};
-        for (unsigned i = 0; i < k; ++i) {
-            if((molecule[i].position()-molecule[k].position()).norm() <= radiusZero){
-                existingEnumeratedType = molecule.findEnumeratedTypeByIndex(i);
-                computedAlreadyQ = true;
-                //std::cout << "found " << existingEnumeratedType << std::endl;
-                break;
-            }
-        }
+        //bool computedAlreadyQ = false;
+//
+        //EnumeratedType<int> existingEnumeratedType = {};
+        //for (unsigned i = 0; i < k; ++i) {
+        //    if((molecule[i].position()-molecule[k].position()).norm() <= radiusZero){
+        //        existingEnumeratedType = molecule.findEnumeratedTypeByIndex(i);
+        //        computedAlreadyQ = true;
+        //        //std::cout << "found " << existingEnumeratedType << std::endl;
+        //        break;
+        //    }
+        //}
         auto newEnumeratedType = molecule.findEnumeratedTypeByIndex(k);
-        if(computedAlreadyQ){
-            exp[newEnumeratedType] = exp[existingEnumeratedType];
-        } else {
+        //if(computedAlreadyQ){
+        //    exp[newEnumeratedType] = exp[existingEnumeratedType];
+        //} else {
             exp[newEnumeratedType] = computeParticularExpansions(Environment(molecule, molecule[k].position()));
-        }
+        //}
     }
 
     return exp;

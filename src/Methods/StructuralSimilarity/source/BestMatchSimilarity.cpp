@@ -96,16 +96,16 @@ std::vector<BestMatch::Result> BestMatch::SOAPSimilarity::getBestMatchResults(
     auto bestMatch
     = Hungarian<double>::findMatching(environmentalSimilarities, Matchtype::MAX);
 
+    std::cout<< std::endl << std::setprecision(5) << bestMatch.indices().transpose() << std::endl;
+
+    std::cout<< std::endl << std::setprecision(5) <<ParticleKit::toKitPermutation(permutee.molecule_.electrons()).indices().transpose() << std::endl;
+    std::cout<< std::endl << std::setprecision(5) <<ParticleKit::toKitPermutation(reference.molecule_.electrons()).indices().transpose() << std::endl;
+
     std::cout<< std::endl << std::setprecision(5) << bestMatch*environmentalSimilarities << std::endl;
 
     // obtain indices in the kit system
     auto dependentIndicesLists =
             BestMatch::SOAPSimilarity::getListOfDependentIndicesLists(environmentalSimilarities, bestMatch, soapThreshold);
-
-    //Todo refactor
-    Eigen::PermutationMatrix<Eigen::Dynamic> invPerm = bestMatch.inverse();
-    auto dependentIndicesInReference =
-            BestMatch::SOAPSimilarity::getListOfDependentIndicesLists(environmentalSimilarities, invPerm, soapThreshold);
 
     for(auto i : dependentIndicesLists) {
         for (auto j : i) {
@@ -367,7 +367,7 @@ BestMatch::SOAPSimilarity::getListOfDependentIndicesLists(
 
     auto numberOfEnvironments = environmentalSimilarities.rows();
 
-    auto permutedEnvironments = bestMatch*environmentalSimilarities;
+    auto permutedEnvironments = bestMatch*environmentalSimilarities;// apply environmental best match
 
     std::set<Eigen::Index> indicesToSkip;
     auto epsilon = sqrt(std::numeric_limits<double>::epsilon());
@@ -388,8 +388,9 @@ BestMatch::SOAPSimilarity::getListOfDependentIndicesLists(
             }
         }
     }
-
-
+    
+    // Achtung alles ist im kit system
+    
     // Beim variieren der ähnlichen umgebungen des permutee werden die zugehörigen umgebungen der reference benötigt.
     /*
      * Bsp: (0,2) im permutee muss nicht der umgebung (0,2) in der Reference entsprechen -> in diesem fall würden keine matches gefunden

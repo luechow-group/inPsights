@@ -43,6 +43,33 @@ TEST_F(ALocalSimilarityTest , SameEnvironmentsOnDifferentCenters) {
     ASSERT_NEAR(LocalSimilarity::kernel(e1, e2),1.0, eps);
 };
 
+TEST_F(ALocalSimilarityTest, TwoDifferentParticlesOnSameCenter) {
+    const auto mol = TestMolecules::threeElectrons::ionic;
+    General::settings.mode = General::Mode::chemical;
+    ParticleKit::create(mol);
+    Radial::settings.nmax = 2;
+    Angular::settings.lmax = 2;
+    Environment e1(mol,mol.electrons()[1].position());
+    Environment e2(mol,mol.electrons()[2].position());
+
+    NeighborhoodExpander expander;
+    //auto molExp = expander.computeMolecularExpansions(mol);
+    auto exp1 = expander.computeParticularExpansions(e1);
+    auto exp2 = expander.computeParticularExpansions(e2);
+
+    // the environments should not be identical
+    std::cout <<std::setprecision(2) << std::endl;
+    // exp w.r.t alpha=-2
+    std::cout << exp1[-2].asEigenVector().transpose() << std::endl;
+    std::cout << exp2[-2].asEigenVector().transpose() << std::endl;
+    std::cout << std::endl;
+    // exp w.r.t beta=-1
+    std::cout << exp1[-1].asEigenVector().transpose() << std::endl;
+    std::cout << exp2[-1].asEigenVector().transpose() << std::endl;
+
+    ASSERT_LT(LocalSimilarity::kernel(e1, e2),1.0-eps);
+};
+
 TEST_F(ALocalSimilarityTest , Cross) {
     ParticleKit::create(molecule);
     General::settings.mode = General::Mode::typeAgnostic;
