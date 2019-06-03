@@ -17,8 +17,7 @@ double Cutoff::getWeight(double distanceFromExpansionCenter) {
     const auto cutoffWidth = Cutoff::settings.width();
     const auto cutoffRadius = Cutoff::settings.radius();
 
-    //TODO delete centerWeight and use: 'if (0 <= distanceFromExpansionCenter...' instead?
-    if (0 < distanceFromExpansionCenter && distanceFromExpansionCenter <= innerPlateauRadius)
+    if (distanceFromExpansionCenter <= innerPlateauRadius)
         return 1.;
     else if (innerPlateauRadius < distanceFromExpansionCenter && distanceFromExpansionCenter <= cutoffRadius)
         return 0.5*( 1 + cos( M_PI*(distanceFromExpansionCenter-innerPlateauRadius)/cutoffWidth) );
