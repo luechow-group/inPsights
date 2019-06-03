@@ -167,10 +167,9 @@ Eigen::MatrixXd RadialBasis::computeCoefficients(double centerToNeighborDistance
     const auto lmax = Angular::settings.lmax();
     const auto nmax = Radial::settings.nmax();
 
-    //TODO just resize?
     Eigen::MatrixXd radialCoeffsGnl = Eigen::MatrixXd::Zero(nmax,lmax+1);
 
-    if (neighborSigma < Radial::settings.radiusZero()) {
+    if (neighborSigma < Radial::settings.sigmaZeroThreshold()) {
 
         for (unsigned n = 0; n < nmax; ++n) {
             double gn_at_r = basis_[n].value(centerToNeighborDistance);

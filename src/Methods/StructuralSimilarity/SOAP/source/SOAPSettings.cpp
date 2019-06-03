@@ -123,6 +123,7 @@ namespace Settings {
 
             unsignedProperty::decode(node[className], nmax);
             doubleProperty::decode(node[className], sigmaAtom);
+            doubleProperty::decode(node[className], sigmaZeroThreshold);
             unsignedProperty::decode(node[className], integrationSteps);
             doubleProperty::decode(node[className], desiredAbsoluteError);
             doubleProperty::decode(node[className], desiredRelativeError);
@@ -132,6 +133,7 @@ namespace Settings {
             node[className][basisType.name()] = ::SOAP::Radial::toString(::SOAP::Radial::BasisType(basisType()));
             node[className][nmax.name()] = nmax();
             node[className][sigmaAtom.name()] = sigmaAtom();
+            node[className][sigmaZeroThreshold.name()] = sigmaZeroThreshold();
             node[className][integrationSteps.name()] = integrationSteps();
             node[className][desiredAbsoluteError.name()] = desiredAbsoluteError();
             node[className][desiredRelativeError.name()] = desiredRelativeError();

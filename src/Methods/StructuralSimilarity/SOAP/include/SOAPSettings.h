@@ -68,7 +68,8 @@ namespace Settings{
                     {::SOAP::Radial::BasisType::equispaced, VARNAME(mode)};
 
             Property<unsigned> nmax = {5, VARNAME(nmax)};
-            Property<double> sigmaAtom = {0.5 * ConversionFactors::angstrom2bohr, VARNAME(sigmaAtom)};
+            Property<double> sigmaAtom = {1.0, VARNAME(sigmaAtom)};
+            Property<double> sigmaZeroThreshold = {1e-10, VARNAME(sigmaZeroThreshold)};
             Property<unsigned> integrationSteps = {100, VARNAME(integrationSteps)};
             Property<double> desiredAbsoluteError = {0.0, VARNAME(desiredAbsoluteError)};
             Property<double> desiredRelativeError = {1e-6, VARNAME(desiredRelativeError)};
