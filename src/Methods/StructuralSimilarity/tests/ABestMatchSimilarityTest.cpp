@@ -9,6 +9,7 @@
 #include <limits>
 #include <random>
 #include <Metrics.h>
+#include <Hungarian.h>
 
 using namespace testing;
 using namespace SOAP;
@@ -72,11 +73,20 @@ TEST_F(ABestMatchSimilarityTest, ListOfDependentIndices) {
     1,0,1,0,\
     0,1,0,1;
 
-    auto result = BestMatch::SOAPSimilarity::getListOfDependentIndicesLists(mat,1.0);
+    auto bestMatch = Hungarian<double>::findMatching(mat, Matchtype::MAX);
+
+    Eigen::PermutationMatrix<Eigen::Dynamic> expectedPerm(mat.rows());
+    expectedPerm.setIdentity();
+    ASSERT_TRUE(bestMatch.indices().isApprox(expectedPerm.indices()));
+
+    auto    result = BestMatch::SOAPSimilarity::getListOfDependentIndicesLists(mat,bestMatch,1.0);
 
     ASSERT_EQ(result.size(),2);
-    ASSERT_THAT(result[0], ElementsAre(0,2));
-    ASSERT_THAT(result[1], ElementsAre(1,3));
+    ASSERT_EQ(result[0][0].first, 0);
+    ASSERT_EQ(result[0][1].first, 2);
+
+    ASSERT_EQ(result[1][0].first, 1);
+    ASSERT_EQ(result[1][1].first, 3);
 }
 
 TEST_F(ABestMatchSimilarityTest, ListOfDependentIndices2) {
@@ -87,20 +97,75 @@ TEST_F(ABestMatchSimilarityTest, ListOfDependentIndices2) {
     0,0,1,1,\
     0,0,1,1;
 
-    auto result = BestMatch::SOAPSimilarity::getListOfDependentIndicesLists(mat,1.0);
+    auto bestMatch = Hungarian<double>::findMatching(mat, Matchtype::MAX);
+
+    Eigen::PermutationMatrix<Eigen::Dynamic> expectedPerm(mat.rows());
+    expectedPerm.setIdentity();
+    ASSERT_TRUE(bestMatch.indices().isApprox(expectedPerm.indices()));
+
+    auto result = BestMatch::SOAPSimilarity::getListOfDependentIndicesLists(mat,bestMatch,1.0);
 
     ASSERT_EQ(result.size(),2);
-    ASSERT_THAT(result[0], ElementsAre(0,1));
-    ASSERT_THAT(result[1], ElementsAre(2,3));
+    ASSERT_EQ(result[0][0].first, 0);
+    ASSERT_EQ(result[0][1].first, 1);
+
+    ASSERT_EQ(result[1][0].first, 2);
+    ASSERT_EQ(result[1][1].first, 3);
 }
 
+TEST_F(ABestMatchSimilarityTest, ListOfDependentIndices3) {
+    Eigen::MatrixXd mat(6,6);
+    mat <<
+    1,1,0,0,0,0,\
+    0,0,1,0,0,0,\
+    1,1,0,0,0,0,\
+    0,0,0,1,1,1,\
+    0,0,0,1,1,1,\
+    0,0,0,1,1,1;
+
+    auto bestMatch = Hungarian<double>::findMatching(mat, Matchtype::MAX);
+
+    Eigen::VectorXi expectedPermIndices(mat.rows());
+    expectedPermIndices << 0,2,1,3,4,5;
+    Eigen::PermutationMatrix<Eigen::Dynamic> expectedPerm(expectedPermIndices);
+    ASSERT_TRUE(bestMatch.indices().isApprox(expectedPerm.indices()));
+
+    auto result = BestMatch::SOAPSimilarity::getListOfDependentIndicesLists(mat,bestMatch,1.0);
+
+    ASSERT_EQ(result.size(),3);
+
+    ASSERT_EQ(result[0].size(),2);
+    ASSERT_EQ(result[0][0].first, 0);
+    ASSERT_EQ(result[0][0].second,0);
+    ASSERT_EQ(result[0][1].first, 2);
+    ASSERT_EQ(result[0][1].second,1);
+
+    ASSERT_EQ(result[1].size(),1);
+    ASSERT_EQ(result[1][0].first, 1);
+    ASSERT_EQ(result[1][0].second,2);
+
+    ASSERT_EQ(result[2].size(),3);
+    ASSERT_EQ(result[2][0].first, 3);
+    ASSERT_EQ(result[2][0].second,3);
+    ASSERT_EQ(result[2][1].first, 4);
+    ASSERT_EQ(result[2][1].second,4);
+    ASSERT_EQ(result[2][2].first, 5);
+    ASSERT_EQ(result[2][2].second,5);
+}
+
+/*
 TEST_F(ABestMatchSimilarityTest, IndexReordering) {
-    std::deque<std::vector<std::deque<Eigen::Index>>> test = {{{0,1,4,2}},{{7,8}},{{5,3}}};
+    std::deque<std::vector<std::deque<std::pair<Eigen::Index,Eigen::Index>>>> test =
+            {
+            {{{{0,0},{1,1},{4,4},{2,2}}}},
+            {{{7,7},{8,8}}},
+            {{{5,5},{3,3}}}
+            };
 
     auto result = BestMatch::SOAPSimilarity::obtainIndexReorderingPermutationOverAllBlocks(test);
 
     ASSERT_THAT(result, ElementsAre(0,1,2,6,3,7,4,5));
-}
+}*/
 
 TEST_F(ABestMatchSimilarityTest, FindDistanceConservingPermutations_Chemical) {
     General::settings.mode = General::Mode::chemical;
@@ -292,7 +357,7 @@ TEST_F(ABestMatchSimilarityTest, EthaneIonic) {
     auto specA = MolecularSpectrum(A);
     auto specB = MolecularSpectrum(B);
 
-    std::vector<Eigen::VectorXi> permsIndices(6, Eigen::VectorXi(B.electrons().numberOfEntities()));
+    std::vector<Eigen::VectorXi> permsIndices(4, Eigen::VectorXi(B.electrons().numberOfEntities()));
     permsIndices[0] << 0,1, 2,3;
     // not found permsIndices[0] << 0,1, 3,2;
     permsIndices[1] << 1,0, 3,2;
@@ -311,6 +376,53 @@ TEST_F(ABestMatchSimilarityTest, EthaneIonic) {
         ASSERT_THAT(i.permutation.indices(), AnyOfArray(permsIndices));
     }
 }
+
+TEST_F(ABestMatchSimilarityTest, MyTest) {
+    General::settings.mode = General::Mode::chemical;
+
+    using namespace TestMolecules;
+    MolecularGeometry B = {
+            Ethane::nuclei.atoms(),
+            ElectronsVector({
+                {Spin::alpha /*12*/,inbetween(Ethane::nuclei.atoms(),{0,2},0.25)},
+                {Spin::alpha /*13*/,inbetween(Ethane::nuclei.atoms(),{0,3},0.25)},
+                {Spin::alpha /*14*/,inbetween(Ethane::nuclei.atoms(),{0,4},0.25)},
+                {Spin::beta/*15*/,inbetween(Ethane::nuclei.atoms(),{1,5},0.25)},
+                {Spin::beta/*16*/,inbetween(Ethane::nuclei.atoms(),{1,6},0.25)},
+                {Spin::beta/*17*/,Ethane::nuclei.atoms().positionsVector()[7]}
+                            })};
+    MolecularGeometry A = {
+            Ethane::nuclei.atoms(),
+            ElectronsVector({
+                 {Spin::alpha /*12*/,inbetween(Ethane::nuclei.atoms(),{0,2},0.25)},
+                 {Spin::alpha /*13*/,inbetween(Ethane::nuclei.atoms(),{0,3},0.25)},
+                 {Spin::alpha /*14*/,inbetween(Ethane::nuclei.atoms(),{0,4},0.25)},
+                 {Spin::beta/*15*/,inbetween(Ethane::nuclei.atoms(),{1,5},0.25)},
+                 {Spin::beta/*16*/,Ethane::nuclei.atoms().positionsVector()[6]},
+                 {Spin::beta/*17*/,inbetween(Ethane::nuclei.atoms(),{1,7},0.25)}
+            })};
+
+
+    // expected:
+    // 0,2,1,4,6,5
+    // 1,2,0,5,6,4 -?
+
+    ParticleKit::create(A);
+    auto permutee = MolecularSpectrum(A);
+    auto reference = MolecularSpectrum(B);
+
+    ParticleKit::create(A);
+
+    auto results = BestMatch::SOAPSimilarity::getBestMatchResults(
+            permutee, reference, distanceTolerance, soapThreshold);
+
+
+
+}
+
+
+#include <MoleculeWidget.h>
+#include <QApplication>
 TEST_F(ABestMatchSimilarityTest, EthaneIonicTest) {
     General::settings.mode = General::Mode::chemical;
 
@@ -318,21 +430,21 @@ TEST_F(ABestMatchSimilarityTest, EthaneIonicTest) {
     MolecularGeometry ionicB = {
             Ethane::nuclei.atoms(),
             ElectronsVector({
-            // C Cores
-            {Spin::alpha/* 0*/,Ethane::nuclei.atoms().positionsVector()[0]},
-            {Spin::beta /* 1*/,Ethane::nuclei.atoms().positionsVector()[0]},
-            {Spin::alpha/* 2*/,Ethane::nuclei.atoms().positionsVector()[1]},
-            {Spin::beta /* 3*/,Ethane::nuclei.atoms().positionsVector()[1]},
-            // H Cores
-            {Spin::alpha/* 4*/,Ethane::nuclei.atoms().positionsVector()[2]},
-            {Spin::alpha/* 5*/,Ethane::nuclei.atoms().positionsVector()[3]},
-            {Spin::alpha/* 6*/,Ethane::nuclei.atoms().positionsVector()[4]},
-            {Spin::beta /* 7*/,Ethane::nuclei.atoms().positionsVector()[5]},
-            {Spin::beta /* 8*/,Ethane::nuclei.atoms().positionsVector()[6]},
-            {Spin::beta /* 9*/,Ethane::nuclei.atoms().positionsVector()[7]},
+            //// C Cores
+            //{Spin::alpha/* 0*/,Ethane::nuclei.atoms().positionsVector()[0]},
+            //{Spin::beta /* 1*/,Ethane::nuclei.atoms().positionsVector()[0]},
+            //{Spin::alpha/* 2*/,Ethane::nuclei.atoms().positionsVector()[1]},
+            //{Spin::beta /* 3*/,Ethane::nuclei.atoms().positionsVector()[1]},
+            //// H Cores
+            //{Spin::alpha/* 4*/,Ethane::nuclei.atoms().positionsVector()[2]},
+            //{Spin::alpha/* 5*/,Ethane::nuclei.atoms().positionsVector()[3]},
+            //{Spin::alpha/* 6*/,Ethane::nuclei.atoms().positionsVector()[4]},
+            //{Spin::beta /* 7*/,Ethane::nuclei.atoms().positionsVector()[5]},
+            //{Spin::beta /* 8*/,Ethane::nuclei.atoms().positionsVector()[6]},
+            //{Spin::beta /* 9*/,Ethane::nuclei.atoms().positionsVector()[7]},
             // C-C Bond
-            {Spin::alpha/*10*/,inbetween(Ethane::nuclei.atoms(),{0,1},0.25)},
-            {Spin::beta /*11*/,inbetween(Ethane::nuclei.atoms(),{1,0},0.25)},
+            //{Spin::alpha/*10*/,inbetween(Ethane::nuclei.atoms(),{0,1},0.25)},
+            //{Spin::beta /*11*/,inbetween(Ethane::nuclei.atoms(),{1,0},0.25)},
             // C-H Bonds
             {Spin::beta /*12*/,inbetween(Ethane::nuclei.atoms(),{0,2},0.25)},
             {Spin::beta /*13*/,inbetween(Ethane::nuclei.atoms(),{0,3},0.25)},
@@ -344,21 +456,21 @@ TEST_F(ABestMatchSimilarityTest, EthaneIonicTest) {
     MolecularGeometry ionicA = {
             Ethane::nuclei.atoms(),
             ElectronsVector({
-            // C Cores
-            {Spin::alpha/* 0*/,Ethane::nuclei.atoms().positionsVector()[0]},
-            {Spin::beta /* 1*/,Ethane::nuclei.atoms().positionsVector()[0]},
-            {Spin::alpha/* 2*/,Ethane::nuclei.atoms().positionsVector()[1]},
-            {Spin::beta /* 3*/,Ethane::nuclei.atoms().positionsVector()[1]},
-            // H Cores
-            {Spin::alpha/* 4*/,Ethane::nuclei.atoms().positionsVector()[2]},
-            {Spin::alpha/* 5*/,Ethane::nuclei.atoms().positionsVector()[3]},
-            {Spin::alpha/* 6*/,Ethane::nuclei.atoms().positionsVector()[4]},
-            {Spin::beta /* 7*/,Ethane::nuclei.atoms().positionsVector()[5]},
-            {Spin::beta /* 8*/,Ethane::nuclei.atoms().positionsVector()[6]},
-            {Spin::beta /* 9*/,Ethane::nuclei.atoms().positionsVector()[7]},
+            //// C Cores
+            //{Spin::alpha/* 0*/,Ethane::nuclei.atoms().positionsVector()[0]},
+            //{Spin::beta /* 1*/,Ethane::nuclei.atoms().positionsVector()[0]},
+            //{Spin::alpha/* 2*/,Ethane::nuclei.atoms().positionsVector()[1]},
+            //{Spin::beta /* 3*/,Ethane::nuclei.atoms().positionsVector()[1]},
+            //// H Cores
+            //{Spin::alpha/* 4*/,Ethane::nuclei.atoms().positionsVector()[2]},
+            //{Spin::alpha/* 5*/,Ethane::nuclei.atoms().positionsVector()[3]},
+            //{Spin::alpha/* 6*/,Ethane::nuclei.atoms().positionsVector()[4]},
+            //{Spin::beta /* 7*/,Ethane::nuclei.atoms().positionsVector()[5]},
+            //{Spin::beta /* 8*/,Ethane::nuclei.atoms().positionsVector()[6]},
+            //{Spin::beta /* 9*/,Ethane::nuclei.atoms().positionsVector()[7]},
             // C-C Bond
-            {Spin::alpha/*10*/,inbetween(Ethane::nuclei.atoms(),{0,1},0.25)},
-            {Spin::beta /*11*/,inbetween(Ethane::nuclei.atoms(),{1,0},0.25)},
+            //{Spin::alpha/*10*/,inbetween(Ethane::nuclei.atoms(),{0,1},0.25)},
+            //{Spin::beta /*11*/,inbetween(Ethane::nuclei.atoms(),{1,0},0.25)},
             // C-H Bonds
             {Spin::beta /*12*/,inbetween(Ethane::nuclei.atoms(),{0,2},0.25)},
             {Spin::beta /*13*/,inbetween(Ethane::nuclei.atoms(),{0,3},0.25)},
@@ -381,11 +493,25 @@ TEST_F(ABestMatchSimilarityTest, EthaneIonicTest) {
         //ASSERT_THAT(i.permutation.indices(), AnyOfArray(permsIndices));
     }
 
-    Eigen::PermutationMatrix<Eigen::Dynamic> expected(ionicA.electrons().numberOfEntities());
-    expected << 0,1,2,3, 4,6,5, 7,9,8, 10,11, 12,14,13, 15,17,16;
-    auto resultsa = BestMatch::SOAPSimilarity::compare(specA, specB, distanceTolerance, soapThreshold);
-    ASSERT_NEAR(resultsa.metric, 1.0, eps);
+    /*int argc;
+    char ** argv;
+    QApplication app(argc, argv);
+    setlocale(LC_NUMERIC,"C");
+
+    auto moleculeWidget = new MoleculeWidget();
+    moleculeWidget->setSharedAtomsVector(ionicA.atoms());
+    moleculeWidget->addElectronsVector(ionicB.electrons());
+    moleculeWidget->drawAtoms();
+    moleculeWidget->drawBonds();
+    moleculeWidget->drawSpinConnections();
+    moleculeWidget->resize(1024,768);
+    moleculeWidget->show();
+    app.exec();*/
+
+    //Eigen::VectorXi indices(ionicA.electrons().numberOfEntities());
+    //indices << 0,1,2,3, 4,6,5, 7,9,8, 10,11, 12,14,13, 15,17,16;
+    //Eigen::PermutationMatrix<Eigen::Dynamic> expected(indices);
+
+    //auto resultsa = BestMatch::SOAPSimilarity::compare(specA, specB, distanceTolerance, soapThreshold);
+    //ASSERT_NEAR(resultsa.metric, 1.0, eps);
 }
-/*
- * TODO WHY NOT ALL PERMS ARE FOUND?
- */

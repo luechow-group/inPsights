@@ -30,25 +30,28 @@ namespace BestMatch {
                 const SOAP::MolecularSpectrum &reference,
                 double similarityRadius, double soapThreshold);
 
-        std::vector<std::deque<Eigen::Index>> getListOfDependentIndicesLists(
-                const Eigen::MatrixXd &environmentalSimilarities, double soapThreshold);
+        std::vector<std::deque<std::pair<Eigen::Index,Eigen::Index>>> getListOfDependentIndicesLists(
+                const Eigen::MatrixXd &environmentalSimilarities,
+                const Eigen::PermutationMatrix<Eigen::Dynamic> &bestMatch,
+                double soapThreshold);
+
 
         void varySimilarEnvironments(
                 const MolecularGeometry &permutee,
                 const MolecularGeometry &reference,
-                std::deque<Eigen::Index> dependentIndices,
-                std::deque<Eigen::Index> surviving,
-                std::vector<std::deque<Eigen::Index>> &allPerms,
+                std::deque<std::pair<Eigen::Index,Eigen::Index>> remaining,
+                std::deque<std::pair<Eigen::Index,Eigen::Index>> surviving,
+                std::vector<std::deque<std::pair<Eigen::Index,Eigen::Index>>> &allPerms,
                 double similarityRadius);
 
-        std::vector<std::deque<Eigen::Index>> combineBlocks(
+        std::vector<std::deque<std::pair<Eigen::Index,Eigen::Index>>> combineBlocks(
                 const MolecularGeometry &permutee,
                 const MolecularGeometry &reference,
-                const std::deque<std::vector<std::deque<Eigen::Index>>> &distancePreservingEnvironmentCombinationsOfRemainingBlocks,
+                const std::deque<std::vector<std::deque<std::pair<Eigen::Index,Eigen::Index>>>> &distancePreservingEnvironmentCombinationsOfRemainingBlocks,
                 double similarityRadius);
 
         std::vector<Eigen::Index> obtainIndexReorderingPermutationOverAllBlocks(
-                const std::deque<std::vector<std::deque<Eigen::Index>>> &distancePreservingEnvironmentCombinationsOfRemainingBlocks);
+                const std::deque<std::vector<std::deque<std::pair<Eigen::Index,Eigen::Index>>>> &distancePreservingEnvironmentCombinationsOfRemainingBlocks);
 
         Eigen::MatrixXd indicesBlockCovariance(
                 const ElectronsVector &electronsVector,
