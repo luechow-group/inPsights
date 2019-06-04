@@ -131,6 +131,17 @@ std::vector<BestMatch::Result> BestMatch::SOAPSimilarity::getBestMatchResults(
         distancePreservingEnvironmentCombinationsOfAllBlocks.emplace_back(distancePreservingEnvironmentCombinations);
     }
 
+
+    for(auto i : distancePreservingEnvironmentCombinationsOfAllBlocks) {
+        for (auto j : i) {
+            for (auto k : j) {
+                std::cout << "(" << k.first << "," << k.second << ") ";
+            }
+            std::cout << std::endl;
+        }
+        std::cout << std::endl;
+    }
+
     auto survivingDistancePreservingEnvironmentCombinations = combineBlocks(
             permutee.molecule_, reference.molecule_,
             distancePreservingEnvironmentCombinationsOfAllBlocks,
@@ -155,6 +166,12 @@ std::vector<BestMatch::Result> BestMatch::SOAPSimilarity::getBestMatchResults(
             indices[i] = copy[indexReorderingPermutation[i]];
         }
     }
+    std::wcerr<< "index reordering :";
+    for (std::size_t i = 0; i < indexReorderingPermutation.size(); ++i) {
+        std::cout << indexReorderingPermutation[i] << " ";
+    }
+    std::cout << std::endl;
+
 
     std::vector<BestMatch::Result> results;
 
@@ -246,13 +263,20 @@ std::vector<std::deque<std::pair<Eigen::Index,Eigen::Index>>> BestMatch::SOAPSim
                     referenceIndices.emplace_back(i.second);
                 }
                 std::sort(referenceIndices.begin(),referenceIndices.end()); // necessary?
+                std::cout << " permutee: ";
+                for(auto i : permuteeIndices)
+                    std::cout << i << " ";
+                std::cout << std::endl << "reference: ";
+                for(auto i : referenceIndices)
+                    std::cout << i << " ";
+                std::cout << std::endl;
 
                 auto covA = indicesBlockCovariance(permutee.electrons(), permuteeIndices);
                 auto covB = indicesBlockCovariance(reference.electrons(), referenceIndices);
 
                 // The maximal distance matrix differences should be smaller than the similarity radius.
                 auto conservingQ = (covB - covA).array().abs().maxCoeff() <= similarityRadius;
-
+                std::cout << (covB - covA).array().abs() << std::endl;
                 if (conservingQ) {
                     auto newSurvivor = *potentialSurvivorIt;
                     newSurvivor.insert(newSurvivor.end(),
@@ -317,23 +341,23 @@ void BestMatch::SOAPSimilarity::varySimilarEnvironments(
 
         std::cout <<std::endl << "surviving ";
         for(auto i : surviving)
-            std::cout << i.first<<" ";
+            std::cout << "(" << i.first << "," << i.second << ") ";
         std::cout <<std::endl << "remaining ";
 
         for(auto i : remaining)
-            std::cout << i.first<<" ";
+            std::cout << "(" << i.first << "," << i.second << ") ";
         std::cout <<std::endl;
 
         potentialSurvivor.emplace_back(*it);
         std::cout << "potential survivor ";
         for(auto i : potentialSurvivor)
-            std::cout << i.first<<" ";
+            std::cout << "(" << i.first << "," << i.second << ") ";
         std::cout <<std::endl;
 
         //TODO create indices list
         // permutee
 
-        std::deque<Eigen::Index> permuteeIndices, referenceIndices;//(potentialSurvivor.size());
+        std::deque<Eigen::Index> permuteeIndices, referenceIndices;
         for(auto i : potentialSurvivor) {
             permuteeIndices.emplace_back(i.first);
             referenceIndices.emplace_back(i.second);
@@ -341,7 +365,9 @@ void BestMatch::SOAPSimilarity::varySimilarEnvironments(
         //TODO is sorting necessary?
         std::sort(referenceIndices.begin(),referenceIndices.end());
 
+        std::cout << "permutee " << std::endl;
         auto covA = indicesBlockCovariance(permutee.electrons(), permuteeIndices);
+        std::cout << "reference" << std::endl;
         auto covB = indicesBlockCovariance(reference.electrons(), referenceIndices);
 
         std::cout << (covB-covA).array().abs()<<std::endl;
@@ -382,7 +408,6 @@ BestMatch::SOAPSimilarity::getListOfDependentIndicesLists(
             for (Eigen::Index j = i + 1; j < numberOfEnvironments; ++j) {
                 if (permutedEnvironments(i, j) >= soapThreshold - epsilon) {
                     indicesToSkip.emplace(j);
-                    //auto pair_j = std::make_pair(0,j);
                     listOfDependentIndicesLists.back().emplace_back(std::make_pair(0,j));
                 }
             }
@@ -413,16 +438,29 @@ BestMatch::SOAPSimilarity::getListOfDependentIndicesLists(
 
 Eigen::MatrixXd BestMatch::SOAPSimilarity::indicesBlockCovariance(const ElectronsVector &electronsVector,
                                                                   std::deque<Eigen::Index> indices){
-    Eigen::MatrixXd distDiffBlock(indices.size(), indices.size());
+    Eigen::MatrixXd positionalDistances(indices.size(), indices.size());
 
     const auto& positions = electronsVector.positionsVector();
 
-    // the toKit permutation is needed to find the indices in the Kit system
-    auto permIndices = ParticleKit::toKitPermutation(electronsVector).indices(); //Store it once
-    //std::cout << permIndices.transpose() << std::endl;
+    // the fromKit permutation is needed to find the indices in the Kit system
+    auto fromKit = ParticleKit::fromKitPermutation(electronsVector).indices();
+
+    assert(fromKit.size() >= indices.size());
+
+    std::cout << "  kit indices: ";
+    for (Eigen::size_t i = 0; i < indices.size(); ++i) {
+        std::cout << indices[i] << " ";
+    }
+    std::cout << std::endl;
+    std::cout << "  lab indices: ";
+    for (Eigen::size_t i = 0; i < indices.size(); ++i) {
+        std::cout << fromKit[indices[i]]<< " ";
+    }
+    std::cout << std::endl;
+
     for (Eigen::size_t i = 0; i < indices.size(); ++i)
         for (Eigen::size_t j = 0; j < indices.size(); ++j)
-            distDiffBlock(i,j) = (positions[permIndices[indices[j]]] - positions[permIndices[indices[i]]]).norm();
+            positionalDistances(i, j) = (positions[fromKit[indices[j]]] - positions[fromKit[indices[i]]]).norm();
 
-    return distDiffBlock;
+    return positionalDistances;
 };
