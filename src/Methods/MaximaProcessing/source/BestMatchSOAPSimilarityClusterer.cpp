@@ -53,7 +53,8 @@ void BestMatchSOAPSimilarityClusterer::cluster(Group& group){
     group.sortAll(); // sort, to make sure that the most probable structures are the representatives
 
     // Calculate spectra
-    spdlog::info("Calculating {} spectra...", group.size());
+    spdlog::info("Calculating {} spectra in {} mode...",
+            group.size(),SOAP::General::toString(SOAP::General::settings.mode.get()));
 #pragma omp parallel for default(none) shared(atoms_, group)
     for (auto it = group.begin(); it < group.end(); ++it) {
 
