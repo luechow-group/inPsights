@@ -44,10 +44,10 @@ namespace SOAP {
             auto eps = std::numeric_limits<double>::epsilon();
             if (selfSimilarity1 <= eps || selfSimilarity2 <= eps) {
                 if (selfSimilarity1 <= eps && selfSimilarity2 <= eps) {
-                    std::wcerr << "\nLocalSelfSimilarity: Warning: The analyzed structure contains two isolated environments.\n";
+                    spdlog::debug("LocalSelfSimilarity: Warning: The analyzed structure contains two isolated environments.");
                     return 1;
                 } else {
-                    std::wcerr << "\nLocalSelfSimilarity: Warning: The analyzed structure contains one isolated environments.\n";
+                    spdlog::debug("LocalSelfSimilarity: Warning: The analyzed structure contains one isolated environments.");
                     return 0;
                 }
             }

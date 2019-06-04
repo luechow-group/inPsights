@@ -14,21 +14,25 @@ SphericalCoordinates::SphericalCoordinates(const Eigen::Vector3d& vec)
     BoostSphericalHarmonics::toSphericalCoordsStandardizedWith2PiShift(vec, r, theta, phi);
 }
 
-Environment::Environment(MolecularGeometry molecularGeometry, Eigen::Vector3d center)
+Environment::Environment(MolecularGeometry molecularGeometry, EnumeratedType<int> enumeratedType)
 : molecularGeometry_(std::move(molecularGeometry)),
-center_(std::move(center)){}
+  enumeratedType_(std::move(enumeratedType)){}
 
 std::vector<std::pair<Particle<int>,SphericalCoordinates>> Environment::selectParticles(int expansionTypeId) const {
+    auto [foundQ, idx] = molecularGeometry_.findIndexByEnumeratedType(enumeratedType_);
+    assert(foundQ && "The enumerated type must exist.");
+
+    auto center = molecularGeometry_[idx].position();
 
     auto mode = General::settings.mode();
     std::vector<std::pair<Particle<int>,SphericalCoordinates>> selectedParticles;
 
-    for (unsigned j = 0; j < unsigned(molecularGeometry_.numberOfEntities()); ++j) {
-        const auto &neighbor = molecularGeometry_[j];
+    for (unsigned i = 0; i < unsigned(molecularGeometry_.numberOfEntities()); ++i) {
+        const auto &neighbor = molecularGeometry_[i];
 
-        if( neighbor.type() == expansionTypeId || mode == General::Mode::typeAgnostic) {
+        if( i != idx && (neighbor.type() == expansionTypeId || mode == General::Mode::typeAgnostic) ) {
 
-            SphericalCoordinates sphericalCoords(neighbor.position()-center_);
+            SphericalCoordinates sphericalCoords(neighbor.position()-center);
 
             if (Cutoff::withinCutoffRadiusQ(sphericalCoords.r)) {
                 selectedParticles.emplace_back<std::pair<Particle<int>,SphericalCoordinates>>(
