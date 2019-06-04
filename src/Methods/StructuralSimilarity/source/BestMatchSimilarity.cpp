@@ -91,28 +91,14 @@ std::vector<BestMatch::Result> BestMatch::SOAPSimilarity::getBestMatchResults(
            && "The number of beta electrons must match.");
 
     Eigen::MatrixXd environmentalSimilarities = calculateEnvironmentalSimilarityMatrix(permutee, reference);
-    std::cout<< std::endl << std::setprecision(5) << environmentalSimilarities << std::endl;
+    //std::cout<< std::endl << std::setprecision(5) << environmentalSimilarities << std::endl;
 
     auto bestMatch
     = Hungarian<double>::findMatching(environmentalSimilarities, Matchtype::MAX);
 
-    std::cout<< std::endl << std::setprecision(5) << bestMatch.indices().transpose() << std::endl;
-
-    std::cout<< std::endl << std::setprecision(5) <<ParticleKit::toKitPermutation(permutee.molecule_.electrons()).indices().transpose() << std::endl;
-    std::cout<< std::endl << std::setprecision(5) <<ParticleKit::toKitPermutation(reference.molecule_.electrons()).indices().transpose() << std::endl;
-
-    std::cout<< std::endl << std::setprecision(5) << bestMatch*environmentalSimilarities << std::endl;
-
     // obtain indices in the kit system
     auto dependentIndicesLists =
             BestMatch::SOAPSimilarity::getListOfDependentIndicesLists(environmentalSimilarities, bestMatch, soapThreshold);
-
-    for(auto i : dependentIndicesLists) {
-        for (auto j : i) {
-            std::cout << "("<< j.first << "," << j.second << ") ";
-        }
-        std::cout << std::endl;
-    }
 
     std::deque<std::vector<std::deque<std::pair<Eigen::Index,Eigen::Index>>>> distancePreservingEnvironmentCombinationsOfAllBlocks;
 
@@ -124,22 +110,11 @@ std::vector<BestMatch::Result> BestMatch::SOAPSimilarity::getBestMatchResults(
 
         if(distancePreservingEnvironmentCombinations.empty()) {
             // no distant preserving permutation could be found
-            std::wcerr<< "exited early 1" << std::endl;
+            //std::wcerr<< "exited early 1" << std::endl;
             auto soapMetric = environmentalSimilarities.diagonal().sum() / N;
             return {{soapMetric, bestMatch}};//TODO better return zero or bool?
         }
         distancePreservingEnvironmentCombinationsOfAllBlocks.emplace_back(distancePreservingEnvironmentCombinations);
-    }
-
-
-    for(auto i : distancePreservingEnvironmentCombinationsOfAllBlocks) {
-        for (auto j : i) {
-            for (auto k : j) {
-                std::cout << "(" << k.first << "," << k.second << ") ";
-            }
-            std::cout << std::endl;
-        }
-        std::cout << std::endl;
     }
 
     auto survivingDistancePreservingEnvironmentCombinations = combineBlocks(
@@ -153,13 +128,13 @@ std::vector<BestMatch::Result> BestMatch::SOAPSimilarity::getBestMatchResults(
         std::wcerr<< "exited early 2" << std::endl;
         return {{soapMetric, bestMatch}};//TODO better return zero or bool?
     }
-    std::cout << "preserving perms " << std::endl;
+    /*std::cout << "preserving perms " << std::endl;
     for(auto i : survivingDistancePreservingEnvironmentCombinations) {
         for (auto j : i) {
                 std::cout << "(" << j.first << "," << j.second << ") ";
         }
         std::cout << std::endl;
-    }
+    }*/
 
 
     // Reverse the blockwise ordering of permutations
@@ -173,11 +148,11 @@ std::vector<BestMatch::Result> BestMatch::SOAPSimilarity::getBestMatchResults(
             indices[i] = copy[indexReorderingPermutation[i]];
         }
     }
-    std::cout<< "index reordering :";
+    /*std::cout<< "index reordering :";
     for (std::size_t i = 0; i < indexReorderingPermutation.size(); ++i) {
         std::cout << indexReorderingPermutation[i] << " ";
     }
-    std::cout << std::endl;
+    std::cout << std::endl;*/
 
 
     std::vector<BestMatch::Result> results;
@@ -187,10 +162,10 @@ std::vector<BestMatch::Result> BestMatch::SOAPSimilarity::getBestMatchResults(
 
         Eigen::VectorXi permIndices(N);
         for (std::size_t i = 0; i < survivingIndices.size(); ++i) {
-            std::cout << survivingIndices[i].first << " ";
+            //std::cout << survivingIndices[i].first << " ";
             permIndices[i] = survivingIndices[i].first;
         }
-        std::cout << std::endl;
+        //std::cout << std::endl;
         Eigen::PermutationMatrix<Eigen::Dynamic> perm(permIndices);
 
         // find smallest element for metric
@@ -247,20 +222,20 @@ std::vector<std::deque<std::pair<Eigen::Index,Eigen::Index>>> BestMatch::SOAPSim
                     referenceIndices.emplace_back(i.second);
                 }
                 std::sort(referenceIndices.begin(),referenceIndices.end()); // necessary?
-                std::cout << " permutee: ";
-                for(auto i : permuteeIndices)
-                    std::cout << i << " ";
-                std::cout << std::endl << "reference: ";
-                for(auto i : referenceIndices)
-                    std::cout << i << " ";
-                std::cout << std::endl;
+                //std::cout << " permutee: ";
+                //for(auto i : permuteeIndices)
+                //    std::cout << i << " ";
+                //std::cout << std::endl << "reference: ";
+                //for(auto i : referenceIndices)
+                //    std::cout << i << " ";
+                //std::cout << std::endl;
 
                 auto covA = indicesBlockCovariance(permutee.electrons(), permuteeIndices);
                 auto covB = indicesBlockCovariance(reference.electrons(), referenceIndices);
 
                 // The maximal distance matrix differences should be smaller than the similarity radius.
                 auto conservingQ = (covB - covA).array().abs().maxCoeff() <= similarityRadius;
-                std::cout << (covB - covA).array().abs() << std::endl;
+                //std::cout << (covB - covA).array().abs() << std::endl;
                 if (conservingQ) {
                     auto newSurvivor = *potentialSurvivorIt;
                     newSurvivor.insert(newSurvivor.end(),
@@ -296,10 +271,10 @@ std::vector<Eigen::Index> BestMatch::SOAPSimilarity::unblockDependentIndicesOfPr
             blockWiseReorderedIndices.emplace_back(index);
         }
     }
-    std::cout << "Blockwise reorderd indices: ";
-    for(auto i : blockWiseReorderedIndices)
-        std::cout << i.first << " ";
-    std::cout << std::endl;
+    //std::cout << "Blockwise reorderd indices: ";
+    //for(auto i : blockWiseReorderedIndices)
+    //    std::cout << i.first << " ";
+    //std::cout << std::endl;
 
     // initialize identity permutation
     std::vector<Eigen::Index> overallReorderedIndices(blockWiseReorderedIndices.size());
@@ -310,9 +285,9 @@ std::vector<Eigen::Index> BestMatch::SOAPSimilarity::unblockDependentIndicesOfPr
     // TODO why overall and blockwise reordered indices are identical
     sort(overallReorderedIndices.begin(), overallReorderedIndices.end(),
          [&](const Eigen::Index &a, const Eigen::Index &b) {
-             return (blockWiseReorderedIndices[a].first < blockWiseReorderedIndices[b].first); // TODO !°!!!!!"§$!$!"$ CORRECT?
-         }
-    );
+             return (blockWiseReorderedIndices[a].second < blockWiseReorderedIndices[b].second);
+             // use the indices of the reference for unblocking
+    });
 
     return overallReorderedIndices;
 };
@@ -328,30 +303,13 @@ void BestMatch::SOAPSimilarity::varySimilarEnvironments(
 
     if(remaining.empty()) {
         allPerms.emplace_back(surviving);
-        std::cout << "done" << std::endl;
         return;
     }
 
     for (auto it = remaining.begin(); it != remaining.end(); ++it){
         auto potentialSurvivor = surviving;
 
-        std::cout <<std::endl << "surviving ";
-        for(auto i : surviving)
-            std::cout << "(" << i.first << "," << i.second << ") ";
-        std::cout <<std::endl << "remaining ";
-
-        for(auto i : remaining)
-            std::cout << "(" << i.first << "," << i.second << ") ";
-        std::cout <<std::endl;
-
         potentialSurvivor.emplace_back(*it);
-        std::cout << "potential survivor ";
-        for(auto i : potentialSurvivor)
-            std::cout << "(" << i.first << "," << i.second << ") ";
-        std::cout <<std::endl;
-
-        //TODO create indices list
-        // permutee
 
         std::deque<Eigen::Index> permuteeIndices, referenceIndices;
         for(auto i : potentialSurvivor) {
@@ -361,12 +319,8 @@ void BestMatch::SOAPSimilarity::varySimilarEnvironments(
         //TODO is sorting necessary?
         std::sort(referenceIndices.begin(),referenceIndices.end());
 
-        std::cout << "permutee " << std::endl;
         auto covA = indicesBlockCovariance(permutee.electrons(), permuteeIndices);
-        std::cout << "reference" << std::endl;
         auto covB = indicesBlockCovariance(reference.electrons(), referenceIndices);
-
-        std::cout << (covB-covA).array().abs()<<std::endl;
 
         auto conservingQ = (covB-covA).array().abs().maxCoeff() <= similarityRadius;
 
@@ -443,16 +397,6 @@ Eigen::MatrixXd BestMatch::SOAPSimilarity::indicesBlockCovariance(const Electron
 
     assert(fromKit.size() >= indices.size());
 
-    std::cout << "  kit indices: ";
-    for (Eigen::size_t i = 0; i < indices.size(); ++i) {
-        std::cout << indices[i] << " ";
-    }
-    std::cout << std::endl;
-    std::cout << "  lab indices: ";
-    for (Eigen::size_t i = 0; i < indices.size(); ++i) {
-        std::cout << fromKit[indices[i]]<< " ";
-    }
-    std::cout << std::endl;
 
     for (Eigen::size_t i = 0; i < indices.size(); ++i)
         for (Eigen::size_t j = 0; j < indices.size(); ++j)

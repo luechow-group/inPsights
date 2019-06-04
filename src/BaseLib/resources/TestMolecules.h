@@ -269,19 +269,6 @@ namespace TestMolecules {
                                  {Spin::beta , inbetween(nuclei.atoms(),{0,3},0.25)}
                                 })};
 
-        const MolecularGeometry normalAlphaRotated = {
-                nuclei.atoms(),
-                ElectronsVector({
-                    normal.electrons()[0],
-                    normal.electrons()[3],
-                    normal.electrons()[1],
-                    normal.electrons()[2],
-
-                    normal.electrons()[4],
-                    normal.electrons()[5],
-                    normal.electrons()[6],
-                    normal.electrons()[7]})};
-
         const MolecularGeometry ionic = {
                 nuclei.atoms(),
                 ElectronsVector({{Spin::alpha, nuclei.atoms().positionsVector()[0]},
@@ -303,29 +290,6 @@ namespace TestMolecules {
                     ionic.electrons()[6],
                     ionic.electrons()[7]})};
 
-        const MolecularGeometry ionicMinimalCorrectAlternativeMatch = {
-                nuclei.atoms(),
-                ElectronsVector({
-                    ionicMinimal.electrons()[1],
-                    ionicMinimal.electrons()[0],
-                    ionicMinimal.electrons()[3],
-                    ionicMinimal.electrons()[2]})};
-        const MolecularGeometry ionicMinimalWrongNonDistantPreservingMatch1 = {
-                nuclei.atoms(),
-                ElectronsVector({
-                    ionicMinimal.electrons()[0],
-                    ionicMinimal.electrons()[1],
-                    ionicMinimal.electrons()[3],
-                    ionicMinimal.electrons()[2]})};
-        const MolecularGeometry ionicMinimalWrongNonDistantPreservingMatch2 = {
-                nuclei.atoms(),
-                ElectronsVector({
-                    ionicMinimal.electrons()[1],
-                    ionicMinimal.electrons()[0],
-                    ionicMinimal.electrons()[2],
-                    ionicMinimal.electrons()[3]})};
-
-
         const MolecularGeometry ionicRotated = {
                 nuclei.atoms(),
                 ElectronsVector({{Spin::alpha, nuclei.atoms().positionsVector()[0]},
@@ -346,7 +310,8 @@ namespace TestMolecules {
                     ionicRotated.electrons()[2],
                     ionicRotated.electrons()[3],
                     ionicRotated.electrons()[6],
-                    ionicRotated.electrons()[7]})};
+                    ionicRotated.electrons()[7]
+                })};
 
         const MolecularGeometry ionicMinimalRotatedPermuted = {
                 nuclei.atoms(),
@@ -354,7 +319,8 @@ namespace TestMolecules {
                     ionicMinimalRotated.electrons()[0],
                     ionicMinimalRotated.electrons()[2],
                     ionicMinimalRotated.electrons()[1],
-                    ionicMinimalRotated.electrons()[3]})};
+                    ionicMinimalRotated.electrons()[3]
+                })};
     }
 
     namespace CO2{
@@ -426,146 +392,7 @@ namespace TestMolecules {
                     {Spin::alpha/*16*/,inbetween(nuclei.atoms(),{1,6},0.25)},
                     {Spin::alpha/*17*/,inbetween(nuclei.atoms(),{1,7},0.25)}
                 })};
-
-        const MolecularGeometry doublyIonic = {
-                nuclei.atoms(),
-                ElectronsVector({
-                    // C Cores
-                    {Spin::alpha/* 0*/,nuclei.atoms().positionsVector()[0]},
-                    {Spin::beta /* 1*/,nuclei.atoms().positionsVector()[0]},
-                    {Spin::alpha/* 2*/,nuclei.atoms().positionsVector()[1]},
-                    {Spin::beta /* 3*/,nuclei.atoms().positionsVector()[1]},
-                    // H Cores
-                    {Spin::alpha/* 4*/,nuclei.atoms().positionsVector()[2]},
-                    {Spin::alpha/* 5*/,nuclei.atoms().positionsVector()[3]},
-                    {Spin::alpha/* 6*/,nuclei.atoms().positionsVector()[4]},
-                    {Spin::alpha/* 7*/,nuclei.atoms().positionsVector()[5]},
-                    {Spin::beta /* 8*/,nuclei.atoms().positionsVector()[2]},
-                    {Spin::beta /* 9*/,nuclei.atoms().positionsVector()[5]},
-                    {Spin::beta /*10*/,nuclei.atoms().positionsVector()[6]},
-                    {Spin::beta /*11*/,nuclei.atoms().positionsVector()[7]},
-                    // C-C Bond
-                    {Spin::alpha/*12*/,inbetween(nuclei.atoms(),{0,1},0.25)},
-                    {Spin::beta /*13*/,inbetween(nuclei.atoms(),{1,0},0.25)},
-                    // C-H Bonds
-                    {Spin::beta /*14*/,inbetween(nuclei.atoms(),{0,3},0.25)},
-                    {Spin::beta /*15*/,inbetween(nuclei.atoms(),{0,4},0.25)},
-                    {Spin::alpha/*16*/,inbetween(nuclei.atoms(),{1,6},0.25)},
-                    {Spin::alpha/*17*/,inbetween(nuclei.atoms(),{1,7},0.25)}
-                })};
-
-        const MolecularGeometry doublyIonicMinimal = {
-                nuclei.atoms(),
-                ElectronsVector({
-                    doublyIonic.electrons()[5],
-                    doublyIonic.electrons()[6],
-                    doublyIonic.electrons()[10],
-                    doublyIonic.electrons()[11],
-                    doublyIonic.electrons()[14],
-                    doublyIonic.electrons()[15],
-                    doublyIonic.electrons()[16],
-                    doublyIonic.electrons()[17]
-                })};
-
-        const MolecularGeometry doublyIonicRotated = {
-                nuclei.atoms(),
-                ElectronsVector({// C Cores
-                                 {Spin::alpha/* 0*/,nuclei.atoms().positionsVector()[0]},
-                                 {Spin::beta /* 1*/,nuclei.atoms().positionsVector()[0]},
-                                 {Spin::alpha/* 2*/,nuclei.atoms().positionsVector()[1]},
-                                 {Spin::beta /* 3*/,nuclei.atoms().positionsVector()[1]},
-                                 // H Cores
-                                 {Spin::alpha/* 4*/,nuclei.atoms().positionsVector()[3]},
-                                 {Spin::alpha/* 5*/,nuclei.atoms().positionsVector()[4]},
-                                 {Spin::alpha/* 6*/,nuclei.atoms().positionsVector()[2]},
-                                 {Spin::alpha/* 7*/,nuclei.atoms().positionsVector()[6]},
-                                 {Spin::beta /* 8*/,nuclei.atoms().positionsVector()[3]},
-                                 {Spin::beta /* 9*/,nuclei.atoms().positionsVector()[6]},
-                                 {Spin::beta /*10*/,nuclei.atoms().positionsVector()[7]},
-                                 {Spin::beta /*11*/,nuclei.atoms().positionsVector()[5]},
-                                 // C-C Bond
-                                 {Spin::alpha/*12*/,inbetween(nuclei.atoms(),{0,1},0.25)},
-                                 {Spin::beta /*13*/,inbetween(nuclei.atoms(),{1,0},0.25)},
-                                 // C-H Bonds
-                                 {Spin::beta /*14*/,inbetween(nuclei.atoms(),{0,4},0.25)},
-                                 {Spin::beta /*15*/,inbetween(nuclei.atoms(),{0,2},0.25)},
-                                 {Spin::alpha/*16*/,inbetween(nuclei.atoms(),{1,7},0.25)},
-                                 {Spin::alpha/*17*/,inbetween(nuclei.atoms(),{1,5},0.25)}
-                                })};
-        const MolecularGeometry doublyIonicMinimalDoublyRotated = {
-                nuclei.atoms(),
-                ElectronsVector({
-                     doublyIonicRotated.electrons()[5],
-                     doublyIonicRotated.electrons()[6],
-                     doublyIonicRotated.electrons()[10],
-                     doublyIonicRotated.electrons()[11],
-                     doublyIonicRotated.electrons()[14],
-                     doublyIonicRotated.electrons()[15],
-                     doublyIonicRotated.electrons()[16],
-                     doublyIonicRotated.electrons()[17]}
-                )};
-        const MolecularGeometry doublyIonicDoublyRotatedPermuted = { // swap els at core 2 with those at 4 and 5 with 7
-                nuclei.atoms(),
-                ElectronsVector({// C Cores
-                                 {Spin::alpha/* 0*/,nuclei.atoms().positionsVector()[0]},
-                                 {Spin::beta /* 1*/,nuclei.atoms().positionsVector()[0]},
-                                 {Spin::alpha/* 2*/,nuclei.atoms().positionsVector()[1]},
-                                 {Spin::beta /* 3*/,nuclei.atoms().positionsVector()[1]},
-                                 // H Cores
-                                 {Spin::alpha/* 4*/,nuclei.atoms().positionsVector()[3]},
-                                 {Spin::alpha/* 5*/,nuclei.atoms().positionsVector()[2]},//*
-                                 {Spin::alpha/* 6*/,nuclei.atoms().positionsVector()[4]},//*
-                                 {Spin::alpha/* 7*/,nuclei.atoms().positionsVector()[6]},
-                                 {Spin::beta /* 8*/,nuclei.atoms().positionsVector()[3]},
-                                 {Spin::beta /* 9*/,nuclei.atoms().positionsVector()[6]},
-                                 {Spin::beta /*10*/,nuclei.atoms().positionsVector()[5]},
-                                 {Spin::beta /*11*/,nuclei.atoms().positionsVector()[7]},
-                                 // C-C Bond
-                                 {Spin::alpha/*12*/,inbetween(nuclei.atoms(),{0,1},0.25)},
-                                 {Spin::beta /*13*/,inbetween(nuclei.atoms(),{1,0},0.25)},
-                                 // C-H Bonds
-                                 {Spin::beta /*14*/,inbetween(nuclei.atoms(),{0,2},0.25)},//*
-                                 {Spin::beta /*15*/,inbetween(nuclei.atoms(),{0,4},0.25)},//*
-                                 {Spin::alpha/*16*/,inbetween(nuclei.atoms(),{1,5},0.25)},
-                                 {Spin::alpha/*17*/,inbetween(nuclei.atoms(),{1,7},0.25)}
-                                })};
-
-
-        const MolecularGeometry minimalRotated = { // corresponds to a cyclic perm that is a correct match already
-                nuclei.atoms(),
-                ElectronsVector({
-                    {Spin::alpha/*0*/,inbetween(nuclei.atoms(),{0,1},0.25)},
-                    {Spin::alpha/*1*/,inbetween(nuclei.atoms(),{1,7},0.25)},
-                    {Spin::alpha/*2*/,inbetween(nuclei.atoms(),{1,5},0.25)},
-                    {Spin::alpha/*3*/,inbetween(nuclei.atoms(),{1,6},0.25)},
-                    {Spin::beta /*4*/,inbetween(nuclei.atoms(),{1,0},0.25)},
-                    {Spin::beta /*5*/,inbetween(nuclei.atoms(),{0,4},0.25)},
-                    {Spin::beta /*6*/,inbetween(nuclei.atoms(),{0,2},0.25)},
-                    {Spin::beta /*7*/,inbetween(nuclei.atoms(),{0,3},0.25)}})};
-        const MolecularGeometry minimal = {
-                nuclei.atoms(),
-                ElectronsVector({
-                    {Spin::alpha/*0*/,inbetween(nuclei.atoms(),{0,1},0.25)},
-                    {Spin::alpha/*1*/,inbetween(nuclei.atoms(),{1,5},0.25)},
-                    {Spin::alpha/*2*/,inbetween(nuclei.atoms(),{1,6},0.25)},
-                    {Spin::alpha/*3*/,inbetween(nuclei.atoms(),{1,7},0.25)},
-                    {Spin::beta /*4*/,inbetween(nuclei.atoms(),{1,0},0.25)},
-                    {Spin::beta /*5*/,inbetween(nuclei.atoms(),{0,2},0.25)},
-                    {Spin::beta /*6*/,inbetween(nuclei.atoms(),{0,3},0.25)},
-                    {Spin::beta /*7*/,inbetween(nuclei.atoms(),{0,4},0.25)}})};
-        const MolecularGeometry minimalWrongNonDistantPreservingMatch1 = { // one sided rotation
-                nuclei.atoms(),
-                ElectronsVector({
-                    minimal.electrons()[0],
-                    minimal.electrons()[3],
-                    minimal.electrons()[1],
-                    minimal.electrons()[2],
-                    minimal.electrons()[4],
-                    minimal.electrons()[5],
-                    minimal.electrons()[6],
-                    minimal.electrons()[7]})};
-    };
-
+    }
 
     namespace CoulombPotentialTest{
         const MolecularGeometry HeH = {
