@@ -50,8 +50,8 @@ namespace BestMatch {
                 const std::deque<std::vector<std::deque<std::pair<Eigen::Index,Eigen::Index>>>> &distancePreservingEnvironmentCombinationsOfRemainingBlocks,
                 double similarityRadius);
 
-        std::vector<Eigen::Index> obtainIndexReorderingPermutationOverAllBlocks(
-                const std::deque<std::vector<std::deque<std::pair<Eigen::Index,Eigen::Index>>>> &distancePreservingEnvironmentCombinationsOfRemainingBlocks);
+        std::vector<Eigen::Index> unblockDependentIndicesOfPreservingCombinations(
+                const std::deque<std::vector<std::deque<std::pair<Eigen::Index, Eigen::Index>>>> &distancePreservingEnvironmentCombinationsOfAllBlocks);
 
         Eigen::MatrixXd indicesBlockCovariance(
                 const ElectronsVector &electronsVector,

@@ -155,22 +155,28 @@ TEST_F(ABestMatchSimilarityTest, ListOfDependentIndices3) {
 
 
 TEST_F(ABestMatchSimilarityTest, VarySimilarEnvironments) {
-
+    //TODO
 }
 
-/*
+
 TEST_F(ABestMatchSimilarityTest, IndexReordering) {
     std::deque<std::vector<std::deque<std::pair<Eigen::Index,Eigen::Index>>>> test =
             {
             {{{{0,0},{1,1},{4,4},{2,2}}}},
+            {{{6,6}}},
             {{{7,7},{8,8}}},
             {{{5,5},{3,3}}}
             };
 
-    auto result = BestMatch::SOAPSimilarity::obtainIndexReorderingPermutationOverAllBlocks(test);
+    auto result = BestMatch::SOAPSimilarity::unblockDependentIndicesOfPreservingCombinations(test);
 
-    ASSERT_THAT(result, ElementsAre(0,1,2,6,3,7,4,5));
-}*/
+    std::cout<< "index reordering :";
+    for (std::size_t i = 0; i < result.size(); ++i) {
+        std::cout << result[i] << " ";
+    }
+    std::cout << std::endl;
+    ASSERT_THAT(result, ElementsAre(0,1,2,7,3,8,4,5,6));
+}
 
 TEST_F(ABestMatchSimilarityTest, FindDistanceConservingPermutations_Chemical) {
     General::settings.mode = General::Mode::chemical;
@@ -290,6 +296,172 @@ TEST_F(ABestMatchSimilarityTest, FindDistanceConservingPermutations_Alchemical_S
         ASSERT_LT(i.metric, 1.0);
         ASSERT_THAT(i.permutation.indices(), AnyOfArray(permsIndices));
     }
+}
+TEST_F(ABestMatchSimilarityTest, FindDistanceConservingPermutations_Chemical_BoraneLEO1) {
+    General::settings.mode = General::Mode::chemical;
+
+    auto nuclei = TestMolecules::BH3::nuclei;
+    const MolecularGeometry A = {
+            TestMolecules::BH3::nuclei.atoms(),
+            ElectronsVector({
+                                    {Spin::alpha, nuclei.atoms().positionsVector()[1]},
+                                    {Spin::alpha, nuclei.atoms().positionsVector()[2]},
+                                    {Spin::alpha, nuclei.atoms().positionsVector()[3]}
+                            })};
+
+
+    ParticleKit::create(A);
+
+    auto specA = MolecularSpectrum(A);
+
+    //std::vector<Eigen::VectorXi> permsIndices(2, Eigen::VectorXi(A.electrons().numberOfEntities()));
+    //permsIndices[0] << 0,1, 2,3;
+    //permsIndices[1] << 1,0, 3,2;
+
+    auto results = BestMatch::SOAPSimilarity::getBestMatchResults(specA, specA, distanceTolerance, soapThreshold);
+
+    for (auto& i : results) {
+        std::cout << i.metric << ", " << i.permutation.indices().transpose() << std::endl;
+    }
+
+
+    //ASSERT_EQ(results.size(), permsIndices.size());
+    //for (auto& i : results) {
+    //    ASSERT_NEAR(i.metric, 1.0, eps);
+    //    ASSERT_THAT(i.permutation.indices(), AnyOfArray(permsIndices));
+    //}
+}
+
+TEST_F(ABestMatchSimilarityTest, FindDistanceConservingPermutations_Chemical_BoraneLEO2) {
+    General::settings.mode = General::Mode::chemical;
+
+    using namespace TestMolecules;
+    auto nuclei = BH3::nuclei;
+
+    const MolecularGeometry A = {
+            nuclei.atoms(),
+            ElectronsVector({
+                             {Spin::alpha, nuclei.atoms().positionsVector()[1]},
+                             {Spin::alpha, nuclei.atoms().positionsVector()[2]},
+                             {Spin::alpha, nuclei.atoms().positionsVector()[3]},
+                             {Spin::beta,inbetween(nuclei.atoms(),{0,1},0.25)},
+                             {Spin::beta,inbetween(nuclei.atoms(),{0,2},0.25)},
+                             {Spin::beta,inbetween(nuclei.atoms(),{0,3},0.25)}
+                            })};
+
+
+    ParticleKit::create(A);
+
+    auto specA = MolecularSpectrum(A);
+
+    //std::vector<Eigen::VectorXi> permsIndices(2, Eigen::VectorXi(A.electrons().numberOfEntities()));
+    //permsIndices[0] << 0,1, 2,3;
+    //permsIndices[1] << 1,0, 3,2;
+
+    auto results = BestMatch::SOAPSimilarity::getBestMatchResults(specA, specA, distanceTolerance, soapThreshold);
+
+    for (auto& i : results) {
+        std::cout << i.metric << ", " << i.permutation.indices().transpose() << std::endl;
+    }
+
+
+    //ASSERT_EQ(results.size(), permsIndices.size());
+    //for (auto& i : results) {
+    //    ASSERT_NEAR(i.metric, 1.0, eps);
+    //    ASSERT_THAT(i.permutation.indices(), AnyOfArray(permsIndices));
+    //}
+}
+
+TEST_F(ABestMatchSimilarityTest, FindDistanceConservingPermutations_Chemical_BoraneLEO3) {
+    General::settings.mode = General::Mode::chemical;
+
+    using namespace TestMolecules;
+    auto nuclei = BH3::nuclei;
+
+    const MolecularGeometry A = {
+            nuclei.atoms(),
+            ElectronsVector({
+                                    {Spin::alpha, nuclei.atoms().positionsVector()[1]},
+                                    {Spin::alpha, nuclei.atoms().positionsVector()[2]},
+                                    {Spin::beta,inbetween(nuclei.atoms(),{0,1},0.25)},
+                                    {Spin::beta,inbetween(nuclei.atoms(),{0,2},0.25)},
+                                    {Spin::alpha, nuclei.atoms().positionsVector()[3]},
+                                    {Spin::beta,inbetween(nuclei.atoms(),{0,3},0.25)}
+                            })};
+
+
+    ParticleKit::create(A);
+
+    auto specA = MolecularSpectrum(A);
+
+    //std::vector<Eigen::VectorXi> permsIndices(2, Eigen::VectorXi(A.electrons().numberOfEntities()));
+    //permsIndices[0] << 0,1, 2,3;
+    //permsIndices[1] << 1,0, 3,2;
+
+    auto results = BestMatch::SOAPSimilarity::getBestMatchResults(specA, specA, distanceTolerance, soapThreshold);
+
+    for (auto& i : results) {
+        std::cout << i.metric << ", " << i.permutation.indices().transpose() << std::endl;
+    }
+
+
+    //ASSERT_EQ(results.size(), permsIndices.size());
+    //for (auto& i : results) {
+    //    ASSERT_NEAR(i.metric, 1.0, eps);
+    //    ASSERT_THAT(i.permutation.indices(), AnyOfArray(permsIndices));
+    //}
+}
+
+TEST_F(ABestMatchSimilarityTest, FindDistanceConservingPermutations_Chemical_BoraneLEO4) {
+    General::settings.mode = General::Mode::chemical;
+
+    using namespace TestMolecules;
+    auto nuclei = BH3::nuclei;
+
+    const MolecularGeometry B = {
+            nuclei.atoms(),
+            ElectronsVector({
+                                    {Spin::alpha, nuclei.atoms().positionsVector()[1]},
+                                    {Spin::alpha, nuclei.atoms().positionsVector()[2]},
+                                    {Spin::alpha, nuclei.atoms().positionsVector()[3]},
+                                    {Spin::beta,inbetween(nuclei.atoms(),{0,1},0.25)},
+                                    {Spin::beta,inbetween(nuclei.atoms(),{0,2},0.25)},
+                                    {Spin::beta,nuclei.atoms().positionsVector()[3]}
+                            })};
+
+    const MolecularGeometry A = {
+            nuclei.atoms(),
+            ElectronsVector({
+                                    {Spin::alpha, nuclei.atoms().positionsVector()[1]},
+                                    {Spin::alpha, nuclei.atoms().positionsVector()[2]},
+                                    {Spin::beta,nuclei.atoms().positionsVector()[3]},
+                                    {Spin::beta,inbetween(nuclei.atoms(),{0,2},0.25)},
+                                    {Spin::alpha, nuclei.atoms().positionsVector()[3]},
+                                    {Spin::beta,inbetween(nuclei.atoms(),{0,1},0.25)}
+                            })};
+
+
+    ParticleKit::create(A);
+
+    auto specA = MolecularSpectrum(A);
+    auto specB = MolecularSpectrum(B);
+
+    //std::vector<Eigen::VectorXi> permsIndices(2, Eigen::VectorXi(A.electrons().numberOfEntities()));
+    //permsIndices[0] << 0,1, 2,3;
+    //permsIndices[1] << 1,0, 3,2;
+
+    auto results = BestMatch::SOAPSimilarity::getBestMatchResults(specA, specB, distanceTolerance, soapThreshold);
+
+    for (auto& i : results) {
+        std::cout << i.metric << ", " << i.permutation.indices().transpose() << std::endl;
+    }
+
+
+    //ASSERT_EQ(results.size(), permsIndices.size());
+    //for (auto& i : results) {
+    //    ASSERT_NEAR(i.metric, 1.0, eps);
+    //    ASSERT_THAT(i.permutation.indices(), AnyOfArray(permsIndices));
+    //}
 }
 
 TEST_F(ABestMatchSimilarityTest, FindDistanceConservingPermutations_Chemical_BoraneIonic) {
@@ -577,27 +749,23 @@ TEST_F(ABestMatchSimilarityTest, EthaneSinglyIonicPermuted) {
                 {Spin::beta /* 1*/,Ethane::nuclei.atoms().positionsVector()[0]},
                 {Spin::alpha/* 2*/,Ethane::nuclei.atoms().positionsVector()[1]},
                 {Spin::beta /* 3*/,Ethane::nuclei.atoms().positionsVector()[1]},
-                // H Cores
-                {Spin::alpha/* 4*/,Ethane::nuclei.atoms().positionsVector()[2]},
-
+                // C-H Bonds
                 {Spin::beta /*12*/,inbetween(Ethane::nuclei.atoms(),{0,2},0.25)},
                 {Spin::beta /*13*/,inbetween(Ethane::nuclei.atoms(),{0,3},0.25)},
                 {Spin::beta /*14*/,inbetween(Ethane::nuclei.atoms(),{0,4},0.25)},
-
-                {Spin::alpha/* 5*/,Ethane::nuclei.atoms().positionsVector()[3]},
-                {Spin::alpha/* 6*/,Ethane::nuclei.atoms().positionsVector()[4]},
-
-                {Spin::beta /* 7*/,Ethane::nuclei.atoms().positionsVector()[5]},
-                {Spin::beta /* 8*/,Ethane::nuclei.atoms().positionsVector()[6]},
-                {Spin::beta /* 9*/,Ethane::nuclei.atoms().positionsVector()[7]},
+                {Spin::alpha/*15*/,inbetween(Ethane::nuclei.atoms(),{1,5},0.25)},
+                {Spin::alpha/*16*/,Ethane::nuclei.atoms().positionsVector()[6]},
+                {Spin::alpha/*17*/,inbetween(Ethane::nuclei.atoms(),{1,7},0.25)},
                 // C-C Bond
                 {Spin::alpha/*10*/,inbetween(Ethane::nuclei.atoms(),{0,1},0.25)},
                 {Spin::beta /*11*/,inbetween(Ethane::nuclei.atoms(),{1,0},0.25)},
-                // C-H Bonds
-
-                {Spin::alpha/*15*/,inbetween(Ethane::nuclei.atoms(),{1,5},0.25)},
-                {Spin::alpha/*16*/,Ethane::nuclei.atoms().positionsVector()[6]},
-                {Spin::alpha/*17*/,inbetween(Ethane::nuclei.atoms(),{1,7},0.25)}
+                // H Cores
+                {Spin::alpha/* 4*/,Ethane::nuclei.atoms().positionsVector()[2]},
+                {Spin::alpha/* 5*/,Ethane::nuclei.atoms().positionsVector()[3]},
+                {Spin::alpha/* 6*/,Ethane::nuclei.atoms().positionsVector()[4]},
+                {Spin::beta /* 7*/,Ethane::nuclei.atoms().positionsVector()[5]},
+                {Spin::beta /* 8*/,Ethane::nuclei.atoms().positionsVector()[6]},
+                {Spin::beta /* 9*/,Ethane::nuclei.atoms().positionsVector()[7]}
             })};
 
     ParticleKit::create(A);
