@@ -271,3 +271,13 @@ TEST_F(AGroupTest, Average) {
 
     ASSERT_TRUE(averagedStructure.positions.asEigenVector().isApprox(avg));
 }
+
+TEST_F(AGroupTest, Average_OneMember) {
+    Group g({g1});
+
+    auto averagedStructure = g.averagedPositionsVector();
+    ASSERT_EQ(averagedStructure.weight, 1);
+
+    ASSERT_TRUE(averagedStructure.positions.asEigenVector().isApprox(
+            g1.representative()->maximum().positionsVector().asEigenVector()));
+}

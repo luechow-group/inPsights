@@ -79,11 +79,10 @@ Group::AveragedPositionsVector Group::averagedPositionsVector() const {
         Eigen::VectorXd average = Eigen::VectorXd::Zero(
                 representative()->maximum().numberOfEntities()
                 *representative()->maximum().positionsVector().entityLength());
-        for (const auto &i : *this) {
-            average =
-                    weight*average +
-                    double(i.averagedPositionsVector().weight)* i.averagedPositionsVector().positions.asEigenVector();
-            weight += i.averagedPositionsVector().weight;
+        for (const auto &subgroup : *this) {
+            auto subgroupAverage = subgroup.averagedPositionsVector();
+            average += double(subgroupAverage.weight)* subgroupAverage.positions.asEigenVector();
+            weight += subgroupAverage.weight;
         }
         average /= weight;
         return {PositionsVector(average), weight};
