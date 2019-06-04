@@ -310,7 +310,6 @@ TEST_F(ABestMatchSimilarityTest, FindDistanceConservingPermutations_Chemical_Bor
 
     ASSERT_EQ(results.size(), permsIndices.size());
     for (auto& i : results) {
-        std::cout << i.metric << " ,  " << i.permutation.indices().transpose() << std::endl;
         ASSERT_NEAR(i.metric, 1.0, eps);
         ASSERT_THAT(i.permutation.indices(), AnyOfArray(permsIndices));
     }
@@ -367,11 +366,9 @@ TEST_F(ABestMatchSimilarityTest, EthaneIonic) {
     permsIndices[0] << 0,1, 2,3;
     permsIndices[1] << 2,3, 0,1;
     auto results = BestMatch::SOAPSimilarity::getBestMatchResults(specA, specB, distanceTolerance, soapThreshold);
-
-    std::wcerr << "check. why the other correct permutations are not found " << std::endl;
+    
     ASSERT_EQ(results.size(), permsIndices.size());
     for (auto& i : results) {
-        std::cout << i.metric << " ,  " << i.permutation.indices().transpose() << std::endl;
         ASSERT_NEAR(i.metric, 1.0, eps);
         ASSERT_THAT(i.permutation.indices(), AnyOfArray(permsIndices));
     }
@@ -493,6 +490,215 @@ TEST_F(ABestMatchSimilarityTest, EthaneSinglyIonic) {
         ASSERT_NEAR(i.metric, 1.0, eps);
         ASSERT_THAT(i.permutation.indices(), AnyOfArray(expectedPermIndices));
     }
+}
+TEST_F(ABestMatchSimilarityTest, EthaneSinglyIonicPermutedMinimal) {
+    General::settings.mode = General::Mode::chemical;
+
+    using namespace TestMolecules;
+    MolecularGeometry B = {
+            Ethane::nuclei.atoms(),
+            ElectronsVector({
+                                    {Spin::alpha /*12*/,inbetween(Ethane::nuclei.atoms(),{0,2},0.25)},
+                                    {Spin::alpha /*13*/,inbetween(Ethane::nuclei.atoms(),{0,3},0.25)},
+                                    {Spin::alpha /*14*/,inbetween(Ethane::nuclei.atoms(),{0,4},0.25)},
+                                    {Spin::beta/*15*/,inbetween(Ethane::nuclei.atoms(),{1,5},0.25)},
+                                    {Spin::beta/*16*/,inbetween(Ethane::nuclei.atoms(),{1,6},0.25)},
+                                    {Spin::beta/*17*/,Ethane::nuclei.atoms().positionsVector()[7]}
+                            })};
+    MolecularGeometry A = {
+            Ethane::nuclei.atoms(),
+            ElectronsVector({
+                                    {Spin::alpha /*12*/,inbetween(Ethane::nuclei.atoms(),{0,2},0.25)},
+                                    {Spin::alpha /*13*/,inbetween(Ethane::nuclei.atoms(),{0,3},0.25)},
+                                    {Spin::beta/*15*/,inbetween(Ethane::nuclei.atoms(),{1,5},0.25)},
+                                    {Spin::beta/*16*/,Ethane::nuclei.atoms().positionsVector()[6]},
+                                    {Spin::alpha /*14*/,inbetween(Ethane::nuclei.atoms(),{0,4},0.25)},
+                                    {Spin::beta/*17*/,inbetween(Ethane::nuclei.atoms(),{1,7},0.25)}
+                            })};
+
+    ParticleKit::create(A);
+    auto permutee = MolecularSpectrum(A);
+    auto reference = MolecularSpectrum(B);
+
+    auto results = BestMatch::SOAPSimilarity::getBestMatchResults(
+            permutee, reference, distanceTolerance, soapThreshold);
+
+
+    std::vector<Eigen::VectorXi> expectedPermIndices(2, Eigen::VectorXi(B.electrons().numberOfEntities()));
+    expectedPermIndices[0] << 2,0,1,5,3,4; // 120° rotation around z
+    expectedPermIndices[1] << 0,2,1,3,5,4; // reflection along H2-C0-C1-H5 plane
+
+    for (auto& i : results) {
+        std::cout << i.metric << ", " << i.permutation.indices().transpose() << std::endl;
+    }
+
+    //ASSERT_EQ(results.size(), expectedPermIndices.size());
+    //for (auto& i : results) {
+    //    ASSERT_NEAR(i.metric, 1.0, eps);
+    //    ASSERT_THAT(i.permutation.indices(), AnyOfArray(expectedPermIndices));
+    //}
+}
+
+TEST_F(ABestMatchSimilarityTest, EthaneSinglyIonicPermuted) {
+    General::settings.mode = General::Mode::chemical;
+
+    using namespace TestMolecules;
+    MolecularGeometry B = {
+            Ethane::nuclei.atoms(),
+            ElectronsVector({
+                // C Cores
+                {Spin::alpha/* 0*/,Ethane::nuclei.atoms().positionsVector()[0]},
+                {Spin::beta /* 1*/,Ethane::nuclei.atoms().positionsVector()[0]},
+                {Spin::alpha/* 2*/,Ethane::nuclei.atoms().positionsVector()[1]},
+                {Spin::beta /* 3*/,Ethane::nuclei.atoms().positionsVector()[1]},
+                // H Cores
+                {Spin::alpha/* 4*/,Ethane::nuclei.atoms().positionsVector()[2]},
+                {Spin::alpha/* 5*/,Ethane::nuclei.atoms().positionsVector()[3]},
+                {Spin::alpha/* 6*/,Ethane::nuclei.atoms().positionsVector()[4]},
+                {Spin::beta /* 7*/,Ethane::nuclei.atoms().positionsVector()[5]},
+                {Spin::beta /* 8*/,Ethane::nuclei.atoms().positionsVector()[6]},
+                {Spin::beta /* 9*/,Ethane::nuclei.atoms().positionsVector()[7]},
+                // C-C Bond
+                {Spin::alpha/*10*/,inbetween(Ethane::nuclei.atoms(),{0,1},0.25)},
+                {Spin::beta /*11*/,inbetween(Ethane::nuclei.atoms(),{1,0},0.25)},
+                // C-H Bonds
+                {Spin::beta /*12*/,inbetween(Ethane::nuclei.atoms(),{0,2},0.25)},
+                {Spin::beta /*13*/,inbetween(Ethane::nuclei.atoms(),{0,3},0.25)},
+                {Spin::beta /*14*/,inbetween(Ethane::nuclei.atoms(),{0,4},0.25)},
+                {Spin::alpha/*15*/,inbetween(Ethane::nuclei.atoms(),{1,5},0.25)},
+                {Spin::alpha/*16*/,inbetween(Ethane::nuclei.atoms(),{1,6},0.25)},
+                {Spin::alpha/*17*/,Ethane::nuclei.atoms().positionsVector()[7]}
+            })};
+    MolecularGeometry A = {
+            Ethane::nuclei.atoms(),
+            ElectronsVector({
+                // C Cores
+                {Spin::alpha/* 0*/,Ethane::nuclei.atoms().positionsVector()[0]},
+                {Spin::beta /* 1*/,Ethane::nuclei.atoms().positionsVector()[0]},
+                {Spin::alpha/* 2*/,Ethane::nuclei.atoms().positionsVector()[1]},
+                {Spin::beta /* 3*/,Ethane::nuclei.atoms().positionsVector()[1]},
+                // H Cores
+                {Spin::alpha/* 4*/,Ethane::nuclei.atoms().positionsVector()[2]},
+
+                {Spin::beta /*12*/,inbetween(Ethane::nuclei.atoms(),{0,2},0.25)},
+                {Spin::beta /*13*/,inbetween(Ethane::nuclei.atoms(),{0,3},0.25)},
+                {Spin::beta /*14*/,inbetween(Ethane::nuclei.atoms(),{0,4},0.25)},
+
+                {Spin::alpha/* 5*/,Ethane::nuclei.atoms().positionsVector()[3]},
+                {Spin::alpha/* 6*/,Ethane::nuclei.atoms().positionsVector()[4]},
+
+                {Spin::beta /* 7*/,Ethane::nuclei.atoms().positionsVector()[5]},
+                {Spin::beta /* 8*/,Ethane::nuclei.atoms().positionsVector()[6]},
+                {Spin::beta /* 9*/,Ethane::nuclei.atoms().positionsVector()[7]},
+                // C-C Bond
+                {Spin::alpha/*10*/,inbetween(Ethane::nuclei.atoms(),{0,1},0.25)},
+                {Spin::beta /*11*/,inbetween(Ethane::nuclei.atoms(),{1,0},0.25)},
+                // C-H Bonds
+
+                {Spin::alpha/*15*/,inbetween(Ethane::nuclei.atoms(),{1,5},0.25)},
+                {Spin::alpha/*16*/,Ethane::nuclei.atoms().positionsVector()[6]},
+                {Spin::alpha/*17*/,inbetween(Ethane::nuclei.atoms(),{1,7},0.25)}
+            })};
+
+    ParticleKit::create(A);
+    auto permutee = MolecularSpectrum(A);
+    auto reference = MolecularSpectrum(B);
+
+    auto results = BestMatch::SOAPSimilarity::getBestMatchResults(permutee, reference, distanceTolerance, soapThreshold);
+
+    std::vector<Eigen::VectorXi> expectedPermIndices(2, Eigen::VectorXi(B.electrons().numberOfEntities()));
+    expectedPermIndices[0] << 0,1,2,3,  6,4,5, 9,7,8,  10,11,  14,12,13, 17,15,16; // 120° rotation around z
+    expectedPermIndices[1] << 0,1,2,3,  4,6,5, 7,9,8,  10,11,  12,14,13, 15,17,16; // reflection along H2-C0-C1-H5 plane
+
+
+    for (auto& i : results) {
+        std::cout << i.metric << ", " << i.permutation.indices().transpose() << std::endl;
+    }
+
+    //ASSERT_EQ(results.size(), expectedPermIndices.size());
+    //for (auto& i : results) {
+    //    ASSERT_NEAR(i.metric, 1.0, eps);
+    //    ASSERT_THAT(i.permutation.indices(), AnyOfArray(expectedPermIndices));
+    //}
+}
+
+TEST_F(ABestMatchSimilarityTest, EthaneSinglyIonicRandomlyPermuted) {
+    General::settings.mode = General::Mode::chemical;
+
+    using namespace TestMolecules;
+    MolecularGeometry B = {
+            Ethane::nuclei.atoms(),
+            ElectronsVector({
+                // C Cores
+                {Spin::alpha/* 0*/,Ethane::nuclei.atoms().positionsVector()[0]},
+                {Spin::beta /* 1*/,Ethane::nuclei.atoms().positionsVector()[0]},
+                {Spin::alpha/* 2*/,Ethane::nuclei.atoms().positionsVector()[1]},
+                {Spin::beta /* 3*/,Ethane::nuclei.atoms().positionsVector()[1]},
+                // H Cores
+                {Spin::alpha/* 4*/,Ethane::nuclei.atoms().positionsVector()[2]},
+                {Spin::alpha/* 5*/,Ethane::nuclei.atoms().positionsVector()[3]},
+                {Spin::alpha/* 6*/,Ethane::nuclei.atoms().positionsVector()[4]},
+                {Spin::beta /* 7*/,Ethane::nuclei.atoms().positionsVector()[5]},
+                {Spin::beta /* 8*/,Ethane::nuclei.atoms().positionsVector()[6]},
+                {Spin::beta /* 9*/,Ethane::nuclei.atoms().positionsVector()[7]},
+                // C-C Bond
+                {Spin::alpha/*10*/,inbetween(Ethane::nuclei.atoms(),{0,1},0.25)},
+                {Spin::beta /*11*/,inbetween(Ethane::nuclei.atoms(),{1,0},0.25)},
+                // C-H Bonds
+                {Spin::beta /*12*/,inbetween(Ethane::nuclei.atoms(),{0,2},0.25)},
+                {Spin::beta /*13*/,inbetween(Ethane::nuclei.atoms(),{0,3},0.25)},
+                {Spin::beta /*14*/,inbetween(Ethane::nuclei.atoms(),{0,4},0.25)},
+                {Spin::alpha/*15*/,inbetween(Ethane::nuclei.atoms(),{1,5},0.25)},
+                {Spin::alpha/*16*/,inbetween(Ethane::nuclei.atoms(),{1,6},0.25)},
+                {Spin::alpha/*17*/,Ethane::nuclei.atoms().positionsVector()[7]}
+                            })};
+    MolecularGeometry A = {
+            Ethane::nuclei.atoms(),
+            ElectronsVector({
+                // C Cores
+                {Spin::alpha/* 0*/,Ethane::nuclei.atoms().positionsVector()[0]},
+                {Spin::beta /* 1*/,Ethane::nuclei.atoms().positionsVector()[0]},
+                {Spin::alpha/* 2*/,Ethane::nuclei.atoms().positionsVector()[1]},
+                {Spin::beta /* 3*/,Ethane::nuclei.atoms().positionsVector()[1]},
+                // H Cores
+                {Spin::alpha/* 4*/,Ethane::nuclei.atoms().positionsVector()[2]},
+                {Spin::alpha/* 5*/,Ethane::nuclei.atoms().positionsVector()[3]},
+                {Spin::alpha/* 6*/,Ethane::nuclei.atoms().positionsVector()[4]},
+                {Spin::beta /* 7*/,Ethane::nuclei.atoms().positionsVector()[5]},
+                {Spin::beta /* 8*/,Ethane::nuclei.atoms().positionsVector()[6]},
+                {Spin::beta /* 9*/,Ethane::nuclei.atoms().positionsVector()[7]},
+                // C-C Bond
+                {Spin::alpha/*10*/,inbetween(Ethane::nuclei.atoms(),{0,1},0.25)},
+                {Spin::beta /*11*/,inbetween(Ethane::nuclei.atoms(),{1,0},0.25)},
+                // C-H Bonds
+                {Spin::beta /*12*/,inbetween(Ethane::nuclei.atoms(),{0,2},0.25)},
+                {Spin::beta /*13*/,inbetween(Ethane::nuclei.atoms(),{0,3},0.25)},
+                {Spin::beta /*14*/,inbetween(Ethane::nuclei.atoms(),{0,4},0.25)},
+                {Spin::alpha/*15*/,inbetween(Ethane::nuclei.atoms(),{1,5},0.25)},
+                {Spin::alpha/*16*/,Ethane::nuclei.atoms().positionsVector()[6]},
+                {Spin::alpha/*17*/,inbetween(Ethane::nuclei.atoms(),{1,7},0.25)}
+                            })};
+
+    auto rng = std::default_random_engine(static_cast<unsigned long>(std::clock()));
+
+    Eigen::PermutationMatrix<Eigen::Dynamic> perm(A.electrons().numberOfEntities());
+    perm.setIdentity();
+    std::shuffle(perm.indices().data(), perm.indices().data()+perm.indices().size(), rng);
+    A.electrons().permute(perm);
+
+    ParticleKit::create(A);
+    auto permutee = MolecularSpectrum(A);
+    auto reference = MolecularSpectrum(B);
+
+    auto results = BestMatch::SOAPSimilarity::getBestMatchResults(permutee, reference, distanceTolerance, soapThreshold);
+
+    for (auto& i : results) {
+        std::cout << i.metric << ", " << i.permutation.indices().transpose() << std::endl;
+    }
+    ASSERT_EQ(results.size(), 2);
+    ASSERT_TRUE(
+            results[0].permutation.indices().isApprox(perm.indices())
+            || results[1].permutation.indices().isApprox(perm.indices()));
 }
 
 TEST_F(ABestMatchSimilarityTest, EthaneDoublyIonicAntiMinimal) {
