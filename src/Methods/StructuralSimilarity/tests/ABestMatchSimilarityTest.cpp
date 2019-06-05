@@ -306,7 +306,7 @@ TEST_F(ABestMatchSimilarityTest, BH3Covalent_Chemical) {
     routine(A,A,permsIndices,distanceTolerance, soapThreshold);
 }
 
-TEST_F(ABestMatchSimilarityTest, BH3Ionic_Chemical) {
+TEST_F(ABestMatchSimilarityTest, BH3IonicSelf_Chemical) {
     General::settings.mode = General::Mode::chemical;
 
     using namespace TestMolecules;
@@ -329,7 +329,7 @@ TEST_F(ABestMatchSimilarityTest, BH3Ionic_Chemical) {
     permsIndices[2] << 1,0,3,2,4,5;
     permsIndices[3] << 1,4,3,5,0,2;
     permsIndices[4] << 4,0,5,2,1,3;
-    permsIndices[5] << 4,1,5,3,0,2; //TODO CHECK
+    permsIndices[5] << 4,1,5,3,0,2;
 
     routine(A,A,permsIndices,distanceTolerance, soapThreshold);
 }
@@ -363,7 +363,7 @@ TEST_F(ABestMatchSimilarityTest, BH3_ThreeIndependentUnsimilarEnvironments_Chemi
 }
 
 
-TEST_F(ABestMatchSimilarityTest, FindDistanceConservingPermutations_Chemical_BoraneIonic) {
+TEST_F(ABestMatchSimilarityTest, BH3Ionic_Chemical) {
     General::settings.mode = General::Mode::chemical;
 
     using namespace TestMolecules;
