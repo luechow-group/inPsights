@@ -186,7 +186,7 @@ TEST_F(ABestMatchSimilarityTest, DISABLED_VarySimilarEnvironments) {
 }
 
 
-TEST_F(ABestMatchSimilarityTest, IndexReordering) {
+/*TEST_F(ABestMatchSimilarityTest, IndexReordering) {
     std::deque<std::vector<std::deque<std::pair<Eigen::Index,Eigen::Index>>>> test =
             {
             {{{{8,0},{7,1},{6,4},{5,2}}}},
@@ -198,7 +198,7 @@ TEST_F(ABestMatchSimilarityTest, IndexReordering) {
     auto result = BestMatch::SOAPSimilarity::unblockDependentIndicesOfPreservingCombinations(test);
 
     ASSERT_THAT(result, ElementsAre(0,1,2,7,3,8,4,5,6));
-}
+}*/
 
 TEST_F(ABestMatchSimilarityTest, FindDistanceConservingPermutations_Chemical) {
     General::settings.mode = General::Mode::chemical;
@@ -582,32 +582,34 @@ TEST_F(ABestMatchSimilarityTest, EthaneSinglyIonicPermutedMinimal) {
     std::vector<int> indices(A.electrons().numberOfEntities());
     std::iota(indices.begin(), indices.end(), 0);
 
-    //Combinatorics::Permutations<int> indexSwapPerms(indices);
+    Combinatorics::Permutations<int> indexSwapPerms(indices);
 
-    //for(auto indexSwap : indexSwapPerms) {
-        Eigen::VectorXi indexSwap(A.electrons().numberOfEntities());
-        //indexSwap << 0, 1, 3, 2, 4, 5; // works
-        //indexSwap << 0, 1, 4, 2, 3, 5; // works
-        //indexSwap << 0, 1, 2, 4, 3, 5; // does not work => the problem occurs, when the EnumeratedType order is changed
-        indexSwap << 1, 0, 2, 3, 4, 5; // SAME HERE
-        //indexSwap << 0, 1, 2, 3, 5, 4; // does not work
-        Eigen::PermutationMatrix<Eigen::Dynamic> indexSwapPerm(indexSwap);
+    for(auto indexSwap : indexSwapPerms) {
+        //Eigen::VectorXi indexSwap(A.electrons().numberOfEntities());
+        ////indexSwap << 0, 1, 3, 2, 4, 5; // works
+        ////indexSwap << 0, 1, 4, 2, 3, 5; // works
+        //indexSwap << 0, 1, 2, 4, 3, 5; // works
+        ////indexSwap << 1, 0, 2, 3, 4, 5; // works
+        ////indexSwap << 0, 1, 2, 3, 5, 4; // works
+        //Eigen::PermutationMatrix<Eigen::Dynamic> indexSwapPerm(indexSwap);
 
-        //Eigen::Map<Eigen::VectorXi> v(indexSwap.data(),indexSwap.size());
-        //std::cout << v.transpose() << std::endl;
-        //Eigen::PermutationMatrix<Eigen::Dynamic> indexSwapPerm(v);
+        Eigen::Map<Eigen::VectorXi> v(indexSwap.data(),indexSwap.size());
+        std::cout << "new perm to try:" << v.transpose() << std::endl;
+        Eigen::PermutationMatrix<Eigen::Dynamic> indexSwapPerm(v);
+        std::cout << "new perm to try:" << indexSwapPerm.indices().transpose() << std::endl;
 
-        A.electrons().permute(indexSwapPerm);
+        auto Acopy = A;
+        Acopy.electrons().permute(indexSwapPerm);
 
         std::vector<Eigen::VectorXi> permIndices(2, Eigen::VectorXi(B.electrons().numberOfEntities()));
-        permIndices[0] << 2, 0, 1, 5, 3, 4; // 120° rotation around z
+        permIndices[0] << 1, 2, 0, 4, 5, 3; // 120° rotation around z
         permIndices[1] << 0, 2, 1, 3, 5, 4; // reflection along H2-C0-C1-H5 plane
 
         permIndices[0] = indexSwapPerm * permIndices[0];
         permIndices[1] = indexSwapPerm * permIndices[1];
 
-        routine(A, B, permIndices, distanceTolerance, soapThreshold);
-    //}
+        routine(Acopy, B, permIndices, distanceTolerance, soapThreshold);
+    }
 }
 
 TEST_F(ABestMatchSimilarityTest, EthaneSinglyIonicPermuted) {
