@@ -265,16 +265,21 @@ std::vector<Eigen::Index> BestMatch::SOAPSimilarity::unblockDependentIndicesOfPr
         // Because we determined dependent indices
         auto examplaricOrder = distancePreservingEnvironmentCombinationsOfAllBlocks[i].front();
 
-        std::sort(examplaricOrder.begin(), examplaricOrder.end());
+        std::sort(examplaricOrder.begin(), examplaricOrder.end(),
+                [&](const std::pair<Eigen::Index,Eigen::Index> &a,
+                    const std::pair<Eigen::Index,Eigen::Index> &b) {
+            return (a.second < b.second);
+            // use the indices of the reference
+        });
 
         for (auto index : examplaricOrder) {
             blockWiseReorderedIndices.emplace_back(index);
         }
     }
-    //std::cout << "Blockwise reorderd indices: ";
-    //for(auto i : blockWiseReorderedIndices)
-    //    std::cout << i.first << " ";
-    //std::cout << std::endl;
+    std::cout << "Blockwise reorderd indices: ";
+    for(auto i : blockWiseReorderedIndices)
+        std::cout << i.first << " ";
+    std::cout << std::endl;
 
     // initialize identity permutation
     std::vector<Eigen::Index> overallReorderedIndices(blockWiseReorderedIndices.size());

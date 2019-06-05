@@ -10,6 +10,7 @@
 #include <random>
 #include <Metrics.h>
 #include <Hungarian.h>
+#include <Combinatorics.h>
 
 using namespace testing;
 using namespace SOAP;
@@ -45,9 +46,13 @@ public:
 
         auto results = BestMatch::SOAPSimilarity::getBestMatchResults(specA, specB, distTolerance, soapThresh);
 
-        ASSERT_EQ(results.size(), expectedPermutationIndices.size());
-        for (auto& i : results) {
+        for (auto& i : results)
             std::cout << i.metric << ", " << i.permutation.indices().transpose() << std::endl;
+        for (auto& i : expectedPermutationIndices)
+            std::cout << "   " << i.transpose() << std::endl;
+
+            ASSERT_EQ(results.size(), expectedPermutationIndices.size());
+        for (auto& i : results) {
             if(!lessThan)
                 ASSERT_NEAR(i.metric, 1.0, eps);
             else
@@ -567,17 +572,42 @@ TEST_F(ABestMatchSimilarityTest, EthaneSinglyIonicPermutedMinimal) {
             ElectronsVector({
                 {Spin::alpha /*12*/,inbetween(Ethane::nuclei.atoms(),{0,2},0.25)},
                 {Spin::alpha /*13*/,inbetween(Ethane::nuclei.atoms(),{0,3},0.25)},
+                {Spin::alpha /*14*/,inbetween(Ethane::nuclei.atoms(),{0,4},0.25)},
                 {Spin::beta/*15*/,inbetween(Ethane::nuclei.atoms(),{1,5},0.25)},
                 {Spin::beta/*16*/,Ethane::nuclei.atoms().positionsVector()[6]},
-                {Spin::alpha /*14*/,inbetween(Ethane::nuclei.atoms(),{0,4},0.25)},
                 {Spin::beta/*17*/,inbetween(Ethane::nuclei.atoms(),{1,7},0.25)}
             })};
 
-    std::vector<Eigen::VectorXi> permIndices(2, Eigen::VectorXi(B.electrons().numberOfEntities()));
-    permIndices[0] << 2,0,1,5,3,4; // 120° rotation around z
-    permIndices[1] << 0,2,1,3,5,4; // reflection along H2-C0-C1-H5 plane
 
-    routine(A,B,permIndices,distanceTolerance, soapThreshold);
+    std::vector<int> indices(A.electrons().numberOfEntities());
+    std::iota(indices.begin(), indices.end(), 0);
+
+    //Combinatorics::Permutations<int> indexSwapPerms(indices);
+
+    //for(auto indexSwap : indexSwapPerms) {
+        Eigen::VectorXi indexSwap(A.electrons().numberOfEntities());
+        //indexSwap << 0, 1, 3, 2, 4, 5; // works
+        //indexSwap << 0, 1, 4, 2, 3, 5; // works
+        //indexSwap << 0, 1, 2, 4, 3, 5; // does not work => the problem occurs, when the EnumeratedType order is changed
+        indexSwap << 1, 0, 2, 3, 4, 5; // SAME HERE
+        //indexSwap << 0, 1, 2, 3, 5, 4; // does not work
+        Eigen::PermutationMatrix<Eigen::Dynamic> indexSwapPerm(indexSwap);
+
+        //Eigen::Map<Eigen::VectorXi> v(indexSwap.data(),indexSwap.size());
+        //std::cout << v.transpose() << std::endl;
+        //Eigen::PermutationMatrix<Eigen::Dynamic> indexSwapPerm(v);
+
+        A.electrons().permute(indexSwapPerm);
+
+        std::vector<Eigen::VectorXi> permIndices(2, Eigen::VectorXi(B.electrons().numberOfEntities()));
+        permIndices[0] << 2, 0, 1, 5, 3, 4; // 120° rotation around z
+        permIndices[1] << 0, 2, 1, 3, 5, 4; // reflection along H2-C0-C1-H5 plane
+
+        permIndices[0] = indexSwapPerm * permIndices[0];
+        permIndices[1] = indexSwapPerm * permIndices[1];
+
+        routine(A, B, permIndices, distanceTolerance, soapThreshold);
+    //}
 }
 
 TEST_F(ABestMatchSimilarityTest, EthaneSinglyIonicPermuted) {
