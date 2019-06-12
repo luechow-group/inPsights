@@ -88,6 +88,14 @@ int main(int argc, char *argv[]) {
         return 1;
     }
     std::string inputFilename = argv[1];
+    std::string::size_type idx;
+
+    idx = inputFilename.rfind('.');
+
+    std::string filenameWithoutExtension;
+    if(idx != std::string::npos)
+        filenameWithoutExtension = inputFilename.substr(idx);
+
     YAML::Node inputYaml = YAML::LoadFile(argv[1]);
     YAML::Emitter emitter;
     emitter << inputYaml;
@@ -97,11 +105,16 @@ int main(int argc, char *argv[]) {
     spdlog::info("Validating input from file {}:\n{}...", inputFilename, emitter.c_str());
     validateInput(inputYaml);
 
-
     // Apply settings from inputYaml
     MaximaProcessing::settings = Settings::MaximaProcessing(inputYaml);
 
-    // Read maxima and samples
+    // if binary file basename is not specified, use the name of  the input file
+    if(!inputYaml["MaximaProcessing"][MaximaProcessing::settings.binaryFileBasename.name()]) {
+        idx = inputFilename.rfind('.');
+        if (idx != std::string::npos)
+            MaximaProcessing::settings.binaryFileBasename = inputFilename.substr(0,idx);
+    }
+        // Read maxima and samples
     Group maxima;
     std::vector<Sample> samples;
     RawDataReader reader(maxima, samples);
