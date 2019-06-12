@@ -34,7 +34,7 @@ namespace Settings{
         public:
             Property<::SOAP::General::Mode> mode = {::SOAP::General::Mode::typeAgnostic, VARNAME(mode)};
             Property<double> zeta = {2.0, VARNAME(zeta)};
-            Property<double> gamma = {0.1, VARNAME(gamma)};
+            Property<double> sinkhornGamma = {0.1, VARNAME(sinkhornGamma)};
             Property<double> sinkhornEpsilon = {1e-8, VARNAME(sinkhornEpsilon)};
 
             std::map<std::pair<int, int>, double> pairSimilarities = {

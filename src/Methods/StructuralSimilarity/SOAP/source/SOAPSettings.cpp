@@ -67,7 +67,7 @@ namespace Settings {
             }
 
             doubleProperty::decode(node[className], zeta);
-            doubleProperty::decode(node[className], gamma);
+            doubleProperty::decode(node[className], sinkhornGamma);
             doubleProperty::decode(node[className], sinkhornEpsilon);
         }
 
@@ -93,7 +93,7 @@ namespace Settings {
             node[className][VARNAME(pairSimilarities)] = mapNode;
             node[className][mode.name()] = ::SOAP::General::toString(::SOAP::General::Mode(mode()));
             node[className][zeta.name()] = zeta();
-            node[className][gamma.name()] = gamma();
+            node[className][sinkhornGamma.name()] = sinkhornGamma();
             node[className][sinkhornEpsilon.name()] = sinkhornEpsilon();
         }
 
