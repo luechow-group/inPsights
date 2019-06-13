@@ -119,7 +119,7 @@ TEST_F(ABestMatchDistanceSimilarityClustererTest, TwoLists) {
     ASSERT_EQ(maxima[1][3].representative()->ownId(), 7);
 }
 
-TEST_F(ABestMatchDistanceSimilarityClustererTest, TwoListsIncrementBorderCase) {
+TEST_F(ABestMatchDistanceSimilarityClustererTest, DISABLED_TwoListsIncrementBorderCase) {
     BestMatchDistanceSimilarityClusterer globalSimilaritySorter(samples);
     BestMatchDistanceSimilarityClusterer::settings.similarityRadius = 0.02;
     BestMatchDistanceSimilarityClusterer::settings.similarityValueIncrement = 1;
