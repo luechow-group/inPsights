@@ -9,7 +9,7 @@
 #include <MaximaProcessingWidget.h>
 
 #include <QCheckBox>
-#include <QSlider>
+#include <QDoubleSpinBox>
 #include <QTreeWidget>
 #include <ClusterData.h>
 
@@ -24,15 +24,14 @@ public slots:
     void onBondsChecked(int stateId);
     void onSpinConnectionsChecked(int stateId = 0);
     void onSpinCorrelationsChecked(int stateId= 0);
-    void onSpinCorrelationsSliderChanged(int value);
+    void onSpinCorrelationsBoxChanged(double value);
 
 private:
     std::string filename_;
     MoleculeWidget *moleculeWidget;
     MaximaProcessingWidget *maximaProcessingWidget;
     QCheckBox *atomsCheckBox, *bondsCheckBox, *spinConnectionsCheckBox, *spinCorrelationsCheckBox;
-    QSlider *spinCorrelationSlider;
-    QLabel *spinCorrelationSliderLabel;
+    QDoubleSpinBox *spinCorrelationbox;
     QTreeWidget *maximaList;
     std::vector<ClusterData> clusterCollection_;
 
@@ -40,7 +39,6 @@ private:
     void loadData();
     void initialView();
     void setupSliderBox();
-    void updateSpinCorrelationSliderLabel(int value);
     void connectSignals();
     void createWidget();
     void redrawSpinDecorations();

@@ -8,7 +8,6 @@
 
 #include <QGridLayout>
 #include <QGroupBox>
-#include <QSpinBox>
 #include <QSplashScreen>
 #include <QTimer>
 #include <QHeaderView>
@@ -30,8 +29,7 @@ InPsightsWidget::InPsightsWidget(QWidget *parent, const std::string& filename)
         bondsCheckBox(new QCheckBox("Bonds", this)),
         spinConnectionsCheckBox(new QCheckBox("Spin Connections", this)),
         spinCorrelationsCheckBox(new QCheckBox("Spin Correlations", this)),
-        spinCorrelationSlider(new QSlider(Qt::Orientation::Horizontal, this)),
-        spinCorrelationSliderLabel(new QLabel(this)),
+        spinCorrelationbox(new QDoubleSpinBox(this)),
         maximaList(new QTreeWidget(this)) {
 
     loadData();
@@ -81,11 +79,10 @@ void InPsightsWidget::createWidget() {
     checkboxGrid->addWidget(spinConnectionsCheckBox,0,1);
     checkboxGrid->addWidget(spinCorrelationsCheckBox,1,1);
 
-    vboxInner->addWidget(spinCorrelationSlider);
+    vboxInner->addWidget(spinCorrelationbox);
     vboxInner->addLayout(sliderBox);
 
-    sliderBox->addWidget(spinCorrelationSliderLabel);
-    sliderBox->addWidget(spinCorrelationSlider);
+    sliderBox->addWidget(spinCorrelationbox);
 
     setupSliderBox();
 }
@@ -109,8 +106,8 @@ void InPsightsWidget::connectSignals() {
     connect(spinCorrelationsCheckBox, &QCheckBox::stateChanged,
             this, &InPsightsWidget::onSpinCorrelationsChecked);
 
-    connect(spinCorrelationSlider, &QSlider::valueChanged,
-            this, &InPsightsWidget::onSpinCorrelationsSliderChanged);
+    connect(spinCorrelationbox, qOverload<double>(&QDoubleSpinBox::valueChanged),
+            this, &InPsightsWidget::onSpinCorrelationsBoxChanged);
 
     connect(maximaProcessingWidget, &MaximaProcessingWidget::atomsChecked,
             moleculeWidget, &MoleculeWidget::onAtomsChecked);
@@ -124,11 +121,9 @@ void InPsightsWidget::connectSignals() {
 }
 
 void InPsightsWidget::setupSliderBox() {
-    spinCorrelationSlider->setRange(0,100);
-    spinCorrelationSlider->setSingleStep(1);
-    spinCorrelationSlider->setValue(75);
-    spinCorrelationSlider->setTickInterval(25);
-    spinCorrelationSlider->setTickPosition(QSlider::TicksBelow);
+    spinCorrelationbox->setRange(0.0,1.0);
+    spinCorrelationbox->setSingleStep(0.01);
+    spinCorrelationbox->setValue(1.0);
 }
 
 void InPsightsWidget::selectedStructure(QTreeWidgetItem *item, int column) {
@@ -179,17 +174,10 @@ void InPsightsWidget::onSpinConnectionsChecked(int stateId) {
 
 void InPsightsWidget::onSpinCorrelationsChecked(int stateId) {
     moleculeWidget->drawSpinCorrelations(Qt::CheckState(stateId) == Qt::CheckState::Checked,
-                                         clusterCollection_,
-                                         double(spinCorrelationSlider->value())/spinCorrelationSlider->maximum());
+                                         clusterCollection_, spinCorrelationbox->value());
 }
 
-void InPsightsWidget::updateSpinCorrelationSliderLabel(int value) {
-    auto corr = double(value)/spinCorrelationSlider->maximum();
-    spinCorrelationSliderLabel->setText(QString::number(corr, 'f', 2));
-}
-
-void InPsightsWidget::onSpinCorrelationsSliderChanged(int value) {
-    updateSpinCorrelationSliderLabel(value);
+void InPsightsWidget::onSpinCorrelationsBoxChanged(double value) {
     if (spinCorrelationsCheckBox->checkState() == Qt::CheckState::Checked) {
         onSpinCorrelationsChecked(Qt::CheckState::Unchecked); //TODO ugly, create update() function in SpinCorrelation3D and make it accessible
         onSpinCorrelationsChecked(Qt::CheckState::Checked);
@@ -281,5 +269,4 @@ void InPsightsWidget::initialView() {
     maximaList->topLevelItem(0)->setCheckState(0, Qt::CheckState::Checked);
     //spinConnectionsCheckBox->setCheckState(Qt::CheckState::Checked);
     //spinCorrelationsCheckBox->setCheckState(Qt::CheckState::Checked);
-    updateSpinCorrelationSliderLabel(spinCorrelationSlider->value());
 }
