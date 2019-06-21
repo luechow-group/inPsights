@@ -30,7 +30,7 @@ InPsightsWidget::InPsightsWidget(QWidget *parent, const std::string& filename)
         axesCheckBox(new QCheckBox("Axes", this)),
         spinConnectionsCheckBox(new QCheckBox("Spin Connections", this)),
         spinCorrelationsCheckBox(new QCheckBox("Spin Correlations", this)),
-        spinCorrelationbox(new QDoubleSpinBox(this)),
+        spinCorrelationBox(new QDoubleSpinBox(this)),
         maximaList(new QTreeWidget(this)) {
 
     loadData();
@@ -81,10 +81,10 @@ void InPsightsWidget::createWidget() {
     checkboxGrid->addWidget(spinConnectionsCheckBox,0,1);
     checkboxGrid->addWidget(spinCorrelationsCheckBox,1,1);
 
-    vboxInner->addWidget(spinCorrelationbox);
+    vboxInner->addWidget(spinCorrelationBox);
     vboxInner->addLayout(sliderBox);
 
-    sliderBox->addWidget(spinCorrelationbox);
+    sliderBox->addWidget(spinCorrelationBox);
 
     setupSliderBox();
 }
@@ -111,7 +111,7 @@ void InPsightsWidget::connectSignals() {
     connect(spinCorrelationsCheckBox, &QCheckBox::stateChanged,
             this, &InPsightsWidget::onSpinCorrelationsChecked);
 
-    connect(spinCorrelationbox, qOverload<double>(&QDoubleSpinBox::valueChanged),
+    connect(spinCorrelationBox, qOverload<double>(&QDoubleSpinBox::valueChanged),
             this, &InPsightsWidget::onSpinCorrelationsBoxChanged);
 
     connect(maximaProcessingWidget, &MaximaProcessingWidget::atomsChecked,
@@ -126,9 +126,9 @@ void InPsightsWidget::connectSignals() {
 }
 
 void InPsightsWidget::setupSliderBox() {
-    spinCorrelationbox->setRange(0.0,1.0);
-    spinCorrelationbox->setSingleStep(0.01);
-    spinCorrelationbox->setValue(1.0);
+    spinCorrelationBox->setRange(0.0,1.0);
+    spinCorrelationBox->setSingleStep(0.01);
+    spinCorrelationBox->setValue(1.0);
 }
 
 void InPsightsWidget::selectedStructure(QTreeWidgetItem *item, int column) {
@@ -183,7 +183,7 @@ void InPsightsWidget::onSpinConnectionsChecked(int stateId) {
 
 void InPsightsWidget::onSpinCorrelationsChecked(int stateId) {
     moleculeWidget->drawSpinCorrelations(Qt::CheckState(stateId) == Qt::CheckState::Checked,
-                                         clusterCollection_, spinCorrelationbox->value());
+                                         clusterCollection_, spinCorrelationBox->value());
 }
 
 void InPsightsWidget::onSpinCorrelationsBoxChanged(double value) {
