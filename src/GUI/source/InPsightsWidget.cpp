@@ -27,6 +27,7 @@ InPsightsWidget::InPsightsWidget(QWidget *parent, const std::string& filename)
         maximaProcessingWidget(new MaximaProcessingWidget(this)), // TODO refator, should it be an additional window?
         atomsCheckBox(new QCheckBox("Atoms", this)),
         bondsCheckBox(new QCheckBox("Bonds", this)),
+        axesCheckBox(new QCheckBox("Axes", this)),
         spinConnectionsCheckBox(new QCheckBox("Spin Connections", this)),
         spinCorrelationsCheckBox(new QCheckBox("Spin Correlations", this)),
         spinCorrelationbox(new QDoubleSpinBox(this)),
@@ -76,6 +77,7 @@ void InPsightsWidget::createWidget() {
     vboxInner->addLayout(checkboxGrid,1);
     checkboxGrid->addWidget(atomsCheckBox,0,0);
     checkboxGrid->addWidget(bondsCheckBox,1,0);
+    checkboxGrid->addWidget(axesCheckBox,2,0);
     checkboxGrid->addWidget(spinConnectionsCheckBox,0,1);
     checkboxGrid->addWidget(spinCorrelationsCheckBox,1,1);
 
@@ -96,6 +98,9 @@ void InPsightsWidget::connectSignals() {
 
     connect(bondsCheckBox, &QCheckBox::stateChanged,
             this, &InPsightsWidget::onBondsChecked);
+
+    connect(axesCheckBox, &QCheckBox::stateChanged,
+           this, &InPsightsWidget::onAxesChecked);
 
     connect(spinConnectionsCheckBox, &QCheckBox::stateChanged,
             this, &InPsightsWidget::onSpinConnectionsChecked);
@@ -166,6 +171,10 @@ void InPsightsWidget::onAtomsChecked(int stateId) {
 
 void InPsightsWidget::onBondsChecked(int stateId) {
     moleculeWidget->drawBonds(Qt::CheckState(stateId) == Qt::CheckState::Checked);
+}
+
+void InPsightsWidget::onAxesChecked(int stateId) {
+    moleculeWidget->drawAxes(Qt::CheckState(stateId) == Qt::CheckState::Checked);
 }
 
 void InPsightsWidget::onSpinConnectionsChecked(int stateId) {
@@ -266,6 +275,7 @@ void InPsightsWidget::initialView() {
     maximaList->sortItems(0,Qt::SortOrder::AscendingOrder);
     atomsCheckBox->setCheckState(Qt::CheckState::Checked);
     bondsCheckBox->setCheckState(Qt::CheckState::Checked);
+    axesCheckBox->setCheckState(Qt::CheckState::Checked);
     maximaList->topLevelItem(0)->setCheckState(0, Qt::CheckState::Checked);
     //spinConnectionsCheckBox->setCheckState(Qt::CheckState::Checked);
     //spinCorrelationsCheckBox->setCheckState(Qt::CheckState::Checked);

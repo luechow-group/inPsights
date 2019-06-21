@@ -47,13 +47,11 @@ MoleculeWidget::MoleculeWidget(QWidget *parent)
     connect(screenshotButton_, &QPushButton::clicked, this, &MoleculeWidget::onScreenshot);
 
     setMouseTracking(true);
-    drawAxes(true);
 }
 
 Qt3DCore::QEntity *MoleculeWidget::getMoleculeEntity() {
     return moleculeEntity_;
 }
-
 
 void MoleculeWidget::drawAxes(bool drawQ) {
     if (drawQ) {
