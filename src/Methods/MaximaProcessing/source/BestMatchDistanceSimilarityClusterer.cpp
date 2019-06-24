@@ -9,17 +9,7 @@
 
 namespace Settings {
     BestMatchDistanceSimilarityClusterer::BestMatchDistanceSimilarityClusterer()
-    : ISettings(VARNAME(BestMatchDistanceSimilarityClusterer)) {
-        similarityRadius.onChange_.connect(
-                [&](double value) {
-                    if(value < ::BestMatchDistanceIdentityClusterer::settings.identityRadius())
-                        throw std::invalid_argument(
-                                "The " + similarityRadius.name() + " with " + std::to_string(similarityRadius())
-                                + " is smaller than the "+ ::BestMatchDistanceIdentityClusterer::settings.identityRadius.name() 
-                                + " with "
-                                + std::to_string(::BestMatchDistanceIdentityClusterer::settings.identityRadius()));
-                });
-    }
+    : ISettings(VARNAME(BestMatchDistanceSimilarityClusterer)) {}
 
     BestMatchDistanceSimilarityClusterer::BestMatchDistanceSimilarityClusterer(const YAML::Node &node)
             : BestMatchDistanceSimilarityClusterer() {
