@@ -27,9 +27,10 @@ InPsightsWidget::InPsightsWidget(QWidget *parent, const std::string& filename)
         maximaProcessingWidget(new MaximaProcessingWidget(this)), // TODO refator, should it be an additional window?
         atomsCheckBox(new QCheckBox("Atoms", this)),
         bondsCheckBox(new QCheckBox("Bonds", this)),
+        axesCheckBox(new QCheckBox("Axes", this)),
         spinConnectionsCheckBox(new QCheckBox("Spin Connections", this)),
         spinCorrelationsCheckBox(new QCheckBox("Spin Correlations", this)),
-        spinCorrelationbox(new QDoubleSpinBox(this)),
+        spinCorrelationBox(new QDoubleSpinBox(this)),
         maximaList(new QTreeWidget(this)) {
 
     loadData();
@@ -76,13 +77,14 @@ void InPsightsWidget::createWidget() {
     vboxInner->addLayout(checkboxGrid,1);
     checkboxGrid->addWidget(atomsCheckBox,0,0);
     checkboxGrid->addWidget(bondsCheckBox,1,0);
+    checkboxGrid->addWidget(axesCheckBox,2,0);
     checkboxGrid->addWidget(spinConnectionsCheckBox,0,1);
     checkboxGrid->addWidget(spinCorrelationsCheckBox,1,1);
 
-    vboxInner->addWidget(spinCorrelationbox);
+    vboxInner->addWidget(spinCorrelationBox);
     vboxInner->addLayout(sliderBox);
 
-    sliderBox->addWidget(spinCorrelationbox);
+    sliderBox->addWidget(spinCorrelationBox);
 
     setupSliderBox();
 }
@@ -97,6 +99,9 @@ void InPsightsWidget::connectSignals() {
     connect(bondsCheckBox, &QCheckBox::stateChanged,
             this, &InPsightsWidget::onBondsChecked);
 
+    connect(axesCheckBox, &QCheckBox::stateChanged,
+           this, &InPsightsWidget::onAxesChecked);
+
     connect(spinConnectionsCheckBox, &QCheckBox::stateChanged,
             this, &InPsightsWidget::onSpinConnectionsChecked);
 
@@ -106,7 +111,7 @@ void InPsightsWidget::connectSignals() {
     connect(spinCorrelationsCheckBox, &QCheckBox::stateChanged,
             this, &InPsightsWidget::onSpinCorrelationsChecked);
 
-    connect(spinCorrelationbox, qOverload<double>(&QDoubleSpinBox::valueChanged),
+    connect(spinCorrelationBox, qOverload<double>(&QDoubleSpinBox::valueChanged),
             this, &InPsightsWidget::onSpinCorrelationsBoxChanged);
 
     connect(maximaProcessingWidget, &MaximaProcessingWidget::atomsChecked,
@@ -121,9 +126,9 @@ void InPsightsWidget::connectSignals() {
 }
 
 void InPsightsWidget::setupSliderBox() {
-    spinCorrelationbox->setRange(0.0,1.0);
-    spinCorrelationbox->setSingleStep(0.01);
-    spinCorrelationbox->setValue(1.0);
+    spinCorrelationBox->setRange(0.0,1.0);
+    spinCorrelationBox->setSingleStep(0.01);
+    spinCorrelationBox->setValue(1.0);
 }
 
 void InPsightsWidget::selectedStructure(QTreeWidgetItem *item, int column) {
@@ -168,13 +173,17 @@ void InPsightsWidget::onBondsChecked(int stateId) {
     moleculeWidget->drawBonds(Qt::CheckState(stateId) == Qt::CheckState::Checked);
 }
 
+void InPsightsWidget::onAxesChecked(int stateId) {
+    moleculeWidget->drawAxes(Qt::CheckState(stateId) == Qt::CheckState::Checked);
+}
+
 void InPsightsWidget::onSpinConnectionsChecked(int stateId) {
     moleculeWidget->drawSpinConnections(Qt::CheckState(stateId) == Qt::CheckState::Checked);
 }
 
 void InPsightsWidget::onSpinCorrelationsChecked(int stateId) {
     moleculeWidget->drawSpinCorrelations(Qt::CheckState(stateId) == Qt::CheckState::Checked,
-                                         clusterCollection_, spinCorrelationbox->value());
+                                         clusterCollection_, spinCorrelationBox->value());
 }
 
 void InPsightsWidget::onSpinCorrelationsBoxChanged(double value) {
@@ -266,6 +275,7 @@ void InPsightsWidget::initialView() {
     maximaList->sortItems(0,Qt::SortOrder::AscendingOrder);
     atomsCheckBox->setCheckState(Qt::CheckState::Checked);
     bondsCheckBox->setCheckState(Qt::CheckState::Checked);
+    axesCheckBox->setCheckState(Qt::CheckState::Checked);
     maximaList->topLevelItem(0)->setCheckState(0, Qt::CheckState::Checked);
     //spinConnectionsCheckBox->setCheckState(Qt::CheckState::Checked);
     //spinCorrelationsCheckBox->setCheckState(Qt::CheckState::Checked);

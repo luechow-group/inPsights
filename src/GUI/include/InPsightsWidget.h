@@ -22,6 +22,7 @@ public slots:
     void selectedStructure(QTreeWidgetItem *item, int column);
     void onAtomsChecked(int stateId);
     void onBondsChecked(int stateId);
+    void onAxesChecked(int stateId);
     void onSpinConnectionsChecked(int stateId = 0);
     void onSpinCorrelationsChecked(int stateId= 0);
     void onSpinCorrelationsBoxChanged(double value);
@@ -30,8 +31,8 @@ private:
     std::string filename_;
     MoleculeWidget *moleculeWidget;
     MaximaProcessingWidget *maximaProcessingWidget;
-    QCheckBox *atomsCheckBox, *bondsCheckBox, *spinConnectionsCheckBox, *spinCorrelationsCheckBox;
-    QDoubleSpinBox *spinCorrelationbox;
+    QCheckBox *atomsCheckBox, *bondsCheckBox, *axesCheckBox, *spinConnectionsCheckBox, *spinCorrelationsCheckBox;
+    QDoubleSpinBox *spinCorrelationBox;
     QTreeWidget *maximaList;
     std::vector<ClusterData> clusterCollection_;
 
