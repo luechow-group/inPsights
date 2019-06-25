@@ -10,7 +10,7 @@ Surface::Surface(
         const SurfaceData & surfaceData,
         QColor color, float alpha)
         :
-        Abstract3dObject(root, std::move(color), {0,0,0}),
+        Abstract3dObject(root, std::move(color), {0,0,0}, alpha),
         mesh_(new SurfaceMesh(surfaceData)) {
 
     addComponent(mesh_);

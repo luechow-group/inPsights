@@ -31,7 +31,7 @@ private:
     std::string filename_;
     MoleculeWidget *moleculeWidget;
     MaximaProcessingWidget *maximaProcessingWidget;
-    QCheckBox *atomsCheckBox, *bondsCheckBox, *axesCheckBox, *spinConnectionsCheckBox, *spinCorrelationsCheckBox;
+    QCheckBox *atomsCheckBox, *bondsCheckBox, *axesCheckBox, *spinConnectionsCheckBox, *spinCorrelationsCheckBox, *sedsCheckBox;
     QDoubleSpinBox *spinCorrelationBox;
     QTreeWidget *maximaList;
     std::vector<ClusterData> clusterCollection_;

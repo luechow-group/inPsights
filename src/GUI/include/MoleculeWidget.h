@@ -39,9 +39,14 @@ public:
     void drawSpinCorrelations(bool drawQ,
                               const std::vector<ClusterData> &clusterData,
                               double spinCorrelationThreshold);
+
+
     void setSharedAtomsVector(AtomsVector atomsVector);
     void addElectronsVector(const ElectronsVector& electronsVector, int clusterId = 0, int structureId = 0);
     void removeElectronsVector(int clusterId = 0, int structureId = 0);
+
+    void addSeds(int clusterId, const std::vector<ClusterData> &clusterData);
+    void removeSeds(int clusterId);
 
 public Q_SLOTS:
 
@@ -65,6 +70,7 @@ private:
     CartesianAxes *cartesianAxes_;
 
 public:
+    std::map<int, std::vector<Surface*>> activeSedsMap_;
     std::map<int, std::map<int,ElectronsVector3D*>> activeElectronsVectorsMap_;
 
 };

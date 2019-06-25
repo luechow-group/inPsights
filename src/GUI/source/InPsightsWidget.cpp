@@ -30,6 +30,7 @@ InPsightsWidget::InPsightsWidget(QWidget *parent, const std::string& filename)
         axesCheckBox(new QCheckBox("Axes", this)),
         spinConnectionsCheckBox(new QCheckBox("Spin Connections", this)),
         spinCorrelationsCheckBox(new QCheckBox("Spin Correlations", this)),
+        sedsCheckBox(new QCheckBox("SEDs", this)),
         spinCorrelationBox(new QDoubleSpinBox(this)),
         maximaList(new QTreeWidget(this)) {
 
@@ -80,6 +81,7 @@ void InPsightsWidget::createWidget() {
     checkboxGrid->addWidget(axesCheckBox,2,0);
     checkboxGrid->addWidget(spinConnectionsCheckBox,0,1);
     checkboxGrid->addWidget(spinCorrelationsCheckBox,1,1);
+    checkboxGrid->addWidget(sedsCheckBox,2,1);
 
     vboxInner->addWidget(spinCorrelationBox);
     vboxInner->addLayout(sliderBox);
@@ -148,8 +150,19 @@ void InPsightsWidget::selectedStructure(QTreeWidgetItem *item, int column) {
     if (createQ) {
         moleculeWidget->addElectronsVector(clusterCollection_[clusterId].exemplaricStructures_[structureId], clusterId, structureId);
         maximaProcessingWidget->updateData(clusterCollection_[clusterId]);
+
+        if(sedsCheckBox->checkState() == Qt::CheckState::Checked
+        && moleculeWidget->activeSedsMap_.find(clusterId) == moleculeWidget->activeSedsMap_.end()) {
+            if (clusterCollection_[clusterId].voxelCubes_.empty())
+                spdlog::warn("Voxel cubes were not calculated.");
+            else
+                moleculeWidget->addSeds(clusterId, clusterCollection_);
+        }
     } else {
         moleculeWidget->removeElectronsVector(clusterId, structureId);
+
+        if(moleculeWidget->activeSedsMap_.find(clusterId) != moleculeWidget->activeSedsMap_.end())
+            moleculeWidget->removeSeds(clusterId);
     }
     redrawSpinDecorations();
 };
@@ -262,13 +275,6 @@ void InPsightsWidget::loadData() {
         }
     }
 
-
-    /*auto voxelData = doc["Clusters"][0]["VoxelCubes"].as<std::vector<VoxelCube>>();
-    for (int j = 0; j < nElectrons; ++j) {
-        SurfaceDataGenerator surfaceDataGenerator(voxelData[j]);
-        auto surfaceData = surfaceDataGenerator.computeSurfaceData(0.25);
-        moleculeWidget->drawSurface(surfaceData);
-    }*/
 }
 
 void InPsightsWidget::initialView() {
