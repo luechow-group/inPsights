@@ -32,6 +32,7 @@ InPsightsWidget::InPsightsWidget(QWidget *parent, const std::string& filename)
         spinCorrelationsCheckBox(new QCheckBox("Spin Correlations", this)),
         sedsCheckBox(new QCheckBox("SEDs", this)),
         spinCorrelationBox(new QDoubleSpinBox(this)),
+        sedPercentageBox(new QDoubleSpinBox(this)),
         maximaList(new QTreeWidget(this)) {
 
     loadData();
@@ -49,7 +50,6 @@ void InPsightsWidget::createWidget() {
     auto vboxOuter = new QVBoxLayout();
     auto vboxInner = new QVBoxLayout();
     auto gbox = new QGroupBox("Settings:");
-    auto sliderBox = new QHBoxLayout();
 
     setLayout(hbox);
 
@@ -81,14 +81,11 @@ void InPsightsWidget::createWidget() {
     checkboxGrid->addWidget(axesCheckBox,2,0);
     checkboxGrid->addWidget(spinConnectionsCheckBox,0,1);
     checkboxGrid->addWidget(spinCorrelationsCheckBox,1,1);
+    checkboxGrid->addWidget(spinCorrelationBox,1,2);
     checkboxGrid->addWidget(sedsCheckBox,2,1);
-
-    vboxInner->addWidget(spinCorrelationBox);
-    vboxInner->addLayout(sliderBox);
-
-    sliderBox->addWidget(spinCorrelationBox);
-
-    setupSliderBox();
+    checkboxGrid->addWidget(sedPercentageBox,2,2);
+    
+    setupSpinBoxes();
 }
 
 void InPsightsWidget::connectSignals() {
@@ -127,10 +124,14 @@ void InPsightsWidget::connectSignals() {
             moleculeWidget, &MoleculeWidget::onElectronsHighlighted);
 }
 
-void InPsightsWidget::setupSliderBox() {
+void InPsightsWidget::setupSpinBoxes() {
     spinCorrelationBox->setRange(0.0,1.0);
     spinCorrelationBox->setSingleStep(0.01);
     spinCorrelationBox->setValue(1.0);
+
+    sedPercentageBox->setRange(0.0,1.0);
+    sedPercentageBox->setSingleStep(0.01);
+    sedPercentageBox->setValue(0.2);
 }
 
 void InPsightsWidget::selectedStructure(QTreeWidgetItem *item, int column) {
@@ -156,7 +157,7 @@ void InPsightsWidget::selectedStructure(QTreeWidgetItem *item, int column) {
             if (clusterCollection_[clusterId].voxelCubes_.empty())
                 spdlog::warn("Voxel cubes were not calculated.");
             else
-                moleculeWidget->addSeds(clusterId, clusterCollection_);
+                moleculeWidget->addSeds(clusterId, clusterCollection_, sedPercentageBox->value());
         }
     } else {
         moleculeWidget->removeElectronsVector(clusterId, structureId);

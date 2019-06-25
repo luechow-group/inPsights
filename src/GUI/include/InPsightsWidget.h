@@ -32,14 +32,14 @@ private:
     MoleculeWidget *moleculeWidget;
     MaximaProcessingWidget *maximaProcessingWidget;
     QCheckBox *atomsCheckBox, *bondsCheckBox, *axesCheckBox, *spinConnectionsCheckBox, *spinCorrelationsCheckBox, *sedsCheckBox;
-    QDoubleSpinBox *spinCorrelationBox;
+    QDoubleSpinBox *spinCorrelationBox, *sedPercentageBox;
     QTreeWidget *maximaList;
     std::vector<ClusterData> clusterCollection_;
 
     void showSplashScreen();
     void loadData();
     void initialView();
-    void setupSliderBox();
+    void setupSpinBoxes();
     void connectSignals();
     void createWidget();
     void redrawSpinDecorations();

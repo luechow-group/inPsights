@@ -111,7 +111,7 @@ void MoleculeWidget::setSharedAtomsVector(AtomsVector atomsVector) {
     sharedAtomsVector_ = std::make_shared<AtomsVector>(std::move(atomsVector));
 }
 
-void MoleculeWidget::addSeds(int clusterId, const std::vector<ClusterData> &clusterData) {
+void MoleculeWidget::addSeds(int clusterId, const std::vector<ClusterData> &clusterData, double includedPercentage) {
     auto spins = clusterData[clusterId].representativeStructure().typesVector();
     auto N = spins.numberOfEntities();
 
@@ -121,8 +121,8 @@ void MoleculeWidget::addSeds(int clusterId, const std::vector<ClusterData> &clus
 
     for (std::size_t i = 0; i < spins.numberOfEntities(); ++i) {
         SurfaceDataGenerator surfaceDataGenerator(voxelData[i]);
-        auto surfaceData = surfaceDataGenerator.computeSurfaceData(0.2);
-        seds[i] = new Surface(getMoleculeEntity(), surfaceData, GuiHelper::QColorFromType(spins[i]), 0.25);
+        auto surfaceData = surfaceDataGenerator.computeSurfaceData(includedPercentage);
+        seds[i] = new Surface(getMoleculeEntity(), surfaceData, GuiHelper::QColorFromType(spins[i]), 0.15);
     }
     activeSedsMap_[clusterId] = seds;
 }

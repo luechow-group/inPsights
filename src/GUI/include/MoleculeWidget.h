@@ -45,7 +45,7 @@ public:
     void addElectronsVector(const ElectronsVector& electronsVector, int clusterId = 0, int structureId = 0);
     void removeElectronsVector(int clusterId = 0, int structureId = 0);
 
-    void addSeds(int clusterId, const std::vector<ClusterData> &clusterData);
+    void addSeds(int clusterId, const std::vector<ClusterData> &clusterData, double includedPercentage);
     void removeSeds(int clusterId);
 
 public Q_SLOTS:
