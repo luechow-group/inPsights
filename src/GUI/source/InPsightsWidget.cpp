@@ -30,7 +30,9 @@ InPsightsWidget::InPsightsWidget(QWidget *parent, const std::string& filename)
         axesCheckBox(new QCheckBox("Axes", this)),
         spinConnectionsCheckBox(new QCheckBox("Spin Connections", this)),
         spinCorrelationsCheckBox(new QCheckBox("Spin Correlations", this)),
+        sedsCheckBox(new QCheckBox("SEDs", this)),
         spinCorrelationBox(new QDoubleSpinBox(this)),
+        sedPercentageBox(new QDoubleSpinBox(this)),
         maximaList(new QTreeWidget(this)) {
 
     loadData();
@@ -48,7 +50,6 @@ void InPsightsWidget::createWidget() {
     auto vboxOuter = new QVBoxLayout();
     auto vboxInner = new QVBoxLayout();
     auto gbox = new QGroupBox("Settings:");
-    auto sliderBox = new QHBoxLayout();
 
     setLayout(hbox);
 
@@ -80,13 +81,11 @@ void InPsightsWidget::createWidget() {
     checkboxGrid->addWidget(axesCheckBox,2,0);
     checkboxGrid->addWidget(spinConnectionsCheckBox,0,1);
     checkboxGrid->addWidget(spinCorrelationsCheckBox,1,1);
-
-    vboxInner->addWidget(spinCorrelationBox);
-    vboxInner->addLayout(sliderBox);
-
-    sliderBox->addWidget(spinCorrelationBox);
-
-    setupSliderBox();
+    checkboxGrid->addWidget(spinCorrelationBox,1,2);
+    checkboxGrid->addWidget(sedsCheckBox,2,1);
+    checkboxGrid->addWidget(sedPercentageBox,2,2);
+    
+    setupSpinBoxes();
 }
 
 void InPsightsWidget::connectSignals() {
@@ -125,10 +124,14 @@ void InPsightsWidget::connectSignals() {
             moleculeWidget, &MoleculeWidget::onElectronsHighlighted);
 }
 
-void InPsightsWidget::setupSliderBox() {
+void InPsightsWidget::setupSpinBoxes() {
     spinCorrelationBox->setRange(0.0,1.0);
     spinCorrelationBox->setSingleStep(0.01);
     spinCorrelationBox->setValue(1.0);
+
+    sedPercentageBox->setRange(0.0,1.0);
+    sedPercentageBox->setSingleStep(0.01);
+    sedPercentageBox->setValue(0.2);
 }
 
 void InPsightsWidget::selectedStructure(QTreeWidgetItem *item, int column) {
@@ -148,8 +151,19 @@ void InPsightsWidget::selectedStructure(QTreeWidgetItem *item, int column) {
     if (createQ) {
         moleculeWidget->addElectronsVector(clusterCollection_[clusterId].exemplaricStructures_[structureId], clusterId, structureId);
         maximaProcessingWidget->updateData(clusterCollection_[clusterId]);
+
+        if(sedsCheckBox->checkState() == Qt::CheckState::Checked
+        && moleculeWidget->activeSedsMap_.find(clusterId) == moleculeWidget->activeSedsMap_.end()) {
+            if (clusterCollection_[clusterId].voxelCubes_.empty())
+                spdlog::warn("Voxel cubes were not calculated.");
+            else
+                moleculeWidget->addSeds(clusterId, clusterCollection_, sedPercentageBox->value());
+        }
     } else {
         moleculeWidget->removeElectronsVector(clusterId, structureId);
+
+        if(moleculeWidget->activeSedsMap_.find(clusterId) != moleculeWidget->activeSedsMap_.end())
+            moleculeWidget->removeSeds(clusterId);
     }
     redrawSpinDecorations();
 };
@@ -262,13 +276,6 @@ void InPsightsWidget::loadData() {
         }
     }
 
-
-    /*auto voxelData = doc["Clusters"][0]["VoxelCubes"].as<std::vector<VoxelCube>>();
-    for (int j = 0; j < nElectrons; ++j) {
-        SurfaceDataGenerator surfaceDataGenerator(voxelData[j]);
-        auto surfaceData = surfaceDataGenerator.computeSurfaceData(0.25);
-        moleculeWidget->drawSurface(surfaceData);
-    }*/
 }
 
 void InPsightsWidget::initialView() {

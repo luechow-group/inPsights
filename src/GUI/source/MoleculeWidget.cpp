@@ -12,6 +12,8 @@
 #include <Bond3D.h>
 #include <Cylinder.h>
 #include <Particle3D.h>
+#include <Surface.h>
+#include <SurfaceDataGenerator.h>
 
 #include <SpinCorrelations3D.h>
 
@@ -108,6 +110,31 @@ void MoleculeWidget::removeElectronsVector(int clusterId, int structureId) {
 void MoleculeWidget::setSharedAtomsVector(AtomsVector atomsVector) {
     sharedAtomsVector_ = std::make_shared<AtomsVector>(std::move(atomsVector));
 }
+
+void MoleculeWidget::addSeds(int clusterId, const std::vector<ClusterData> &clusterData, double includedPercentage) {
+    auto spins = clusterData[clusterId].representativeStructure().typesVector();
+    auto N = spins.numberOfEntities();
+
+    std::vector<Surface*> seds(N);
+
+    const auto& voxelData = clusterData[clusterId].voxelCubes_;
+
+    for (std::size_t i = 0; i < spins.numberOfEntities(); ++i) {
+        SurfaceDataGenerator surfaceDataGenerator(voxelData[i]);
+        auto surfaceData = surfaceDataGenerator.computeSurfaceData(includedPercentage);
+        seds[i] = new Surface(getMoleculeEntity(), surfaceData, GuiHelper::QColorFromType(spins[i]), 0.15);
+    }
+    activeSedsMap_[clusterId] = seds;
+}
+
+void MoleculeWidget::removeSeds(int clusterId) {
+    for (auto &sed : activeSedsMap_[clusterId])
+        sed->deleteLater();
+
+    if (!activeSedsMap_[clusterId].empty())
+        activeSedsMap_.erase(clusterId);
+}
+
 
 void MoleculeWidget::drawSpinCorrelations(bool drawQ,
                                           const std::vector<ClusterData> &clusterData,
