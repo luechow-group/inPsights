@@ -84,7 +84,7 @@ void InPsightsWidget::createWidget() {
     checkboxGrid->addWidget(spinCorrelationBox,1,2);
     checkboxGrid->addWidget(sedsCheckBox,2,1);
     checkboxGrid->addWidget(sedPercentageBox,2,2);
-    
+
     setupSpinBoxes();
 }
 
@@ -282,7 +282,7 @@ void InPsightsWidget::initialView() {
     maximaList->sortItems(0,Qt::SortOrder::AscendingOrder);
     atomsCheckBox->setCheckState(Qt::CheckState::Checked);
     bondsCheckBox->setCheckState(Qt::CheckState::Checked);
-    axesCheckBox->setCheckState(Qt::CheckState::Checked);
+    axesCheckBox->setCheckState(Qt::CheckState::Unchecked);
     maximaList->topLevelItem(0)->setCheckState(0, Qt::CheckState::Checked);
     //spinConnectionsCheckBox->setCheckState(Qt::CheckState::Checked);
     //spinCorrelationsCheckBox->setCheckState(Qt::CheckState::Checked);
