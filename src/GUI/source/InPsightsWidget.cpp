@@ -284,6 +284,4 @@ void InPsightsWidget::initialView() {
     bondsCheckBox->setCheckState(Qt::CheckState::Checked);
     axesCheckBox->setCheckState(Qt::CheckState::Unchecked);
     maximaList->topLevelItem(0)->setCheckState(0, Qt::CheckState::Checked);
-    //spinConnectionsCheckBox->setCheckState(Qt::CheckState::Checked);
-    //spinCorrelationsCheckBox->setCheckState(Qt::CheckState::Checked);
 }
