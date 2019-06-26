@@ -4,6 +4,7 @@
 
 #include <LocalBondSimilarityClusterer.h>
 #include <BestMatchDistance.h>
+#include <BestMatch.h>
 #include <NearestElectrons.h>
 #include <Reference.h>
 #include <Group.h>
@@ -36,7 +37,6 @@ LocalBondSimilarityClusterer::LocalBondSimilarityClusterer(std::vector<Sample> &
         : samples_(samples),
           nuclei_(nuclei) {}
 
-
 void LocalBondSimilarityClusterer::cluster(Group &group) {
     assert(!group.empty() && "The group cannot be empty.");
 
@@ -44,21 +44,25 @@ void LocalBondSimilarityClusterer::cluster(Group &group) {
 
     group.sort();
 
+    std::list<long> subIndices;
+    Eigen::PermutationMatrix<Eigen::Dynamic> permutation;
+
+    for (auto subGroup = group.begin(); subGroup != group.end(); ++subGroup) {
+        subIndices = LocalBondSimilarityClusterer::getRelevantIndices(subGroup->representative()->maximum());
+        permutation = BestMatch::getPermutationToFront(subIndices, subGroup->representative()->maximum().numberOfEntities());
+        subGroup->permuteAll(permutation, samples_);
+    }
+
     Group superGroup({Group({*group.begin()})});
 
-    std::list<long> subIndices;
-    std::list<long> sortedIndices;
     bool isSimilarQ;
 
     for (auto subGroup = std::next(group.begin()); subGroup != group.end(); ++subGroup) {
         isSimilarQ = false;
         for (auto sortedGroup = superGroup.begin(); sortedGroup != superGroup.end(); ++sortedGroup) {
-            subIndices = LocalBondSimilarityClusterer::getRelevantIndices(subGroup->representative()->maximum());
-            sortedIndices = LocalBondSimilarityClusterer::getRelevantIndices(sortedGroup->representative()->maximum());
-
             auto[norm, perm] = BestMatch::Distance::compare<Eigen::Infinity, 2>(
-                    subGroup->representative()->maximum()[subIndices].positionsVector(),
-                    sortedGroup->representative()->maximum()[sortedIndices].positionsVector());
+                    subGroup->representative()->maximum().getFirstElements(settings.count()).positionsVector(),
+                    sortedGroup->representative()->maximum().getFirstElements(settings.count()).positionsVector());
 
             if (norm < similarityRadius) {
                 sortedGroup->emplace_back(*subGroup);
