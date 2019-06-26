@@ -41,15 +41,17 @@ void LocalBondSimilarityClusterer::cluster(Group &group) {
     assert(!group.empty() && "The group cannot be empty.");
 
     auto similarityRadius = settings.similarityRadius();
+    long electronsNumber = group.representative()->maximum().numberOfEntities();
 
     group.sort();
 
     std::list<long> subIndices;
     Eigen::PermutationMatrix<Eigen::Dynamic> permutation;
 
+    // sorting relevant electrons to the front
     for (auto subGroup = group.begin(); subGroup != group.end(); ++subGroup) {
         subIndices = LocalBondSimilarityClusterer::getRelevantIndices(subGroup->representative()->maximum());
-        permutation = BestMatch::getPermutationToFront(subIndices, subGroup->representative()->maximum().numberOfEntities());
+        permutation = BestMatch::getPermutationToFront(subIndices, electronsNumber);
         subGroup->permuteAll(permutation, samples_);
     }
 
@@ -65,6 +67,7 @@ void LocalBondSimilarityClusterer::cluster(Group &group) {
                     sortedGroup->representative()->maximum().getFirstElements(settings.count()).positionsVector());
 
             if (norm < similarityRadius) {
+                subGroup->permuteAll(BestMatch::getFullPermutation(perm, electronsNumber), samples_);
                 sortedGroup->emplace_back(*subGroup);
                 isSimilarQ = true;
                 break;
