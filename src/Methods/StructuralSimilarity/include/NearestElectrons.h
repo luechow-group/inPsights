@@ -15,8 +15,17 @@ namespace NearestElectrons {
 
     std::list<long>
     getNearestValenceIndices(const ElectronsVector &electrons, const AtomsVector &nuclei,
+                             const std::vector<Eigen::Vector3d> &positions,
+                             const long &count);
+
+    std::list<long>
+    getNearestValenceIndices(const ElectronsVector &electrons, const AtomsVector &nuclei,
                              const Eigen::Vector3d &position,
                              const long &count);
+
+    std::list<long>
+    getNearestElectronsIndices(const ElectronsVector &electrons, const std::vector<Eigen::Vector3d> &positions,
+                               const long &count);
 
     std::list<long>
     getNearestElectronsIndices(const ElectronsVector &electrons, const Eigen::Vector3d &position,

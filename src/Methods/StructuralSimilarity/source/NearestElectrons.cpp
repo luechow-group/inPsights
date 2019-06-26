@@ -28,11 +28,11 @@ namespace NearestElectrons {
 
     std::list<long>
     getNearestValenceIndices(const ElectronsVector &electrons, const AtomsVector &nuclei,
-                             const Eigen::Vector3d &position,
+                             const std::vector<Eigen::Vector3d> &positions,
                              const long &count) {
         std::priority_queue<std::pair<double, long>> q;
         for (long i = 0; i < electrons.numberOfEntities(); i++) {
-            q.push(std::pair<double, long>(-Metrics::distance(electrons[i].position(), position),
+            q.push(std::pair<double, long>(-Metrics::distance(electrons[i].position(), positions[0]),
                                            i));
         };
 
@@ -53,12 +53,19 @@ namespace NearestElectrons {
         return indices;
     };
 
+    std::list<long>
+    getNearestValenceIndices(const ElectronsVector &electrons, const AtomsVector &nuclei,
+                             const Eigen::Vector3d &position,
+                             const long &count){
+        return getNearestValenceIndices(electrons, nuclei, std::vector<Eigen::Vector3d>({position}), count);
+    };
+
     std::list<long> getNearestElectronsIndices(const ElectronsVector &electrons,
-                                               const Eigen::Vector3d &position,
+                                               const std::vector<Eigen::Vector3d> &positions,
                                                const long &count) {
         std::priority_queue<std::pair<double, int>> q;
         for (long i = 0; i < electrons.numberOfEntities(); i++) {
-            q.push(std::pair<double, long>(-Metrics::distance(electrons[i].position(), position),
+            q.push(std::pair<double, long>(-Metrics::distance(electrons[i].position(), positions[0]),
                                            i));
         };
 
@@ -71,5 +78,11 @@ namespace NearestElectrons {
         indices.sort();
 
         return indices;
+    };
+
+    std::list<long>
+    getNearestElectronsIndices(const ElectronsVector &electrons, const Eigen::Vector3d &position,
+                               const long &count){
+        return getNearestElectronsIndices(electrons, std::vector<Eigen::Vector3d>({position}), count);
     };
 }
