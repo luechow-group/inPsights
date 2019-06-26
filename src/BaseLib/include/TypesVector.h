@@ -104,9 +104,9 @@ public:
     }
 
     //TODO dirty - refactor
-    std::vector<std::pair<Type,unsigned>> countTypes() const {
+    std::vector<EnumeratedType<Type>> countTypes() const {
 
-        std::vector<std::pair<Type,unsigned>> typeCountsPair;
+        std::vector<EnumeratedType<Type>> typeCountsPair;
         if(numberOfEntities() > 0) {
             if(numberOfEntities() == 1) {
                 return {{this->operator[](0),1}};
@@ -122,12 +122,12 @@ public:
                 if (currentType == lastType)
                     count++;
                 else {
-                    typeCountsPair.push_back({Type(lastType), count});
+                    typeCountsPair.emplace_back(EnumeratedType<Type>(Type(lastType), count));
                     count = 1;
                 }
                 // treat last element
                 if(i == numberOfEntities()-1)
-                    typeCountsPair.push_back({Type(currentType), count});
+                    typeCountsPair.emplace_back(EnumeratedType<Type>(Type(currentType), count));
             }
         }
         return typeCountsPair;

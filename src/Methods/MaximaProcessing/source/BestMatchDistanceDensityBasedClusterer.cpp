@@ -1,5 +1,6 @@
 //
 // Created by heuer on 12.12.18.
+// Edited by reuter on 21.05.18.
 //
 
 #include <BestMatchDistanceDensityBasedClusterer.h>
@@ -13,10 +14,10 @@ namespace Settings {
     : ISettings(VARNAME(BestMatchDistanceDensityBasedClusterer)) {
         clusterRadius.onChange_.connect(
                 [&](double value) {
-                    if(value > ::BestMatchDistanceSimilarityClusterer::settings.similarityRadius())
+                    if(value < ::BestMatchDistanceSimilarityClusterer::settings.similarityRadius())
                         throw std::invalid_argument(
                                 "The " + clusterRadius.name() + " with " + std::to_string(clusterRadius())
-                                + " is greater than the "+ ::BestMatchDistanceSimilarityClusterer::settings.similarityRadius.name() 
+                                + " is smaller than the "+ ::BestMatchDistanceSimilarityClusterer::settings.similarityRadius.name()
                                 + " with "
                                 + std::to_string(::BestMatchDistanceSimilarityClusterer::settings.similarityRadius()));
                 });
@@ -41,26 +42,18 @@ BestMatchDistanceDensityBasedClusterer::BestMatchDistanceDensityBasedClusterer(s
 
 double BestMatchDistanceDensityBasedClusterer::wrapper(const Group &g1, const Group &g2) {
     return BestMatch::Distance::compare<Eigen::Infinity, 2>(
-            g1.representative()->maximum(),
-            g2.representative()->maximum()).metric;
+            g1.representative()->maximum().positionsVector(),
+            g2.representative()->maximum().positionsVector()).metric;
 };
-
-bool BestMatchDistanceDensityBasedClusterer::SortElement::operator<(const SortElement &rhs) const {
-    return bestMatch_.metric < rhs.bestMatch_.metric;
-}
-
-
-BestMatchDistanceDensityBasedClusterer::SortElement::SortElement(BestMatch::Result bestMatch, Group::iterator it)
-        : bestMatch_(std::move(bestMatch)), it_(it) {}
         
 void BestMatchDistanceDensityBasedClusterer::cluster(Group& group) {
     assert(!group.empty() && "The group cannot be empty.");
 
     group.sortAll();
-    auto threshold = settings.clusterRadius() * 2 + 0.01; // TODO WHY IS THIS CORRECTION NECESSARY?
 
+    auto threshold = settings.clusterRadius()*2;
     DensityBasedScan<double, Group, BestMatchDistanceDensityBasedClusterer::wrapper> dbscan(group);
-    auto result = dbscan.findClusters(threshold, 1); // why multiplication by 2 is needed?
+    auto result = dbscan.findClusters(threshold, 1);// why multiplication by 2 is needed?
 
     Group supergroup(static_cast<Group::size_type>(result.numberOfClusters));
 
@@ -69,42 +62,51 @@ void BestMatchDistanceDensityBasedClusterer::cluster(Group& group) {
             if (result.labels[j] == i)
                 supergroup[i].emplace_back(std::move(g));
 
-    orderByBestMatchDistance(supergroup);
+    orderByBestMatchDistance(supergroup, threshold);
 
     group = supergroup;
 }
 
-// TODO this is a more general group sorting method
-void BestMatchDistanceDensityBasedClusterer::orderByBestMatchDistance(Group &supergroup) const {// order clusters by best match distance //TODO make specialized sorting method
+void BestMatchDistanceDensityBasedClusterer::orderByBestMatchDistance(Group &supergroup, double threshold) const {
     for (auto &subgroup : supergroup) {
         sort(subgroup.begin(), subgroup.end());
 
-        // iterate over all similarReferences in the cluster
-        for (auto i = subgroup.begin(); i != subgroup.end(); ++i) {
-            std::vector<SortElement> bestMatchDistances;
+        // starting sortedGroup with one active group, which is erased from subgroup
+        Group sortedGroup({*subgroup.begin()});
+        subgroup.erase(subgroup.begin());
+        long activeGroups = 1;
 
-            // make a list of best match distances and permutations starting with the next similarReferences object
-            for (auto j = i + 1; j != subgroup.end(); ++j) {
-                bestMatchDistances.emplace_back(
-                        SortElement(BestMatch::Distance::compare<Eigen::Infinity, 2>(
-                                j.base()->representative()->maximum(),
-                                i.base()->representative()->maximum()), j)
-                );
-            }
+        while (!subgroup.empty()){
+            // setting newGroups empty again
+            Group newGroups;
 
-            // check if the list contains more than one element
-            if (bestMatchDistances.size() > 1) {
-                // find the SimilarReferences object whose representativeReference is closest to the i
-                auto minIt = min_element(bestMatchDistances.begin(), bestMatchDistances.end());
+            // iterating over all active groups (at the end of sortedGroup)
+            for (auto i = sortedGroup.end() - activeGroups; i != sortedGroup.end(); ++i){
 
-                // permute and swap
-                minIt.base()->it_.base()->permuteAll(minIt.base()->bestMatch_.permutation, samples_);
-                if (i + 1 != minIt.base()->it_) {
-                    iter_swap(i + 1, minIt.base()->it_);
-                }
-            } else if (bestMatchDistances.size() == 1) { // only one element left
-                (i + 1).base()->permuteAll(bestMatchDistances[0].bestMatch_.permutation, samples_);
-            }
-        }
+                // iterating over all groups remaining in the unsorted subgroup
+                for (auto j = subgroup.begin(); j != subgroup.end(); ++j) {
+                    auto[norm, perm] = BestMatch::Distance::compare<Eigen::Infinity, 2>(
+                                    j->representative()->maximum().positionsVector(),
+                                    i->representative()->maximum().positionsVector());
+
+                    if (norm <= threshold) {
+                        j->permuteAll(perm, samples_);
+
+                        // moving j from subgroup to newGroups
+                        newGroups.emplace_back(*j);
+                        j = subgroup.erase(j);
+                        --j;
+                    };
+                };
+            };
+
+            // moving all groups from newGroups to sortedGroup()
+            activeGroups = newGroups.size();
+            for (auto &newGroup : newGroups) {
+                sortedGroup.emplace_back(newGroup);
+            };
+        };
+
+        subgroup = sortedGroup;
     }
 }

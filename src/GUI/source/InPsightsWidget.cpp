@@ -8,7 +8,6 @@
 
 #include <QGridLayout>
 #include <QGroupBox>
-#include <QSpinBox>
 #include <QSplashScreen>
 #include <QTimer>
 #include <QHeaderView>
@@ -20,17 +19,20 @@
 #include <spdlog/spdlog.h>
 
 
-InPsightsWidget::InPsightsWidget(QWidget *parent)
+InPsightsWidget::InPsightsWidget(QWidget *parent, const std::string& filename)
         :
         QWidget(parent),
+        filename_(filename),
         moleculeWidget(new MoleculeWidget(this)),
         maximaProcessingWidget(new MaximaProcessingWidget(this)), // TODO refator, should it be an additional window?
         atomsCheckBox(new QCheckBox("Atoms", this)),
         bondsCheckBox(new QCheckBox("Bonds", this)),
+        axesCheckBox(new QCheckBox("Axes", this)),
         spinConnectionsCheckBox(new QCheckBox("Spin Connections", this)),
         spinCorrelationsCheckBox(new QCheckBox("Spin Correlations", this)),
-        spinCorrelationSlider(new QSlider(Qt::Orientation::Horizontal, this)),
-        spinCorrelationSliderLabel(new QLabel(this)),
+        sedsCheckBox(new QCheckBox("SEDs", this)),
+        spinCorrelationBox(new QDoubleSpinBox(this)),
+        sedPercentageBox(new QDoubleSpinBox(this)),
         maximaList(new QTreeWidget(this)) {
 
     loadData();
@@ -48,7 +50,6 @@ void InPsightsWidget::createWidget() {
     auto vboxOuter = new QVBoxLayout();
     auto vboxInner = new QVBoxLayout();
     auto gbox = new QGroupBox("Settings:");
-    auto sliderBox = new QHBoxLayout();
 
     setLayout(hbox);
 
@@ -57,10 +58,14 @@ void InPsightsWidget::createWidget() {
     hbox->addLayout(vboxOuter, 1);
 
     // put into MaximaTreeWidget class
-    auto headerLabels = QList<QString>({"ID", "N", "min(-ln(|Ψ|²))", "max(-ln(|Ψ|²))"});
+    auto headerLabels = QList<QString>({"ID", "Weight", "min(-ln|Ψ|²)", "max(-ln|Ψ|²)"});
     maximaList->setColumnCount(headerLabels.size());
     maximaList->setHeaderLabels(headerLabels);
     maximaList->header()->setStretchLastSection(false);
+    maximaList-> header() -> setSectionResizeMode(0,QHeaderView::Stretch);
+    maximaList-> header() -> setSectionResizeMode(1,QHeaderView::ResizeToContents);
+    maximaList-> header() -> setSectionResizeMode(2,QHeaderView::ResizeToContents);
+    maximaList-> header() -> setSectionResizeMode(3,QHeaderView::ResizeToContents);
 
     vboxOuter->addWidget(maximaList, 1);
     vboxOuter->addWidget(maximaProcessingWidget,1);
@@ -73,16 +78,14 @@ void InPsightsWidget::createWidget() {
     vboxInner->addLayout(checkboxGrid,1);
     checkboxGrid->addWidget(atomsCheckBox,0,0);
     checkboxGrid->addWidget(bondsCheckBox,1,0);
+    checkboxGrid->addWidget(axesCheckBox,2,0);
     checkboxGrid->addWidget(spinConnectionsCheckBox,0,1);
     checkboxGrid->addWidget(spinCorrelationsCheckBox,1,1);
+    checkboxGrid->addWidget(spinCorrelationBox,1,2);
+    checkboxGrid->addWidget(sedsCheckBox,2,1);
+    checkboxGrid->addWidget(sedPercentageBox,2,2);
 
-    vboxInner->addWidget(spinCorrelationSlider);
-    vboxInner->addLayout(sliderBox);
-
-    sliderBox->addWidget(spinCorrelationSliderLabel);
-    sliderBox->addWidget(spinCorrelationSlider);
-
-    setupSliderBox();
+    setupSpinBoxes();
 }
 
 void InPsightsWidget::connectSignals() {
@@ -95,6 +98,9 @@ void InPsightsWidget::connectSignals() {
     connect(bondsCheckBox, &QCheckBox::stateChanged,
             this, &InPsightsWidget::onBondsChecked);
 
+    connect(axesCheckBox, &QCheckBox::stateChanged,
+           this, &InPsightsWidget::onAxesChecked);
+
     connect(spinConnectionsCheckBox, &QCheckBox::stateChanged,
             this, &InPsightsWidget::onSpinConnectionsChecked);
 
@@ -104,8 +110,8 @@ void InPsightsWidget::connectSignals() {
     connect(spinCorrelationsCheckBox, &QCheckBox::stateChanged,
             this, &InPsightsWidget::onSpinCorrelationsChecked);
 
-    connect(spinCorrelationSlider, &QSlider::valueChanged,
-            this, &InPsightsWidget::onSpinCorrelationsSliderChanged);
+    connect(spinCorrelationBox, qOverload<double>(&QDoubleSpinBox::valueChanged),
+            this, &InPsightsWidget::onSpinCorrelationsBoxChanged);
 
     connect(maximaProcessingWidget, &MaximaProcessingWidget::atomsChecked,
             moleculeWidget, &MoleculeWidget::onAtomsChecked);
@@ -118,12 +124,14 @@ void InPsightsWidget::connectSignals() {
             moleculeWidget, &MoleculeWidget::onElectronsHighlighted);
 }
 
-void InPsightsWidget::setupSliderBox() {
-    spinCorrelationSlider->setRange(0,100);
-    spinCorrelationSlider->setSingleStep(1);
-    spinCorrelationSlider->setValue(75);
-    spinCorrelationSlider->setTickInterval(25);
-    spinCorrelationSlider->setTickPosition(QSlider::TicksBelow);
+void InPsightsWidget::setupSpinBoxes() {
+    spinCorrelationBox->setRange(0.0,1.0);
+    spinCorrelationBox->setSingleStep(0.01);
+    spinCorrelationBox->setValue(1.0);
+
+    sedPercentageBox->setRange(0.0,1.0);
+    sedPercentageBox->setSingleStep(0.01);
+    sedPercentageBox->setValue(0.2);
 }
 
 void InPsightsWidget::selectedStructure(QTreeWidgetItem *item, int column) {
@@ -143,8 +151,19 @@ void InPsightsWidget::selectedStructure(QTreeWidgetItem *item, int column) {
     if (createQ) {
         moleculeWidget->addElectronsVector(clusterCollection_[clusterId].exemplaricStructures_[structureId], clusterId, structureId);
         maximaProcessingWidget->updateData(clusterCollection_[clusterId]);
+
+        if(sedsCheckBox->checkState() == Qt::CheckState::Checked
+        && moleculeWidget->activeSedsMap_.find(clusterId) == moleculeWidget->activeSedsMap_.end()) {
+            if (clusterCollection_[clusterId].voxelCubes_.empty())
+                spdlog::warn("Voxel cubes were not calculated.");
+            else
+                moleculeWidget->addSeds(clusterId, clusterCollection_, sedPercentageBox->value());
+        }
     } else {
         moleculeWidget->removeElectronsVector(clusterId, structureId);
+
+        if(moleculeWidget->activeSedsMap_.find(clusterId) != moleculeWidget->activeSedsMap_.end())
+            moleculeWidget->removeSeds(clusterId);
     }
     redrawSpinDecorations();
 };
@@ -168,23 +187,20 @@ void InPsightsWidget::onBondsChecked(int stateId) {
     moleculeWidget->drawBonds(Qt::CheckState(stateId) == Qt::CheckState::Checked);
 }
 
+void InPsightsWidget::onAxesChecked(int stateId) {
+    moleculeWidget->drawAxes(Qt::CheckState(stateId) == Qt::CheckState::Checked);
+}
+
 void InPsightsWidget::onSpinConnectionsChecked(int stateId) {
     moleculeWidget->drawSpinConnections(Qt::CheckState(stateId) == Qt::CheckState::Checked);
 }
 
 void InPsightsWidget::onSpinCorrelationsChecked(int stateId) {
     moleculeWidget->drawSpinCorrelations(Qt::CheckState(stateId) == Qt::CheckState::Checked,
-                                         clusterCollection_,
-                                         double(spinCorrelationSlider->value())/spinCorrelationSlider->maximum());
+                                         clusterCollection_, spinCorrelationBox->value());
 }
 
-void InPsightsWidget::updateSpinCorrelationSliderLabel(int value) {
-    auto corr = double(value)/spinCorrelationSlider->maximum();
-    spinCorrelationSliderLabel->setText(QString::number(corr, 'f', 2));
-}
-
-void InPsightsWidget::onSpinCorrelationsSliderChanged(int value) {
-    updateSpinCorrelationSliderLabel(value);
+void InPsightsWidget::onSpinCorrelationsBoxChanged(double value) {
     if (spinCorrelationsCheckBox->checkState() == Qt::CheckState::Checked) {
         onSpinCorrelationsChecked(Qt::CheckState::Unchecked); //TODO ugly, create update() function in SpinCorrelation3D and make it accessible
         onSpinCorrelationsChecked(Qt::CheckState::Checked);
@@ -203,14 +219,16 @@ void InPsightsWidget::showSplashScreen() {
 
 void InPsightsWidget::loadData() {
 
-    auto fileName = QFileDialog::getOpenFileName(this,
-            QString("Open results file"),
-            QDir::currentPath(),
-            QString("YAML files (*.yml *.yaml *.json)"));
+    if(filename_.empty()) {
+        filename_ = QFileDialog::getOpenFileName(this,
+                                                QString("Open results file"),
+                                                QDir::currentPath(),
+                                                QString("YAML files (*.yml *.yaml *.json)")).toStdString();
+    }
 
-    moleculeWidget->infoText_->setText(fileName);
+    moleculeWidget->infoText_->setText(filename_.c_str());
 
-    YAML::Node doc = YAML::LoadAllFromFile(fileName.toStdString())[1]; // load results
+    YAML::Node doc = YAML::LoadAllFromFile(filename_)[1]; // load results
     auto atoms = doc["Atoms"].as<AtomsVector>();
 
     auto nElectrons = doc["Clusters"][0]["Structures"][0].as<ElectronsVector>().numberOfEntities();
@@ -230,10 +248,11 @@ void InPsightsWidget::loadData() {
         ClusterData clusterData = doc["Clusters"][clusterId].as<ClusterData>();
 
         clusterCollection_.emplace_back(clusterData);
-        auto item = new IntegerSortedTreeWidgetItem(maximaList,{QString::number(clusterId),
-                                                         QString::number(clusterData.N_),
-                                                         QString::number(clusterData.valueStats_.cwiseMin()[0]),
-                                                         QString::number(clusterData.valueStats_.cwiseMax()[0])});
+        auto item = new IntegerSortedTreeWidgetItem(
+                maximaList, {QString::number(clusterId),
+                 QString::number(1.0 * clusterData.N_ / doc["NSamples"].as<unsigned>(), 'f', 4),
+                 QString::number(clusterData.valueStats_.cwiseMin()[0], 'f', 3),
+                 QString::number(clusterData.valueStats_.cwiseMax()[0], 'f', 3)});
 
         item->setCheckState(0, Qt::CheckState::Unchecked);
 
@@ -257,25 +276,12 @@ void InPsightsWidget::loadData() {
         }
     }
 
-
-    /*auto voxelData = doc["Clusters"][0]["VoxelCubes"].as<std::vector<VoxelCube>>();
-    for (int j = 0; j < nElectrons; ++j) {
-        SurfaceDataGenerator surfaceDataGenerator(voxelData[j]);
-        auto surfaceData = surfaceDataGenerator.computeSurfaceData(0.25);
-        moleculeWidget->drawSurface(surfaceData);
-    }*/
 }
 
 void InPsightsWidget::initialView() {
-    maximaList->resizeColumnToContents(0);
-    maximaList->resizeColumnToContents(1);
-    maximaList->resizeColumnToContents(2);
-    maximaList->resizeColumnToContents(3);
     maximaList->sortItems(0,Qt::SortOrder::AscendingOrder);
     atomsCheckBox->setCheckState(Qt::CheckState::Checked);
     bondsCheckBox->setCheckState(Qt::CheckState::Checked);
+    axesCheckBox->setCheckState(Qt::CheckState::Unchecked);
     maximaList->topLevelItem(0)->setCheckState(0, Qt::CheckState::Checked);
-    //spinConnectionsCheckBox->setCheckState(Qt::CheckState::Checked);
-    //spinCorrelationsCheckBox->setCheckState(Qt::CheckState::Checked);
-    updateSpinCorrelationSliderLabel(spinCorrelationSlider->value());
 }

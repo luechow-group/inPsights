@@ -128,7 +128,8 @@ void MaximaProcessor::calculateStatistics(const Group &maxima){
             voxelCubes = VoxelCubeGeneration::fromCluster(group, samples_);
 
 
-        if(TeStats_.getTotalWeight() >= MaximaProcessing::settings.minimalClusterSize.get()) {
+        auto weight = double(TeStats_.getTotalWeight())/double(samples_.size());
+        if(weight >= MaximaProcessing::settings.minimalClusterWeight.get()) {
             yamlDocument_ << ClusterData(TeStats_.getTotalWeight(), structures, valueStats_, TeStats_, EeStats_,
                                          SeeStats_, VeeStats_, VenStats_,
                                          motifs_, EtotalStats_, intraMotifEnergyStats_, interMotifEnergyStats_,

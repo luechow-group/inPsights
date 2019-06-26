@@ -18,7 +18,12 @@ int main(int argc, char *argv[]) {
 
     spdlog::info("Welcome to inPsights!");
 
-    auto widget = std::make_unique<InPsightsWidget>();
+    std::unique_ptr<InPsightsWidget> widget;
+
+    if (argc == 2)
+        widget = std::make_unique<InPsightsWidget>(nullptr, argv[1]);
+    else
+        widget = std::make_unique<InPsightsWidget>();
 
     return QApplication::exec();
 

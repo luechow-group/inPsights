@@ -20,7 +20,7 @@ namespace Settings {
     public:
         Property<std::string> binaryFileBasename = {"raw", VARNAME(binaryFileBasename)};
         Property<unsigned> samplesToAnalyze = {unsigned(SamplesToAnalyze::small), VARNAME(samplesToAnalyze)};
-        Property<unsigned> minimalClusterSize = {samplesToAnalyze.get()/1000, VARNAME(minimalClusterSize)};
+        Property<double> minimalClusterWeight = {0.01, VARNAME(minimalClusterWeight)};
 
         MaximaProcessing();
         explicit MaximaProcessing(const YAML::Node &node);

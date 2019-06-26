@@ -95,8 +95,10 @@ TEST_F(ANearestElectronsTest, BestMatch) {
     std::list<long> indices1 = NearestElectrons::getNearestValenceIndices(electrons.positionsVector(), nuclei, 0, 2, 2);
     std::list<long> indices2 = NearestElectrons::getNearestValenceIndices(electrons3.positionsVector(), nuclei, 0, 2, 2);
 
-    auto[norm, perm] = BestMatch::Distance::compare<Eigen::Infinity, 2>(electrons[indices1], electrons3[indices2]);
-    std::cout << std::endl << perm.indices().transpose() << std::endl;
+    auto[norm, perm] = BestMatch::Distance::compare<Eigen::Infinity, 2>(
+            electrons[indices1].positionsVector(),
+            electrons3[indices2].positionsVector());
+
     ASSERT_EQ(norm,0);
 };
 
@@ -104,6 +106,8 @@ TEST_F(ANearestElectronsTest, BestMatch2) {
     std::list<long> indices1 = NearestElectrons::getNearestValenceIndices(electrons.positionsVector(), nuclei, 0, 1, 2);
     std::list<long> indices2 = NearestElectrons::getNearestValenceIndices(electrons2.positionsVector(), nuclei, 0, 1, 2);
 
-    auto[norm, perm] = BestMatch::Distance::compare<Eigen::Infinity, 2>(electrons[indices1], electrons2[indices2]);
+    auto[norm, perm] = BestMatch::Distance::compare<Eigen::Infinity, 2>(
+            electrons[indices1].positionsVector(),
+            electrons2[indices2].positionsVector());
     ASSERT_NE(norm,0);
 };

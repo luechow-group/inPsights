@@ -24,19 +24,17 @@ public:
 
     explicit Group(std::vector<Group>::size_type size);
     Group(std::initializer_list<Group> group);
-    explicit Group(Reference reference); // constructor needed for convenience?
+    explicit Group(Reference reference);
 
     bool isLeaf() const;
 
     Group::size_type numberOfLeaves() const;
 
     void sort();
-    void sortAll(); // make it a template that accepts a function pointer of sorting routines
-    // sortBy(function pointer) //TODO
+    void sortAll();
 
     Group& operator+= (const Group& other);
 
-    // g: {a, b, c}, g.makeSubgroup({ait,cit}) => g: {b, {a, c}}
     void makeSubgroup(std::vector<Group::iterator> its);
 
     void permuteAll(const Eigen::PermutationMatrix<Eigen::Dynamic>& perm, std::vector<Sample>& samples);

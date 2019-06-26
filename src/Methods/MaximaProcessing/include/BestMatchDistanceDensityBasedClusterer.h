@@ -40,16 +40,7 @@ private:
 
     static double wrapper(const Group &g1, const Group &g2);
 
-    struct SortElement {
-        SortElement(BestMatch::Result bestMatch, Group::iterator it);
-
-        bool operator<(const SortElement &rhs) const;
-
-        BestMatch::Result bestMatch_;
-        Group::iterator it_;
-    };
-
-    void orderByBestMatchDistance(Group &supergroup) const;
+    void orderByBestMatchDistance(Group &supergroup, double threshold) const;
 };
 
 #endif //INPSIGHTS_BESTMATCHDISTANCEDENSITYBASEDCLUSTERER_H

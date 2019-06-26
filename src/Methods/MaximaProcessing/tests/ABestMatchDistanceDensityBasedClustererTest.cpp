@@ -10,6 +10,7 @@
 #include <Sample.h>
 #include <Reference.h>
 #include <NaturalConstants.h>
+#include <Metrics.h>
 
 using namespace testing;
 
@@ -19,57 +20,76 @@ public:
         spdlog::set_level(spdlog::level::off);
         BestMatchDistanceSimilarityClusterer::settings.similarityRadius = 0.1; // prevent assert
     }
+    Group makeRingLikeCluster(Group &references, std::vector<Sample> &samples, unsigned n){
+        auto rng = std::default_random_engine(static_cast<unsigned long>(std::clock()));
+        const auto &normal = TestMolecules::fourElectrons::normal.electrons();
+
+        // emplace first element (the first elements determines the ordering of the cluster)
+        references.emplace_back(Reference(0,normal));
+
+        Eigen::PermutationMatrix<Eigen::Dynamic> perm(normal.numberOfEntities());
+        perm.setIdentity();
+
+        // start with second element
+        bool anyWrong = false;
+        while (!anyWrong){
+            for (unsigned i = 1; i < n; ++i) {
+                double angle = Constant::pi/2.0*double(i)/double(n); // 90°
+                Eigen::Vector3d zAxis = {0,0,1};
+                auto evCopy = normal;
+                evCopy.positionsVector().rotateAroundOrigin(angle, zAxis);
+
+                // random permutation
+                std::shuffle(perm.indices().data(), perm.indices().data()+perm.indices().size(), rng);
+                evCopy.permute(perm);
+                references.emplace_back(Reference(std::pow(std::sin(angle),2),evCopy));
+
+                Sample s(evCopy, Eigen::VectorXd::Random(normal.numberOfEntities()));
+                samples.emplace_back(std::move(s));
+            }
+
+
+            auto referenceDistanceMatrix2 = Metrics::positionalDistances(references[0].representative()->maximum().positionsVector());
+
+            // test if any permutation is wrong
+
+            for (size_t i = 1; i < references.size(); ++i) {
+                auto distanceMatrix2 = Metrics::positionalDistances(references[i].representative()->maximum().positionsVector());
+                if (!distanceMatrix2.isApprox(referenceDistanceMatrix2)){
+                    anyWrong = true;
+                    break;
+                };
+            }
+        }
+        return references;
+    }
 };
 
 TEST_F(ABestMatchDistanceDensityBasedClustererTest, RotationallySymmetricCluster){
     BestMatchDistanceDensityBasedClusterer::settings.clusterRadius = 0.1;
 
-    const auto &normal = TestMolecules::threeElectrons::normal.electrons();
-
+    unsigned n = 20;
+    Group references;
     std::vector<Sample> samples;
-    Group references, expected;
+    makeRingLikeCluster(references, samples, n);
+
 
     auto rng = std::default_random_engine(static_cast<unsigned long>(std::clock()));
 
-    // emplace first element (the first elements determines the ordering of the cluster)
-    expected.emplace_back(Reference(0,normal));
-    references.emplace_back(Reference(0,normal));
-
-    Eigen::PermutationMatrix<Eigen::Dynamic> perm(normal.numberOfEntities());
-    perm.setIdentity();
-
-    unsigned n = 20;
-    // start with second element
-    for (unsigned i = 1; i < n; ++i) {
-        double angle = Constant::pi*double(i)/double(n); // 180°
-        Eigen::Vector3d xAxis = {1,0,0};
-        auto evCopy = normal;
-        evCopy.positionsVector().rotateAroundOrigin(angle, xAxis);
-        expected.emplace_back(Reference(std::pow(std::sin(angle),2),evCopy));
-
-        // random permuation
-        std::shuffle(perm.indices().data(), perm.indices().data()+perm.indices().size(), rng);
-        evCopy.permute(perm);
-        references.emplace_back(Reference(std::pow(std::sin(angle),2),evCopy));
-
-        Sample s(evCopy, Eigen::VectorXd::Random(normal.numberOfEntities()));
-        samples.emplace_back(std::move(s));
-    }
-
-    ASSERT_EQ(references.size(), expected.size());
-
-    // don't shuffle the first element
-    std::shuffle(references.begin()+1, references.end(), rng);
+    ASSERT_EQ(references.size(), n);
+    std::shuffle(references.begin(), references.end(), rng);
 
     BestMatchDistanceDensityBasedClusterer globalClusterSorter(samples);
     globalClusterSorter.cluster(references);
 
     ASSERT_EQ(references.size(),1);
-    ASSERT_EQ(references[0].size(), expected.size());
+    ASSERT_EQ(references[0].size(), n);
 
-    for (size_t i = 0; i < references[0].size(); ++i) {
-        ASSERT_TRUE(references[0][i].representative()->maximum() == expected[i].representative()->maximum());
-        ASSERT_TRUE(references[0][i].representative()->value() == expected[i].representative()->value());
+    auto referenceDistanceMatrix = Metrics::positionalDistances(references[0][0].representative()->maximum().positionsVector());
+
+    for (size_t i = 1; i < references[0].size(); ++i) {
+        auto distanceMatrix = Metrics::positionalDistances(references[0][i].representative()->maximum().positionsVector());
+        ASSERT_TRUE(distanceMatrix.isApprox(referenceDistanceMatrix));
     }
 }
 
@@ -77,52 +97,24 @@ TEST_F(ABestMatchDistanceDensityBasedClustererTest, RotationallySymmetricCluster
 TEST_F(ABestMatchDistanceDensityBasedClustererTest, RotationallySymmetricAndPointLikeCluster){
     BestMatchDistanceDensityBasedClusterer::settings.clusterRadius = 0.1;
 
-    const auto &normal = TestMolecules::threeElectrons::normal.electrons();
-    auto ionic = TestMolecules::threeElectrons::normal.electrons();
-    ionic.positionsVector().translate({1.0,0,0});
-
-    assert(normal.numberOfEntities() == ionic.numberOfEntities());
-
+    unsigned n = 20;
+    Group references;
     std::vector<Sample> samples;
-    Group references, cluster0Expected, cluster1Expected;
+    makeRingLikeCluster(references, samples, n);
 
-    auto rng = std::default_random_engine(12345);//static_cast<unsigned long>(std::clock()));
+    const auto &ionic = TestMolecules::fourElectrons::ionic.electrons();
 
-    // emplace first element
-    cluster0Expected.emplace_back(Reference(0, normal));
-    references.emplace_back(Reference(0,normal));
-
-    Eigen::PermutationMatrix<Eigen::Dynamic> perm(normal.numberOfEntities());
+    Eigen::PermutationMatrix<Eigen::Dynamic> perm(ionic.numberOfEntities());
     perm.setIdentity();
 
-    unsigned n = 20;
-    // start with second element
-    for (unsigned i = 1; i < n; ++i) {
-        double angle = Constant::pi*double(i)/double(n); // 180°
-        Eigen::Vector3d xAxis = {1,0,0};
-        auto evCopy = normal;
-        evCopy.positionsVector().rotateAroundOrigin(angle, xAxis);
-        cluster0Expected.emplace_back(Reference(std::pow(std::sin(angle),2),evCopy));
-
-        // random permuation
-        std::shuffle(perm.indices().data(), perm.indices().data()+perm.indices().size(), rng);
-        evCopy.permute(perm);
-        references.emplace_back(Reference(std::pow(std::sin(angle),2),evCopy));
-
-        Sample s(evCopy, Eigen::VectorXd::Random(normal.numberOfEntities()));
-        samples.emplace_back(std::move(s));
-    }
-    ASSERT_EQ(references.size(), n);
-    ASSERT_EQ(references.size(), cluster0Expected.size());
-
+    auto rng = std::default_random_engine(static_cast<unsigned long>(std::clock()));
 
     references.emplace_back(Reference(10, ionic));
-    cluster1Expected.emplace_back(Reference(10, ionic));
     unsigned m = 5;
     for (unsigned i = 1; i < m; ++i) {
         auto maxDev = 1./std::sqrt(3.0)*BestMatchDistanceDensityBasedClusterer::settings.clusterRadius.get();
 
-        Eigen::Vector3d randomTranslation; //= Eigen::Vector3d::Random(-maxDev, maxDev);
+        Eigen::Vector3d randomTranslation;
         std::uniform_real_distribution<double> uniformRealDistribution(-maxDev, maxDev);
         randomTranslation.x() = uniformRealDistribution(rng);
         randomTranslation.y() = uniformRealDistribution(rng);
@@ -130,30 +122,33 @@ TEST_F(ABestMatchDistanceDensityBasedClustererTest, RotationallySymmetricAndPoin
 
         auto evCopy = ionic;
         evCopy.positionsVector().translate(randomTranslation);
-        cluster1Expected.emplace_back(Reference(10, evCopy));
 
-        // random permuation
+        // random permutation
         std::shuffle(perm.indices().data(), perm.indices().data()+perm.indices().size(), rng);
         evCopy.permute(perm);
         references.emplace_back(Reference(10 ,evCopy));
 
-        Sample s(evCopy, Eigen::VectorXd::Random(normal.numberOfEntities()));
+        Sample s(evCopy, Eigen::VectorXd::Random(ionic.numberOfEntities()));
         samples.emplace_back(std::move(s));
     }
 
     ASSERT_EQ(references.size(), n+m);
-    ASSERT_EQ(references.size(), cluster0Expected.size() + cluster1Expected.size());
-    ASSERT_EQ(references[0].size(), cluster0Expected[0].size());
-    ASSERT_EQ(references[1].size(), cluster1Expected[1].size());
 
-    // don't shuffle the first element
-    std::shuffle(references.begin()+1, references.end(), rng);
+    std::shuffle(references.begin(), references.end(), rng);
 
     BestMatchDistanceDensityBasedClusterer globalClusterSorter(samples);
     globalClusterSorter.cluster(references);
 
-    for (size_t i = 0; i < references[0].size(); ++i) {
-        ASSERT_TRUE(references[0][i].representative()->maximum() == cluster0Expected[i].representative()->maximum());
-        ASSERT_TRUE(references[0][i].representative()->value() == cluster0Expected[i].representative()->value());
+    ASSERT_EQ(references.size(), 2);
+    ASSERT_EQ(references[0].size(), n);
+    ASSERT_EQ(references[1].size(), m);
+
+    for (size_t j = 0; j < references.size(); j++){
+        auto referenceDistanceMatrix = Metrics::positionalDistances(references[j][0].representative()->maximum().positionsVector());
+
+        for (size_t i = 1; i < references[j].size(); ++i) {
+            auto distanceMatrix = Metrics::positionalDistances(references[j][i].representative()->maximum().positionsVector());
+            ASSERT_TRUE(distanceMatrix.isApprox(referenceDistanceMatrix));
+        }
     }
 }

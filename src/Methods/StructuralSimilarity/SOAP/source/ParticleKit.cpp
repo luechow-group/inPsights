@@ -175,14 +175,14 @@ namespace SOAP {
 
         bool isSubsetQ(const AtomsVector &atomsVector) {
             auto countedTypes = atomsVector.typesVector().countTypes();
-            for (const auto &typeCountPair : countedTypes) {
+            for (auto typeCount: countedTypes) {
 
                 auto it = std::find_if(SOAP::ParticleKit::atomKit.begin(), SOAP::ParticleKit::atomKit.end(),
-                                       [typeCountPair](const std::pair<Element, unsigned> &element) {
-                                           return element.first == typeCountPair.first;
+                                       [typeCount](const std::pair<Element, unsigned> &element) {
+                                           return element.first == typeCount.type_;
                                        });
                 if (it == SOAP::ParticleKit::atomKit.end()) return false;
-                else if ((*it).second < typeCountPair.second) {
+                else if ((*it).second < typeCount.number_) {
                     return false;
                 }
             }

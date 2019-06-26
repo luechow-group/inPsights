@@ -9,37 +9,37 @@
 #include <MaximaProcessingWidget.h>
 
 #include <QCheckBox>
-#include <QSlider>
+#include <QDoubleSpinBox>
 #include <QTreeWidget>
 #include <ClusterData.h>
 
 class InPsightsWidget : public QWidget {
 Q_OBJECT
 public:
-    explicit InPsightsWidget(QWidget *parent = nullptr);
+    explicit InPsightsWidget(QWidget *parent = nullptr, const std::string &filename = "");
 
 public slots:
     void selectedStructure(QTreeWidgetItem *item, int column);
     void onAtomsChecked(int stateId);
     void onBondsChecked(int stateId);
+    void onAxesChecked(int stateId);
     void onSpinConnectionsChecked(int stateId = 0);
     void onSpinCorrelationsChecked(int stateId= 0);
-    void onSpinCorrelationsSliderChanged(int value);
+    void onSpinCorrelationsBoxChanged(double value);
 
 private:
+    std::string filename_;
     MoleculeWidget *moleculeWidget;
     MaximaProcessingWidget *maximaProcessingWidget;
-    QCheckBox *atomsCheckBox, *bondsCheckBox, *spinConnectionsCheckBox, *spinCorrelationsCheckBox;
-    QSlider *spinCorrelationSlider;
-    QLabel *spinCorrelationSliderLabel;
+    QCheckBox *atomsCheckBox, *bondsCheckBox, *axesCheckBox, *spinConnectionsCheckBox, *spinCorrelationsCheckBox, *sedsCheckBox;
+    QDoubleSpinBox *spinCorrelationBox, *sedPercentageBox;
     QTreeWidget *maximaList;
     std::vector<ClusterData> clusterCollection_;
 
     void showSplashScreen();
     void loadData();
     void initialView();
-    void setupSliderBox();
-    void updateSpinCorrelationSliderLabel(int value);
+    void setupSpinBoxes();
     void connectSignals();
     void createWidget();
     void redrawSpinDecorations();

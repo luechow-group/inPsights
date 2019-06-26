@@ -18,6 +18,7 @@
 #include <spdlog/spdlog.h>
 #include <SOAPSettings.h>
 #include <AsciiArt.h>
+#include <fstream>
 
 using namespace YAML;
 
@@ -87,6 +88,14 @@ int main(int argc, char *argv[]) {
         return 1;
     }
     std::string inputFilename = argv[1];
+    std::string::size_type idx;
+
+    idx = inputFilename.rfind('.');
+
+    std::string filenameWithoutExtension;
+    if(idx != std::string::npos)
+        filenameWithoutExtension = inputFilename.substr(idx);
+
     YAML::Node inputYaml = YAML::LoadFile(argv[1]);
     YAML::Emitter emitter;
     emitter << inputYaml;
@@ -96,11 +105,16 @@ int main(int argc, char *argv[]) {
     spdlog::info("Validating input from file {}:\n{}...", inputFilename, emitter.c_str());
     validateInput(inputYaml);
 
-
     // Apply settings from inputYaml
     MaximaProcessing::settings = Settings::MaximaProcessing(inputYaml);
 
-    // Read maxima and samples
+    // if binary file basename is not specified, use the name of  the input file
+    if(!inputYaml["MaximaProcessing"][MaximaProcessing::settings.binaryFileBasename.name()]) {
+        idx = inputFilename.rfind('.');
+        if (idx != std::string::npos)
+            MaximaProcessing::settings.binaryFileBasename = inputFilename.substr(0,idx);
+    }
+        // Read maxima and samples
     Group maxima;
     std::vector<Sample> samples;
     RawDataReader reader(maxima, samples);
@@ -232,7 +246,16 @@ int main(int argc, char *argv[]) {
     outputYaml << EndMap << EndDoc;
     outputYaml << BeginDoc << Comment("final settings") << usedSettings << EndDoc;
 
-    std::string resultsFilename = inputFilename.substr(0,inputFilename.find('.')) + "-out.yml";
+    std::string resultsBaseName = inputFilename.substr(0,inputFilename.find('.')) + "-out";
+    std::string resultsFilename = resultsBaseName + ".yml";
+    if (std::ifstream(resultsFilename).good()){
+        for (int i = 1; i < 100; i++){
+            resultsFilename = resultsBaseName + "-" + std::to_string(i) + ".yml";
+            if (not std::ifstream(resultsFilename).good()){
+                break;
+            }
+        }
+    }
     spdlog::info("Writing results into file \"{}\"", resultsFilename);
 
     std::ofstream yamlFile(resultsFilename);
@@ -243,13 +266,11 @@ int main(int argc, char *argv[]) {
 
     return 0;
 
-    /*TODO
-     * - add similarity attribute (enum - spatially|permutationally|rotationally + similar|identical ) to group
+    /* TODO
+     * - refactor best match clusterer
      * - make single value statistics class
-     * - test naive standard deviatino
+     * - test naive standard deviation
      * - test choice of function value increment
-     * - validate that ring-like clusters are ordered correctly
      * - split identity sort into batches that can be compared in parallel using OpenMP
-     * - improve spinSpecificHungarian (low priority)
      * */
 };
