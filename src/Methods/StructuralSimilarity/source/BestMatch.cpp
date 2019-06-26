@@ -43,3 +43,24 @@ Eigen::PermutationMatrix<Eigen::Dynamic> BestMatch::getPermutationToFront(const 
 
     return Eigen::PermutationMatrix<Eigen::Dynamic>(indices).inverse();
 };
+
+Eigen::PermutationMatrix<Eigen::Dynamic> BestMatch::getFullPermutation(const Eigen::PermutationMatrix<Eigen::Dynamic> &permutation, const long &size){
+    // builds full permutation from front permutation
+    assert(permutation.indices().size() <= size);
+
+    Eigen::VectorXi indices(size);
+    int i = 0;
+    while (i<permutation.indices().size()){
+        indices[i] = permutation.indices()[i];
+        i++;
+    }
+
+    for (long j=permutation.indices().size(); j<size; j++) {
+        indices[i] = j;
+        i++;
+    }
+
+    assert(i == size);
+
+    return Eigen::PermutationMatrix<Eigen::Dynamic>(indices);
+};

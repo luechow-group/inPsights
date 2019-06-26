@@ -49,3 +49,16 @@ TEST(ABestMatchTest, PermutationToFront) {
 
     ASSERT_EQ(permutation.indices(), refIndices);
 };
+
+TEST(ABestMatchTest, GetFullPermutation) {
+    Eigen::VectorXi indices(3);
+    indices << 2,0,1;
+
+    Eigen::PermutationMatrix<Eigen::Dynamic> partialPermutation(indices);
+    auto permutation = BestMatch::getFullPermutation(partialPermutation, 10);
+
+    Eigen::VectorXi refIndices(10);
+    refIndices << 2,0,1,3,4,5,6,7,8,9;
+
+    ASSERT_EQ(permutation.indices(), refIndices);
+};

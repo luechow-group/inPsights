@@ -17,6 +17,9 @@ namespace BestMatch {
     Eigen::PermutationMatrix<Eigen::Dynamic>
     getPermutationToFront(const std::list<long> &relevantIndices, const long &size);
 
+    Eigen::PermutationMatrix<Eigen::Dynamic>
+    getFullPermutation(const Eigen::PermutationMatrix<Eigen::Dynamic> &permutation, const long &size);
+
     struct Result {
         const double metric;
         const Eigen::PermutationMatrix<Eigen::Dynamic> permutation;
