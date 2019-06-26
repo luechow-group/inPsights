@@ -81,6 +81,7 @@ void LocalBondSimilarityClusterer::cluster(Group &group) {
 }
 
 std::list<long> LocalBondSimilarityClusterer::getRelevantIndices(const ElectronsVector &electrons) {
-    return NearestElectrons::getNearestValenceIndices(electrons, nuclei_, settings.index1(), settings.index2(),
-                                                      settings.count());
+    Eigen::Vector3d position =
+            (nuclei_[settings.index1()].position() + nuclei_[settings.index2()].position()) / 2;
+    return NearestElectrons::getNearestValenceIndices(electrons, nuclei_, position, settings.count());
 }
