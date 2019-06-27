@@ -192,6 +192,11 @@ int main(int argc, char *argv[]) {
                     positions.emplace_back(YAML::decodePosition(positionNode, atoms));
                 }
 
+                spdlog::info("Using the following positions:");
+                for (const auto &position : positions){
+                    spdlog::info("{} {} {}", position[0], position[1], position[2]);
+                }
+
                 LocalBondSimilarityClusterer localBondSimilarityClusterer(samples, atoms, positions);
                 localBondSimilarityClusterer.cluster(maxima);
 
