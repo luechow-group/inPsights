@@ -18,6 +18,16 @@ namespace Settings {
                     if (not (value == "minimum" || value == "average"))
                         throw std::invalid_argument("The distanceMode has to be minimum or average.");
                 });
+        similarityRadius.onChange_.connect(
+                [&](double value) {
+                    if (not (value > 0.0))
+                        throw std::invalid_argument("The similarityRadius has to be larger than zero.");
+                });
+        maximalCount.onChange_.connect(
+                [&](long value) {
+                    if (not (value > 0))
+                        throw std::invalid_argument("The maximalCount has to be larger than zero.");
+                });
     };
 
     LocalBondSimilarityClusterer::LocalBondSimilarityClusterer(const YAML::Node &node)
