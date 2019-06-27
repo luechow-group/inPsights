@@ -9,6 +9,7 @@
 #include <ISettings.h>
 #include <ParticlesVector.h>
 #include <Sample.h>
+#include <functional>
 
 namespace Settings {
     class LocalBondSimilarityClusterer : public ISettings {
@@ -17,6 +18,7 @@ namespace Settings {
         Property<int> index1 = {0, VARNAME(index1)};
         Property<int> index2 = {1, VARNAME(index2)};
         Property<long> maximalCount = {2, VARNAME(maximalCount)};
+        Property<std::string> distanceMode = {"minimum", VARNAME(distanceMode)};
 
         LocalBondSimilarityClusterer();
         explicit LocalBondSimilarityClusterer(const YAML::Node &node);
@@ -37,6 +39,7 @@ public:
 private:
     std::vector<Sample> &samples_;
     AtomsVector nuclei_;
+    std::function<double(const Eigen::Vector3d &, const std::vector<Eigen::Vector3d> &)> distanceFunction_;
 };
 
 #endif //INPSIGHTS_LOCALBONDSIMILARITYCLUSTERER_H

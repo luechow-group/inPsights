@@ -8,10 +8,17 @@
 #include <NearestElectrons.h>
 #include <Reference.h>
 #include <Group.h>
+#include <functional>
 
 namespace Settings {
     LocalBondSimilarityClusterer::LocalBondSimilarityClusterer()
-            : ISettings(VARNAME(LocalBondSimilarityClusterer)) {};
+            : ISettings(VARNAME(LocalBondSimilarityClusterer)) {
+        distanceMode.onChange_.connect(
+                [&](std::string value) {
+                    if (not (value == "minimum" || value == "average"))
+                        throw std::invalid_argument("The distanceMode has to be minimum or average.");
+                });
+    };
 
     LocalBondSimilarityClusterer::LocalBondSimilarityClusterer(const YAML::Node &node)
             : LocalBondSimilarityClusterer() {
@@ -19,6 +26,7 @@ namespace Settings {
         intProperty::decode(node, index1);
         intProperty::decode(node, index2);
         longProperty::decode(node, maximalCount);
+        stringProperty::decode(node, distanceMode);
     };
 
     void LocalBondSimilarityClusterer::appendToNode(YAML::Node &node) const {
@@ -26,6 +34,7 @@ namespace Settings {
         node[className][index1.name()] = index1();
         node[className][index2.name()] = index2();
         node[className][maximalCount.name()] = maximalCount();
+        node[className][distanceMode.name()] = distanceMode();
     };
 }
 
@@ -35,7 +44,14 @@ Settings::LocalBondSimilarityClusterer LocalBondSimilarityClusterer::settings = 
 
 LocalBondSimilarityClusterer::LocalBondSimilarityClusterer(std::vector<Sample> &samples, AtomsVector nuclei)
         : samples_(samples),
-          nuclei_(nuclei) {}
+          nuclei_(nuclei) {
+    if (settings.distanceMode() == "average"){
+        distanceFunction_ = Metrics::averageDistance;
+    }
+    else if (settings.distanceMode() == "minimum"){
+        distanceFunction_ = Metrics::minimalDistance;
+    }
+}
 
 void LocalBondSimilarityClusterer::cluster(Group &group) {
     assert(!group.empty() && "The group cannot be empty.");
@@ -83,5 +99,7 @@ void LocalBondSimilarityClusterer::cluster(Group &group) {
 std::list<long> LocalBondSimilarityClusterer::getRelevantIndices(const ElectronsVector &electrons) {
     Eigen::Vector3d position =
             (nuclei_[settings.index1()].position() + nuclei_[settings.index2()].position()) / 2;
-    return NearestElectrons::getNearestValenceIndices(electrons, nuclei_, position, settings.maximalCount());
+
+    return NearestElectrons::getNearestValenceIndices(electrons, nuclei_, std::vector<Eigen::Vector3d>({position}),
+            settings.maximalCount(), distanceFunction_);
 }
