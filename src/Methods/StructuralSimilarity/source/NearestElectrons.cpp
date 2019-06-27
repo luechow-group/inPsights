@@ -51,8 +51,6 @@ namespace NearestElectrons {
             q.pop();
         };
 
-        indices.sort();
-
         return indices;
     };
 
