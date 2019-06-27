@@ -19,6 +19,7 @@
 #include <SOAPSettings.h>
 #include <AsciiArt.h>
 #include <fstream>
+#include <IPosition.h>
 
 using namespace YAML;
 
@@ -184,7 +185,14 @@ int main(int argc, char *argv[]) {
 
                 settings = Settings::LocalBondSimilarityClusterer(node.second);
 
-                LocalBondSimilarityClusterer localBondSimilarityClusterer(samples, atoms);
+                std::vector<Eigen::Vector3d> positions;
+
+                auto positionNodes = node.second["positions"];
+                for (const auto &positionNode : positionNodes){
+                    positions.emplace_back(YAML::decodePosition(positionNode, atoms));
+                }
+
+                LocalBondSimilarityClusterer localBondSimilarityClusterer(samples, atoms, positions);
                 localBondSimilarityClusterer.cluster(maxima);
 
                 settings.appendToNode(usedClusteringSettings);

@@ -33,16 +33,12 @@ namespace Settings {
     LocalBondSimilarityClusterer::LocalBondSimilarityClusterer(const YAML::Node &node)
             : LocalBondSimilarityClusterer() {
         doubleProperty::decode(node, similarityRadius);
-        intProperty::decode(node, index1);
-        intProperty::decode(node, index2);
         longProperty::decode(node, maximalCount);
         stringProperty::decode(node, distanceMode);
     };
 
     void LocalBondSimilarityClusterer::appendToNode(YAML::Node &node) const {
         node[className][similarityRadius.name()] = similarityRadius();
-        node[className][index1.name()] = index1();
-        node[className][index2.name()] = index2();
         node[className][maximalCount.name()] = maximalCount();
         node[className][distanceMode.name()] = distanceMode();
     };
@@ -52,9 +48,11 @@ YAML_SETTINGS_DEFINITION(Settings::LocalBondSimilarityClusterer)
 
 Settings::LocalBondSimilarityClusterer LocalBondSimilarityClusterer::settings = Settings::LocalBondSimilarityClusterer();
 
-LocalBondSimilarityClusterer::LocalBondSimilarityClusterer(std::vector<Sample> &samples, AtomsVector nuclei)
+LocalBondSimilarityClusterer::LocalBondSimilarityClusterer(std::vector<Sample> &samples, AtomsVector &nuclei,
+        std::vector<Eigen::Vector3d> &positions)
         : samples_(samples),
-          nuclei_(nuclei) {
+          nuclei_(nuclei),
+          positions_(positions){
     if (settings.distanceMode() == "average"){
         distanceFunction_ = Metrics::averageDistance;
     }
@@ -107,9 +105,6 @@ void LocalBondSimilarityClusterer::cluster(Group &group) {
 }
 
 std::list<long> LocalBondSimilarityClusterer::getRelevantIndices(const ElectronsVector &electrons) {
-    Eigen::Vector3d position =
-            (nuclei_[settings.index1()].position() + nuclei_[settings.index2()].position()) / 2;
-
-    return NearestElectrons::getNearestValenceIndices(electrons, nuclei_, std::vector<Eigen::Vector3d>({position}),
+    return NearestElectrons::getNearestValenceIndices(electrons, nuclei_, positions_,
             settings.maximalCount(), distanceFunction_);
 }

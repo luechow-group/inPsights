@@ -15,8 +15,6 @@ namespace Settings {
     class LocalBondSimilarityClusterer : public ISettings {
     public:
         Property<double> similarityRadius = {0.1, VARNAME(similarityRadius)};
-        Property<int> index1 = {0, VARNAME(index1)};
-        Property<int> index2 = {1, VARNAME(index2)};
         Property<long> maximalCount = {2, VARNAME(maximalCount)};
         Property<std::string> distanceMode = {"minimum", VARNAME(distanceMode)};
 
@@ -31,7 +29,8 @@ class LocalBondSimilarityClusterer : public IClusterer {
 public:
     static Settings::LocalBondSimilarityClusterer settings;
 
-    LocalBondSimilarityClusterer(std::vector<Sample> &samples, AtomsVector nuclei);
+    LocalBondSimilarityClusterer(std::vector<Sample> &samples, AtomsVector &nuclei,
+            std::vector<Eigen::Vector3d> &positions);
     // in contrast to the other clusterers, this clusterer does no permutations
     void cluster(Group& group) override;
     std::list<long> getRelevantIndices(const ElectronsVector &electronsVector);
@@ -39,6 +38,7 @@ public:
 private:
     std::vector<Sample> &samples_;
     AtomsVector nuclei_;
+    std::vector<Eigen::Vector3d> positions_;
     std::function<double(const Eigen::Vector3d &, const std::vector<Eigen::Vector3d> &)> distanceFunction_;
 };
 
