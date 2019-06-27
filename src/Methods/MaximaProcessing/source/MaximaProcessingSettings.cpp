@@ -11,11 +11,7 @@ namespace Settings {
     : ISettings(VARNAME(MaximaProcessing)) {
         samplesToAnalyze.onChange_.connect(
                 [&](unsigned value) {
-                    if (value == 0)
-                        spdlog::info("Analyzing all samples.");
-                    else if(value < std::numeric_limits<unsigned>::max())
-                        spdlog::info("Analyzing {} samples.", value);
-                    else
+                    if (not (value >= 0 and value < std::numeric_limits<unsigned>::max()))
                         throw std::invalid_argument("The samples to analyze must not be negative.");
                 });
         minimalClusterWeight.onChange_.connect(

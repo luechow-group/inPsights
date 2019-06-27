@@ -108,6 +108,11 @@ int main(int argc, char *argv[]) {
 
     // Apply settings from inputYaml
     MaximaProcessing::settings = Settings::MaximaProcessing(inputYaml);
+    unsigned samplesToAnalyze = MaximaProcessing::settings.samplesToAnalyze();
+    if (samplesToAnalyze == 0)
+        spdlog::info("Analyzing all samples.");
+    else if(samplesToAnalyze < std::numeric_limits<unsigned>::max())
+        spdlog::info("Analyzing {} samples.", samplesToAnalyze);
 
     // if binary file basename is not specified, use the name of  the input file
     if(!inputYaml["MaximaProcessing"][MaximaProcessing::settings.binaryFileBasename.name()]) {
