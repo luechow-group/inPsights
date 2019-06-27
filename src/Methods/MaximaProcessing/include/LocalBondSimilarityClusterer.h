@@ -16,7 +16,7 @@ namespace Settings {
         Property<double> similarityRadius = {0.1, VARNAME(similarityRadius)};
         Property<int> index1 = {0, VARNAME(index1)};
         Property<int> index2 = {1, VARNAME(index2)};
-        Property<long> count = {2, VARNAME(count)};
+        Property<long> maximalCount = {2, VARNAME(maximalCount)};
 
         LocalBondSimilarityClusterer();
         explicit LocalBondSimilarityClusterer(const YAML::Node &node);

@@ -18,14 +18,14 @@ namespace Settings {
         doubleProperty::decode(node, similarityRadius);
         intProperty::decode(node, index1);
         intProperty::decode(node, index2);
-        longProperty::decode(node, count);
+        longProperty::decode(node, maximalCount);
     };
 
     void LocalBondSimilarityClusterer::appendToNode(YAML::Node &node) const {
         node[className][similarityRadius.name()] = similarityRadius();
         node[className][index1.name()] = index1();
         node[className][index2.name()] = index2();
-        node[className][count.name()] = count();
+        node[className][maximalCount.name()] = maximalCount();
     };
 }
 
@@ -63,8 +63,8 @@ void LocalBondSimilarityClusterer::cluster(Group &group) {
         isSimilarQ = false;
         for (auto sortedGroup = superGroup.begin(); sortedGroup != superGroup.end(); ++sortedGroup) {
             auto[norm, perm] = BestMatch::Distance::compare<Eigen::Infinity, 2>(
-                    subGroup->representative()->maximum().getFirstElements(settings.count()).positionsVector(),
-                    sortedGroup->representative()->maximum().getFirstElements(settings.count()).positionsVector());
+                    subGroup->representative()->maximum().getFirstElements(settings.maximalCount()).positionsVector(),
+                    sortedGroup->representative()->maximum().getFirstElements(settings.maximalCount()).positionsVector());
 
             if (norm < similarityRadius) {
                 subGroup->permuteAll(BestMatch::getFullPermutation(perm, electronsNumber), samples_);
@@ -83,5 +83,5 @@ void LocalBondSimilarityClusterer::cluster(Group &group) {
 std::list<long> LocalBondSimilarityClusterer::getRelevantIndices(const ElectronsVector &electrons) {
     Eigen::Vector3d position =
             (nuclei_[settings.index1()].position() + nuclei_[settings.index2()].position()) / 2;
-    return NearestElectrons::getNearestValenceIndices(electrons, nuclei_, position, settings.count());
+    return NearestElectrons::getNearestValenceIndices(electrons, nuclei_, position, settings.maximalCount());
 }
