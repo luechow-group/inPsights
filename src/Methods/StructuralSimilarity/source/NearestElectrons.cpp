@@ -32,7 +32,7 @@ namespace NearestElectrons {
                              const long &count) {
         std::priority_queue<std::pair<double, long>> q;
         for (long i = 0; i < electrons.numberOfEntities(); i++) {
-            q.push(std::pair<double, long>(-Metrics::distance(electrons[i].position(), positions[0]),
+            q.push(std::pair<double, long>(-Metrics::minimalDistance(electrons[i].position(), positions),
                                            i));
         };
 
@@ -65,7 +65,7 @@ namespace NearestElectrons {
                                                const long &count) {
         std::priority_queue<std::pair<double, int>> q;
         for (long i = 0; i < electrons.numberOfEntities(); i++) {
-            q.push(std::pair<double, long>(-Metrics::distance(electrons[i].position(), positions[0]),
+            q.push(std::pair<double, long>(-Metrics::minimalDistance(electrons[i].position(), positions),
                                            i));
         };
 
