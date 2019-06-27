@@ -6,6 +6,7 @@
 #define INPSIGHTS_NEARESTELECTRONS_H
 
 #include <ParticlesVector.h>
+#include <functional>
 
 namespace NearestElectrons {
     std::list<long>
@@ -16,7 +17,10 @@ namespace NearestElectrons {
     std::list<long>
     getNearestValenceIndices(const ElectronsVector &electrons, const AtomsVector &nuclei,
                              const std::vector<Eigen::Vector3d> &positions,
-                             const long &count);
+                             const long &count,
+                             std::function<double(const Eigen::Vector3d &,
+                                                  const std::vector<Eigen::Vector3d> &)>
+                                &distanceFunction);
 
     std::list<long>
     getNearestValenceIndices(const ElectronsVector &electrons, const AtomsVector &nuclei,
