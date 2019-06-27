@@ -61,11 +61,11 @@ namespace NearestElectrons {
     };
 
     std::list<long> getNearestElectronsIndices(const ElectronsVector &electrons,
-                                               const std::vector<Eigen::Vector3d> &positions,
+                                               const Eigen::Vector3d &position,
                                                const long &count) {
         std::priority_queue<std::pair<double, int>> q;
         for (long i = 0; i < electrons.numberOfEntities(); i++) {
-            q.push(std::pair<double, long>(-Metrics::minimalDistance(electrons[i].position(), positions),
+            q.push(std::pair<double, long>(-Metrics::distance(electrons[i].position(), position),
                                            i));
         };
 
@@ -78,11 +78,5 @@ namespace NearestElectrons {
         indices.sort();
 
         return indices;
-    };
-
-    std::list<long>
-    getNearestElectronsIndices(const ElectronsVector &electrons, const Eigen::Vector3d &position,
-                               const long &count){
-        return getNearestElectronsIndices(electrons, std::vector<Eigen::Vector3d>({position}), count);
     };
 }

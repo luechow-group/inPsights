@@ -24,10 +24,6 @@ namespace NearestElectrons {
                              const long &count);
 
     std::list<long>
-    getNearestElectronsIndices(const ElectronsVector &electrons, const std::vector<Eigen::Vector3d> &positions,
-                               const long &count);
-
-    std::list<long>
     getNearestElectronsIndices(const ElectronsVector &electrons, const Eigen::Vector3d &position,
                                const long &count);
 }
