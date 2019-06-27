@@ -29,24 +29,25 @@ namespace NearestElectrons {
     std::list<long>
     getNearestValenceIndices(const ElectronsVector &electrons, const AtomsVector &nuclei,
                              const std::vector<Eigen::Vector3d> &positions,
-                             const long &count,
+                             const long &maximalCount, const double &maximalDistance,
                              std::function<double(const Eigen::Vector3d &,
                                                   const std::vector<Eigen::Vector3d> &)>
                                   &distanceFunction) {
         std::priority_queue<std::pair<double, long>> q;
         for (long i = 0; i < electrons.numberOfEntities(); i++) {
-            q.push(std::pair<double, long>(-distanceFunction(electrons[i].position(), positions),
-                                           i));
+            q.push(std::pair<double, long>(-distanceFunction(electrons[i].position(), positions), i));
         };
 
         std::list<long> excludedIndices = getNonValenceIndices(electrons, nuclei);
 
         std::list<long> indices;
-        for (long j = 0; j < count; ++j) {
+        for (long j = 0; j < maximalCount; ++j) {
             // pop queue if index in pair q.top() is in excludedIndices
             while (std::find(excludedIndices.begin(), excludedIndices.end(), q.top().second) != excludedIndices.end()) {
                 q.pop();
             };
+
+            if (q.top().first > maximalDistance) break;
             indices.emplace_back(q.top().second);
             q.pop();
         };
@@ -59,7 +60,7 @@ namespace NearestElectrons {
                              const Eigen::Vector3d &position,
                              const long &count){
         std::function<double(const Eigen::Vector3d &, const std::vector<Eigen::Vector3d> &)> distanceFunction = Metrics::minimalDistance;
-        return getNearestValenceIndices(electrons, nuclei, std::vector<Eigen::Vector3d>({position}), count, distanceFunction);
+        return getNearestValenceIndices(electrons, nuclei, std::vector<Eigen::Vector3d>({position}), count, 100.0, distanceFunction);
     };
 
     std::list<long> getNearestElectronsIndices(const ElectronsVector &electrons,

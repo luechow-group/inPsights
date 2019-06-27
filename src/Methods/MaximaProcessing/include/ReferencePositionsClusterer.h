@@ -15,6 +15,7 @@ namespace Settings {
     class ReferencePositionsClusterer : public ISettings {
     public:
         Property<double> similarityRadius = {0.1, VARNAME(similarityRadius)};
+        Property<double> maximalDistance = {10.0, VARNAME(maximalDistance)};
         Property<long> maximalCount = {2, VARNAME(maximalCount)};
         Property<std::string> distanceMode = {"minimum", VARNAME(distanceMode)};
 

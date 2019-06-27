@@ -23,6 +23,11 @@ namespace Settings {
                     if (not (value > 0.0))
                         throw std::invalid_argument("The similarityRadius has to be larger than zero.");
                 });
+        maximalDistance.onChange_.connect(
+                [&](double value) {
+                    if (not (value > 0.0))
+                        throw std::invalid_argument("The maximalDistance has to be larger than zero.");
+                });
         maximalCount.onChange_.connect(
                 [&](long value) {
                     if (not (value > 0))
@@ -33,12 +38,14 @@ namespace Settings {
     ReferencePositionsClusterer::ReferencePositionsClusterer(const YAML::Node &node)
             : ReferencePositionsClusterer() {
         doubleProperty::decode(node, similarityRadius);
+        doubleProperty::decode(node, maximalDistance);
         longProperty::decode(node, maximalCount);
         stringProperty::decode(node, distanceMode);
     };
 
     void ReferencePositionsClusterer::appendToNode(YAML::Node &node) const {
         node[className][similarityRadius.name()] = similarityRadius();
+        node[className][maximalDistance.name()] = maximalDistance();
         node[className][maximalCount.name()] = maximalCount();
         node[className][distanceMode.name()] = distanceMode();
     };
@@ -72,39 +79,55 @@ void ReferencePositionsClusterer::cluster(Group &group) {
     std::list<long> subIndices;
     Eigen::PermutationMatrix<Eigen::Dynamic> permutation;
 
+    std::vector<long> counts;
+
     // sorting relevant electrons to the front
     for (auto subGroup = group.begin(); subGroup != group.end(); ++subGroup) {
         subIndices = ReferencePositionsClusterer::getRelevantIndices(subGroup->representative()->maximum());
+        counts.emplace_back(subIndices.size());
         permutation = BestMatch::getPermutationToFront(subIndices, electronsNumber);
         subGroup->permuteAll(permutation, samples_);
     }
 
+    std::vector<long> countsSuperGroup;
+    auto countIterator = counts.begin();
+
     Group superGroup({Group({*group.begin()})});
+    countsSuperGroup.emplace_back(*countIterator);
+    countIterator++;
+
+    auto countIteratorSuperGroup = countsSuperGroup.begin();
 
     bool isSimilarQ;
 
     for (auto subGroup = std::next(group.begin()); subGroup != group.end(); ++subGroup) {
         isSimilarQ = false;
         for (auto sortedGroup = superGroup.begin(); sortedGroup != superGroup.end(); ++sortedGroup) {
-            auto[norm, perm] = BestMatch::Distance::compare<Eigen::Infinity, 2>(
-                    subGroup->representative()->maximum().getFirstElements(settings.maximalCount()).positionsVector(),
-                    sortedGroup->representative()->maximum().getFirstElements(settings.maximalCount()).positionsVector());
+            if (*countIterator == *countIteratorSuperGroup){
+                auto[norm, perm] = BestMatch::Distance::compare<Eigen::Infinity, 2>(
+                        subGroup->representative()->maximum().getFirstElements(*countIterator).positionsVector(),
+                        sortedGroup->representative()->maximum().getFirstElements(*countIteratorSuperGroup).positionsVector());
 
-            if (norm < similarityRadius) {
-                subGroup->permuteAll(BestMatch::getFullPermutation(perm, electronsNumber), samples_);
-                sortedGroup->emplace_back(*subGroup);
-                isSimilarQ = true;
-                break;
+                if (norm < similarityRadius) {
+                    subGroup->permuteAll(BestMatch::getFullPermutation(perm, electronsNumber), samples_);
+                    sortedGroup->emplace_back(*subGroup);
+                    isSimilarQ = true;
+                    break;
+                }
             }
+            countIteratorSuperGroup++;
         }
         if (!isSimilarQ) {
             superGroup.emplace_back(Group({*subGroup}));
+            countsSuperGroup.emplace_back(*countIterator);
         }
+        countIteratorSuperGroup = countsSuperGroup.begin();
+        countIterator++;
     }
     group = superGroup;
 }
 
 std::list<long> ReferencePositionsClusterer::getRelevantIndices(const ElectronsVector &electrons) {
     return NearestElectrons::getNearestValenceIndices(electrons, nuclei_, positions_,
-            settings.maximalCount(), distanceFunction_);
+            settings.maximalCount(), settings.maximalDistance(), distanceFunction_);
 }
