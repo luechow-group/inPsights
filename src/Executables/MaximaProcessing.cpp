@@ -8,7 +8,7 @@
 #include <BestMatchDistanceSimilarityClusterer.h>
 #include <BestMatchDistanceDensityBasedClusterer.h>
 #include <BestMatchSOAPSimilarityClusterer.h>
-#include <LocalBondSimilarityClusterer.h>
+#include <ReferencePositionsClusterer.h>
 #include <MaximaProcessor.h>
 #include <GeneralStatistics.h>
 #include <algorithm>
@@ -46,9 +46,9 @@ void validateClusteringSettings(const YAML::Node &inputYaml) {
                         = Settings::BestMatchDistanceDensityBasedClusterer(clusteringNode);
                 break;
             }
-            case IClusterer::Type::LocalBondSimilarityClusterer: {
-                LocalBondSimilarityClusterer::settings
-                        = Settings::LocalBondSimilarityClusterer(clusteringNode);
+            case IClusterer::Type::ReferencePositionsClusterer: {
+                ReferencePositionsClusterer::settings
+                        = Settings::ReferencePositionsClusterer(clusteringNode);
                 break;
             }
             case IClusterer::Type::BestMatchSOAPSimilarityClusterer: {
@@ -180,10 +180,10 @@ int main(int argc, char *argv[]) {
                 settings.appendToNode(usedClusteringSettings);
                 break;
             }
-            case IClusterer::Type::LocalBondSimilarityClusterer: {
-                auto &settings = LocalBondSimilarityClusterer::settings;
+            case IClusterer::Type::ReferencePositionsClusterer: {
+                auto &settings = ReferencePositionsClusterer::settings;
 
-                settings = Settings::LocalBondSimilarityClusterer(node.second);
+                settings = Settings::ReferencePositionsClusterer(node.second);
 
                 std::vector<Eigen::Vector3d> positions;
 
@@ -197,8 +197,8 @@ int main(int argc, char *argv[]) {
                     spdlog::info("{} {} {}", position[0], position[1], position[2]);
                 }
 
-                LocalBondSimilarityClusterer localBondSimilarityClusterer(samples, atoms, positions);
-                localBondSimilarityClusterer.cluster(maxima);
+                ReferencePositionsClusterer ReferencePositionsClusterer(samples, atoms, positions);
+                ReferencePositionsClusterer.cluster(maxima);
 
                 settings.appendToNode(usedClusteringSettings);
                 break;

@@ -2,7 +2,7 @@
 // Created by leonard on 13.05.19.
 //
 
-#include <LocalBondSimilarityClusterer.h>
+#include <ReferencePositionsClusterer.h>
 #include <BestMatchDistance.h>
 #include <BestMatch.h>
 #include <NearestElectrons.h>
@@ -11,8 +11,8 @@
 #include <functional>
 
 namespace Settings {
-    LocalBondSimilarityClusterer::LocalBondSimilarityClusterer()
-            : ISettings(VARNAME(LocalBondSimilarityClusterer)) {
+    ReferencePositionsClusterer::ReferencePositionsClusterer()
+            : ISettings(VARNAME(ReferencePositionsClusterer)) {
         distanceMode.onChange_.connect(
                 [&](std::string value) {
                     if (not (value == "minimum" || value == "average"))
@@ -30,25 +30,25 @@ namespace Settings {
                 });
     };
 
-    LocalBondSimilarityClusterer::LocalBondSimilarityClusterer(const YAML::Node &node)
-            : LocalBondSimilarityClusterer() {
+    ReferencePositionsClusterer::ReferencePositionsClusterer(const YAML::Node &node)
+            : ReferencePositionsClusterer() {
         doubleProperty::decode(node, similarityRadius);
         longProperty::decode(node, maximalCount);
         stringProperty::decode(node, distanceMode);
     };
 
-    void LocalBondSimilarityClusterer::appendToNode(YAML::Node &node) const {
+    void ReferencePositionsClusterer::appendToNode(YAML::Node &node) const {
         node[className][similarityRadius.name()] = similarityRadius();
         node[className][maximalCount.name()] = maximalCount();
         node[className][distanceMode.name()] = distanceMode();
     };
 }
 
-YAML_SETTINGS_DEFINITION(Settings::LocalBondSimilarityClusterer)
+YAML_SETTINGS_DEFINITION(Settings::ReferencePositionsClusterer)
 
-Settings::LocalBondSimilarityClusterer LocalBondSimilarityClusterer::settings = Settings::LocalBondSimilarityClusterer();
+Settings::ReferencePositionsClusterer ReferencePositionsClusterer::settings = Settings::ReferencePositionsClusterer();
 
-LocalBondSimilarityClusterer::LocalBondSimilarityClusterer(std::vector<Sample> &samples, AtomsVector &nuclei,
+ReferencePositionsClusterer::ReferencePositionsClusterer(std::vector<Sample> &samples, AtomsVector &nuclei,
         std::vector<Eigen::Vector3d> &positions)
         : samples_(samples),
           nuclei_(nuclei),
@@ -61,7 +61,7 @@ LocalBondSimilarityClusterer::LocalBondSimilarityClusterer(std::vector<Sample> &
     }
 }
 
-void LocalBondSimilarityClusterer::cluster(Group &group) {
+void ReferencePositionsClusterer::cluster(Group &group) {
     assert(!group.empty() && "The group cannot be empty.");
 
     auto similarityRadius = settings.similarityRadius();
@@ -74,7 +74,7 @@ void LocalBondSimilarityClusterer::cluster(Group &group) {
 
     // sorting relevant electrons to the front
     for (auto subGroup = group.begin(); subGroup != group.end(); ++subGroup) {
-        subIndices = LocalBondSimilarityClusterer::getRelevantIndices(subGroup->representative()->maximum());
+        subIndices = ReferencePositionsClusterer::getRelevantIndices(subGroup->representative()->maximum());
         permutation = BestMatch::getPermutationToFront(subIndices, electronsNumber);
         subGroup->permuteAll(permutation, samples_);
     }
@@ -104,7 +104,7 @@ void LocalBondSimilarityClusterer::cluster(Group &group) {
     group = superGroup;
 }
 
-std::list<long> LocalBondSimilarityClusterer::getRelevantIndices(const ElectronsVector &electrons) {
+std::list<long> ReferencePositionsClusterer::getRelevantIndices(const ElectronsVector &electrons) {
     return NearestElectrons::getNearestValenceIndices(electrons, nuclei_, positions_,
             settings.maximalCount(), distanceFunction_);
 }
