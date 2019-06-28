@@ -18,6 +18,7 @@ namespace Settings {
         Property<double> maximalDistance = {10.0, VARNAME(maximalDistance)};
         Property<long> maximalCount = {2, VARNAME(maximalCount)};
         Property<std::string> distanceMode = {"minimum", VARNAME(distanceMode)};
+        Property<bool> invertSelection = {false, VARNAME(invertSelection)};
 
         ReferencePositionsClusterer();
         explicit ReferencePositionsClusterer(const YAML::Node &node);

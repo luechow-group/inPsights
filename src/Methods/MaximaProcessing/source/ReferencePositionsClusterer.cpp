@@ -41,6 +41,7 @@ namespace Settings {
         doubleProperty::decode(node, maximalDistance);
         longProperty::decode(node, maximalCount);
         stringProperty::decode(node, distanceMode);
+        boolProperty::decode(node, invertSelection);
     };
 
     void ReferencePositionsClusterer::appendToNode(YAML::Node &node) const {
@@ -48,6 +49,7 @@ namespace Settings {
         node[className][maximalDistance.name()] = maximalDistance();
         node[className][maximalCount.name()] = maximalCount();
         node[className][distanceMode.name()] = distanceMode();
+        node[className][invertSelection.name()] = invertSelection();
     };
 }
 
@@ -84,8 +86,14 @@ void ReferencePositionsClusterer::cluster(Group &group) {
     // sorting relevant electrons to the front
     for (auto subGroup = group.begin(); subGroup != group.end(); ++subGroup) {
         subIndices = ReferencePositionsClusterer::getRelevantIndices(subGroup->representative()->maximum());
-        counts.emplace_back(subIndices.size());
-        permutation = BestMatch::getPermutationToFront(subIndices, electronsNumber);
+        if (not settings.invertSelection()){
+            counts.emplace_back(subIndices.size());
+            permutation = BestMatch::getPermutationToFront(subIndices, electronsNumber);
+        }
+        else{
+            counts.emplace_back(electronsNumber - subIndices.size());
+            permutation = BestMatch::getPermutationToBack(subIndices, electronsNumber);
+        }
         subGroup->permuteAll(permutation, samples_);
     }
 
