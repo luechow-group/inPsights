@@ -42,6 +42,7 @@ namespace Settings {
         longProperty::decode(node, maximalCount);
         stringProperty::decode(node, distanceMode);
         boolProperty::decode(node, invertSelection);
+        boolProperty::decode(node, valenceOnly);
     };
 
     void ReferencePositionsClusterer::appendToNode(YAML::Node &node) const {
@@ -50,6 +51,7 @@ namespace Settings {
         node[className][maximalCount.name()] = maximalCount();
         node[className][distanceMode.name()] = distanceMode();
         node[className][invertSelection.name()] = invertSelection();
+        node[className][valenceOnly.name()] = valenceOnly();
     };
 }
 
@@ -91,6 +93,10 @@ void ReferencePositionsClusterer::cluster(Group &group) {
             permutation = BestMatch::getPermutationToFront(subIndices, electronsNumber);
         }
         else{
+            if (settings.valenceOnly()){
+                subIndices.splice(subIndices.end(),
+                        NearestElectrons::getNonValenceIndices(subGroup->representative()->maximum(), nuclei_));
+            }
             counts.emplace_back(electronsNumber - subIndices.size());
             permutation = BestMatch::getPermutationToBack(subIndices, electronsNumber);
         }
@@ -137,5 +143,5 @@ void ReferencePositionsClusterer::cluster(Group &group) {
 
 std::list<long> ReferencePositionsClusterer::getRelevantIndices(const ElectronsVector &electrons) {
     return NearestElectrons::getNearestValenceIndices(electrons, nuclei_, positions_,
-            settings.maximalCount(), settings.maximalDistance(), distanceFunction_);
+            settings.maximalCount(), settings.maximalDistance(), distanceFunction_, settings.valenceOnly());
 }
