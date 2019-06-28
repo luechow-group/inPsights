@@ -44,14 +44,14 @@ TEST_F(ANearestElectronsTest, GetElectronsByPosition) {
 TEST_F(ANearestElectronsTest, GetValenceByPosition) {
     std::list<long> indices = NearestElectrons::getNearestValenceIndices(electrons, nuclei,
                                                                          nuclei[0].position(), 2);
-    std::list<long> reference({6, 7});
+    std::list<long> reference({7, 6});
     ASSERT_EQ(reference, indices);
 };
 
 TEST_F(ANearestElectronsTest, PickElements) {
     ElectronsVector reference;
-    reference.append(electrons[2]);
     reference.append(electrons[6]);
+    reference.append(electrons[2]);
 
     Eigen::Vector3d position = TestMolecules::inbetween(nuclei, {0, 2}, 0.5);
 
