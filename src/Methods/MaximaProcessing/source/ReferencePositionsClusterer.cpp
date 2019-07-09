@@ -142,6 +142,7 @@ void ReferencePositionsClusterer::cluster(Group &group) {
 }
 
 std::list<long> ReferencePositionsClusterer::getRelevantIndices(const ElectronsVector &electrons) {
-    return NearestElectrons::getNearestValenceIndices(electrons, nuclei_, positions_,
-            settings.maximalCount(), settings.maximalDistance(), distanceFunction_, settings.valenceOnly());
+    return NearestElectrons::getNearestElectronsIndices(electrons, nuclei_, positions_,
+                                                        settings.maximalCount(), settings.maximalDistance(),
+                                                        distanceFunction_, settings.valenceOnly());
 }
