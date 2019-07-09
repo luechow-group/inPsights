@@ -95,6 +95,9 @@ void BestMatchDistanceDensityBasedClusterer::orderByBestMatchDistance(Group &sup
                         // moving j from subgroup to newGroups
                         newGroups.emplace_back(*j);
                         j = subgroup.erase(j);
+
+                        // the iterator has to be set back by one because the j element was erased and
+                        // ++j of the for loop would otherwise skip one group of subgroup
                         --j;
                     };
                 };
