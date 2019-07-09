@@ -78,11 +78,13 @@ void ReferencePositionsClusterer::cluster(Group &group) {
     auto similarityRadius = settings.similarityRadius();
     long electronsNumber = group.representative()->maximum().numberOfEntities();
 
+    // sorts 'group' by the value ( -ln(|\Psi|^2) )
     group.sort();
 
     std::list<long> subIndices;
     Eigen::PermutationMatrix<Eigen::Dynamic> permutation;
 
+    // for every 'subGroup' in 'group', the number of relevant electrons is stored in 'counts'
     std::vector<long> counts;
 
     // sorting relevant electrons to the front
@@ -90,14 +92,18 @@ void ReferencePositionsClusterer::cluster(Group &group) {
         subIndices = ReferencePositionsClusterer::getRelevantIndices(subGroup->representative()->maximum());
         if (not settings.invertSelection()){
             counts.emplace_back(subIndices.size());
+            // sorting will take the front indices, so they have to be permuted to the front
             permutation = BestMatch::getPermutationToFront(subIndices, electronsNumber);
         }
         else{
             if (settings.valenceOnly()){
+                // since selection should be inverted, core indices have to be added to 'subIndices' before inverting
                 subIndices.splice(subIndices.end(),
                         NearestElectrons::getNonValenceIndices(subGroup->representative()->maximum(), nuclei_));
             }
             counts.emplace_back(electronsNumber - subIndices.size());
+            // sorting will take the front indices. Since the invertSelection is true,
+            // 'subIndices' are permuted to the back
             permutation = BestMatch::getPermutationToBack(subIndices, electronsNumber);
         }
         subGroup->permuteAll(permutation, samples_);
@@ -112,11 +118,14 @@ void ReferencePositionsClusterer::cluster(Group &group) {
 
     auto countIteratorSuperGroup = countsSuperGroup.begin();
 
+    // bool to decide, whether subGroup of group is added to a sortedGroup of superGroup
+    // or to superGroup as a new sortedGroup
     bool isSimilarQ;
 
     for (auto subGroup = std::next(group.begin()); subGroup != group.end(); ++subGroup) {
         isSimilarQ = false;
         for (auto sortedGroup = superGroup.begin(); sortedGroup != superGroup.end(); ++sortedGroup) {
+            // only check similarity of sortedGroup and subGroup, if the number of relevant indices ('count') is equal
             if (*countIterator == *countIteratorSuperGroup){
                 auto[norm, perm] = BestMatch::Distance::compare<Eigen::Infinity, 2>(
                         subGroup->representative()->maximum().getFirstElements(*countIterator).positionsVector(),
@@ -132,6 +141,7 @@ void ReferencePositionsClusterer::cluster(Group &group) {
             countIteratorSuperGroup++;
         }
         if (!isSimilarQ) {
+            // adds subGroup as a new sortedGroup to superGroup
             superGroup.emplace_back(Group({*subGroup}));
             countsSuperGroup.emplace_back(*countIterator);
         }

@@ -36,6 +36,9 @@ namespace NearestElectrons {
                                                     const std::vector<Eigen::Vector3d> &)>
                                &distanceFunction,
                                const bool &valenceOnly) {
+        // returns indices of electrons closest to a vector of 'positions'
+        // the metric is defined by the 'distanceFunction'
+        // the indices are chosen beginning with the closest one, until 'maximalCount' or 'maximalDistance' is reached
         std::priority_queue<std::pair<double, long>> q;
         for (long i = 0; i < electrons.numberOfEntities(); i++) {
             q.push(std::pair<double, long>(-distanceFunction(electrons[i].position(), positions), i));
@@ -62,6 +65,7 @@ namespace NearestElectrons {
     std::list<long> getNearestElectronsIndices(const ElectronsVector &electrons,
                                                const Eigen::Vector3d &position,
                                                const long &count) {
+        // returns indices of the 'count' electrons closest to 'position' (without restrictions)
         std::priority_queue<std::pair<double, int>> q;
         for (long i = 0; i < electrons.numberOfEntities(); i++) {
             q.push(std::pair<double, long>(-Metrics::distance(electrons[i].position(), position),
