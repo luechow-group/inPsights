@@ -6,6 +6,7 @@
 #include <TestMolecules.h>
 #include <NearestElectrons.h>
 #include <BestMatchDistance.h>
+#include <Metrics.h>
 
 using namespace testing;
 
@@ -20,7 +21,7 @@ public:
     getNearestElectronsIndices(const ElectronsVector &electrons, const AtomsVector &nuclei,
                              const Eigen::Vector3d &position,
                              const long &count){
-        std::function<double(const Eigen::Vector3d &, const std::vector<Eigen::Vector3d> &)> distanceFunction = Metrics::minimalDistance;
+        std::function<double(const Eigen::Vector3d &, const std::vector<Eigen::Vector3d> &)> distanceFunction = Metrics::minimalDistance<2>;
         return NearestElectrons::getNearestElectronsIndices(electrons, nuclei, std::vector<Eigen::Vector3d>({position}), count, 100.0,
                                           distanceFunction, true);
     };

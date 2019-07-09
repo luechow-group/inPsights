@@ -65,10 +65,10 @@ ReferencePositionsClusterer::ReferencePositionsClusterer(std::vector<Sample> &sa
           nuclei_(nuclei),
           positions_(positions){
     if (settings.distanceMode() == "average"){
-        distanceFunction_ = Metrics::averageDistance;
+        distanceFunction_ = Metrics::averageDistance<2>;
     }
     else if (settings.distanceMode() == "minimum"){
-        distanceFunction_ = Metrics::minimalDistance;
+        distanceFunction_ = Metrics::minimalDistance<2>;
     }
 }
 
