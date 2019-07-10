@@ -51,6 +51,7 @@ set(HEADER_FILES
         include/Enumerate.h
         include/Combinatorics.h
         include/AsciiArt.h
+        include/IPosition.h
         )
 
 set(SOURCE_FILES
@@ -75,6 +76,7 @@ set(SOURCE_FILES
         source/BinaryFileReader.cpp
         source/ISettings.cpp
         source/Combinatorics.cpp
+        source/IPosition.cpp
         )
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES})

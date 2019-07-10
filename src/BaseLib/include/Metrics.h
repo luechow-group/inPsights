@@ -26,6 +26,30 @@ namespace Metrics{
     }
 
     template <int Norm = 2>
+    double minimalDistance(const Eigen::Vector3d &position,
+                           const std::vector<Eigen::Vector3d> &positions){
+        double minDistance = -1.0;
+        double distance;
+        for (auto position2 : positions){
+            distance = (position-position2).lpNorm<Norm>();
+            if (distance < minDistance or minDistance < 0){
+                minDistance = distance;
+            }
+        }
+        return minDistance;
+    }
+
+    template <int Norm = 2>
+    double averageDistance(const Eigen::Vector3d &position,
+                           const std::vector<Eigen::Vector3d> &positions){
+        double avgDistance = 0.0;
+        for (auto position2 : positions){
+            avgDistance += (position-position2).lpNorm<Norm>();
+        }
+        return avgDistance/positions.size();
+    }
+
+    template <int Norm = 2>
     Eigen::VectorXd positionalNormsVector(const PositionsVector &positions1, const PositionsVector &positions2) {
         assert(positions1.numberOfEntities() == positions2.numberOfEntities()
                && "Both PositionVectors must have the same size.");

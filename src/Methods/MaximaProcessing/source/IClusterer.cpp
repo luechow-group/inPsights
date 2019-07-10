@@ -11,8 +11,8 @@ IClusterer::Type IClusterer::typeFromString(const std::string& clustererName) {
         return Type::BestMatchDistanceSimilarityClusterer;
     else if(clustererName == "BestMatchDistanceDensityBasedClusterer")
         return Type::BestMatchDistanceDensityBasedClusterer;
-    else if(clustererName == "LocalBondSimilarityClusterer")
-        return Type::LocalBondSimilarityClusterer;
+    else if(clustererName == "ReferencePositionsClusterer")
+        return Type::ReferencePositionsClusterer;
     else //(clustererName == "BestMatchSOAPSimilarityClusterer")
         return Type::BestMatchSOAPSimilarityClusterer;
 };

@@ -6,6 +6,7 @@
 #include <TestMolecules.h>
 #include <NearestElectrons.h>
 #include <BestMatchDistance.h>
+#include <Metrics.h>
 
 using namespace testing;
 
@@ -16,14 +17,22 @@ public:
     const ElectronsVector &electrons2 = TestMolecules::BH3::ionicMirrored.electrons();
     const ElectronsVector &electrons3 = TestMolecules::BH3::ionicMirrored2.electrons();
     const AtomsVector &nuclei = BH3.atoms();
+    std::list<long>
+    getNearestElectronsIndices(const ElectronsVector &electrons, const AtomsVector &nuclei,
+                             const Eigen::Vector3d &position,
+                             const long &count){
+        std::function<double(const Eigen::Vector3d &, const std::vector<Eigen::Vector3d> &)> distanceFunction = Metrics::minimalDistance<2>;
+        return NearestElectrons::getNearestElectronsIndices(electrons, nuclei, std::vector<Eigen::Vector3d>({position}), count, 100.0,
+                                          distanceFunction, true);
+    };
 };
 
 TEST_F(ANearestElectronsTest, GetNonValenceIndices) {
-    std::list<long> indices = NearestElectrons::getNonValenceIndices(electrons, nuclei, 0);
+    std::list<long> indices = NearestElectrons::getNonValenceIndices(electrons, nuclei[0]);
     std::list<long> reference = std::list<long>({0, 4});
     ASSERT_EQ(reference, indices);
 
-    indices = NearestElectrons::getNonValenceIndices(electrons, nuclei, 1);
+    indices = NearestElectrons::getNonValenceIndices(electrons, nuclei[1]);
     reference = std::list<long>({});
     ASSERT_EQ(reference, indices);
 };
@@ -36,64 +45,35 @@ TEST_F(ANearestElectronsTest, GetNonValenceIndicesAll) {
 
 TEST_F(ANearestElectronsTest, GetElectronsByPosition) {
     Eigen::Vector3d position = TestMolecules::inbetween(nuclei, {0, 2}, 0.7);
-    std::list<long> indices = NearestElectrons::getNearestElectronsIndices(electrons, nuclei, position, 2);
+    std::list<long> indices = NearestElectrons::getNearestElectronsIndices(electrons, position, 2);
     std::list<long> reference({2, 6});
-    ASSERT_EQ(reference, indices);
-};
-
-TEST_F(ANearestElectronsTest, GetElectronsByAtomIndex) {
-    std::list<long> indices = NearestElectrons::getNearestElectronsIndices(electrons, nuclei, 2, 2);
-    std::list<long> reference({2, 6});
-    ASSERT_EQ(reference, indices);
-};
-
-TEST_F(ANearestElectronsTest, GetElectronsByAtomIndices) {
-    std::list<long> indices = NearestElectrons::getNearestElectronsIndices(electrons, nuclei, 0, 2, 4);
-    std::list<long> reference({0, 2, 4, 6});
     ASSERT_EQ(reference, indices);
 };
 
 TEST_F(ANearestElectronsTest, GetValenceByPosition) {
-    std::list<long> indices = NearestElectrons::getNearestValenceIndices(electrons, nuclei,
+    std::list<long> indices = getNearestElectronsIndices(electrons, nuclei,
                                                                          nuclei[0].position(), 2);
-    std::list<long> reference({6, 7});
-    ASSERT_EQ(reference, indices);
-};
-
-TEST_F(ANearestElectronsTest, GetValenceByAtomIndex) {
-    std::list<long> indices = NearestElectrons::getNearestValenceIndices(electrons, nuclei, 0, 2);
-    std::list<long> reference({6, 7});
-    ASSERT_EQ(reference, indices);
-};
-
-TEST_F(ANearestElectronsTest, GetValenceByAtomIndices) {
-    std::list<long> indices = NearestElectrons::getNearestValenceIndices(electrons, nuclei, 0, 2, 2);
-    std::list<long> reference({2, 6});
+    std::list<long> reference({7, 6});
     ASSERT_EQ(reference, indices);
 };
 
 TEST_F(ANearestElectronsTest, PickElements) {
     ElectronsVector reference;
-    reference.append(electrons[2]);
     reference.append(electrons[6]);
+    reference.append(electrons[2]);
 
-    std::list<long> indices = NearestElectrons::getNearestValenceIndices(electrons, nuclei, 0, 2, 2);
+    Eigen::Vector3d position = TestMolecules::inbetween(nuclei, {0, 2}, 0.5);
+
+    std::list<long> indices = getNearestElectronsIndices(electrons, nuclei, position, 2);
 
     ASSERT_EQ(reference, electrons[indices]);
 };
 
-TEST_F(ANearestElectronsTest, PickElementsMethod) {
-    ElectronsVector reference;
-    reference.append(electrons[2]);
-    reference.append(electrons[6]);
-
-    ElectronsVector slicedVector = NearestElectrons::getNearestValenceElectrons(electrons, nuclei, 0, 2, 2);
-    ASSERT_EQ(reference, slicedVector);
-};
-
 TEST_F(ANearestElectronsTest, BestMatch) {
-    std::list<long> indices1 = NearestElectrons::getNearestValenceIndices(electrons.positionsVector(), nuclei, 0, 2, 2);
-    std::list<long> indices2 = NearestElectrons::getNearestValenceIndices(electrons3.positionsVector(), nuclei, 0, 2, 2);
+    Eigen::Vector3d position = TestMolecules::inbetween(nuclei, {0, 2}, 0.5);
+
+    std::list<long> indices1 = getNearestElectronsIndices(electrons.positionsVector(), nuclei, position, 2);
+    std::list<long> indices2 = getNearestElectronsIndices(electrons3.positionsVector(), nuclei, position, 2);
 
     auto[norm, perm] = BestMatch::Distance::compare<Eigen::Infinity, 2>(
             electrons[indices1].positionsVector(),
@@ -103,8 +83,10 @@ TEST_F(ANearestElectronsTest, BestMatch) {
 };
 
 TEST_F(ANearestElectronsTest, BestMatch2) {
-    std::list<long> indices1 = NearestElectrons::getNearestValenceIndices(electrons.positionsVector(), nuclei, 0, 1, 2);
-    std::list<long> indices2 = NearestElectrons::getNearestValenceIndices(electrons2.positionsVector(), nuclei, 0, 1, 2);
+    Eigen::Vector3d position = TestMolecules::inbetween(nuclei, {0, 1}, 0.5);
+
+    std::list<long> indices1 = getNearestElectronsIndices(electrons.positionsVector(), nuclei, position, 2);
+    std::list<long> indices2 = getNearestElectronsIndices(electrons2.positionsVector(), nuclei, position, 2);
 
     auto[norm, perm] = BestMatch::Distance::compare<Eigen::Infinity, 2>(
             electrons[indices1].positionsVector(),

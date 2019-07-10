@@ -1,5 +1,6 @@
 //
 // Created by Michael Heuer on 06.09.18.
+// Edited by Leonard Reuter on 26.06.19.
 //
 
 #include <gmock/gmock.h>
@@ -34,3 +35,30 @@ TEST(ABestMatchTest, CombinePermutationsWithZeroLength){
     auto p = BestMatch::combinePermutations(p1,p2);
     ASSERT_TRUE(p.indices().base().isApprox(expected));
 }
+
+TEST(ABestMatchTest, PermutationToFront) {
+    std::list<long> indices;
+
+    indices.emplace_back(3);
+    indices.emplace_back(7);
+
+    auto permutation = BestMatch::getPermutationToFront(indices,10);
+
+    Eigen::VectorXi refIndices(10);
+    refIndices << 2,3,4,0,5,6,7,1,8,9;
+
+    ASSERT_EQ(permutation.indices(), refIndices);
+};
+
+TEST(ABestMatchTest, GetFullPermutation) {
+    Eigen::VectorXi indices(3);
+    indices << 2,0,1;
+
+    Eigen::PermutationMatrix<Eigen::Dynamic> partialPermutation(indices);
+    auto permutation = BestMatch::getFullPermutation(partialPermutation, 10);
+
+    Eigen::VectorXi refIndices(10);
+    refIndices << 2,0,1,3,4,5,6,7,8,9;
+
+    ASSERT_EQ(permutation.indices(), refIndices);
+};

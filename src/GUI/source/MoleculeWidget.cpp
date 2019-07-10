@@ -16,6 +16,7 @@
 #include <SurfaceDataGenerator.h>
 
 #include <SpinCorrelations3D.h>
+#include <spdlog/spdlog.h>
 
 MoleculeWidget::MoleculeWidget(QWidget *parent)
         :
@@ -171,7 +172,7 @@ void MoleculeWidget::onAtomsHighlighted(std::vector<int> selectedParticles) {
 
 void MoleculeWidget::onElectronsChecked(std::vector<int> selectedParticles) {
     if(activeElectronsVectorsMap_.size() != 1)
-        std::cout << "Make sure only one Electronsvector is checked" << std::endl;
+        spdlog::warn("Make sure only one electrons vector is checked!");
     else {
         auto &particles = activeElectronsVectorsMap_.begin()->second.begin()->second->particles3D_;
 
@@ -184,7 +185,7 @@ void MoleculeWidget::onElectronsChecked(std::vector<int> selectedParticles) {
 
 void MoleculeWidget::onElectronsHighlighted(std::vector<int> selectedParticles) {
     if(activeElectronsVectorsMap_.size() != 1)
-        std::cout << "Make sure only one Electronsvector is checked" << std::endl;
+        spdlog::warn("Make sure only one electrons vector is checked!");
     else {
         auto &particles = activeElectronsVectorsMap_.begin()->second.begin()->second->particles3D_;
 
