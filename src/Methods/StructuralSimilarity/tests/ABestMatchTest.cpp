@@ -67,42 +67,6 @@ TEST(ABestMatchTest, GetFullPermutation) {
     ASSERT_EQ(permutation.indices(), refIndices);
 };
 
-
-TEST(ABestMatchTest, ApplySwap) {
-    Eigen::PermutationMatrix<Eigen::Dynamic>
-            original(Eigen::Vector3i(2, 1, 0)),
-            expected(Eigen::Vector3i(1, 2, 0)),
-            wrongOrder(Eigen::Vector3i(2, 0, 1));
-
-    auto swap = BestMatch::swapPermutation({0,1}, original.size());
-
-    ASSERT_TRUE((original*swap).indices().isApprox(expected.indices()));
-    ASSERT_TRUE((swap*original).indices().isApprox(wrongOrder.indices()));
-}
-
-
-TEST(ABestMatchTest, ConcatenateSwaps){
-    std::deque<std::pair<Eigen::Index,Eigen::Index>> swaps;
-    swaps.emplace_back(std::make_pair(0,1));
-    swaps.emplace_back(std::make_pair(0,2));
-    swaps.emplace_back(std::make_pair(6,7));
-
-    auto perm = BestMatch::concatenateSwaps(swaps, 8);
-
-    Eigen::VectorXi indices(8);
-    indices << 1,2,0,3,4,5,7,6;
-
-    Eigen::PermutationMatrix<Eigen::Dynamic> expected(indices);
-    ASSERT_TRUE(perm.indices().isApprox(expected.indices()));
-}
-
-TEST(ABestMatchTest, LengthAndIndicesNumberMismatchDeath){
-    std::deque<std::pair<Eigen::Index,Eigen::Index>> swaps;
-    swaps.emplace_back(std::make_pair(0,1));
-    swaps.emplace_back(std::make_pair(2,1));
-    EXPECT_DEATH(BestMatch::concatenateSwaps(swaps, 1), "");
-}
-
 TEST(ABestMatchTest, LesserOperator){
     Eigen::VectorXi indices(3);
     indices << 0,1,2;

@@ -25,15 +25,6 @@ namespace BestMatch {
     Eigen::PermutationMatrix<Eigen::Dynamic>
     getFullPermutation(const Eigen::PermutationMatrix<Eigen::Dynamic> &permutation, const long &size);
 
-    using Swap = std::pair<Eigen::Index, Eigen::Index>;
-
-    Eigen::PermutationMatrix<Eigen::Dynamic> swapPermutation(Swap swap, Eigen::Index length);
-    Eigen::PermutationMatrix<Eigen::Dynamic> swapPermutation(Eigen::Index i, Eigen::Index j, Eigen::Index length);
-
-    Eigen::PermutationMatrix<Eigen::Dynamic>
-    concatenateSwaps(std::deque<Swap> swaps, unsigned permutationSize);
-
-
     template<typename Type>
     Eigen::PermutationMatrix<Eigen::Dynamic> findTypeSeparatingPermutation(
             const ParticlesVector<Type> &particlesVector) {
