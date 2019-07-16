@@ -14,7 +14,7 @@ public:
         BestMatchDistanceSimilarityClusterer,
         BestMatchDistanceDensityBasedClusterer,
         BestMatchSOAPSimilarityClusterer,
-        ReferencePositionsClusterer
+        ReferencePositionsClusterer,
         invalid
     };
 
