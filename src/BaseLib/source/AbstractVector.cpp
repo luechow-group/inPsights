@@ -40,3 +40,13 @@ long AbstractVector::calculateIndex(long i) const {
     if (i >= 0) return i*entityLength_;
     return (numberOfEntities()+i)*entityLength_;
 }
+
+Eigen::PermutationMatrix<Eigen::Dynamic> AbstractVector::randomPermutation() const {
+    std::random_device rd;
+    std::mt19937 g(rd());
+    Eigen::PermutationMatrix<Eigen::Dynamic> perm(numberOfEntities());
+    perm.setIdentity();
+    std::shuffle(perm.indices().data(), perm.indices().data()+perm.indices().size(),g);
+
+    return perm;
+}

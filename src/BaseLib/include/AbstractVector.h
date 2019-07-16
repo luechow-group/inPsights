@@ -7,6 +7,7 @@
 
 #include <iostream>
 #include <Eigen/Core>
+#include <random>
 
 /* AbstractVector
  * keeps track of the number of countable entities
@@ -15,6 +16,7 @@ class AbstractVector {
 public:
     long numberOfEntities() const;
     long entityLength() const;
+    Eigen::PermutationMatrix<Eigen::Dynamic> randomPermutation() const;
 
 protected:
     explicit AbstractVector(long numberOfEntities = 0, long entityLength = 1);
