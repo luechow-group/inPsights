@@ -1,5 +1,6 @@
 //
 // Created by Michael Heuer on 26.09.18.
+// Edited by Leonard Reuter on 26.06.19.
 //
 
 #include <BestMatch.h>
@@ -24,6 +25,73 @@ Eigen::PermutationMatrix<Eigen::Dynamic> BestMatch::combinePermutations(
     }
     return Eigen::PermutationMatrix<Eigen::Dynamic>(combined);
 };
+
+Eigen::PermutationMatrix<Eigen::Dynamic> BestMatch::getPermutationToFront(const std::list<long> &relevantIndices, const long &size){
+    assert(relevantIndices.size() <= size);
+
+    Eigen::VectorXi indices(size);
+    int i = 0;
+    for (auto index : relevantIndices){
+        indices[i] = index;
+        i++;
+    }
+
+    for (long j=0; j<size; j++) {
+        if (std::find(relevantIndices.begin(), relevantIndices.end(), j) == relevantIndices.end()){
+            indices[i] = j;
+            i++;
+        }
+    }
+
+    assert(i == size);
+
+    return Eigen::PermutationMatrix<Eigen::Dynamic>(indices).inverse();
+};
+
+Eigen::PermutationMatrix<Eigen::Dynamic> BestMatch::getPermutationToBack(const std::list<long> &relevantIndices, const long &size){
+    assert(relevantIndices.size() <= size);
+
+    Eigen::VectorXi indices(size);
+    int i = 0;
+
+    for (long j=0; j<size; j++) {
+        if (std::find(relevantIndices.begin(), relevantIndices.end(), j) == relevantIndices.end()){
+            indices[i] = j;
+            i++;
+        }
+    }
+
+    for (auto index : relevantIndices){
+        indices[i] = index;
+        i++;
+    }
+
+    assert(i == size);
+
+    return Eigen::PermutationMatrix<Eigen::Dynamic>(indices).inverse();
+};
+
+Eigen::PermutationMatrix<Eigen::Dynamic> BestMatch::getFullPermutation(const Eigen::PermutationMatrix<Eigen::Dynamic> &permutation, const long &size){
+    // builds full permutation from front permutation
+    assert(permutation.indices().size() <= size);
+
+    Eigen::VectorXi indices(size);
+    int i = 0;
+    while (i<permutation.indices().size()){
+        indices[i] = permutation.indices()[i];
+        i++;
+    }
+
+    for (long j=permutation.indices().size(); j<size; j++) {
+        indices[i] = j;
+        i++;
+    }
+
+    assert(i == size);
+
+    return Eigen::PermutationMatrix<Eigen::Dynamic>(indices);
+};
+
 
 
 Eigen::PermutationMatrix<Eigen::Dynamic>

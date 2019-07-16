@@ -11,17 +11,15 @@ namespace Settings {
     : ISettings(VARNAME(MaximaProcessing)) {
         samplesToAnalyze.onChange_.connect(
                 [&](unsigned value) {
-                    if(value < std::numeric_limits<unsigned>::max())
-                        spdlog::info("Analyzing {} samples.", value);
-                    else if (value == 0)
-                        spdlog::info("Analyzing all samples.");
-                    else if (value < minimalClusterSize.get())
-                        throw std::invalid_argument("The number of samples cannot be smaller than the minimal cluster size");
+                    if (not (value >= 0 and value < std::numeric_limits<unsigned>::max()))
+                        throw std::invalid_argument("The samples to analyze must not be negative.");
                 });
-        minimalClusterSize.onChange_.connect(
-                [&](unsigned value) {
-                    if (value > samplesToAnalyze.get())
-                        throw std::invalid_argument("The minimal cluster size cannot be greater than the number of samples");
+        minimalClusterWeight.onChange_.connect(
+                [&](double value) {
+                    if (value < 0.0)
+                        throw std::invalid_argument("The minimal cluster weight cannot be negative.");
+                    else if (value >= 1.0)
+                        throw std::invalid_argument("The minimal cluster weight cannot be 1 or larger.");
                 });
     }
 
@@ -29,13 +27,13 @@ namespace Settings {
     : MaximaProcessing() {
         YAML::convert<Property<std::string>>::decode(node[className], binaryFileBasename);
         unsignedProperty::decode(node[className], samplesToAnalyze);
-        unsignedProperty::decode(node[className], minimalClusterSize);
+        doubleProperty ::decode(node[className], minimalClusterWeight);
     }
 
     void MaximaProcessing::appendToNode(YAML::Node &node) const {
         node[className][binaryFileBasename.name()] = binaryFileBasename.get();
         node[className][samplesToAnalyze.name()] = samplesToAnalyze.get();
-        node[className][minimalClusterSize.name()] = minimalClusterSize.get();
+        node[className][minimalClusterWeight.name()] = minimalClusterWeight.get();
     }
 }
 

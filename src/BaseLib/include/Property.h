@@ -142,7 +142,7 @@ namespace YAML {
 
         static bool decode(const Node &node, Property<T> &rhs) {
             if(!node.IsMap() || !node[rhs.name()]) {
-                spdlog::info("Property \"{0}\" was not found. Using preset value: {1}", rhs.name(), rhs.get());
+                spdlog::warn("Property \"{0}\" was not found. Using preset value: {1}", rhs.name(), rhs.get());
                 return false;
             }
 

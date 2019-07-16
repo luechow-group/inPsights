@@ -160,7 +160,6 @@ void MaximaProcessingWidget::updateData(const ClusterData &clusterData) {
     << clusterData.EtotalStats_
     << clusterData.intraMotifEnergyStats_
     << clusterData.interMotifEnergyStats_;
-    std::cout << out.c_str()<< "\n" << std::endl;
 
     updateEnergies(Ee_, clusterData.EeStats_.mean(), clusterData.EeStats_.standardError());
     updateEnergies(En_, EnStats_.mean(), EnStats_.standardError());

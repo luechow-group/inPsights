@@ -8,7 +8,7 @@
 #include <BestMatchDistanceSimilarityClusterer.h>
 #include <BestMatchDistanceDensityBasedClusterer.h>
 #include <BestMatchSOAPSimilarityClusterer.h>
-#include <LocalBondSimilarityClusterer.h>
+#include <ReferencePositionsClusterer.h>
 #include <MaximaProcessor.h>
 #include <GeneralStatistics.h>
 #include <algorithm>
@@ -19,6 +19,7 @@
 #include <SOAPSettings.h>
 #include <AsciiArt.h>
 #include <fstream>
+#include <IPosition.h>
 
 using namespace YAML;
 
@@ -45,9 +46,9 @@ void validateClusteringSettings(const YAML::Node &inputYaml) {
                         = Settings::BestMatchDistanceDensityBasedClusterer(clusteringNode);
                 break;
             }
-            case IClusterer::Type::LocalBondSimilarityClusterer: {
-                LocalBondSimilarityClusterer::settings
-                        = Settings::LocalBondSimilarityClusterer(clusteringNode);
+            case IClusterer::Type::ReferencePositionsClusterer: {
+                ReferencePositionsClusterer::settings
+                        = Settings::ReferencePositionsClusterer(clusteringNode);
                 break;
             }
             case IClusterer::Type::BestMatchSOAPSimilarityClusterer: {
@@ -107,6 +108,11 @@ int main(int argc, char *argv[]) {
 
     // Apply settings from inputYaml
     MaximaProcessing::settings = Settings::MaximaProcessing(inputYaml);
+    unsigned samplesToAnalyze = MaximaProcessing::settings.samplesToAnalyze();
+    if (samplesToAnalyze == 0)
+        spdlog::info("Analyzing all samples.");
+    else if(samplesToAnalyze < std::numeric_limits<unsigned>::max())
+        spdlog::info("Analyzing {} samples.", samplesToAnalyze);
 
     // if binary file basename is not specified, use the name of  the input file
     if(!inputYaml["MaximaProcessing"][MaximaProcessing::settings.binaryFileBasename.name()]) {
@@ -179,13 +185,25 @@ int main(int argc, char *argv[]) {
                 settings.appendToNode(usedClusteringSettings);
                 break;
             }
-            case IClusterer::Type::LocalBondSimilarityClusterer: {
-                auto &settings = LocalBondSimilarityClusterer::settings;
+            case IClusterer::Type::ReferencePositionsClusterer: {
+                auto &settings = ReferencePositionsClusterer::settings;
 
-                settings = Settings::LocalBondSimilarityClusterer(node.second);
+                settings = Settings::ReferencePositionsClusterer(node.second);
 
-                LocalBondSimilarityClusterer localBondSimilarityClusterer(samples, atoms);
-                localBondSimilarityClusterer.cluster(maxima);
+                std::vector<Eigen::Vector3d> positions;
+
+                auto positionNodes = node.second["positions"];
+                for (const auto &positionNode : positionNodes){
+                    positions.emplace_back(YAML::decodePosition(positionNode, atoms));
+                }
+
+                spdlog::info("Using the following positions:");
+                for (const auto &position : positions){
+                    spdlog::info("{} {} {}", position[0], position[1], position[2]);
+                }
+
+                ReferencePositionsClusterer ReferencePositionsClusterer(samples, atoms, positions);
+                ReferencePositionsClusterer.cluster(maxima);
 
                 settings.appendToNode(usedClusteringSettings);
                 break;
@@ -266,13 +284,11 @@ int main(int argc, char *argv[]) {
 
     return 0;
 
-    /*TODO
-     * - add similarity attribute (enum - spatially|permutationally|rotationally + similar|identical ) to group
+    /* TODO
+     * - refactor best match clusterer
      * - make single value statistics class
-     * - test naive standard deviatino
+     * - test naive standard deviation
      * - test choice of function value increment
-     * - validate that ring-like clusters are ordered correctly
      * - split identity sort into batches that can be compared in parallel using OpenMP
-     * - improve spinSpecificHungarian (low priority)
      * */
 };

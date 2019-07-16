@@ -25,7 +25,7 @@ set(HEADER_FILES
         include/EnergyStatistics.h
         include/Group.h
         include/IClusterer.h
-        include/LocalBondSimilarityClusterer.h
+        include/ReferencePositionsClusterer.h
         )
 
 set(SOURCE_FILES
@@ -45,7 +45,7 @@ set(SOURCE_FILES
         source/EnergyStatistics.cpp
         source/Group.cpp
         source/IClusterer.cpp
-        source/LocalBondSimilarityClusterer.cpp
+        source/ReferencePositionsClusterer.cpp
         )
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES})

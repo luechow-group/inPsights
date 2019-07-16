@@ -12,8 +12,11 @@
 #include <Bond3D.h>
 #include <Cylinder.h>
 #include <Particle3D.h>
+#include <Surface.h>
+#include <SurfaceDataGenerator.h>
 
 #include <SpinCorrelations3D.h>
+#include <spdlog/spdlog.h>
 
 MoleculeWidget::MoleculeWidget(QWidget *parent)
         :
@@ -47,13 +50,11 @@ MoleculeWidget::MoleculeWidget(QWidget *parent)
     connect(screenshotButton_, &QPushButton::clicked, this, &MoleculeWidget::onScreenshot);
 
     setMouseTracking(true);
-    drawAxes(true);
 }
 
 Qt3DCore::QEntity *MoleculeWidget::getMoleculeEntity() {
     return moleculeEntity_;
 }
-
 
 void MoleculeWidget::drawAxes(bool drawQ) {
     if (drawQ) {
@@ -111,6 +112,31 @@ void MoleculeWidget::setSharedAtomsVector(AtomsVector atomsVector) {
     sharedAtomsVector_ = std::make_shared<AtomsVector>(std::move(atomsVector));
 }
 
+void MoleculeWidget::addSeds(int clusterId, const std::vector<ClusterData> &clusterData, double includedPercentage) {
+    auto spins = clusterData[clusterId].representativeStructure().typesVector();
+    auto N = spins.numberOfEntities();
+
+    std::vector<Surface*> seds(N);
+
+    const auto& voxelData = clusterData[clusterId].voxelCubes_;
+
+    for (std::size_t i = 0; i < spins.numberOfEntities(); ++i) {
+        SurfaceDataGenerator surfaceDataGenerator(voxelData[i]);
+        auto surfaceData = surfaceDataGenerator.computeSurfaceData(includedPercentage);
+        seds[i] = new Surface(getMoleculeEntity(), surfaceData, GuiHelper::QColorFromType(spins[i]), 0.15);
+    }
+    activeSedsMap_[clusterId] = seds;
+}
+
+void MoleculeWidget::removeSeds(int clusterId) {
+    for (auto &sed : activeSedsMap_[clusterId])
+        sed->deleteLater();
+
+    if (!activeSedsMap_[clusterId].empty())
+        activeSedsMap_.erase(clusterId);
+}
+
+
 void MoleculeWidget::drawSpinCorrelations(bool drawQ,
                                           const std::vector<ClusterData> &clusterData,
                                           double spinCorrelationThreshold) {
@@ -146,7 +172,7 @@ void MoleculeWidget::onAtomsHighlighted(std::vector<int> selectedParticles) {
 
 void MoleculeWidget::onElectronsChecked(std::vector<int> selectedParticles) {
     if(activeElectronsVectorsMap_.size() != 1)
-        std::cout << "Make sure only one Electronsvector is checked" << std::endl;
+        spdlog::warn("Make sure only one electrons vector is checked!");
     else {
         auto &particles = activeElectronsVectorsMap_.begin()->second.begin()->second->particles3D_;
 
@@ -159,7 +185,7 @@ void MoleculeWidget::onElectronsChecked(std::vector<int> selectedParticles) {
 
 void MoleculeWidget::onElectronsHighlighted(std::vector<int> selectedParticles) {
     if(activeElectronsVectorsMap_.size() != 1)
-        std::cout << "Make sure only one Electronsvector is checked" << std::endl;
+        spdlog::warn("Make sure only one electrons vector is checked!");
     else {
         auto &particles = activeElectronsVectorsMap_.begin()->second.begin()->second->particles3D_;
 
