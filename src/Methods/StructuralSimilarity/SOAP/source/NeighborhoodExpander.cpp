@@ -26,11 +26,11 @@ NeighborhoodExpansion NeighborhoodExpander::expandEnvironment(const Environment&
 
         const auto& neighborCoords = neighborCoordsPair.second;
 
-        double weight = 1; //TODO TypeSpecific Value? //const auto& neighbor = neighborCoordsPair.first;
+        double weight = 1; //TODO TypeSpecific Value?
         double weightScale = Cutoff::getWeight(neighborCoords.r);
 
         if (neighborCoords.r <= radiusZero)
-            weight *= centerWeight; //TODO return something here?
+            weight *= centerWeight;
 
         for (unsigned n = 1; n <= nmax; ++n) {
             for (unsigned l = 0; l <= lmax; ++l) {
@@ -40,7 +40,6 @@ NeighborhoodExpansion NeighborhoodExpander::expandEnvironment(const Environment&
                 for (int m = -int(l); m <= int(l); ++m) {
 
                     //TODO use TypeSpecific sigma value? Is neighbor sigma right?
-                    //auto coeff = coefficient(n, l, m, neighborCoords, weight, weightScale);//,neighborSigma);
                     auto coeff = radialCoeff(n-1,l)* AngularBasis::computeCoefficient(l, m, neighborCoords.theta, neighborCoords.phi)
                                  * weight*weightScale;
                     neighborhoodExpansion.storeCoefficient(n,l,m,coeff);
@@ -52,7 +51,7 @@ NeighborhoodExpansion NeighborhoodExpander::expandEnvironment(const Environment&
 }
 
 TypeSpecificNeighborhoodsAtOneCenter
-NeighborhoodExpander::computeParticularExpansions(const Environment &e) { // WORKS!
+NeighborhoodExpander::computeParticularExpansions(const Environment &e) {
     TypeSpecificNeighborhoodsAtOneCenter expansions;
 
     auto mode = General::settings.mode();
@@ -84,33 +83,13 @@ MolecularCenters
 NeighborhoodExpander::computeMolecularExpansions(MolecularGeometry molecule) {
     assert(ParticleKit::isSubsetQ(molecule)
            && "The molecule must be composable from the set of particles specified in the particle kit");
-    MolecularCenters exp;
 
-    auto radiusZero = Radial::settings.radiusZero();
+    MolecularCenters expansions;
 
-    //TODO CHECK HERE FOR IDENTICAL CENTERS!
     for (unsigned k = 0; k < unsigned(molecule.numberOfEntities()); ++k) {
-
-        // check if center was calculated already;
-        // TODO: not possible, if type specific center value is chosen which currently isn't the case;
-        bool computedAlreadyQ = false;
-
-        EnumeratedType<int> existingEnumeratedType = {};
-        for (unsigned i = 0; i < k; ++i) {
-            if((molecule[i].position()-molecule[k].position()).norm() <= radiusZero){
-                existingEnumeratedType = molecule.findEnumeratedTypeByIndex(i);
-                computedAlreadyQ = true;
-                //std::cout << "found " << existingEnumeratedType << std::endl;
-                break;
-            }
-        }
-        auto newEnumeratedType = molecule.findEnumeratedTypeByIndex(k);
-        if(computedAlreadyQ){
-            exp[newEnumeratedType] = exp[existingEnumeratedType];
-        } else {
-            exp[newEnumeratedType] = computeParticularExpansions(Environment(molecule, molecule[k].position()));
-        }
+        auto currentEnumeratedType = molecule.findEnumeratedTypeByIndex(k);
+        expansions[currentEnumeratedType] = computeParticularExpansions(Environment(molecule, currentEnumeratedType));
     }
 
-    return exp;
+    return expansions;
 }

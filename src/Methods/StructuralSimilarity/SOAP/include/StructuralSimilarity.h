@@ -19,16 +19,16 @@ namespace SOAP {
         Eigen::MatrixXd selfCorrelationMatrix(const MolecularSpectrum &A);
 
         double kernel(const MolecularGeometry &A,
-                      const MolecularGeometry &B, double gamma = General::settings.gamma());
+                      const MolecularGeometry &B, double gamma = General::settings.sinkhornGamma());
 
         double kernel(const MolecularSpectrum &spectrumA,
-                      const MolecularSpectrum &spectrumB, double gamma = General::settings.gamma());
+                      const MolecularSpectrum &spectrumB, double gamma = General::settings.sinkhornGamma());
 
         double kernelDistance(const MolecularGeometry &A,
-                              const MolecularGeometry &B, double gamma = General::settings.gamma());
+                              const MolecularGeometry &B, double gamma = General::settings.sinkhornGamma());
 
         double kernelDistance(const MolecularSpectrum &spectrumA,
-                              const MolecularSpectrum &spectrumB, double gamma = General::settings.gamma());
+                              const MolecularSpectrum &spectrumB, double gamma = General::settings.sinkhornGamma());
     }
 }
 

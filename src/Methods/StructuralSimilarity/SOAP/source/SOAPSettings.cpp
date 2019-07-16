@@ -67,7 +67,7 @@ namespace Settings {
             }
 
             doubleProperty::decode(node[className], zeta);
-            doubleProperty::decode(node[className], gamma);
+            doubleProperty::decode(node[className], sinkhornGamma);
             doubleProperty::decode(node[className], sinkhornEpsilon);
         }
 
@@ -93,7 +93,7 @@ namespace Settings {
             node[className][VARNAME(pairSimilarities)] = mapNode;
             node[className][mode.name()] = ::SOAP::General::toString(::SOAP::General::Mode(mode()));
             node[className][zeta.name()] = zeta();
-            node[className][gamma.name()] = gamma();
+            node[className][sinkhornGamma.name()] = sinkhornGamma();
             node[className][sinkhornEpsilon.name()] = sinkhornEpsilon();
         }
 
@@ -123,6 +123,7 @@ namespace Settings {
 
             unsignedProperty::decode(node[className], nmax);
             doubleProperty::decode(node[className], sigmaAtom);
+            doubleProperty::decode(node[className], sigmaZeroThreshold);
             unsignedProperty::decode(node[className], integrationSteps);
             doubleProperty::decode(node[className], desiredAbsoluteError);
             doubleProperty::decode(node[className], desiredRelativeError);
@@ -132,6 +133,7 @@ namespace Settings {
             node[className][basisType.name()] = ::SOAP::Radial::toString(::SOAP::Radial::BasisType(basisType()));
             node[className][nmax.name()] = nmax();
             node[className][sigmaAtom.name()] = sigmaAtom();
+            node[className][sigmaZeroThreshold.name()] = sigmaZeroThreshold();
             node[className][integrationSteps.name()] = integrationSteps();
             node[className][desiredAbsoluteError.name()] = desiredAbsoluteError();
             node[className][desiredRelativeError.name()] = desiredRelativeError();

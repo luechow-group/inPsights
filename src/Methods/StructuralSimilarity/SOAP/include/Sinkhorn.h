@@ -13,10 +13,10 @@ namespace SOAP {
     namespace Sinkhorn {
 
         Eigen::MatrixXd Pgamma(const Eigen::MatrixXd &C,
-                               double gamma = General::settings.gamma(),
+                               double gamma = General::settings.sinkhornGamma(),
                                double eps = std::numeric_limits<double>::epsilon());
 
-        double distance(Eigen::MatrixXd correlationMatrix, double gamma = General::settings.gamma(),
+        double distance(Eigen::MatrixXd correlationMatrix, double gamma = General::settings.sinkhornGamma(),
                         double eps = std::numeric_limits<double>::epsilon());
     }
 }

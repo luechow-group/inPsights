@@ -6,6 +6,7 @@
 #include <Eigen/Cholesky>
 #include <unsupported/Eigen/MatrixFunctions>
 #include <SpecialMathFunctions/ModifiedSphericalBesser1stKind.h>
+#include <NaturalConstants.h>
 #include "RadialBasis.h"
 #include "SOAPSettings.h"
 
@@ -95,7 +96,7 @@ Eigen::MatrixXd RadialBasis::Sab(unsigned nmax) const{
             double s = 1./(4.*pow(w, 2.5));
             s *= exp(-a*rCenterA*rCenterA-b*rCenterB*rCenterB);
             s *= 2.0*sqrt(w)*W0
-                 + sqrt(M_PI)*exp(std::pow(W0,2)/w)*(w+2*std::pow(W0,2))
+                 + sqrt(Constant::pi)*exp(std::pow(W0,2)/w)*(w+2*std::pow(W0,2))
                  * erfc(-W0/sqrt(w)); // TODO which one is faster (with MKL)
                  //*boost::math::erfc<double>(-W0/sqrt(w));
             s *= basis_[i].normalizationConstant_g2_r2()*basis_[j].normalizationConstant_g2_r2();
@@ -166,10 +167,9 @@ Eigen::MatrixXd RadialBasis::computeCoefficients(double centerToNeighborDistance
     const auto lmax = Angular::settings.lmax();
     const auto nmax = Radial::settings.nmax();
 
-    //TODO just resize?
     Eigen::MatrixXd radialCoeffsGnl = Eigen::MatrixXd::Zero(nmax,lmax+1);
 
-    if (neighborSigma < Radial::settings.radiusZero()) {
+    if (neighborSigma < Radial::settings.sigmaZeroThreshold()) {
 
         for (unsigned n = 0; n < nmax; ++n) {
             double gn_at_r = basis_[n].value(centerToNeighborDistance);
@@ -177,8 +177,8 @@ Eigen::MatrixXd RadialBasis::computeCoefficients(double centerToNeighborDistance
                 radialCoeffsGnl(n, l) = gn_at_r;
             }
         }
-      } else {
-        double ai = 1 / (2. * pow(neighborSigma, 2));
+    } else {
+        double ai = 1.0 / (2.0 * pow(neighborSigma, 2));
         double ri = centerToNeighborDistance;
         SphericalGaussian gi_sph(Eigen::Vector3d::Zero(),
                                  neighborSigma); // <- position should not matter, as only normalization used here
@@ -192,14 +192,15 @@ Eigen::MatrixXd RadialBasis::computeCoefficients(double centerToNeighborDistance
             double basisFunctionCenter = basis_[n].center(); //rk
             double norm_r2_g2_dr_rad_k = basis_[n].normalizationConstant_g2_r2();
             double beta_ik = ai + basisFunctionAlpha;
-            double rho_ik = basisFunctionAlpha * basisFunctionCenter / beta_ik;
+
             double prefac =
-                    4 * M_PI *
+                    4.0 * Constant::pi *
                     norm_r2_g2_dr_rad_k * norm_g_dV_sph_i *
                     exp(-ai * ri * ri) *
                     exp(-basisFunctionAlpha * pow(basisFunctionCenter, 2) *
-                        (1 - basisFunctionAlpha / beta_ik)); // eq 32 bzw. 33
+                        (1.0 - basisFunctionAlpha / beta_ik)); // eq 32 bzw. 33
 
+            double rho_ik = basisFunctionAlpha * basisFunctionCenter / beta_ik;
             auto integrals = calculateIntegrals(ai, ri, rho_ik, beta_ik);
 
             for (unsigned l = 0; l <= lmax; ++l) {

@@ -6,6 +6,10 @@
 #include <gmock/gmock.h>
 #include <BestMatch.h>
 
+using namespace testing;
+
+
+
 TEST(ABestMatchTest, CombinePermutations){
     Eigen::PermutationMatrix<Eigen::Dynamic>p1,p2;
     p1.setIdentity(4);
@@ -62,3 +66,28 @@ TEST(ABestMatchTest, GetFullPermutation) {
 
     ASSERT_EQ(permutation.indices(), refIndices);
 };
+
+TEST(ABestMatchTest, LesserOperator){
+    Eigen::VectorXi indices(3);
+    indices << 0,1,2;
+    Eigen::PermutationMatrix<Eigen::Dynamic> perm(indices);
+
+    BestMatch::Result a = {0,perm};
+    BestMatch::Result b = {1,perm};
+
+    ASSERT_TRUE(a<b);
+}
+
+TEST(ABestMatchTest, Sort){
+    Eigen::VectorXi indices(3);
+    indices << 0,1,2;
+    Eigen::PermutationMatrix<Eigen::Dynamic> perm(indices);
+
+    BestMatch::Result a = {0,perm};
+    BestMatch::Result b = {1,perm};
+    BestMatch::Result c = {2,perm};
+
+    std::vector< BestMatch::Result> vec = {a,c,b};
+    std::sort(vec.begin(),vec.end());
+
+}

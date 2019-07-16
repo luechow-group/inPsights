@@ -39,7 +39,7 @@ void BestMatchDistanceSimilarityClusterer::cluster(Group& group) {
 
 
     // first, make sure group is sorted
-    group.sort();
+    group.sort(); // TODO use sortAll?
 
     // insert first element
     Group supergroup({Group({*group.begin()})});
@@ -113,6 +113,7 @@ void BestMatchDistanceSimilarityClusterer::cluster(Group& group) {
                 overallBestMatchPerm = perm;
                 bestMatchSubgroupFromSupergroupBoundaries = subgroupFromSupergroupBoundaries;
             }
+
         }
         if (overallBestMatchNorm <= similarityRadius) {
             subgroup->permuteAll(overallBestMatchPerm, samples_);

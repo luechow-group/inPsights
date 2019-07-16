@@ -34,7 +34,7 @@ namespace Settings{
         public:
             Property<::SOAP::General::Mode> mode = {::SOAP::General::Mode::typeAgnostic, VARNAME(mode)};
             Property<double> zeta = {2.0, VARNAME(zeta)};
-            Property<double> gamma = {0.1, VARNAME(gamma)};
+            Property<double> sinkhornGamma = {0.1, VARNAME(sinkhornGamma)};
             Property<double> sinkhornEpsilon = {1e-8, VARNAME(sinkhornEpsilon)};
 
             std::map<std::pair<int, int>, double> pairSimilarities = {
@@ -68,11 +68,11 @@ namespace Settings{
                     {::SOAP::Radial::BasisType::equispaced, VARNAME(mode)};
 
             Property<unsigned> nmax = {5, VARNAME(nmax)};
-            Property<double> sigmaAtom = {0.5 * ConversionFactors::angstrom2bohr, VARNAME(sigmaAtom)};
+            Property<double> sigmaAtom = {1.0, VARNAME(sigmaAtom)};
+            Property<double> sigmaZeroThreshold = {1e-10, VARNAME(sigmaZeroThreshold)};
             Property<unsigned> integrationSteps = {100, VARNAME(integrationSteps)};
             Property<double> desiredAbsoluteError = {0.0, VARNAME(desiredAbsoluteError)};
-            Property<double> desiredRelativeError = {std::numeric_limits<double>::epsilon() * 1e2,
-                                                     VARNAME(desiredRelativeError)};
+            Property<double> desiredRelativeError = {1e-6, VARNAME(desiredRelativeError)};
 
             Radial();
 

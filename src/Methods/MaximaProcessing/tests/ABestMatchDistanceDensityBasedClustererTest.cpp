@@ -48,11 +48,9 @@ public:
                 samples.emplace_back(std::move(s));
             }
 
-
             auto referenceDistanceMatrix2 = Metrics::positionalDistances(references[0].representative()->maximum().positionsVector());
 
             // test if any permutation is wrong
-
             for (size_t i = 1; i < references.size(); ++i) {
                 auto distanceMatrix2 = Metrics::positionalDistances(references[i].representative()->maximum().positionsVector());
                 if (!distanceMatrix2.isApprox(referenceDistanceMatrix2)){
@@ -102,26 +100,17 @@ TEST_F(ABestMatchDistanceDensityBasedClustererTest, RotationallySymmetricAndPoin
     std::vector<Sample> samples;
     makeRingLikeCluster(references, samples, n);
 
+    auto rng = std::default_random_engine(static_cast<unsigned long>(std::clock()));
     const auto &ionic = TestMolecules::fourElectrons::ionic.electrons();
 
     Eigen::PermutationMatrix<Eigen::Dynamic> perm(ionic.numberOfEntities());
     perm.setIdentity();
 
-    auto rng = std::default_random_engine(static_cast<unsigned long>(std::clock()));
-
     references.emplace_back(Reference(10, ionic));
     unsigned m = 5;
     for (unsigned i = 1; i < m; ++i) {
-        auto maxDev = 1./std::sqrt(3.0)*BestMatchDistanceDensityBasedClusterer::settings.clusterRadius.get();
-
-        Eigen::Vector3d randomTranslation;
-        std::uniform_real_distribution<double> uniformRealDistribution(-maxDev, maxDev);
-        randomTranslation.x() = uniformRealDistribution(rng);
-        randomTranslation.y() = uniformRealDistribution(rng);
-        randomTranslation.z() = uniformRealDistribution(rng);
-
         auto evCopy = ionic;
-        evCopy.positionsVector().translate(randomTranslation);
+        evCopy.positionsVector().shake(BestMatchDistanceDensityBasedClusterer::settings.clusterRadius.get());
 
         // random permutation
         std::shuffle(perm.indices().data(), perm.indices().data()+perm.indices().size(), rng);
@@ -144,10 +133,12 @@ TEST_F(ABestMatchDistanceDensityBasedClustererTest, RotationallySymmetricAndPoin
     ASSERT_EQ(references[1].size(), m);
 
     for (size_t j = 0; j < references.size(); j++){
-        auto referenceDistanceMatrix = Metrics::positionalDistances(references[j][0].representative()->maximum().positionsVector());
+        auto referenceDistanceMatrix =
+                Metrics::positionalDistances(references[j][0].representative()->maximum().positionsVector());
 
         for (size_t i = 1; i < references[j].size(); ++i) {
-            auto distanceMatrix = Metrics::positionalDistances(references[j][i].representative()->maximum().positionsVector());
+            auto distanceMatrix =
+                    Metrics::positionalDistances(references[j][i].representative()->maximum().positionsVector());
             ASSERT_TRUE(distanceMatrix.isApprox(referenceDistanceMatrix));
         }
     }

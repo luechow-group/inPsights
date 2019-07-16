@@ -5,6 +5,10 @@
 
 #include <BestMatch.h>
 
+bool BestMatch::Result::operator<(const BestMatch::Result &rhs) {
+    return metric < rhs.metric;
+}
+
 Eigen::PermutationMatrix<Eigen::Dynamic> BestMatch::combinePermutations(
         const Eigen::PermutationMatrix<Eigen::Dynamic> &p1,
         const Eigen::PermutationMatrix<Eigen::Dynamic> &p2, bool flipSpinsQ) {

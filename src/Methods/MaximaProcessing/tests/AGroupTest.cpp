@@ -259,3 +259,25 @@ TEST_F(AGroupTest, Print) {
 
     ASSERT_EQ(ss.str(), std::string("{{0},{{1},{2}}}"));
 }
+
+TEST_F(AGroupTest, Average) {
+    Group g({g1,g3});
+
+    auto averagedStructure = g.averagedPositionsVector();
+    ASSERT_EQ(averagedStructure.weight, 2);
+    Eigen::VectorXd avg = Eigen::VectorXd::Zero(
+            TestMolecules::H2::ElectronsInCores::normal.electrons().positionsVector().numberOfEntities()
+            * TestMolecules::H2::ElectronsInCores::normal.electrons().positionsVector().entityLength());
+
+    ASSERT_TRUE(averagedStructure.positions.asEigenVector().isApprox(avg));
+}
+
+TEST_F(AGroupTest, Average_OneMember) {
+    Group g({g1});
+
+    auto averagedStructure = g.averagedPositionsVector();
+    ASSERT_EQ(averagedStructure.weight, 1);
+
+    ASSERT_TRUE(averagedStructure.positions.asEigenVector().isApprox(
+            g1.representative()->maximum().positionsVector().asEigenVector()));
+}

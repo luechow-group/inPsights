@@ -3,6 +3,7 @@
 //
 
 #include <gmock/gmock.h>
+#include <BestMatch.h>
 #include <BestMatchDistance.h>
 #include <TestMolecules.h>
 
@@ -15,7 +16,7 @@ TEST(ABestMatchDistanceTest, findTypeSeparatingPermutation) {
                         {Element::H, {0, 0, 2}}});
 
 
-    auto result = BestMatch::Distance::findTypeSeparatingPermutation<Element>(nuclei);
+    auto result = BestMatch::findTypeSeparatingPermutation<Element>(nuclei);
 
     Eigen::VectorXi expected(5);
     expected << 0,4,1,3,2;

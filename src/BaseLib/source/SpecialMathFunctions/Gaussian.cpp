@@ -5,6 +5,7 @@
 #include "SpecialMathFunctions/Gaussian.h"
 #include <cmath>
 #include <boost/math/special_functions.hpp>
+#include <NaturalConstants.h>
 
 IGaussian::IGaussian(double sigma)
         : sigma_(sigma),
@@ -22,7 +23,7 @@ Gaussian::Gaussian(double rCenter, double sigma)
 
 // computes the normalization constant for the 1D volume integral
 double Gaussian::calculateNormalizationConstant() const {
-    return  sqrt(alpha_/M_PI);
+    return  sqrt(alpha_/Constant::pi);
 };
 
 double Gaussian::center() const { return rCenter_; };
@@ -35,7 +36,7 @@ double Gaussian::normalizationConstant_g2_r2() const{
             1./(4.*pow(w, 5/2.))
             *exp(-w*pow(rCenter_,2))
             *(2*sqrt(w)*W0
-              + sqrt(M_PI)
+              + sqrt(Constant::pi )
                 *exp(pow(W0,2)/w)
                 *(w+2*pow(W0,2))
                 *boost::math::erfc<double>(-W0/sqrt(w))
@@ -52,7 +53,7 @@ double Gaussian::normalizationConstant_g_r2() const{
     double integral_r2_g_dr =
             1./(4.*pow(w, 2.5))*exp(-w*pow(rCenter_,2))*(
                     2*sqrt(w)*W0 +
-                    sqrt(M_PI)*exp(pow(W0,2)/w)*(w+2*pow(W0,2))*(
+                    sqrt(Constant::pi )*exp(pow(W0,2)/w)*(w+2*pow(W0,2))*(
                             1 - boost::math::erf<double>(-W0/sqrt(w))
                     )
             );
@@ -77,7 +78,7 @@ SphericalGaussian::SphericalGaussian(const Eigen::Vector3d& rCenter, double sigm
 
 // computes the normalization constant for the 3D volume integral
 double SphericalGaussian::calculateNormalizationConstant() const {
-    return pow(alpha_/M_PI, 3./2.);
+    return pow(alpha_/Constant::pi , 3./2.);
 };
 
 double SphericalGaussian::value(const Eigen::Vector3d &r) const {

@@ -71,6 +71,28 @@ void Group::permuteAll(const Eigen::PermutationMatrix<Eigen::Dynamic> &perm, std
     }
 }
 
+Group::AveragedPositionsVector Group::averagedPositionsVector() const {
+    if (isLeaf())
+        return {representative()->maximum().positionsVector(), 1};
+    else {
+        unsigned weight = 0;
+        Eigen::VectorXd average = Eigen::VectorXd::Zero(
+                representative()->maximum().numberOfEntities()
+                *representative()->maximum().positionsVector().entityLength());
+        for (const auto &subgroup : *this) {
+            auto subgroupAverage = subgroup.averagedPositionsVector();
+            average += double(subgroupAverage.weight)* subgroupAverage.positions.asEigenVector();
+            weight += subgroupAverage.weight;
+        }
+        average /= weight;
+        return {PositionsVector(average), weight};
+    }
+}
+
+ElectronsVector Group::averagedRepresentativeElectronsVector() const {
+    return {averagedPositionsVector().positions,representative()->maximum().typesVector()};
+}
+
 std::shared_ptr<Reference> Group::representative() {
     if (!isLeaf())
         return front().representative();

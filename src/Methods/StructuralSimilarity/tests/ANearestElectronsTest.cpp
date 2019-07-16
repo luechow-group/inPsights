@@ -14,9 +14,23 @@ class ANearestElectronsTest : public Test {
 public:
     const MolecularGeometry &BH3 = TestMolecules::BH3::ionic;
     const ElectronsVector &electrons = BH3.electrons();
-    const ElectronsVector &electrons2 = TestMolecules::BH3::ionicMirrored.electrons();
-    const ElectronsVector &electrons3 = TestMolecules::BH3::ionicMirrored2.electrons();
+    const ElectronsVector &electrons2 = TestMolecules::BH3::ionicRotated.electrons();
+    ElectronsVector electrons3;
     const AtomsVector &nuclei = BH3.atoms();
+
+    void SetUp() override {
+        electrons3 =
+                ElectronsVector({
+                    electrons2[0],
+                    electrons2[1],
+                    electrons2[2],
+                    electrons2[7],
+                    electrons2[4],
+                    electrons2[5],
+                    electrons2[6],
+                    electrons2[3]
+                });
+    }
     std::list<long>
     getNearestElectronsIndices(const ElectronsVector &electrons, const AtomsVector &nuclei,
                              const Eigen::Vector3d &position,

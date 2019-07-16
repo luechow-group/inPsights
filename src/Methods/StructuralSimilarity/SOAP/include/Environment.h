@@ -19,12 +19,12 @@ namespace SOAP {
 
     class Environment {
     public:
-        Environment(MolecularGeometry molecularGeometry, Eigen::Vector3d center);
+        Environment(MolecularGeometry molecularGeometry, EnumeratedType<int> enumeratedType);
 
         std::vector<std::pair<Particle<int>, SphericalCoordinates>> selectParticles(int expansionTypeId = 0) const;
 
         MolecularGeometry molecularGeometry_;
-        Eigen::Vector3d center_; //TODO be careful with many particles located at the same center => getCenterWeight?
+        EnumeratedType<int> enumeratedType_;
     };
 }
 
