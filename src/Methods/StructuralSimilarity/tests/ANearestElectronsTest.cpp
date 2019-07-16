@@ -30,6 +30,7 @@ public:
                     electrons2[6],
                     electrons2[3]
                 });
+    }
     std::list<long>
     getNearestElectronsIndices(const ElectronsVector &electrons, const AtomsVector &nuclei,
                              const Eigen::Vector3d &position,
