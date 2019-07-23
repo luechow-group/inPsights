@@ -96,7 +96,7 @@ TEST_F(ASOAPClustererTest, VerifyTestCluster) {
     ASSERT_EQ(BestMatch::SOAPSimilarity::compare(
             specF, specE, soapThreshold, distanceTolerance).metric, 1);
 }
-
+/*
 TEST_F(ASOAPClustererTest, TwoClusters) {
     ParticleKit::create(atoms, A.representative()->maximum());
     SOAPClusterer sOAPClusterer(atoms, samples);
@@ -159,3 +159,4 @@ TEST_F(ASOAPClustererTest, TwoClusters_Alchemical) {
 
     // Group expected({{A,{B,C},D},{E,F}});
 }
+ */
