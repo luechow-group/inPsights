@@ -3,7 +3,7 @@
 //
 
 #include <gmock/gmock.h>
-#include <BestMatchSOAPSimilarityClusterer.h>
+#include <SOAPClusterer.h>
 #include <DistanceClusterer.h>
 #include <SOAPSettings.h>
 #include <TestMolecules.h>
