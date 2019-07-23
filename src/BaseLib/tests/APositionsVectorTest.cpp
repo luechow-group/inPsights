@@ -200,12 +200,18 @@ TEST_F(APositionsVectorTest, RotateAllClockwise) {
 
 TEST_F(APositionsVectorTest, Shake) {
     PositionsVector p(positions);
-    auto rng = std::default_random_engine(0);
 
-    auto pcopy = p;
-    double shakeDist = 0.1;
-    pcopy.shake(shakeDist, rng);
-    
-    auto maxDev = Metrics::positionalNormsVectorNorm<Eigen::Infinity,2>(p,pcopy);
-    ASSERT_LE(maxDev,shakeDist);
+    auto randomSeed = static_cast<unsigned long>(std::clock());
+    std::cout << "random seed: " << randomSeed << std::endl;
+
+    for(auto seed : std::vector<unsigned long>{0,randomSeed}) {
+        auto rng = std::default_random_engine(seed);
+
+        auto pcopy = p;
+        double shakeDist = 0.1;
+        pcopy.shake(shakeDist, rng);
+
+        auto maxDev = Metrics::positionalNormsVectorNorm<Eigen::Infinity, 2>(p, pcopy);
+        ASSERT_LE(maxDev, shakeDist);
+    }
 }

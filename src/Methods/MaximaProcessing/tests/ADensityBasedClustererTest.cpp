@@ -20,13 +20,12 @@ public:
         spdlog::set_level(spdlog::level::off);
         DistanceClusterer::settings.similarityRadius = 0.1; // prevent assert
     }
-    Group makeRingLikeCluster(Group &references, std::vector<Sample> &samples, unsigned n){
-        auto rng = std::default_random_engine(static_cast<unsigned long>(std::clock()));
+
+    Group makeRingLikeCluster(Group &references, std::vector<Sample> &samples, unsigned n, std::default_random_engine& rng){
         const auto &normal = TestMolecules::fourElectrons::normal.electrons();
 
         // emplace first element (the first elements determines the ordering of the cluster)
         references.emplace_back(Reference(0,normal));
-
 
         // start with second element
         bool anyWrong = false;
@@ -64,76 +63,92 @@ TEST_F(ADensityBasedClustererTest, RotationallySymmetricCluster){
     DensityBasedClusterer::settings.clusterRadius = 0.1;
 
     unsigned n = 20;
-    Group references;
-    std::vector<Sample> samples;
-    makeRingLikeCluster(references, samples, n);
 
+    // check different seeds
+    auto randomSeed = static_cast<unsigned long>(std::clock());
+    std::cout << "random seed: " << randomSeed << std::endl;
 
-    auto rng = std::default_random_engine(static_cast<unsigned long>(std::clock()));
+    for(auto seed : std::vector<unsigned long>{0,randomSeed}) {
+        auto rng = std::default_random_engine(seed);
 
-    ASSERT_EQ(references.size(), n);
-    std::shuffle(references.begin(), references.end(), rng);
+        Group references;
+        std::vector<Sample> samples;
 
-    DensityBasedClusterer globalClusterSorter(samples);
-    globalClusterSorter.cluster(references);
+        makeRingLikeCluster(references, samples, n, rng);
 
-    ASSERT_EQ(references.size(),1);
-    ASSERT_EQ(references[0].size(), n);
+        ASSERT_EQ(references.size(), n);
+        std::shuffle(references.begin(), references.end(), rng);
 
-    auto referenceDistanceMatrix = Metrics::positionalDistances(references[0][0].representative()->maximum().positionsVector());
+        DensityBasedClusterer globalClusterSorter(samples);
+        globalClusterSorter.cluster(references);
 
-    for (size_t i = 1; i < references[0].size(); ++i) {
-        auto distanceMatrix = Metrics::positionalDistances(references[0][i].representative()->maximum().positionsVector());
-        ASSERT_TRUE(distanceMatrix.isApprox(referenceDistanceMatrix));
+        ASSERT_EQ(references.size(), 1);
+        ASSERT_EQ(references[0].size(), n);
+
+        auto referenceDistanceMatrix = Metrics::positionalDistances(
+                references[0][0].representative()->maximum().positionsVector());
+
+        for (size_t i = 1; i < references[0].size(); ++i) {
+            auto distanceMatrix = Metrics::positionalDistances(
+                    references[0][i].representative()->maximum().positionsVector());
+            ASSERT_TRUE(distanceMatrix.isApprox(referenceDistanceMatrix));
+        }
     }
 }
-
 
 TEST_F(ADensityBasedClustererTest, RotationallySymmetricAndPointLikeCluster){
     DensityBasedClusterer::settings.clusterRadius = 0.1;
 
     unsigned n = 20;
-    Group references;
-    std::vector<Sample> samples;
-    makeRingLikeCluster(references, samples, n);
+    unsigned m = 5;
 
-    auto rng = std::default_random_engine(static_cast<unsigned long>(std::clock()));
     const auto &ionic = TestMolecules::fourElectrons::ionic.electrons();
 
-    references.emplace_back(Reference(10, ionic));
-    unsigned m = 5;
-    for (unsigned i = 1; i < m; ++i) {
-        auto evCopy = ionic;
-        evCopy.positionsVector().shake(DensityBasedClusterer::settings.clusterRadius.get(), rng);
+    // check different seeds
+    auto randomSeed = static_cast<unsigned long>(std::clock());
+    std::cout << "random seed: " << randomSeed << std::endl;
 
-        // random permutation
-        evCopy.permute(evCopy.randomPermutation(rng));
-        references.emplace_back(Reference(10 ,evCopy));
+    for(auto seed : std::vector<unsigned long>{0,randomSeed}) {
+        auto rng = std::default_random_engine(seed);
 
-        Sample s(evCopy, Eigen::VectorXd::Random(ionic.numberOfEntities()));
-        samples.emplace_back(std::move(s));
-    }
+        Group references;
+        std::vector<Sample> samples;
+        makeRingLikeCluster(references, samples, n, rng);
 
-    ASSERT_EQ(references.size(), n+m);
+        references.emplace_back(Reference(10, ionic));
+        for (unsigned i = 1; i < m; ++i) {
+            auto evCopy = ionic;
+            evCopy.positionsVector().shake(DensityBasedClusterer::settings.clusterRadius.get(), rng);
 
-    std::shuffle(references.begin(), references.end(), rng);
+            // random permutation
+            evCopy.permute(evCopy.randomPermutation(rng));
+            references.emplace_back(Reference(10, evCopy));
 
-    DensityBasedClusterer globalClusterSorter(samples);
-    globalClusterSorter.cluster(references);
+            Sample s(evCopy, Eigen::VectorXd::Random(ionic.numberOfEntities()));
+            samples.emplace_back(std::move(s));
+        }
 
-    ASSERT_EQ(references.size(), 2);
-    ASSERT_EQ(references[0].size(), n);
-    ASSERT_EQ(references[1].size(), m);
+        ASSERT_EQ(references.size(), n + m);
 
-    for (size_t j = 0; j < references.size(); j++){
-        auto referenceDistanceMatrix =
-                Metrics::positionalDistances(references[j][0].representative()->maximum().positionsVector());
+        std::shuffle(references.begin(), references.end(), rng);
 
-        for (size_t i = 1; i < references[j].size(); ++i) {
-            auto distanceMatrix =
-                    Metrics::positionalDistances(references[j][i].representative()->maximum().positionsVector());
-            ASSERT_TRUE(distanceMatrix.isApprox(referenceDistanceMatrix,
-                    DensityBasedClusterer::settings.clusterRadius.get()));
+        DensityBasedClusterer globalClusterSorter(samples);
+        globalClusterSorter.cluster(references);
+
+        ASSERT_EQ(references.size(), 2);
+        ASSERT_EQ(references[0].size(), n);
+        ASSERT_EQ(references[1].size(), m);
+
+        for (size_t j = 0; j < references.size(); j++) {
+            auto referenceDistanceMatrix =
+                    Metrics::positionalDistances(references[j][0].representative()->maximum().positionsVector());
+
+            for (size_t i = 1; i < references[j].size(); ++i) {
+                auto distanceMatrix =
+                        Metrics::positionalDistances(references[j][i].representative()->maximum().positionsVector());
+                ASSERT_TRUE(distanceMatrix.isApprox(referenceDistanceMatrix,
+                                                    DensityBasedClusterer::settings.clusterRadius.get()));
+            }
         }
     }
 }

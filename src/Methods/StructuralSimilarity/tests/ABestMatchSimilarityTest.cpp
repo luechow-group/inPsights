@@ -206,21 +206,26 @@ TEST_F(ABestMatchSimilarityTest, H4_Chemical_Shaked) {
     auto B = TestMolecules::H4::fourAlpha;
     auto A = B;
     ParticleKit::create(A);
+    
+    auto randomSeed = static_cast<unsigned long>(std::clock());
+    std::cout << "random seed: " << randomSeed << std::endl;
 
-    auto rng = std::default_random_engine(0);
+    for(auto seed : std::vector<unsigned long>{0,randomSeed}) {
+        auto rng = std::default_random_engine(seed);
 
-    while(Metrics::positionalNormsVectorNorm<Eigen::Dynamic,2>(
-            A.electrons().positionsVector(),
-            B.electrons().positionsVector()) == 0.0)
-        A.electrons().positionsVector().shake(distanceTolerance/2.0, rng);
+        while (Metrics::positionalNormsVectorNorm<Eigen::Dynamic, 2>(
+                A.electrons().positionsVector(),
+                B.electrons().positionsVector()) == 0.0)
+            A.electrons().positionsVector().shake(distanceTolerance / 2.0, rng);
 
-    std::vector<Eigen::VectorXi> permsIndices(4,Eigen::VectorXi(B.electrons().numberOfEntities()));
-    permsIndices[0] << 0,1,2,3;
-    permsIndices[1] << 0,1,3,2;
-    permsIndices[2] << 1,0,2,3;
-    permsIndices[3] << 1,0,3,2;
+        std::vector<Eigen::VectorXi> permsIndices(4, Eigen::VectorXi(B.electrons().numberOfEntities()));
+        permsIndices[0] << 0, 1, 2, 3;
+        permsIndices[1] << 0, 1, 3, 2;
+        permsIndices[2] << 1, 0, 2, 3;
+        permsIndices[3] << 1, 0, 3, 2;
 
-    routine(A,B,permsIndices,distanceTolerance, shakeSoapThreshold, true);
+        routine(A, B, permsIndices, distanceTolerance, shakeSoapThreshold, true);
+    }
 }
 
 TEST_F(ABestMatchSimilarityTest, H4_Alchemical) {
@@ -243,22 +248,28 @@ TEST_F(ABestMatchSimilarityTest, H4_Alchemical_Shaked) {
 
     auto B = TestMolecules::H4::fourAlpha;
     auto A = B;
+    
+    auto randomSeed = static_cast<unsigned long>(std::clock());
+    std::cout << "random seed: " << randomSeed << std::endl;
 
-    auto rng = std::default_random_engine(0);
+    for(auto seed : std::vector<unsigned long>{0,randomSeed}) {
+        auto rng = std::default_random_engine(seed);
 
-    while(Metrics::positionalNormsVectorNorm<Eigen::Dynamic,2>(
-            A.electrons().positionsVector(),
-            B.electrons().positionsVector()) == 0.0)
-        A.electrons().positionsVector().shake(distanceTolerance/2.0, rng);
+        while (Metrics::positionalNormsVectorNorm<Eigen::Dynamic, 2>(
+                A.electrons().positionsVector(),
+                B.electrons().positionsVector()) == 0.0)
+            A.electrons().positionsVector().shake(distanceTolerance / 2.0, rng);
 
-    std::vector<Eigen::VectorXi> permsIndices(4,Eigen::VectorXi(B.electrons().numberOfEntities()));
-    permsIndices[0] << 0,1,2,3;
-    permsIndices[1] << 0,1,3,2;
-    permsIndices[2] << 1,0,2,3;
-    permsIndices[3] << 1,0,3,2;
+        std::vector<Eigen::VectorXi> permsIndices(4, Eigen::VectorXi(B.electrons().numberOfEntities()));
+        permsIndices[0] << 0, 1, 2, 3;
+        permsIndices[1] << 0, 1, 3, 2;
+        permsIndices[2] << 1, 0, 2, 3;
+        permsIndices[3] << 1, 0, 3, 2;
 
-    routine(A,B,permsIndices,distanceTolerance, shakeSoapThreshold,true);
+        routine(A, B, permsIndices, distanceTolerance, shakeSoapThreshold, true);
+    }
 }
+
 TEST_F(ABestMatchSimilarityTest, FindDistanceConservingPermutations_Chemical_BoraneLEO1) {
     General::settings.mode = General::Mode::chemical;
 
