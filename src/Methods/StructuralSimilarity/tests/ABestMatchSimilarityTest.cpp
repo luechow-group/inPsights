@@ -207,10 +207,12 @@ TEST_F(ABestMatchSimilarityTest, H4_Chemical_Shaked) {
     auto A = B;
     ParticleKit::create(A);
 
+    auto rng = std::default_random_engine(0);
+
     while(Metrics::positionalNormsVectorNorm<Eigen::Dynamic,2>(
             A.electrons().positionsVector(),
             B.electrons().positionsVector()) == 0.0)
-        A.electrons().positionsVector().shake(distanceTolerance/2.0);
+        A.electrons().positionsVector().shake(distanceTolerance/2.0, rng);
 
     std::vector<Eigen::VectorXi> permsIndices(4,Eigen::VectorXi(B.electrons().numberOfEntities()));
     permsIndices[0] << 0,1,2,3;
@@ -242,10 +244,12 @@ TEST_F(ABestMatchSimilarityTest, H4_Alchemical_Shaked) {
     auto B = TestMolecules::H4::fourAlpha;
     auto A = B;
 
+    auto rng = std::default_random_engine(0);
+
     while(Metrics::positionalNormsVectorNorm<Eigen::Dynamic,2>(
             A.electrons().positionsVector(),
             B.electrons().positionsVector()) == 0.0)
-        A.electrons().positionsVector().shake(distanceTolerance/2.0);
+        A.electrons().positionsVector().shake(distanceTolerance/2.0, rng);
 
     std::vector<Eigen::VectorXi> permsIndices(4,Eigen::VectorXi(B.electrons().numberOfEntities()));
     permsIndices[0] << 0,1,2,3;

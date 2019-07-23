@@ -6,6 +6,7 @@
 #define INPSIGHTS_POSITIONSVECTOR_H
 
 #include "InsertableVector.h"
+#include <random>
 #include <Eigen/Core>
 
 class PositionsVector : public InsertableVector<double>{
@@ -31,7 +32,7 @@ public:
 
     friend std::ostream& operator<<(std::ostream& os, const PositionsVector& pc);
 
-    void shake(double radius);
+    void shake(double radius, std::default_random_engine& rng);
 };
 
 namespace YAML {

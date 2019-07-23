@@ -110,7 +110,7 @@ TEST_F(ADensityBasedClustererTest, RotationallySymmetricAndPointLikeCluster){
     unsigned m = 5;
     for (unsigned i = 1; i < m; ++i) {
         auto evCopy = ionic;
-        evCopy.positionsVector().shake(DensityBasedClusterer::settings.clusterRadius.get());
+        evCopy.positionsVector().shake(DensityBasedClusterer::settings.clusterRadius.get(), rng);
 
         // random permutation
         std::shuffle(perm.indices().data(), perm.indices().data()+perm.indices().size(), rng);
