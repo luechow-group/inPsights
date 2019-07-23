@@ -87,10 +87,7 @@ TEST(AHungarianTest, IntegrationTest_IdenticalPermutation) {
 
     auto nAlpha = ev.typesVector().countOccurence(Spin::alpha);
     auto nBeta = ev.typesVector().countOccurence(Spin::beta);
-    // assume that vector is ordered
-    Interval alphaElectrons({0,nAlpha}), betaElectrons({nAlpha,nBeta});
-    // add noise
-
+    
     // Add random noise
     //double scalingFactor = 0.01;
     //evp.positionsVector().dataRef() += (Eigen::VectorXd::Random(evp.numberOfEntities()*3)*scalingFactor);
