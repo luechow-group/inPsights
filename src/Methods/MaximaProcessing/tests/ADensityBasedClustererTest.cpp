@@ -3,7 +3,7 @@
 //
 
 #include <gmock/gmock.h>
-#include <BestMatchDistanceDensityBasedClusterer.h>
+#include <DensityBasedClusterer.h>
 #include <DistanceClusterer.h>
 #include <random>
 #include <TestMolecules.h>
