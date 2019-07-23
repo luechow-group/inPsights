@@ -46,7 +46,7 @@ target_link_libraries(${PROJECT_NAME}
         DensityBasedScan
         )
 
-add_gtest_subdirectory_with_dependency(tests "gmock;pthread;GUI")
+add_gtest_subdirectory_with_dependency(tests "gmock;pthread")
 
 add_subdirectory(SOAP)
 add_subdirectory(DensityBasedScan)
