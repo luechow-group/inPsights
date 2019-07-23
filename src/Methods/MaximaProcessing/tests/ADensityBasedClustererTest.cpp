@@ -139,7 +139,8 @@ TEST_F(ADensityBasedClustererTest, RotationallySymmetricAndPointLikeCluster){
         for (size_t i = 1; i < references[j].size(); ++i) {
             auto distanceMatrix =
                     Metrics::positionalDistances(references[j][i].representative()->maximum().positionsVector());
-            ASSERT_TRUE(distanceMatrix.isApprox(referenceDistanceMatrix));
+            ASSERT_TRUE(distanceMatrix.isApprox(referenceDistanceMatrix,
+                    DensityBasedClusterer::settings.clusterRadius.get()));
         }
     }
 }
