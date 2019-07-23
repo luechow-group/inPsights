@@ -5,7 +5,7 @@
 #include <gmock/gmock.h>
 #include <Reference.h>
 #include <Sample.h>
-#include <BestMatchDistanceSimilarityClusterer.h>
+#include <DistanceClusterer.h>
 #include <IdentityClusterer.h>
 #include <algorithm>
 #include <random>
