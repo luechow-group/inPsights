@@ -6,7 +6,7 @@
 #include <Reference.h>
 #include <Sample.h>
 #include <BestMatchDistanceSimilarityClusterer.h>
-#include <BestMatchDistanceIdentityClusterer.h>
+#include <IdentityClusterer.h>
 #include <algorithm>
 #include <random>
 
@@ -20,7 +20,7 @@ public:
 
     void SetUp() override {
         spdlog::set_level(spdlog::level::off);
-        BestMatchDistanceIdentityClusterer::settings.identityRadius = 1e-4; // prevent assert
+        IdentityClusterer::settings.identityRadius = 1e-4; // prevent assert
 
         ekin.resize(2);
         ekin[0] = 0;

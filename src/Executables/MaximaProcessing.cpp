@@ -4,7 +4,7 @@
 
 #include <RawDataReader.h>
 #include <Group.h>
-#include <BestMatchDistanceIdentityClusterer.h>
+#include <IdentityClusterer.h>
 #include <BestMatchDistanceSimilarityClusterer.h>
 #include <BestMatchDistanceDensityBasedClusterer.h>
 #include <BestMatchSOAPSimilarityClusterer.h>
@@ -31,9 +31,9 @@ void validateClusteringSettings(const YAML::Node &inputYaml) {
         auto methodName = node.first.as<std::string>();
 
         switch (IClusterer::typeFromString(methodName)) {
-            case IClusterer::Type::BestMatchDistanceIdentityClusterer: {
-                BestMatchDistanceIdentityClusterer::settings
-                        = Settings::BestMatchDistanceIdentityClusterer(clusteringNode);
+            case IClusterer::Type::IdentityClusterer: {
+                IdentityClusterer::settings
+                        = Settings::IdentityClusterer(clusteringNode);
                 break;
             }
             case IClusterer::Type::BestMatchDistanceSimilarityClusterer: {
@@ -147,16 +147,16 @@ int main(int argc, char *argv[]) {
             spdlog::warn("Method \"{}\" is being applied multiple times! Overwriting old settings...", methodName);
 
         switch (IClusterer::typeFromString(methodName)) {
-            case IClusterer::Type::BestMatchDistanceIdentityClusterer: {
-                auto &settings = BestMatchDistanceIdentityClusterer::settings;
+            case IClusterer::Type::IdentityClusterer: {
+                auto &settings = IdentityClusterer::settings;
 
-                settings = Settings::BestMatchDistanceIdentityClusterer(node.second);
+                settings = Settings::IdentityClusterer(node.second);
 
-                BestMatchDistanceIdentityClusterer bestMatchDistanceIdentityClusterer(samples);
+                IdentityClusterer identityClusterer(samples);
                 if (!node.second[settings.identityValueIncrement.name()])
                     settings.identityValueIncrement = valueStandardError * 1e-4;
 
-                bestMatchDistanceIdentityClusterer.cluster(maxima);
+                identityClusterer.cluster(maxima);
 
                 settings.appendToNode(usedClusteringSettings);
                 break;

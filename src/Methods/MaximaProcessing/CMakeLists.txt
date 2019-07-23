@@ -12,7 +12,7 @@ set(HEADER_FILES
         include/Sample.h
         include/Reference.h
         include/ClusterData.h
-        include/BestMatchDistanceIdentityClusterer.h
+        include/IdentityClusterer.h
         include/BestMatchDistanceSimilarityClusterer.h
         include/BestMatchDistanceDensityBasedClusterer.h
         include/BestMatchSOAPSimilarityClusterer.h
@@ -33,7 +33,7 @@ set(SOURCE_FILES
         source/Sample.cpp
         source/Reference.cpp
         source/ClusterData.cpp
-        source/BestMatchDistanceIdentityClusterer.cpp
+        source/IdentityClusterer.cpp
         source/BestMatchDistanceSimilarityClusterer.cpp
         source/BestMatchDistanceDensityBasedClusterer.cpp
         source/BestMatchSOAPSimilarityClusterer.cpp

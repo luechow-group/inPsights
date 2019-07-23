@@ -2,36 +2,36 @@
 // Created by heuer on 12.12.18.
 //
 
-#include <BestMatchDistanceIdentityClusterer.h>
+#include <IdentityClusterer.h>
 #include <BestMatchDistanceSimilarityClusterer.h>
 #include <BestMatchDistance.h>
 #include <ValueSorter.h>
 #include <spdlog/spdlog.h>
 
 namespace Settings {
-    BestMatchDistanceIdentityClusterer::BestMatchDistanceIdentityClusterer()
-    : ISettings(VARNAME(BestMatchDistanceIdentityClusterer)) {}
+    IdentityClusterer::IdentityClusterer()
+    : ISettings(VARNAME(IdentityClusterer)) {}
 
-    BestMatchDistanceIdentityClusterer::BestMatchDistanceIdentityClusterer(const YAML::Node &node)
-            : BestMatchDistanceIdentityClusterer() {
+    IdentityClusterer::IdentityClusterer(const YAML::Node &node)
+            : IdentityClusterer() {
         doubleProperty::decode(node, identityRadius);
         doubleProperty::decode(node, identityValueIncrement);
     }
 
-    void BestMatchDistanceIdentityClusterer::appendToNode(YAML::Node &node) const {
+    void IdentityClusterer::appendToNode(YAML::Node &node) const {
         node[className][identityRadius.name()] = identityRadius();
         node[className][identityValueIncrement.name()] = identityValueIncrement();
     }
 }
-YAML_SETTINGS_DEFINITION(Settings::BestMatchDistanceIdentityClusterer)
+YAML_SETTINGS_DEFINITION(Settings::IdentityClusterer)
 
-Settings::BestMatchDistanceIdentityClusterer BestMatchDistanceIdentityClusterer::settings = Settings::BestMatchDistanceIdentityClusterer();
+Settings::IdentityClusterer IdentityClusterer::settings = Settings::IdentityClusterer();
 
 
-BestMatchDistanceIdentityClusterer::BestMatchDistanceIdentityClusterer(std::vector<Sample> &samples)
+IdentityClusterer::IdentityClusterer(std::vector<Sample> &samples)
         : samples_(samples) {}
 
-void BestMatchDistanceIdentityClusterer::cluster(Group& group) {
+void IdentityClusterer::cluster(Group& group) {
     assert(!group.empty() && "The group cannot be empty.");
 
     auto identityRadius = settings.identityRadius();
@@ -63,7 +63,7 @@ void BestMatchDistanceIdentityClusterer::cluster(Group& group) {
     }
 }
 
-void BestMatchDistanceIdentityClusterer::subLoop(Group& group,
+void IdentityClusterer::subLoop(Group& group,
         Group::iterator &beginIt,
         Group::iterator &it,
         Group::iterator &endIt,
@@ -101,7 +101,7 @@ void BestMatchDistanceIdentityClusterer::subLoop(Group& group,
 }
 
 // TODO This method should be located inside of a reference container class
-void BestMatchDistanceIdentityClusterer::addReference(Group& group,
+void IdentityClusterer::addReference(Group& group,
         const Group::iterator &beginIt,
         Group::iterator &it,
         const Eigen::PermutationMatrix<Eigen::Dynamic> &bestMatch) const {

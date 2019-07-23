@@ -2,31 +2,31 @@
 // Created by Michael Heuer on 25.09.18.
 //
 
-#ifndef INPSIGHTS_BESTMATCHDISTANCEIDENTITYCLUSTERER_H
-#define INPSIGHTS_BESTMATCHDISTANCEIDENTITYCLUSTERER_H
+#ifndef INPSIGHTS_IDENTITYCLUSTERER_H
+#define INPSIGHTS_IDENTITYCLUSTERER_H
 
 #include "Sample.h"
 #include "IClusterer.h"
 #include <ISettings.h>
 
 namespace Settings {
-    class BestMatchDistanceIdentityClusterer : public ISettings {
+    class IdentityClusterer : public ISettings {
     public:
         Property<double> identityRadius = {0.01, VARNAME(identityRadius)};
         Property<double> identityValueIncrement = {1e-7, VARNAME(identityValueIncrement)};
 
-        BestMatchDistanceIdentityClusterer();
-        explicit BestMatchDistanceIdentityClusterer(const YAML::Node &node);
+        IdentityClusterer();
+        explicit IdentityClusterer(const YAML::Node &node);
         void appendToNode(YAML::Node &node) const override;
     };
 }
-YAML_SETTINGS_DECLARATION(Settings::BestMatchDistanceIdentityClusterer)
+YAML_SETTINGS_DECLARATION(Settings::IdentityClusterer)
 
-class BestMatchDistanceIdentityClusterer : public IClusterer{
+class IdentityClusterer : public IClusterer{
 public:
-    static Settings::BestMatchDistanceIdentityClusterer settings;
+    static Settings::IdentityClusterer settings;
 
-    BestMatchDistanceIdentityClusterer(std::vector<Sample> &samples);
+    IdentityClusterer(std::vector<Sample> &samples);
     void cluster(Group& group) override;
 
 private:
@@ -47,4 +47,4 @@ private:
 };
 
 
-#endif //INPSIGHTS_BESTMATCHIDENTITYCLUSTERER_H
+#endif //INPSIGHTS_IDENTITYCLUSTERER_H

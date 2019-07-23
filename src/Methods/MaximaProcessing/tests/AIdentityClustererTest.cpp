@@ -12,7 +12,7 @@
 
 using namespace testing;
 
-class ABestMatchDistanceIdentityClustererTest : public ::testing::Test {
+class AIdentityClustererTest : public ::testing::Test {
 public:
     Group tripletMaxima, singletMaxima;
     std::vector<Sample> tripletSamples, singletSamples;
@@ -63,58 +63,58 @@ public:
     }
 };
 
-TEST_F(ABestMatchDistanceIdentityClustererTest, OneListTriplet) {
-    BestMatchDistanceIdentityClusterer globalIdentiySorter(tripletSamples);
-    BestMatchDistanceIdentityClusterer::settings.identityRadius = 2;
-    BestMatchDistanceIdentityClusterer::settings.identityValueIncrement = 1;
+TEST_F(AIdentityClustererTest, OneListTriplet) {
+    IdentityClusterer globalIdentiySorter(tripletSamples);
+    IdentityClusterer::settings.identityRadius = 2;
+    IdentityClusterer::settings.identityValueIncrement = 1;
     globalIdentiySorter.cluster(tripletMaxima);
 
     ASSERT_THAT(tripletMaxima.representative()->sampleIds(), ElementsAre(0,1,2,3,4,5,6,7));
 }
 
-TEST_F(ABestMatchDistanceIdentityClustererTest, OneListSinglet) {
-    BestMatchDistanceIdentityClusterer globalIdentiySorter(singletSamples);
-    BestMatchDistanceIdentityClusterer::settings.identityRadius = 2;
-    BestMatchDistanceIdentityClusterer::settings.identityValueIncrement = 1;
+TEST_F(AIdentityClustererTest, OneListSinglet) {
+    IdentityClusterer globalIdentiySorter(singletSamples);
+    IdentityClusterer::settings.identityRadius = 2;
+    IdentityClusterer::settings.identityValueIncrement = 1;
     globalIdentiySorter.cluster(singletMaxima);
 
     ASSERT_THAT(singletMaxima.at(0).representative()->sampleIds(), ElementsAre(0,1,2,3,4,5,6,7));
 }
 
-TEST_F(ABestMatchDistanceIdentityClustererTest, TwoListsTriplet) {
-    BestMatchDistanceIdentityClusterer globalIdentiySorter(tripletSamples);
-    BestMatchDistanceIdentityClusterer::settings.identityRadius = 1;
-    BestMatchDistanceIdentityClusterer::settings.identityValueIncrement = 0.05;
+TEST_F(AIdentityClustererTest, TwoListsTriplet) {
+    IdentityClusterer globalIdentiySorter(tripletSamples);
+    IdentityClusterer::settings.identityRadius = 1;
+    IdentityClusterer::settings.identityValueIncrement = 0.05;
     globalIdentiySorter.cluster(tripletMaxima);
 
     ASSERT_THAT(tripletMaxima.at(0).representative()->sampleIds(), ElementsAre(0,1,2,3));
     ASSERT_THAT(tripletMaxima.at(1).representative()->sampleIds(), ElementsAre(4,5,6,7));
 }
 
-TEST_F(ABestMatchDistanceIdentityClustererTest, TwoListsSinglet) {
-    BestMatchDistanceIdentityClusterer globalIdentiySorter(singletSamples);
-    BestMatchDistanceIdentityClusterer::settings.identityRadius = 1;
-    BestMatchDistanceIdentityClusterer::settings.identityValueIncrement = 0.05;
+TEST_F(AIdentityClustererTest, TwoListsSinglet) {
+    IdentityClusterer globalIdentiySorter(singletSamples);
+    IdentityClusterer::settings.identityRadius = 1;
+    IdentityClusterer::settings.identityValueIncrement = 0.05;
     globalIdentiySorter.cluster(singletMaxima);
 
     ASSERT_THAT(singletMaxima.at(0).representative()->sampleIds(), ElementsAre(0,1,2,3));
     ASSERT_THAT(singletMaxima.at(1).representative()->sampleIds(), ElementsAre(4,5,6,7));
 }
 
-TEST_F(ABestMatchDistanceIdentityClustererTest, TwoListsIncrementBorderCaseTriplet) {
-    BestMatchDistanceIdentityClusterer globalIdentiySorter(tripletSamples);
-    BestMatchDistanceIdentityClusterer::settings.identityRadius = 1;
-    BestMatchDistanceIdentityClusterer::settings.identityValueIncrement = 0.1;
+TEST_F(AIdentityClustererTest, TwoListsIncrementBorderCaseTriplet) {
+    IdentityClusterer globalIdentiySorter(tripletSamples);
+    IdentityClusterer::settings.identityRadius = 1;
+    IdentityClusterer::settings.identityValueIncrement = 0.1;
     globalIdentiySorter.cluster(tripletMaxima);
 
     ASSERT_THAT(tripletMaxima.at(0).representative()->sampleIds(), ElementsAre(0,1,2,3,4));
     ASSERT_THAT(tripletMaxima.at(1).representative()->sampleIds(), ElementsAre(5,6,7));
 }
 
-TEST_F(ABestMatchDistanceIdentityClustererTest, TwoListsIncrementBorderCaseSinglet) {
-    BestMatchDistanceIdentityClusterer globalIdentiySorter(singletSamples);
-    BestMatchDistanceIdentityClusterer::settings.identityRadius = 1;
-    BestMatchDistanceIdentityClusterer::settings.identityValueIncrement = 0.1;
+TEST_F(AIdentityClustererTest, TwoListsIncrementBorderCaseSinglet) {
+    IdentityClusterer globalIdentiySorter(singletSamples);
+    IdentityClusterer::settings.identityRadius = 1;
+    IdentityClusterer::settings.identityValueIncrement = 0.1;
     globalIdentiySorter.cluster(singletMaxima);
 
     ASSERT_THAT(singletMaxima.at(0).representative()->sampleIds(), ElementsAre(0,1,2,3,4));

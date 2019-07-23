@@ -2,7 +2,7 @@
 // Created by heuer on 12.12.18.
 //
 
-#include <BestMatchDistanceIdentityClusterer.h>
+#include <IdentityClusterer.h>
 #include <BestMatchDistanceSimilarityClusterer.h>
 #include <BestMatchDistance.h>
 #include <ValueSorter.h>
