@@ -313,3 +313,12 @@ TEST_F(AQuickHullTest, Test7) {
 
     // TODO ASSERT was missing here
 }
+
+TEST_F(AQuickHullTest, WavefrontObj) {
+    QuickHull<FloatType> qh;
+
+    auto pc = createSphere<FloatType>(1, 10);
+    auto hull = qh.getConvexHull(pc,true,false);
+
+    hull.writeWaveformOBJ("Wavefront.obj");
+}
