@@ -3,15 +3,15 @@
 // Edited by reuter on 21.05.18.
 //
 
-#include <BestMatchDistanceDensityBasedClusterer.h>
+#include <DensityBasedClusterer.h>
 #include <DistanceClusterer.h>
 #include <BestMatchDistance.h>
 #include <Enumerate.h>
 #include <Reference.h>
 
 namespace Settings {
-    BestMatchDistanceDensityBasedClusterer::BestMatchDistanceDensityBasedClusterer()
-    : ISettings(VARNAME(BestMatchDistanceDensityBasedClusterer)) {
+    DensityBasedClusterer::DensityBasedClusterer()
+    : ISettings(VARNAME(DensityBasedClusterer)) {
         clusterRadius.onChange_.connect(
                 [&](double value) {
                     if(value < ::DistanceClusterer::settings.similarityRadius())
@@ -23,36 +23,36 @@ namespace Settings {
                 });
     }
 
-    BestMatchDistanceDensityBasedClusterer::BestMatchDistanceDensityBasedClusterer(const YAML::Node &node)
-            : BestMatchDistanceDensityBasedClusterer() {
+    DensityBasedClusterer::DensityBasedClusterer(const YAML::Node &node)
+            : DensityBasedClusterer() {
         doubleProperty::decode(node, clusterRadius);
     }
 
-    void BestMatchDistanceDensityBasedClusterer::appendToNode(YAML::Node &node) const {
+    void DensityBasedClusterer::appendToNode(YAML::Node &node) const {
         node[className][clusterRadius.name()] = clusterRadius();
     }
 }
-YAML_SETTINGS_DEFINITION(Settings::BestMatchDistanceDensityBasedClusterer)
+YAML_SETTINGS_DEFINITION(Settings::DensityBasedClusterer)
 
-Settings::BestMatchDistanceDensityBasedClusterer BestMatchDistanceDensityBasedClusterer::settings = Settings::BestMatchDistanceDensityBasedClusterer();
+Settings::DensityBasedClusterer DensityBasedClusterer::settings = Settings::DensityBasedClusterer();
 
 
-BestMatchDistanceDensityBasedClusterer::BestMatchDistanceDensityBasedClusterer(std::vector<Sample> &samples)
+DensityBasedClusterer::DensityBasedClusterer(std::vector<Sample> &samples)
         : samples_(samples) {};
 
-double BestMatchDistanceDensityBasedClusterer::wrapper(const Group &g1, const Group &g2) {
+double DensityBasedClusterer::wrapper(const Group &g1, const Group &g2) {
     return BestMatch::Distance::compare<Eigen::Infinity, 2>(
             g1.representative()->maximum().positionsVector(),
             g2.representative()->maximum().positionsVector()).metric;
 };
         
-void BestMatchDistanceDensityBasedClusterer::cluster(Group& group) {
+void DensityBasedClusterer::cluster(Group& group) {
     assert(!group.empty() && "The group cannot be empty.");
 
     group.sortAll();
 
     auto threshold = settings.clusterRadius()*2;
-    DensityBasedScan<double, Group, BestMatchDistanceDensityBasedClusterer::wrapper> dbscan(group);
+    DensityBasedScan<double, Group, DensityBasedClusterer::wrapper> dbscan(group);
     auto result = dbscan.findClusters(threshold, 1);// why multiplication by 2 is needed?
 
     Group supergroup(static_cast<Group::size_type>(result.numberOfClusters));
@@ -67,7 +67,7 @@ void BestMatchDistanceDensityBasedClusterer::cluster(Group& group) {
     group = supergroup;
 }
 
-void BestMatchDistanceDensityBasedClusterer::orderByBestMatchDistance(Group &supergroup, double threshold) const {
+void DensityBasedClusterer::orderByBestMatchDistance(Group &supergroup, double threshold) const {
     for (auto &subgroup : supergroup) {
         sort(subgroup.begin(), subgroup.end());
 

@@ -12,7 +12,7 @@ public:
     enum class Type {
         IdentityClusterer,
         DistanceClusterer,
-        BestMatchDistanceDensityBasedClusterer,
+        DensityBasedClusterer,
         BestMatchSOAPSimilarityClusterer,
         ReferencePositionsClusterer,
         invalid

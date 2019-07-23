@@ -14,7 +14,7 @@
 
 using namespace testing;
 
-class ABestMatchDistanceDensityBasedClustererTest : public ::testing::Test {
+class ADensityBasedClustererTest : public ::testing::Test {
 public:
     void SetUp() override {
         spdlog::set_level(spdlog::level::off);
@@ -63,8 +63,8 @@ public:
     }
 };
 
-TEST_F(ABestMatchDistanceDensityBasedClustererTest, RotationallySymmetricCluster){
-    BestMatchDistanceDensityBasedClusterer::settings.clusterRadius = 0.1;
+TEST_F(ADensityBasedClustererTest, RotationallySymmetricCluster){
+    DensityBasedClusterer::settings.clusterRadius = 0.1;
 
     unsigned n = 20;
     Group references;
@@ -77,7 +77,7 @@ TEST_F(ABestMatchDistanceDensityBasedClustererTest, RotationallySymmetricCluster
     ASSERT_EQ(references.size(), n);
     std::shuffle(references.begin(), references.end(), rng);
 
-    BestMatchDistanceDensityBasedClusterer globalClusterSorter(samples);
+    DensityBasedClusterer globalClusterSorter(samples);
     globalClusterSorter.cluster(references);
 
     ASSERT_EQ(references.size(),1);
@@ -92,8 +92,8 @@ TEST_F(ABestMatchDistanceDensityBasedClustererTest, RotationallySymmetricCluster
 }
 
 
-TEST_F(ABestMatchDistanceDensityBasedClustererTest, RotationallySymmetricAndPointLikeCluster){
-    BestMatchDistanceDensityBasedClusterer::settings.clusterRadius = 0.1;
+TEST_F(ADensityBasedClustererTest, RotationallySymmetricAndPointLikeCluster){
+    DensityBasedClusterer::settings.clusterRadius = 0.1;
 
     unsigned n = 20;
     Group references;
@@ -110,7 +110,7 @@ TEST_F(ABestMatchDistanceDensityBasedClustererTest, RotationallySymmetricAndPoin
     unsigned m = 5;
     for (unsigned i = 1; i < m; ++i) {
         auto evCopy = ionic;
-        evCopy.positionsVector().shake(BestMatchDistanceDensityBasedClusterer::settings.clusterRadius.get());
+        evCopy.positionsVector().shake(DensityBasedClusterer::settings.clusterRadius.get());
 
         // random permutation
         std::shuffle(perm.indices().data(), perm.indices().data()+perm.indices().size(), rng);
@@ -125,7 +125,7 @@ TEST_F(ABestMatchDistanceDensityBasedClustererTest, RotationallySymmetricAndPoin
 
     std::shuffle(references.begin(), references.end(), rng);
 
-    BestMatchDistanceDensityBasedClusterer globalClusterSorter(samples);
+    DensityBasedClusterer globalClusterSorter(samples);
     globalClusterSorter.cluster(references);
 
     ASSERT_EQ(references.size(), 2);

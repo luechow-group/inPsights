@@ -6,7 +6,7 @@
 #include <Group.h>
 #include <IdentityClusterer.h>
 #include <DistanceClusterer.h>
-#include <BestMatchDistanceDensityBasedClusterer.h>
+#include <DensityBasedClusterer.h>
 #include <BestMatchSOAPSimilarityClusterer.h>
 #include <ReferencePositionsClusterer.h>
 #include <MaximaProcessor.h>
@@ -41,9 +41,9 @@ void validateClusteringSettings(const YAML::Node &inputYaml) {
                         = Settings::DistanceClusterer(clusteringNode);
                 break;
             }
-            case IClusterer::Type::BestMatchDistanceDensityBasedClusterer: {
-                BestMatchDistanceDensityBasedClusterer::settings
-                        = Settings::BestMatchDistanceDensityBasedClusterer(clusteringNode);
+            case IClusterer::Type::DensityBasedClusterer: {
+                DensityBasedClusterer::settings
+                        = Settings::DensityBasedClusterer(clusteringNode);
                 break;
             }
             case IClusterer::Type::ReferencePositionsClusterer: {
@@ -174,13 +174,13 @@ int main(int argc, char *argv[]) {
                 settings.appendToNode(usedClusteringSettings);
                 break;
             }
-            case IClusterer::Type::BestMatchDistanceDensityBasedClusterer: {
-                auto &settings = BestMatchDistanceDensityBasedClusterer::settings;
+            case IClusterer::Type::DensityBasedClusterer: {
+                auto &settings = DensityBasedClusterer::settings;
 
-                settings = Settings::BestMatchDistanceDensityBasedClusterer(node.second);
+                settings = Settings::DensityBasedClusterer(node.second);
 
-                BestMatchDistanceDensityBasedClusterer bestMatchDistanceDensityBasedClusterer(samples);
-                bestMatchDistanceDensityBasedClusterer.cluster(maxima);
+                DensityBasedClusterer densityBasedClusterer(samples);
+                densityBasedClusterer.cluster(maxima);
 
                 settings.appendToNode(usedClusteringSettings);
                 break;

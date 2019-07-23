@@ -9,8 +9,8 @@ IClusterer::Type IClusterer::typeFromString(const std::string& clustererName) {
         return Type::IdentityClusterer;
     else if(clustererName == "DistanceClusterer")
         return Type::DistanceClusterer;
-    else if(clustererName == "BestMatchDistanceDensityBasedClusterer")
-        return Type::BestMatchDistanceDensityBasedClusterer;
+    else if(clustererName == "DensityBasedClusterer")
+        return Type::DensityBasedClusterer;
     else if(clustererName == "ReferencePositionsClusterer")
         return Type::ReferencePositionsClusterer;
     else if(clustererName == "BestMatchSOAPSimilarityClusterer")

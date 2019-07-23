@@ -14,7 +14,7 @@ set(HEADER_FILES
         include/ClusterData.h
         include/IdentityClusterer.h
         include/DistanceClusterer.h
-        include/BestMatchDistanceDensityBasedClusterer.h
+        include/DensityBasedClusterer.h
         include/BestMatchSOAPSimilarityClusterer.h
         include/MaximaProcessor.h
         include/GeneralStatistics.h
@@ -35,7 +35,7 @@ set(SOURCE_FILES
         source/ClusterData.cpp
         source/IdentityClusterer.cpp
         source/DistanceClusterer.cpp
-        source/BestMatchDistanceDensityBasedClusterer.cpp
+        source/DensityBasedClusterer.cpp
         source/BestMatchSOAPSimilarityClusterer.cpp
         source/MaximaProcessor.cpp
         source/GeneralStatistics.cpp

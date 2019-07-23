@@ -2,8 +2,8 @@
 // Created by heuer on 19.10.18.
 //
 
-#ifndef INPSIGHTS_BESTMATCHDISTANCEDENSITYBASEDCLUSTERER_H
-#define INPSIGHTS_BESTMATCHDISTANCEDENSITYBASEDCLUSTERER_H
+#ifndef INPSIGHTS_DENSITYBASEDCLUSTERER_H
+#define INPSIGHTS_DENSITYBASEDCLUSTERER_H
 
 #include <DensityBasedScan.h>
 #include <DistanceClusterer.h>
@@ -14,24 +14,24 @@
 #include <Group.h>
 
 namespace Settings {
-    class BestMatchDistanceDensityBasedClusterer : public ISettings { //TODO rename
+    class DensityBasedClusterer : public ISettings { //TODO rename
     public:
         Property<double> clusterRadius = {
                 ::DistanceClusterer::settings.similarityRadius(), VARNAME(clusterRadius)};
 
-        BestMatchDistanceDensityBasedClusterer();
-        explicit BestMatchDistanceDensityBasedClusterer(const YAML::Node &node);
+        DensityBasedClusterer();
+        explicit DensityBasedClusterer(const YAML::Node &node);
         void appendToNode(YAML::Node &node) const override;
     };
 }
-YAML_SETTINGS_DECLARATION(Settings::BestMatchDistanceDensityBasedClusterer)
+YAML_SETTINGS_DECLARATION(Settings::DensityBasedClusterer)
 
 
-class BestMatchDistanceDensityBasedClusterer : public IClusterer {
+class DensityBasedClusterer : public IClusterer {
 public:
-    static Settings::BestMatchDistanceDensityBasedClusterer settings;
+    static Settings::DensityBasedClusterer settings;
 
-    explicit BestMatchDistanceDensityBasedClusterer(std::vector<Sample> &samples);
+    explicit DensityBasedClusterer(std::vector<Sample> &samples);
 
     void cluster(Group& group) override;
 
@@ -43,4 +43,4 @@ private:
     void orderByBestMatchDistance(Group &supergroup, double threshold) const;
 };
 
-#endif //INPSIGHTS_BESTMATCHDISTANCEDENSITYBASEDCLUSTERER_H
+#endif //INPSIGHTS_DENSITYBASEDCLUSTERER_H
