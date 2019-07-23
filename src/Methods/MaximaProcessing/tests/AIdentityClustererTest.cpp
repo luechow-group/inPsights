@@ -6,7 +6,7 @@
 #include <Reference.h>
 #include <Sample.h>
 #include <IdentityClusterer.h>
-#include <BestMatchDistanceSimilarityClusterer.h>
+#include <DistanceClusterer.h>
 #include <algorithm>
 #include <random>
 
@@ -19,7 +19,7 @@ public:
 
     void SetUp() override {
         spdlog::set_level(spdlog::level::off);
-        BestMatchDistanceSimilarityClusterer::settings.similarityRadius = 10; // prevent assert
+        DistanceClusterer::settings.similarityRadius = 10; // prevent assert
 
         auto rng = std::default_random_engine(static_cast<unsigned long>(std::clock()));
 

@@ -4,7 +4,7 @@
 //
 
 #include <BestMatchDistanceDensityBasedClusterer.h>
-#include <BestMatchDistanceSimilarityClusterer.h>
+#include <DistanceClusterer.h>
 #include <BestMatchDistance.h>
 #include <Enumerate.h>
 #include <Reference.h>
@@ -14,12 +14,12 @@ namespace Settings {
     : ISettings(VARNAME(BestMatchDistanceDensityBasedClusterer)) {
         clusterRadius.onChange_.connect(
                 [&](double value) {
-                    if(value < ::BestMatchDistanceSimilarityClusterer::settings.similarityRadius())
+                    if(value < ::DistanceClusterer::settings.similarityRadius())
                         throw std::invalid_argument(
                                 "The " + clusterRadius.name() + " with " + std::to_string(clusterRadius())
-                                + " is smaller than the "+ ::BestMatchDistanceSimilarityClusterer::settings.similarityRadius.name()
+                                + " is smaller than the "+ ::DistanceClusterer::settings.similarityRadius.name()
                                 + " with "
-                                + std::to_string(::BestMatchDistanceSimilarityClusterer::settings.similarityRadius()));
+                                + std::to_string(::DistanceClusterer::settings.similarityRadius()));
                 });
     }
 

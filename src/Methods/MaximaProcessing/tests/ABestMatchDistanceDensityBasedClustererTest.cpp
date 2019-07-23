@@ -4,7 +4,7 @@
 
 #include <gmock/gmock.h>
 #include <BestMatchDistanceDensityBasedClusterer.h>
-#include <BestMatchDistanceSimilarityClusterer.h>
+#include <DistanceClusterer.h>
 #include <random>
 #include <TestMolecules.h>
 #include <Sample.h>
@@ -18,7 +18,7 @@ class ABestMatchDistanceDensityBasedClustererTest : public ::testing::Test {
 public:
     void SetUp() override {
         spdlog::set_level(spdlog::level::off);
-        BestMatchDistanceSimilarityClusterer::settings.similarityRadius = 0.1; // prevent assert
+        DistanceClusterer::settings.similarityRadius = 0.1; // prevent assert
     }
     Group makeRingLikeCluster(Group &references, std::vector<Sample> &samples, unsigned n){
         auto rng = std::default_random_engine(static_cast<unsigned long>(std::clock()));

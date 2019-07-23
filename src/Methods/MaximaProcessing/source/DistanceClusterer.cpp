@@ -3,35 +3,35 @@
 //
 
 #include <IdentityClusterer.h>
-#include <BestMatchDistanceSimilarityClusterer.h>
+#include <DistanceClusterer.h>
 #include <BestMatchDistance.h>
 #include <ValueSorter.h>
 
 namespace Settings {
-    BestMatchDistanceSimilarityClusterer::BestMatchDistanceSimilarityClusterer()
-    : ISettings(VARNAME(BestMatchDistanceSimilarityClusterer)) {}
+    DistanceClusterer::DistanceClusterer()
+    : ISettings(VARNAME(DistanceClusterer)) {}
 
-    BestMatchDistanceSimilarityClusterer::BestMatchDistanceSimilarityClusterer(const YAML::Node &node)
-            : BestMatchDistanceSimilarityClusterer() {
+    DistanceClusterer::DistanceClusterer(const YAML::Node &node)
+            : DistanceClusterer() {
         doubleProperty::decode(node, similarityRadius);
         doubleProperty::decode(node, similarityValueIncrement);
     }
 
-    void BestMatchDistanceSimilarityClusterer::appendToNode(YAML::Node &node) const {
+    void DistanceClusterer::appendToNode(YAML::Node &node) const {
         node[className][similarityRadius.name()] = similarityRadius();
         node[className][similarityValueIncrement.name()] = similarityValueIncrement();
     }
 }
-YAML_SETTINGS_DEFINITION(Settings::BestMatchDistanceSimilarityClusterer)
+YAML_SETTINGS_DEFINITION(Settings::DistanceClusterer)
 
-Settings::BestMatchDistanceSimilarityClusterer BestMatchDistanceSimilarityClusterer::settings = Settings::BestMatchDistanceSimilarityClusterer();
+Settings::DistanceClusterer DistanceClusterer::settings = Settings::DistanceClusterer();
 
 
-BestMatchDistanceSimilarityClusterer::BestMatchDistanceSimilarityClusterer(std::vector<Sample> &samples)
+DistanceClusterer::DistanceClusterer(std::vector<Sample> &samples)
         : samples_(samples){}
         
 // assumes a sorted reference vector
-void BestMatchDistanceSimilarityClusterer::cluster(Group& group) {
+void DistanceClusterer::cluster(Group& group) {
     assert(!group.empty() && "The group cannot be empty.");
 
     auto similarityRadius = settings.similarityRadius();

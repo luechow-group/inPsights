@@ -5,7 +5,7 @@
 #include <RawDataReader.h>
 #include <Group.h>
 #include <IdentityClusterer.h>
-#include <BestMatchDistanceSimilarityClusterer.h>
+#include <DistanceClusterer.h>
 #include <BestMatchDistanceDensityBasedClusterer.h>
 #include <BestMatchSOAPSimilarityClusterer.h>
 #include <ReferencePositionsClusterer.h>
@@ -36,9 +36,9 @@ void validateClusteringSettings(const YAML::Node &inputYaml) {
                         = Settings::IdentityClusterer(clusteringNode);
                 break;
             }
-            case IClusterer::Type::BestMatchDistanceSimilarityClusterer: {
-                BestMatchDistanceSimilarityClusterer::settings
-                        = Settings::BestMatchDistanceSimilarityClusterer(clusteringNode);
+            case IClusterer::Type::DistanceClusterer: {
+                DistanceClusterer::settings
+                        = Settings::DistanceClusterer(clusteringNode);
                 break;
             }
             case IClusterer::Type::BestMatchDistanceDensityBasedClusterer: {
@@ -161,15 +161,15 @@ int main(int argc, char *argv[]) {
                 settings.appendToNode(usedClusteringSettings);
                 break;
             }
-            case IClusterer::Type::BestMatchDistanceSimilarityClusterer: {
-                auto &settings = BestMatchDistanceSimilarityClusterer::settings;
+            case IClusterer::Type::DistanceClusterer: {
+                auto &settings = DistanceClusterer::settings;
 
-                settings = Settings::BestMatchDistanceSimilarityClusterer(node.second);
+                settings = Settings::DistanceClusterer(node.second);
 
-                BestMatchDistanceSimilarityClusterer bestMatchDistanceSimilarityClusterer(samples);
+                DistanceClusterer distanceClusterer(samples);
                 if (!node.second[settings.similarityValueIncrement.name()])
                     settings.similarityValueIncrement = valueStandardError * 1e-2;
-                bestMatchDistanceSimilarityClusterer.cluster(maxima);
+                distanceClusterer.cluster(maxima);
 
                 settings.appendToNode(usedClusteringSettings);
                 break;

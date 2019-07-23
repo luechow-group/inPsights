@@ -4,7 +4,7 @@
 
 #include <gmock/gmock.h>
 #include <BestMatchSOAPSimilarityClusterer.h>
-#include <BestMatchDistanceSimilarityClusterer.h>
+#include <DistanceClusterer.h>
 #include <SOAPSettings.h>
 #include <TestMolecules.h>
 #include <Group.h>

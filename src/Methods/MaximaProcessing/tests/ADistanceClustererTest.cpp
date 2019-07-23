@@ -12,7 +12,7 @@
 
 using namespace testing;
 
-class ABestMatchDistanceSimilarityClustererTest : public ::testing::Test {
+class ADistanceClustererTest : public ::testing::Test {
 public:
     Group maxima;
     std::vector<Sample> samples;
@@ -49,10 +49,10 @@ public:
     }
 };
 
-TEST_F(ABestMatchDistanceSimilarityClustererTest, OneList) {
-    BestMatchDistanceSimilarityClusterer globalSimilaritySorter(samples);
-    BestMatchDistanceSimilarityClusterer::settings.similarityRadius = 1;
-    BestMatchDistanceSimilarityClusterer::settings.similarityValueIncrement = 1;
+TEST_F(ADistanceClustererTest, OneList) {
+    DistanceClusterer globalSimilaritySorter(samples);
+    DistanceClusterer::settings.similarityRadius = 1;
+    DistanceClusterer::settings.similarityValueIncrement = 1;
     globalSimilaritySorter.cluster(maxima);
 
     ASSERT_EQ(maxima.size(), 1);
@@ -82,10 +82,10 @@ TEST_F(ABestMatchDistanceSimilarityClustererTest, OneList) {
 }
 
 
-TEST_F(ABestMatchDistanceSimilarityClustererTest, TwoLists) {
-    BestMatchDistanceSimilarityClusterer globalSimilaritySorter(samples);
-    BestMatchDistanceSimilarityClusterer::settings.similarityRadius = 0.1;
-    BestMatchDistanceSimilarityClusterer::settings.similarityValueIncrement = 1;
+TEST_F(ADistanceClustererTest, TwoLists) {
+    DistanceClusterer globalSimilaritySorter(samples);
+    DistanceClusterer::settings.similarityRadius = 0.1;
+    DistanceClusterer::settings.similarityValueIncrement = 1;
     globalSimilaritySorter.cluster(maxima);
 
     ASSERT_EQ(maxima.size(), 2);
@@ -119,10 +119,10 @@ TEST_F(ABestMatchDistanceSimilarityClustererTest, TwoLists) {
     ASSERT_EQ(maxima[1][3].representative()->ownId(), 7);
 }
 
-TEST_F(ABestMatchDistanceSimilarityClustererTest, DISABLED_TwoListsIncrementBorderCase) {
-    BestMatchDistanceSimilarityClusterer globalSimilaritySorter(samples);
-    BestMatchDistanceSimilarityClusterer::settings.similarityRadius = 0.02;
-    BestMatchDistanceSimilarityClusterer::settings.similarityValueIncrement = 1;
+TEST_F(ADistanceClustererTest, DISABLED_TwoListsIncrementBorderCase) {
+    DistanceClusterer globalSimilaritySorter(samples);
+    DistanceClusterer::settings.similarityRadius = 0.02;
+    DistanceClusterer::settings.similarityValueIncrement = 1;
     globalSimilaritySorter.cluster(maxima);
 
     ASSERT_EQ(maxima.size(), 4);

@@ -3,7 +3,7 @@
 //
 
 #include <IdentityClusterer.h>
-#include <BestMatchDistanceSimilarityClusterer.h>
+#include <DistanceClusterer.h>
 #include <BestMatchDistance.h>
 #include <ValueSorter.h>
 #include <spdlog/spdlog.h>

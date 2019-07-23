@@ -6,7 +6,7 @@
 #define INPSIGHTS_BESTMATCHDISTANCEDENSITYBASEDCLUSTERER_H
 
 #include <DensityBasedScan.h>
-#include <BestMatchDistanceSimilarityClusterer.h>
+#include <DistanceClusterer.h>
 #include <ISettings.h>
 #include <spdlog/spdlog.h>
 
@@ -17,7 +17,7 @@ namespace Settings {
     class BestMatchDistanceDensityBasedClusterer : public ISettings { //TODO rename
     public:
         Property<double> clusterRadius = {
-                ::BestMatchDistanceSimilarityClusterer::settings.similarityRadius(), VARNAME(clusterRadius)};
+                ::DistanceClusterer::settings.similarityRadius(), VARNAME(clusterRadius)};
 
         BestMatchDistanceDensityBasedClusterer();
         explicit BestMatchDistanceDensityBasedClusterer(const YAML::Node &node);

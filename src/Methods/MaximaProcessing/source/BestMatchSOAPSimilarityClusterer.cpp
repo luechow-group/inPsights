@@ -3,7 +3,7 @@
 //
 
 #include "BestMatchSOAPSimilarityClusterer.h"
-#include "BestMatchDistanceSimilarityClusterer.h"
+#include "DistanceClusterer.h"
 #include <StructuralSimilarity.h>
 #include <spdlog/spdlog.h>
 #include <BestMatchSimilarity.h>

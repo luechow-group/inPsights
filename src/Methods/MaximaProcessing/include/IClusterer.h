@@ -11,7 +11,7 @@ class IClusterer{
 public:
     enum class Type {
         IdentityClusterer,
-        BestMatchDistanceSimilarityClusterer,
+        DistanceClusterer,
         BestMatchDistanceDensityBasedClusterer,
         BestMatchSOAPSimilarityClusterer,
         ReferencePositionsClusterer,
