@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.11)
 
-project(VoxelProcessing CXX)
+project(SurfaceGeneration CXX)
 
 set ( PROJECT_FOLDER_NAME ${PROJECT_NAME} )
 set ( PROJECT_PATH ${PROJECT_NAME})
