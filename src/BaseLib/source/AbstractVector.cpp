@@ -41,12 +41,10 @@ long AbstractVector::calculateIndex(long i) const {
     return (numberOfEntities()+i)*entityLength_;
 }
 
-Eigen::PermutationMatrix<Eigen::Dynamic> AbstractVector::randomPermutation() const {
-    std::random_device rd;
-    std::mt19937 g(rd());
+Eigen::PermutationMatrix<Eigen::Dynamic> AbstractVector::randomPermutation(std::default_random_engine& rng) const {
     Eigen::PermutationMatrix<Eigen::Dynamic> perm(numberOfEntities());
     perm.setIdentity();
-    std::shuffle(perm.indices().data(), perm.indices().data()+perm.indices().size(),g);
+    std::shuffle(perm.indices().data(), perm.indices().data()+perm.indices().size(),rng);
 
     return perm;
 }

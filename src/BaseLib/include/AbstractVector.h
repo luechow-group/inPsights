@@ -16,7 +16,7 @@ class AbstractVector {
 public:
     long numberOfEntities() const;
     long entityLength() const;
-    Eigen::PermutationMatrix<Eigen::Dynamic> randomPermutation() const;
+    Eigen::PermutationMatrix<Eigen::Dynamic> randomPermutation(std::default_random_engine& rng) const;
 
 protected:
     explicit AbstractVector(long numberOfEntities = 0, long entityLength = 1);

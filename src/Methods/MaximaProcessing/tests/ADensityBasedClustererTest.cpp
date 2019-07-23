@@ -27,8 +27,6 @@ public:
         // emplace first element (the first elements determines the ordering of the cluster)
         references.emplace_back(Reference(0,normal));
 
-        Eigen::PermutationMatrix<Eigen::Dynamic> perm(normal.numberOfEntities());
-        perm.setIdentity();
 
         // start with second element
         bool anyWrong = false;
@@ -40,8 +38,7 @@ public:
                 evCopy.positionsVector().rotateAroundOrigin(angle, zAxis);
 
                 // random permutation
-                std::shuffle(perm.indices().data(), perm.indices().data()+perm.indices().size(), rng);
-                evCopy.permute(perm);
+                evCopy.permute(evCopy.randomPermutation(rng));
                 references.emplace_back(Reference(std::pow(std::sin(angle),2),evCopy));
 
                 Sample s(evCopy, Eigen::VectorXd::Random(normal.numberOfEntities()));
@@ -103,9 +100,6 @@ TEST_F(ADensityBasedClustererTest, RotationallySymmetricAndPointLikeCluster){
     auto rng = std::default_random_engine(static_cast<unsigned long>(std::clock()));
     const auto &ionic = TestMolecules::fourElectrons::ionic.electrons();
 
-    Eigen::PermutationMatrix<Eigen::Dynamic> perm(ionic.numberOfEntities());
-    perm.setIdentity();
-
     references.emplace_back(Reference(10, ionic));
     unsigned m = 5;
     for (unsigned i = 1; i < m; ++i) {
@@ -113,8 +107,7 @@ TEST_F(ADensityBasedClustererTest, RotationallySymmetricAndPointLikeCluster){
         evCopy.positionsVector().shake(DensityBasedClusterer::settings.clusterRadius.get(), rng);
 
         // random permutation
-        std::shuffle(perm.indices().data(), perm.indices().data()+perm.indices().size(), rng);
-        evCopy.permute(perm);
+        evCopy.permute(evCopy.randomPermutation(rng));
         references.emplace_back(Reference(10 ,evCopy));
 
         Sample s(evCopy, Eigen::VectorXd::Random(ionic.numberOfEntities()));
