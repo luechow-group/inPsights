@@ -25,13 +25,13 @@ namespace quickhull {
 	 */
 	
 	template<typename T>
-	ConvexHull<T> QuickHull<T>::getConvexHull(const std::vector<Vector3<T>>& pointCloud, bool CCW, bool useOriginalIndices, T epsilon) {
+	ConvexHull<T> QuickHull<T>::getConvexHull(const std::vector<Eigen::Matrix<T,3,1>>& pointCloud, bool CCW, bool useOriginalIndices, T epsilon) {
 		VertexDataSource<T> vertexDataSource(pointCloud);
 		return getConvexHull(vertexDataSource,CCW,useOriginalIndices,epsilon);
 	}
 	
 	template<typename T>
-	ConvexHull<T> QuickHull<T>::getConvexHull(const Vector3<T>* vertexData, size_t vertexCount, bool CCW, bool useOriginalIndices, T epsilon) {
+	ConvexHull<T> QuickHull<T>::getConvexHull(const Eigen::Matrix<T,3,1>* vertexData, size_t vertexCount, bool CCW, bool useOriginalIndices, T epsilon) {
 		VertexDataSource<T> vertexDataSource(vertexData,vertexCount);
 		return getConvexHull(vertexDataSource,CCW,useOriginalIndices,epsilon);
 	}
@@ -158,7 +158,7 @@ namespace quickhull {
 				else {
 					const Plane<T>& P = pvf.m_P;
 					pvf.m_visibilityCheckedOnIteration = iter;
-					const T d = P.m_N.dotProduct(activePoint)+P.m_D;
+					const T d = P.m_N.dot(activePoint)+P.m_D;
 					if (d>0) {
 						pvf.m_isVisibleFaceOnCurrentIteration = 1;
 						pvf.m_horizonEdgesOnCurrentIteration = 0;
@@ -262,7 +262,7 @@ namespace quickhull {
 
 				auto& newFace = m_mesh.m_faces[newFaceIndex];
 
-				const Vector3<T> planeNormal = mathutils::getTriangleNormal(m_vertexData[A],m_vertexData[B],activePoint);
+				const Eigen::Matrix<T,3,1> planeNormal = mathutils::getTriangleNormal(m_vertexData[A],m_vertexData[B],activePoint);
 				newFace.m_P = Plane<T>(planeNormal,activePoint);
 				newFace.m_he = AB;
 
@@ -311,32 +311,33 @@ namespace quickhull {
 	template <typename T>
 	std::array<IndexType,6> QuickHull<T>::getExtremeValues() {
 		std::array<IndexType,6> outIndices{0,0,0,0,0,0};
-		T extremeVals[6] = {m_vertexData[0].x,m_vertexData[0].x,m_vertexData[0].y,m_vertexData[0].y,m_vertexData[0].z,m_vertexData[0].z};
+		T extremeVals[6] = {
+		        m_vertexData[0].x(),m_vertexData[0].x(),m_vertexData[0].y(),m_vertexData[0].y(),m_vertexData[0].z(),m_vertexData[0].z()};
 		const size_t vCount = m_vertexData.size();
 		for (size_t i=1;i<vCount;i++) {
-			const Vector3<T>& pos = m_vertexData[i];
-			if (pos.x>extremeVals[0]) {
-				extremeVals[0]=pos.x;
+			const Eigen::Matrix<T,3,1>& pos = m_vertexData[i];
+			if (pos.x()>extremeVals[0]) {
+				extremeVals[0]=pos.x();
 				outIndices[0]=(IndexType)i;
 			}
-			else if (pos.x<extremeVals[1]) {
-				extremeVals[1]=pos.x;
+			else if (pos.x()<extremeVals[1]) {
+				extremeVals[1]=pos.x();
 				outIndices[1]=(IndexType)i;
 			}
-			if (pos.y>extremeVals[2]) {
-				extremeVals[2]=pos.y;
+			if (pos.y()>extremeVals[2]) {
+				extremeVals[2]=pos.y();
 				outIndices[2]=(IndexType)i;
 			}
-			else if (pos.y<extremeVals[3]) {
-				extremeVals[3]=pos.y;
+			else if (pos.y()<extremeVals[3]) {
+				extremeVals[3]=pos.y();
 				outIndices[3]=(IndexType)i;
 			}
-			if (pos.z>extremeVals[4]) {
-				extremeVals[4]=pos.z;
+			if (pos.z()>extremeVals[4]) {
+				extremeVals[4]=pos.z();
 				outIndices[4]=(IndexType)i;
 			}
-			else if (pos.z<extremeVals[5]) {
-				extremeVals[5]=pos.z;
+			else if (pos.z()<extremeVals[5]) {
+				extremeVals[5]=pos.z();
 				outIndices[5]=(IndexType)i;
 			}
 		}
@@ -386,7 +387,7 @@ namespace quickhull {
 		// If we have at most 4 points, just return a degenerate tetrahedron:
 		if (vertexCount <= 4) {
 			IndexType v[4] = {0,std::min((size_t)1,vertexCount-1),std::min((size_t)2,vertexCount-1),std::min((size_t)3,vertexCount-1)};
-			const Vector3<T> N = mathutils::getTriangleNormal(m_vertexData[v[0]],m_vertexData[v[1]],m_vertexData[v[2]]);
+			const Eigen::Matrix<T,3,1> N = mathutils::getTriangleNormal(m_vertexData[v[0]],m_vertexData[v[1]],m_vertexData[v[2]]);
 			const Plane<T> trianglePlane(N,m_vertexData[v[0]]);
 			if (trianglePlane.isPointOnPositiveSide(m_vertexData[v[3]])) {
 				std::swap(v[0],v[1]);
@@ -399,7 +400,7 @@ namespace quickhull {
 		std::pair<IndexType,IndexType> selectedPoints;
 		for (size_t i=0;i<6;i++) {
 			for (size_t j=i+1;j<6;j++) {
-				const T d = m_vertexData[ m_extremeValues[i] ].getSquaredDistanceTo( m_vertexData[ m_extremeValues[j] ] );
+				const T d = (m_vertexData[m_extremeValues[i]] - m_vertexData[m_extremeValues[j]]).squaredNorm();
 				if (d > maxD) {
 					maxD=d;
 					selectedPoints={m_extremeValues[i],m_extremeValues[j]};
@@ -441,12 +442,12 @@ namespace quickhull {
 		// These three points form the base triangle for our tetrahedron.
 		assert(selectedPoints.first != maxI && selectedPoints.second != maxI);
 		std::array<size_t,3> baseTriangle{selectedPoints.first, selectedPoints.second, maxI};
-		const Vector3<T> baseTriangleVertices[]={ m_vertexData[baseTriangle[0]], m_vertexData[baseTriangle[1]],  m_vertexData[baseTriangle[2]] };
+		const Eigen::Matrix<T,3,1> baseTriangleVertices[]={ m_vertexData[baseTriangle[0]], m_vertexData[baseTriangle[1]],  m_vertexData[baseTriangle[2]] };
 		
 		// Next step is to find the 4th vertex of the tetrahedron. We naturally choose the point farthest away from the triangle plane.
 		maxD=m_epsilon;
 		maxI=0;
-		const Vector3<T> N = mathutils::getTriangleNormal(baseTriangleVertices[0],baseTriangleVertices[1],baseTriangleVertices[2]);
+		const vec3 N = mathutils::getTriangleNormal(baseTriangleVertices[0],baseTriangleVertices[1],baseTriangleVertices[2]);
 		Plane<T> trianglePlane(N,baseTriangleVertices[0]);
 		for (size_t i=0;i<vCount;i++) {
 			const T d = std::abs(mathutils::getSignedDistanceToPlane(m_vertexData[i],trianglePlane));
@@ -477,10 +478,10 @@ namespace quickhull {
 		MeshBuilder<T> mesh(baseTriangle[0],baseTriangle[1],baseTriangle[2],maxI);
 		for (auto& f : mesh.m_faces) {
 			auto v = mesh.getVertexIndicesOfFace(f);
-			const Vector3<T>& va = m_vertexData[v[0]];
-			const Vector3<T>& vb = m_vertexData[v[1]];
-			const Vector3<T>& vc = m_vertexData[v[2]];
-			const Vector3<T> N = mathutils::getTriangleNormal(va, vb, vc);
+			const vec3 & va = m_vertexData[v[0]];
+			const vec3 & vb = m_vertexData[v[1]];
+			const vec3 & vc = m_vertexData[v[2]];
+			const vec3 N = mathutils::getTriangleNormal(va, vb, vc);
 			const Plane<T> trianglePlane(N,va);
 			f.m_P = trianglePlane;
 		}

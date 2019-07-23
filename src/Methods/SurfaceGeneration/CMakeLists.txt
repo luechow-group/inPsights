@@ -16,7 +16,6 @@ set(HEADER_FILES
         include/SurfaceData.h
 
         include/VertexDataSource.h
-        include/Vector3.h
         include/Types.h
         include/Ray.h
         include/QuickHull.h

@@ -20,7 +20,7 @@ namespace quickhull {
 			IndexType m_halfEdgeIndex; // Index of one of the half edges of this face
 		};
 		
-		std::vector<Vector3<FloatType>> m_vertices;
+		std::vector<Eigen::Matrix<FloatType,Eigen::Dynamic,1>> m_vertices;
 		std::vector<Face> m_faces;
 		std::vector<HalfEdge> m_halfEdges;
 		

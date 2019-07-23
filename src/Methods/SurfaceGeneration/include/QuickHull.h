@@ -4,7 +4,6 @@
 #include <vector>
 #include <array>
 #include <limits>
-#include "Vector3.h"
 #include "Plane.h"
 #include "Pool.h"
 #include "Mesh.h"
@@ -61,7 +60,7 @@ namespace quickhull {
 
 	template<typename FloatType>
 	class QuickHull {
-		using vec3 = Vector3<FloatType>;
+		using vec3 = Eigen::Matrix<FloatType,3,1>;
 
 		FloatType m_epsilon, m_epsilonSquared, m_scale;
 		bool m_planar;
@@ -115,7 +114,7 @@ namespace quickhull {
 		//   useOriginalIndices: should the output mesh use same vertex indices as the original point cloud. If this is false,
 		//      then we generate a new vertex buffer which contains only the vertices that are part of the convex hull.
 		//   eps: minimum distance to a plane to consider a point being on positive of it (for a point cloud with scale 1)
-		ConvexHull<FloatType> getConvexHull(const std::vector<Vector3<FloatType>>& pointCloud, bool CCW, bool useOriginalIndices, FloatType eps = defaultEps<FloatType>());
+		ConvexHull<FloatType> getConvexHull(const std::vector<Eigen::Matrix<FloatType,3,1>>& pointCloud, bool CCW, bool useOriginalIndices, FloatType eps = defaultEps<FloatType>());
 		
 		// Computes convex hull for a given point cloud.
 		// Params:
@@ -125,7 +124,7 @@ namespace quickhull {
 		//   useOriginalIndices: should the output mesh use same vertex indices as the original point cloud. If this is false,
 		//      then we generate a new vertex buffer which contains only the vertices that are part of the convex hull.
 		//   eps: minimum distance to a plane to consider a point being on positive of it (for a point cloud with scale 1)
-		ConvexHull<FloatType> getConvexHull(const Vector3<FloatType>* vertexData, size_t vertexCount, bool CCW, bool useOriginalIndices, FloatType eps = defaultEps<FloatType>());
+		ConvexHull<FloatType> getConvexHull(const vec3* vertexData, size_t vertexCount, bool CCW, bool useOriginalIndices, FloatType eps = defaultEps<FloatType>());
 		
 		// Computes convex hull for a given point cloud. This function assumes that the vertex data resides in memory
 		// in the following format: x_0,y_0,z_0,x_1,y_1,z_1,...

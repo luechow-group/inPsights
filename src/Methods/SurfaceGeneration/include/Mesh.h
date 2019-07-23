@@ -2,7 +2,7 @@
 #define MESH_HPP_
 
 #include <vector>
-#include "Vector3.h"
+#include <Eigen/Core>
 #include "Plane.h"
 #include "Pool.h"
 #include "Types.h"

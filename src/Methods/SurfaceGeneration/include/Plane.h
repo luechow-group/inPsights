@@ -1,14 +1,14 @@
 #ifndef QHPLANE_HPP_
 #define QHPLANE_HPP_
 
-#include "Vector3.h"
+#include <Eigen/Core>
 
 namespace quickhull {
 
 	template<typename T>
 	class Plane {
 	public:
-		Vector3<T> m_N;
+		Eigen::Matrix<T,3,1> m_N;
 		
 		// Signed distance (if normal is of length 1) to the plane from origin
 		T m_D;
@@ -16,16 +16,16 @@ namespace quickhull {
 		// Normal length squared
 		T m_sqrNLength;
 
-		bool isPointOnPositiveSide(const Vector3<T>& Q) const {
-			T d = m_N.dotProduct(Q)+m_D;
-			if (d>=0) return true;
-			return false;
-		}
+		bool isPointOnPositiveSide(const Eigen::Matrix<T,3,1>& Q) const {
+			T d = m_N.dot(Q)+m_D;
+            return d >= 0;
+        }
 
 		Plane() = default;
 
 		// Construct a plane using normal N and any point P on the plane
-		Plane(const Vector3<T>& N, const Vector3<T>& P) : m_N(N), m_D(-N.dotProduct(P)), m_sqrNLength(m_N.x*m_N.x+m_N.y*m_N.y+m_N.z*m_N.z) {
+		Plane(const Eigen::Matrix<T,3,1>& N, const Eigen::Matrix<T,3,1>& P)
+		: m_N(N), m_D(-N.dot(P)), m_sqrNLength(m_N.squaredNorm()) {
 			
 		}
 	};

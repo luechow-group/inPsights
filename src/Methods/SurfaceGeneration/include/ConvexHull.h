@@ -1,7 +1,7 @@
 #ifndef CONVEXHULL_HPP_
 #define CONVEXHULL_HPP_
 
-#include "Vector3.h"
+#include <Eigen/Core>
 #include "Mesh.h"
 #include "VertexDataSource.h"
 #include <vector>
@@ -13,7 +13,7 @@ namespace quickhull {
 
 	template<typename T>
 	class ConvexHull {
-		std::unique_ptr<std::vector<Vector3<T>>> m_optimizedVertexBuffer;
+		std::unique_ptr<std::vector<Eigen::Matrix<T,3,1>>> m_optimizedVertexBuffer;
 		VertexDataSource<T> m_vertices;
 		std::vector<size_t> m_indices;
 	public:
@@ -23,7 +23,7 @@ namespace quickhull {
 		ConvexHull(const ConvexHull& o) {
 			m_indices = o.m_indices;
 			if (o.m_optimizedVertexBuffer) {
-				m_optimizedVertexBuffer.reset(new std::vector<Vector3<T>>(*o.m_optimizedVertexBuffer));
+				m_optimizedVertexBuffer.reset(new std::vector<Eigen::Matrix<T,3,1>>(*o.m_optimizedVertexBuffer));
 				m_vertices = VertexDataSource<T>(*m_optimizedVertexBuffer);
 			}
 			else {
@@ -37,7 +37,7 @@ namespace quickhull {
 			}
 			m_indices = o.m_indices;
 			if (o.m_optimizedVertexBuffer) {
-				m_optimizedVertexBuffer.reset(new std::vector<Vector3<T>>(*o.m_optimizedVertexBuffer));
+				m_optimizedVertexBuffer.reset(new std::vector<Eigen::Matrix<T,3,1>>(*o.m_optimizedVertexBuffer));
 				m_vertices = VertexDataSource<T>(*m_optimizedVertexBuffer);
 			}
 			else {
@@ -77,7 +77,7 @@ namespace quickhull {
 		// Construct vertex and index buffers from half edge mesh and pointcloud
 		ConvexHull(const MeshBuilder<T>& mesh, const VertexDataSource<T>& pointCloud, bool CCW, bool useOriginalIndices) {
 			if (!useOriginalIndices) {
-				m_optimizedVertexBuffer.reset(new std::vector<Vector3<T>>());
+				m_optimizedVertexBuffer.reset(new std::vector<Eigen::Matrix<T,3,1>>());
 			}
 			
 			std::vector<bool> faceProcessed(mesh.m_faces.size(),false);
@@ -162,7 +162,7 @@ namespace quickhull {
 			objFile.open (filename);
 			objFile << "o " << objectName << "\n";
 			for (const auto& v : getVertexBuffer()) {
-				objFile << "v " << v.x << " " << v.y << " " << v.z << "\n";
+				objFile << "v " << v.x() << " " << v.y() << " " << v.z() << "\n";
 			}
 			const auto& indBuf = getIndexBuffer();
 			size_t triangleCount = indBuf.size()/3;
