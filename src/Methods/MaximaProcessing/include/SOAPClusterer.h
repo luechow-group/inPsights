@@ -2,8 +2,8 @@
 // Created by heuer on 12.12.18.
 //
 
-#ifndef INPSIGHTS_BESTMATCHSOAPSIMILARITYCLUSTERER_H
-#define INPSIGHTS_BESTMATCHSOAPSIMILARITYCLUSTERER_H
+#ifndef INPSIGHTS_SOAPCLUSTERER_H
+#define INPSIGHTS_SOAPCLUSTERER_H
 
 #include "Sample.h"
 #include "IClusterer.h"
@@ -11,22 +11,22 @@
 #include <MolecularSpectrum.h>
 
 namespace Settings {
-    class BestMatchSOAPSimilarityClusterer : public ISettings {
+    class SOAPClusterer : public ISettings {
     public:
         Property<double> soapSimilarityThreshold = {0.95, VARNAME(soapSimilarityThreshold)};
         Property<double> distanceToleranceRadius = {0.2, VARNAME(distanceToleranceRadius)};
-        BestMatchSOAPSimilarityClusterer();
-        explicit BestMatchSOAPSimilarityClusterer(const YAML::Node &node);
+        SOAPClusterer();
+        explicit SOAPClusterer(const YAML::Node &node);
         void appendToNode(YAML::Node &node) const override;
     };
 }
-YAML_SETTINGS_DECLARATION(Settings::BestMatchSOAPSimilarityClusterer)
+YAML_SETTINGS_DECLARATION(Settings::SOAPClusterer)
 
-class BestMatchSOAPSimilarityClusterer : public IClusterer {
+class SOAPClusterer : public IClusterer {
 public:
-    static Settings::BestMatchSOAPSimilarityClusterer settings;
+    static Settings::SOAPClusterer settings;
 
-    BestMatchSOAPSimilarityClusterer(const AtomsVector& atoms, std::vector<Sample> &samples);
+    SOAPClusterer(const AtomsVector& atoms, std::vector<Sample> &samples);
 
     void cluster(Group &group) override;
 
@@ -35,4 +35,4 @@ private:
     std::vector<Sample> &samples_;
 };
 
-#endif //INPSIGHTS_BESTMATCHSOAPSIMILARITYCLUSTERER_H
+#endif //INPSIGHTS_SOAPCLUSTERER_H

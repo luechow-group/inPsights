@@ -7,7 +7,7 @@
 #include <IdentityClusterer.h>
 #include <DistanceClusterer.h>
 #include <DensityBasedClusterer.h>
-#include <BestMatchSOAPSimilarityClusterer.h>
+#include <SOAPClusterer.h>
 #include <ReferencePositionsClusterer.h>
 #include <MaximaProcessor.h>
 #include <GeneralStatistics.h>
@@ -51,9 +51,9 @@ void validateClusteringSettings(const YAML::Node &inputYaml) {
                         = Settings::ReferencePositionsClusterer(clusteringNode);
                 break;
             }
-            case IClusterer::Type::BestMatchSOAPSimilarityClusterer: {
-                BestMatchSOAPSimilarityClusterer::settings
-                        = Settings::BestMatchSOAPSimilarityClusterer(clusteringNode);
+            case IClusterer::Type::SOAPClusterer: {
+                SOAPClusterer::settings
+                        = Settings::SOAPClusterer(clusteringNode);
 
                 auto soapSettings = node.second["SOAP"];
                 if (soapSettings[SOAP::General::settings.name()])
@@ -208,10 +208,10 @@ int main(int argc, char *argv[]) {
                 settings.appendToNode(usedClusteringSettings);
                 break;
             }
-            case IClusterer::Type::BestMatchSOAPSimilarityClusterer: {
-                auto &settings = BestMatchSOAPSimilarityClusterer::settings;
+            case IClusterer::Type::SOAPClusterer: {
+                auto &settings = SOAPClusterer::settings;
 
-                settings = Settings::BestMatchSOAPSimilarityClusterer(node.second);
+                settings = Settings::SOAPClusterer(node.second);
 
                 auto soapSettings = node.second["SOAP"];
                 if (soapSettings[SOAP::General::settings.name()])
@@ -223,8 +223,8 @@ int main(int argc, char *argv[]) {
                 if (soapSettings[SOAP::Cutoff::settings.name()])
                     SOAP::Cutoff::settings = Settings::SOAP::Cutoff(soapSettings);
 
-                BestMatchSOAPSimilarityClusterer bestMatchSOAPSimilarityClusterer(atoms, samples);
-                bestMatchSOAPSimilarityClusterer.cluster(maxima);
+                SOAPClusterer sOAPClusterer(atoms, samples);
+                sOAPClusterer.cluster(maxima);
 
                 settings.appendToNode(usedClusteringSettings);
                 auto usedSoapSettings = usedClusteringSettings[settings.name()]["SOAP"];

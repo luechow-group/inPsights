@@ -2,7 +2,7 @@
 // Created by heuer on 12.12.18.
 //
 
-#include "BestMatchSOAPSimilarityClusterer.h"
+#include "SOAPClusterer.h"
 #include "DistanceClusterer.h"
 #include <StructuralSimilarity.h>
 #include <spdlog/spdlog.h>
@@ -13,8 +13,8 @@
 using namespace SOAP;
 
 namespace Settings {
-    BestMatchSOAPSimilarityClusterer::BestMatchSOAPSimilarityClusterer()
-            : ISettings(VARNAME(BestMatchSOAPSimilarityClusterer)) {
+    SOAPClusterer::SOAPClusterer()
+            : ISettings(VARNAME(SOAPClusterer)) {
         soapSimilarityThreshold.onChange_.connect(
                 [&](double value) {
                     if(value <= 0 || value > 1)
@@ -24,30 +24,30 @@ namespace Settings {
                 });
     }
 
-    BestMatchSOAPSimilarityClusterer::BestMatchSOAPSimilarityClusterer(const YAML::Node &node)
-            : BestMatchSOAPSimilarityClusterer() {
+    SOAPClusterer::SOAPClusterer(const YAML::Node &node)
+            : SOAPClusterer() {
         doubleProperty::decode(node, soapSimilarityThreshold);
         doubleProperty::decode(node, distanceToleranceRadius);
     }
 
-    void BestMatchSOAPSimilarityClusterer::appendToNode(YAML::Node &node) const {
+    void SOAPClusterer::appendToNode(YAML::Node &node) const {
         node[className][soapSimilarityThreshold.name()] = soapSimilarityThreshold();
         node[className][distanceToleranceRadius.name()] = distanceToleranceRadius();
     }
 }
-YAML_SETTINGS_DEFINITION(Settings::BestMatchSOAPSimilarityClusterer)
+YAML_SETTINGS_DEFINITION(Settings::SOAPClusterer)
 
-Settings::BestMatchSOAPSimilarityClusterer BestMatchSOAPSimilarityClusterer::settings = Settings::BestMatchSOAPSimilarityClusterer();
+Settings::SOAPClusterer SOAPClusterer::settings = Settings::SOAPClusterer();
 
 
-BestMatchSOAPSimilarityClusterer::BestMatchSOAPSimilarityClusterer(
+SOAPClusterer::SOAPClusterer(
         const AtomsVector& atoms,
         std::vector<Sample> &samples)
         : atoms_(atoms), samples_(samples) {
     ParticleKit::create(atoms_, (*samples.begin()).sample_);
 };
 
-void BestMatchSOAPSimilarityClusterer::cluster(Group& group){
+void SOAPClusterer::cluster(Group& group){
     assert(!group.isLeaf() && "The group cannot be a leaf.");
 
     group.sortAll(); // sort, to make sure that the most probable structures are the representatives

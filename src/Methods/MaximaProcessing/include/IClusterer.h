@@ -13,7 +13,7 @@ public:
         IdentityClusterer,
         DistanceClusterer,
         DensityBasedClusterer,
-        BestMatchSOAPSimilarityClusterer,
+        SOAPClusterer,
         ReferencePositionsClusterer,
         invalid
     };

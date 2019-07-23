@@ -10,7 +10,7 @@
 #include <Motifs.h>
 #include <Statistics.h>
 #include <VoxelCube.h>
-#include <BestMatchSOAPSimilarityClusterer.h>
+#include <SOAPClusterer.h>
 
 class MaximaProcessor {
 public:

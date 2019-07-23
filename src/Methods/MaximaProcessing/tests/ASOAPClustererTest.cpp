@@ -14,7 +14,7 @@
 using namespace testing;
 using namespace SOAP;
 
-class ABestMatchSOAPSimilarityClustererTest : public ::testing::Test {
+class ASOAPClustererTest : public ::testing::Test {
 public:
     Group A, B, C, D, E, F;
     std::vector<Sample> samples;
@@ -63,9 +63,9 @@ public:
     }
 };
 
-TEST_F(ABestMatchSOAPSimilarityClustererTest, VerifyTestCluster) {
+TEST_F(ASOAPClustererTest, VerifyTestCluster) {
     ParticleKit::create(atoms, A.representative()->maximum());
-    BestMatchSOAPSimilarityClusterer bestMatchSOAPSimilarityClusterer(atoms, samples);
+    SOAPClusterer sOAPClusterer(atoms, samples);
 
     General::settings.mode = General::Mode::chemical;
     double soapThreshold = 1.0;
@@ -97,19 +97,19 @@ TEST_F(ABestMatchSOAPSimilarityClustererTest, VerifyTestCluster) {
             specF, specE, soapThreshold, distanceTolerance).metric, 1);
 }
 
-TEST_F(ABestMatchSOAPSimilarityClustererTest, TwoClusters) {
+TEST_F(ASOAPClustererTest, TwoClusters) {
     ParticleKit::create(atoms, A.representative()->maximum());
-    BestMatchSOAPSimilarityClusterer bestMatchSOAPSimilarityClusterer(atoms, samples);
+    SOAPClusterer sOAPClusterer(atoms, samples);
 
     General::settings.mode = General::Mode::chemical;
-    BestMatchSOAPSimilarityClusterer::settings.soapSimilarityThreshold = 1.0;
-    BestMatchSOAPSimilarityClusterer::settings.distanceToleranceRadius = 0.1;
+    SOAPClusterer::settings.soapSimilarityThreshold = 1.0;
+    SOAPClusterer::settings.distanceToleranceRadius = 0.1;
     Angular::settings.lmax = 3;
     Radial::settings.nmax = 3;
 
     Group maxima({A, {B, C}, D, E, F});
 
-    bestMatchSOAPSimilarityClusterer.cluster(maxima);
+    sOAPClusterer.cluster(maxima);
 
     ASSERT_EQ(maxima.size(), 2);
     ASSERT_EQ(maxima[0].size(), 3);
@@ -128,20 +128,20 @@ TEST_F(ABestMatchSOAPSimilarityClustererTest, TwoClusters) {
     // Group expected({{A,{B,C},D},{E,F}});
 }
 
-TEST_F(ABestMatchSOAPSimilarityClustererTest, TwoClusters_Alchemical) {
+TEST_F(ASOAPClustererTest, TwoClusters_Alchemical) {
     ParticleKit::create(atoms, A.representative()->maximum());
-    BestMatchSOAPSimilarityClusterer bestMatchSOAPSimilarityClusterer(atoms, samples);
+    SOAPClusterer sOAPClusterer(atoms, samples);
 
     General::settings.mode = General::Mode::alchemical;
     General::settings.pairSimilarities[{int(Spin::alpha), int(Spin::beta)}] = 1.0;
-    BestMatchSOAPSimilarityClusterer::settings.soapSimilarityThreshold = 1.0;
-    BestMatchSOAPSimilarityClusterer::settings.distanceToleranceRadius = 0.1;
+    SOAPClusterer::settings.soapSimilarityThreshold = 1.0;
+    SOAPClusterer::settings.distanceToleranceRadius = 0.1;
     Angular::settings.lmax = 3;
     Radial::settings.nmax = 3;
 
     Group maxima({A, {B, C}, D, E, F});
 
-    bestMatchSOAPSimilarityClusterer.cluster(maxima);
+    sOAPClusterer.cluster(maxima);
 
     ASSERT_EQ(maxima.size(), 2);
     ASSERT_EQ(maxima[0].size(), 3);

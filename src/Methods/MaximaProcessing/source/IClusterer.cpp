@@ -13,8 +13,8 @@ IClusterer::Type IClusterer::typeFromString(const std::string& clustererName) {
         return Type::DensityBasedClusterer;
     else if(clustererName == "ReferencePositionsClusterer")
         return Type::ReferencePositionsClusterer;
-    else if(clustererName == "BestMatchSOAPSimilarityClusterer")
-        return Type::BestMatchSOAPSimilarityClusterer;
+    else if(clustererName == "SOAPClusterer")
+        return Type::SOAPClusterer;
     else
         return Type::invalid;
 };
