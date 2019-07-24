@@ -31,6 +31,7 @@ InPsightsWidget::InPsightsWidget(QWidget *parent, const std::string& filename)
         spinConnectionsCheckBox(new QCheckBox("Spin Connections", this)),
         spinCorrelationsCheckBox(new QCheckBox("Spin Correlations", this)),
         sedsCheckBox(new QCheckBox("SEDs", this)),
+        maximaHullsCheckBox(new QCheckBox("Maxima Hulls", this)),
         spinCorrelationBox(new QDoubleSpinBox(this)),
         sedPercentageBox(new QDoubleSpinBox(this)),
         maximaList(new QTreeWidget(this)) {
@@ -62,10 +63,10 @@ void InPsightsWidget::createWidget() {
     maximaList->setColumnCount(headerLabels.size());
     maximaList->setHeaderLabels(headerLabels);
     maximaList->header()->setStretchLastSection(false);
-    maximaList-> header() -> setSectionResizeMode(0,QHeaderView::Stretch);
-    maximaList-> header() -> setSectionResizeMode(1,QHeaderView::ResizeToContents);
-    maximaList-> header() -> setSectionResizeMode(2,QHeaderView::ResizeToContents);
-    maximaList-> header() -> setSectionResizeMode(3,QHeaderView::ResizeToContents);
+    maximaList->header()->setSectionResizeMode(0,QHeaderView::Stretch);
+    maximaList->header()->setSectionResizeMode(1,QHeaderView::ResizeToContents);
+    maximaList->header()->setSectionResizeMode(2,QHeaderView::ResizeToContents);
+    maximaList->header()->setSectionResizeMode(3,QHeaderView::ResizeToContents);
 
     vboxOuter->addWidget(maximaList, 1);
     vboxOuter->addWidget(maximaProcessingWidget,1);
@@ -79,11 +80,13 @@ void InPsightsWidget::createWidget() {
     checkboxGrid->addWidget(atomsCheckBox,0,0);
     checkboxGrid->addWidget(bondsCheckBox,1,0);
     checkboxGrid->addWidget(axesCheckBox,2,0);
+
     checkboxGrid->addWidget(spinConnectionsCheckBox,0,1);
-    checkboxGrid->addWidget(spinCorrelationsCheckBox,1,1);
-    checkboxGrid->addWidget(spinCorrelationBox,1,2);
-    checkboxGrid->addWidget(sedsCheckBox,2,1);
-    checkboxGrid->addWidget(sedPercentageBox,2,2);
+    checkboxGrid->addWidget(maximaHullsCheckBox,1,1);
+    checkboxGrid->addWidget(spinCorrelationsCheckBox,2,1);
+    checkboxGrid->addWidget(spinCorrelationBox,2,2);
+    checkboxGrid->addWidget(sedsCheckBox,3,1);
+    checkboxGrid->addWidget(sedPercentageBox,3,2);
 
     setupSpinBoxes();
 }
@@ -159,11 +162,23 @@ void InPsightsWidget::selectedStructure(QTreeWidgetItem *item, int column) {
             else
                 moleculeWidget->addSeds(clusterId, clusterCollection_, sedPercentageBox->value());
         }
+
+        if(maximaHullsCheckBox->checkState() == Qt::CheckState::Checked
+           && moleculeWidget->activeMaximaHullsMap_.find(clusterId) == moleculeWidget->activeMaximaHullsMap_.end()) {
+            if (clusterCollection_[clusterId].exemplaricStructures_.empty())
+                spdlog::warn("Voxel cubes were not calculated.");
+            else
+                moleculeWidget->addMaximaHulls(clusterId, clusterCollection_);
+        }
+
     } else {
         moleculeWidget->removeElectronsVector(clusterId, structureId);
 
         if(moleculeWidget->activeSedsMap_.find(clusterId) != moleculeWidget->activeSedsMap_.end())
             moleculeWidget->removeSeds(clusterId);
+
+        if(moleculeWidget->activeMaximaHullsMap_.find(clusterId) != moleculeWidget->activeMaximaHullsMap_.end())
+            moleculeWidget->removeMaximaHulls(clusterId);
     }
     redrawSpinDecorations();
 };

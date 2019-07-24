@@ -53,6 +53,7 @@ set(HEADER_FILES
         include/Surface.h
         include/Arrow.h
         include/CartesianAxes.h
+        include/ColorPalette.h
         )
 
 set(SOURCE_FILES

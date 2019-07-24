@@ -12,11 +12,14 @@
 #include <Bond3D.h>
 #include <Cylinder.h>
 #include <Particle3D.h>
+#include <ColorPalette.h>
 #include <Surface.h>
 #include <SurfaceDataGenerator.h>
-
+#include <QuickHull.h>
+#include <Conversion.h>
 #include <SpinCorrelations3D.h>
 #include <spdlog/spdlog.h>
+
 
 MoleculeWidget::MoleculeWidget(QWidget *parent)
         :
@@ -195,6 +198,44 @@ void MoleculeWidget::onElectronsHighlighted(std::vector<int> selectedParticles) 
         }
     }
 }
+
+void MoleculeWidget::addMaximaHulls(int clusterId, const std::vector<ClusterData> &clusterData) {
+    auto spins = clusterData[clusterId].representativeStructure().typesVector();
+    auto N = spins.numberOfEntities();
+
+    std::vector<Surface*> maximaHulls(N);
+
+    const auto& voxelData = clusterData[clusterId].voxelCubes_;
+
+    quickhull::QuickHull<float> qh;
+
+    for (std::size_t i = 0; i < spins.numberOfEntities(); ++i) {
+        std::vector<Eigen::Vector3f> electronPointCloud;
+        for(const auto & ev : clusterData[clusterId].exemplaricStructures_)
+            electronPointCloud.emplace_back(ev[i].position().cast<float>());
+
+        auto hull = qh.getConvexHull(electronPointCloud);
+        auto vertices = hull.getVertices();
+        auto triangles = hull.getTriangles();
+
+        Conversion::calculateVertexNormals(vertices, triangles);
+        SurfaceData surfaceData;
+        surfaceData.triangles = triangles;
+        surfaceData.vertices = vertices;
+
+        maximaHulls[i] = new Surface(getMoleculeEntity(), surfaceData, ColorPalette::colorFunction(i), 0.5);
+    }
+    activeMaximaHullsMap_[clusterId] = maximaHulls;
+}
+
+void MoleculeWidget::removeMaximaHulls(int clusterId) {
+    for (auto &hull : activeMaximaHullsMap_[clusterId])
+        hull->deleteLater();
+
+    if (!activeMaximaHullsMap_[clusterId].empty())
+        activeMaximaHullsMap_.erase(clusterId);
+}
+
 
 void MoleculeWidget::onScreenshot(bool) {
     QScreen *screen = QGuiApplication::primaryScreen();
