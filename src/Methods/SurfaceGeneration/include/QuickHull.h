@@ -55,18 +55,16 @@ namespace quickhull {
 		DiagnosticsData() : failedHorizonEdges_(0) { }
 	};
 
-	template<typename FloatType>
-	FloatType defaultEps();
+	template<typename T>
+	T defaultEps();
 
-	template<typename FloatType>
+	template<typename T>
 	class QuickHull {
-		using vec3 = Eigen::Matrix<FloatType,3,1>;
-
-		FloatType epsilon_, epsilonSquared_, scale_;
+		T epsilon_, epsilonSquared_, scale_;
 		bool planar_;
-		std::vector<vec3> planarPointCloudTemp_;
-		VertexDataSource<FloatType> vertexData_;
-		MeshBuilder<FloatType> mesh_;
+		std::vector<Eigen::Matrix<T,3,1>> planarPointCloudTemp_;
+		VertexDataSource<T> vertexData_;
+		MeshBuilder<T> mesh_;
 		std::array<IndexType,6> extremeValues_;
 		DiagnosticsData diagnostics_;
 
@@ -76,7 +74,7 @@ namespace quickhull {
 		std::vector< std::unique_ptr<std::vector<IndexType>> > disabledFacePointVectors_;
 
 		// Create a half edge mesh representing the base tetrahedron from which the QuickHull iteration proceeds. extremeValues_ must be properly set up when this is called.
-		MeshBuilder<FloatType> getInitialTetrahedron();
+		MeshBuilder<T> getInitialTetrahedron();
 
 		// Given a list of half edges, try to rearrange them so that they form a loop. Return true on success.
 		bool reorderHorizonEdges(std::vector<IndexType>& horizonEdges);
@@ -85,7 +83,7 @@ namespace quickhull {
 		std::array<IndexType,6> getExtremeValues();
 		
 		// Compute scale of the vertex data.
-		FloatType getScale(const std::array<IndexType,6>& extremeValues);
+		T getScale(const std::array<IndexType,6>& extremeValues);
 		
 		// Each face contains a unique pointer to a vector of indices. However, many - often most - faces do not have any points on the positive
 		// side of them especially at the the end of the iteration. When a face is removed from the mesh, its associated point vector, if such
@@ -96,16 +94,16 @@ namespace quickhull {
 		inline void reclaimToIndexVectorPool(std::unique_ptr<std::vector<IndexType>>& ptr);
 		
 		// Associates a point with a face if the point resides on the positive side of the plane. Returns true if the points was on the positive side.
-		inline bool addPointToFace(typename MeshBuilder<FloatType>::Face& f, IndexType pointIndex);
+		inline bool addPointToFace(typename MeshBuilder<T>::Face& f, IndexType pointIndex);
 		
 		// This will update mesh_ from which we create the ConvexHull object that getConvexHull function returns
 		void createConvexHalfEdgeMesh();
 		
 		// Constructs the convex hull into a MeshBuilder object which can be converted to a ConvexHull or Mesh object
-		void buildMesh(const VertexDataSource<FloatType>& pointCloud, bool CCW, bool useOriginalIndices, FloatType eps);
+		void buildMesh(const VertexDataSource<T>& pointCloud, bool CCW, bool useOriginalIndices, T eps);
 		
 		// The public getConvexHull functions will setup a VertexDataSource object and call this
-		ConvexHull<FloatType> getConvexHull(const VertexDataSource<FloatType>& pointCloud, bool CCW, bool useOriginalIndices, FloatType eps);
+		ConvexHull<T> getConvexHull(const VertexDataSource<T>& pointCloud, bool CCW, bool useOriginalIndices, T eps);
 	public:
 		// Computes convex hull for a given point cloud.
 		// Params:
@@ -114,7 +112,7 @@ namespace quickhull {
 		//   useOriginalIndices: should the output mesh use same vertex indices as the original point cloud. If this is false,
 		//      then we generate a new vertex buffer which contains only the vertices that are part of the convex hull.
 		//   eps: minimum distance to a plane to consider a point being on positive of it (for a point cloud with scale 1)
-		ConvexHull<FloatType> getConvexHull(const std::vector<Eigen::Matrix<FloatType,3,1>>& pointCloud, bool CCW, bool useOriginalIndices, FloatType eps = defaultEps<FloatType>());
+		ConvexHull<T> getConvexHull(const std::vector<Eigen::Matrix<T,3,1>>& pointCloud, bool CCW, bool useOriginalIndices, T eps = defaultEps<T>());
 		
 		// Computes convex hull for a given point cloud.
 		// Params:
@@ -124,7 +122,7 @@ namespace quickhull {
 		//   useOriginalIndices: should the output mesh use same vertex indices as the original point cloud. If this is false,
 		//      then we generate a new vertex buffer which contains only the vertices that are part of the convex hull.
 		//   eps: minimum distance to a plane to consider a point being on positive of it (for a point cloud with scale 1)
-		ConvexHull<FloatType> getConvexHull(const vec3* vertexData, size_t vertexCount, bool CCW, bool useOriginalIndices, FloatType eps = defaultEps<FloatType>());
+		ConvexHull<T> getConvexHull(const Eigen::Matrix<T,3,1>* vertexData, size_t vertexCount, bool CCW, bool useOriginalIndices, T eps = defaultEps<T>());
 		
 		// Computes convex hull for a given point cloud. This function assumes that the vertex data resides in memory
 		// in the following format: x_0,y_0,z_0,x_1,y_1,z_1,...
@@ -135,7 +133,7 @@ namespace quickhull {
 		//   useOriginalIndices: should the output mesh use same vertex indices as the original point cloud. If this is false,
 		//      then we generate a new vertex buffer which contains only the vertices that are part of the convex hull.
 		//   eps: minimum distance to a plane to consider a point being on positive of it (for a point cloud with scale 1)
-		ConvexHull<FloatType> getConvexHull(const FloatType* vertexData, size_t vertexCount, bool CCW, bool useOriginalIndices, FloatType eps = defaultEps<FloatType>());
+		ConvexHull<T> getConvexHull(const T* vertexData, size_t vertexCount, bool CCW, bool useOriginalIndices, T eps = defaultEps<T>());
 		
 		// Computes convex hull for a given point cloud. This function assumes that the vertex data resides in memory
 		// in the following format: x_0,y_0,z_0,x_1,y_1,z_1,...
@@ -146,7 +144,7 @@ namespace quickhull {
 		//   eps: minimum distance to a plane to consider a point being on positive of it (for a point cloud with scale 1)
 		// Returns:
 		//   Convex hull of the point cloud as a mesh object with half edge structure.
-		HalfEdgeMesh<FloatType, IndexType> getConvexHullAsMesh(const FloatType* vertexData, size_t vertexCount, bool CCW, FloatType eps = defaultEps<FloatType>());
+		HalfEdgeMesh<T, IndexType> getConvexHullAsMesh(const T* vertexData, size_t vertexCount, bool CCW, T eps = defaultEps<T>());
 		
 		// Get diagnostics about last generated convex hull
 		const DiagnosticsData& getDiagnostics() {
