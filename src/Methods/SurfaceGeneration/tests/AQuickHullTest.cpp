@@ -86,7 +86,7 @@ TEST_F(AQuickHullTest, Vector3){
 TEST_F(AQuickHullTest, Sphere){
     QuickHull<FloatType> qh;
     FloatType y = 1;
-    for (;;) {
+    while(true) {
         auto pc = createSphere<FloatType>(1, 100, vec3(0,y,0));
         auto hull = qh.getConvexHull(pc,true,false);
         y *= 15;
@@ -100,10 +100,9 @@ TEST_F(AQuickHullTest, Sphere){
     // running out of numerical accuracy.
     size_t i =  1;
     FloatType eps = 0.002f;
-    for (;;) {
+    while (true) {
         auto pc = createSphere<FloatType>(1, i, vec3(0,0,0));
         auto hull = qh.getConvexHull(pc,true,false,eps);
-        std::cout << i << ":" << pc.size() << " : " << hull.getVertexBuffer().size() << " at eps=" << eps << std::endl;
         if (qh.getDiagnostics().failedHorizonEdges_) {
             // This should not happen
             ASSERT_TRUE(false);
@@ -115,7 +114,6 @@ TEST_F(AQuickHullTest, Sphere){
         }
         else {
             eps *= 0.5f;
-            std::cout << "Epsilon to " << eps << std::endl;
         }
 
         if (i == 100) { //Original value 500
@@ -289,7 +287,8 @@ TEST_F(AQuickHullTest, Test6){
 
     size_t N = 200;
 
-    for (int x=0;;x++) {
+    int x = 0;
+    while (true) {
         pointCloud.clear();
         const FloatType l = 1;
         const FloatType r = l/(std::pow(10, x));
@@ -303,10 +302,12 @@ TEST_F(AQuickHullTest, Test6){
         if (hull.getVertexBuffer().size()==4) {
             break;
         }
+
+        x++;
     }
 }
 
-TEST_F(AQuickHullTest, Test7) {
+TEST_F(AQuickHullTest, DISABLED_Test7) {
     QuickHull<FloatType> qh;
     std::vector<vec3> pointCloud;
 
@@ -345,9 +346,6 @@ TEST_F(AQuickHullTest, Triangles) {
     auto hull = qh.getConvexHull(pc,true,false);
 
     ASSERT_EQ(hull.getTriangles().size(),12);
-
-    for(auto t : hull.getTriangles())
-        std::cout << t.indices.transpose() << std::endl;
 }
 
 TEST_F(AQuickHullTest, CubeVertices) {
