@@ -8,6 +8,9 @@
 #include <unordered_map>
 #include <fstream>
 #include <memory>
+#include <Vertex.h>
+#include <Triangle.h>
+#include <Enumerate.h>
 
 namespace quickhull {
 
@@ -148,12 +151,20 @@ namespace quickhull {
 		}
 
 		std::vector<size_t>& getIndexBuffer() {
-			return indices_;
-		}
+            return indices_;
+        }
+
+        const std::vector<size_t>& getIndexBuffer() const {
+            return indices_;
+        }
 
 		VertexDataSource<T>& getVertexBuffer() {
-			return vertices_;
-		}
+            return vertices_;
+        }
+
+        const VertexDataSource<T>& getVertexBuffer() const {
+            return vertices_;
+        }
 		
 		// Export the mesh to a Waveform OBJ file
 		void writeWaveformOBJ(const std::string& filename, const std::string& objectName = "quickhull")
@@ -172,6 +183,26 @@ namespace quickhull {
 			objFile.close();
 		}
 
+		std::vector<Vertex> getVertices() const {
+		    std::vector<Vertex> vertices(getVertexBuffer().size());
+
+            for (const auto& [i,v] : enumerate(getVertexBuffer()))
+                vertices[i] = Vertex(v);
+
+            return vertices;
+		}
+
+        std::vector<Triangle> getTriangles() const {
+            std::vector<Triangle> triangles(getIndexBuffer().size()/3);
+
+            for (size_t i = 0; i < getIndexBuffer().size()/3; ++i)
+                triangles[i] = Triangle({
+                    static_cast<int>(getIndexBuffer()[i*3+0]),
+                    static_cast<int>(getIndexBuffer()[i*3+1]),
+                    static_cast<int>(getIndexBuffer()[i*3+2])});
+
+            return triangles;
+        }
 	};
 
 }

@@ -20,9 +20,6 @@ auto sameEps = 0.0001f;
 class AQuickHullTest: public Test {
 public:
 
-    // Setup test env
-    const size_t N = 200;
-    std::vector<vec3> pc;
 
     std::default_random_engine rng;
     std::uniform_real_distribution<FloatType> dist;
@@ -31,10 +28,16 @@ public:
         // Seed RNG using Unix time
         dist = std::uniform_real_distribution<FloatType> (0, 1); //remove
         rng.seed(static_cast<unsigned long>(std::clock()));
+    };
 
+    FloatType rnd(FloatType from, FloatType to) {
+        return from + (FloatType)dist(rng)*(to-from);
+    };
 
-        // Test 1 : Put N points inside unit cube. Result mesh must have exactly 8 vertices because the convex hull is the unit cube.
-        pc.clear();
+    template <typename T>
+    std::vector<Eigen::Matrix<T,3,1>> createUnitCube(size_t N = 200) {
+        std::vector<vec3> pc;
+
         for (int i=0;i<8;i++) {
             pc.emplace_back(i&1 ? -1 : 1,i&2 ? -1 : 1,i&4 ? -1 : 1);
         }
@@ -42,11 +45,8 @@ public:
         {
             pc.emplace_back(rnd(-1,1),rnd(-1,1),rnd(-1,1));
         }
-    };
-
-    FloatType rnd(FloatType from, FloatType to) {
-        return from + (FloatType)dist(rng)*(to-from);
-    };
+        return pc;
+    }
 
     template <typename T>
     std::vector<Eigen::Matrix<T,3,1>> createSphere(T radius, size_t M, Eigen::Matrix<T,3,1> offset = Eigen::Matrix<T,3,1>(0,0,0)) {
@@ -173,7 +173,10 @@ TEST_F(AQuickHullTest, HalfEdgeOutput) {
 
 TEST_F(AQuickHullTest, Hull1) {
     QuickHull<FloatType> qh;
+    auto pc = createUnitCube<FloatType>();
+
     auto hull = qh.getConvexHull(pc,true,false);
+
     ASSERT_EQ(hull.getVertexBuffer().size(), 8);
     ASSERT_EQ(hull.getIndexBuffer().size(), 3*2*6); // 6 cube faces, 2 triangles per face, 3 indices per triangle
     ASSERT_NE(&(hull.getVertexBuffer()[0]), &(pc[0]));
@@ -181,6 +184,8 @@ TEST_F(AQuickHullTest, Hull1) {
 
 TEST_F(AQuickHullTest, Hull2) {
     QuickHull<FloatType> qh;
+    auto pc = createUnitCube<FloatType>();
+
     auto hull = qh.getConvexHull(pc,true,false);
 
     ASSERT_EQ(hull.getVertexBuffer().size(), hull.getVertexBuffer().size());
@@ -190,6 +195,7 @@ TEST_F(AQuickHullTest, Hull2) {
 
 TEST_F(AQuickHullTest, Hull3) {
     QuickHull<FloatType> qh;
+    auto pc = createUnitCube<FloatType>();
     auto hull = qh.getConvexHull(pc, true, false);
 
     auto hull3 = std::move(hull);
@@ -198,6 +204,8 @@ TEST_F(AQuickHullTest, Hull3) {
 
 TEST_F(AQuickHullTest, Hull1OriginalIndices) {
     QuickHull<FloatType> qh;
+    auto pc = createUnitCube<FloatType>();
+
     auto hull = qh.getConvexHull(pc, true, true);
 
     ASSERT_EQ(hull.getIndexBuffer().size(), 3*2*6);
@@ -257,6 +265,8 @@ TEST_F(AQuickHullTest, PlanarCircleAndCylinder){
     QuickHull<FloatType> qh;
     std::vector<vec3> pointCloud;
 
+    size_t N = 200;
+
     // first a planar circle, then make a cylinder out of it
     pointCloud.clear();    for (size_t i=0;i<N;i++) {
         const FloatType alpha = (FloatType)i/N*2*Constant::pi;
@@ -276,6 +286,8 @@ TEST_F(AQuickHullTest, PlanarCircleAndCylinder){
 TEST_F(AQuickHullTest, Test6){
     QuickHull<FloatType> qh;
     std::vector<vec3> pointCloud;
+
+    size_t N = 200;
 
     for (int x=0;;x++) {
         pointCloud.clear();
@@ -298,6 +310,8 @@ TEST_F(AQuickHullTest, Test7) {
     QuickHull<FloatType> qh;
     std::vector<vec3> pointCloud;
 
+    size_t N = 200;
+
     for (int h = 0; h < 100; h++) {
         pointCloud.clear();
         const vec3 v1(rnd(-1, 1), rnd(-1, 1), rnd(-1, 1));
@@ -315,11 +329,46 @@ TEST_F(AQuickHullTest, Test7) {
     // TODO ASSERT was missing here
 }
 
-TEST_F(AQuickHullTest, WavefrontObj) {
+TEST_F(AQuickHullTest, DISABLED_WavefrontObj) {
     QuickHull<FloatType> qh;
 
     auto pc = createSphere<FloatType>(1, 10);
     auto hull = qh.getConvexHull(pc,true,false);
 
     hull.writeWaveformOBJ("Wavefront.obj");
+}
+
+TEST_F(AQuickHullTest, Triangles) {
+    QuickHull<FloatType> qh;
+
+    auto pc = createUnitCube<FloatType>(100);
+    auto hull = qh.getConvexHull(pc,true,false);
+
+    ASSERT_EQ(hull.getTriangles().size(),12);
+
+    for(auto t : hull.getTriangles())
+        std::cout << t.indices.transpose() << std::endl;
+}
+
+TEST_F(AQuickHullTest, CubeVertices) {
+    QuickHull<FloatType> qh;
+
+    auto pc = createUnitCube<FloatType>(100);
+    auto hull = qh.getConvexHull(pc,true,false);
+
+    ASSERT_EQ(hull.getVertices().size(),8);
+
+    std::vector<Eigen::Vector3f> expected({
+        {-1,  1,  1},
+        { 1,  1,  1},
+        { 1,  1, -1},
+        { 1, -1,  1},
+        {-1, -1,  1},
+        {-1, -1, -1},
+        {-1,  1, -1},
+        { 1, -1, -1}
+    });
+
+    for(const auto& v : hull.getVertices())
+        ASSERT_THAT(v.position, AnyOfArray(expected));
 }

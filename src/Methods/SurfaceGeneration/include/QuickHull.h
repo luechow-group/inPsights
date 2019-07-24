@@ -112,7 +112,10 @@ namespace quickhull {
 		//   useOriginalIndices: should the output mesh use same vertex indices as the original point cloud. If this is false,
 		//      then we generate a new vertex buffer which contains only the vertices that are part of the convex hull.
 		//   eps: minimum distance to a plane to consider a point being on positive of it (for a point cloud with scale 1)
-		ConvexHull<T> getConvexHull(const std::vector<Eigen::Matrix<T,3,1>>& pointCloud, bool CCW, bool useOriginalIndices, T eps = defaultEps<T>());
+		ConvexHull<T> getConvexHull(
+		        const std::vector<Eigen::Matrix<T,3,1>>& pointCloud,
+		        bool CCW = false, bool useOriginalIndices = false,
+		        T eps = defaultEps<T>());
 		
 		// Computes convex hull for a given point cloud.
 		// Params:

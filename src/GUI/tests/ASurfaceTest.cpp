@@ -17,6 +17,7 @@
 #include <Qt3DExtras/QOrbitCameraController>
 #include <Qt3DRender/QCamera>
 #include <Qt3DCore/QEntity>
+#include <QuickHull.h>
 
 class RadialGaussian {
 public:
@@ -51,6 +52,47 @@ private:
     float falloff;
 };
 
+void create3DWindow(const SurfaceData &surfaceData) {
+    int argc = 0;
+    char *argv[] = {};
+    QApplication app(argc, argv);
+
+    // Root entity
+    auto *rootEntity = new Qt3DCore::QEntity();
+
+    // Window container
+    auto qt3DWindow = new Qt3DExtras::Qt3DWindow();
+    qt3DWindow->setRootEntity(rootEntity);
+    auto widget = QWidget::createWindowContainer(qt3DWindow);
+
+    // Camera
+    auto *camController = new Qt3DExtras::QOrbitCameraController(rootEntity);
+
+    qt3DWindow->setRootEntity(rootEntity);
+    qt3DWindow->camera()->lens()->setPerspectiveProjection(45.0f, 16.0f / 9.0f, 0.1f, 100.0f);
+    qt3DWindow->camera()->setPosition(QVector3D(2.5, -8, 0.0));
+    qt3DWindow->camera()->setViewCenter(QVector3D(0, 0, 0));
+
+    // For camera controls
+    camController->setLinearSpeed(50.f);
+    camController->setLookSpeed(180.f);
+    camController->setCamera(qt3DWindow->camera());
+
+    // Isosurface
+    auto *entity = new Qt3DCore::QEntity(rootEntity);
+    new Cylinder(entity, Qt::red, {{-0.5f, 0, 0},
+                                   {0.5f,  0, 0}}, 0.005f);
+    new Cylinder(entity, Qt::green, {{0, -0.5f, 0},
+                                     {0, 0.5f,  0}}, 0.005f);
+    new Cylinder(entity, Qt::blue, {{0, 0, -0.5f},
+                                    {0, 0, 0.5f}}, 0.005f);
+    new Surface(entity, surfaceData, Qt::gray);
+
+    qt3DWindow->setRootEntity(rootEntity);
+    widget->show();
+
+    QApplication::exec();
+}
 
 TEST(ASurfaceTest, SphereFromDensity) {
     VoxelCube cube(32, 1.0, {0.5,0,0});
@@ -78,41 +120,7 @@ TEST(ASurfaceTest, SphereFromDensity) {
     SurfaceDataGenerator surfaceDataGenerator(cube);
     auto surfaceData = surfaceDataGenerator.computeSurfaceData(0.4);
 
-    int argc = 0;
-    char* argv[] = {};
-    QApplication app(argc,argv);
-
-    // Root entity
-    auto *rootEntity = new Qt3DCore::QEntity();
-
-    // Window container
-    auto qt3DWindow = new Qt3DExtras::Qt3DWindow();
-    qt3DWindow->setRootEntity(rootEntity);
-    auto widget = QWidget::createWindowContainer(qt3DWindow);
-
-    // Camera
-    auto *camController = new Qt3DExtras::QOrbitCameraController(rootEntity);
-    qt3DWindow->camera()->lens()->setPerspectiveProjection(45.0f, 16.0f / 9.0f, 0.1f, 100.0f);
-    qt3DWindow->camera()->setPosition(QVector3D(2, -4, 0.0));
-    qt3DWindow->camera()->setViewCenter(QVector3D(0, 0, 0));
-
-    // For camera controls
-    camController->setLinearSpeed(50.f);
-    camController->setLookSpeed(180.f);
-    camController->setCamera(qt3DWindow->camera());
-
-    // Isosurface
-
-    auto *entity = new Qt3DCore::QEntity(rootEntity);
-
-    new Cylinder(entity, Qt::red,  {{-0.5f,0,0},{0.5f,0,0}}, 0.005f);
-    new Cylinder(entity, Qt::green,{{0,-0.5f,0},{0,0.5f,0}}, 0.005f);
-    new Cylinder(entity, Qt::blue, {{0,0,-0.5f},{0,0,0.5f}}, 0.005f);
-    new Surface(entity, surfaceData, Qt::gray,0.25);
-
-    widget->show();
-
-    QApplication::exec();
+    create3DWindow(surfaceData);
 }
 
 TEST(ASurfaceTest, CubeFromData) {
@@ -143,40 +151,38 @@ TEST(ASurfaceTest, CubeFromData) {
     surfaceData.triangles = triangles;
     surfaceData.vertices = vertices;
 
-    int argc = 0;
-    char* argv[] = {};
-    QApplication app(argc,argv);
+    create3DWindow(surfaceData);
+}
 
-    // Root entity
-    auto *rootEntity = new Qt3DCore::QEntity();
+TEST(ASurfaceTest, CubeFromConvexHullOfPointCloud){
 
-    // Window container
-    auto qt3DWindow = new Qt3DExtras::Qt3DWindow();
-    qt3DWindow->setRootEntity(rootEntity);
-    auto widget = QWidget::createWindowContainer(qt3DWindow);
+    std::vector<Eigen::Vector3f> pc({
+        {-1,  1,  1},
+        { 1,  1,  1},
+        { 1,  1, -1},
+        { 1, -1,  1},
+        {-1, -1,  1},
+        {-1, -1, -1},
+        {-1,  1, -1},
+        { 1, -1, -1},
+        { 0,  0,  0},// Points inside the convex hull
+        Eigen::Vector3f::Random(),
+        Eigen::Vector3f::Random(),
+        Eigen::Vector3f::Random(),
+        Eigen::Vector3f::Random()
+    });
 
-    // Camera
-    auto *camController = new Qt3DExtras::QOrbitCameraController(rootEntity);
+    quickhull::QuickHull<float> qh;
 
-    qt3DWindow->setRootEntity(rootEntity);
-    qt3DWindow->camera()->lens()->setPerspectiveProjection(45.0f, 16.0f / 9.0f, 0.1f, 100.0f);
-    qt3DWindow->camera()->setPosition(QVector3D(2.5, -8, 0.0));
-    qt3DWindow->camera()->setViewCenter(QVector3D(0, 0, 0));
+    auto hull = qh.getConvexHull(pc);
 
-    // For camera controls
-    camController->setLinearSpeed(50.f);
-    camController->setLookSpeed(180.f);
-    camController->setCamera(qt3DWindow->camera());
+    auto vertices = hull.getVertices();
+    auto triangles = hull.getTriangles();
 
-    // Isosurface
-    auto *entity = new Qt3DCore::QEntity(rootEntity);
-    new Cylinder(entity, Qt::red,  {{-0.5f,0,0},{0.5f,0,0}}, 0.005f);
-    new Cylinder(entity, Qt::green,{{0,-0.5f,0},{0,0.5f,0}}, 0.005f);
-    new Cylinder(entity, Qt::blue, {{0,0,-0.5f},{0,0,0.5f}}, 0.005f);
-    new Surface(entity, surfaceData, Qt::gray);
+    Conversion::calculateVertexNormals(vertices, triangles);
+    SurfaceData surfaceData;
+    surfaceData.triangles = triangles;
+    surfaceData.vertices = vertices;
 
-    qt3DWindow->setRootEntity(rootEntity);
-    widget->show();
-
-    QApplication::exec();
+    create3DWindow(surfaceData);
 }
