@@ -50,9 +50,9 @@
 namespace quickhull {
 	
 	struct DiagnosticsData {
-		size_t m_failedHorizonEdges; // How many times QuickHull failed to solve the horizon edge. Failures lead to degenerated convex hulls.
+		size_t failedHorizonEdges_; // How many times QuickHull failed to solve the horizon edge. Failures lead to degenerated convex hulls.
 		
-		DiagnosticsData() : m_failedHorizonEdges(0) { }
+		DiagnosticsData() : failedHorizonEdges_(0) { }
 	};
 
 	template<typename FloatType>
@@ -62,20 +62,20 @@ namespace quickhull {
 	class QuickHull {
 		using vec3 = Eigen::Matrix<FloatType,3,1>;
 
-		FloatType m_epsilon, m_epsilonSquared, m_scale;
-		bool m_planar;
-		std::vector<vec3> m_planarPointCloudTemp;
-		VertexDataSource<FloatType> m_vertexData;
-		MeshBuilder<FloatType> m_mesh;
-		std::array<IndexType,6> m_extremeValues;
-		DiagnosticsData m_diagnostics;
+		FloatType epsilon_, epsilonSquared_, scale_;
+		bool planar_;
+		std::vector<vec3> planarPointCloudTemp_;
+		VertexDataSource<FloatType> vertexData_;
+		MeshBuilder<FloatType> mesh_;
+		std::array<IndexType,6> extremeValues_;
+		DiagnosticsData diagnostics_;
 
 		// Temporary variables used during iteration process
-		std::vector<IndexType> m_newFaceIndices;
-		std::vector<IndexType> m_newHalfEdgeIndices;
-		std::vector< std::unique_ptr<std::vector<IndexType>> > m_disabledFacePointVectors;
+		std::vector<IndexType> newFaceIndices_;
+		std::vector<IndexType> newHalfEdgeIndices_;
+		std::vector< std::unique_ptr<std::vector<IndexType>> > disabledFacePointVectors_;
 
-		// Create a half edge mesh representing the base tetrahedron from which the QuickHull iteration proceeds. m_extremeValues must be properly set up when this is called.
+		// Create a half edge mesh representing the base tetrahedron from which the QuickHull iteration proceeds. extremeValues_ must be properly set up when this is called.
 		MeshBuilder<FloatType> getInitialTetrahedron();
 
 		// Given a list of half edges, try to rearrange them so that they form a loop. Return true on success.
@@ -91,14 +91,14 @@ namespace quickhull {
 		// side of them especially at the the end of the iteration. When a face is removed from the mesh, its associated point vector, if such
 		// exists, is moved to the index vector pool, and when we need to add new faces with points on the positive side to the mesh,
 		// we reuse these vectors. This reduces the amount of std::vectors we have to deal with, and impact on performance is remarkable.
-		Pool<std::vector<IndexType>> m_indexVectorPool;
+		Pool<std::vector<IndexType>> indexVectorPool_;
 		inline std::unique_ptr<std::vector<IndexType>> getIndexVectorFromPool();
 		inline void reclaimToIndexVectorPool(std::unique_ptr<std::vector<IndexType>>& ptr);
 		
 		// Associates a point with a face if the point resides on the positive side of the plane. Returns true if the points was on the positive side.
 		inline bool addPointToFace(typename MeshBuilder<FloatType>::Face& f, IndexType pointIndex);
 		
-		// This will update m_mesh from which we create the ConvexHull object that getConvexHull function returns
+		// This will update mesh_ from which we create the ConvexHull object that getConvexHull function returns
 		void createConvexHalfEdgeMesh();
 		
 		// Constructs the convex hull into a MeshBuilder object which can be converted to a ConvexHull or Mesh object
@@ -150,7 +150,7 @@ namespace quickhull {
 		
 		// Get diagnostics about last generated convex hull
 		const DiagnosticsData& getDiagnostics() {
-			return m_diagnostics;
+			return diagnostics_;
 		}
 	};
 	
@@ -160,7 +160,7 @@ namespace quickhull {
 	
 	template<typename T>
 	std::unique_ptr<std::vector<IndexType>> QuickHull<T>::getIndexVectorFromPool() {
-		auto r = std::move(m_indexVectorPool.get());
+		auto r = std::move(indexVectorPool_.get());
 		r->clear();
 		return r;
 	}
@@ -173,20 +173,20 @@ namespace quickhull {
 			ptr.reset(nullptr);
 			return;
 		}
-		m_indexVectorPool.reclaim(ptr);
+		indexVectorPool_.reclaim(ptr);
 	}
 
 	template<typename T>
 	bool QuickHull<T>::addPointToFace(typename MeshBuilder<T>::Face& f, IndexType pointIndex) {
-		const T D = mathutils::getSignedDistanceToPlane(m_vertexData[ pointIndex ],f.m_P);
-		if (D>0 && D*D > m_epsilonSquared*f.m_P.m_sqrNLength) {
-			if (!f.m_pointsOnPositiveSide) {
-				f.m_pointsOnPositiveSide = std::move(getIndexVectorFromPool());
+		const T D = mathutils::getSignedDistanceToPlane(vertexData_[ pointIndex ],f.P_);
+		if (D>0 && D*D > epsilonSquared_*f.P_.sqrNLength_) {
+			if (!f.pointsOnPositiveSide_) {
+				f.pointsOnPositiveSide_ = std::move(getIndexVectorFromPool());
 			}
-			f.m_pointsOnPositiveSide->push_back( pointIndex );
-			if (D > f.m_mostDistantPointDist) {
-				f.m_mostDistantPointDist = D;
-				f.m_mostDistantPoint = pointIndex;
+			f.pointsOnPositiveSide_->push_back( pointIndex );
+			if (D > f.mostDistantPointDist_) {
+				f.mostDistantPointDist_ = D;
+				f.mostDistantPoint_ = pointIndex;
 			}
 			return true;
 		}

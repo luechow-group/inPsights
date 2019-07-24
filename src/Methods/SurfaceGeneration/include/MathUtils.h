@@ -11,15 +11,15 @@ namespace quickhull {
 		
 		template <typename T>
 		inline T getSquaredDistanceBetweenPointAndRay(const Eigen::Matrix<T,3,1>& p, const Ray<T>& r) {
-			const Eigen::Matrix<T,Eigen::Dynamic,1> s = p-r.m_S;
-			T t = s.dot(r.m_V);
-			return s.squaredNorm() - t*t*r.m_VInvLengthSquared;
+			const Eigen::Matrix<T,Eigen::Dynamic,1> s = p-r.S_;
+			T t = s.dot(r.V_);
+			return s.squaredNorm() - t*t*r.VInvLengthSquared_;
 		}
 		
 		// Note that the unit of distance returned is relative to plane's normal's length (divide by N.getNormalized() if needed to get the "real" distance).
 		template <typename T>
 		inline T getSignedDistanceToPlane(const Eigen::Matrix<T,3,1>& v, const Plane<T>& p) {
-			return p.m_N.dot(v) + p.m_D;
+			return p.N_.dot(v) + p.D_;
 		}
 
 		template <typename T>

@@ -104,7 +104,7 @@ TEST_F(AQuickHullTest, Sphere){
         auto pc = createSphere<FloatType>(1, i, vec3(0,0,0));
         auto hull = qh.getConvexHull(pc,true,false,eps);
         std::cout << i << ":" << pc.size() << " : " << hull.getVertexBuffer().size() << " at eps=" << eps << std::endl;
-        if (qh.getDiagnostics().m_failedHorizonEdges) {
+        if (qh.getDiagnostics().failedHorizonEdges_) {
             // This should not happen
             ASSERT_TRUE(false);
             break;
@@ -118,7 +118,7 @@ TEST_F(AQuickHullTest, Sphere){
             std::cout << "Epsilon to " << eps << std::endl;
         }
 
-        if (i == 200) { //Original value 500
+        if (i == 100) { //Original value 500
             break;
         }
     }
@@ -165,9 +165,9 @@ TEST_F(AQuickHullTest, HalfEdgeOutput) {
         pc.emplace_back(h&1?-2:2, h&2?-2:2, h&4?-2:2);
     }
     HalfEdgeMesh<FloatType, size_t> mesh = qh.getConvexHullAsMesh(&pc[0].x(), pc.size(), true);
-    ASSERT_EQ(mesh.m_faces.size(), 12);
-    ASSERT_EQ(mesh.m_halfEdges.size(), 36);
-    ASSERT_EQ(mesh.m_vertices.size(), 8);
+    ASSERT_EQ(mesh.faces_.size(), 12);
+    ASSERT_EQ(mesh.halfEdges_.size(), 36);
+    ASSERT_EQ(mesh.vertices_.size(), 8);
 }
 
 
@@ -315,7 +315,7 @@ TEST_F(AQuickHullTest, Test7) {
     // TODO ASSERT was missing here
 }
 
-TEST_F(AQuickHullTest, DISABLED_WavefrontObj) {
+TEST_F(AQuickHullTest, WavefrontObj) {
     QuickHull<FloatType> qh;
 
     auto pc = createSphere<FloatType>(1, 10);

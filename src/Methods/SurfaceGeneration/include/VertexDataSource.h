@@ -7,40 +7,40 @@ namespace quickhull {
 	
 	template<typename T>
 	class VertexDataSource {
-		const Eigen::Matrix<T,3,1>* m_ptr;
-		size_t m_count;
+		const Eigen::Matrix<T,3,1>* ptr_;
+		size_t count_;
 	
 	public:
 		VertexDataSource(const Eigen::Matrix<T,3,1>* ptr, size_t count)
-		: m_ptr(ptr), m_count(count) {
+		: ptr_(ptr), count_(count) {
 			
 		}
 		
 		VertexDataSource(const std::vector<Eigen::Matrix<T,3,1>>& vec)
-		: m_ptr(&vec[0]), m_count(vec.size()) {
+		: ptr_(&vec[0]), count_(vec.size()) {
 			
 		}
 		
-		VertexDataSource() : m_ptr(nullptr), m_count(0) {
+		VertexDataSource() : ptr_(nullptr), count_(0) {
 			
 		}
 		
 		VertexDataSource& operator=(const VertexDataSource& other) = default;
 		
 		size_t size() const {
-			return m_count;
+			return count_;
 		}
 		
 		const Eigen::Matrix<T,3,1>& operator[](size_t index) const {
-			return m_ptr[index];
+			return ptr_[index];
 		}
 		
 		const Eigen::Matrix<T,3,1>* begin() const {
-			return m_ptr;
+			return ptr_;
 		}
 		
 		const Eigen::Matrix<T,3,1>* end() const {
-			return m_ptr + m_count;
+			return ptr_ + count_;
 		}
 	};
 	

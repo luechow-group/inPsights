@@ -20,96 +20,96 @@ namespace quickhull {
 	class MeshBuilder {
 	public:
 		struct HalfEdge {
-			IndexType m_endVertex;
-			IndexType m_opp;
-			IndexType m_face;
-			IndexType m_next;
+			IndexType endVertex_;
+			IndexType opp_;
+			IndexType face_;
+			IndexType next_;
 			
 			void disable() {
-				m_endVertex = std::numeric_limits<IndexType>::max();
+				endVertex_ = std::numeric_limits<IndexType>::max();
 			}
 			
 			bool isDisabled() const {
-				return m_endVertex == std::numeric_limits<IndexType>::max();
+				return endVertex_ == std::numeric_limits<IndexType>::max();
 			}
 		};
 
 		struct Face {
-			IndexType m_he;
-			Plane<T> m_P;
-			T m_mostDistantPointDist;
-			IndexType m_mostDistantPoint;
-			size_t m_visibilityCheckedOnIteration;
-			std::uint8_t m_isVisibleFaceOnCurrentIteration : 1;
-			std::uint8_t m_inFaceStack : 1;
-			std::uint8_t m_horizonEdgesOnCurrentIteration : 3; // Bit for each half edge assigned to this face, each being 0 or 1 depending on whether the edge belongs to horizon edge
-			std::unique_ptr<std::vector<IndexType>> m_pointsOnPositiveSide;
+			IndexType he_;
+			Plane<T> P_;
+			T mostDistantPointDist_;
+			IndexType mostDistantPoint_;
+			size_t visibilityCheckedOnIteration_;
+			std::uint8_t isVisibleFaceOnCurrentIteration_ : 1;
+			std::uint8_t inFaceStack_ : 1;
+			std::uint8_t horizonEdgesOnCurrentIteration_ : 3; // Bit for each half edge assigned to this face, each being 0 or 1 depending on whether the edge belongs to horizon edge
+			std::unique_ptr<std::vector<IndexType>> pointsOnPositiveSide_;
 
-			Face() : m_he(std::numeric_limits<IndexType>::max()),
-					 m_mostDistantPointDist(0),
-					 m_mostDistantPoint(0),
-					 m_visibilityCheckedOnIteration(0),
-					 m_isVisibleFaceOnCurrentIteration(0),
-					 m_inFaceStack(0),
-					 m_horizonEdgesOnCurrentIteration(0)
+			Face() : he_(std::numeric_limits<IndexType>::max()),
+					 mostDistantPointDist_(0),
+					 mostDistantPoint_(0),
+					 visibilityCheckedOnIteration_(0),
+					 isVisibleFaceOnCurrentIteration_(0),
+					 inFaceStack_(0),
+					 horizonEdgesOnCurrentIteration_(0)
 			{
 
 			}
 			
 			void disable() {
-				m_he = std::numeric_limits<IndexType>::max();
+				he_ = std::numeric_limits<IndexType>::max();
 			}
 
 			bool isDisabled() const {
-				return m_he == std::numeric_limits<IndexType>::max();
+				return he_ == std::numeric_limits<IndexType>::max();
 			}
 		};
 
 		// Mesh data
-		std::vector<Face> m_faces;
-		std::vector<HalfEdge> m_halfEdges;
+		std::vector<Face> faces_;
+		std::vector<HalfEdge> halfEdges_;
 		
 		// When the mesh is modified and faces and half edges are removed from it, we do not actually remove them from the container vectors.
 		// Insted, they are marked as disabled which means that the indices can be reused when we need to add new faces and half edges to the mesh.
 		// We store the free indices in the following vectors.
-		std::vector<IndexType> m_disabledFaces,m_disabledHalfEdges;
+		std::vector<IndexType> disabledFaces_,disabledHalfEdges_;
 		
 		IndexType addFace() {
-			if (m_disabledFaces.size()) {
-				IndexType index = m_disabledFaces.back();
-				auto& f = m_faces[index];
+			if (disabledFaces_.size()) {
+				IndexType index = disabledFaces_.back();
+				auto& f = faces_[index];
 				assert(f.isDisabled());
-				assert(!f.m_pointsOnPositiveSide);
-				f.m_mostDistantPointDist = 0;
-				m_disabledFaces.pop_back();
+				assert(!f.pointsOnPositiveSide_);
+				f.mostDistantPointDist_ = 0;
+				disabledFaces_.pop_back();
 				return index;
 			}
-			m_faces.emplace_back();
-			return m_faces.size()-1;
+			faces_.emplace_back();
+			return faces_.size()-1;
 		}
 
 		IndexType addHalfEdge()	{
-			if (m_disabledHalfEdges.size()) {
-				const IndexType index = m_disabledHalfEdges.back();
-				m_disabledHalfEdges.pop_back();
+			if (disabledHalfEdges_.size()) {
+				const IndexType index = disabledHalfEdges_.back();
+				disabledHalfEdges_.pop_back();
 				return index;
 			}
-			m_halfEdges.emplace_back();
-			return m_halfEdges.size()-1;
+			halfEdges_.emplace_back();
+			return halfEdges_.size()-1;
 		}
 
 		// Mark a face as disabled and return a pointer to the points that were on the positive of it.
 		std::unique_ptr<std::vector<IndexType>> disableFace(IndexType faceIndex) {
-			auto& f = m_faces[faceIndex];
+			auto& f = faces_[faceIndex];
 			f.disable();
-			m_disabledFaces.push_back(faceIndex);
-			return std::move(f.m_pointsOnPositiveSide);
+			disabledFaces_.push_back(faceIndex);
+			return std::move(f.pointsOnPositiveSide_);
 		}
 
 		void disableHalfEdge(IndexType heIndex) {
-			auto& he = m_halfEdges[heIndex];
+			auto& he = halfEdges_[heIndex];
 			he.disable();
-			m_disabledHalfEdges.push_back(heIndex);
+			disabledHalfEdges_.push_back(heIndex);
 		}
 
 		MeshBuilder() = default;
@@ -118,131 +118,126 @@ namespace quickhull {
 		MeshBuilder(IndexType a, IndexType b, IndexType c, IndexType d) {
 			// Create halfedges
 			HalfEdge AB;
-			AB.m_endVertex = b;
-			AB.m_opp = 6;
-			AB.m_face = 0;
-			AB.m_next = 1;
-			m_halfEdges.push_back(AB);
+			AB.endVertex_ = b;
+			AB.opp_ = 6;
+			AB.face_ = 0;
+			AB.next_ = 1;
+			halfEdges_.push_back(AB);
 
 			HalfEdge BC;
-			BC.m_endVertex = c;
-			BC.m_opp = 9;
-			BC.m_face = 0;
-			BC.m_next = 2;
-			m_halfEdges.push_back(BC);
+			BC.endVertex_ = c;
+			BC.opp_ = 9;
+			BC.face_ = 0;
+			BC.next_ = 2;
+			halfEdges_.push_back(BC);
 
 			HalfEdge CA;
-			CA.m_endVertex = a;
-			CA.m_opp = 3;
-			CA.m_face = 0;
-			CA.m_next = 0;
-			m_halfEdges.push_back(CA);
+			CA.endVertex_ = a;
+			CA.opp_ = 3;
+			CA.face_ = 0;
+			CA.next_ = 0;
+			halfEdges_.push_back(CA);
 
 			HalfEdge AC;
-			AC.m_endVertex = c;
-			AC.m_opp = 2;
-			AC.m_face = 1;
-			AC.m_next = 4;
-			m_halfEdges.push_back(AC);
+			AC.endVertex_ = c;
+			AC.opp_ = 2;
+			AC.face_ = 1;
+			AC.next_ = 4;
+			halfEdges_.push_back(AC);
 
 			HalfEdge CD;
-			CD.m_endVertex = d;
-			CD.m_opp = 11;
-			CD.m_face = 1;
-			CD.m_next = 5;
-			m_halfEdges.push_back(CD);
+			CD.endVertex_ = d;
+			CD.opp_ = 11;
+			CD.face_ = 1;
+			CD.next_ = 5;
+			halfEdges_.push_back(CD);
 
 			HalfEdge DA;
-			DA.m_endVertex = a;
-			DA.m_opp = 7;
-			DA.m_face = 1;
-			DA.m_next = 3;
-			m_halfEdges.push_back(DA);
+			DA.endVertex_ = a;
+			DA.opp_ = 7;
+			DA.face_ = 1;
+			DA.next_ = 3;
+			halfEdges_.push_back(DA);
 
 			HalfEdge BA;
-			BA.m_endVertex = a;
-			BA.m_opp = 0;
-			BA.m_face = 2;
-			BA.m_next = 7;
-			m_halfEdges.push_back(BA);
+			BA.endVertex_ = a;
+			BA.opp_ = 0;
+			BA.face_ = 2;
+			BA.next_ = 7;
+			halfEdges_.push_back(BA);
 
 			HalfEdge AD;
-			AD.m_endVertex = d;
-			AD.m_opp = 5;
-			AD.m_face = 2;
-			AD.m_next = 8;
-			m_halfEdges.push_back(AD);
+			AD.endVertex_ = d;
+			AD.opp_ = 5;
+			AD.face_ = 2;
+			AD.next_ = 8;
+			halfEdges_.push_back(AD);
 
 			HalfEdge DB;
-			DB.m_endVertex = b;
-			DB.m_opp = 10;
-			DB.m_face = 2;
-			DB.m_next = 6;
-			m_halfEdges.push_back(DB);
+			DB.endVertex_ = b;
+			DB.opp_ = 10;
+			DB.face_ = 2;
+			DB.next_ = 6;
+			halfEdges_.push_back(DB);
 
 			HalfEdge CB;
-			CB.m_endVertex = b;
-			CB.m_opp = 1;
-			CB.m_face = 3;
-			CB.m_next = 10;
-			m_halfEdges.push_back(CB);
+			CB.endVertex_ = b;
+			CB.opp_ = 1;
+			CB.face_ = 3;
+			CB.next_ = 10;
+			halfEdges_.push_back(CB);
 
 			HalfEdge BD;
-			BD.m_endVertex = d;
-			BD.m_opp = 8;
-			BD.m_face = 3;
-			BD.m_next = 11;
-			m_halfEdges.push_back(BD);
+			BD.endVertex_ = d;
+			BD.opp_ = 8;
+			BD.face_ = 3;
+			BD.next_ = 11;
+			halfEdges_.push_back(BD);
 
 			HalfEdge DC;
-			DC.m_endVertex = c;
-			DC.m_opp = 4;
-			DC.m_face = 3;
-			DC.m_next = 9;
-			m_halfEdges.push_back(DC);
+			DC.endVertex_ = c;
+			DC.opp_ = 4;
+			DC.face_ = 3;
+			DC.next_ = 9;
+			halfEdges_.push_back(DC);
 
 			// Create faces
 			Face ABC;
-			ABC.m_he = 0;
-			m_faces.push_back(std::move(ABC));
+			ABC.he_ = 0;
+			faces_.push_back(std::move(ABC));
 
 			Face ACD;
-			ACD.m_he = 3;
-			m_faces.push_back(std::move(ACD));
+			ACD.he_ = 3;
+			faces_.push_back(std::move(ACD));
 
 			Face BAD;
-			BAD.m_he = 6;
-			m_faces.push_back(std::move(BAD));
+			BAD.he_ = 6;
+			faces_.push_back(std::move(BAD));
 
 			Face CBD;
-			CBD.m_he = 9;
-			m_faces.push_back(std::move(CBD));
+			CBD.he_ = 9;
+			faces_.push_back(std::move(CBD));
 		}
 
 		std::array<IndexType,3> getVertexIndicesOfFace(const Face& f) const {
 			std::array<IndexType,3> v;
-			const HalfEdge* he = &m_halfEdges[f.m_he];
-			v[0] = he->m_endVertex;
-			he = &m_halfEdges[he->m_next];
-			v[1] = he->m_endVertex;
-			he = &m_halfEdges[he->m_next];
-			v[2] = he->m_endVertex;
+			const HalfEdge* he = &halfEdges_[f.he_];
+			v[0] = he->endVertex_;
+			he = &halfEdges_[he->next_];
+			v[1] = he->endVertex_;
+			he = &halfEdges_[he->next_];
+			v[2] = he->endVertex_;
 			return v;
 		}
 
 		std::array<IndexType,2> getVertexIndicesOfHalfEdge(const HalfEdge& he) const {
-			return {m_halfEdges[he.m_opp].m_endVertex,he.m_endVertex};
+			return {halfEdges_[he.opp_].endVertex_,he.endVertex_};
 		}
 
 		std::array<IndexType,3> getHalfEdgeIndicesOfFace(const Face& f) const {
-			return {f.m_he,m_halfEdges[f.m_he].m_next,m_halfEdges[m_halfEdges[f.m_he].m_next].m_next};
+			return {f.he_,halfEdges_[f.he_].next_,halfEdges_[halfEdges_[f.he_].next_].next_};
 		}
 	};
-	
-
-
 }
-
-
 
 #endif 

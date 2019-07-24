@@ -10,19 +10,19 @@ namespace quickhull {
 	public:
 		
 		struct HalfEdge {
-			IndexType m_endVertex;
-			IndexType m_opp;
-			IndexType m_face;
-			IndexType m_next;
+			IndexType endVertex_;
+			IndexType opp_;
+			IndexType face_;
+			IndexType next_;
 		};
 		
 		struct Face {
-			IndexType m_halfEdgeIndex; // Index of one of the half edges of this face
+			IndexType halfEdgeIndex_; // Index of one of the half edges of this face
 		};
 		
-		std::vector<Eigen::Matrix<FloatType,Eigen::Dynamic,1>> m_vertices;
-		std::vector<Face> m_faces;
-		std::vector<HalfEdge> m_halfEdges;
+		std::vector<Eigen::Matrix<FloatType,Eigen::Dynamic,1>> vertices_;
+		std::vector<Face> faces_;
+		std::vector<HalfEdge> halfEdges_;
 		
 		HalfEdgeMesh(const MeshBuilder<FloatType>& builderObject, const VertexDataSource<FloatType>& vertexData )
 		{
@@ -31,17 +31,17 @@ namespace quickhull {
 			std::unordered_map<IndexType, IndexType> vertexMapping;
 			
 			size_t i=0;
-			for (const auto& face : builderObject.m_faces) {
+			for (const auto& face : builderObject.faces_) {
 				if (!face.isDisabled()) {
-					m_faces.push_back({static_cast<IndexType>(face.m_he)});
-					faceMapping[i] = m_faces.size()-1;
+					faces_.push_back({static_cast<IndexType>(face.he_)});
+					faceMapping[i] = faces_.size()-1;
 					
 					const auto heIndices = builderObject.getHalfEdgeIndicesOfFace(face);
 					for (const auto heIndex : heIndices) {
-						const IndexType vertexIndex = builderObject.m_halfEdges[heIndex].m_endVertex;
+						const IndexType vertexIndex = builderObject.halfEdges_[heIndex].endVertex_;
 						if (vertexMapping.count(vertexIndex)==0) {
-							m_vertices.push_back(vertexData[vertexIndex]);
-							vertexMapping[vertexIndex] = m_vertices.size()-1;
+							vertices_.push_back(vertexData[vertexIndex]);
+							vertexMapping[vertexIndex] = vertices_.size()-1;
 						}
 					}
 				}
@@ -49,24 +49,28 @@ namespace quickhull {
 			}
 			
 			i=0;
-			for (const auto& halfEdge : builderObject.m_halfEdges) {
+			for (const auto& halfEdge : builderObject.halfEdges_) {
 				if (!halfEdge.isDisabled()) {
-					m_halfEdges.push_back({static_cast<IndexType>(halfEdge.m_endVertex),static_cast<IndexType>(halfEdge.m_opp),static_cast<IndexType>(halfEdge.m_face),static_cast<IndexType>(halfEdge.m_next)});
-					halfEdgeMapping[i] = m_halfEdges.size()-1;
+					halfEdges_.push_back({
+					    static_cast<IndexType>(halfEdge.endVertex_),
+					    static_cast<IndexType>(halfEdge.opp_),
+					    static_cast<IndexType>(halfEdge.face_),
+					    static_cast<IndexType>(halfEdge.next_)});
+					halfEdgeMapping[i] = halfEdges_.size()-1;
 				}
 				i++;
 			}
 			
-			for (auto& face : m_faces) {
-				assert(halfEdgeMapping.count(face.m_halfEdgeIndex) == 1);
-				face.m_halfEdgeIndex = halfEdgeMapping[face.m_halfEdgeIndex];
+			for (auto& face : faces_) {
+				assert(halfEdgeMapping.count(face.halfEdgeIndex_) == 1);
+				face.halfEdgeIndex_ = halfEdgeMapping[face.halfEdgeIndex_];
 			}
 			
-			for (auto& he : m_halfEdges) {
-				he.m_face = faceMapping[he.m_face];
-				he.m_opp = halfEdgeMapping[he.m_opp];
-				he.m_next = halfEdgeMapping[he.m_next];
-				he.m_endVertex = vertexMapping[he.m_endVertex];
+			for (auto& he : halfEdges_) {
+				he.face_ = faceMapping[he.face_];
+				he.opp_ = halfEdgeMapping[he.opp_];
+				he.next_ = halfEdgeMapping[he.next_];
+				he.endVertex_ = vertexMapping[he.endVertex_];
 			}
 		}
 		
