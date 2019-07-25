@@ -27,7 +27,10 @@ namespace Elements {
         static unsigned Z(ElementType e);
 
         /* Number of valence electrons */
-        static int valElectrons(ElementType e);
+        static int valenceElectrons(ElementType e);
+        /* Number of inner shell electrons */
+        static int innerShellElectrons(ElementType e);
+        
         /* Number of s-valence electrons */
         static int sElectrons(ElementType e);
         /* Number of p-valence electrons */

@@ -14,7 +14,7 @@ namespace NearestElectrons {
         // returns the core electron indices of a given nucleus
         const Elements::ElementType &elementType = nucleus.type();
         const long coreElectronsNumber =
-                Elements::ElementInfo::Z(elementType) - Elements::ElementInfo::valElectrons(elementType);
+                Elements::ElementInfo::Z(elementType) - Elements::ElementInfo::valenceElectrons(elementType);
         return getNearestElectronsIndices(electrons, nucleus.position(), coreElectronsNumber);
     };
 
