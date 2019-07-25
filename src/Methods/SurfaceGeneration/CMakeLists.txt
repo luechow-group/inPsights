@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.11)
 
-project(VoxelProcessing CXX)
+project(SurfaceGeneration CXX)
 
 set ( PROJECT_FOLDER_NAME ${PROJECT_NAME} )
 set ( PROJECT_PATH ${PROJECT_NAME})
@@ -14,6 +14,17 @@ set(HEADER_FILES
         include/VoxelCube.h
         include/SurfaceDataGenerator.h
         include/SurfaceData.h
+
+        include/VertexDataSource.h
+        include/Types.h
+        include/Ray.h
+        include/QuickHull.h
+        include/Pool.h
+        include/Plane.h
+        include/Mesh.h
+        include/MathUtils.h
+        include/HalfEdgeMesh.h
+        include/ConvexHull.h
         )
 
 set(SOURCE_FILES
@@ -23,6 +34,8 @@ set(SOURCE_FILES
         source/VoxelCube.cpp
         source/SurfaceDataGenerator.cpp
         source/SurfaceData.cpp
+
+        source/QuickHull.cpp
         )
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES})

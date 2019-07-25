@@ -53,6 +53,7 @@ set(HEADER_FILES
         include/Surface.h
         include/Arrow.h
         include/CartesianAxes.h
+        include/ColorPalette.h
         )
 
 set(SOURCE_FILES
@@ -94,7 +95,7 @@ target_include_directories(${PROJECT_NAME}
 target_link_libraries(${PROJECT_NAME}
         BaseLib # includes eigen
         MaximaProcessing
-        VoxelProcessing # includes dualmc
+        SurfaceGeneration # includes dualmc
         Qt5::Core
         Qt5::Gui
         Qt5::Widgets

@@ -28,11 +28,8 @@ public:
 
     //TODO make base MoleculeWidget and InPsightsMoleculeWidget child
 
-    void drawSurface(const SurfaceData& data, const QColor& color = Qt::lightGray, float alpha = 0.25){
-        new Surface(moleculeEntity_,data, color, alpha);
-    };
 
-    void drawAxes(bool drawQ = true);;
+    void drawAxes(bool drawQ = true);
     void drawAtoms(bool drawQ = true);
     void drawBonds(bool drawQ = true);
     void drawSpinConnections(bool drawQ = true);
@@ -47,6 +44,9 @@ public:
 
     void addSeds(int clusterId, const std::vector<ClusterData> &clusterData, double includedPercentage);
     void removeSeds(int clusterId);
+
+    void addMaximaHulls(int clusterId, const std::vector<ClusterData> &clusterData);
+    void removeMaximaHulls(int clusterId);
 
 public Q_SLOTS:
 
@@ -70,7 +70,7 @@ private:
     CartesianAxes *cartesianAxes_;
 
 public:
-    std::map<int, std::vector<Surface*>> activeSedsMap_;
+    std::map<int, std::vector<Surface*>> activeSedsMap_, activeMaximaHullsMap_;
     std::map<int, std::map<int,ElectronsVector3D*>> activeElectronsVectorsMap_;
 
 };
