@@ -26,7 +26,7 @@ public:
     }
 
     ParticlesVector(const PositionsVector &positionsVector)
-            : AbstractVector(positionsVector.numberOfEntities()),//ISliceable(positionsVector.numberOfEntities()),
+            : AbstractVector(positionsVector.numberOfEntities()),
               positionsVector_(positionsVector),
               typesVector_(numberOfEntities()),
               linkedParticles_(0) {
@@ -35,7 +35,7 @@ public:
 
     ParticlesVector(const PositionsVector &positionsVector,
                     const TypesVector<Type> &typesVector)
-            : AbstractVector(positionsVector.numberOfEntities()),//ISliceable(positionsVector.numberOfEntities()),
+            : AbstractVector(positionsVector.numberOfEntities()),
               positionsVector_(positionsVector),
               typesVector_(typesVector),
               linkedParticles_(0) {
@@ -135,7 +135,6 @@ public:
 
 
     friend std::ostream& operator<<(std::ostream& os, const ParticlesVector<Type> & pv){
-        //TODO print only slice?
         for (long i = 0; i < pv.numberOfEntities(); i++) {
             os << ToString::longToString(i + 1) << " " << pv[i] << std::endl;
         }
