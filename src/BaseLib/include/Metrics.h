@@ -12,8 +12,7 @@
 namespace Metrics{
 
     template <int Norm = 2>
-    double distance(const Eigen::Vector3d& position1,
-            const Eigen::Vector3d& position2){
+    double distance(const Eigen::Vector3d& position1, const Eigen::Vector3d& position2){
         return (position1-position2).lpNorm<Norm>();
     }
 
@@ -28,11 +27,12 @@ namespace Metrics{
     template <int Norm = 2>
     double minimalDistance(const Eigen::Vector3d &position,
                            const std::vector<Eigen::Vector3d> &positions){
-        double minDistance = -1.0;
+        double minDistance = (position-positions.front()).lpNorm<Norm>();
         double distance;
-        for (auto position2 : positions){
-            distance = (position-position2).lpNorm<Norm>();
-            if (distance < minDistance or minDistance < 0){
+
+        for(auto positionIt = std::next(positions.begin()); positionIt != positions.end(); ++positionIt) {
+            distance = (position-*positionIt).lpNorm<Norm>();
+            if(distance < minDistance) {
                 minDistance = distance;
             }
         }
@@ -43,7 +43,7 @@ namespace Metrics{
     double averageDistance(const Eigen::Vector3d &position,
                            const std::vector<Eigen::Vector3d> &positions){
         double avgDistance = 0.0;
-        for (auto position2 : positions){
+        for (const auto& position2 : positions){
             avgDistance += (position-position2).lpNorm<Norm>();
         }
         return avgDistance/positions.size();
