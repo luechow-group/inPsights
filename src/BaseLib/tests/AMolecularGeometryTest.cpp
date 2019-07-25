@@ -63,5 +63,5 @@ TEST_F(AMolecularGeometryTest, CoreElectrons) {
 
 TEST_F(AMolecularGeometryTest, ValenceElectrons) {
     double thresh = 0.1;
-    ASSERT_THAT(mol.valenceElectronsIndices(thresh), ElementsAre(2));
+    ASSERT_THAT(mol.nonCoreElectronsIndices(thresh), ElementsAre(2));
 }

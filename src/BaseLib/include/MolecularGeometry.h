@@ -34,7 +34,7 @@ public:
 
     std::list<long> coreElectronsIndices(double threshold = 0.01) const;
 
-    std::list<long> valenceElectronsIndices(double threshold = 0.01) const;
+    std::list<long> nonCoreElectronsIndices(double threshold = 0.01) const;
 
 
     friend std::ostream& operator<<(std::ostream &os, const MolecularGeometry &mol) {

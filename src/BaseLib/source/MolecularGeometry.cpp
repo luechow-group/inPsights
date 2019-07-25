@@ -95,7 +95,7 @@ std::list<long> MolecularGeometry::coreElectronsIndices(double threshold) const 
     return indices;
 }
 
-std::list<long> MolecularGeometry::valenceElectronsIndices(double threshold) const {
+std::list<long> MolecularGeometry::nonCoreElectronsIndices(double threshold) const {
     std::list<long> diff{}, indices = std::list<long>(size_t(electrons().numberOfEntities()));
     std::iota(indices.begin(), indices.end(), 0);
 
@@ -104,7 +104,6 @@ std::list<long> MolecularGeometry::valenceElectronsIndices(double threshold) con
                         std::inserter(diff, diff.begin()));
     return diff;
 }
-
 
 namespace YAML {
     Node convert<MolecularGeometry>::encode(const MolecularGeometry &rhs) {
