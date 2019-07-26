@@ -82,10 +82,10 @@ public:
     ParticlesVector<Type> getFirstElements(long i) {
         assert(i >= 0);
 
-        ParticlesVector newVector;
-        for (long index = 0; index < i; index++) {
-            newVector.append(Particle<Type>{typesVector_[index],positionsVector_[index]});
-        }
+        ParticlesVector newVector(
+                PositionsVector(positionsVector_.asEigenVector().head(3*i)),
+                TypesVector<Type>(typesVector_.asEigenVector().head(i))
+        );
         return newVector;
     }
 
