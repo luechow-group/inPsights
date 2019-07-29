@@ -23,7 +23,6 @@ set(HEADER_FILES
 
 set(SOURCE_FILES
         source/QuaternionFit.cpp
-        source/SimpleSorter.cpp
         source/BestMatch.cpp
         source/GraphAnalysis.cpp
         source/SpinPairClassification.cpp

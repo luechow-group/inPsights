@@ -15,13 +15,6 @@ target_link_libraries(MaximaProcessing.exe
         MaximaProcessing
         )
 
-add_executable(StructuralSimilarity.exe StructuralSimilarityExec.cpp)
-target_link_libraries(StructuralSimilarity.exe
-        BaseLib
-        StructuralSimilarity
-        AmolqcFileImport
-        )
-
 if (DEFINED BUILD_GUI AND ON)
     add_executable(CustomMesh CustomMesh.cpp)
     target_link_libraries(CustomMesh
