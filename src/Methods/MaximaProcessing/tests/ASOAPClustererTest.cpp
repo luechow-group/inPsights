@@ -102,8 +102,8 @@ TEST_F(ASOAPClustererTest, TwoClusters) {
     SOAPClusterer sOAPClusterer(atoms, samples);
 
     General::settings.mode = General::Mode::chemical;
-    SOAPClusterer::settings.soapSimilarityThreshold = 1.0;
-    SOAPClusterer::settings.distanceToleranceRadius = 0.1;
+    SOAPClusterer::settings.similarityThreshold = 1.0;
+    SOAPClusterer::settings.toleranceRadius = 0.1;
     Angular::settings.lmax = 3;
     Radial::settings.nmax = 3;
 
@@ -134,8 +134,8 @@ TEST_F(ASOAPClustererTest, TwoClusters_Alchemical) {
 
     General::settings.mode = General::Mode::alchemical;
     General::settings.pairSimilarities[{int(Spin::alpha), int(Spin::beta)}] = 1.0;
-    SOAPClusterer::settings.soapSimilarityThreshold = 1.0;
-    SOAPClusterer::settings.distanceToleranceRadius = 0.1;
+    SOAPClusterer::settings.similarityThreshold = 1.0;
+    SOAPClusterer::settings.toleranceRadius = 0.1;
     Angular::settings.lmax = 3;
     Radial::settings.nmax = 3;
 

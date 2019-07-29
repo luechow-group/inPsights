@@ -15,24 +15,24 @@ using namespace SOAP;
 namespace Settings {
     SOAPClusterer::SOAPClusterer()
             : ISettings(VARNAME(SOAPClusterer)) {
-        soapSimilarityThreshold.onChange_.connect(
+        similarityThreshold.onChange_.connect(
                 [&](double value) {
                     if(value <= 0 || value > 1)
                         throw std::invalid_argument(
-                                "The " + soapSimilarityThreshold.name() + " with " + std::to_string(soapSimilarityThreshold())
+                                "The " + similarityThreshold.name() + " with " + std::to_string(similarityThreshold())
                                 + " must be within the range (0,1].");
                 });
     }
 
     SOAPClusterer::SOAPClusterer(const YAML::Node &node)
             : SOAPClusterer() {
-        doubleProperty::decode(node, soapSimilarityThreshold);
-        doubleProperty::decode(node, distanceToleranceRadius);
+        doubleProperty::decode(node, similarityThreshold);
+        doubleProperty::decode(node, toleranceRadius);
     }
 
     void SOAPClusterer::appendToNode(YAML::Node &node) const {
-        node[className][soapSimilarityThreshold.name()] = soapSimilarityThreshold();
-        node[className][distanceToleranceRadius.name()] = distanceToleranceRadius();
+        node[className][similarityThreshold.name()] = similarityThreshold();
+        node[className][toleranceRadius.name()] = toleranceRadius();
     }
 }
 YAML_SETTINGS_DEFINITION(Settings::SOAPClusterer)
@@ -63,8 +63,8 @@ void SOAPClusterer::cluster(Group& group){
         spdlog::info("calculated spectrum {}", std::distance(group.begin(), it));
     }
 
-    auto similarityThreshold = settings.soapSimilarityThreshold();
-    auto toleranceRadius = settings.distanceToleranceRadius();
+    auto similarityThreshold = settings.similarityThreshold();
+    auto toleranceRadius = settings.toleranceRadius();
 
     Group supergroup({{*group.begin()}});
 

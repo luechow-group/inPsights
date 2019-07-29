@@ -20,7 +20,7 @@ public:
 
     void SetUp() override {
         spdlog::set_level(spdlog::level::off);
-        IdentityClusterer::settings.identityRadius = 1e-4; // prevent assert
+        IdentityClusterer::settings.radius = 1e-4; // prevent assert
 
         ekin.resize(2);
         ekin[0] = 0;
@@ -51,8 +51,8 @@ public:
 
 TEST_F(ADistanceClustererTest, OneList) {
     DistanceClusterer globalSimilaritySorter(samples);
-    DistanceClusterer::settings.similarityRadius = 1;
-    DistanceClusterer::settings.similarityValueIncrement = 1;
+    DistanceClusterer::settings.radius = 1;
+    DistanceClusterer::settings.valueIncrement = 1;
     globalSimilaritySorter.cluster(maxima);
 
     ASSERT_EQ(maxima.size(), 1);
@@ -84,8 +84,8 @@ TEST_F(ADistanceClustererTest, OneList) {
 
 TEST_F(ADistanceClustererTest, TwoLists) {
     DistanceClusterer globalSimilaritySorter(samples);
-    DistanceClusterer::settings.similarityRadius = 0.1;
-    DistanceClusterer::settings.similarityValueIncrement = 1;
+    DistanceClusterer::settings.radius = 0.1;
+    DistanceClusterer::settings.valueIncrement = 1;
     globalSimilaritySorter.cluster(maxima);
 
     ASSERT_EQ(maxima.size(), 2);
@@ -121,8 +121,8 @@ TEST_F(ADistanceClustererTest, TwoLists) {
 
 TEST_F(ADistanceClustererTest, DISABLED_TwoListsIncrementBorderCase) {
     DistanceClusterer globalSimilaritySorter(samples);
-    DistanceClusterer::settings.similarityRadius = 0.02;
-    DistanceClusterer::settings.similarityValueIncrement = 1;
+    DistanceClusterer::settings.radius = 0.02;
+    DistanceClusterer::settings.valueIncrement = 1;
     globalSimilaritySorter.cluster(maxima);
 
     ASSERT_EQ(maxima.size(), 4);

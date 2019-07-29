@@ -18,10 +18,10 @@ namespace Settings {
                     if (not (value == "minimum" || value == "average"))
                         throw std::invalid_argument("The distanceMode has to be minimum or average.");
                 });
-        similarityRadius.onChange_.connect(
+        radius.onChange_.connect(
                 [&](double value) {
                     if (not (value > 0.0))
-                        throw std::invalid_argument("The similarityRadius has to be larger than zero.");
+                        throw std::invalid_argument("The radius has to be larger than zero.");
                 });
         maximalDistance.onChange_.connect(
                 [&](double value) {
@@ -37,7 +37,7 @@ namespace Settings {
 
     ReferencePositionsClusterer::ReferencePositionsClusterer(const YAML::Node &node)
             : ReferencePositionsClusterer() {
-        doubleProperty::decode(node, similarityRadius);
+        doubleProperty::decode(node, radius);
         doubleProperty::decode(node, maximalDistance);
         longProperty::decode(node, maximalCount);
         stringProperty::decode(node, distanceMode);
@@ -46,7 +46,7 @@ namespace Settings {
     };
 
     void ReferencePositionsClusterer::appendToNode(YAML::Node &node) const {
-        node[className][similarityRadius.name()] = similarityRadius();
+        node[className][radius.name()] = radius();
         node[className][maximalDistance.name()] = maximalDistance();
         node[className][maximalCount.name()] = maximalCount();
         node[className][distanceMode.name()] = distanceMode();
@@ -75,7 +75,7 @@ ReferencePositionsClusterer::ReferencePositionsClusterer(std::vector<Sample> &sa
 void ReferencePositionsClusterer::cluster(Group &group) {
     assert(!group.empty() && "The group cannot be empty.");
 
-    auto similarityRadius = settings.similarityRadius();
+    auto similarityRadius = settings.radius();
     long electronsNumber = group.representative()->maximum().numberOfEntities();
 
     // sorts 'group' by the value ( -ln(|\Psi|^2) )

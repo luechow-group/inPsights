@@ -16,7 +16,7 @@ class AIdentityClustererTest : public ::testing::Test {
 public:
     void SetUp() override {
         spdlog::set_level(spdlog::level::off);
-        DistanceClusterer::settings.similarityRadius = 10; // prevent assert
+        DistanceClusterer::settings.radius = 10; // prevent assert
     }
 
     std::pair<Group, std::vector<Sample>> prepareRandomTripletMaxima(std::default_random_engine &rng) {
@@ -89,8 +89,8 @@ public:
 };
 
 TEST_F(AIdentityClustererTest, OneListTriplet) {
-    IdentityClusterer::settings.identityRadius = 2;
-    IdentityClusterer::settings.identityValueIncrement = 1;
+    IdentityClusterer::settings.radius = 2;
+    IdentityClusterer::settings.valueIncrement = 1;
 
     auto randomSeed = static_cast<unsigned long>(std::clock());
     std::cout << "random seed: " << randomSeed << std::endl;
@@ -107,8 +107,8 @@ TEST_F(AIdentityClustererTest, OneListTriplet) {
 }
 
 TEST_F(AIdentityClustererTest, OneListSinglet) {
-    IdentityClusterer::settings.identityRadius = 2;
-    IdentityClusterer::settings.identityValueIncrement = 1;
+    IdentityClusterer::settings.radius = 2;
+    IdentityClusterer::settings.valueIncrement = 1;
 
     auto randomSeed = static_cast<unsigned long>(std::clock());
     std::cout << "random seed: " << randomSeed << std::endl;
@@ -125,8 +125,8 @@ TEST_F(AIdentityClustererTest, OneListSinglet) {
 }
 
 TEST_F(AIdentityClustererTest, TwoListsTriplet) {
-    IdentityClusterer::settings.identityRadius = 1;
-    IdentityClusterer::settings.identityValueIncrement = 0.05;
+    IdentityClusterer::settings.radius = 1;
+    IdentityClusterer::settings.valueIncrement = 0.05;
 
     auto randomSeed = static_cast<unsigned long>(std::clock());
     std::cout << "random seed: " << randomSeed << std::endl;
@@ -144,8 +144,8 @@ TEST_F(AIdentityClustererTest, TwoListsTriplet) {
 }
 
 TEST_F(AIdentityClustererTest, TwoListsSinglet) {
-    IdentityClusterer::settings.identityRadius = 1;
-    IdentityClusterer::settings.identityValueIncrement = 0.05;
+    IdentityClusterer::settings.radius = 1;
+    IdentityClusterer::settings.valueIncrement = 0.05;
 
     auto randomSeed = static_cast<unsigned long>(std::clock());
     std::cout << "random seed: " << randomSeed << std::endl;
@@ -163,8 +163,8 @@ TEST_F(AIdentityClustererTest, TwoListsSinglet) {
 }
 
 TEST_F(AIdentityClustererTest, TwoListsIncrementBorderCaseTriplet) {
-    IdentityClusterer::settings.identityRadius = 1;
-    IdentityClusterer::settings.identityValueIncrement = 0.1;
+    IdentityClusterer::settings.radius = 1;
+    IdentityClusterer::settings.valueIncrement = 0.1;
 
     auto randomSeed = static_cast<unsigned long>(std::clock());
     std::cout << "random seed: " << randomSeed << std::endl;
@@ -182,8 +182,8 @@ TEST_F(AIdentityClustererTest, TwoListsIncrementBorderCaseTriplet) {
 }
 
 TEST_F(AIdentityClustererTest, TwoListsIncrementBorderCaseSinglet) {
-    IdentityClusterer::settings.identityRadius = 1;
-    IdentityClusterer::settings.identityValueIncrement = 0.1;
+    IdentityClusterer::settings.radius = 1;
+    IdentityClusterer::settings.valueIncrement = 0.1;
 
     auto randomSeed = static_cast<unsigned long>(std::clock());
     std::cout << "random seed: " << randomSeed << std::endl;

@@ -12,8 +12,8 @@
 namespace Settings {
     class DistanceClusterer : public ISettings {
     public:
-        Property<double> similarityRadius = {0.1, VARNAME(similarityRadius)};
-        Property<double> similarityValueIncrement = {1e-5, VARNAME(similarityValueIncrement)};
+        Property<double> radius = {0.1, VARNAME(radius)};
+        Property<double> valueIncrement = {1e-5, VARNAME(valueIncrement)};
 
         DistanceClusterer();
         explicit DistanceClusterer(const YAML::Node &node);

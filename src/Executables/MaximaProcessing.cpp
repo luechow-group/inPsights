@@ -153,8 +153,8 @@ int main(int argc, char *argv[]) {
                 settings = Settings::IdentityClusterer(node.second);
 
                 IdentityClusterer identityClusterer(samples);
-                if (!node.second[settings.identityValueIncrement.name()])
-                    settings.identityValueIncrement = valueStandardError * 1e-4;
+                if (!node.second[settings.valueIncrement.name()])
+                    settings.valueIncrement = valueStandardError * 1e-4;
 
                 identityClusterer.cluster(maxima);
 
@@ -167,8 +167,8 @@ int main(int argc, char *argv[]) {
                 settings = Settings::DistanceClusterer(node.second);
 
                 DistanceClusterer distanceClusterer(samples);
-                if (!node.second[settings.similarityValueIncrement.name()])
-                    settings.similarityValueIncrement = valueStandardError * 1e-2;
+                if (!node.second[settings.valueIncrement.name()])
+                    settings.valueIncrement = valueStandardError * 1e-2;
                 distanceClusterer.cluster(maxima);
 
                 settings.appendToNode(usedClusteringSettings);

@@ -12,24 +12,24 @@
 namespace Settings {
     DensityBasedClusterer::DensityBasedClusterer()
     : ISettings(VARNAME(DensityBasedClusterer)) {
-        clusterRadius.onChange_.connect(
+        radius.onChange_.connect(
                 [&](double value) {
-                    if(value < ::DistanceClusterer::settings.similarityRadius())
+                    if(value < ::DistanceClusterer::settings.radius())
                         throw std::invalid_argument(
-                                "The " + clusterRadius.name() + " with " + std::to_string(clusterRadius())
-                                + " is smaller than the "+ ::DistanceClusterer::settings.similarityRadius.name()
+                                "The " + radius.name() + " with " + std::to_string(radius())
+                                + " is smaller than the " + ::DistanceClusterer::settings.radius.name()
                                 + " with "
-                                + std::to_string(::DistanceClusterer::settings.similarityRadius()));
+                                + std::to_string(::DistanceClusterer::settings.radius()));
                 });
     }
 
     DensityBasedClusterer::DensityBasedClusterer(const YAML::Node &node)
             : DensityBasedClusterer() {
-        doubleProperty::decode(node, clusterRadius);
+        doubleProperty::decode(node, radius);
     }
 
     void DensityBasedClusterer::appendToNode(YAML::Node &node) const {
-        node[className][clusterRadius.name()] = clusterRadius();
+        node[className][radius.name()] = radius();
     }
 }
 YAML_SETTINGS_DEFINITION(Settings::DensityBasedClusterer)
@@ -51,7 +51,7 @@ void DensityBasedClusterer::cluster(Group& group) {
 
     group.sortAll();
 
-    auto threshold = settings.clusterRadius()*2;
+    auto threshold = settings.radius() * 2;
     DensityBasedScan<double, Group, DensityBasedClusterer::wrapper> dbscan(group);
     auto result = dbscan.findClusters(threshold, 1);// why multiplication by 2 is needed?
 

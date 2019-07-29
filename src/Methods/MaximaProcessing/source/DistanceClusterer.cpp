@@ -13,13 +13,13 @@ namespace Settings {
 
     DistanceClusterer::DistanceClusterer(const YAML::Node &node)
             : DistanceClusterer() {
-        doubleProperty::decode(node, similarityRadius);
-        doubleProperty::decode(node, similarityValueIncrement);
+        doubleProperty::decode(node, radius);
+        doubleProperty::decode(node, valueIncrement);
     }
 
     void DistanceClusterer::appendToNode(YAML::Node &node) const {
-        node[className][similarityRadius.name()] = similarityRadius();
-        node[className][similarityValueIncrement.name()] = similarityValueIncrement();
+        node[className][radius.name()] = radius();
+        node[className][valueIncrement.name()] = valueIncrement();
     }
 }
 YAML_SETTINGS_DEFINITION(Settings::DistanceClusterer)
@@ -34,8 +34,8 @@ DistanceClusterer::DistanceClusterer(std::vector<Sample> &samples)
 void DistanceClusterer::cluster(Group& group) {
     assert(!group.empty() && "The group cannot be empty.");
 
-    auto similarityRadius = settings.similarityRadius();
-    auto valueIncrement = settings.similarityValueIncrement();
+    auto similarityRadius = settings.radius();
+    auto valueIncrement = settings.valueIncrement();
 
 
     // first, make sure group is sorted

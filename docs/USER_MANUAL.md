@@ -12,7 +12,7 @@
 #### ReferencePositionsClusterer
 * Clusters maxima only comparing a subset of electrons which are closest to given reference positions.
 * `ReferencePositionsClusterer`: A sub-node of `Clustering` with the following settings:
-    * `similarityRadius`: Clustering threshold referring to the single particle maximum euclidian distance.
+    * `radius`: Clustering threshold referring to the single particle maximum euclidian distance.
     * `maximalCount`: Maximal number of electrons that are compared for clustering (the subset).
     * `maximalDistance`: Maximal distance of electrons from the reference positions to be included in the subset for comparison.
     * `distanceMode`: Calculation of the distance for deciding which electrons to compare.

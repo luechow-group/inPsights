@@ -14,13 +14,13 @@ namespace Settings {
 
     IdentityClusterer::IdentityClusterer(const YAML::Node &node)
             : IdentityClusterer() {
-        doubleProperty::decode(node, identityRadius);
-        doubleProperty::decode(node, identityValueIncrement);
+        doubleProperty::decode(node, radius);
+        doubleProperty::decode(node, valueIncrement);
     }
 
     void IdentityClusterer::appendToNode(YAML::Node &node) const {
-        node[className][identityRadius.name()] = identityRadius();
-        node[className][identityValueIncrement.name()] = identityValueIncrement();
+        node[className][radius.name()] = radius();
+        node[className][valueIncrement.name()] = valueIncrement();
     }
 }
 YAML_SETTINGS_DEFINITION(Settings::IdentityClusterer)
@@ -34,8 +34,8 @@ IdentityClusterer::IdentityClusterer(std::vector<Sample> &samples)
 void IdentityClusterer::cluster(Group& group) {
     assert(!group.empty() && "The group cannot be empty.");
 
-    auto identityRadius = settings.identityRadius();
-    auto valueIncrement = settings.identityValueIncrement();
+    auto identityRadius = settings.radius();
+    auto valueIncrement = settings.valueIncrement();
 
     // first, sort references by value
     group.sortAll();

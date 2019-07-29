@@ -12,8 +12,8 @@
 namespace Settings {
     class IdentityClusterer : public ISettings {
     public:
-        Property<double> identityRadius = {0.01, VARNAME(identityRadius)};
-        Property<double> identityValueIncrement = {1e-7, VARNAME(identityValueIncrement)};
+        Property<double> radius = {0.01, VARNAME(radius)};
+        Property<double> valueIncrement = {1e-7, VARNAME(valueIncrement)};
 
         IdentityClusterer();
         explicit IdentityClusterer(const YAML::Node &node);

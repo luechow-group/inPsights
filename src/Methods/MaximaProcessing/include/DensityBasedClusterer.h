@@ -14,10 +14,10 @@
 #include <Group.h>
 
 namespace Settings {
-    class DensityBasedClusterer : public ISettings { //TODO rename
+    class DensityBasedClusterer : public ISettings {
     public:
-        Property<double> clusterRadius = {
-                ::DistanceClusterer::settings.similarityRadius(), VARNAME(clusterRadius)};
+        Property<double> radius = {
+                ::DistanceClusterer::settings.radius(), VARNAME(radius)};
 
         DensityBasedClusterer();
         explicit DensityBasedClusterer(const YAML::Node &node);

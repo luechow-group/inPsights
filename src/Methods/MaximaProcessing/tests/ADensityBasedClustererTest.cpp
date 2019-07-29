@@ -18,7 +18,7 @@ class ADensityBasedClustererTest : public ::testing::Test {
 public:
     void SetUp() override {
         spdlog::set_level(spdlog::level::off);
-        DistanceClusterer::settings.similarityRadius = 0.1; // prevent assert
+        DistanceClusterer::settings.radius = 0.1; // prevent assert
     }
 
     Group makeRingLikeCluster(Group &references, std::vector<Sample> &samples, unsigned n, std::default_random_engine& rng){
@@ -60,7 +60,7 @@ public:
 };
 
 TEST_F(ADensityBasedClustererTest, RotationallySymmetricCluster){
-    DensityBasedClusterer::settings.clusterRadius = 0.1;
+    DensityBasedClusterer::settings.radius = 0.1;
 
     unsigned n = 20;
 
@@ -97,7 +97,7 @@ TEST_F(ADensityBasedClustererTest, RotationallySymmetricCluster){
 }
 
 TEST_F(ADensityBasedClustererTest, RotationallySymmetricAndPointLikeCluster){
-    DensityBasedClusterer::settings.clusterRadius = 0.1;
+    DensityBasedClusterer::settings.radius = 0.1;
 
     unsigned n = 20;
     unsigned m = 5;
@@ -118,7 +118,7 @@ TEST_F(ADensityBasedClustererTest, RotationallySymmetricAndPointLikeCluster){
         references.emplace_back(Reference(10, ionic));
         for (unsigned i = 1; i < m; ++i) {
             auto evCopy = ionic;
-            evCopy.positionsVector().shake(DensityBasedClusterer::settings.clusterRadius.get(), rng);
+            evCopy.positionsVector().shake(DensityBasedClusterer::settings.radius.get(), rng);
 
             // random permutation
             evCopy.permute(evCopy.randomPermutation(rng));
@@ -147,7 +147,7 @@ TEST_F(ADensityBasedClustererTest, RotationallySymmetricAndPointLikeCluster){
                 auto distanceMatrix =
                         Metrics::positionalDistances(references[j][i].representative()->maximum().positionsVector());
                 ASSERT_TRUE(distanceMatrix.isApprox(referenceDistanceMatrix,
-                                                    DensityBasedClusterer::settings.clusterRadius.get()));
+                                                    DensityBasedClusterer::settings.radius.get()));
             }
         }
     }

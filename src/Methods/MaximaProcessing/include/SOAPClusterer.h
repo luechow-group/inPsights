@@ -13,8 +13,8 @@
 namespace Settings {
     class SOAPClusterer : public ISettings {
     public:
-        Property<double> soapSimilarityThreshold = {0.95, VARNAME(soapSimilarityThreshold)};
-        Property<double> distanceToleranceRadius = {0.2, VARNAME(distanceToleranceRadius)};
+        Property<double> similarityThreshold = {0.95, VARNAME(similarityThreshold)};
+        Property<double> toleranceRadius = {0.2, VARNAME(toleranceRadius)};
         SOAPClusterer();
         explicit SOAPClusterer(const YAML::Node &node);
         void appendToNode(YAML::Node &node) const override;
