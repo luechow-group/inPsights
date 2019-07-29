@@ -20,23 +20,26 @@ public:
     void SetUp() override {
         electrons3 =
                 ElectronsVector({
-                    electrons2[0],
-                    electrons2[1],
-                    electrons2[2],
-                    electrons2[7],
-                    electrons2[4],
-                    electrons2[5],
-                    electrons2[6],
-                    electrons2[3]
-                });
+                                        electrons2[0],
+                                        electrons2[1],
+                                        electrons2[2],
+                                        electrons2[7],
+                                        electrons2[4],
+                                        electrons2[5],
+                                        electrons2[6],
+                                        electrons2[3]
+                                });
     }
+
     std::list<long>
     getNearestElectronsIndices(const ElectronsVector &electrons, const AtomsVector &nuclei,
-                             const Eigen::Vector3d &position,
-                             const long &count){
-        std::function<double(const Eigen::Vector3d &, const std::vector<Eigen::Vector3d> &)> distanceFunction = Metrics::minimalDistance<2>;
-        return NearestElectrons::getNearestElectronsIndices(electrons, nuclei, std::vector<Eigen::Vector3d>({position}), count, 100.0,
-                                          distanceFunction, true);
+                               const Eigen::Vector3d &position,
+                               const long &count) {
+        std::function<double(const Eigen::Vector3d &,
+                             const std::vector<Eigen::Vector3d> &)> distanceFunction = Metrics::minimalDistance<2>;
+        return NearestElectrons::getNearestElectronsIndices(electrons, nuclei, std::vector<Eigen::Vector3d>({position}),
+                                                            count, 100.0,
+                                                            distanceFunction, true);
     };
 };
 
@@ -65,7 +68,7 @@ TEST_F(ANearestElectronsTest, GetElectronsByPosition) {
 
 TEST_F(ANearestElectronsTest, GetValenceByPosition) {
     std::list<long> indices = getNearestElectronsIndices(electrons, nuclei,
-                                                                         nuclei[0].position(), 2);
+                                                         nuclei[0].position(), 2);
     std::list<long> reference({7, 6});
     ASSERT_EQ(reference, indices);
 };

@@ -22,7 +22,7 @@ namespace NearestElectrons {
         // returns all core electron indices of a given vector of nuclei
         std::list<long> indices;
 
-        for (int k = 0; k < nuclei.numberOfEntities(); ++k)
+        for (long k = 0; k < nuclei.numberOfEntities(); ++k)
             indices.splice(indices.end(), getNonValenceIndices(electrons, nuclei[k]));
         indices.sort();
         return indices;
@@ -39,9 +39,13 @@ namespace NearestElectrons {
         // returns indices of electrons closest to a vector of 'positions'
         // the metric is defined by the 'distanceFunction'
         // the indices are chosen beginning with the closest one, until 'maximalCount' or 'maximalDistance' is reached
-        std::priority_queue<std::pair<double, long>> q;
+        std::priority_queue<
+                std::pair<double, int>,
+                std::vector<std::pair<double, int>>,
+                std::greater<std::pair<double, int>>> q;
+
         for (long i = 0; i < electrons.numberOfEntities(); i++) {
-            q.push(std::pair<double, long>(-distanceFunction(electrons[i].position(), positions), i));
+            q.push({distanceFunction(electrons[i].position(), positions), i});
         };
 
         std::list<long> excludedIndices;
@@ -66,10 +70,13 @@ namespace NearestElectrons {
                                                const Eigen::Vector3d &position,
                                                const long &count) {
         // returns indices of the 'count' electrons closest to 'position' (without restrictions)
-        std::priority_queue<std::pair<double, int>> q;
+        std::priority_queue<
+        std::pair<double, int>,
+        std::vector<std::pair<double, int>>,
+        std::greater<std::pair<double, int>>> q;
+
         for (long i = 0; i < electrons.numberOfEntities(); i++) {
-            q.push(std::pair<double, long>(-Metrics::distance(electrons[i].position(), position),
-                                           i));
+            q.push({Metrics::distance(electrons[i].position(), position),i});
         };
 
         std::list<long> indices;
