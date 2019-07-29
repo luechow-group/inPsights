@@ -5,7 +5,6 @@
 #include <gmock/gmock.h>
 #include <TestMolecules.h>
 #include <NearestElectrons.h>
-#include <BestMatchDistance.h>
 #include <Metrics.h>
 
 using namespace testing;
@@ -81,29 +80,4 @@ TEST_F(ANearestElectronsTest, PickElements) {
     std::list<long> indices = getNearestElectronsIndices(electrons, nuclei, position, 2);
 
     ASSERT_EQ(reference, electrons[indices]);
-};
-
-TEST_F(ANearestElectronsTest, BestMatch) {
-    Eigen::Vector3d position = TestMolecules::inbetween(nuclei, {0, 2}, 0.5);
-
-    std::list<long> indices1 = getNearestElectronsIndices(electrons.positionsVector(), nuclei, position, 2);
-    std::list<long> indices2 = getNearestElectronsIndices(electrons3.positionsVector(), nuclei, position, 2);
-
-    auto[norm, perm] = BestMatch::Distance::compare<Eigen::Infinity, 2>(
-            electrons[indices1].positionsVector(),
-            electrons3[indices2].positionsVector());
-
-    ASSERT_EQ(norm,0);
-};
-
-TEST_F(ANearestElectronsTest, BestMatch2) {
-    Eigen::Vector3d position = TestMolecules::inbetween(nuclei, {0, 1}, 0.5);
-
-    std::list<long> indices1 = getNearestElectronsIndices(electrons.positionsVector(), nuclei, position, 2);
-    std::list<long> indices2 = getNearestElectronsIndices(electrons2.positionsVector(), nuclei, position, 2);
-
-    auto[norm, perm] = BestMatch::Distance::compare<Eigen::Infinity, 2>(
-            electrons[indices1].positionsVector(),
-            electrons2[indices2].positionsVector());
-    ASSERT_NE(norm,0);
 };

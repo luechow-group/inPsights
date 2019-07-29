@@ -6,6 +6,7 @@
 #include <BestMatch.h>
 #include <BestMatchDistance.h>
 #include <TestMolecules.h>
+#include <NearestElectrons.h>
 
 TEST(ABestMatchDistanceTest, findTypeSeparatingPermutation) {
 
@@ -229,3 +230,63 @@ TEST(ABestMatchDistanceTest, TypeUnspecific_RealMaxima) {
     ASSERT_LT(norm, 0.1);
     ASSERT_TRUE(perm.indices().isApprox(expectedPerm));
 }
+
+#include "Metrics.h"
+
+TEST(ABestMatchDistanceTest, NearestElectrons) {
+    const MolecularGeometry &BH3 = TestMolecules::BH3::ionic;
+    const AtomsVector &nuclei = BH3.atoms();
+    const ElectronsVector &electrons = BH3.electrons();
+    const ElectronsVector &electrons2 = TestMolecules::BH3::ionicRotated.electrons();
+    ElectronsVector electrons3 =
+            ElectronsVector({
+                                    electrons2[0],
+                                    electrons2[1],
+                                    electrons2[2],
+                                    electrons2[7],
+                                    electrons2[4],
+                                    electrons2[5],
+                                    electrons2[6],
+                                    electrons2[3]
+                            });
+
+    Eigen::Vector3d position = TestMolecules::inbetween(nuclei, {0, 2}, 0.5);
+
+    std::function<double(const Eigen::Vector3d &,
+                         const std::vector<Eigen::Vector3d> &)> distanceFunction = Metrics::minimalDistance<2>;
+    auto indices1 = NearestElectrons::getNearestElectronsIndices(electrons, nuclei,
+                                                                 std::vector<Eigen::Vector3d>({position}), 2, 100.0,
+                                                                 distanceFunction, true);
+    auto indices2 = NearestElectrons::getNearestElectronsIndices(electrons3, nuclei,
+                                                                 std::vector<Eigen::Vector3d>({position}), 2, 100.0,
+                                                                 distanceFunction, true);
+
+    auto[norm, perm] = BestMatch::Distance::compare<Eigen::Infinity, 2>(
+            electrons[indices1].positionsVector(),
+            electrons3[indices2].positionsVector());
+
+    ASSERT_EQ(norm, 0);
+};
+
+TEST(ABestMatchDistanceTest, NearestElectrons2) {
+    const MolecularGeometry &BH3 = TestMolecules::BH3::ionic;
+    const AtomsVector &nuclei = BH3.atoms();
+    const ElectronsVector &electrons = BH3.electrons();
+    const ElectronsVector &electrons2 = TestMolecules::BH3::ionicRotated.electrons();
+
+    Eigen::Vector3d position = TestMolecules::inbetween(nuclei, {0, 1}, 0.5);
+
+    std::function<double(const Eigen::Vector3d &,
+                         const std::vector<Eigen::Vector3d> &)> distanceFunction = Metrics::minimalDistance<2>;
+    auto indices1 = NearestElectrons::getNearestElectronsIndices(electrons, nuclei,
+                                                                 std::vector<Eigen::Vector3d>({position}), 2, 100.0,
+                                                                 distanceFunction, true);
+    auto indices2 = NearestElectrons::getNearestElectronsIndices(electrons2, nuclei,
+                                                                 std::vector<Eigen::Vector3d>({position}), 2, 100.0,
+                                                                 distanceFunction, true);
+
+    auto[norm, perm] = BestMatch::Distance::compare<Eigen::Infinity, 2>(
+            electrons[indices1].positionsVector(),
+            electrons2[indices2].positionsVector());
+    ASSERT_NE(norm, 0);
+};
