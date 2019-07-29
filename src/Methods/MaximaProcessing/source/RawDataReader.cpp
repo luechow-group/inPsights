@@ -5,6 +5,8 @@
 #include <RawDataReader.h>
 #include "Reference.h"
 #include "ParticlesVector.h"
+#include "NearestElectrons.h"
+#include "MaximaProcessingSettings.h"
 #include <iomanip>
 #include <fstream>
 
@@ -54,12 +56,17 @@ void RawDataReader::readSamplesAndMaxima(std::ifstream &input, int fileLength, s
         auto sample = serializedData.segment(0,3*ne);
         auto kineticEnergies = serializedData.segment(3*ne, ne);
         auto s = Sample(ElectronsVector(PositionsVector(sample), spins_),kineticEnergies);
-        samples_.emplace_back(std::move(s));
 
         // create reference
         auto maximum =  serializedData.segment(4*ne, 3*ne);
         auto value = serializedData[7*ne];
         auto r = Reference(value, ElectronsVector(PositionsVector(maximum), spins_), id_);
+
+
+        if(MaximaProcessing::settings.valenceElectronsOnly())
+            removeNonValenceElectrons(r, s);
+
+        samples_.emplace_back(std::move(s));
         maxima_.emplace_back(Group(std::move(r)));
 
         id_++;
@@ -67,7 +74,6 @@ void RawDataReader::readSamplesAndMaxima(std::ifstream &input, int fileLength, s
 }
 
 void RawDataReader::read(const std::string &basename, size_t numberOfSamples){
-
 
     unsigned fileCounter = 0;
     int fileLength;
@@ -127,4 +133,25 @@ std::string RawDataReader::zeroPadNumber(int num) {
     std::ostringstream ss;
     ss << std::setw(2) << std::setfill('0') << num;
     return ss.str();
+}
+
+void RawDataReader::removeNonValenceElectrons(Reference& reference, Sample& sample) {
+
+    auto nonValenceIndices = NearestElectrons::getNonValenceIndices(reference.maximum(),atoms_);
+
+    ElectronsVector newMaximum, newSample;
+    Eigen::VectorXd newKineticEnergies(reference.maximum().numberOfEntities()-nonValenceIndices.size());
+
+    long count = 0;
+    for (long i = 0; i < reference.maximum().numberOfEntities(); ++i) {
+        if(auto it = std::find(nonValenceIndices.begin(),nonValenceIndices.end(),i); it == nonValenceIndices.end()){
+            newMaximum.append(reference.maximum()[i]);
+            newSample.append(sample.sample_[i]);
+            newKineticEnergies[count] = sample.kineticEnergies_[i];
+            ++count;
+        }
+    }
+
+    reference = Reference(reference.value(), newMaximum, reference.ownId());
+    sample = Sample(newSample, newKineticEnergies);
 }

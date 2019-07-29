@@ -20,6 +20,8 @@ public:
     
     void read(const std::string& basename, size_t numberOfSamples);
 
+    void removeNonValenceElectrons(Reference& reference, Sample& sample);
+
     AtomsVector getAtoms() const;
     
 private:
