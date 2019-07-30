@@ -69,7 +69,7 @@ TEST_F(ANearestElectronsTest, GetElectronsByPosition) {
 TEST_F(ANearestElectronsTest, GetValenceByPosition) {
     std::list<long> indices = getNearestElectronsIndices(electrons, nuclei,
                                                          nuclei[0].position(), 2);
-    std::list<long> reference({7, 6});
+    std::list<long> reference({6, 7});
     ASSERT_EQ(reference, indices);
 };
 
