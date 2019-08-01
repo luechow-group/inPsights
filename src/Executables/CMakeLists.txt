@@ -15,7 +15,7 @@ target_link_libraries(MaximaProcessing.exe
         MaximaProcessing
         )
 
-if (DEFINED BUILD_GUI AND ON)
+if (${BUILD_GUI})
     add_executable(CustomMesh CustomMesh.cpp)
     target_link_libraries(CustomMesh
             VoxelProcessing # contains dualmc

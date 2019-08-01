@@ -7,8 +7,8 @@ add_subdirectory(dualmc)
 add_subdirectory(cppoptlib)
 #add_dependencies(inPsightsTests cppoptlib_tests.exe)
 
-option(YAML_CPP_BUILD_TESTS "Don't build the YAML tests." OFF)
-option(YAML_CPP_BUILD_CONTRIB "Don't build YAML contributions." OFF)
+set(YAML_CPP_BUILD_TESTS OFF CACHE BOOL "Don't build the YAML tests.")
+set(YAML_CPP_BUILD_CONTRIB OFF CACHE BOOL "Don't build YAML contributions.")
 add_subdirectory(yaml-cpp)
 
 add_subdirectory(spdlog)

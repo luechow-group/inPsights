@@ -93,7 +93,7 @@ target_link_libraries(${PROJECT_NAME}
         spdlog
         )
 
-if (DEFINED BUILD_EIGEN AND (${BUILD_EIGEN}))
+if (${BUILD_EIGEN})
         message("BUILD_EIGEN build eigen is ON.")
         target_link_libraries(${PROJECT_NAME} eigen)
 endif()

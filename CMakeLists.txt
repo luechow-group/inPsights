@@ -1,4 +1,10 @@
 cmake_minimum_required(VERSION 3.11)
+
+option(BUILD_GUI   "ON/OFF - Do/Don't build the graphical user interface." OFF)
+option(BUILD_EIGEN "ON/OFF - Build/Try to find the required Eigen3 library." ON)
+
+option(YAML_CPP_BUILD_TESTS "ON/OFF - yaml test" OFF)
+
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake/Modules")
 
 set(CMAKE_CXX_STANDARD 17)
@@ -21,7 +27,7 @@ endif(DEFINED ENV{BOOST_ROOT})
 find_package(Boost)
 include_directories(${Boost_INCLUDE_DIRS})
 
-if (DEFINED BUILD_EIGEN AND (${BUILD_EIGEN}))
+if (${BUILD_EIGEN})
     message("BUILD_EIGEN build eigen is ON. Building Eigen3...")
     include(cmake/DownloadEigen.cmake)
 else()
