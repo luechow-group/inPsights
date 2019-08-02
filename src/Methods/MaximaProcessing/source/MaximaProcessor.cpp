@@ -95,7 +95,8 @@ std::vector<ElectronsVector> MaximaProcessor::getAllRepresentativeMaxima(const G
 void MaximaProcessor::calculateStatistics(const Group &maxima){
     using namespace YAML;
 
-    yamlDocument_ << Key << "En" << Comment("[Eh]") << Value << EnStats_
+    yamlDocument_ << Key << "Vnnn" << Comment("[Eh]") << Value << VnnStats_
+                  << Key << "En" << Comment("[Eh]") << Value << EnStats_
                   << Key << "Clusters" << BeginSeq;
 
     size_t totalCount = 0;
