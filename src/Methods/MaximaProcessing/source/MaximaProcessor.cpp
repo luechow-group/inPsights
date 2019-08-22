@@ -35,12 +35,13 @@ unsigned long MaximaProcessor::addReference(const Reference &reference) {
 
     // Sample related statistics
     for (auto & id : reference.sampleIds()) {
+        auto & electrons = samples_[id].sample_;
         Eigen::VectorXd Te = samples_[id].kineticEnergies_;
-        Eigen::MatrixXd Vee = CoulombPotential::energies(samples_[id].sample_);
-        Eigen::MatrixXd Ven = CoulombPotential::energies(samples_[id].sample_,atoms_);
+        Eigen::MatrixXd Vee = CoulombPotential::energies(electrons);
+        Eigen::MatrixXd Ven = CoulombPotential::energies(electrons,atoms_);
         Eigen::VectorXd Ee = EnergyPartitioning::ParticleBased::oneElectronEnergies(Te, Vee, Ven, Vnn_);
-        Eigen::MatrixXd Ree = Metrics::positionalDistances(samples_[id].sample_.positionsVector());
-        Eigen::MatrixXd Ren = Metrics::positionalDistances(samples_[id].sample_.positionsVector(), atoms_.positionsVector());
+        Eigen::MatrixXd Ree = Metrics::positionalDistances(electrons.positionsVector());
+        Eigen::MatrixXd Ren = Metrics::positionalDistances(electrons.positionsVector(), atoms_.positionsVector());
 
         TeStats_.add(Te,1);
         VeeStats_.add(Vee,1);
@@ -95,7 +96,7 @@ std::vector<ElectronsVector> MaximaProcessor::getAllRepresentativeMaxima(const G
 void MaximaProcessor::calculateStatistics(const Group &maxima){
     using namespace YAML;
 
-    yamlDocument_ << Key << "Vnnn" << Comment("[Eh]") << Value << VnnStats_
+    yamlDocument_ << Key << "Vnn" << Comment("[Eh]") << Value << VnnStats_
                   << Key << "En" << Comment("[Eh]") << Value << EnStats_
                   << Key << "Clusters" << BeginSeq;
 
