@@ -25,6 +25,9 @@ namespace BestMatch {
     Eigen::PermutationMatrix<Eigen::Dynamic>
     headToFullPermutation(const Eigen::PermutationMatrix<Eigen::Dynamic> &permutation, const long &size);
 
+    Eigen::PermutationMatrix<Eigen::Dynamic>
+    tailToFullPermutation(const Eigen::PermutationMatrix<Eigen::Dynamic> &permutation, const long &size);
+
     template<typename Type>
     Eigen::PermutationMatrix<Eigen::Dynamic> findTypeSeparatingPermutation(
             const ParticlesVector<Type> &particlesVector) {

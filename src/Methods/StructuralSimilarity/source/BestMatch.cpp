@@ -72,7 +72,7 @@ Eigen::PermutationMatrix<Eigen::Dynamic> BestMatch::getPermutationToBack(const s
 };
 
 Eigen::PermutationMatrix<Eigen::Dynamic> BestMatch::headToFullPermutation(const Eigen::PermutationMatrix<Eigen::Dynamic> &permutation, const long &size){
-    // builds full permutation from front permutation
+    // builds full permutation from head permutation
     assert(permutation.indices().size() <= size);
 
     Eigen::VectorXi indices(size);
@@ -84,6 +84,29 @@ Eigen::PermutationMatrix<Eigen::Dynamic> BestMatch::headToFullPermutation(const 
 
     for (long j=permutation.indices().size(); j<size; j++) {
         indices[i] = j;
+        i++;
+    }
+
+    assert(i == size);
+
+    return Eigen::PermutationMatrix<Eigen::Dynamic>(indices);
+};
+
+Eigen::PermutationMatrix<Eigen::Dynamic> BestMatch::tailToFullPermutation(const Eigen::PermutationMatrix<Eigen::Dynamic> &permutation, const long &size){
+    // builds full permutation from tail permutation
+    assert(permutation.indices().size() <= size);
+
+    Eigen::VectorXi indices(size);
+
+    int headSize = size - permutation.indices().size();
+    int i = 0;
+    for (int j=0; j < headSize; j++) {
+        indices[i] = i;
+        i++;
+    }
+
+    for (int j=0; j < permutation.indices().size(); j++) {
+        indices[i] = permutation.indices()[j] + headSize;
         i++;
     }
 
