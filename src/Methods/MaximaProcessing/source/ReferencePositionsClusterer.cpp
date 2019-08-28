@@ -132,7 +132,7 @@ void ReferencePositionsClusterer::cluster(Group &group) {
                         sortedGroup->representative()->maximum().head(*countIteratorSuperGroup).positionsVector());
 
                 if (norm < similarityRadius) {
-                    subGroup->permuteAll(BestMatch::getFullPermutation(perm, electronsNumber), samples_);
+                    subGroup->permuteAll(BestMatch::headToFullPermutation(perm, electronsNumber), samples_);
                     sortedGroup->emplace_back(*subGroup);
                     isSimilarQ = true;
                     break;

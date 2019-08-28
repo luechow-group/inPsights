@@ -23,7 +23,7 @@ namespace BestMatch {
     getPermutationToBack(const std::list<long> &relevantIndices, const long &size);
 
     Eigen::PermutationMatrix<Eigen::Dynamic>
-    getFullPermutation(const Eigen::PermutationMatrix<Eigen::Dynamic> &permutation, const long &size);
+    headToFullPermutation(const Eigen::PermutationMatrix<Eigen::Dynamic> &permutation, const long &size);
 
     template<typename Type>
     Eigen::PermutationMatrix<Eigen::Dynamic> findTypeSeparatingPermutation(
