@@ -158,7 +158,7 @@ TEST_F(AParticlesVectorTest, AccessWithIndexList){
 }
 
 TEST_F(AParticlesVectorTest, AccessFirstElements){
-    auto newVector = electrons.getFirstElements(2);
+    auto newVector = electrons.head(2);
     ASSERT_EQ(newVector.numberOfEntities(), 2);
     ASSERT_EQ(newVector[0].position(), electrons[0].position());
     ASSERT_EQ(newVector[0].type(), electrons[0].type());

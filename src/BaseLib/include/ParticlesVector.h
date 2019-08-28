@@ -79,7 +79,7 @@ public:
         return newVector;
     }
 
-    ParticlesVector<Type> getFirstElements(long i) {
+    ParticlesVector<Type> head(long i) {
         assert(i >= 0);
 
         ParticlesVector newVector(
