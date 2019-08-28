@@ -20,6 +20,7 @@ namespace Settings {
         Property<std::string> distanceMode = {"minimum", VARNAME(distanceMode)};
         Property<bool> invertSelection = {false, VARNAME(invertSelection)};
         Property<bool> valenceOnly = {true, VARNAME(valenceOnly)};
+        Property<bool> sortRemainder = {false, VARNAME(sortRemainder)};
 
         ReferencePositionsClusterer();
         explicit ReferencePositionsClusterer(const YAML::Node &node);

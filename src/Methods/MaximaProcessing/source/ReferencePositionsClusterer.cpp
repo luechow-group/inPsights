@@ -43,6 +43,7 @@ namespace Settings {
         stringProperty::decode(node, distanceMode);
         boolProperty::decode(node, invertSelection);
         boolProperty::decode(node, valenceOnly);
+        boolProperty::decode(node, sortRemainder);
     };
 
     void ReferencePositionsClusterer::appendToNode(YAML::Node &node) const {
@@ -52,6 +53,7 @@ namespace Settings {
         node[className][distanceMode.name()] = distanceMode();
         node[className][invertSelection.name()] = invertSelection();
         node[className][valenceOnly.name()] = valenceOnly();
+        node[className][sortRemainder.name()] = sortRemainder();
     };
 }
 
@@ -133,6 +135,12 @@ void ReferencePositionsClusterer::cluster(Group &group) {
 
                 if (norm < similarityRadius) {
                     subGroup->permuteAll(BestMatch::headToFullPermutation(perm, electronsNumber), samples_);
+                    if (settings.sortRemainder()){
+                        auto[norm, perm] = BestMatch::Distance::compare<Eigen::Infinity, 2>(
+                                subGroup->representative()->maximum().tail(electronsNumber - *countIterator).positionsVector(),
+                                sortedGroup->representative()->maximum().tail(electronsNumber - *countIteratorSuperGroup).positionsVector());
+                        subGroup->permuteAll(BestMatch::tailToFullPermutation(perm, electronsNumber), samples_);
+                    }
                     sortedGroup->emplace_back(*subGroup);
                     isSimilarQ = true;
                     break;

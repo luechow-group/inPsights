@@ -20,6 +20,7 @@
         * `average` The distance of an electron is calculated as the average of all distances to the reference positions.
     * `invertSelection`: `true` or `false`, inverts the selection of electrons.
     * `valenceOnly`: `true` or `false`. If `true`, ignores non-valence electrons.
+    * `sortRemainder`: `true` or `false`. If `true`, best-match sorts electrons that are not within the subset.
     * `positions`: A list of positions, each of which can be given in one of the following ways:
         * `atAtom`: Give the index of an atom to add its position to the list.
         * `atCoordinates`: Give the cartesian coordinates as a three-membered list of floats.
