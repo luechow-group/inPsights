@@ -165,3 +165,12 @@ TEST_F(AParticlesVectorTest, AccessFirstElements){
     ASSERT_EQ(newVector[1].position(), electrons[1].position());
     ASSERT_EQ(newVector[1].type(), electrons[1].type());
 }
+
+TEST_F(AParticlesVectorTest, AccessLastElements){
+    auto newVector = electrons.tail(2);
+    ASSERT_EQ(newVector.numberOfEntities(), 2);
+    ASSERT_EQ(newVector[0].position(), electrons[1].position());
+    ASSERT_EQ(newVector[0].type(), electrons[1].type());
+    ASSERT_EQ(newVector[1].position(), electrons[2].position());
+    ASSERT_EQ(newVector[1].type(), electrons[2].type());
+}

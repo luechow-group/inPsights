@@ -89,6 +89,16 @@ public:
         return newVector;
     }
 
+    ParticlesVector<Type> tail(long i) {
+        assert(i >= 0);
+
+        ParticlesVector newVector(
+                PositionsVector(positionsVector_.asEigenVector().tail(3*i)),
+                TypesVector<Type>(typesVector_.asEigenVector().tail(i))
+        );
+        return newVector;
+    }
+
     const PositionsVector & positionsVector() const {
         return positionsVector_;
     }
