@@ -96,14 +96,11 @@ void ReferencePositionsClusterer::cluster(Group &group) {
     std::list<long> subIndices;
     Eigen::PermutationMatrix<Eigen::Dynamic> permutation;
 
-    // for every 'subGroup' in 'group', the number of relevant electrons is stored in 'counts'
-    std::vector<long> counts;
-
     // sorting relevant electrons to the front
     for (auto subGroup = group.begin(); subGroup != group.end(); ++subGroup) {
         subIndices = ReferencePositionsClusterer::getRelevantIndices(subGroup->representative()->maximum());
         if (not settings.invertSelection()){
-            counts.emplace_back(subIndices.size());
+            subGroup->setSelectedElectronsCount(subIndices.size());
             // sorting will take the front indices, so they have to be permuted to the front
             permutation = BestMatch::getPermutationToFront(subIndices, electronsNumber);
         }
@@ -113,7 +110,7 @@ void ReferencePositionsClusterer::cluster(Group &group) {
                 subIndices.splice(subIndices.end(),
                         NearestElectrons::getNonValenceIndices(subGroup->representative()->maximum(), nuclei_));
             }
-            counts.emplace_back(electronsNumber - subIndices.size());
+            subGroup->setSelectedElectronsCount(electronsNumber - subIndices.size());
             // sorting will take the front indices. Since the invertSelection is true,
             // 'subIndices' are permuted to the back
             permutation = BestMatch::getPermutationToBack(subIndices, electronsNumber);
@@ -121,14 +118,7 @@ void ReferencePositionsClusterer::cluster(Group &group) {
         subGroup->permuteAll(permutation, samples_);
     }
 
-    std::vector<long> countsSuperGroup;
-    auto countIterator = counts.begin();
-
     Group superGroup({Group({*group.begin()})});
-    countsSuperGroup.emplace_back(*countIterator);
-    countIterator++;
-
-    auto countIteratorSuperGroup = countsSuperGroup.begin();
 
     // bool to decide, whether subGroup of group is added to a sortedGroup of superGroup
     // or to superGroup as a new sortedGroup
@@ -137,8 +127,8 @@ void ReferencePositionsClusterer::cluster(Group &group) {
     for (auto subGroup = std::next(group.begin()); subGroup != group.end(); ++subGroup) {
         isSimilarQ = false;
         for (auto sortedGroup = superGroup.begin(); sortedGroup != superGroup.end(); ++sortedGroup) {
-            // only check similarity of sortedGroup and subGroup, if the number of relevant indices ('count') is equal
-            if (*countIterator == *countIteratorSuperGroup){
+            // only check similarity of sortedGroup and subGroup, if the number of selected indices is equal
+            if (subGroup->getSelectedElectronsCount() == superGroup.getSelectedElectronsCount()){
                 auto[norm, perm] = BestMatch::Distance::compare<Eigen::Infinity, 2>(
                         subGroup->representative()->maximum().getFirstParticles(*countIterator).positionsVector(),
                         sortedGroup->representative()->maximum().getFirstParticles(*countIteratorSuperGroup).positionsVector());
@@ -147,8 +137,8 @@ void ReferencePositionsClusterer::cluster(Group &group) {
                     subGroup->permuteAll(BestMatch::headToFullPermutation(perm, electronsNumber), samples_);
                     if (settings.sortRemainder()){
                         auto[norm, perm] = BestMatch::Distance::compare<Eigen::Infinity, 2>(
-                                subGroup->representative()->maximum().tail(electronsNumber - *countIterator).positionsVector(),
-                                sortedGroup->representative()->maximum().tail(electronsNumber - *countIteratorSuperGroup).positionsVector());
+                                subGroup->representative()->maximum().tail(electronsNumber - subGroup->getSelectedElectronsCount()).positionsVector(),
+                                sortedGroup->representative()->maximum().tail(electronsNumber - superGroup.getSelectedElectronsCount()).positionsVector());
                         subGroup->permuteAll(BestMatch::tailToFullPermutation(perm, electronsNumber), samples_);
                     }
                     sortedGroup->emplace_back(*subGroup);
@@ -156,15 +146,11 @@ void ReferencePositionsClusterer::cluster(Group &group) {
                     break;
                 }
             }
-            countIteratorSuperGroup++;
         }
         if (!isSimilarQ) {
             // adds subGroup as a new sortedGroup to superGroup
             superGroup.emplace_back(Group({*subGroup}));
-            countsSuperGroup.emplace_back(*countIterator);
         }
-        countIteratorSuperGroup = countsSuperGroup.begin();
-        countIterator++;
     }
     group = superGroup;
 
