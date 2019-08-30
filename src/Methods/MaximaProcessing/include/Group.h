@@ -32,7 +32,7 @@ class Reference;
 
 class Group : public std::vector<Group> {
 public:
-    Group() = default;
+    Group();
     Group(const Group& group) = default;
 
     explicit Group(std::vector<Group>::size_type size);
@@ -72,10 +72,13 @@ public:
 
     friend std::ostream& operator<<(std::ostream& os, const Group & g);
 
+    long getSelectedElectronsCount() const;
+    void setSelectedElectronsCount(const long &count);
 
 private:
     virtual void updateRepresentative();
     std::shared_ptr<Reference> representative_;
+    long selectedElectronsCount_;
 };
 
 inline Group operator+ (Group lhs, const Group& rhs) {
