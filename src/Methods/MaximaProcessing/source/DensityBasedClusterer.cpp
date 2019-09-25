@@ -16,20 +16,29 @@ namespace Settings {
                 [&](double value) {
                     if(value < ::DistanceClusterer::settings.radius())
                         throw std::invalid_argument(
-                                "The " + radius.name() + " with " + std::to_string(radius())
-                                + " is smaller than the " + ::DistanceClusterer::settings.radius.name()
-                                + " with "
-                                + std::to_string(::DistanceClusterer::settings.radius()));
+                                "The " + radius.name() + "=" + std::to_string(radius())
+                                + " is smaller than the " + ::DistanceClusterer::settings.name()
+                                + "::"  + ::DistanceClusterer::settings.radius.name()
+                                + " of " + std::to_string(::DistanceClusterer::settings.radius()) + ".");
+                });
+        minimalClusterSize.onChange_.connect(
+                [&](size_t value) {
+                    if(!value >= 1)
+                        throw std::invalid_argument(
+                                "The " + minimalClusterSize.name() + "=" + std::to_string(minimalClusterSize())
+                                + " must be 1 or greater.");
                 });
     }
 
     DensityBasedClusterer::DensityBasedClusterer(const YAML::Node &node)
             : DensityBasedClusterer() {
         doubleProperty::decode(node, radius);
+        size_tProperty ::decode(node, minimalClusterSize);
     }
 
     void DensityBasedClusterer::appendToNode(YAML::Node &node) const {
         node[className][radius.name()] = radius();
+        node[className][minimalClusterSize.name()] = minimalClusterSize();
     }
 }
 YAML_SETTINGS_DEFINITION(Settings::DensityBasedClusterer)
@@ -51,9 +60,11 @@ void DensityBasedClusterer::cluster(Group& group) {
 
     group.sortAll();
 
-    auto threshold = settings.radius() * 2;
+    auto eps = settings.radius() * 2;// why multiplication by 2 is needed?
+    auto minPts = settings.minimalClusterSize();
+
     DensityBasedScan<double, Group, DensityBasedClusterer::wrapper> dbscan(group);
-    auto result = dbscan.findClusters(threshold, 1);// why multiplication by 2 is needed?
+    auto result = dbscan.findClusters(eps, minPts);
 
     Group supergroup(static_cast<Group::size_type>(result.numberOfClusters));
 
@@ -62,7 +73,7 @@ void DensityBasedClusterer::cluster(Group& group) {
             if (result.labels[j] == i)
                 supergroup[i].emplace_back(std::move(g));
 
-    orderByBestMatchDistance(supergroup, threshold);
+    orderByBestMatchDistance(supergroup, eps);
 
     group = supergroup;
 }

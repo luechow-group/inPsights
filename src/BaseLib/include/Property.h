@@ -165,6 +165,7 @@ using intProperty           = YAML::convert<Property<int>>;
 using longProperty          = YAML::convert<Property<long>>;
 using charProperty          = YAML::convert<Property<char>>;
 using stringProperty        = YAML::convert<Property<std::string>>;
+using size_tProperty        = YAML::convert<Property<size_t>>;
 using unsignedProperty      = YAML::convert<Property<unsigned>>;
 using unsignedShortProperty = YAML::convert<Property<unsigned short>>;
 using boolProperty          = YAML::convert<Property<bool>>;

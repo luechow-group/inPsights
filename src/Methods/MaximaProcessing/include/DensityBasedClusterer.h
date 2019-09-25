@@ -16,8 +16,8 @@
 namespace Settings {
     class DensityBasedClusterer : public ISettings {
     public:
-        Property<double> radius = {
-                ::DistanceClusterer::settings.radius(), VARNAME(radius)};
+        Property<double> radius = {::DistanceClusterer::settings.radius(), VARNAME(radius)};
+        Property<size_t> minimalClusterSize = {1, VARNAME(minimalClusterSize)};
 
         DensityBasedClusterer();
         explicit DensityBasedClusterer(const YAML::Node &node);
