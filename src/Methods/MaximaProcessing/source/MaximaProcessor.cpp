@@ -101,6 +101,7 @@ void MaximaProcessor::calculateStatistics(const Group &maxima){
                   << Key << "Clusters" << BeginSeq;
 
     size_t totalCount = 0;
+    double totalWeight = 0.0;
     for (auto& group : maxima) {
 
         valueStats_.reset();
@@ -132,14 +133,16 @@ void MaximaProcessor::calculateStatistics(const Group &maxima){
 
         auto weight = double(TeStats_.getTotalWeight())/double(samples_.size());
         if(weight >= MaximaProcessing::settings.minimalClusterWeight.get()) {
+            totalWeight += weight;
             yamlDocument_ << ClusterData(TeStats_.getTotalWeight(), structures, valueStats_, TeStats_, EeStats_,
                                          SeeStats_, VeeStats_, VenStats_,
                                          motifs_, EtotalStats_, intraMotifEnergyStats_, interMotifEnergyStats_,
                                          ReeStats_, RenStats_, voxelCubes);
         }
     }
-    spdlog::info("overall count {}", totalCount);
-    assert(totalCount == samples_.size() && "The total count must match the sample size.");
+    spdlog::info("Overall count {}. Some structures might be lost "
+                 "by being classified as noise during density based clustering.", totalCount);
+    spdlog::info("Considered weight: {}, discarded weight: {}", totalWeight, 1.0 - totalWeight);
 
     yamlDocument_ << EndSeq;
     assert(yamlDocument_.good());
