@@ -79,12 +79,13 @@ public:
         return newVector;
     }
 
-    ParticlesVector<Type> head(long i) {
-        assert(i >= 0);
+    ParticlesVector<Type> getFirstParticles(long n) {
+        assert(n >= 0);
+        assert(n < numberOfEntities());
 
         ParticlesVector newVector(
-                PositionsVector(positionsVector_.asEigenVector().head(3*i)),
-                TypesVector<Type>(typesVector_.asEigenVector().head(i))
+                PositionsVector(positionsVector_.asEigenVector().head(positionsVector().entityLength() * n)),
+                TypesVector<Type>(typesVector_.asEigenVector().head(n))
         );
         return newVector;
     }

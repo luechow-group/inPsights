@@ -18,9 +18,9 @@ PositionsVector::PositionsVector(const VectorXd &positions)
 : PositionsVector() {
     auto size = positions.size();
     assert(size >= 0 && "Vector cannot be empty");
-    assert(size%3 == 0 && "Vector must be 3N-dimensional");
+    assert(size%entityLength() == 0 && "Vector must be 3N-dimensional");
 
-    AbstractVector::setNumberOfEntities(size/3);
+    AbstractVector::setNumberOfEntities(size/entityLength());
     data_ = positions;
 }
 
@@ -111,7 +111,7 @@ namespace YAML {
 
     Emitter &operator<<(Emitter &out, const PositionsVector &p) {
         out << Flow << BeginSeq << Newline;
-        for (unsigned i = 0; i < p.numberOfEntities(); ++i)
+        for (long i = 0; i < p.numberOfEntities(); ++i)
             out << p[i] << Newline;
         out << EndSeq << Auto;
         return out;

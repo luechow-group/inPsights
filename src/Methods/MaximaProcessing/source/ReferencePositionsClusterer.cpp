@@ -130,8 +130,8 @@ void ReferencePositionsClusterer::cluster(Group &group) {
             // only check similarity of sortedGroup and subGroup, if the number of relevant indices ('count') is equal
             if (*countIterator == *countIteratorSuperGroup){
                 auto[norm, perm] = BestMatch::Distance::compare<Eigen::Infinity, 2>(
-                        subGroup->representative()->maximum().head(*countIterator).positionsVector(),
-                        sortedGroup->representative()->maximum().head(*countIteratorSuperGroup).positionsVector());
+                        subGroup->representative()->maximum().getFirstParticles(*countIterator).positionsVector(),
+                        sortedGroup->representative()->maximum().getFirstParticles(*countIteratorSuperGroup).positionsVector());
 
                 if (norm < similarityRadius) {
                     subGroup->permuteAll(BestMatch::headToFullPermutation(perm, electronsNumber), samples_);
