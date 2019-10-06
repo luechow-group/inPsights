@@ -14,8 +14,8 @@ Sphere::Sphere(Qt3DCore::QEntity *root, QColor color, const QVector3D location, 
         mesh_(new Qt3DExtras::QSphereMesh(this)) {
 
     mesh_->setRadius(radius);
-    mesh_->setRings(8);
-    mesh_->setSlices(16);
+    mesh_->setRings(16);
+    mesh_->setSlices(32);
 
     addComponent(mesh_);
 

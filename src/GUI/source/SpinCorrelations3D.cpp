@@ -20,6 +20,8 @@ void SpinCorrelations3D::createConnections(const ElectronsVector &electronsVecto
 
     auto pairTypes = SpinPairClassification::classify(electronsVector);
 
+    auto sphereRadius = GuiHelper::radiusFromType(Spin::alpha);
+
     for (auto &idxPair : pairTypes) {
         auto i = idxPair.first.first;
         auto j = idxPair.first.second;
@@ -38,9 +40,11 @@ void SpinCorrelations3D::createConnections(const ElectronsVector &electronsVecto
                 else
                     color = QColor::fromRgb(0, 255, 0);
 
-                new Line3D(this, color, {
-                        GuiHelper::toQVector3D(electronsVector.positionsVector()[i]),
-                        GuiHelper::toQVector3D(electronsVector.positionsVector()[j])}, std::abs(corr));
+
+                new Line3D(this, color, GuiHelper::sphericalSurfacePositionPair(
+                        electronsVector.positionsVector()[i], sphereRadius,
+                        electronsVector.positionsVector()[j], sphereRadius),
+                                std::abs(corr));
             }
         }
     }
