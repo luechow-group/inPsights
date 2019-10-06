@@ -13,8 +13,6 @@
 
 template <typename Type>
 class Particle3D : public LinkedParticle<Type>, public Sphere {
-private:
-    Q_DISABLE_COPY(Particle3D<Type>) //TODO needed
 public:
     Particle3D(Qt3DCore::QEntity *root, std::shared_ptr<LinkedParticle<Type>> particle)
     : LinkedParticle<Type>::LinkedParticle(*particle),
