@@ -23,7 +23,7 @@ public:
                            ) {
 
         if(std::is_same<Type,Element>())
-            material->setAlpha(0.25f);
+            material->setAlpha(0.33f);
         else if (std::is_same<Type,Spin>())
             material->setAlpha(0.5f);
     }

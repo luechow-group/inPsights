@@ -12,4 +12,4 @@ Bond3D::Bond3D(Qt3DCore::QEntity *root, const Atom3D &src, const Atom3D &dest) /
                                   src.position(), src.getRadius(),
                                   dest.position(), dest.getRadius()),
                                   0.04f,
-                          0.25f) {}
+                          0.33f) {}
