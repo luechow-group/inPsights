@@ -5,9 +5,9 @@
 #include <utility>
 #include <Sphere.h>
 
-Sphere::Sphere(Qt3DCore::QEntity *root, QColor color, const QVector3D location, const float radius)
+Sphere::Sphere(Qt3DCore::QEntity *root, QColor color, const QVector3D location, const float radius, const float alpha)
         :
-        Abstract3dObject(root, std::move(color), location),
+        Abstract3dObject(root, std::move(color), location, alpha),
         highlightedQ_(false),
         selectedQ_(false),
         radius_(radius),

@@ -54,6 +54,7 @@ set(HEADER_FILES
         include/Arrow.h
         include/CartesianAxes.h
         include/ColorPalette.h
+        include/X3Dconversion.h
         )
 
 set(SOURCE_FILES

@@ -18,7 +18,6 @@ public:
 
     QColor color() const;
 
-protected:
     Qt3DExtras::QPhongAlphaMaterial *material;
     Qt3DCore::QTransform *transform;
 public:
