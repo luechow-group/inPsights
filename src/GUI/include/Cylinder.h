@@ -18,51 +18,14 @@ public:
            float radius,
            float alpha = 1.0f);
 
-  float getRadius() const { return radius_; };
+  float getRadius() const;
+  void setRadius(const float radius);
+  float length() const;
+  QVector3D start() const;
+  QVector3D end() const;
+  QVector3D difference() const;
 
-  void setRadius(const float radius) {
-      radius_ = radius;
-      mesh_->setRadius(radius);
-  };
-
-  float length() const { return difference().length(); };
-  QVector3D start() const{ return start_; };
-  QVector3D end() const{ return end_; };
-  QVector3D difference() const{ return end_ - start_; };
-
-
-  friend std::ostream& operator<< (std::ostream& os, const Cylinder& obj) {
-      auto color = obj.color();
-      auto center = obj.transform->translation();
-
-      QVector3D axis;
-      float angle;
-      obj.transform->rotation().getAxisAndAngle(&axis,&angle);
-
-      os << "<transform translation='"
-         << center[0] << ","
-         << center[1] << ","
-         << center[2]
-         <<"' rotation='"
-         << axis[0] << ","
-         << axis[1] << ","
-         << axis[2] << ","
-         << angle*ConversionFactors::deg2rad
-         << "'>\n";
-      os << "<shape><appearance><material diffuseColor='"
-         << color.red() << " "
-         << color.green() << " "
-         << color.blue()
-         << "' transparency='" << obj.material->alpha() << "'></material></appearance>\n";
-
-      os << "<cylinder top='false' bottom='false' height='"
-         << obj.length()
-         << "' radius='"
-         << obj.getRadius()
-         << "'></cylinder>\n";
-      os <<"</shape></transform>\n\n";
-      return os;
-  }
+   void addToXml (std::ostream& os, unsigned sortKey = 1) const;
 
 private:
   void rotateToOrientation(const QVector3D &orientation);

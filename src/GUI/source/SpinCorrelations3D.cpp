@@ -4,6 +4,7 @@
 
 #include <SpinCorrelations3D.h>
 #include <Line3D.h>
+#include <Cylinder.h>
 
 SpinCorrelations3D::SpinCorrelations3D(ElectronsVector3D *electronsVector3D,
                                        const TriangularMatrixStatistics& SeeStats,
@@ -19,8 +20,7 @@ void SpinCorrelations3D::createConnections(const ElectronsVector &electronsVecto
                                            double spinCorrelationThreshold)  {
 
     auto pairTypes = SpinPairClassification::classify(electronsVector);
-
-    auto sphereRadius = GuiHelper::radiusFromType(Spin::alpha);
+    auto electronRadius = float(GuiHelper::radiusFromType(Spin::alpha));
 
     for (auto &idxPair : pairTypes) {
         auto i = idxPair.first.first;
@@ -30,22 +30,33 @@ void SpinCorrelations3D::createConnections(const ElectronsVector &electronsVecto
         && !SpinPairClassification::isAtSamePositionQ(pairTypes,i)
         && !SpinPairClassification::isAtSamePositionQ(pairTypes,j)
         ) {
+            auto corr = float(SeeStats.mean()(i, j));
 
-            auto corr = SeeStats.mean()(i, j);
-            if (std::abs(corr) >= spinCorrelationThreshold) {
+            auto positionPair = GuiHelper::sphericalSurfacePositionPair(
+                    electronsVector.positionsVector()[i], electronRadius,
+                    electronsVector.positionsVector()[j], electronRadius);
 
-                QColor color;
-                if (corr > 0)
-                    color = QColor::fromRgb(255, 0, 255);
-                else
-                    color = QColor::fromRgb(0, 255, 0);
-
-
-                new Line3D(this, color, GuiHelper::sphericalSurfacePositionPair(
-                        electronsVector.positionsVector()[i], sphereRadius,
-                        electronsVector.positionsVector()[j], sphereRadius),
-                                std::abs(corr));
+            bool lineMode = false;
+            if(lineMode) {
+                if (std::abs(corr) >= spinCorrelationThreshold) {
+                    if (corr < 0)
+                        new Line3D(this, Qt::green, positionPair, std::abs(corr));
+                    else
+                        new Line3D(this, Qt::magenta, positionPair, std::abs(corr));
+                }
+            } else {
+                if (std::abs(corr) >= spinCorrelationThreshold) {
+                    Cylinder* c;
+                    if (corr < 0) {
+                        c = new Cylinder(this, Qt::green, positionPair, electronRadius / 7.5f, std::abs(corr));
+                        c->material->setShininess(0);
+                    }
+                    //else
+                    //    c = new Cylinder(this, Qt::magenta, positionPair, electronRadius / 7.5f, std::abs(corr));
+                    //c->material->setShininess(0);
+                }
             }
+
         }
     }
 }

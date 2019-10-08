@@ -22,6 +22,15 @@ Sphere::Sphere(Qt3DCore::QEntity *root, QColor color, const QVector3D location, 
     //QObject::connect(picker, &Qt3DRender::QObjectPicker::containsMouseChanged, this, &Sphere::onHighlighted);
 }
 
+float Sphere::getRadius() const {
+    return radius_;
+};
+
+void Sphere::setRadius(const float radius) {
+    radius_ = radius;
+    mesh_->setRadius(radius);
+};
+
 void Sphere::onHighlighted(bool highlightQ) {
     highlightedQ_ = highlightQ;
     update();
@@ -30,6 +39,27 @@ void Sphere::onHighlighted(bool highlightQ) {
 void Sphere::onSelected(bool selectedQ) {
     selectedQ_ = selectedQ;
     update();
+}
+
+void Sphere::addToXml(std::ostream &os, unsigned int sortKey) const {
+    auto sphereColor = color();
+    auto center = transform->translation();
+
+    os << "<transform translation='"
+       << center[0] << ","
+       << center[1] << ","
+       << center[2] << "'>\n";
+    os << "<shape><appearance sortKey='"
+       << sortKey
+       << "'><material diffuseColor='"
+       << sphereColor.redF()<< " "
+       << sphereColor.greenF() << " "
+       << sphereColor.blueF()
+       << "' transparency='" << 0.75*(1.0f-material->alpha()) << "'></material></appearance>\n";
+
+    os << "<sphere radius='"
+       << getRadius()
+       << "'></sphere></shape></transform>\n\n";
 }
 
 void Sphere::update() {

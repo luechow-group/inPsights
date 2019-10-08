@@ -29,6 +29,63 @@ Cylinder::Cylinder(Qt3DCore::QEntity *root,
     addComponent(mesh_);
 }
 
+float Cylinder::length() const {
+    return difference().length();
+}
+
+QVector3D Cylinder::start() const {
+    return start_;
+}
+
+QVector3D Cylinder::end() const {
+    return end_;
+}
+QVector3D Cylinder::difference() const{
+    return end_ - start_;
+};
+
+float Cylinder::getRadius() const {
+    return radius_;
+};
+
+void Cylinder::setRadius(const float radius) {
+    radius_ = radius;
+    mesh_->setRadius(radius);
+};
+
+void Cylinder::addToXml(std::ostream &os, unsigned int sortKey) const  {
+    auto cylinderColor = color();
+    auto center = transform->translation();
+
+    QVector3D axis;
+    float angle;
+    transform->rotation().getAxisAndAngle(&axis,&angle);
+
+    os << "<transform translation='"
+       << center[0] << ","
+       << center[1] << ","
+       << center[2]
+       <<"' rotation='"
+       << axis[0] << ","
+       << axis[1] << ","
+       << axis[2] << ","
+       << angle*ConversionFactors::deg2rad
+       << "'>\n";
+    os << "<shape><appearance sortKey='"
+       << sortKey
+       << "'><material diffuseColor='"
+       << cylinderColor.redF() << " "
+       << cylinderColor.greenF() << " "
+       << cylinderColor.blueF()
+       << "' transparency='" << 0.75*(1.0f-material->alpha()) << "'></material></appearance>\n";
+
+    os << "<cylinder top='false' bottom='false' height='"
+       << length()
+       << "' radius='"
+       << getRadius()
+       << "' top='false' bottom='false'></cylinder></shape></transform>\n\n";
+}
+
 void Cylinder::rotateToOrientation(const QVector3D &orientation) {
 
   auto origVec = QVector3D(0, 1, 0);
