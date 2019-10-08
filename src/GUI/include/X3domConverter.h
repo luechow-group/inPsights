@@ -3,8 +3,8 @@
 //
 
 
-#ifndef INPSIGHTS_X3DCONVERTER_H
-#define INPSIGHTS_X3DCONVERTER_H
+#ifndef INPSIGHTS_X3DOMCONVERTER_H
+#define INPSIGHTS_X3DOMCONVERTER_H
 
 #include <string>
 #include <iostream>
@@ -12,11 +12,13 @@
 #include "Sphere.h"
 #include "Cylinder.h"
 
-class X3dConverter{
+class X3domConverter{
 public:
-    X3dConverter(const std::string &filename,
-                 const std::string& title = "Title",
-                 const std::string& comment = "Comment");
+    X3domConverter(const std::string &filename);
+
+    X3domConverter(const std::string &filename,
+                   const std::string& title,
+                   const std::string& comment);
 
     void startScene(const std::string& title, const std::string& comment);
 
@@ -28,4 +30,4 @@ private:
     std::ofstream file;
 };
 
-#endif //INPSIGHTS_X3DCONVERTER_H
+#endif //INPSIGHTS_X3DOMCONVERTER_H

@@ -54,7 +54,7 @@ set(HEADER_FILES
         include/Arrow.h
         include/CartesianAxes.h
         include/ColorPalette.h
-        include/X3dConverter.h
+        include/X3domConverter.h
         )
 
 set(SOURCE_FILES
@@ -81,7 +81,7 @@ set(SOURCE_FILES
         source/Surface.cpp
         source/Arrow.cpp
         source/CartesianAxes.cpp
-        source/X3dConverter.cpp)
+        source/X3domConverter.cpp)
 
 add_library(${PROJECT_NAME} STATIC
         ${SOURCE_FILES}

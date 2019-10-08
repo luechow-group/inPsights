@@ -19,7 +19,7 @@
 #include <Conversion.h>
 #include <SpinCorrelations3D.h>
 #include <spdlog/spdlog.h>
-#include <X3dConverter.h>
+#include <X3domConverter.h>
 
 MoleculeWidget::MoleculeWidget(QWidget *parent)
         :
@@ -256,11 +256,8 @@ void MoleculeWidget::onScreenshot(bool) {
 
 void MoleculeWidget::onX3dExport(bool) {
 
-    //QFile file(QDateTime::currentDateTime().toString(Qt::ISODate) + QString(".html"));
-    //file.open(QIODevice::WriteOnly);
-
     auto filename = QDateTime::currentDateTime().toString(Qt::ISODate) + QString(".html");
-    X3dConverter x3Dconverter(filename.toStdString());
+    X3domConverter x3Dconverter(filename.toStdString(), filename.toStdString(), "");
     auto atoms3d = atomsVector3D_->particles3D_;
 
     for (const auto & a : atoms3d) {
