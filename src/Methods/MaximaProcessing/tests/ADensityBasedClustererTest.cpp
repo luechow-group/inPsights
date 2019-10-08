@@ -146,8 +146,11 @@ TEST_F(ADensityBasedClustererTest, RotationallySymmetricAndPointLikeCluster){
             for (size_t i = 1; i < references[j].size(); ++i) {
                 auto distanceMatrix =
                         Metrics::positionalDistances(references[j][i].representative()->maximum().positionsVector());
+                // for the comparison, the threshold has to be 2*radius
+                // since every particle can be displaced by radius, the distance between
+                // two particles can change by 2*radius
                 ASSERT_TRUE(distanceMatrix.isApprox(referenceDistanceMatrix,
-                                                    DensityBasedClusterer::settings.radius.get()));
+                                                    2 * DensityBasedClusterer::settings.radius.get()));
             }
         }
     }
