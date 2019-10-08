@@ -16,7 +16,6 @@ public:
                   float radius,
                   float alpha = 1.0f);
 
-private:
   Cylinder *srcCylinder_, *destCylinder_;
 };
 

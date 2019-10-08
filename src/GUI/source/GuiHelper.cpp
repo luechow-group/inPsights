@@ -48,3 +48,15 @@ float GuiHelper::radiusFromType<Spin>(const Spin &type) {
     // choose electron size relative to an hydrogen atom
     return GuiHelper::radiusFromType<Element>(Element::H)/4.0f;
 }
+
+std::pair<QVector3D, QVector3D> GuiHelper::sphericalSurfacePositionPair(
+        const Eigen::Vector3d& position1, double radius1,
+        const Eigen::Vector3d& position2, double radius2){
+
+    Eigen::Vector3d v12 = position2-position1;
+    float distance =  v12.norm();
+    Eigen::Vector3d p1 = position1 + v12 * radius1 / distance;
+    Eigen::Vector3d p2 = position2 - v12 * radius2 / distance;
+
+    return {GuiHelper::toQVector3D(p1), GuiHelper::toQVector3D(p2)};
+}

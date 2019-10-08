@@ -19,7 +19,7 @@
 #include <Conversion.h>
 #include <SpinCorrelations3D.h>
 #include <spdlog/spdlog.h>
-
+#include <X3dConverter.h>
 
 MoleculeWidget::MoleculeWidget(QWidget *parent)
         :
@@ -29,6 +29,7 @@ MoleculeWidget::MoleculeWidget(QWidget *parent)
         moleculeEntity_(new Qt3DCore::QEntity(root_)),
         cameraController_(new Qt3DExtras::QOrbitCameraController(root_)),
         screenshotButton_(new QPushButton("Save image", this)),
+        x3dExportButton_(new QPushButton("Save x3d", this)),
         infoText_(new QLabel("Info text")),
         atomsVector3D_(nullptr) {
 
@@ -39,6 +40,7 @@ MoleculeWidget::MoleculeWidget(QWidget *parent)
     outerLayout->addWidget(createWindowContainer(qt3DWindow_),1);
     outerLayout->addLayout(innerLayout,0);
     innerLayout->addWidget(screenshotButton_,1);
+    innerLayout->addWidget(x3dExportButton_,1);
     innerLayout->addWidget(infoText_,3);
 
     qt3DWindow_->setRootEntity(root_);
@@ -51,6 +53,7 @@ MoleculeWidget::MoleculeWidget(QWidget *parent)
     cameraController_->setCamera(qt3DWindow_->camera());
 
     connect(screenshotButton_, &QPushButton::clicked, this, &MoleculeWidget::onScreenshot);
+    connect(x3dExportButton_, &QPushButton::clicked, this, &MoleculeWidget::onX3dExport);
 
     setMouseTracking(true);
 }
@@ -248,4 +251,52 @@ void MoleculeWidget::onScreenshot(bool) {
     file.open(QIODevice::WriteOnly);
     screen->grabWindow(qt3DWindow_->winId()).save(&file, "PNG");
     file.close();
+}
+
+
+void MoleculeWidget::onX3dExport(bool) {
+
+    //QFile file(QDateTime::currentDateTime().toString(Qt::ISODate) + QString(".html"));
+    //file.open(QIODevice::WriteOnly);
+
+    auto filename = QDateTime::currentDateTime().toString(Qt::ISODate) + QString(".html");
+    X3dConverter x3Dconverter(filename.toStdString());
+    auto atoms3d = atomsVector3D_->particles3D_;
+
+    for (const auto & a : atoms3d) {
+        x3Dconverter.addSphere(a.operator*(),2);
+    }
+
+    //TODO Refactor
+    double bondDrawingLimit = 1.40 * 1e-10 / AU::length;
+    for (long i = 0; i < atomsVector3D_->numberOfEntities(); ++i) {
+        for (long j = i+1; j < atomsVector3D_->numberOfEntities(); ++j) {
+
+            auto atomDistance = Metrics::distance(
+                    atomsVector3D_->operator[](i).position(),
+                    atomsVector3D_->operator[](j).position());
+            auto addedGuiRadii = (GuiHelper::radiusFromType(atomsVector3D_->operator[](i).type())
+                                  + GuiHelper::radiusFromType(atomsVector3D_->operator[](j).type()));
+
+
+            if (atomDistance - 0.5*addedGuiRadii < bondDrawingLimit) {
+                Qt3DCore::QEntity root;
+                Bond3D bond(&root, *atomsVector3D_->particles3D_[i], *atomsVector3D_->particles3D_[j]);
+                x3Dconverter.addCylinder(*bond.srcCylinder_,2);
+                x3Dconverter.addCylinder(*bond.destCylinder_,2);
+            }
+        }
+    }
+
+    for(const auto& evMap : activeElectronsVectorsMap_){
+        Qt3DCore::QEntity root;
+
+        for(const auto& ev : evMap.second) {
+            for (const auto &e : ev.second->particles3D_) {
+                x3Dconverter.addSphere(e.operator*(),1);
+            }
+        }
+    }
+
+    x3Dconverter.closeScene();
 }

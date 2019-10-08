@@ -53,6 +53,10 @@ namespace GuiHelper {
     QVector3D toQVector3D(const Eigen::Vector3f &vec);
 
     QVector3D toQVector3D(const Eigen::Vector3d &vec);
+
+    std::pair<QVector3D, QVector3D> sphericalSurfacePositionPair(
+            const Eigen::Vector3d& position1, double radius1,
+            const Eigen::Vector3d& position2, double radius2);
 }
 
 #endif //INPSIGHTS_HELPER_H

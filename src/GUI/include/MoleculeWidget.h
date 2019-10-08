@@ -56,12 +56,14 @@ public Q_SLOTS:
     void onElectronsHighlighted(std::vector<int>);
 
     void onScreenshot(bool);
+    void onX3dExport(bool);
 
 private:
     Qt3DExtras::Qt3DWindow *qt3DWindow_;
     Qt3DCore::QEntity *root_, *moleculeEntity_;
     Qt3DExtras::QOrbitCameraController *cameraController_;
     QPushButton *screenshotButton_;
+    QPushButton *x3dExportButton_;
 public:
     QLabel* infoText_;
 private:

@@ -8,7 +8,8 @@ Bond3D::Bond3D(Qt3DCore::QEntity *root, const Atom3D &src, const Atom3D &dest) /
         : DividedCylinder(root,
                           {GuiHelper::QColorFromType<Element>(src.type()),
                            GuiHelper::QColorFromType<Element>(dest.type())},
-                          {GuiHelper::toQVector3D(src.position()),
-                           GuiHelper::toQVector3D(dest.position())},
-                          2.4f / 40.0f * std::exp(-0.1f * (src.position() - dest.position()).norm()),
-                          0.25f) {}
+                          GuiHelper::sphericalSurfacePositionPair(
+                                  src.position(), src.getRadius(),
+                                  dest.position(), dest.getRadius()),
+                                  0.04f,
+                          0.33f) {}

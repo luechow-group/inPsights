@@ -10,14 +10,13 @@
 
 class Sphere : public Abstract3dObject{
 public:
-    Sphere(Qt3DCore::QEntity *root, QColor color, QVector3D location, float radius);
+    Sphere(Qt3DCore::QEntity *root, QColor color, QVector3D location, float radius, float alpha = 1.0f);
 
-    float getRadius() const { return radius_;};
+    float getRadius() const;
 
-    void setRadius(const float radius) {
-        radius_ = radius;
-        mesh_->setRadius(radius);
-    };
+    void setRadius(const float radius);
+
+    void addToXml (std::ostream& os, unsigned sortKey = 1) const;
 
 public slots:
     void onHighlighted(bool highlightQ);

@@ -14,7 +14,7 @@ Abstract3dObject::Abstract3dObject(Qt3DCore::QEntity *root, QColor color, const 
     color_(std::move(color))
 {
   material->setSpecular(Qt::white);
-  material->setShininess(0);
+  material->setShininess(4.0f);
   material->setAmbient(color);
   material->setAlpha(alpha);
   transform->setTranslation(location);
