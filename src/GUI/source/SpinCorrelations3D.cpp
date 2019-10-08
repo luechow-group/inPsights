@@ -36,8 +36,8 @@ void SpinCorrelations3D::createConnections(const ElectronsVector &electronsVecto
                     electronsVector.positionsVector()[i], electronRadius,
                     electronsVector.positionsVector()[j], electronRadius);
 
-            bool lineMode = false;
-            if(lineMode) {
+            bool thinLineMode = false;
+            if(thinLineMode) {
                 if (std::abs(corr) >= spinCorrelationThreshold) {
                     if (corr < 0)
                         new Line3D(this, Qt::green, positionPair, std::abs(corr));
@@ -50,10 +50,10 @@ void SpinCorrelations3D::createConnections(const ElectronsVector &electronsVecto
                     if (corr < 0) {
                         c = new Cylinder(this, Qt::green, positionPair, electronRadius / 7.5f, std::abs(corr));
                         c->material->setShininess(0);
+                    } else {
+                        c = new Cylinder(this, Qt::magenta, positionPair, electronRadius / 7.5f, std::abs(corr));
+                        c->material->setShininess(0);
                     }
-                    //else
-                    //    c = new Cylinder(this, Qt::magenta, positionPair, electronRadius / 7.5f, std::abs(corr));
-                    //c->material->setShininess(0);
                 }
             }
 
