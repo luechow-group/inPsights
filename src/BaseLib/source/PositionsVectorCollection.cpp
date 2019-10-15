@@ -19,10 +19,9 @@ PositionsVectorCollection::PositionsVectorCollection(const std::vector<Positions
     if( !positionsVectorCollection.empty()) {
         numberOfPositionEntities_ = positionsVectorCollection[0].numberOfEntities();
 
-        for (const auto &positionsVector : positionsVectorCollection) {
-             assert(numberOfPositionEntities_ == positionsVector.numberOfEntities()
-                    && "All position collections must contain the same number of positions.");
-        }
+        assert(std::all_of(std::next(positionsVectorCollection.cbegin()), positionsVectorCollection.cend(),
+                [this](const PositionsVector &p){ return p.numberOfEntities() == numberOfPositionEntities_; })
+                && "All position collections must contain the same number of positions.");
     }
 }
 
