@@ -23,7 +23,7 @@ namespace Settings {
                 });
         minimalClusterSize.onChange_.connect(
                 [&](size_t value) {
-                    if(!value >= 1)
+                    if(value < 1)
                         throw std::invalid_argument(
                                 "The " + minimalClusterSize.name() + "=" + std::to_string(minimalClusterSize())
                                 + " must be 1 or greater.");
