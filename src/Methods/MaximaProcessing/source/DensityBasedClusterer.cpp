@@ -60,7 +60,7 @@ void DensityBasedClusterer::cluster(Group& group) {
 
     group.sortAll();
 
-    auto eps = settings.radius() * 2;// why multiplication by 2 is needed?
+    auto eps = settings.radius();
     auto minPts = settings.minimalClusterSize();
 
     DensityBasedScan<double, Group, DensityBasedClusterer::wrapper> dbscan(group);
