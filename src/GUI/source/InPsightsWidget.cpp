@@ -235,12 +235,16 @@ void InPsightsWidget::onSpinCorrelationsBoxChanged(double value) {
     }
 }
 
+#include <QSize>
 void InPsightsWidget::showSplashScreen() {
     auto splashScreen = new QSplashScreen();
+    auto pixmap = QPixmap(":inPsights.png").scaledToWidth(400, Qt::TransformationMode::SmoothTransformation);
 
-    splashScreen->setPixmap(QPixmap(":inPsights.png"));
+    splashScreen->setPixmap(pixmap);
     splashScreen->show();
-    splashScreen->showMessage("Version 1.0.0", Qt::AlignRight, Qt::lightGray);
+    splashScreen->showMessage(
+            "Version 0.1.0 (pre-release)\n"
+            "Copyright © 2016-2019  Michael A. Heuer.", Qt::AlignBottom, Qt::gray);
 
     splashScreen->finish(this);
 }
