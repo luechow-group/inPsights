@@ -20,7 +20,7 @@ namespace quickhull {
 		VertexDataSource<T> vertices_;
 		std::vector<size_t> indices_;
 	public:
-		ConvexHull() {}
+		ConvexHull() = default;
 		
 		// Copy constructor
 		ConvexHull(const ConvexHull& o) {
@@ -92,14 +92,14 @@ namespace quickhull {
 					break;
 				}
 			}
-			if (faceStack.size()==0) {
+			if (faceStack.empty()) {
 				return;
 			}
 			
 			const size_t finalMeshFaceCount = mesh.faces_.size() - mesh.disabledFaces_.size();
 			indices_.reserve(finalMeshFaceCount*3);
 
-			while (faceStack.size()) {
+			while (!faceStack.empty()) {
 				auto it = faceStack.end()-1;
 				size_t top = *it;
 				assert(!mesh.faces_[top].isDisabled());
@@ -119,14 +119,14 @@ namespace quickhull {
 					auto vertices = mesh.getVertexIndicesOfFace(mesh.faces_[top]);
 					if (!useOriginalIndices) {
 						for (auto& v : vertices) {
-							auto it = vertexIndexMapping.find(v);
-							if (it == vertexIndexMapping.end()) {
+							auto foundIt = vertexIndexMapping.find(v);
+							if (foundIt == vertexIndexMapping.end()) {
 								optimizedVertexBuffer_->push_back(pointCloud[v]);
 								vertexIndexMapping[v] = optimizedVertexBuffer_->size()-1;
 								v = optimizedVertexBuffer_->size()-1;
 							}
 							else {
-								v = it->second;
+								v = foundIt->second;
 							}
 						}
 					}
