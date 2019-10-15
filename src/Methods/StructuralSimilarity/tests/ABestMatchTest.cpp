@@ -1,4 +1,3 @@
-// Edited by Leonard Reuter on 26.06.19.
 /* Copyright (C) 2018-2019 Michael Heuer.
  *
  * This file is part of inPsights.
@@ -20,8 +19,6 @@
 #include <BestMatch.h>
 
 using namespace testing;
-
-
 
 TEST(ABestMatchTest, CombinePermutations){
     Eigen::PermutationMatrix<Eigen::Dynamic>p1,p2;
