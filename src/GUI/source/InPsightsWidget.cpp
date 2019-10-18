@@ -235,7 +235,6 @@ void InPsightsWidget::onSpinCorrelationsBoxChanged(double value) {
     }
 }
 
-#include <QSize>
 void InPsightsWidget::showSplashScreen() {
     auto splashScreen = new QSplashScreen();
     auto pixmap = QPixmap(":inPsights.png").scaledToWidth(400, Qt::TransformationMode::SmoothTransformation);
