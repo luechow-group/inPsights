@@ -39,7 +39,6 @@ if (${BUILD_GUI})
     target_link_libraries(PathOptimization.exe
             GUI
             BaseLib
-            TransitionStateSearch
             )
 
     add_executable(WavefunctionTransitionStates.exe WavefunctionTransitionStates.cpp)
