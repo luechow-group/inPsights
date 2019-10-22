@@ -1,12 +1,6 @@
 [submodule "src/AmolqcInterface/Amolqc"]
 	path = src/AmolqcInterface/Amolqc
 	url = ./../Amolqc.git
-[submodule "src/Externals/BSplines"]
-    path = src/Externals/BSplines
-    url = ./../../michael.heuer/BSplines.git
-[submodule "src/Externals/cppoptlib"]
-	path = src/Externals/cppoptlib
-	url = ./../CppNumericalSolvers.git
 [submodule "src/Externals/dualmc"]
 	path = src/Externals/dualmc
 	url = ./../dualmc.git

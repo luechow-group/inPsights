@@ -129,31 +129,6 @@ void ElectronicWaveFunctionProblem::putElectronsIntoNuclei(Eigen::VectorXd& x, E
     }
 }
 
-bool ElectronicWaveFunctionProblem::callback(const cppoptlib::Criteria<double> &state, Eigen::VectorXd &x, Eigen::VectorXd& grad) {
-    if (putElectronsIntoNuclei_){
-        gradientResetQ = false;
-        putElectronsIntoNuclei(x, grad); //gradientQ could be true now
-    }
-
-    optimizationPath_.append(ElectronsVector(PositionsVector(x), wf_.getSpinTypesVector()));
-
-    if (printStatus_){
-        std::cout << "(" << std::setw(2) << state.iterations << ")"
-                  << " f(x) = " << std::fixed << std::setw(8) << std::setprecision(8) << value(x)
-                  << " xDelta = " << std::setw(8) << state.xDelta
-                  << " gradInfNorm = " << std::setw(8) << state.gradNorm
-                  << std::endl;
-        std::cout << "value calls: " <<  valueCallCount_ << ", gradient calls:" << gradientCallCount_ << std::endl;
-
-        for (auto & it : indicesOfElectronsNotAtNuclei_) std::cout << it << " ";
-        std::cout << std::endl;
-        for (auto & it : indicesOfElectronsAtNuclei_) std::cout << it << " ";
-        std::cout << std::endl;
-    }
-
-    return true;
-}
-
 AtomsVector ElectronicWaveFunctionProblem::getAtomsVector() const{
     return wf_.getAtomsVector();
 }

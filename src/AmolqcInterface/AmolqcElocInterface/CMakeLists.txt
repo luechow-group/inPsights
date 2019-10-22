@@ -8,6 +8,7 @@ set ( OUTPUT_NAME "${PROJECT_FOLDER_NAME}" )
 message ( "-- ++ CREATING PROJECT OR MAKEFILE ---> ${OUTPUT_NAME}" )
 
 set(HEADER_FILES
+        include/Problem.h
         include/ElectronicWaveFunction.h
         include/ElectronicWaveFunctionProblem.h
         )

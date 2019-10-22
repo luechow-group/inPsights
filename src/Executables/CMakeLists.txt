@@ -25,33 +25,6 @@ if (${BUILD_GUI})
     add_executable(ShowMaxima ShowMaxima.cpp)
     target_link_libraries(ShowMaxima
             GUI
-            BaseLib
-            TransitionStateSearch
-            )
-
-    add_executable(PathOptimization.exe PathOptimization.cpp)
-    target_link_libraries(PathOptimization.exe
-            GUI
-            BaseLib
-            )
-
-    add_executable(WavefunctionTransitionStates.exe WavefunctionTransitionStates.cpp)
-    target_link_libraries(WavefunctionTransitionStates.exe
-            GUI
-            BaseLib
-            TransitionStateSearch
-            )
-
-    add_executable(LocalPotentialEnergy.exe LocalPotentialEnergy.cpp)
-    target_link_libraries(LocalPotentialEnergy.exe
-            GUI
-            LocalPotentialEnergy
-            AmolqcElocInterface
-            )
-
-    add_executable(ShowMaxima.exe ShowMaxima.cpp)
-    target_link_libraries(ShowMaxima.exe
-            GUI
             AmolqcFileImport
             )
 
