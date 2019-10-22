@@ -22,8 +22,8 @@ if (${BUILD_GUI})
             MaximaProcessing
             )
 
-    add_executable(ShowMaxima ShowMaxima.cpp)
-    target_link_libraries(ShowMaxima
+    add_executable(ShowMaximum ShowMaximum.cpp)
+    target_link_libraries(ShowMaximum
             GUI
             AmolqcFileImport
             )
