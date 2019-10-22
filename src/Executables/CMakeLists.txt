@@ -16,12 +16,6 @@ target_link_libraries(MaximaProcessing.exe
         )
 
 if (${BUILD_GUI})
-    add_executable(CustomMesh CustomMesh.cpp)
-    target_link_libraries(CustomMesh
-            VoxelProcessing # contains dualmc
-            GUI
-            )
-
     add_executable(inPsights inPsights.cpp)
     target_link_libraries(inPsights
             GUI
