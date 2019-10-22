@@ -1,6 +1,3 @@
-//
-// Created by Michael Heuer on 11.03.18.
-//
 #include <gmock/gmock.h>
 
 int main(int ac, char* av[])
