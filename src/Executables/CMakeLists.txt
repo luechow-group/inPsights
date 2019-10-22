@@ -9,8 +9,8 @@ set ( OUTPUT_NAME "${PROJECT_FOLDER_NAME}" )
 message ( "-- ++ CREATING PROJECT OR MAKEFILE ---> ${OUTPUT_NAME}" )
 
 
-add_executable(MaximaProcessing.exe MaximaProcessing.cpp)
-target_link_libraries(MaximaProcessing.exe
+add_executable(ProcessMaxima ProcessMaxima.cpp)
+target_link_libraries(ProcessMaxima
         BaseLib
         MaximaProcessing
         )
@@ -22,8 +22,8 @@ if (${BUILD_GUI})
             MaximaProcessing
             )
 
-    add_executable(StringMethodGUI.exe StringMethodGUI.cpp)
-    target_link_libraries(StringMethodGUI.exe
+    add_executable(ShowMaxima ShowMaxima.cpp)
+    target_link_libraries(ShowMaxima
             GUI
             BaseLib
             TransitionStateSearch
@@ -55,8 +55,8 @@ if (${BUILD_GUI})
             AmolqcFileImport
             )
 
-    add_executable(ShowPath.exe ShowPath.cpp)
-    target_link_libraries(ShowPath.exe
+    add_executable(ShowPath ShowPath.cpp)
+    target_link_libraries(ShowPath
             GUI
             AmolqcFileImport
             )
