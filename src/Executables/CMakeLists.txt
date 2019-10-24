@@ -9,61 +9,27 @@ set ( OUTPUT_NAME "${PROJECT_FOLDER_NAME}" )
 message ( "-- ++ CREATING PROJECT OR MAKEFILE ---> ${OUTPUT_NAME}" )
 
 
-add_executable(MaximaProcessing.exe MaximaProcessing.cpp)
-target_link_libraries(MaximaProcessing.exe
+add_executable(ProcessMaxima ProcessMaxima.cpp)
+target_link_libraries(ProcessMaxima
         BaseLib
         MaximaProcessing
         )
 
 if (${BUILD_GUI})
-    add_executable(CustomMesh CustomMesh.cpp)
-    target_link_libraries(CustomMesh
-            VoxelProcessing # contains dualmc
-            GUI
-            )
-
     add_executable(inPsights inPsights.cpp)
     target_link_libraries(inPsights
             GUI
             MaximaProcessing
             )
 
-    add_executable(StringMethodGUI.exe StringMethodGUI.cpp)
-    target_link_libraries(StringMethodGUI.exe
-            GUI
-            BaseLib
-            TransitionStateSearch
-            )
-
-    add_executable(PathOptimization.exe PathOptimization.cpp)
-    target_link_libraries(PathOptimization.exe
-            GUI
-            BaseLib
-            TransitionStateSearch
-            )
-
-    add_executable(WavefunctionTransitionStates.exe WavefunctionTransitionStates.cpp)
-    target_link_libraries(WavefunctionTransitionStates.exe
-            GUI
-            BaseLib
-            TransitionStateSearch
-            )
-
-    add_executable(LocalPotentialEnergy.exe LocalPotentialEnergy.cpp)
-    target_link_libraries(LocalPotentialEnergy.exe
-            GUI
-            LocalPotentialEnergy
-            AmolqcElocInterface
-            )
-
-    add_executable(ShowMaxima.exe ShowMaxima.cpp)
-    target_link_libraries(ShowMaxima.exe
+    add_executable(ShowMaximum ShowMaximum.cpp)
+    target_link_libraries(ShowMaximum
             GUI
             AmolqcFileImport
             )
 
-    add_executable(ShowPath.exe ShowPath.cpp)
-    target_link_libraries(ShowPath.exe
+    add_executable(ShowPath ShowPath.cpp)
+    target_link_libraries(ShowPath
             GUI
             AmolqcFileImport
             )

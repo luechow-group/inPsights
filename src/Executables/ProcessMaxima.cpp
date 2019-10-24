@@ -296,12 +296,4 @@ int main(int argc, char *argv[]) {
     spdlog::info("Done! Bye bye.");
 
     return 0;
-
-    /* TODO
-     * - refactor best match clusterer
-     * - make single value statistics class
-     * - test naive standard deviation
-     * - test choice of function value increment
-     * - split identity sort into batches that can be compared in parallel using OpenMP
-     * */
 };

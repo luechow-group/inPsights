@@ -19,7 +19,7 @@
 #define INPSIGHTS_ELECTRONICWAVEFUNCTIONPROBLEM_H
 
 #include "ElectronicWaveFunction.h"
-#include "problem.h"
+#include "Problem.h"
 #include <ParticlesVectorCollection.h>
 
 namespace Eigen {
@@ -40,9 +40,7 @@ public:
 
     void hessian(const Eigen::VectorXd&x, Eigen::MatrixXd &hessian) override;
 
-    bool callback(const cppoptlib::Criteria<double> &state, Eigen::VectorXd &x, Eigen::VectorXd& grad) override;
-
-    ParticlesVector<Element> getAtomsVector() const;
+    AtomsVector getAtomsVector() const;
 
     unsigned getValueCallCount(){
         return valueCallCount_;
