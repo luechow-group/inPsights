@@ -14,7 +14,6 @@ set(HEADER_FILES
         include/SimpleSorter.h
         include/BestMatch.h
         include/GraphAnalysis.h
-        include/SpinPairClassification.h
         include/Motif.h
         include/Motifs.h
         include/BestMatchSimilarity.h
@@ -25,7 +24,6 @@ set(SOURCE_FILES
         source/QuaternionFit.cpp
         source/BestMatch.cpp
         source/GraphAnalysis.cpp
-        source/SpinPairClassification.cpp
         source/Motif.cpp
         source/Motifs.cpp
         source/BestMatchSimilarity.cpp

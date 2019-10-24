@@ -53,6 +53,7 @@ set(HEADER_FILES
         include/AsciiArt.h
         include/IPosition.h
         include/NearestElectrons.h
+        include/SpinPairClassification.h
         )
 
 set(SOURCE_FILES
@@ -79,6 +80,7 @@ set(SOURCE_FILES
         source/Combinatorics.cpp
         source/IPosition.cpp
         source/NearestElectrons.cpp
+        source/SpinPairClassification.cpp
         )
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES})
