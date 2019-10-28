@@ -30,6 +30,8 @@ namespace Settings {
         boolProperty::decode(node[className], generateVoxelCubesQ);
         boolProperty::decode(node[className], centerCubesAtElectronsQ);
         unsignedShortProperty::decode(node[className], dimension);
+        boolProperty::decode(node[className], smoothingQ);
+        unsignedShortProperty::decode(node[className], smoothingNeighbors);
         YAML::convert<Property<VoxelCube::VertexComponentsType>>::decode(node[className], length);
     };
 
@@ -37,6 +39,8 @@ namespace Settings {
         node[className][generateVoxelCubesQ.name()] = generateVoxelCubesQ.get();
         node[className][centerCubesAtElectronsQ.name()] = centerCubesAtElectronsQ.get();
         node[className][dimension.name()] = dimension.get();
+        node[className][smoothingQ.name()] = smoothingQ.get();
+        node[className][smoothingNeighbors.name()] = smoothingNeighbors.get();
         node[className][length.name()] = length.get();
     };
 }
@@ -45,6 +49,8 @@ YAML_SETTINGS_DEFINITION(Settings::VoxelCubeGeneration)
 std::vector<VoxelCube> VoxelCubeGeneration::fromCluster(const Group &maxima, const std::vector<Sample> &samples) {
     auto dimension = settings.dimension.get();
     auto length = settings.length.get();
+    auto smoothingQ = settings.smoothingQ.get();
+    auto smoothingNeighbors = settings.smoothingNeighbors.get();
 
     ElectronsVector representativeMax = maxima.representative()->maximum(); //TODO use averaged point
     std::vector<VoxelCube> voxels(static_cast<unsigned long>(representativeMax.numberOfEntities()));
@@ -54,12 +60,15 @@ std::vector<VoxelCube> VoxelCubeGeneration::fromCluster(const Group &maxima, con
         if(settings.centerCubesAtElectronsQ.get())
             cubeOrigin = representativeMax.positionsVector()[i].cast<float>();
 
-        VoxelCube voxel(dimension, length, cubeOrigin);
+        VoxelCube voxel(dimension, length, cubeOrigin, smoothingQ);
 
         auto allSampleIds = maxima.allSampleIds();
 
         for (auto id : allSampleIds)
             voxel.add(samples[id].sample_[i].position());
+
+        if(smoothingQ)
+            voxel.smooth(smoothingNeighbors);
 
         voxels[i] = voxel;
     }

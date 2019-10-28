@@ -33,14 +33,14 @@ public:
     explicit VoxelCube(
             IndexType dimension = 16,
             VertexComponentsType length = VertexComponentsType(8 * ConversionFactors::angstrom2bohr),
-            const Eigen::Matrix<VertexComponentsType,3,1>& origin = {0,0,0});
+            const Eigen::Matrix<VertexComponentsType,3,1>& origin = {0,0,0},
+            bool boxSmoothQ = true);
 
     long index(IndexType i, IndexType j, IndexType k);
 
     void add(const Eigen::Vector3d& pos, IndexType weight = 1);
 
     void shiftDualMCResults(std::vector<dualmc::Vertex>& vertices);
-
 
     IndexType getDimension() const;
 
@@ -50,10 +50,15 @@ public:
 
     const std::vector<VolumeDataType> &getData() const;
 
+    void smooth(IndexType neighbors);
+
+    VolumeDataType cubeAverage(IndexType i, IndexType j, IndexType k, IndexType neighbors);
+
     void setData(const std::vector<VolumeDataType> &data);
    
     static constexpr VertexComponentsType offset_ = 0.5;
 
+    bool smoothQ_;
     IndexType dimension_;
     VertexComponentsType length_, halfLength_, inverseDimension_;
     Eigen::Matrix<VertexComponentsType,3,1> origin_;

@@ -22,14 +22,15 @@
 VoxelCube::VoxelCube(
         IndexType dimension,
         VertexComponentsType length,
-        const Eigen::Matrix<VertexComponentsType, 3, 1>& origin)
+        const Eigen::Matrix<VertexComponentsType, 3, 1> &origin, bool boxSmoothQ)
         :
+        smoothQ_(boxSmoothQ),
         dimension_(dimension),
         length_(length),
         halfLength_(length / 2.0f),
-        inverseDimension_(1.0f / (dimension - 1)),
+        inverseDimension_(1.0f / float(dimension - 1)),
         origin_(origin),
-        data_(static_cast<unsigned long>(dimension * dimension * dimension)) {
+        data_(static_cast<size_t>(dimension * dimension * dimension)) {
     assert(dimension > 3 && "The cube dimensions must be greater than 3.");
     assert(length > 0 && "Length must be positive.");
 }
@@ -43,9 +44,9 @@ void VoxelCube::add(const Eigen::Vector3d &pos, IndexType weight) {
     auto j = IndexType((pos[1] + halfLength_ - origin_[1]) / length_ * dimension_);
     auto k = IndexType((pos[2] + halfLength_ - origin_[2]) / length_ * dimension_);
 
-    if((0 <= i && i < dimension_)
-    && (0 <= j && j < dimension_)
-    && (0 <= k && k < dimension_)) {
+    if ((0 <= i && i < dimension_)
+        && (0 <= j && j < dimension_)
+        && (0 <= k && k < dimension_)) {
         assert(index(i, j, k) < data_.size() && "The index must fit into the vector");
         data_[index(i, j, k)] += static_cast<VolumeDataType>(weight);
     }
@@ -79,9 +80,52 @@ void VoxelCube::setData(const std::vector<VoxelCube::VolumeDataType> &data) {
     VoxelCube::data_ = data;
 }
 
+
+VoxelCube::VolumeDataType
+VoxelCube::cubeAverage(IndexType i, IndexType j, IndexType k, IndexType neighbors) {
+
+    VolumeDataType average = 0;
+
+    auto numberOfAveragedBoxes = std::pow(neighbors * 2 + 1, 3);
+
+    for (IndexType l = -neighbors; l <= neighbors; ++l) {
+        for (IndexType m = -neighbors; m <= neighbors; ++m) {
+            for (IndexType n = -neighbors; n <= neighbors; ++n) {
+
+                IndexType lp = l, mp = m, np = n;
+
+                if (i + l < 0 || i + l >= dimension_) lp = 0;
+
+                if (j + m < 0 || j + m >= dimension_) mp = 0;
+
+                if (k + n < 0 || k + n >= dimension_) np = 0;
+
+                average += data_[index(i + lp, j + mp, k + np)];
+            }
+        }
+    }
+    // Attention: division by integer
+    average /= numberOfAveragedBoxes; 
+
+    return average;
+}
+
+void VoxelCube::smooth(VoxelCube::IndexType neighbors) {
+
+    std::vector<VolumeDataType> dataSmoothed(static_cast<size_t>(dimension_ * dimension_ * dimension_));
+
+    for (IndexType i = 0; i < dimension_; ++i)
+        for (IndexType j = 0; j < dimension_; ++j)
+            for (IndexType k = 0; k < dimension_; ++k)
+                dataSmoothed[index(i, j, k)] = cubeAverage(i, j, k, neighbors);
+
+    data_ = dataSmoothed;
+}
+
 namespace YAML {
     Node convert<VoxelCube>::encode(const VoxelCube &rhs) {
         Node node;
+        node["smoothed"] = rhs.smoothQ_;
         node["dimension"] = rhs.getDimension();
         node["length"] = rhs.getLength();
         node["origin"] = rhs.getOrigin();
@@ -93,16 +137,18 @@ namespace YAML {
         if (!node.IsMap())
             return false;
 
+        auto smoothed = node["smoothed"].as<bool>();
         auto dimension = node["dimension"].as<VoxelCube::IndexType>();
         auto length = node["length"].as<VoxelCube::VertexComponentsType>();
         auto origin = node["origin"].as<Eigen::Matrix<VoxelCube::VertexComponentsType, 3, 1>>();
-        rhs = VoxelCube(dimension, length, origin);
+        rhs = VoxelCube(dimension, length, origin, smoothed);
         rhs.setData(node["data"].as<std::vector<VoxelCube::VolumeDataType>>());
         return true;
     }
 
     Emitter &operator<<(Emitter &out, const VoxelCube &rhs) {
         out << BeginMap
+            << Key << "smoothed" << Value << rhs.smoothQ_
             << Key << "dimension" << Value << rhs.getDimension()
             << Key << "length" << Value << rhs.getLength()
             << Key << "origin" << Value << rhs.getOrigin()
