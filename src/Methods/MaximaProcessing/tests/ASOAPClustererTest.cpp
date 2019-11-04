@@ -87,8 +87,12 @@ TEST_F(ASOAPClustererTest, VerifyTestCluster) {
     Angular::settings.lmax = 3;
     Radial::settings.nmax = 3;
 
+    auto gBC = Group({B, C});
+    auto averagedMaximumsElectronsVectorBC =
+            gBC.electronsVectorFromAveragedPositionsVector(gBC.averagedMaximumPositionsVector());
+
     auto specA = MolecularSpectrum({atoms, A.representative()->maximum()});
-    auto specBCavg = MolecularSpectrum({atoms, Group({B, C}).averagedRepresentativeElectronsVector()});
+    auto specBCavg = MolecularSpectrum({atoms, averagedMaximumsElectronsVectorBC});
     auto specD = MolecularSpectrum({atoms, D.representative()->maximum()});
     auto specE = MolecularSpectrum({atoms, E.representative()->maximum()});
     auto specF = MolecularSpectrum({atoms, F.representative()->maximum()});

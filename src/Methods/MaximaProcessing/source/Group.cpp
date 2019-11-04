@@ -84,7 +84,7 @@ void Group::permuteAll(const Eigen::PermutationMatrix<Eigen::Dynamic> &perm, std
     }
 }
 
-Group::AveragedPositionsVector Group::averagedPositionsVector() const {
+Group::AveragedPositionsVector Group::averagedMaximumPositionsVector() const {
     if (isLeaf())
         return {representative()->maximum().positionsVector(), 1};
     else {
@@ -93,7 +93,7 @@ Group::AveragedPositionsVector Group::averagedPositionsVector() const {
                 representative()->maximum().numberOfEntities()
                 *representative()->maximum().positionsVector().entityLength());
         for (const auto &subgroup : *this) {
-            auto subgroupAverage = subgroup.averagedPositionsVector();
+            auto subgroupAverage = subgroup.averagedMaximumPositionsVector();
             average += double(subgroupAverage.weight)* subgroupAverage.positions.asEigenVector();
             weight += subgroupAverage.weight;
         }
@@ -102,8 +102,22 @@ Group::AveragedPositionsVector Group::averagedPositionsVector() const {
     }
 }
 
-ElectronsVector Group::averagedRepresentativeElectronsVector() const {
-    return {averagedPositionsVector().positions,representative()->maximum().typesVector()};
+ElectronsVector Group::electronsVectorFromAveragedPositionsVector(const AveragedPositionsVector & averagedPositionsVector) const {
+    return {averagedPositionsVector.positions, representative()->maximum().typesVector()};
+}
+
+Group::AveragedPositionsVector Group::averagedSamplePositionsVector(const std::vector<Sample>& samples) const {
+    auto sampleIds = allSampleIds();
+    
+    Eigen::VectorXd average = Eigen::VectorXd::Zero(
+            representative()->maximum().numberOfEntities()
+            *representative()->maximum().positionsVector().entityLength());
+    for (const auto &sampleId : sampleIds) {
+        average += samples[sampleId].sample_.positionsVector().asEigenVector();
+    }
+    average /= sampleIds.size();
+    
+    return {PositionsVector(average), static_cast<unsigned>(sampleIds.size())};
 }
 
 std::shared_ptr<Reference> Group::representative() {
@@ -156,7 +170,7 @@ std::vector<size_t> Group::allSampleIds() const {
         return representative()->sampleIds();
     else {
         std::vector<size_t> ids;
-        for (auto subgroup : *this) {
+        for (const auto & subgroup : *this) {
             auto subgroupSampleIds = subgroup.allSampleIds();
             ids.insert(ids.end(), subgroupSampleIds.begin(), subgroupSampleIds.end());
         }

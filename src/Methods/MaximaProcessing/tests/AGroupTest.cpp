@@ -276,7 +276,7 @@ TEST_F(AGroupTest, Print) {
 TEST_F(AGroupTest, Average) {
     Group g({g1,g3});
 
-    auto averagedStructure = g.averagedPositionsVector();
+    auto averagedStructure = g.averagedMaximumPositionsVector();
     ASSERT_EQ(averagedStructure.weight, 2);
     Eigen::VectorXd avg = Eigen::VectorXd::Zero(
             TestMolecules::H2::ElectronsInCores::normal.electrons().positionsVector().numberOfEntities()
@@ -288,7 +288,7 @@ TEST_F(AGroupTest, Average) {
 TEST_F(AGroupTest, Average_OneMember) {
     Group g({g1});
 
-    auto averagedStructure = g.averagedPositionsVector();
+    auto averagedStructure = g.averagedMaximumPositionsVector();
     ASSERT_EQ(averagedStructure.weight, 1);
 
     ASSERT_TRUE(averagedStructure.positions.asEigenVector().isApprox(
