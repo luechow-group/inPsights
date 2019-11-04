@@ -82,7 +82,7 @@ namespace YAML {
         // TODO temporary - remove
         std::vector<VoxelCube> cubes = {};
         if(node["VoxelCubes"])
-            if (node["VoxelCubes"].IsMap() && node["VoxelCubes"].size() > 0)
+            if (node["VoxelCubes"].IsSequence() && node["VoxelCubes"].size() > 0)
                 cubes = node["VoxelCubes"].as<std::vector<VoxelCube>>();
 
         Eigen::MatrixXd sedOverlaps;
