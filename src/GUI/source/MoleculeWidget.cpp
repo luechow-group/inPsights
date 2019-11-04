@@ -221,8 +221,6 @@ void MoleculeWidget::addMaximaHulls(int clusterId, const std::vector<ClusterData
 
     std::vector<Surface*> maximaHulls(N);
 
-    const auto& voxelData = clusterData[clusterId].voxelCubes_;
-
     quickhull::QuickHull<float> qh;
 
     for (std::size_t i = 0; i < spins.numberOfEntities(); ++i) {
