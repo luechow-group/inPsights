@@ -26,6 +26,7 @@ set(HEADER_FILES
         include/Group.h
         include/IClusterer.h
         include/ReferencePositionsClusterer.h
+        include/VoxelCubeOverlapCalculation.h
         )
 
 set(SOURCE_FILES
@@ -46,6 +47,7 @@ set(SOURCE_FILES
         source/Group.cpp
         source/IClusterer.cpp
         source/ReferencePositionsClusterer.cpp
+        source/VoxelCubeOverlapCalculation.cpp
         )
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES})

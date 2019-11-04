@@ -42,7 +42,8 @@ public:
                 const TriangularMatrixStatistics & interMotifEnergyStats,
                 const TriangularMatrixStatistics & ReeStats,
                 const MatrixStatistics RenStats,
-                const std::vector<VoxelCube>& voxelCubes
+                const std::vector<VoxelCube>& seds,
+                const Eigen::MatrixXd& sedOverlaps
                 );
 
     ElectronsVector representativeStructure() const;
@@ -56,6 +57,7 @@ public:
     TriangularMatrixStatistics SeeStats_, interMotifEnergyStats_, ReeStats_;
     MatrixStatistics RenStats_;
     std::vector<VoxelCube> voxelCubes_;
+    Eigen::MatrixXd overlaps_;
 };
 
 namespace YAML {

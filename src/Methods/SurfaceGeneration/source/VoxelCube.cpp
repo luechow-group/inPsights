@@ -17,15 +17,20 @@
 
 #include <VoxelCube.h>
 #include <yaml-cpp/yaml.h>
+#include <spdlog/spdlog.h>
 #include <EigenYamlConversion.h>
+#include <Varname.h>
 
 VoxelCube::VoxelCube(
         IndexType dimension,
         VertexComponentsType length,
-        const Eigen::Matrix<VertexComponentsType, 3, 1> &origin, bool boxSmoothQ)
+        const Eigen::Matrix<VertexComponentsType, 3, 1> &origin,
+        bool boxSmoothQ)
         :
         smoothQ_(boxSmoothQ),
         dimension_(dimension),
+        insideWeight_(0),
+        totalWeight_(0),
         length_(length),
         halfLength_(length / 2.0f),
         inverseDimension_(1.0f / float(dimension - 1)),
@@ -35,22 +40,44 @@ VoxelCube::VoxelCube(
     assert(length > 0 && "Length must be positive.");
 }
 
-long VoxelCube::index(IndexType i, IndexType j, IndexType k) {
+std::size_t VoxelCube::index(IndexType i, IndexType j, IndexType k) const {
     return i + dimension_ * (j + dimension_ * k);
 }
 
-void VoxelCube::add(const Eigen::Vector3d &pos, IndexType weight) {
-    auto i = IndexType((pos[0] + halfLength_ - origin_[0]) / length_ * dimension_);
-    auto j = IndexType((pos[1] + halfLength_ - origin_[1]) / length_ * dimension_);
-    auto k = IndexType((pos[2] + halfLength_ - origin_[2]) / length_ * dimension_);
+Eigen::Vector3i VoxelCube::getVoxelIndices(const Eigen::Vector3d& pos){
+    Eigen::Vector3i indices;
+    indices[0] = IndexType((pos[0] + halfLength_ - origin_[0]) / length_ * dimension_);
+    indices[1] = IndexType((pos[1] + halfLength_ - origin_[1]) / length_ * dimension_);
+    indices[2] = IndexType((pos[2] + halfLength_ - origin_[2]) / length_ * dimension_);
+    return indices;
+}
+
+void VoxelCube::add(const Eigen::Vector3d &pos, VolumeDataType weight) {
+    auto indices = getVoxelIndices(pos);
+
+    IndexType i = indices[0];
+    IndexType j = indices[1];
+    IndexType k = indices[2];
+
+    add(i,j,k,weight);
+};
+
+void VoxelCube::add(IndexType i, IndexType j, IndexType k, VolumeDataType weight) {
+    if(totalWeight_ == std::numeric_limits<VolumeDataType>::max())
+        spdlog::critical("Overflow in voxel cell. The maxium value for the {} of {} has been exceeded.",
+                VARNAME(VolumeDataType),
+                std::numeric_limits<VolumeDataType>::max());
 
     if ((0 <= i && i < dimension_)
         && (0 <= j && j < dimension_)
         && (0 <= k && k < dimension_)) {
         assert(index(i, j, k) < data_.size() && "The index must fit into the vector");
         data_[index(i, j, k)] += static_cast<VolumeDataType>(weight);
+        insideWeight_ += weight;
     }
+    totalWeight_ += weight;
 };
+
 
 void VoxelCube::shiftDualMCResults(std::vector<dualmc::Vertex> &vertices) {
     for (auto &v : vertices) {
@@ -75,6 +102,10 @@ const Eigen::Matrix<VoxelCube::VertexComponentsType, 3, 1> &VoxelCube::getOrigin
 const std::vector<VoxelCube::VolumeDataType> &VoxelCube::getData() const {
     return data_;
 }
+
+VoxelCube::VolumeDataType VoxelCube::getData(IndexType i, IndexType j, IndexType k) const{
+    return data_[index(i,j,k)];
+};
 
 void VoxelCube::setData(const std::vector<VoxelCube::VolumeDataType> &data) {
     VoxelCube::data_ = data;

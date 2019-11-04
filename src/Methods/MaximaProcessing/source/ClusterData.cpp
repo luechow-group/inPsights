@@ -17,6 +17,7 @@
 
 #include <ClusterData.h>
 
+
 ClusterData::ClusterData(unsigned totalNumberOfStructures,
             const std::vector<ElectronsVector>& exemplaricStructures,
             const SingleValueStatistics & valueStats,
@@ -31,7 +32,8 @@ ClusterData::ClusterData(unsigned totalNumberOfStructures,
             const TriangularMatrixStatistics & interMotifEnergyStats,
             const TriangularMatrixStatistics & ReeStats,
             const MatrixStatistics RenStats,
-            const std::vector<VoxelCube> &voxelCubes
+            const std::vector<VoxelCube> &seds,
+            const Eigen::MatrixXd& sedOverlaps
             )
         :
         N_(totalNumberOfStructures),
@@ -46,7 +48,8 @@ ClusterData::ClusterData(unsigned totalNumberOfStructures,
         interMotifEnergyStats_(interMotifEnergyStats),
         ReeStats_(ReeStats),
         RenStats_(RenStats),
-        voxelCubes_(voxelCubes)
+        voxelCubes_(seds),
+        overlaps_(sedOverlaps)
         {};
 
 ElectronsVector ClusterData::representativeStructure() const {
@@ -70,7 +73,7 @@ namespace YAML {
         node["Vee"] = rhs.electronicEnergyStats_.Vee();
         node["Ven"] = rhs.electronicEnergyStats_.Ven();
         node["VoxelCubes"] = rhs.voxelCubes_;
-
+        node["SedOverlaps"] = rhs.overlaps_;
         return node;
     }
 
@@ -79,8 +82,13 @@ namespace YAML {
         // TODO temporary - remove
         std::vector<VoxelCube> cubes = {};
         if(node["VoxelCubes"])
-            if (node["VoxelCubes"].IsSequence() && node["VoxelCubes"].size() > 0)
+            if (node["VoxelCubes"].IsMap() && node["VoxelCubes"].size() > 0)
                 cubes = node["VoxelCubes"].as<std::vector<VoxelCube>>();
+
+        Eigen::MatrixXd sedOverlaps;
+        if(node["SedOverlaps"])
+            if (node["SedOverlaps"].IsMap() && node["SedOverlaps"][0].IsMap())
+                sedOverlaps= node["SedOverlaps"].as<Eigen::MatrixXd>();
 
         auto motifVector = node["Motifs"].as<std::vector<Motif>>();
 
@@ -99,7 +107,8 @@ namespace YAML {
                 node["InterMotifEnergies"].as<TriangularMatrixStatistics>(),
                 node["Ree"].as<TriangularMatrixStatistics>(),
                 node["Ren"].as<MatrixStatistics>(),
-                cubes
+                cubes,
+                sedOverlaps
                 );
         
         return true;
@@ -122,6 +131,7 @@ namespace YAML {
             << Key << "Vee" << Comment("[Eh]") << Value << rhs.electronicEnergyStats_.Vee()
             << Key << "Ven" << Comment("[Eh]") << Value << rhs.electronicEnergyStats_.Ven()
             << Key << "VoxelCubes" << Value << rhs.voxelCubes_
+            << Key << "SedOverlaps" << Value << rhs.overlaps_
             << EndMap;
 
         return out;

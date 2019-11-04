@@ -26,7 +26,7 @@
 
 class VoxelCube {
 public:
-    using VolumeDataType = uint16_t;
+    using VolumeDataType = uint32_t ;
     using IndexType = dualmc::QuadIndexType;
     using VertexComponentsType = dualmc::VertexComponentsType;
 
@@ -34,11 +34,15 @@ public:
             IndexType dimension = 16,
             VertexComponentsType length = VertexComponentsType(8 * ConversionFactors::angstrom2bohr),
             const Eigen::Matrix<VertexComponentsType,3,1>& origin = {0,0,0},
-            bool boxSmoothQ = true);
+            bool boxSmoothQ = false);
 
-    long index(IndexType i, IndexType j, IndexType k);
+    std::size_t index(IndexType i, IndexType j, IndexType k) const;
 
-    void add(const Eigen::Vector3d& pos, IndexType weight = 1);
+    Eigen::Vector3i getVoxelIndices(const Eigen::Vector3d& pos);
+
+    void add(const Eigen::Vector3d& pos, VolumeDataType weight = 1);
+
+    void add(IndexType i, IndexType j, IndexType k, VolumeDataType weight = 1);
 
     void shiftDualMCResults(std::vector<dualmc::Vertex>& vertices);
 
@@ -50,6 +54,8 @@ public:
 
     const std::vector<VolumeDataType> &getData() const;
 
+    VolumeDataType getData(IndexType i, IndexType j, IndexType k) const;
+
     void smooth(IndexType neighbors);
 
     VolumeDataType cubeAverage(IndexType i, IndexType j, IndexType k, IndexType neighbors);
@@ -60,6 +66,7 @@ public:
 
     bool smoothQ_;
     IndexType dimension_;
+    VolumeDataType insideWeight_, totalWeight_;
     VertexComponentsType length_, halfLength_, inverseDimension_;
     Eigen::Matrix<VertexComponentsType,3,1> origin_;
     std::vector<VolumeDataType> data_;

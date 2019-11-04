@@ -28,6 +28,7 @@
 #include <utility>
 #include <MaximaProcessingSettings.h>
 #include <VoxelCubeGeneration.h>
+#include <VoxelCubeOverlapCalculation.h>
 #include <spdlog/spdlog.h>
 #include <SOAPSettings.h>
 #include <AsciiArt.h>
@@ -260,6 +261,8 @@ int main(int argc, char *argv[]) {
     VoxelCubeGeneration::settings = Settings::VoxelCubeGeneration(inputYaml);
     VoxelCubeGeneration::settings.appendToNode(usedSettings);
 
+    VoxelCubeOverlapCalculation::settings = Settings::VoxelCubeOverlapCalculation(inputYaml);
+    VoxelCubeOverlapCalculation::settings.appendToNode(usedSettings);
 
     outputYaml << BeginDoc
     << Comment("input from \"" + inputFilename + "\"") << inputYaml << EndDoc;

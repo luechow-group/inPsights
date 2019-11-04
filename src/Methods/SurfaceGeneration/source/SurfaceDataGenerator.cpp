@@ -38,7 +38,7 @@ SurfaceData SurfaceDataGenerator::computeSurfaceData(double volumeThreshold) {
     cube_.shiftDualMCResults(dualMcVertices_);
 
     //spdlog::info("{0} vertices and {1} quads found for an iso value {2}",dualMcVertices_.size(), dualMcQuads_.size(), isovalue);
-    
+
     SurfaceData surfaceData;
     surfaceData.triangles = Conversion::quadsToTriangles(dualMcQuads_);
     surfaceData.vertices = Conversion::convertVertices(dualMcVertices_);
@@ -49,7 +49,7 @@ SurfaceData SurfaceDataGenerator::computeSurfaceData(double volumeThreshold) {
 }
 
 
-uint16_t SurfaceDataGenerator::getIsoValue(double volumeThreshold, unsigned maxSteps, double eps) {
+VoxelCube::VolumeDataType SurfaceDataGenerator::getIsoValue(double volumeThreshold, unsigned maxSteps, double eps) {
     auto res = std::minmax_element(cube_.getData().begin(), cube_.getData().end());
     auto min = *res.first, max = *res.second;
     auto lower = min, mid = VoxelCube::VolumeDataType(0.2 * max), upper = max;

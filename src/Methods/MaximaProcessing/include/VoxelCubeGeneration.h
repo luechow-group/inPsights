@@ -25,6 +25,7 @@ class Group;
 
 #include <ISettings.h>
 #include <Property.h>
+
 namespace Settings {
     class VoxelCubeGeneration : public ISettings {
         inline static const std::string className = {VARNAME(VoxelCubeGeneration)};
@@ -49,6 +50,10 @@ namespace VoxelCubeGeneration{
     inline Settings::VoxelCubeGeneration settings {};
 
     std::vector<VoxelCube> fromCluster(const Group &maxima, const std::vector<Sample> &samples);
+
+    std::vector<VoxelCube> getVoxels(const Group &maxima, const std::vector<Sample> &samples, uint16_t dimension,
+                                     VoxelCube::VertexComponentsType length, bool centerCubesAtElectronsQ, bool smoothingQ,
+                                     uint16_t smoothingNeighbors);
 };
 
 #endif //INPSIGHTS_VOXELCUBEGENERATION_H
