@@ -77,7 +77,7 @@ namespace Metrics{
     template <int Norm = 2>
     Eigen::MatrixXd positionalDistances(const PositionsVector &positions){
         Eigen::MatrixXd d = Eigen::MatrixXd::Zero(positions.numberOfEntities(),positions.numberOfEntities());
-        for (Eigen::Index  i = 0; i < d.rows(); i++)
+        for (Eigen::Index  i = 0; i < d.rows()-1; i++)
             for (Eigen::Index  j = i + 1; j < d.cols(); j++)
                 d(i,j) = distance<Norm>(positions[i], positions[j]);
 

@@ -30,7 +30,7 @@ namespace CoulombPotential {
     Eigen::MatrixXd energies(const ParticlesVector<Type> &pv, bool atomicUnits = true){
         Eigen::MatrixXd V = Eigen::MatrixXd::Zero(pv.numberOfEntities(),pv.numberOfEntities());
 
-        for (Eigen::Index i = 0; i < V.rows(); i++)
+        for (Eigen::Index i = 0; i < V.rows()-1; i++)
             for (Eigen::Index j = i + 1; j < V.cols(); j++)
                 V(i,j) = pv[i].charge() * pv[j].charge() / Metrics::distance(pv[i].position(), pv[j].position());
 

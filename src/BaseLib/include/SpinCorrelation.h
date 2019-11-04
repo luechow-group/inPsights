@@ -26,7 +26,7 @@ namespace SpinCorrelation{
     Eigen::MatrixXi spinCorrelations(const TypesVector<Type> &tv){
         Eigen::MatrixXi S = Eigen::MatrixXi::Zero(tv.numberOfEntities(), tv.numberOfEntities());
 
-        for (Eigen::Index i = 0; i < S.rows(); i++)
+        for (Eigen::Index i = 0; i < S.rows()-1; i++)
             for (Eigen::Index j = i + 1; j < S.cols(); j++)
                 S(i,j) = tv[i]==tv[j]? 1 : -1;
 
