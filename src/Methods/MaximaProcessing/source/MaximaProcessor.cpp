@@ -14,6 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with inPsights. If not, see <https://www.gnu.org/licenses/>.
  */
+
 #include <MaximaProcessor.h>
 #include <MaximaProcessingSettings.h>
 #include <ClusterData.h>
@@ -25,7 +26,7 @@
 #include <EnergyPartitioning.h>
 #include <spdlog/spdlog.h>
 
-MaximaProcessor::MaximaProcessor(YAML::Emitter& yamlDocument, const std::vector<Sample>& samples, AtomsVector atoms)
+MaximaProcessor::MaximaProcessor(YAML::Emitter& yamlDocument, const std::vector<Sample>& samples, const AtomsVector& atoms)
         :
         yamlDocument_(yamlDocument),
         samples_(samples),
