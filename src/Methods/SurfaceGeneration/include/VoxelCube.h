@@ -26,7 +26,7 @@
 
 class VoxelCube {
 public:
-    using VolumeDataType = uint32_t ;
+    using VolumeDataType = uint64_t ;
     using IndexType = dualmc::QuadIndexType;
     using VertexComponentsType = dualmc::VertexComponentsType;
 
