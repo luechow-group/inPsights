@@ -35,6 +35,7 @@ namespace Settings {
         Property<unsigned> samplesToAnalyze = {unsigned(SamplesToAnalyze::small), VARNAME(samplesToAnalyze)};
         Property<double> minimalClusterWeight = {0.01, VARNAME(minimalClusterWeight)};
         Property<bool> valenceElectronsOnly = {false, VARNAME(valenceElectronsOnly)};
+        Property<bool> showSampleAverageQ = {false, VARNAME(showSampleAverageQ)};
 
         MaximaProcessing();
         explicit MaximaProcessing(const YAML::Node &node);

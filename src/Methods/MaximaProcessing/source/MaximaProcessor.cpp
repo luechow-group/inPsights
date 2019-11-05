@@ -157,7 +157,11 @@ void MaximaProcessor::calculateStatistics(const Group &maxima){
         if(weight >= MaximaProcessing::settings.minimalClusterWeight.get()) {
             totalWeight += weight;
 
-            yamlDocument_ << ClusterData(TeStats_.getTotalWeight(), structures, valueStats_, TeStats_, EeStats_,
+            if(MaximaProcessing::settings.showSampleAverageQ.get())
+            structures = {group.electronsVectorFromAveragedPositionsVector(group.averagedSamplePositionsVector(samples_))};
+
+            yamlDocument_ << ClusterData(TeStats_.getTotalWeight(), structures,
+                    valueStats_, TeStats_, EeStats_,
                                          SeeStats_, VeeStats_, VenStats_,
                                          motifs_, EtotalStats_, intraMotifEnergyStats_, interMotifEnergyStats_,
                                          ReeStats_, RenStats_, voxelCubes,overlaps);
