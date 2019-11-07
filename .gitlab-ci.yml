@@ -1,4 +1,3 @@
-image: registry.git.rwth-aachen.de/luechow-group/amolqcpp:combined
 
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
@@ -7,18 +6,20 @@ stages:
 - build
 - test
 
+
 GNU build:
+  image: registry.git.rwth-aachen.de/luechow-group/inpsights/gnu:7.3.0
   stage: build
   before_script:
   - export CC=/usr/bin/gcc
   - export CXX=/usr/bin/g++
   - export FC=/usr/bin/gfortran
-  - export AMOLQC=/builds/luechow-group/Amolqcpp/src/AmolqcInterface/amolqc
+  - export AMOLQC=/builds/luechow-group/inPsights/src/AmolqcInterface/amolqc
   script:
   - mkdir -p cmake-build-debug-gnu
   - cd cmake-build-debug-gnu
   - cmake .. -DCMAKE_BUILD_TYPE=DEBUG -DBUILD_GUI=OFF  -DPFUNIT=OFF
-  - cmake --build . --target AmolqcppTests --
+  - cmake --build . --target inPsightsTests -- -j2
   cache:
     key: "$CI_COMMIT_REF_SLUG-GNU"
     paths:
@@ -26,20 +27,20 @@ GNU build:
     policy: pull-push
 
 Intel build:
+  image: registry.git.rwth-aachen.de/luechow-group/inpsights/intel:19.0.1.144
   stage: build
   before_script:
-  - source /opt/intel/bin/compilervars.sh intel64
-  - source /opt/intel/parallel_studio_xe_2019/compilers_and_libraries_2019/linux/mkl/bin/mklvars.sh intel64
+  - source /opt/intel/parallel_studio_xe_2019/psxevars.sh intel64
   - export CC=/opt/intel/bin/icc
   - export CXX=/opt/intel/bin/icpc
   - export FC=/opt/intel/bin/ifort
   - export MKLROOT=/opt/intel/mkl
-  - export AMOLQC=/builds/luechow-group/Amolqcpp/src/AmolqcInterface/amolqc
+  - export AMOLQC=/builds/luechow-group/inPsights/src/AmolqcInterface/amolqc
   script:
   - mkdir -p cmake-build-debug-intel
   - cd cmake-build-debug-intel
   - cmake .. -DCMAKE_BUILD_TYPE=DEBUG -DBUILD_GUI=OFF -DPFUNIT=OFF
-  - cmake --build . --target AmolqcppTests --
+  - cmake --build . --target inPsightsTests -- -j2
   cache:
     key: "$CI_COMMIT_REF_SLUG-Intel"
     paths:
@@ -47,6 +48,7 @@ Intel build:
     policy: pull-push
 
 GNU test:
+  image: registry.git.rwth-aachen.de/luechow-group/inpsights/gnu:7.3.0
   stage: test
   cache:
     key: "$CI_COMMIT_REF_SLUG-GNU"
@@ -56,11 +58,12 @@ GNU test:
 
   script:
   - cd cmake-build-debug-gnu
-  - ctest -LE "(AmolqcInterface|amolqc|GUI|cppoptlib)" -E "(example|spdlog-utests)" --output-on-failure
+  - ctest -LE "(AmolqcElocInterface|amolqc|GUI)" -E "(example|spdlog-utests)" --output-on-failure -j4
   dependencies:
   - GNU build
 
 Intel test:
+  image: registry.git.rwth-aachen.de/luechow-group/inpsights/intel:19.0.1.144
   stage: test
   cache:
     key: "$CI_COMMIT_REF_SLUG-Intel"
@@ -69,10 +72,10 @@ Intel test:
     policy: pull
 
   before_script:
-  -  source /opt/intel/bin/compilervars.sh intel64 # exports OpenMP libraries into LD_LIBRARY_PATH
+  - source /opt/intel/parallel_studio_xe_2019/psxevars.sh intel64
   script:
   - cd cmake-build-debug-intel
-  - ctest -LE "(AmolqcInterface|amolqc|GUI|cppoptlib)" -E "(example|spdlog-utests)" --output-on-failure
+  - ctest -LE "(AmolqcElocInterface|amolqc|GUI)" -E "(example|spdlog-utests)" --output-on-failure -j4
   dependencies:
   - Intel build
 

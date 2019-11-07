@@ -1,11 +1,25 @@
-//
-// Created by Michael Heuer on 08.05.18.
-//
+/* Copyright (C) 2018-2019 Michael Heuer.
+ *
+ * This file is part of inPsights.
+ * inPsights is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * inPsights is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with inPsights. If not, see <https://www.gnu.org/licenses/>.
+ */
 
-#ifndef AMOLQCPP_MOLECULARGEOMETRY_H
-#define AMOLQCPP_MOLECULARGEOMETRY_H
+#ifndef INPSIGHTS_MOLECULARGEOMETRY_H
+#define INPSIGHTS_MOLECULARGEOMETRY_H
 
 #include "ParticlesVector.h"
+#include <list>
 
 class MolecularGeometry{
 public:
@@ -20,18 +34,28 @@ public:
 
     Particle<int> operator[](long i) const;
 
-    std::pair<bool,long> findIndexByNumberedType(const NumberedType<int> &numberedType) const;
+    std::pair<bool,long> findIndexByEnumeratedType(const EnumeratedType<int> &enumeratedType) const;
 
-    NumberedType<int> findNumberedTypeByIndex(unsigned idx) const;
+    EnumeratedType<int> findEnumeratedTypeByIndex(unsigned idx) const;
 
     long numberOfEntities() const;
+
+    //TODO refactor Motifs::classifyMotifs since it is the only user of the method
+    std::tuple<bool,Eigen::Index> coreElectronQ(long i, double threshold = 0.01) const ;
+
+    std::list<long> coreElectronsIndices(long k, double threshold = 0.01) const;
+
+    std::list<long> coreElectronsIndices(double threshold = 0.01) const;
+
+    std::list<long> nonCoreElectronsIndices(double threshold = 0.01) const;
+
 
     friend std::ostream& operator<<(std::ostream &os, const MolecularGeometry &mol) {
         os << mol.atoms() << std::endl;
         os << mol.electrons() << std::endl;
         return os;
     }
-    
+
 private:
     AtomsVector atoms_;
     ElectronsVector electrons_;
@@ -50,4 +74,4 @@ namespace YAML {
 }
 
 
-#endif //AMOLQCPP_MOLECULARGEOMETRY_H
+#endif //INPSIGHTS_MOLECULARGEOMETRY_H

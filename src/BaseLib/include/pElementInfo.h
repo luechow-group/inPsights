@@ -1,5 +1,5 @@
-#ifndef AMOLQCPP_PELEMENTINFO_H
-#define AMOLQCPP_PELEMENTINFO_H
+#ifndef INPSIGHTS_PELEMENTINFO_H
+#define INPSIGHTS_PELEMENTINFO_H
 
 #include "NaturalConstants.h"
 #include "ElementType.h"
@@ -28,7 +28,7 @@ namespace Elements {
 
                 /* Constructor for default (empty) element */
                 ElementData() : d_symbol(""), d_Z(0), d_mass(-1),
-                                d_vdWRadius(-1), d_valElectrons(-1),
+                                d_vdWRadius(-1), d_valenceElectrons(-1),
                                 d_sElectrons(-1), d_pElectrons(-1), d_dElectrons(-1), d_fElectrons(-1),
                                 d_color({0,0,0}) {};
 
@@ -39,7 +39,7 @@ namespace Elements {
                             int pElectrons = -1, int dElectrons = -1, int fElectrons = -1) :
                         d_symbol(symbol), d_Z(Z), d_mass(mass),
                         d_vdWRadius(vdWRadiusInPicometers / 100 * ConversionFactors::angstrom2bohr),
-                        d_valElectrons(valElectrons), d_sElectrons(sElectrons),
+                        d_valenceElectrons(valElectrons), d_sElectrons(sElectrons),
                         d_pElectrons(pElectrons), d_dElectrons(dElectrons),d_fElectrons(fElectrons),
                         d_color(color) {};
 
@@ -61,8 +61,14 @@ namespace Elements {
 
                 /* Number of valence electrons */
                 int valElectrons() const {
-                    if (d_valElectrons > -1)
-                        return d_valElectrons;
+                    if (d_valenceElectrons > -1)
+                        return d_valenceElectrons;
+                    else throw DataNotAvailable();
+                }
+
+                int innerShellElectrons() const {
+                    if (d_valenceElectrons > -1)
+                        return Z()-d_valenceElectrons;
                     else throw DataNotAvailable();
                 }
 
@@ -108,7 +114,7 @@ namespace Elements {
                 double d_mass;
                 double d_vdWRadius;
 
-                int d_valElectrons;
+                int d_valenceElectrons;
                 int d_sElectrons;
                 int d_pElectrons;
                 int d_dElectrons;
@@ -156,4 +162,4 @@ namespace Elements {
 
 } // namespace Elements
 
-#endif // AMOLQCPP_PELEMENTINFO_H
+#endif // INPSIGHTS_PELEMENTINFO_H

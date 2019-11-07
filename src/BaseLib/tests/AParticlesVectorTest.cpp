@@ -1,8 +1,21 @@
-//
-// Created by Michael Heuer on 29.10.17.
-//
+/* Copyright (C) 2017-2019 Michael Heuer.
+ *
+ * This file is part of inPsights.
+ * inPsights is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * inPsights is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with inPsights. If not, see <https://www.gnu.org/licenses/>.
+ */
 
-#include <gtest/gtest.h>
+#include <gmock/gmock.h>
 #include <ParticlesVector.h>
 #include <sstream>
 
@@ -40,9 +53,18 @@ TEST_F(AParticlesVectorTest, BraceInitialization) {
     );
 }
 
-//TEST_F(AParticlesVectorTest, CopyConstructor) {
-//    EXPECT_TRUE(false);
-//}
+TEST_F(AParticlesVectorTest, CopyConstructor) {
+
+    auto electronsCopy = electrons;
+
+    ASSERT_EQ(electronsCopy[0].type(),e0.type());
+    ASSERT_EQ(electronsCopy[1].type(),e1.type());
+    ASSERT_EQ(electronsCopy[2].type(),e2.type());
+
+    ASSERT_EQ(electronsCopy[0].position(),e0.position());
+    ASSERT_EQ(electronsCopy[1].position(),e1.position());
+    ASSERT_EQ(electronsCopy[2].position(),e2.position());
+}
 
 TEST_F(AParticlesVectorTest, SpinTypeParticlesVector) {
     std::stringstream stringstream;
@@ -84,22 +106,7 @@ TEST_F(AParticlesVectorTest, Permute){
     ASSERT_EQ(e[2].position(),e0.position());
 }
 
-TEST_F(AParticlesVectorTest, PermuteSlice){
-    auto e = electrons;
-
-    VectorXi p(2);
-    p << 1,0;
-
-    e.slice({1,2}).permute(PermutationMatrix<Dynamic>(p));
-    ASSERT_EQ(e[0].type(),e0.type());
-    ASSERT_EQ(e[1].type(),e2.type());
-    ASSERT_EQ(e[2].type(),e1.type());
-
-    ASSERT_EQ(e[0].position(),e0.position());
-    ASSERT_EQ(e[1].position(),e2.position());
-    ASSERT_EQ(e[2].position(),e1.position());
-}
-
+/*
 TEST_F(AParticlesVectorTest, IntegrationTest_PermuteAndTranslateAlphaElectrons){
     auto e = electrons;
 
@@ -121,4 +128,62 @@ TEST_F(AParticlesVectorTest, IntegrationTest_PermuteAndTranslateAlphaElectrons){
     ASSERT_EQ(e[0].position(),e0.position()+Vector3d(0,0,0.5));
     ASSERT_EQ(e[1].position(),e1.position()+Vector3d(0,0,0.5));
     ASSERT_EQ(e[2].position(),e2.position());
+}*/
+
+TEST_F(AParticlesVectorTest, LinkedParticles){
+    ElectronsVector e = electrons;
+
+    auto l0 = e.linkedParticle(0);
+    auto l1 = e.linkedParticle(1);
+    auto l2 = e.linkedParticle(2);
+
+    ASSERT_EQ(e[0].type(),l0->type());
+    ASSERT_EQ(e[1].type(),l1->type());
+    ASSERT_EQ(e[2].type(),l2->type());
+
+    ASSERT_EQ(e[0].position(),l0->position());
+    ASSERT_EQ(e[1].position(),l1->position());
+    ASSERT_EQ(e[2].position(),l2->position());
+
+    auto changed = Eigen::Vector3d({1,1,1});
+    l1->setPosition(changed);
+    l2->setType(Spin::none);
+
+
+    ASSERT_EQ(e[0].type(),l0->type());
+    ASSERT_EQ(e[1].type(),l1->type());
+    ASSERT_EQ(e[2].type(),Spin::none);
+
+    ASSERT_EQ(e[0].position(),l0->position());
+    ASSERT_EQ(e[1].position(),changed);
+    ASSERT_EQ(e[2].position(),l2->position());
+}
+
+TEST_F(AParticlesVectorTest, AccessWithIndexList){
+    std::list<long> indices({0,2});
+
+    auto newVector = electrons[indices];
+    ASSERT_EQ(newVector.numberOfEntities(), 2);
+    ASSERT_EQ(newVector[0].position(), electrons[0].position());
+    ASSERT_EQ(newVector[0].type(), electrons[0].type());
+    ASSERT_EQ(newVector[1].position(), electrons[2].position());
+    ASSERT_EQ(newVector[1].type(), electrons[2].type());
+}
+
+TEST_F(AParticlesVectorTest, AccessFirstElements){
+    auto newVector = electrons.getFirstParticles(2);
+    ASSERT_EQ(newVector.numberOfEntities(), 2);
+    ASSERT_EQ(newVector[0].position(), electrons[0].position());
+    ASSERT_EQ(newVector[0].type(), electrons[0].type());
+    ASSERT_EQ(newVector[1].position(), electrons[1].position());
+    ASSERT_EQ(newVector[1].type(), electrons[1].type());
+}
+
+TEST_F(AParticlesVectorTest, AccessLastElements){
+    auto newVector = electrons.tail(2);
+    ASSERT_EQ(newVector.numberOfEntities(), 2);
+    ASSERT_EQ(newVector[0].position(), electrons[1].position());
+    ASSERT_EQ(newVector[0].type(), electrons[1].type());
+    ASSERT_EQ(newVector[1].position(), electrons[2].position());
+    ASSERT_EQ(newVector[1].type(), electrons[2].type());
 }

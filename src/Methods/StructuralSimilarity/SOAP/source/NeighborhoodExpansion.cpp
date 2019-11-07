@@ -1,26 +1,39 @@
-//
-// Created by Michael Heuer on 15.05.18.
-//
+/* Copyright (C) 2018-2019 Michael Heuer.
+ *
+ * This file is part of inPsights.
+ * inPsights is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * inPsights is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with inPsights. If not, see <https://www.gnu.org/licenses/>.
+ */
 
 #include "NeighborhoodExpansion.h"
-#include "ExpansionSettings.h"
+#include "SOAPSettings.h"
+
+using namespace SOAP;
 
 NeighborhoodExpansion::NeighborhoodExpansion()
-        : angularEntityLength_(angularEntityLength(ExpansionSettings::Angular::lmax)), //lmax*lmax+ 2*lmax+1
-          entityLength_(ExpansionSettings::Radial::nmax * angularEntityLength_),//TODO rename
+        : angularEntityLength_(angularEntityLength(Angular::settings.lmax())), //lmax*lmax+ 2*lmax+1
+          entityLength_(Radial::settings.nmax() * angularEntityLength_),//TODO rename
           coefficients_(Eigen::VectorXcd::Zero(entityLength_))
 {}
 
 std::complex<double> NeighborhoodExpansion::getCoefficient(unsigned n, unsigned l, int m) const {
-    ExpansionSettings::checkBounds(n,l,m);
+    General::checkBounds(n,l,m);
     return coefficients_[(n-1)*angularEntityLength_ + (angularEntityLength(l-1)) + (m+l)];
 }
 
 Eigen::Ref<const Eigen::VectorXcd> NeighborhoodExpansion::getCoefficients_nl(unsigned n, unsigned l) const {
     Eigen::VectorXcd coeffs(2*l+1);
     unsigned start = (n-1)*angularEntityLength_ + (angularEntityLength(l-1));
-    //Eigen::Ref<Eigen::VectorXcd>ref = coefficients_.segment(start, 2*l+1); // return only reference?
-    //return ref;
     return coefficients_.segment(start, 2*l+1);
 }
 
@@ -34,7 +47,7 @@ unsigned  NeighborhoodExpansion::angularSubEntityLength(unsigned l) const {
 }
 
 void NeighborhoodExpansion::storeCoefficient(unsigned n, unsigned l, int m, const std::complex<double> &coefficient) {
-    ExpansionSettings::checkBounds(n,l,m);
+    General::checkBounds(n,l,m);
     assert(coefficient == coefficient && "Value cannot be NaN!");
     coefficients_[(n-1)*angularEntityLength_ + (angularEntityLength(l-1)) + (m+l)] += coefficient;
 }
@@ -48,9 +61,9 @@ void NeighborhoodExpansion::operator*=(double weight){
 }
 
 std::ostream& operator<<(std::ostream& os, const NeighborhoodExpansion & ne){
-    for (unsigned n = 1; n <= ExpansionSettings::Radial::nmax; ++n) {
+    for (unsigned n = 1; n <= Radial::settings.nmax(); ++n) {
         os << " n: "<< n << std::endl;
-        for (unsigned l = 0; l <= ExpansionSettings::Angular::lmax; ++l) {
+        for (unsigned l = 0; l <= Angular::settings.lmax(); ++l) {
             os << "  l: "<< l << std::endl;
             for (int m = -int(l); m <= int(l); ++m) {
                 os << "   m: " << m << " " << ne.getCoefficient(n,l,m) << std::endl;

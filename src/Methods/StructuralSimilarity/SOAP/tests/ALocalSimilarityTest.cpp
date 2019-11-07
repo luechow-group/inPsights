@@ -1,33 +1,48 @@
-//
-// Created by Michael Heuer on 09.05.18.
-//
+/* Copyright (C) 2018-2019 Michael Heuer.
+ *
+ * This file is part of inPsights.
+ * inPsights is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * inPsights is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with inPsights. If not, see <https://www.gnu.org/licenses/>.
+ */
 
-#include <gtest/gtest.h>
+#include <gmock/gmock.h>
 #include <ParticlesVector.h>
 #include <MolecularSpectrum.h>
 #include "LocalSimilarity.h"
 #include "ParticleKit.h"
-#include "ExpansionSettings.h"
+#include "SOAPSettings.h"
 #include "Environment.h"
 #include "TestMolecules.h"
-
 #include "NeighborhoodExpander.h"
+
+using namespace SOAP;
 
 class ALocalSimilarityTest : public ::testing::Test {
 public:
 
     MolecularGeometry molecule = TestMolecules::CO2::nuclei;
     double eps = std::numeric_limits<double>::epsilon()*1e3;
-    void SetUp() override {};
+    void SetUp() override {
+        spdlog::set_level(spdlog::level::off);
+    };
 };
 
 TEST_F(ALocalSimilarityTest , GenericNormalization) {
     ParticleKit::create(molecule);
-    ExpansionSettings::defaults();
-    ExpansionSettings::mode = ExpansionSettings::Mode::typeAgnostic;
+    General::settings.mode = General::Mode::typeAgnostic;
 
-    Environment e1(molecule,molecule.atoms()[1].position());
-    Environment e2(molecule,molecule.atoms()[2].position());
+    Environment e1(molecule, EnumeratedType<int>(int(Element::O),0));
+    Environment e2(molecule, EnumeratedType<int>(int(Element::O),1));
 
     ASSERT_NEAR(LocalSimilarity::kernel(e1, e1), 1.0, eps);
     ASSERT_NEAR(LocalSimilarity::kernel(e2, e2), 1.0, eps);
@@ -35,24 +50,33 @@ TEST_F(ALocalSimilarityTest , GenericNormalization) {
 
 TEST_F(ALocalSimilarityTest , SameEnvironmentsOnDifferentCenters) {
     ParticleKit::create(molecule);
-    ExpansionSettings::defaults();
 
-    Environment e1(molecule,molecule.atoms()[1].position());
-    Environment e2(molecule,molecule.atoms()[2].position());
+    Environment e1(molecule, EnumeratedType<int>(int(Element::O),0));
+    Environment e2(molecule, EnumeratedType<int>(int(Element::O),1));
 
     ASSERT_NEAR(LocalSimilarity::kernel(e1, e2),1.0, eps);
 };
 
+TEST_F(ALocalSimilarityTest, TwoDifferentParticlesOnSameCenter) {
+    const auto mol = TestMolecules::threeElectrons::ionic;
+    General::settings.mode = General::Mode::chemical;
+    ParticleKit::create(mol);
+    Radial::settings.nmax = 2;
+    Angular::settings.lmax = 2;
+
+    Environment e1(mol, EnumeratedType<int>(int(Spin::alpha),1));
+    Environment e2(mol, EnumeratedType<int>(int(Spin::beta),0));
+
+    ASSERT_LT(LocalSimilarity::kernel(e1, e2),1.0-eps);
+};
+
 TEST_F(ALocalSimilarityTest , Cross) {
     ParticleKit::create(molecule);
-    ExpansionSettings::defaults();
-    ExpansionSettings::mode = ExpansionSettings::Mode::typeAgnostic;
-    ExpansionSettings::Cutoff::radius = 1.2;
-    ExpansionSettings::Angular::lmax = 3;
+    General::settings.mode = General::Mode::typeAgnostic;
 
-    Environment e0(molecule, molecule.atoms()[0].position()); // C
-    Environment e1(molecule, molecule.atoms()[1].position()); // O1
-    Environment e2(molecule, molecule.atoms()[2].position()); // O2
+    Environment e0(molecule, EnumeratedType<int>(int(Element::C),0));
+    Environment e1(molecule, EnumeratedType<int>(int(Element::O),0));
+    Environment e2(molecule, EnumeratedType<int>(int(Element::O),1));
 
     auto val = LocalSimilarity::kernel(e0, e1);
     ASSERT_LT(val,1.0);
@@ -68,11 +92,10 @@ TEST_F(ALocalSimilarityTest , Cross) {
 
 TEST_F(ALocalSimilarityTest, TypeSpecificNormalization) {
     ParticleKit::create(molecule);
-    ExpansionSettings::defaults();
-    ExpansionSettings::mode = ExpansionSettings::Mode::chemical;
+    General::settings.mode = General::Mode::chemical;
 
-    Environment e1(molecule,molecule.atoms()[1].position());
-    Environment e2(molecule,molecule.atoms()[2].position());
+    Environment e1(molecule, EnumeratedType<int>(int(Element::O),0));
+    Environment e2(molecule, EnumeratedType<int>(int(Element::O),1));
 
     ASSERT_NEAR(LocalSimilarity::kernel(e1, e1),1.0, eps);
     ASSERT_NEAR(LocalSimilarity::kernel(e2, e2),1.0, eps);
@@ -80,88 +103,69 @@ TEST_F(ALocalSimilarityTest, TypeSpecificNormalization) {
 
 TEST_F(ALocalSimilarityTest, SameEnvironmentOnDifferentCentersGeneric) {
     ParticleKit::create(molecule);
-    ExpansionSettings::defaults();
-    ExpansionSettings::mode = ExpansionSettings::Mode::typeAgnostic;
+    General::settings.mode = General::Mode::typeAgnostic;
 
-    Environment e1(molecule,molecule.atoms()[1].position());
-    Environment e2(molecule,molecule.atoms()[2].position());
+    Environment e1(molecule, EnumeratedType<int>(int(Element::O),0));
+    Environment e2(molecule, EnumeratedType<int>(int(Element::O),1));
 
     ASSERT_NEAR(LocalSimilarity::kernel(e1, e2),1.0, eps);
 };
 
 TEST_F(ALocalSimilarityTest, SameEnvironmentOnDifferentCentersTypeSpecific) {
     ParticleKit::create(molecule);
-    ExpansionSettings::defaults();
-    ExpansionSettings::mode = ExpansionSettings::Mode::chemical;
+    General::settings.mode = General::Mode::chemical;
 
-    Environment e1(molecule,molecule.atoms()[1].position());
-    Environment e2(molecule,molecule.atoms()[2].position());
+    Environment e1(molecule, EnumeratedType<int>(int(Element::O),0));
+    Environment e2(molecule, EnumeratedType<int>(int(Element::O),1));
 
     ASSERT_NEAR(LocalSimilarity::kernel(e1, e2),1.0, eps);
 };
 
 TEST_F(ALocalSimilarityTest, IsolatedSpecies) {
     ParticleKit::create(TestMolecules::CO2::isolatedNuclei);
-    ExpansionSettings::defaults();
-    ExpansionSettings::mode = ExpansionSettings::Mode::chemical;
+    General::settings.mode = General::Mode::chemical;
 
     auto isolated = TestMolecules::CO2::isolatedNuclei;
-    Environment e0(isolated, isolated.atoms()[0].position());
-    Environment e1(isolated, isolated.atoms()[1].position());
-    Environment e2(isolated, isolated.atoms()[2].position());
+    Environment e0(isolated, molecule.findEnumeratedTypeByIndex(0));
+    Environment e1(isolated, molecule.findEnumeratedTypeByIndex(1));
+    Environment e2(isolated, molecule.findEnumeratedTypeByIndex(2));
 
     ASSERT_NEAR(LocalSimilarity::kernel(e0, e1),1.0, eps);
     ASSERT_NEAR(LocalSimilarity::kernel(e2, e0),1.0, eps);
 };
 
 TEST_F(ALocalSimilarityTest, H2sameCenter) {
-    ExpansionSettings::defaults();
-    ExpansionSettings::mode = ExpansionSettings::Mode::chemical;
+    General::settings.mode = General::Mode::chemical;
     ParticleKit::create(TestMolecules::H2::ElectronsInCores::normal);
 
     auto H2 = TestMolecules::H2::ElectronsInCores::normal;
 
-    Environment a0(H2, H2.atoms()[0].position());
-    Environment e0(H2, H2.electrons()[0].position());
+    Environment a0(H2, EnumeratedType<int>(int(Element::H),0));
+    Environment e0(H2, EnumeratedType<int>(int(Spin::alpha),0));
 
-    ASSERT_NEAR(LocalSimilarity::kernel(a0, e0), 1.0, eps);
-}
-
-TEST_F(ALocalSimilarityTest, H2sameEnvironment) {
-    ExpansionSettings::defaults();
-    ExpansionSettings::mode = ExpansionSettings::Mode::chemical;
-    ParticleKit::create(TestMolecules::H2::ElectronsInCores::normal);
-
-    auto H2 = TestMolecules::H2::ElectronsInCores::normal;
-
-    Environment a0(H2, H2.atoms()[0].position());
-    Environment e0(H2, H2.electrons()[0].position());
-
-    ASSERT_NEAR(LocalSimilarity::kernel(a0, e0), 1.0, eps);
+    ASSERT_LT(LocalSimilarity::kernel(a0, e0),1.0-eps);
 }
 
 TEST_F(ALocalSimilarityTest, twoOppositeElectrons) {
-    ExpansionSettings::defaults();
-    ExpansionSettings::mode = ExpansionSettings::Mode::chemical;
+    General::settings.mode = General::Mode::chemical;
 
     auto eaeb = TestMolecules::twoElectrons::oppositeSpin;
     ParticleKit::create(eaeb);
 
-    Environment e0(eaeb, eaeb.electrons()[0].position());
-    Environment e1(eaeb, eaeb.electrons()[1].position());
+    Environment e0(eaeb, EnumeratedType<int>(int(Spin::alpha),0));
+    Environment e1(eaeb, EnumeratedType<int>(int(Spin::beta),0));
 
     ASSERT_NEAR(LocalSimilarity::kernel(e0, e1),0.0,eps);
 }
 
 TEST_F(ALocalSimilarityTest, twoOppositeElectronsReversedOrder) {
-    ExpansionSettings::defaults();
-    ExpansionSettings::mode = ExpansionSettings::Mode::chemical;
+    General::settings.mode = General::Mode::chemical;
 
     auto ebea = TestMolecules::twoElectrons::oppositeSpinReversedOrder;
     ParticleKit::create(ebea);
 
-    Environment e0(ebea, ebea.electrons()[0].position());
-    Environment e1(ebea, ebea.electrons()[1].position());
+    Environment e0(ebea, EnumeratedType<int>(int(Spin::beta),0));
+    Environment e1(ebea, EnumeratedType<int>(int(Spin::alpha),0));
 
     ASSERT_NEAR(LocalSimilarity::kernel(e0, e1),0.0,eps);
 }
@@ -171,14 +175,13 @@ TEST_F(ALocalSimilarityTest, twoOppositeSpinElectronsComparision) {
     auto mol2 = TestMolecules::twoElectrons::oppositeSpinReversedOrder;
     ParticleKit::create(mol1);
 
-    ExpansionSettings::defaults();
-    ExpansionSettings::mode = ExpansionSettings::Mode::chemical;
+    General::settings.mode = General::Mode::chemical;
 
-    Environment mol1e0(mol1, mol1.electrons()[0].position());
-    Environment mol1e1(mol1, mol1.electrons()[1].position());
+    Environment mol1e0(mol1, EnumeratedType<int>(int(Spin::alpha),0));
+    Environment mol1e1(mol1, EnumeratedType<int>(int(Spin::beta),0));
 
-    Environment mol2e0(mol2, mol2.electrons()[0].position());
-    Environment mol2e1(mol2, mol2.electrons()[1].position());
+    Environment mol2e0(mol2, EnumeratedType<int>(int(Spin::beta),0));
+    Environment mol2e1(mol2, EnumeratedType<int>(int(Spin::alpha),0));
 
     ASSERT_NEAR(LocalSimilarity::kernel(mol1e0, mol1e1), 0.0, eps);
     ASSERT_NEAR(LocalSimilarity::kernel(mol2e0, mol2e1), 0.0, eps);
@@ -192,45 +195,42 @@ TEST_F(ALocalSimilarityTest, twoOppositeSpinElectronsComparisionMs) {
     auto mol2 = TestMolecules::twoElectrons::oppositeSpinReversedOrder;
     ParticleKit::create(mol1);
 
-    ExpansionSettings::defaults();
-    ExpansionSettings::mode = ExpansionSettings::Mode::chemical;
+    General::settings.mode = General::Mode::chemical;
 
     MolecularSpectrum ms1(mol1);
     MolecularSpectrum ms2(mol2);
 
-    ASSERT_NEAR(LocalSimilarity::kernel(ms1.molecularCenters_[NumberedType<int>(int(Spin::alpha), 0)],
-                                        ms2.molecularCenters_[NumberedType<int>(int(Spin::alpha), 0)]), 1.0, eps);
-    ASSERT_NEAR(LocalSimilarity::kernel(ms1.molecularCenters_[NumberedType<int>(int(Spin::beta), 0)],
-                                        ms2.molecularCenters_[NumberedType<int>(int(Spin::beta), 0)]), 1.0, eps);
-    ASSERT_NEAR(LocalSimilarity::kernel(ms1.molecularCenters_[NumberedType<int>(int(Spin::alpha), 0)],
-                                        ms2.molecularCenters_[NumberedType<int>(int(Spin::beta), 0)]), 0.0, eps);
-    ASSERT_NEAR(LocalSimilarity::kernel(ms1.molecularCenters_[NumberedType<int>(int(Spin::beta), 0)],
-                                        ms2.molecularCenters_[NumberedType<int>(int(Spin::alpha), 0)]), 0.0, eps);
+    ASSERT_NEAR(LocalSimilarity::kernel(ms1.molecularCenters_[EnumeratedType<int>(int(Spin::alpha), 0)],
+                                        ms2.molecularCenters_[EnumeratedType<int>(int(Spin::alpha), 0)]), 1.0, eps);
+    ASSERT_NEAR(LocalSimilarity::kernel(ms1.molecularCenters_[EnumeratedType<int>(int(Spin::beta), 0)],
+                                        ms2.molecularCenters_[EnumeratedType<int>(int(Spin::beta), 0)]), 1.0, eps);
+    ASSERT_NEAR(LocalSimilarity::kernel(ms1.molecularCenters_[EnumeratedType<int>(int(Spin::alpha), 0)],
+                                        ms2.molecularCenters_[EnumeratedType<int>(int(Spin::beta), 0)]), 0.0, eps);
+    ASSERT_NEAR(LocalSimilarity::kernel(ms1.molecularCenters_[EnumeratedType<int>(int(Spin::beta), 0)],
+                                        ms2.molecularCenters_[EnumeratedType<int>(int(Spin::alpha), 0)]), 0.0, eps);
 }
 
 TEST_F(ALocalSimilarityTest, twoAlphaElectrons) {
-    ExpansionSettings::defaults();
-    ExpansionSettings::mode = ExpansionSettings::Mode::chemical;
+    General::settings.mode = General::Mode::chemical;
 
     auto eaea = TestMolecules::twoElectrons::sameSpinAlpha;
     ParticleKit::create(eaea);
 
-    Environment e0(eaea, eaea.electrons()[0].position());
-    Environment e1(eaea, eaea.electrons()[1].position());
+    Environment e0(eaea, EnumeratedType<int>(int(Spin::alpha),0));
+    Environment e1(eaea, EnumeratedType<int>(int(Spin::alpha),1));
 
     ASSERT_NEAR(LocalSimilarity::kernel(e0, e1),1.0,eps);
 }
 
 
 TEST_F(ALocalSimilarityTest, twoBetaElectrons) {
-    ExpansionSettings::defaults();
-    ExpansionSettings::mode = ExpansionSettings::Mode::chemical;
+    General::settings.mode = General::Mode::chemical;
 
     auto ebeb = TestMolecules::twoElectrons::sameSpinBeta;
     ParticleKit::create(ebeb);
 
-    Environment e0(ebeb, ebeb.electrons()[0].position());
-    Environment e1(ebeb, ebeb.electrons()[1].position());
+    Environment e0(ebeb, EnumeratedType<int>(int(Spin::beta),0));
+    Environment e1(ebeb, EnumeratedType<int>(int(Spin::beta),1));
 
     ASSERT_NEAR(LocalSimilarity::kernel(e0, e1),1.0,eps);
 }
@@ -239,14 +239,13 @@ TEST_F(ALocalSimilarityTest, TypeSpecificAndAlchemicalComparison) {
     auto mol1 = TestMolecules::twoElectrons::oppositeSpin;
     auto mol2 = TestMolecules::twoElectrons::oppositeSpinReversedOrder;
     ParticleKit::create(mol1);
-    ExpansionSettings::defaults();
 
-    ExpansionSettings::mode = ExpansionSettings::Mode::chemical;
-    Environment mol1e0(mol1, mol1.electrons()[0].position());
-    Environment mol1e1(mol1, mol1.electrons()[1].position());
+    General::settings.mode = General::Mode::chemical;
+    Environment mol1e0(mol1, EnumeratedType<int>(int(Spin::alpha),0));
+    Environment mol1e1(mol1, EnumeratedType<int>(int(Spin::beta),0));
 
-    Environment mol2e0(mol2, mol2.electrons()[0].position());
-    Environment mol2e1(mol2, mol2.electrons()[1].position());
+    Environment mol2e0(mol2, EnumeratedType<int>(int(Spin::beta),0));
+    Environment mol2e1(mol2, EnumeratedType<int>(int(Spin::alpha),0));
 
     ASSERT_NEAR(LocalSimilarity::kernel(mol1e0, mol1e1), 0.0, eps);
     ASSERT_NEAR(LocalSimilarity::kernel(mol2e0, mol2e1), 0.0, eps);
@@ -255,7 +254,7 @@ TEST_F(ALocalSimilarityTest, TypeSpecificAndAlchemicalComparison) {
     ASSERT_NEAR(LocalSimilarity::kernel(mol2e0, mol1e1), 1.0, eps);
 
 
-    ExpansionSettings::mode = ExpansionSettings::Mode::alchemical;
+    General::settings.mode = General::Mode::alchemical;
     auto simMol1e0e1 = LocalSimilarity::kernel(mol1e0, mol1e1);
     auto simMol2e0e1 = LocalSimilarity::kernel(mol2e0, mol2e1);
 
@@ -274,10 +273,9 @@ TEST_F(ALocalSimilarityTest, TypeSpecificAndAlchemicalComparison) {
 
 
 TEST_F(ALocalSimilarityTest, DissociationIntoTwoIsolatedSpecies) {
-    ExpansionSettings::defaults();
-    ExpansionSettings::mode = ExpansionSettings::Mode::chemical;
-    ExpansionSettings::Cutoff::radius = 2;// bohr
-    ExpansionSettings::Cutoff::width = 1;// bohr // the inner plateau ends at 1
+    General::settings.mode = General::Mode::chemical;
+    Cutoff::settings.radius = 2;// bohr
+    Cutoff::settings.width = 1;// bohr // the inner plateau ends at 1
     ParticleKit::create({},{2,0}); //the particle kit consists of two alpha electrons
 
     // alter !both! environments by moving the second electron
@@ -292,8 +290,8 @@ TEST_F(ALocalSimilarityTest, DissociationIntoTwoIsolatedSpecies) {
                                                  {Spin::alpha, {0,0,r}}
                                                  })};
 
-        Environment e0(mol, mol.electrons()[0].position());
-        Environment e1(mol, mol.electrons()[1].position());
+        Environment e0(mol, EnumeratedType<int>(int(Spin::alpha),0));
+        Environment e1(mol, EnumeratedType<int>(int(Spin::alpha),1));
 
         ASSERT_EQ(LocalSimilarity::kernel(e0,e0),1);
         ASSERT_EQ(LocalSimilarity::kernel(e1,e1),1);
@@ -302,46 +300,45 @@ TEST_F(ALocalSimilarityTest, DissociationIntoTwoIsolatedSpecies) {
 };
 
 TEST_F(ALocalSimilarityTest, DissociationIntoOneIsolatedSpecies) {
-    ExpansionSettings::defaults();
-    ExpansionSettings::mode = ExpansionSettings::Mode::typeAgnostic;
-    ExpansionSettings::Cutoff::radius = 2;// bohr
-    ExpansionSettings::Cutoff::width = 1;// bohr
+    General::settings.mode = General::Mode::typeAgnostic;
+    Cutoff::settings.radius = 2;// bohr
+    Cutoff::settings.width = 1;// bohr
     ParticleKit::create({},{3,0}); //the particle kit consists of three alpha electrons
 
     MolecularGeometry mol;
     mol= {AtomsVector(),ElectronsVector({{Spin::alpha,{0,0,0}},{Spin::alpha,{0,0,0}},{Spin::alpha, {0,0,-0.1}}})};
-    Environment e0(mol, mol.electrons()[0].position());
-    Environment e1(mol, mol.electrons()[1].position());
+    Environment e0(mol, EnumeratedType<int>(int(Spin::alpha),0));
+    Environment e1(mol, EnumeratedType<int>(int(Spin::alpha),1));
     ASSERT_NEAR(LocalSimilarity::kernel(e0,e0),1,eps);
     ASSERT_NEAR(LocalSimilarity::kernel(e1,e1),1,eps);
     ASSERT_NEAR(LocalSimilarity::kernel(e0,e1),1,eps);
 
     mol= {AtomsVector(),ElectronsVector({{Spin::alpha,{0,0,0}},{Spin::alpha,{0,0,0.5}},{Spin::alpha, {0,0,-0.1}}})};
-    e0 = Environment(mol, mol.electrons()[0].position());
-    e1 = Environment(mol, mol.electrons()[1].position());
+    e0 = Environment(mol, EnumeratedType<int>(int(Spin::alpha),0));
+    e1 = Environment(mol, EnumeratedType<int>(int(Spin::alpha),1));
     ASSERT_NEAR(LocalSimilarity::kernel(e0,e0),1,eps);
     ASSERT_NEAR(LocalSimilarity::kernel(e1,e1),1,eps);
     ASSERT_GT(LocalSimilarity::kernel(e0,e1),0);
     ASSERT_LT(LocalSimilarity::kernel(e0,e1),1);
 
     mol= {AtomsVector(),ElectronsVector({{Spin::alpha,{0,0,0}},{Spin::alpha,{0,0,1.5}},{Spin::alpha, {0,0,-0.1}}})};
-    e0 = Environment(mol, mol.electrons()[0].position());
-    e1 = Environment(mol, mol.electrons()[1].position());
+    e0 = Environment(mol, EnumeratedType<int>(int(Spin::alpha),0));
+    e1 = Environment(mol, EnumeratedType<int>(int(Spin::alpha),1));
     ASSERT_NEAR(LocalSimilarity::kernel(e0,e0),1,eps);
     ASSERT_NEAR(LocalSimilarity::kernel(e1,e1),1,eps);
     ASSERT_GT(LocalSimilarity::kernel(e0,e1),0);
     ASSERT_LT(LocalSimilarity::kernel(e0,e1),1);
 
     mol= {AtomsVector(),ElectronsVector({{Spin::alpha,{0,0,0}},{Spin::alpha,{0,0,2.0}},{Spin::alpha, {0,0,-0.1}}})};
-    e0 = Environment(mol, mol.electrons()[0].position());
-    e1 = Environment(mol, mol.electrons()[1].position());
+    e0 = Environment(mol, EnumeratedType<int>(int(Spin::alpha),0));
+    e1 = Environment(mol, EnumeratedType<int>(int(Spin::alpha),1));
     ASSERT_NEAR(LocalSimilarity::kernel(e0,e0),1,eps);
     ASSERT_NEAR(LocalSimilarity::kernel(e1,e1),1,eps);
     ASSERT_NEAR(LocalSimilarity::kernel(e0,e1),0,eps);
 
     mol= {AtomsVector(),ElectronsVector({{Spin::alpha,{0,0,0}},{Spin::alpha,{0,0,2.5}},{Spin::alpha, {0,0,-0.1}}})};
-    e0 = Environment(mol, mol.electrons()[0].position());
-    e1 = Environment(mol, mol.electrons()[1].position());
+    e0 = Environment(mol, EnumeratedType<int>(int(Spin::alpha),0));
+    e1 = Environment(mol, EnumeratedType<int>(int(Spin::alpha),1));
     ASSERT_NEAR(LocalSimilarity::kernel(e0,e0),1,eps);
     ASSERT_NEAR(LocalSimilarity::kernel(e1,e1),1,eps);
     ASSERT_NEAR(LocalSimilarity::kernel(e0,e1),0,eps);

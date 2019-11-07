@@ -1,13 +1,27 @@
-//
-// Created by Michael Heuer on 08.05.18.
-//
+/* Copyright (C) 2018-2019 Michael Heuer.
+ *
+ * This file is part of inPsights.
+ * inPsights is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * inPsights is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with inPsights. If not, see <https://www.gnu.org/licenses/>.
+ */
 
-#include <gtest/gtest.h>
+#include <gmock/gmock.h>
 #include "ParticleKit.h"
 #include <TestMolecules.h>
 #include <iomanip>
 
 using namespace testing;
+using namespace SOAP;
 
 class AParticleKitTest : public ::testing::Test {
 public:
@@ -26,6 +40,8 @@ public:
         molecularGeometry.atoms().append(a2);
     };
 };
+
+
 
 TEST_F(AParticleKitTest, Constructor1) {
     ParticleKit::create(molecularGeometry.atoms(),0,2);
@@ -97,23 +113,23 @@ TEST_F(AParticleKitTest, isSubsetQFalse) {
 }
 
 
-TEST_F(AParticleKitTest, NumberedType) {
+TEST_F(AParticleKitTest, EnumeratedNumberedType) {
     ParticleKit::create({{Element::H,2},{Element::Ca,2},{Element::He,2}},{2,3});
 
-    ASSERT_EQ(ParticleKit::getNumberedElementByIndex(0), NumberedElement (Element::H,0));
-    ASSERT_EQ(ParticleKit::getNumberedElementByIndex(1), NumberedElement (Element::H,1));
-    ASSERT_EQ(ParticleKit::getNumberedElementByIndex(4), NumberedElement (Element::He,0));
-    ASSERT_EQ(ParticleKit::getNumberedElementByIndex(5), NumberedElement (Element::He,1));
+    ASSERT_EQ(ParticleKit::getEnumeratedElementByIndex(0), EnumeratedElement (Element::H,0));
+    ASSERT_EQ(ParticleKit::getEnumeratedElementByIndex(1), EnumeratedElement (Element::H,1));
+    ASSERT_EQ(ParticleKit::getEnumeratedElementByIndex(4), EnumeratedElement (Element::He,0));
+    ASSERT_EQ(ParticleKit::getEnumeratedElementByIndex(5), EnumeratedElement (Element::He,1));
 
-    ASSERT_EQ(ParticleKit::getNumberedSpinByIndex(1), NumberedSpin(Spin::alpha,1));
-    ASSERT_EQ(ParticleKit::getNumberedSpinByIndex(4), NumberedSpin(Spin::beta,2));
+    ASSERT_EQ(ParticleKit::getEnumeratedSpinByIndex(1), EnumeratedSpin(Spin::alpha,1));
+    ASSERT_EQ(ParticleKit::getEnumeratedSpinByIndex(4), EnumeratedSpin(Spin::beta,2));
 
-    ASSERT_EQ(ParticleKit::getNumberedTypeByIndex(0), NumberedType<int>(int(Element::H),0));
-    ASSERT_EQ(ParticleKit::getNumberedTypeByIndex(1), NumberedType<int>(int(Element::H),1));
-    ASSERT_EQ(ParticleKit::getNumberedTypeByIndex(4), NumberedType<int>(int(Element::He),0));
-    ASSERT_EQ(ParticleKit::getNumberedTypeByIndex(5), NumberedType<int>(int(Element::He),1));
-    ASSERT_EQ(ParticleKit::getNumberedTypeByIndex(7), NumberedType<int>(int(Spin::alpha),1));
-    ASSERT_EQ(ParticleKit::getNumberedTypeByIndex(10), NumberedType<int>(int(Spin::beta),2));
+    ASSERT_EQ(ParticleKit::getEnumeratedTypeByIndex(0), EnumeratedType<int>(int(Element::H),0));
+    ASSERT_EQ(ParticleKit::getEnumeratedTypeByIndex(1), EnumeratedType<int>(int(Element::H),1));
+    ASSERT_EQ(ParticleKit::getEnumeratedTypeByIndex(4), EnumeratedType<int>(int(Element::He),0));
+    ASSERT_EQ(ParticleKit::getEnumeratedTypeByIndex(5), EnumeratedType<int>(int(Element::He),1));
+    ASSERT_EQ(ParticleKit::getEnumeratedTypeByIndex(7), EnumeratedType<int>(int(Spin::alpha),1));
+    ASSERT_EQ(ParticleKit::getEnumeratedTypeByIndex(10), EnumeratedType<int>(int(Spin::beta),2));
 }
 
 TEST_F(AParticleKitTest, toString) {
@@ -122,4 +138,57 @@ TEST_F(AParticleKitTest, toString) {
                       "------------\n"
                       "1*H, 1*He, 2*ea, 1*eb\n";
     ASSERT_EQ(ParticleKit::toString(),ref);
+}
+
+TEST_F(AParticleKitTest, electronsToKitPermutation) {
+    ParticleKit::create(TestMolecules::threeElectrons::spinFlipped);
+    auto original = TestMolecules::threeElectrons::spinFlipped.electrons();
+    auto copy = original;
+
+    //permute so that the result matches the kit
+    copy.permute(ParticleKit::toKitPermutation(original));
+    ASSERT_EQ(copy.typesVector(), ParticleKit::toSpinTypesVector());
+
+    // permute copy back to the original order
+    copy.permute(ParticleKit::fromKitPermutation(original));
+    ASSERT_EQ(copy, original);
+}
+
+TEST_F(AParticleKitTest, CombinedPermutations) {
+
+    ParticleKit::create(TestMolecules::threeElectrons::spinFlipped);
+    auto original = TestMolecules::threeElectrons::spinFlipped.electrons();
+    auto ref = original;
+    auto test = original;
+
+    Eigen::VectorXi indices(original.numberOfEntities());
+    indices << 2,0,1;
+    auto myperm = Eigen::PermutationMatrix<Eigen::Dynamic>(indices);
+    auto tokit = ParticleKit::toKitPermutation(original);
+    auto fromkit = ParticleKit::fromKitPermutation(original);
+
+    // to kit
+    ref.permute(tokit);
+    test.permute(tokit);
+
+    // both perms in sequence
+    ref.permute(myperm);
+    ref.permute(fromkit);
+
+    // combined perm
+    test.permute(fromkit*myperm);
+}
+
+TEST_F(AParticleKitTest, atomsToKitPermutation) {
+    ParticleKit::create(TestMolecules::CO2::nucleiPermuted);
+    auto original = TestMolecules::CO2::nucleiPermuted.atoms();
+    auto copy = original;
+
+    //permute so that the result matches the kit
+    copy.permute(ParticleKit::toKitPermutation(original));
+    ASSERT_EQ(copy.typesVector(), ParticleKit::toElementTypesVector());
+
+    // permute copy back to the original order
+    copy.permute(ParticleKit::fromKitPermutation(original));
+    ASSERT_EQ(copy, original);
 }

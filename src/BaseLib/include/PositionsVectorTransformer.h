@@ -1,9 +1,22 @@
-//
-// Created by Michael Heuer on 08.04.18.
-//
+/* Copyright (C) 2018-2019 Michael Heuer.
+ *
+ * This file is part of inPsights.
+ * inPsights is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * inPsights is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with inPsights. If not, see <https://www.gnu.org/licenses/>.
+ */
 
-#ifndef AMOLQCPP_POSITIONSVECTORTRANSFORMER_H
-#define AMOLQCPP_POSITIONSVECTORTRANSFORMER_H
+#ifndef INPSIGHTS_POSITIONSVECTORTRANSFORMER_H
+#define INPSIGHTS_POSITIONSVECTORTRANSFORMER_H
 
 #include "PositionsVector.h"
 #include <Eigen/Eigenvalues>
@@ -20,12 +33,6 @@ namespace PositionsVectorTransformer{
 
     void translateCenterOfMassToOrigin(PositionsVector& positionsVector);
 
-    void rotateAroundAxis(PositionsVector &p, double angle,
-                          const Eigen::Vector3d &axisStart,
-                          const Eigen::Vector3d &axisEnd);
-    void rotateAroundAxis(PositionsVector &positionsVector, double angle,
-                          const Eigen::Vector3d &axis);
-
     Eigen::Matrix3d rotationMatrixFromQuaternion(const Eigen::Vector4d &q);
 
     Eigen::Vector3d calculateCenterOfMass(const PositionsVector& positionsVector,
@@ -39,4 +46,4 @@ namespace PositionsVectorTransformer{
 };
 
 
-#endif //AMOLQCPP_POSITIONSVECTORTRANSFORMER_H
+#endif //INPSIGHTS_POSITIONSVECTORTRANSFORMER_H

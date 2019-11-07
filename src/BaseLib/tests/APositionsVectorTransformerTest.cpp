@@ -1,9 +1,22 @@
-//
-// Created by Michael Heuer on 29.10.17.
-//
+/* Copyright (C) 2017-2019 Michael Heuer.
+ *
+ * This file is part of inPsights.
+ * inPsights is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * inPsights is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with inPsights. If not, see <https://www.gnu.org/licenses/>.
+ */
 
 
-#include <gtest/gtest.h>
+#include <gmock/gmock.h>
 #include <ParticlesVector.h>
 #include <PositionsVectorTransformer.h>
 #include <NaturalConstants.h>
@@ -26,48 +39,6 @@ public:
     }
 };
 
-TEST_F(APositionsVectorTransformerTest, counterclockwiseRotation){
-
-    double angle = 120.*ConversionFactors::deg2rad; // 120° counterclockwise rotiation
-    Eigen::Vector3d axis = {1,1,1};
-
-    auto rotmat =PositionsVectorTransformer::rotationMatrixFromQuaternion(
-            PositionsVectorTransformer::quaternionFromAngleAndAxis(angle,axis));
-
-    Eigen::Matrix3d expectedRotationMatrix;
-    expectedRotationMatrix << 0,0,1, 1,0,0, 0,1,0;
-
-    ASSERT_TRUE(rotmat.isApprox(expectedRotationMatrix));
-
-    PositionsVectorTransformer::rotateAroundAxis(ev.positionsVector(), angle, axis);
-
-    Eigen::VectorXd expectedPositions(12);
-    expectedPositions << 0,0,0, 0,0,1, 1,0,0, 0,1,0;
-
-    ASSERT_TRUE(ev.positionsVector().asEigenVector().isApprox(expectedPositions));
-}
-
-TEST_F(APositionsVectorTransformerTest, clockwiseRotation){
-
-    double angle = -120.*ConversionFactors::deg2rad; // 120° clockwise rotiation
-    Eigen::Vector3d axis = {1,1,1};
-
-    auto rotmat =PositionsVectorTransformer::rotationMatrixFromQuaternion(
-            PositionsVectorTransformer::quaternionFromAngleAndAxis(angle,axis));
-
-    Eigen::Matrix3d expectedRotationMatrix;
-    expectedRotationMatrix << 0,1,0, 0,0,1, 1,0,0;
-
-    ASSERT_TRUE(rotmat.isApprox(expectedRotationMatrix));
-
-    PositionsVectorTransformer::rotateAroundAxis(ev.positionsVector(), angle, axis);
-
-    Eigen::VectorXd expectedPositions(12);
-    expectedPositions << 0,0,0, 0,1,0, 0,0,1, 1,0,0;
-
-    ASSERT_TRUE(ev.positionsVector().asEigenVector().isApprox(expectedPositions));
-}
-
 TEST_F(APositionsVectorTransformerTest, centerOfMassTranslation){
 
     auto centerOfMass = PositionsVectorTransformer::calculateCenterOfMass(ev.positionsVector());
@@ -84,5 +55,4 @@ TEST_F(APositionsVectorTransformerTest, centerOfMassTranslation){
     -1./4.,-1./4.,3./4.;
 
     ASSERT_TRUE(ev.positionsVector().asEigenVector().isApprox(expectedPositions));
-
 }

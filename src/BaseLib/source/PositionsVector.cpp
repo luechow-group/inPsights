@@ -1,47 +1,48 @@
-//
-// Created by Michael Heuer on 29.10.17.
-//
+/* Copyright (C) 2017-2019 Michael Heuer.
+ *
+ * This file is part of inPsights.
+ * inPsights is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * inPsights is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with inPsights. If not, see <https://www.gnu.org/licenses/>.
+ */
 
 #include <PositionsVector.h>
 #include <ToString.h>
 #include <EigenYamlConversion.h>
 #include <PositionsVectorTransformer.h>
 #include <yaml-cpp/yaml.h>
+#include <random>
 
 using namespace Eigen;
 
 PositionsVector::PositionsVector()
-        : InsertableVector(0,3)
-{
-    resetRef();
-}
+        : InsertableVector(0,3) {}
 
 PositionsVector::PositionsVector(const VectorXd &positions)
 : PositionsVector() {
     auto size = positions.size();
     assert(size >= 0 && "Vector cannot be empty");
-    assert(size%3 == 0 && "Vector must be 3N-dimensional");
+    assert(size%entityLength() == 0 && "Vector must be 3N-dimensional");
 
-    AbstractVector::setNumberOfEntities(size/3);
+    AbstractVector::setNumberOfEntities(size/entityLength());
     data_ = positions;
-
-    resetRef();
 }
 
 Eigen::Vector3d PositionsVector::operator[](long i) const {
     return data_.segment(calculateIndex(i),entityLength());
 }
 
-//TODO replace operator[] by this?
-Eigen::Vector3d PositionsVector::position(long i, const Usage& usage) {
-    assertResetInstruction(usage);
-
-    if((resetType() == Reset::Automatic && usage == Usage::Standard)
-    || (resetType() == Reset::OnFinished && usage == Usage::Finished))
-        return RETURN_AND_RESET<PositionsVector,Eigen::Vector3d>(
-                *this,dataRef(usage).segment(calculateIndex(i),entityLength())).returnAndReset();
-    else
-        return dataRef(usage).segment(calculateIndex(i),entityLength());
+Eigen::Vector3d PositionsVector::position(long i) {
+    return operator[](i);
 }
 
 void PositionsVector::prepend(const Eigen::Vector3d &position) {
@@ -54,59 +55,36 @@ void PositionsVector::insert(const Eigen::Vector3d &position, long i) {
     InsertableVector<double>::insert(position,i);
 }
 
-void PositionsVector::translate(const Eigen::Vector3d &shift, const Usage& usage) {
-    auto tmp = resetType_;
-    resetType_ = Reset::OnFinished;
-
-    for (long i = 0; i < sliceInterval_.numberOfEntities(); ++i)
-        dataRef(Usage::NotFinished).segment(calculateIndex(i), 3) += shift;
-
-    resetType_ = tmp;
-    resetStrategy(usage);
+void PositionsVector::translate(const Eigen::Vector3d &shift) {
+   for (long i = 0; i < numberOfEntities(); ++i)
+        data_.segment(calculateIndex(i), 3) += shift;
 }
 
-void PositionsVector::rotateAroundOrigin(double angle, const Eigen::Vector3d &axisDirection, const Usage& usage) {
-    rotate(angle,{0,0,0},axisDirection,usage);
+void PositionsVector::rotateAroundOrigin(double angle, const Eigen::Vector3d &axisDirection) {
+    rotate(angle,{0,0,0},axisDirection);
 }
 
-void PositionsVector::rotate(double angle,const Eigen::Vector3d &center,const Eigen::Vector3d &axisDirection, const Usage& usage) {
-
+void PositionsVector::rotate(double angle,const Eigen::Vector3d &center,const Eigen::Vector3d &axisDirection) {
     auto rotMat = PositionsVectorTransformer::rotationMatrixFromQuaternion(
             PositionsVectorTransformer::quaternionFromAngleAndAxis(angle, axisDirection));
 
-    auto tmp = resetType_;
-    resetType_ = Reset::OnFinished;
+    this->translate(-center);
 
-    this->translate(-center,Usage::NotFinished);
+    for (long i = 0; i < numberOfEntities(); ++i)
+        data_.segment(calculateIndex(i), entityLength()) = position(i).transpose() * rotMat;
 
-    for (long i = 0; i < sliceInterval_.numberOfEntities(); ++i)
-        dataRef(Usage::NotFinished).segment(calculateIndex(i), entityLength()) = position(i,Usage::NotFinished).transpose() * rotMat;
-
-    this->translate(center,Usage::NotFinished);
-
-    resetType_ = tmp;
-    resetStrategy(usage);
+    this->translate(center);
 };
 
-PositionsVector& PositionsVector::entity(long i, const Reset& resetType) {
-    return slice(Interval(i), resetType);
-}
-
-PositionsVector& PositionsVector::slice(const Interval& interval, const Reset& resetType) {
-    SliceableDataVector<double>::slice(interval,resetType);
-    return *this;
-}
-
 std::ostream& operator<<(std::ostream& os, const PositionsVector& pc){
-    for (long i = 0; i < pc.numberOfEntities(); i++){
+    for (Eigen::Index i = 0; i < pc.numberOfEntities(); i++){
         os << ToString::longToString(i + 1) << " " << ToString::vector3dToString(pc[i]) << std::endl;
     }
-    const_cast<PositionsVector &>(pc).resetRef(); //TODO refactor
     return os;
 }
 
 bool PositionsVector::operator==(const PositionsVector& other) const {
-    return SliceableDataVector<double>::operator==(other);
+    return DataVector<double>::operator==(other);
 }
 
 bool PositionsVector::operator!=(const PositionsVector&other) const {
@@ -114,10 +92,23 @@ bool PositionsVector::operator!=(const PositionsVector&other) const {
 }
 
 
+void PositionsVector::shake(double radius, std::default_random_engine& rng){
+    auto maxDev = 1./std::sqrt(3.0)*radius;
+    std::uniform_real_distribution<double> uniformRealDistribution(-maxDev, maxDev);
+
+    auto eLength = entityLength();
+    for (long i = 0; i < numberOfEntities(); ++i) {
+        data_[i*eLength+0] += uniformRealDistribution(rng);
+        data_[i*eLength+1] += uniformRealDistribution(rng);
+        data_[i*eLength+2] += uniformRealDistribution(rng);
+    }
+};
+
+
 namespace YAML {
     Node convert<PositionsVector>::encode(const PositionsVector &rhs) {
         Node node;
-        for (unsigned i = 0; i < rhs.numberOfEntities(); ++i)
+        for (long i = 0; i < rhs.numberOfEntities(); ++i)
             node.push_back(rhs[i]);
         return node;
     }
@@ -133,7 +124,7 @@ namespace YAML {
 
     Emitter &operator<<(Emitter &out, const PositionsVector &p) {
         out << Flow << BeginSeq << Newline;
-        for (unsigned i = 0; i < p.numberOfEntities(); ++i)
+        for (long i = 0; i < p.numberOfEntities(); ++i)
             out << p[i] << Newline;
         out << EndSeq << Auto;
         return out;

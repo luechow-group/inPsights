@@ -1,48 +1,36 @@
 
 #include <cmath>
 #include "Cone.h"
-#include "Helper.h"
+#include "GuiHelper.h"
 
 Cone::Cone(Qt3DCore::QEntity *root,
            QColor color,
            const std::pair<QVector3D, QVector3D>& pair,
-           const float bottomRadius,
-           const float topRadius,
-           const float alpha)
-        : Abstract3dObject(root, QColor(), MidPointVector(pair)),
+           float bottomRadius,
+           float topRadius,
+           float alpha)
+        : Abstract3dObject(root, QColor(), GuiHelper::midPointVector(pair)),
           topRadius_(topRadius),
           bottomRadius_(bottomRadius),
           start_(pair.first),
-          end_(pair.second) {
+          end_(pair.second),
+          mesh_(new Qt3DExtras::QConeMesh(this)) {
 
-  difference_ = end_ - start_;
-  length_ = difference_.length();
-
-  mesh_ = new Qt3DExtras::QConeMesh;
   mesh_->setTopRadius(topRadius);
   mesh_->hasTopEndcapChanged(true);
   mesh_->setBottomRadius(bottomRadius);
   mesh_->hasBottomEndcapChanged(true);
-  mesh_->setLength(length_);
+  mesh_->setLength(length());
   mesh_->setRings(100);
   mesh_->setSlices(10);
 
   material->setAlpha(alpha);
 
-  rotateToOrientation(difference_);
+  rotateToOrientation(difference());
 
   material->setAmbient(color);
 
-  entity->addComponent(mesh_);
-}
-
-Cone::Cone(const Cone &cone)
-        : bottomRadius_(cone.getBottomRadius()),
-          length_(cone.getLength()),
-          start_(cone.getStart()),
-          end_(cone.getEnd()),
-          difference_(cone.difference_)
-{
+  addComponent(mesh_);
 }
 
 void Cone::rotateToOrientation(const QVector3D &orientation) {

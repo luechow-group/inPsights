@@ -1,54 +1,71 @@
-//
-// Created by Michael Heuer on 29.10.17.
-//
+/* Copyright (C) 2017-2019 Michael Heuer.
+ *
+ * This file is part of inPsights.
+ * inPsights is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * inPsights is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with inPsights. If not, see <https://www.gnu.org/licenses/>.
+ */
 
-#ifndef AMOLQCPP_PARTICLESVECTOR_H
-#define AMOLQCPP_PARTICLESVECTOR_H
+#ifndef INPSIGHTS_PARTICLESVECTOR_H
+#define INPSIGHTS_PARTICLESVECTOR_H
 
 #include "AbstractVector.h"
 #include "Particle.h"
 #include "PositionsVector.h"
 #include "TypesVector.h"
-#include <vector>
 #include <yaml-cpp/yaml.h>
+#include <vector>
+#include <memory>
 
 template<typename Type>
-class ParticlesVector : public ISliceable{
+class ParticlesVector : public AbstractVector{
 public:
 
     ParticlesVector()
-            : ISliceable(0),
+            : AbstractVector(0),
               positionsVector_(),
-              typesVector_(0)
-    {}
+              typesVector_(0),
+              linkedParticles_(0) {
+        initializeLinkedParticles();
+    }
 
     ParticlesVector(const PositionsVector &positionsVector)
-            : ISliceable(positionsVector.numberOfEntities()),
+            : AbstractVector(positionsVector.numberOfEntities()),
               positionsVector_(positionsVector),
-              typesVector_(numberOfEntities())
-    {}
+              typesVector_(numberOfEntities()),
+              linkedParticles_(0) {
+        initializeLinkedParticles();
+    }
 
     ParticlesVector(const PositionsVector &positionsVector,
                     const TypesVector<Type> &typesVector)
-            : ISliceable(positionsVector.numberOfEntities()),
+            : AbstractVector(positionsVector.numberOfEntities()),
               positionsVector_(positionsVector),
-              typesVector_(typesVector) {
+              typesVector_(typesVector),
+              linkedParticles_(0) {
         assert(numberOfEntities() == positionsVector_.numberOfEntities()
                && numberOfEntities() == typesVector_.numberOfEntities()
                && "The number of entities in ParticlesVector, PositionsVector, and TypesVector must match.");
+        initializeLinkedParticles();
     }
 
-    ParticlesVector& slice(const Interval& interval, const Reset& resetType = Reset::Automatic /*TODO makes no sense here*/) {
-        setSlice(interval,resetType);
-        typesVector().slice(interval,resetType);
-        positionsVector().slice(interval,resetType);
+    ParticlesVector(const ParticlesVector& pv)
+            : ParticlesVector(pv.positionsVector(),pv.typesVector()) {}
 
-        //TODO CAREFUL WITH RESET
-        return *this;
-    }
-
-    ParticlesVector& entity(long i, const Reset& resetType = Reset::Automatic) {
-        return slice(Interval(i), resetType);
+    void initializeLinkedParticles(){
+        for (long i = 0; i < numberOfEntities(); ++i) {
+            linkedParticles_.emplace_back(std::make_shared<LinkedParticle<Type>>(
+                    positionsVector_.dataRef(i), &typesVector_.dataRef(i)[0]));//TODO or give LinkedParticle a VectorXi(1) ref?
+        }
     }
 
     ParticlesVector(std::vector<Particle<Type>> particles)
@@ -56,10 +73,44 @@ public:
         for (const auto& particle : particles){
             append(particle);
         }
+        initializeLinkedParticles();
     }
-    
+
+    std::shared_ptr<LinkedParticle<Type>> linkedParticle(long i) const {
+        return linkedParticles_[i];
+    }
+
     Particle<Type> operator[](long i) const {
         return {typesVector_[i],positionsVector_[i]};
+    }
+
+    ParticlesVector<Type> operator[](std::list<long> indices) const {
+        ParticlesVector newVector;
+        for (long index : indices) {
+            newVector.append(Particle<Type>{typesVector_[index],positionsVector_[index]});
+        }
+        return newVector;
+    }
+
+    ParticlesVector<Type> getFirstParticles(long n) {
+        assert(n >= 0);
+        assert(n < numberOfEntities());
+
+        ParticlesVector newVector(
+                PositionsVector(positionsVector_.asEigenVector().head(positionsVector().entityLength() * n)),
+                TypesVector<Type>(typesVector_.asEigenVector().head(n))
+        );
+        return newVector;
+    }
+
+    ParticlesVector<Type> tail(long i) {
+        assert(i >= 0);
+
+        ParticlesVector newVector(
+                PositionsVector(positionsVector_.asEigenVector().tail(3*i)),
+                TypesVector<Type>(typesVector_.asEigenVector().tail(i))
+        );
+        return newVector;
     }
 
     const PositionsVector & positionsVector() const {
@@ -85,9 +136,12 @@ public:
         positionsVector_.insert(particle.position(),i);
         typesVector_.insert(particle.type(),i);
         incrementNumberOfEntities();
-
         assert(positionsVector_.numberOfEntities() == numberOfEntities());
         assert(typesVector_.numberOfEntities() == numberOfEntities());
+
+        linkedParticles_.resize(0); //TODO find alternative to recreate the entire vector (what happens to existing linked particles)
+        initializeLinkedParticles();
+        assert(long(linkedParticles_.size()) == numberOfEntities());
     }
 
     void prepend(const Particle<Type> & particle) {
@@ -98,11 +152,6 @@ public:
         this->insert(particle,numberOfEntities());
     }
 
-    void permute(const Eigen::PermutationMatrix<Eigen::Dynamic> &permutation, const Usage &usage) {
-        positionsVector_.permute(permutation,usage);
-        typesVector_.permute(permutation,usage);
-    }
-
     void permute(const Eigen::PermutationMatrix<Eigen::Dynamic> &permutation) override {
         positionsVector_.permute(permutation);
         typesVector_.permute(permutation);
@@ -110,7 +159,6 @@ public:
 
 
     friend std::ostream& operator<<(std::ostream& os, const ParticlesVector<Type> & pv){
-        //TODO print only slice?
         for (long i = 0; i < pv.numberOfEntities(); i++) {
             os << ToString::longToString(i + 1) << " " << pv[i] << std::endl;
         }
@@ -118,25 +166,28 @@ public:
     }
 
     bool operator==(const ParticlesVector<Type> &other) const {
-        return ISliceable::operator==(other)
-                && (typesVector() == other.typesVector())
-                && (positionsVector() == other.positionsVector());
+        return (typesVector() == other.typesVector())
+        && (positionsVector() == other.positionsVector());
     }
 
     bool operator!=(const ParticlesVector<Type> &other) const {
         return !(*this == other);
     }
 
-
-
 protected:
     PositionsVector positionsVector_;
     TypesVector<Type> typesVector_;
+public:
+    std::vector<std::shared_ptr<LinkedParticle<Type>>> linkedParticles_;
 };
 
 using TypedParticlesVector = ParticlesVector<int>;
 using ElectronsVector = ParticlesVector<Spin>;
 using AtomsVector = ParticlesVector<Element>;
+
+using LinkedTypedParticle = LinkedParticle<int>;
+using LinkedElectron = LinkedParticle<Spin>;
+using LinkedAtoms = LinkedParticle<Element>;
 
 namespace YAML {
     template<typename Type> struct convert<ParticlesVector<Type>> {
@@ -168,4 +219,4 @@ namespace YAML {
     };
 }
 
-#endif //AMOLQCPP_PARTICLESVECTOR_H
+#endif //INPSIGHTS_PARTICLESVECTOR_H

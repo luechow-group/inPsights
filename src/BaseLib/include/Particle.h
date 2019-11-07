@@ -1,39 +1,56 @@
-//
-// Created by Michael Heuer on 29.10.17.
-//
+/* Copyright (C) 2017-2019 Michael Heuer.
+ *
+ * This file is part of inPsights.
+ * inPsights is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * inPsights is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with inPsights. If not, see <https://www.gnu.org/licenses/>.
+ */
 
-#ifndef AMOLQCPP_PARTICLE_H
-#define AMOLQCPP_PARTICLE_H
+#ifndef INPSIGHTS_PARTICLE_H
+#define INPSIGHTS_PARTICLE_H
 
 #include <Eigen/Core>
 #include <iostream>
-
 #include "ToString.h"
 #include "ElementType.h"
 #include "SpinType.h"
+#include "LinkedParticle.h"
 #include "EigenYamlConversion.h"
 
 template<typename Type>
 class Particle {
 public:
     Particle()
-            : position_(Eigen::Vector3d::Zero()),
-              type_(0)
+            : Particle(Eigen::Vector3d::Zero(), 0)
     {}
 
-    Particle(Type type, const Eigen::Vector3d &position)
-            : position_(position), type_(int(type))
+    Particle(Type type, Eigen::Vector3d position)
+            : Particle(position, int(type))
     {}
 
-    Particle(const Eigen::Vector3d& position, int typeId = 0)
-            : position_(position), type_(typeId){}
+    Particle(Eigen::Vector3d position, int typeId = 0)
+            : position_(std::move(position)), type_(typeId)
+    {}
 
     const Eigen::Vector3d& position() const{
         return position_;
     }
 
-    Eigen::Vector3d& position() {
-        return position_;
+    virtual void setPosition(const Eigen::Vector3d& position) {
+        position_ = position;
+    }
+
+    void translate(const Eigen::Vector3d& shift){
+        setPosition(position()+shift);
     }
 
     Type type() const{
@@ -56,7 +73,7 @@ public:
         return os;
     }
 
-    //Generic
+    //Generic particles are not charged
     int charge() const{
         return 0;
     }
@@ -103,4 +120,4 @@ namespace YAML {
     Emitter& operator<< (Emitter& out, const Electron& p);
 }
 
-#endif //AMOLQCPP_PARTICLE_H
+#endif //INPSIGHTS_PARTICLE_H

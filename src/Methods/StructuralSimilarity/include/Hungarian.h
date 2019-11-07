@@ -37,8 +37,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 
 
-#ifndef AMOLQCPP_HUNGARIAN_H
-#define AMOLQCPP_HUNGARIAN_H
+#ifndef INPSIGHTS_HUNGARIAN_H
+#define INPSIGHTS_HUNGARIAN_H
 
 #include <Eigen/Dense>
 #include <limits>
@@ -49,7 +49,7 @@ template<typename Scalar>
 class Hungarian {
 public:
     static Eigen::PermutationMatrix<Eigen::Dynamic>
-    findMatching(Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic> &m, Matchtype type = Matchtype::MIN) {
+    findMatching(const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic> &m, Matchtype type = Matchtype::MIN) {
         Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic> n = m; // make a copy of m for reducing
         Eigen::Index dim = n.rows(); // dimension of matrix, used for checking if we've reduced the matrix enough yet
 
@@ -236,4 +236,4 @@ private:
     };
 };
 
-#endif //AMOLQCPP_HUNGARIAN_H
+#endif //INPSIGHTS_HUNGARIAN_H

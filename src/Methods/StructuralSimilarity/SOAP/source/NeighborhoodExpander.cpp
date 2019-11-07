@@ -1,11 +1,27 @@
-//
-// Created by Michael Heuer on 15.05.18.
-//
+/* Copyright (C) 2018-2019 Michael Heuer.
+ *
+ * This file is part of inPsights.
+ * inPsights is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * inPsights is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with inPsights. If not, see <https://www.gnu.org/licenses/>.
+ */
 
 #include "NeighborhoodExpander.h"
-#include "CutoffFunction.h"
+#include "Cutoff.h"
 #include "AngularBasis.h"
 #include "ParticleKit.h"
+#include <SOAPSettings.h>
+
+using namespace SOAP;
 
 NeighborhoodExpander::NeighborhoodExpander()
         : radialGaussianBasis_(){}
@@ -13,25 +29,30 @@ NeighborhoodExpander::NeighborhoodExpander()
 NeighborhoodExpansion NeighborhoodExpander::expandEnvironment(const Environment& e, int expansionTypeId) const {
     NeighborhoodExpansion neighborhoodExpansion;
 
+    auto nmax = Radial::settings.nmax();
+    auto lmax = Angular::settings.lmax();
+    auto sigmaAtom  = Radial::settings.sigmaAtom();
+    auto radiusZero = Radial::settings.radiusZero();
+    auto centerWeight = Cutoff::settings.centerWeight();
+
     for (const auto& neighborCoordsPair : e.selectParticles(expansionTypeId)) {
 
         const auto& neighborCoords = neighborCoordsPair.second;
 
-        double weight = 1; //TODO TypeSpecific Value? //const auto& neighbor = neighborCoordsPair.first;
-        double weightScale = CutoffFunction::getWeight(neighborCoords.r);
+        double weight = 1; //TODO TypeSpecific Value?
+        double weightScale = Cutoff::getWeight(neighborCoords.r);
 
-        if (neighborCoords.r <= ExpansionSettings::Radial::radiusZero)
-            weight *= ExpansionSettings::Cutoff::centerWeight; //TODO return something here?
+        if (neighborCoords.r <= radiusZero)
+            weight *= centerWeight;
 
-        for (unsigned n = 1; n <= ExpansionSettings::Radial::nmax; ++n) {
-            for (unsigned l = 0; l <= ExpansionSettings::Angular::lmax; ++l) {
+        for (unsigned n = 1; n <= nmax; ++n) {
+            for (unsigned l = 0; l <= lmax; ++l) {
 
                 //radialGaussianBasis_.
-                auto radialCoeff = radialGaussianBasis_.computeCoefficients(neighborCoords.r,ExpansionSettings::Radial::sigmaAtom);
+                auto radialCoeff = radialGaussianBasis_.computeCoefficients(neighborCoords.r, sigmaAtom);
                 for (int m = -int(l); m <= int(l); ++m) {
 
                     //TODO use TypeSpecific sigma value? Is neighbor sigma right?
-                    //auto coeff = coefficient(n, l, m, neighborCoords, weight, weightScale);//,neighborSigma);
                     auto coeff = radialCoeff(n-1,l)* AngularBasis::computeCoefficient(l, m, neighborCoords.theta, neighborCoords.phi)
                                  * weight*weightScale;
                     neighborhoodExpansion.storeCoefficient(n,l,m,coeff);
@@ -43,27 +64,30 @@ NeighborhoodExpansion NeighborhoodExpander::expandEnvironment(const Environment&
 }
 
 TypeSpecificNeighborhoodsAtOneCenter
-NeighborhoodExpander::computeParticularExpansions(const Environment &e) { // WORKS!
+NeighborhoodExpander::computeParticularExpansions(const Environment &e) {
     TypeSpecificNeighborhoodsAtOneCenter expansions;
 
-    switch (ExpansionSettings::mode) {
-        case ExpansionSettings::Mode::typeAgnostic: {
+    auto mode = General::settings.mode();
+    switch (mode) {
+        case General::Mode::typeAgnostic: {
             auto noneTypeId = 0;
             expansions.emplace(noneTypeId, expandEnvironment(e, noneTypeId));
             break;
         }
-        case ExpansionSettings::Mode::chemical: {
-            for(auto & type : ParticleKit::kit){
-                expansions.emplace(type.first, expandEnvironment(e, type.first));
+        case General::Mode::chemical: {
+            for(auto & [type, count] : ParticleKit::kit){
+                expansions.emplace(type, expandEnvironment(e, type));
             }
             break;
         }
-        case ExpansionSettings::Mode::alchemical: {
-            for(auto & type : ParticleKit::kit){
-                expansions.emplace(type.first, expandEnvironment(e, type.first));
+        case General::Mode::alchemical: {
+            for(auto & [type, count] : ParticleKit::kit){
+                expansions.emplace(type, expandEnvironment(e, type));
             }
             break;
         }
+        case General::Mode::undefined:
+            throw std::exception();
     }
     return expansions;
 }
@@ -72,31 +96,13 @@ MolecularCenters
 NeighborhoodExpander::computeMolecularExpansions(MolecularGeometry molecule) {
     assert(ParticleKit::isSubsetQ(molecule)
            && "The molecule must be composable from the set of particles specified in the particle kit");
-    MolecularCenters exp;
 
-    //TODO CHECK HERE FOR IDENTICAL CENTERS!
+    MolecularCenters expansions;
+
     for (unsigned k = 0; k < unsigned(molecule.numberOfEntities()); ++k) {
-
-        // check if center was calculated already ;
-        // TODO: not possible, if type specific center value is chosen which currently isn't the case;
-        bool computedAlreadyQ = false;
-
-        NumberedType<int> existingNumberedType;
-        for (unsigned i = 0; i < k; ++i) {
-            if((molecule[i].position()-molecule[k].position()).norm() <= ExpansionSettings::Radial::radiusZero){
-                existingNumberedType = molecule.findNumberedTypeByIndex(i);
-                computedAlreadyQ = true;
-                //std::cout << "found " << existingNumberedType << std::endl;
-                break;
-            }
-        }
-        auto newNumberedType = molecule.findNumberedTypeByIndex(k);
-        if(computedAlreadyQ){
-            exp[newNumberedType] = exp[existingNumberedType];
-        } else {
-            exp[newNumberedType] = computeParticularExpansions(Environment(molecule, molecule[k].position()));
-        }
+        auto currentEnumeratedType = molecule.findEnumeratedTypeByIndex(k);
+        expansions[currentEnumeratedType] = computeParticularExpansions(Environment(molecule, currentEnumeratedType));
     }
 
-    return exp;
+    return expansions;
 }

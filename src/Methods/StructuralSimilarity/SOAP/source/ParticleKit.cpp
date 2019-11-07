@@ -1,232 +1,304 @@
-//
-// Created by Michael Heuer on 15.05.18.
-//
+/* Copyright (C) 2018-2019 Michael Heuer.
+ *
+ * This file is part of inPsights.
+ * inPsights is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * inPsights is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with inPsights. If not, see <https://www.gnu.org/licenses/>.
+ */
+
+#include <ParticleKit.h>
 
 #include "ParticleKit.h"
 #include "ElementInfo.h"
 
-namespace ParticleKit {
-    AtomKit atomKit = {};
+namespace SOAP {
+    namespace ParticleKit {
+        AtomKit atomKit = {};
 
-    ElectronKit electronKit = {0, 0};
-    TypeKit kit = {};
+        ElectronKit electronKit = {0, 0};
+        TypeKit kit = {};
 
-    void create(const AtomKit &atomKit, const ElectronKit &electronKit) {
-        ParticleKit::atomKit = atomKit;
-        ParticleKit::electronKit.first = electronKit.first;
-        ParticleKit::electronKit.second = electronKit.second;
+        void create(const AtomKit &atomKit, const ElectronKit &electronKit) {
+            SOAP::ParticleKit::atomKit = atomKit;
+            SOAP::ParticleKit::electronKit.first = electronKit.first;
+            SOAP::ParticleKit::electronKit.second = electronKit.second;
 
-        createKit(atomKit,electronKit);
-    }
-
-    void createKit(const AtomKit &atomKit, const ElectronKit &electronKit){
-        ParticleKit::kit = {};
-
-        for (const auto &i : atomKit)
-            ParticleKit::kit.push_back({int(i.first), i.second});
-
-        if (electronKit.first>0)
-            ParticleKit::kit.push_back({int(Spin::alpha),electronKit.first});
-
-        if (electronKit.second>0)
-            ParticleKit::kit.push_back({int(Spin::beta),electronKit.second});
-    }
-
-    void create(const AtomKit &atomKit, int charge, unsigned multiplicity) {
-        ParticleKit::atomKit = atomKit;
-
-        createElectronKitFromAtomKit(atomKit, charge, multiplicity);
-
-        createKit(ParticleKit::atomKit,ParticleKit::electronKit);
-    }
-
-    void create(const AtomsVector &atoms, int charge, unsigned multiplicity){
-        createAtomKitFromAtomsVector(atoms);
-        create(ParticleKit::atomKit, charge, multiplicity);
-
-        createKit(ParticleKit::atomKit,ParticleKit::electronKit);
-    }
-
-    void create(const AtomsVector &atoms, const ElectronsVector &electrons) {
-        createAtomKitFromAtomsVector(atoms);
-        createElectronKitFromElectronsVector(electrons);
-        createKit(ParticleKit::atomKit,ParticleKit::electronKit);
-    }
-
-    void create(const MolecularGeometry &molecularGeometry) {
-        create(molecularGeometry.atoms(),molecularGeometry.electrons());
-    }
-
-    namespace {
-        void createAtomKitFromAtomsVector(const AtomsVector &atoms) {
-
-            AtomKit newAtomKit;
-            std::vector<Element> elementsPresent;
-
-            for (int i = 0; i < atoms.numberOfEntities(); ++i) {
-                auto element = atoms[i].type();
-                if (std::find(elementsPresent.begin(), elementsPresent.end(), element) == elementsPresent.end())
-                    elementsPresent.emplace_back(element);
-            }
-
-            std::sort(elementsPresent.begin(), elementsPresent.end());
-
-            for (const auto &element : elementsPresent) {
-                newAtomKit.emplace_back<std::pair<Element, unsigned>>(
-                        {element, atoms.typesVector().countOccurence(element)});
-            }
-
-            ParticleKit::atomKit = newAtomKit;
-        };
-
-
-        void createElectronKitFromElectronsVector(const ElectronsVector &electronsVector) {
-
-            electronKit.first = electronsVector.typesVector().countOccurence(Spin::alpha);
-            electronKit.second = electronsVector.typesVector().countOccurence(Spin::beta);
+            SOAP::ParticleKit::createKit(atomKit, electronKit);
         }
 
-        void createElectronKitFromAtomKit(const AtomKit &atomKit,
-                                          int charge, unsigned multiplicity) {
-            unsigned numberOfElectrons = 0;
+        void createKit(const AtomKit &atomKit, const ElectronKit &electronKit) {
+            SOAP::ParticleKit::kit = {};
 
-            for (auto const &elemenTypeNumberPair : atomKit) {
-                auto elementType = elemenTypeNumberPair.first;
-                auto numberOfAtoms = elemenTypeNumberPair.second;
+            for (const auto &[type, numberOfAtoms] : atomKit)
+                SOAP::ParticleKit::kit.push_back({Elements::elementToInt(type), numberOfAtoms});
 
-                numberOfElectrons += Elements::ElementInfo::Z(elementType) * numberOfAtoms;
-            }
-            numberOfElectrons -= charge;
+            auto[numberOfAlphaSpins, numberOfBetaSpins] = electronKit;
 
-            unsigned numberOfUnpairedElectrons = multiplicity - 1;
+            if (numberOfAlphaSpins > 0)
+                SOAP::ParticleKit::kit.push_back({Spins::spinToInt(Spin::alpha), numberOfAlphaSpins});
 
-            assert((numberOfElectrons - numberOfUnpairedElectrons) % 2 == 0
-                   && "The number of electron pairs must be a multiple of 2.");
-            unsigned numberOfElectronPairs = (numberOfElectrons - numberOfUnpairedElectrons) / 2;
-
-            // use amolqc convention
-            unsigned numberOfAlphaElectrons = numberOfUnpairedElectrons + numberOfElectronPairs;
-            unsigned numberOfBetaElectrons = numberOfElectronPairs;
-
-            ParticleKit::electronKit.first = numberOfAlphaElectrons;
-            ParticleKit::electronKit.second = numberOfBetaElectrons;
-        };
-    }
-
-
-
-    bool isSubsetQ(const AtomsVector &atomsVector) {
-        auto countedTypes = atomsVector.typesVector().countTypes();
-        for (const auto& typeCountPair : countedTypes){
-
-            auto it = std::find_if( ParticleKit::atomKit.begin(), ParticleKit::atomKit.end(),
-                    [typeCountPair](const std::pair<Element, unsigned >& element){
-                return element.first == typeCountPair.first;} );
-            if(it == ParticleKit::atomKit.end()) return false;
-            else if ((*it).second < typeCountPair.second) {
-                return false;
-            }
+            if (numberOfBetaSpins > 0)
+                SOAP::ParticleKit::kit.push_back({Spins::spinToInt(Spin::beta), numberOfBetaSpins});
         }
-        return true;
-    }
 
-    bool isSubsetQ(const ElectronsVector &electronsVector) {
-        if(electronsVector.typesVector().countOccurence(Spin::alpha) > ParticleKit::electronKit.first)
-            return false;
-        else if (electronsVector.typesVector().countOccurence(Spin::beta) > ParticleKit::electronKit.second)
-            return false;
-        else
+        void create(const AtomKit &atomKit, int charge, unsigned multiplicity) {
+            SOAP::ParticleKit::atomKit = atomKit;
+
+            SOAP::ParticleKit::internal::createElectronKitFromAtomKit(atomKit, charge, multiplicity);
+
+            createKit(SOAP::ParticleKit::atomKit, SOAP::ParticleKit::electronKit);
+        }
+
+        void create(const AtomsVector &atoms, int charge, unsigned multiplicity) {
+            SOAP::ParticleKit::internal::createAtomKitFromAtomsVector(atoms);
+            create(SOAP::ParticleKit::atomKit, charge, multiplicity);
+
+            createKit(SOAP::ParticleKit::atomKit, SOAP::ParticleKit::electronKit);
+        }
+
+        void create(const AtomsVector &atoms, const ElectronsVector &electrons) {
+            SOAP::ParticleKit::internal::createAtomKitFromAtomsVector(atoms);
+            SOAP::ParticleKit::internal::createElectronKitFromElectronsVector(electrons);
+            createKit(SOAP::ParticleKit::atomKit, SOAP::ParticleKit::electronKit);
+        }
+
+        void create(const MolecularGeometry &molecularGeometry) {
+            create(molecularGeometry.atoms(), molecularGeometry.electrons());
+        }
+
+        namespace internal {
+            void createAtomKitFromAtomsVector(const AtomsVector &atoms) {
+
+                AtomKit newAtomKit;
+                std::vector<Element> elementsPresent;
+
+                for (int i = 0; i < atoms.numberOfEntities(); ++i) {
+                    auto element = atoms[i].type();
+                    if (std::find(elementsPresent.begin(), elementsPresent.end(), element) == elementsPresent.end())
+                        elementsPresent.emplace_back(element);
+                }
+
+                std::sort(elementsPresent.begin(), elementsPresent.end());
+
+                for (const auto &element : elementsPresent) {
+                    newAtomKit.emplace_back<std::pair<Element, unsigned>>(
+                            {element, atoms.typesVector().countOccurence(element)});
+                }
+
+                SOAP::ParticleKit::atomKit = newAtomKit;
+            };
+
+
+            void createElectronKitFromElectronsVector(const ElectronsVector &electronsVector) {
+
+                electronKit.first = electronsVector.typesVector().countOccurence(Spin::alpha);
+                electronKit.second = electronsVector.typesVector().countOccurence(Spin::beta);
+            }
+
+            void createElectronKitFromAtomKit(const AtomKit &atomKit,
+                                              int charge, unsigned multiplicity) {
+                unsigned numberOfElectrons = 0;
+
+                for (auto const &[elementType, numberOfAtoms] : atomKit)
+                    numberOfElectrons += Elements::ElementInfo::Z(elementType) * numberOfAtoms;
+
+                numberOfElectrons -= charge;
+
+                unsigned numberOfUnpairedElectrons = multiplicity - 1;
+
+                assert((numberOfElectrons - numberOfUnpairedElectrons) % 2 == 0
+                       && "The number of electron pairs must be a multiple of 2.");
+                unsigned numberOfElectronPairs = (numberOfElectrons - numberOfUnpairedElectrons) / 2;
+
+                // use amolqc convention
+                unsigned numberOfAlphaElectrons = numberOfUnpairedElectrons + numberOfElectronPairs;
+                unsigned numberOfBetaElectrons = numberOfElectronPairs;
+
+                SOAP::ParticleKit::electronKit = {numberOfAlphaElectrons, numberOfBetaElectrons};
+            };
+        }
+
+        SpinTypesVector toSpinTypesVector() {
+            return {SOAP::ParticleKit::electronKit.first, SOAP::ParticleKit::electronKit.second};
+        }
+
+        ElementTypesVector toElementTypesVector() {
+            ElementTypesVector elementTypesVector;
+            for (const auto &elementCount : atomKit)
+                for (unsigned i = 0; i < elementCount.second; ++i)
+                    elementTypesVector.append(elementCount.first);
+            return elementTypesVector;
+        }
+
+
+        Eigen::PermutationMatrix<Eigen::Dynamic> fromKitPermutation(const ElectronsVector &electronsVector) {
+            assert(SOAP::ParticleKit::isSubsetQ(electronsVector));
+
+            Eigen::VectorXi indices(electronsVector.numberOfEntities());
+
+            int index = 0;
+            for (long i = 0; i < electronsVector.numberOfEntities(); ++i)
+                if (electronsVector[i].type() == Spin::alpha) {
+                    indices[index] = i;
+                    index++;
+                }
+
+            for (long i = 0; i < electronsVector.numberOfEntities(); ++i)
+                if (electronsVector[i].type() == Spin::beta) {
+                    indices[index] = i;
+                    index++;
+                }
+
+            return Eigen::PermutationMatrix<Eigen::Dynamic>(indices);
+        }
+
+        Eigen::PermutationMatrix<Eigen::Dynamic> toKitPermutation(const ElectronsVector &electronsVector) {
+            return fromKitPermutation(electronsVector).inverse();
+        }
+
+        Eigen::PermutationMatrix<Eigen::Dynamic> fromKitPermutation(const AtomsVector &atomsVector) {
+            assert(SOAP::ParticleKit::isSubsetQ(atomsVector));
+
+            Eigen::VectorXi indices(atomsVector.numberOfEntities());
+            auto typeCounts = atomsVector.typesVector().countTypes();
+
+            int index = 0;
+            for (const auto &[type, count] : typeCounts)
+                for (long i = 0; i < atomsVector.numberOfEntities(); ++i)
+                    if (atomsVector[i].type() == type) {
+                        indices[index] = i;
+                        index++;
+                    }
+
+            return Eigen::PermutationMatrix<Eigen::Dynamic>(indices);
+        }
+
+        Eigen::PermutationMatrix<Eigen::Dynamic> toKitPermutation(const AtomsVector &atomsVector) {
+            return fromKitPermutation(atomsVector).inverse();
+        }
+
+        bool isSubsetQ(const AtomsVector &atomsVector) {
+            auto countedTypes = atomsVector.typesVector().countTypes();
+            for (auto typeCount: countedTypes) {
+
+                auto it = std::find_if(SOAP::ParticleKit::atomKit.begin(), SOAP::ParticleKit::atomKit.end(),
+                                       [typeCount](const std::pair<Element, unsigned> &element) {
+                                           return element.first == typeCount.type_;
+                                       });
+                if (it == SOAP::ParticleKit::atomKit.end()) return false;
+                else if ((*it).second < typeCount.number_) {
+                    return false;
+                }
+            }
             return true;
-    }
+        }
 
-    bool isSubsetQ(const MolecularGeometry &molecularGeometry) {
-        return isSubsetQ(molecularGeometry.atoms()) && isSubsetQ(molecularGeometry.electrons());
-    }
+        bool isSubsetQ(const ElectronsVector &electronsVector) {
+            if (electronsVector.typesVector().countOccurence(Spin::alpha) > SOAP::ParticleKit::electronKit.first)
+                return false;
+            else
+                return electronsVector.typesVector().countOccurence(Spin::beta) <=
+                       SOAP::ParticleKit::electronKit.second;
+        }
 
-    unsigned numberOfTypes() {
-        return unsigned(kit.size());
-    }
+        bool isSubsetQ(const MolecularGeometry &molecularGeometry) {
+            return isSubsetQ(molecularGeometry.atoms()) && isSubsetQ(molecularGeometry.electrons());
+        }
 
-    unsigned numberOfAtoms() {
-        unsigned sum = 0;
+        unsigned numberOfTypes() {
+            return unsigned(kit.size());
+        }
 
-        for (auto const &elementTypeNumberPair :  atomKit)
-            sum += elementTypeNumberPair.second;
+        unsigned numberOfAtoms() {
+            unsigned sum = 0;
 
-        return sum;
-    }
+            for (auto const &elementTypeNumberPair :  atomKit)
+                sum += elementTypeNumberPair.second;
 
-    unsigned numberOfElectrons() {
-        return electronKit.first + electronKit.second;
-    }
+            return sum;
+        }
 
-    unsigned numberOfParticles() {
-        return numberOfAtoms()+numberOfElectrons();
-    }
+        unsigned numberOfElectrons() {
+            return electronKit.first + electronKit.second;
+        }
+
+        unsigned numberOfParticles() {
+            return numberOfAtoms() + numberOfElectrons();
+        }
 
 
-    unsigned numberOfElementTypes() {
-        return unsigned(atomKit.size());
-    }
+        unsigned numberOfElementTypes() {
+            return unsigned(atomKit.size());
+        }
 
-    unsigned numberOfSpinTypes() {
-        unsigned numberOfSpinTypes = 0;
-        if(electronKit.first>0) // alpha
-            numberOfSpinTypes +=1;
-        if(electronKit.second>0) // beta
-            numberOfSpinTypes +=1;
+        unsigned numberOfSpinTypes() {
+            unsigned numberOfSpinTypes = 0;
+            if (electronKit.first > 0) // alpha
+                numberOfSpinTypes += 1;
+            if (electronKit.second > 0) // beta
+                numberOfSpinTypes += 1;
 
-        return numberOfSpinTypes;
-    }
+            return numberOfSpinTypes;
+        }
 
-    NumberedType<int> getNumberedTypeByIndex(unsigned idx){
-        assert(idx < ParticleKit::numberOfParticles());
+        EnumeratedType<int> getEnumeratedTypeByIndex(unsigned idx) {
+            assert(idx < SOAP::ParticleKit::numberOfParticles());
 
-        unsigned count = 0;
-        for (auto& typeNumberPair : ParticleKit::kit) {
-            if(idx >= count + typeNumberPair.second) {
-                count += typeNumberPair.second;
-            } else {
-                return {typeNumberPair.first,idx-count};
+            unsigned count = 0;
+            for (auto &typeNumberPair : SOAP::ParticleKit::kit) {
+                if (idx >= count + typeNumberPair.second) {
+                    count += typeNumberPair.second;
+                } else {
+                    return {typeNumberPair.first, idx - count};
+                }
             }
+            return {0, 0}; //TODO undefined behavior
         }
-        return {0,0}; //TODO undefined behavior
-    }
 
-    NumberedElement getNumberedElementByIndex(unsigned idx){
-        assert(idx < numberOfAtoms());
+        EnumeratedElement getEnumeratedElementByIndex(unsigned idx) {
+            assert(idx < numberOfAtoms());
 
-        unsigned count = 0;
-        for (auto& typeNumberPair : ParticleKit::atomKit) {
-            if(idx >= count + typeNumberPair.second) {
-                count += typeNumberPair.second;
-            } else {
-                return {typeNumberPair.first,idx-count};
+            unsigned count = 0;
+            for (auto &typeNumberPair : SOAP::ParticleKit::atomKit) {
+                if (idx >= count + typeNumberPair.second) {
+                    count += typeNumberPair.second;
+                } else {
+                    return {typeNumberPair.first, idx - count};
+                }
             }
+            return {Element::none, 0}; //TODO undefined behavior
         }
-        return {Element::none,0}; //TODO undefined behavior
-    }
 
-    NumberedSpin getNumberedSpinByIndex(unsigned idx) {
-        assert(idx < numberOfElectrons());
+        EnumeratedSpin getEnumeratedSpinByIndex(unsigned idx) {
+            assert(idx < numberOfElectrons());
 
-        if( idx < electronKit.first)
-            return {Spin::alpha, idx};
-        else
-            return {Spin::beta, idx-electronKit.first};
-    }
-
-    std::string toString(){
-        std::stringstream ss;
-
-        ss << "ParticleKit:" <<std::endl
-           << "------------" << std::endl;
-
-        for (auto& typeNumberPair : ParticleKit::atomKit) {
-            ss << typeNumberPair.second << "*"<< typeNumberPair.first << ", ";
+            if (idx < electronKit.first)
+                return {Spin::alpha, idx};
+            else
+                return {Spin::beta, idx - electronKit.first};
         }
-        ss << electronKit.first << "*e" << Spin::alpha << ", "
-           << electronKit.second << "*e" << Spin::beta << std::endl;
-        return ss.str();
+
+        std::string toString() {
+            std::stringstream ss;
+
+            ss << "ParticleKit:" << std::endl
+               << "------------" << std::endl;
+
+            for (auto &typeNumberPair : SOAP::ParticleKit::atomKit) {
+                ss << typeNumberPair.second << "*" << typeNumberPair.first << ", ";
+            }
+            ss << electronKit.first << "*e" << Spin::alpha << ", "
+               << electronKit.second << "*e" << Spin::beta << std::endl;
+            return ss.str();
+        }
     }
 }

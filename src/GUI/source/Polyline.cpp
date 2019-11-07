@@ -1,13 +1,26 @@
-//
-// Created by heuer on 12.05.17.
-//
+/* Copyright (C) 2017-2019 Michael Heuer.
+ *
+ * This file is part of inPsights.
+ * inPsights is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * inPsights is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with inPsights. If not, see <https://www.gnu.org/licenses/>.
+ */
 
 #include "Polyline.h"
-#include "Helper.h"
+#include "GuiHelper.h"
 
 Polyline::Polyline(Qt3DCore::QEntity *root, QColor color, const std::vector<QVector3D> points, const float radius,
                    bool arrowTipQ)
-        : Abstract3dObject(root,color,MidPointVector(std::make_pair(*points.begin(),*points.end()))),
+        : Abstract3dObject(root,color, QVector3D({0,0,0})),
           points_(points),
           cylinders_(0),
           radius_(radius),
@@ -15,9 +28,9 @@ Polyline::Polyline(Qt3DCore::QEntity *root, QColor color, const std::vector<QVec
 {
 
   totalArcLength_ = 0;
-  for (int i = 1; i < points.size(); ++i) {
+  for (size_t i = 1; i < points.size(); ++i) {
     totalArcLength_ += (points[i]-points[i-1]).length();
-    cylinders_.emplace_back(new Cylinder(root,color,std::make_pair(points[i-1],points[i]),radius));
+    cylinders_.emplace_back(new Cylinder(this,color,std::make_pair(points[i-1],points[i]),radius));
   }
 
   if (arrowTipQ) {
@@ -27,7 +40,7 @@ Polyline::Polyline(Qt3DCore::QEntity *root, QColor color, const std::vector<QVec
 
     // Don't plot arrow if the arrow length would be greater than the half total polyline length
     if( (arrowTipEnd-arrowTipStart).length() < totalArcLength_*0.5 )
-      arrowTip_ = new Cone(root, color, std::make_pair(arrowTipStart, arrowTipEnd), radius* 4.0f, radius);
+      arrowTip_ = new Cone(this, color, std::make_pair(arrowTipStart, arrowTipEnd), radius* 4.0f, radius);
   }
 }
 

@@ -1,8 +1,21 @@
-//
-// Created by Michael Heuer on 25.04.18.
-//
+/* Copyright (C) 2018-2019 Michael Heuer.
+ *
+ * This file is part of inPsights.
+ * inPsights is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * inPsights is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with inPsights. If not, see <https://www.gnu.org/licenses/>.
+ */
 
-#include <gtest/gtest.h>
+#include <gmock/gmock.h>
 #include <TypesVector.h>
 #include <SpinType.h>
 #include <ElementType.h>
@@ -52,46 +65,52 @@ TEST_F(ATypesVectorTest, ElementTypesStream){
     ASSERT_EQ(stringstream.str(), "H\nHe\nOg\nHe\nHe\n");
 }
 
-/*TEST_F(ATypesVectorTest, CopyConstructor){//TODO
-    SpinTypesVector s(stv);
-    bool b = (s==stv);
-    std::cout << b << std::endl;
-}*/
+TEST_F(ATypesVectorTest, EigenVectorConstructor){
+    SpinTypesVector stv(Eigen::VectorXi::Zero(5));
+    std::stringstream stringstream;
+    stringstream << stv;
+    ASSERT_EQ(stringstream.str(), "-\n-\n-\n-\n-\n");
+}
 
 TEST_F(ATypesVectorTest, SpecializedConstructor){
     SpinTypesVector stv(2,3);
     std::stringstream stringstream;
     stringstream << stv;
     ASSERT_EQ(stringstream.str(), "a\na\nb\nb\nb\n");
+
+    SpinTypesVector stv2(5);
+    std::stringstream stringstream2;
+    stringstream2 << stv2;
+    ASSERT_EQ(stringstream2.str(), "a\na\na\na\na\n");
 }
 
 TEST_F(ATypesVectorTest,GetIndexedTypeFromIndex){
-    auto indexedType = etv.getNumberedTypeByIndex(3);
+    auto indexedType = etv.getEnumeratedTypeByIndex(3);
 
     ASSERT_EQ(indexedType.number_,1);
     ASSERT_EQ(indexedType.type_, Element::He);
 }
 
 TEST_F(ATypesVectorTest,CheckIndexedType_Present){
-    auto indexedType = NumberedType<Element>(Element::He,1);
+    auto indexedType = EnumeratedType<Element>(Element::He,1);
 
-    auto foundIndexPair = etv.findIndexOfNumberedType(indexedType);
+    auto foundIndexPair = etv.findIndexOfEnumeratedType(indexedType);
     ASSERT_TRUE(foundIndexPair.first);
     ASSERT_EQ(foundIndexPair.second,3);
 }
 
 TEST_F(ATypesVectorTest,CheckIndexedTypePresentBut_WrongIndex){
-    auto wrongIndexedType = NumberedType<Element>(Element::He,3);
+    auto wrongIndexedType = EnumeratedType<Element>(Element::He,3);
 
-    auto foundIndexPair = etv.findIndexOfNumberedType(wrongIndexedType);
+    auto foundIndexPair = etv.findIndexOfEnumeratedType(wrongIndexedType);
     ASSERT_FALSE(foundIndexPair.first);
     ASSERT_EQ(foundIndexPair.second,0);
 }
 
 TEST_F(ATypesVectorTest,CheckIndexedType_MissingType){
-    auto indexedType = NumberedType<Element>(Element::Ca,1);
+    auto indexedType = EnumeratedType<Element>(Element::Ca,1);
 
-    auto foundIndexPair = etv.findIndexOfNumberedType(indexedType);
+    auto foundIndexPair = etv.findIndexOfEnumeratedType(indexedType);
     ASSERT_FALSE(foundIndexPair.first);
     ASSERT_EQ(foundIndexPair.second,0);
 }
@@ -99,47 +118,26 @@ TEST_F(ATypesVectorTest,CheckIndexedType_MissingType){
 TEST_F(ATypesVectorTest, CountTypes_ElementTypes){
     auto result = etv.countTypes();
 
-    ASSERT_EQ(result[0].first, Element::H);
-    ASSERT_EQ(result[0].second, 1);
+    ASSERT_EQ(result[0].type_, Element::H);
+    ASSERT_EQ(result[0].number_, 1);
 
-    ASSERT_EQ(result[1].first, Element::He);
-    ASSERT_EQ(result[1].second, 3);
+    ASSERT_EQ(result[1].type_, Element::He);
+    ASSERT_EQ(result[1].number_, 3);
 
-    ASSERT_EQ(result[2].first, Element::Og);
-    ASSERT_EQ(result[2].second, 1);
+    ASSERT_EQ(result[2].type_, Element::Og);
+    ASSERT_EQ(result[2].number_, 1);
 }
 
 TEST_F(ATypesVectorTest, CountTypes_SpinTypes){
     auto result = stv.countTypes();
 
-    ASSERT_EQ(result[0].first, Spin::alpha);
-    ASSERT_EQ(result[0].second, 3);
+    ASSERT_EQ(result[0].type_, Spin::alpha);
+    ASSERT_EQ(result[0].number_, 3);
 
-    ASSERT_EQ(result[1].first, Spin::beta);
-    ASSERT_EQ(result[1].second, 3);
+    ASSERT_EQ(result[1].type_, Spin::beta);
+    ASSERT_EQ(result[1].number_, 3);
 }
 
-TEST_F(ATypesVectorTest, Slice){
-    auto s = stvsmall;
-    auto types = s.asEigenVector();
-
-    ASSERT_EQ(s.entity(0).dataRef(), types.segment(0,1));
-    ASSERT_EQ(s.entity(1).dataRef(), types.segment(1,1));
-    ASSERT_EQ(s.entity(2).dataRef(), types.segment(2,1));
-
-    ASSERT_EQ(s.slice({0, 1}).dataRef(), s.entity(0).dataRef());
-    ASSERT_EQ(s.slice({1, 1}).dataRef(), s.entity(1).dataRef());
-    ASSERT_EQ(s.slice({2, 1}).dataRef(), s.entity(2).dataRef());
-
-    ASSERT_EQ(s.slice({0, 2}).dataRef(), types.segment(0,2));
-    ASSERT_EQ(s.slice({1, 2}).dataRef(), types.segment(1,2));
-    ASSERT_EQ(s.slice({0, 3}).dataRef(), types.segment(0,3));
-
-    ASSERT_EQ(s.slice({0, 3}).dataRef(), s.dataRef());
-
-    EXPECT_DEATH(s.entity(-1).dataRef(),"");
-    EXPECT_DEATH(s.slice({0, 4}).dataRef(),"");
-}
 
 TEST_F(ATypesVectorTest, Permute){
     auto s = stvsmall;
@@ -153,35 +151,47 @@ TEST_F(ATypesVectorTest, Permute){
     ASSERT_EQ(s[2],Spin::alpha);
 }
 
-TEST_F(ATypesVectorTest, PermuteSlice){
-    auto s = stvsmall;
-
-    VectorXi p(2);
-    p << 1,0;
-
-    s.slice({1,2}).permute(PermutationMatrix<Dynamic>(p));
-    ASSERT_EQ(s[0],Spin::alpha);
-    ASSERT_EQ(s[1],Spin::beta);
-    ASSERT_EQ(s[2],Spin::alpha);
-
-}
-
-TEST_F(ATypesVectorTest, EqualityOperator) {
-    SpinTypesVector s1({Spin::alpha, Spin::alpha, Spin::beta});
-    SpinTypesVector s2({Spin::alpha, Spin::alpha, Spin::beta});
-    SpinTypesVector s3({Spin::beta, Spin::alpha, Spin::beta});
-
-    ASSERT_TRUE(s1 == s2);
-    ASSERT_TRUE(s1.slice({0, 2}) == s2.slice({0, 2}));
-
-    ASSERT_FALSE(s1.slice({0, 2}) == s2.slice({1, 2}));
-    ASSERT_FALSE(s1 == s3);
-
-    //equality means that not only the slice but also the underlying data is identical
-    ASSERT_FALSE(s1.slice({1, 2}) == s3.slice({1, 2}));
-}
-
 TEST_F(ATypesVectorTest, Multiplicity) {
     ASSERT_EQ(stv.multiplicity(),1);
     ASSERT_EQ(stvsmall.multiplicity(),2);
+}
+
+TEST_F(ATypesVectorTest, FlipSpins){
+    
+    auto stvFlipped = stv;
+    stvFlipped.flipSpins();
+    
+    SpinTypesVector reference({
+        Spin::beta,
+        Spin::beta,
+        Spin::alpha,
+        Spin::beta,
+        Spin::alpha,
+        Spin::alpha});
+    
+    ASSERT_EQ(stvFlipped, reference);
+}
+
+TEST_F(ATypesVectorTest, CountedTypes_EqualityOperator){
+    SpinTypesVector stvSwap({
+        stv[0],
+        stv[3],
+        stv[2],
+        stv[1],
+        stv[4],
+        stv[5]});
+
+    auto countedTypes1 = stv.countTypes();
+    auto countedTypes2 = stvSwap.countTypes();
+
+    ASSERT_EQ(stv.countTypes(),stvSwap.countTypes());
+
+    SpinTypesVector stvDifferent({
+        Spin::beta,
+        stv[1],
+        stv[2],
+        stv[3],
+        stv[4],
+        stv[5]});
+    ASSERT_TRUE(stv.countTypes() != stvDifferent.countTypes());
 }

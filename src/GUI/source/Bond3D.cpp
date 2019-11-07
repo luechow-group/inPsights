@@ -1,15 +1,15 @@
-#include "Bond3D.h"
 
-#include "Helper.h"
+#include <Bond3D.h>
+#include "GuiHelper.h"
 #include "cmath"
-// bond is internally attached to the src root
 
-Bond3D::Bond3D(const Atom3D &src, const Atom3D &dest)
-  : DividedCylinder(src.parentEntity(),
-                    {QColorFromElementType(src.getElementType()),
-                     QColorFromElementType(dest.getElementType())},
-                    {src.getLocation(),
-                     dest.getLocation()},
-                    2.4f/40.0f*std::exp(-0.1f*(src.getLocation()-dest.getLocation()).length()), 0.25f),
-    src_(src),
-    dest_(dest) {}
+// bond is internally attached to the src root
+Bond3D::Bond3D(Qt3DCore::QEntity *root, const Atom3D &src, const Atom3D &dest) //TODO what if dest gets deleted
+        : DividedCylinder(root,
+                          {GuiHelper::QColorFromType<Element>(src.type()),
+                           GuiHelper::QColorFromType<Element>(dest.type())},
+                          GuiHelper::sphericalSurfacePositionPair(
+                                  src.position(), src.getRadius(),
+                                  dest.position(), dest.getRadius()),
+                                  0.04f,
+                          0.33f) {}

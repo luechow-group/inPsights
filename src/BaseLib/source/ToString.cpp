@@ -1,10 +1,23 @@
-//
-// Created by Leonard Reuter on 09.03.18.
-//
+/* Copyright (C) 2018 Leonard Reuter.
+ *
+ * This file is part of inPsights.
+ * inPsights is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * inPsights is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with inPsights. If not, see <https://www.gnu.org/licenses/>.
+ */
 
 #include <iomanip>
+#include <cmath>
 #include "ToString.h"
-#include "math.h"
 
 std::string ToString::longToString(long a,
                                    unsigned leadingSpaces) {
@@ -25,7 +38,7 @@ std::string ToString::doubleToString(double a, unsigned decimalPlaces, unsigned 
     if (a >= 0){
         sstream << " ";
     }
-    for (int i = 1; i <= leadingSpaces; i++){
+    for (unsigned i = 1; i <= leadingSpaces; i++){
         if (fabs(a) < pow(10.0,i)){
             sstream << " ";
         }

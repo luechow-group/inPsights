@@ -57,7 +57,7 @@ elseif (${CMAKE_CXX_COMPILER_ID} MATCHES "Intel")
 elseif (${CMAKE_CXX_COMPILER_ID} MATCHES "MSVC")
 
     # using Visual Studio C++
-    message(" ## WARNING ##: Amolqcpp was not tested with the Microsoft Visual Studio compiler.
+    message(" ## WARNING ##: inPsights was not tested with the Microsoft Visual Studio compiler.
     Consider switching to the Intel or GNU compiler collection ")
 
     if(${CMAKE_BUILD_TYPE} MATCHES "Release")

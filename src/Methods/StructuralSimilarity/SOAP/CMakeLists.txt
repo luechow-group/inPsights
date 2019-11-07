@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.11)
 
 project(SOAP CXX)
 
@@ -12,9 +12,9 @@ set(HEADER_FILES
         include/RadialBasis.h
         include/AngularBasis.h
         include/NeighborhoodExpander.h
-        include/CutoffFunction.h
+        include/Cutoff.h
         include/Environment.h
-        include/ExpansionSettings.h
+        include/SOAPSettings.h
         include/LocalSimilarity.h
         include/PowerSpectrum.h
         include/ParticleKit.h
@@ -27,8 +27,8 @@ set(HEADER_FILES
 set(SOURCE_FILES
         source/RadialBasis.cpp
         source/AngularBasis.cpp
-        source/CutoffFunction.cpp
-        source/ExpansionSettings.cpp
+        source/Cutoff.cpp
+        source/SOAPSettings.cpp
         source/ParticleKit.cpp
         source/PowerSpectrum.cpp
         source/LocalSimilarity.cpp
@@ -50,4 +50,4 @@ target_link_libraries(${PROJECT_NAME}
         BaseLib
         )
 
-add_gtest_subdirectory_with_dependency(tests "gtest;pthread")
+add_gtest_subdirectory_with_dependency(tests "gmock;pthread")

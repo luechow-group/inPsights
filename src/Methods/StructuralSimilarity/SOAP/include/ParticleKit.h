@@ -1,69 +1,98 @@
-//
-// Created by Michael Heuer on 08.05.18.
-//
+/* Copyright (C) 2018-2019 Michael Heuer.
+ *
+ * This file is part of inPsights.
+ * inPsights is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * inPsights is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with inPsights. If not, see <https://www.gnu.org/licenses/>.
+ */
 
-#ifndef AMOLQCPP_PARTICLEKIT_H
-#define AMOLQCPP_PARTICLEKIT_H
+#ifndef INPSIGHTS_PARTICLEKIT_H
+#define INPSIGHTS_PARTICLEKIT_H
 
 #include <vector>
 #include <ParticlesVector.h>
 #include <MolecularGeometry.h>
+#include <Eigen/Core>
 
-using AtomKit = std::vector<std::pair<Element,unsigned>>;
-using ElectronKit = std::pair<unsigned,unsigned>; // alpha, beta
-using TypeKit = std::vector<std::pair<int,unsigned>>;
 
-namespace ParticleKit{
+using AtomKit = std::vector<std::pair<Element, unsigned>>;
+using ElectronKit = std::pair<unsigned, unsigned>; // alpha, beta
+using TypeKit = std::vector<std::pair<int, unsigned>>;
 
-    void create(const AtomKit& atomKit, const ElectronKit& electronKit);
+namespace SOAP {
+    namespace ParticleKit {
 
-    void createKit(const AtomKit &atomKit, const ElectronKit &electronKit);
+        void create(const AtomKit &atomKit, const ElectronKit &electronKit);
 
-    void create(const AtomKit& atomKit, int charge = 0, unsigned multiplicity = 1);
+        void createKit(const AtomKit &atomKit, const ElectronKit &electronKit);
 
-    void create(const AtomsVector& atoms, int charge = 0, unsigned multiplicity = 1);
+        void create(const AtomKit &atomKit, int charge = 0, unsigned multiplicity = 1);
 
-    void create(const AtomsVector& atoms, const ElectronsVector& electrons);
+        void create(const AtomsVector &atoms, int charge = 0, unsigned multiplicity = 1);
 
-    void create(const MolecularGeometry& molecularGeometry);
+        void create(const AtomsVector &atoms, const ElectronsVector &electrons);
 
-    namespace {
-        void createAtomKitFromAtomsVector(const AtomsVector& atoms);
+        void create(const MolecularGeometry &molecularGeometry);
 
-        void createElectronKitFromAtomKit(const AtomKit &atomKit, int charge, unsigned multiplicity);
+        namespace internal {
+            void createAtomKitFromAtomsVector(const AtomsVector &atoms);
 
-        void createElectronKitFromElectronsVector(const ElectronsVector &electronsVector);
-    }
+            void createElectronKitFromAtomKit(const AtomKit &atomKit, int charge, unsigned multiplicity);
 
-    bool isSubsetQ(const AtomsVector& atomsVector);
+            void createElectronKitFromElectronsVector(const ElectronsVector &electronsVector);
+        }
 
-    bool isSubsetQ(const ElectronsVector& electronsVector);
+        ElementTypesVector toElementTypesVector();
 
-    bool isSubsetQ(const MolecularGeometry& molecularGeometry);
+        SpinTypesVector toSpinTypesVector();
 
-    NumberedElement getNumberedElementByIndex(unsigned idx);
+        Eigen::PermutationMatrix<Eigen::Dynamic> fromKitPermutation(const AtomsVector &atomsVector);
 
-    NumberedSpin getNumberedSpinByIndex(unsigned idx);
+        Eigen::PermutationMatrix<Eigen::Dynamic> toKitPermutation(const AtomsVector &atomsVector);
 
-    NumberedType<int> getNumberedTypeByIndex(unsigned idx);
+        Eigen::PermutationMatrix<Eigen::Dynamic> fromKitPermutation(const ElectronsVector &electronsVector);
 
-    unsigned numberOfElementTypes();
+        Eigen::PermutationMatrix<Eigen::Dynamic> toKitPermutation(const ElectronsVector &electronsVector);
 
-    unsigned numberOfSpinTypes();
+        bool isSubsetQ(const AtomsVector &atomsVector);
 
-    unsigned numberOfTypes();
+        bool isSubsetQ(const ElectronsVector &electronsVector);
 
-    unsigned numberOfAtoms();
+        bool isSubsetQ(const MolecularGeometry &molecularGeometry);
 
-    unsigned numberOfElectrons();
+        EnumeratedElement getEnumeratedElementByIndex(unsigned idx);
 
-    unsigned numberOfParticles();
+        EnumeratedSpin getEnumeratedSpinByIndex(unsigned idx);
 
-    std::string toString();
+        EnumeratedType<int> getEnumeratedTypeByIndex(unsigned idx);
 
-    extern AtomKit atomKit;
-    extern ElectronKit electronKit;
-    extern TypeKit kit;
-};
+        unsigned numberOfElementTypes();
 
-#endif //AMOLQCPP_PARTICLEKIT_H
+        unsigned numberOfSpinTypes();
+
+        unsigned numberOfTypes();
+
+        unsigned numberOfAtoms();
+
+        unsigned numberOfElectrons();
+
+        unsigned numberOfParticles();
+
+        std::string toString();
+
+        extern AtomKit atomKit;
+        extern ElectronKit electronKit;
+        extern TypeKit kit;
+    };
+}
+
+#endif //INPSIGHTS_PARTICLEKIT_H

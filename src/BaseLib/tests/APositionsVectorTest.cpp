@@ -1,11 +1,25 @@
-//
-// Created by Michael Heuer on 29.10.17.
-//
+/* Copyright (C) 2017-2019 Michael Heuer.
+ *
+ * This file is part of inPsights.
+ * inPsights is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * inPsights is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with inPsights. If not, see <https://www.gnu.org/licenses/>.
+ */
 
-#include <gtest/gtest.h>
+#include <gmock/gmock.h>
 #include <sstream>
 #include <PositionsVector.h>
 #include <NaturalConstants.h>
+#include <Metrics.h>
 
 using namespace testing;
 using namespace Eigen;
@@ -120,46 +134,7 @@ TEST_F(APositionsVectorTest, PermuteAllCyclic) {
     ASSERT_EQ(p[2],position0);
 }
 
-TEST_F(APositionsVectorTest, PermuteSlice) {
-    PositionsVector p(positions);
-
-    VectorXi p1(2);
-    p1 << 1,0;
-    p.slice({1,2}).permute(PermutationMatrix<Dynamic>(p1));
-    ASSERT_EQ(p[0],position0);
-    ASSERT_EQ(p[1],position2);
-    ASSERT_EQ(p[2],position1);
-
-    VectorXi p2(3);
-    p2 << 2,0,1;
-    p.permute(PermutationMatrix<Dynamic>(p2));
-    ASSERT_EQ(p[0],position2);
-    ASSERT_EQ(p[1],position1);
-    ASSERT_EQ(p[2],position0);
-}
-
-TEST_F(APositionsVectorTest, Slice) {
-    PositionsVector p(positions);
-
-    ASSERT_EQ(p.entity(0).dataRef(), positions.segment(0,3));
-    ASSERT_EQ(p.entity(1).dataRef(), positions.segment(3,3));
-    ASSERT_EQ(p.entity(2).dataRef(), positions.segment(6,3));
-
-    ASSERT_EQ(p.slice({0,1}).dataRef(),p.entity(0).dataRef());
-    ASSERT_EQ(p.slice({1,1}).dataRef(),p.entity(1).dataRef());
-    ASSERT_EQ(p.slice({2,1}).dataRef(),p.entity(2).dataRef());
-
-    ASSERT_EQ(p.slice({0,2}).dataRef(), positions.segment(0,6));
-    ASSERT_EQ(p.slice({1,2}).dataRef(), positions.segment(3,6));
-    ASSERT_EQ(p.slice({0,3}).dataRef(), positions.segment(0,9));
-
-    ASSERT_EQ(p.slice({0,3}).dataRef(),p.dataRef());
-
-    EXPECT_DEATH(p.entity(-1).dataRef(),"");
-    EXPECT_DEATH(p.slice({0,4}).dataRef(),"");
-}
-
-TEST_F(APositionsVectorTest, Translate) {
+/*TEST_F(APositionsVectorTest, Translate) { //TODO USE LINKED PARTICLES
     PositionsVector p(positions);
 
     VectorXd expected[2] = {VectorXd(9),VectorXd(9)};
@@ -171,6 +146,20 @@ TEST_F(APositionsVectorTest, Translate) {
 
     p.slice({1,2}).translate({1,1,1});
     ASSERT_EQ(p.asEigenVector(),expected[1]);
+}*/
+
+TEST_F(APositionsVectorTest, DISABLED_Translate) { //TODO USE LINKED PARTICLES
+    PositionsVector p(positions);
+
+    VectorXd expected[2] = {VectorXd(9),VectorXd(9)};
+    expected[0] << 1,2,3,5,6,7,7,8,9;
+    expected[1] << 1,2,3,6,7,8,8,9,10;
+
+    //p.entity(1).translate({1,1,1});
+    //ASSERT_EQ(p.asEigenVector(),expected[0]);
+
+    //p.slice({1,2}).translate({1,1,1});
+    //ASSERT_EQ(p.asEigenVector(),expected[1]);
 }
 
 
@@ -222,154 +211,20 @@ TEST_F(APositionsVectorTest, RotateAllClockwise) {
     ASSERT_TRUE(p.asEigenVector().isApprox(expectedPositions));
 }
 
-
-TEST_F(APositionsVectorTest, RotateSliceCounterClockwise) {
-    VectorXd positions(12);
-    positions <<\
-    0,0,0,\
-    1,0,0,\
-    0,1,0,\
-    0,0,1;
+TEST_F(APositionsVectorTest, Shake) {
     PositionsVector p(positions);
 
-    double angle = 120.*ConversionFactors::deg2rad; // 120° counterclockwise rotiation
-    Vector3d axis = {1,1,1};
+    auto randomSeed = static_cast<unsigned long>(std::clock());
+    std::cout << "random seed: " << randomSeed << std::endl;
 
-    p.slice({2,2}).rotateAroundOrigin(angle,axis);
+    for(auto seed : std::vector<unsigned long>{0,randomSeed}) {
+        auto rng = std::default_random_engine(seed);
 
-    VectorXd expectedPositions(12);
-    expectedPositions << \
-    0,0,0,\
-    1,0,0,\
-    1,0,0,\
-    0,1,0;
+        auto pcopy = p;
+        double shakeDist = 0.1;
+        pcopy.shake(shakeDist, rng);
 
-    ASSERT_TRUE(p.asEigenVector().isApprox(expectedPositions));
-}
-
-TEST_F(APositionsVectorTest, RotateSliceClockwise) {
-    VectorXd positions(12);
-    positions <<\
-    0,0,0,\
-    1,0,0,\
-    0,1,0,\
-    0,0,1;
-    PositionsVector p(positions);
-
-    double angle = -120.*ConversionFactors::deg2rad; // 120° clockwise rotiation
-    Vector3d axis = {1,1,1};
-
-    p.slice({2,2}).rotateAroundOrigin(angle,axis);
-
-    VectorXd expectedPositions(12);
-    expectedPositions << \
-    0,0,0,\
-    1,0,0,\
-    0,0,1,\
-    1,0,0;
-
-    ASSERT_TRUE(p.asEigenVector().isApprox(expectedPositions));
-}
-
-TEST_F(APositionsVectorTest, ResetAutomatic){
-    PositionsVector p(positions);
-
-    ASSERT_EQ(p.position(0),position0);
-    ASSERT_EQ(p.slice({1,2}, Reset::Automatic).position(0),position1);
-    ASSERT_EQ(p.position(0),position0);
-}
-
-TEST_F(APositionsVectorTest, ResetOnFinished){
-    PositionsVector p(positions);
-
-    ASSERT_EQ(p.position(0),position0);
-    ASSERT_EQ(p.slice({1,2}, Reset::Manual).position(0),position1);
-    ASSERT_EQ(p.position(0),position1);
-}
-
-TEST_F(APositionsVectorTest, ResetManual){
-    PositionsVector p(positions);
-
-    ASSERT_EQ(p.position(0),position0);
-    ASSERT_EQ(p.slice({1,2}, Reset::Manual).position(0,Usage::Standard),position1);
-    ASSERT_EQ(p.position(0),position1);
-    p.resetRef(); // manual reset
-    ASSERT_EQ(p.position(0),position0);
-}
-
-
-TEST_F(APositionsVectorTest, OutputStreamOperator){
-    PositionsVector p(positions);
-
-    std::stringstream ss;
-    ss << p.position(0).transpose()
-    << std::endl
-    << p.slice({1,2}, Reset::Automatic).dataRef().transpose()
-    << std::endl
-    << p.position(0).transpose();
-
-    std::string expected = "1 2 3\n4 5 6 7 8 9\n1 2 3";
-    ASSERT_STREQ(expected.c_str(), ss.str().c_str());
-}
-
-
-TEST_F(APositionsVectorTest, DataRef) {
-    PositionsVector p(positions);
-
-    // after construction
-    ASSERT_EQ(p.dataRef(),positions);
-
-    // Automatic
-    ASSERT_EQ(p.dataRef(Usage::Standard),positions);
-    ASSERT_EQ(p.entity(2,Reset::Automatic).dataRef(Usage::Standard),position2);
-    ASSERT_EQ(p.dataRef(Usage::Standard),positions);
-
-    // default (same as above)
-    ASSERT_EQ(p.dataRef(),positions);
-    ASSERT_EQ(p.entity(2).dataRef(),position2);
-    ASSERT_EQ(p.dataRef(),positions);
-
-    // OnFinished
-    ASSERT_EQ(p.dataRef(),positions);
-    ASSERT_EQ(p.entity(2,Reset::OnFinished).dataRef(Usage::Finished),position2);
-    ASSERT_EQ(p.dataRef(Usage::Standard),positions);
-    ASSERT_EQ(p.entity(2,Reset::OnFinished).dataRef(Usage::NotFinished),position2);
-    ASSERT_EQ(p.dataRef(Usage::Finished),position2);
-    ASSERT_EQ(p.dataRef(Usage::Standard),positions);
-
-    // Manual
-    ASSERT_EQ(p.entity(2,Reset::Manual).dataRef(Usage::Standard),position2);
-    ASSERT_EQ(p.dataRef(Usage::Standard),position2);
-    p.resetRef();
-    ASSERT_EQ(p.dataRef(Usage::Standard),positions);
-
-    //complain on conflicting reset instructions
-    ASSERT_DEATH(p.entity(0,Reset::Automatic).dataRef(Usage::NotFinished),"");
-    ASSERT_DEATH(p.entity(0,Reset::Automatic).dataRef(Usage::Finished),"");
-    ASSERT_DEATH(p.entity(0,Reset::Manual).dataRef(Usage::NotFinished),"");
-    ASSERT_DEATH(p.entity(0,Reset::Manual).dataRef(Usage::Finished),"");
-    ASSERT_DEATH(p.entity(0,Reset::OnFinished).dataRef(Usage::Standard),"");
-
-}
-
-TEST_F(APositionsVectorTest, Position) {
-
-    PositionsVector p(positions);
-
-    ASSERT_EQ(p.position(2),position2);
-    ASSERT_EQ(p.dataRef(),positions);
-
-    // Automatic
-    ASSERT_EQ(p.slice({1,2},Reset::Automatic).position(0,Usage::Standard),position1);
-    ASSERT_EQ(p.dataRef(),positions);
-
-    // OnFinished
-    ASSERT_EQ(p.slice({1,2},Reset::OnFinished).position(0,Usage::NotFinished),position1);
-    ASSERT_EQ(p.position(0,Usage::Finished),position1);
-    ASSERT_EQ(p.position(0),position0);
-
-
-    // Manual
-
-
+        auto maxDev = Metrics::positionalNormsVectorNorm<Eigen::Infinity, 2>(p, pcopy);
+        ASSERT_LE(maxDev, shakeDist);
+    }
 }

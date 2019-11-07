@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.11)
 
 project(BaseLib CXX)
 
@@ -32,7 +32,7 @@ set(HEADER_FILES
         include/TypesVector.h
         include/Metrics.h
         include/MolecularGeometry.h
-        include/NumberedType.h
+        include/EnumeratedType.h
         include/EigenYamlConversion.h
         include/SpecialMathFunctions/BoostSphericalHarmonics.h
         include/SpecialMathFunctions/ModifiedSphericalBesser1stKind.h
@@ -40,11 +40,20 @@ set(HEADER_FILES
         include/CoulombPotential.h
         include/BinaryFileReader.h
         include/Interval.h
-        include/ReturnAndReset.h
-        include/SliceableDataVector.h
+        include/DataVector.h
         include/InsertableVector.h
-        include/Logger.h
         include/Statistics.h
+        include/SpinCorrelation.h
+        include/LinkedParticle.h
+        include/ISettings.h
+        include/Property.h
+        include/Varname.h
+        include/Enumerate.h
+        include/Combinatorics.h
+        include/AsciiArt.h
+        include/IPosition.h
+        include/NearestElectrons.h
+        include/SpinPairClassification.h
         )
 
 set(SOURCE_FILES
@@ -66,7 +75,12 @@ set(SOURCE_FILES
         source/SpecialMathFunctions/BoostSphericalHarmonics.cpp
         source/SpecialMathFunctions/ModifiedSphericalBesser1stKind.cpp
         source/SpecialMathFunctions/Gaussian.cpp
-        source/Logger.cpp
+        source/BinaryFileReader.cpp
+        source/ISettings.cpp
+        source/Combinatorics.cpp
+        source/IPosition.cpp
+        source/NearestElectrons.cpp
+        source/SpinPairClassification.cpp
         )
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES})
@@ -81,7 +95,7 @@ target_link_libraries(${PROJECT_NAME}
         spdlog
         )
 
-if (DEFINED BUILD_EIGEN AND (${BUILD_EIGEN}))
+if (${BUILD_EIGEN})
         message("BUILD_EIGEN build eigen is ON.")
         target_link_libraries(${PROJECT_NAME} eigen)
 endif()
@@ -94,4 +108,4 @@ target_include_directories(${PROJECT_NAME}
                 source
         )
 
-add_gtest_subdirectory_with_dependency(tests "gtest;pthread")
+add_gtest_subdirectory_with_dependency(tests "gmock;pthread")

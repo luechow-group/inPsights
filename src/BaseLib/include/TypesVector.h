@@ -1,13 +1,26 @@
-//
-// Created by Michael Heuer on 22.04.18.
-//
+/* Copyright (C) 2018-2019 Michael Heuer.
+ *
+ * This file is part of inPsights.
+ * inPsights is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * inPsights is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with inPsights. If not, see <https://www.gnu.org/licenses/>.
+ */
 
-#ifndef AMOLQCPP_TYPESVECTOR_H
-#define AMOLQCPP_TYPESVECTOR_H
+#ifndef INPSIGHTS_TYPESVECTOR_H
+#define INPSIGHTS_TYPESVECTOR_H
 
 #include "SpinType.h"
 #include "ElementType.h"
-#include "NumberedType.h"
+#include "EnumeratedType.h"
 #include "InsertableVector.h"
 #include <vector>
 #include <yaml-cpp/yaml.h>
@@ -18,10 +31,17 @@ public:
 
     // unsigned long dummy is there to be specialized in TypesVector<Spin::SpinTypes>
     TypesVector(unsigned long size = 0, unsigned long dummy = 0)
-    : InsertableVector<int>(size)
-    {
-        resetRef();
+    : InsertableVector<int>(long(size)) {}
+
+    TypesVector(const Eigen::VectorXi &types)
+            : TypesVector() {
+        auto size = types.size();
+        assert(size >= 0 && "Vector cannot be empty");
+
+        AbstractVector::setNumberOfEntities(size);
+        data_ = types;
     }
+
 
     TypesVector(std::vector<Type> types)
     : InsertableVector<int>(0)
@@ -31,15 +51,6 @@ public:
             assert(int(type) <= int(Elements::last()));
             this->append(type);
         }
-        resetRef();
-    }
-
-    TypesVector<Type>& slice(const Interval& interval, const Reset& resetType = Reset::Automatic) {
-        SliceableDataVector<int>::slice(interval,resetType); // template specialization necessary?
-        return *this;
-    }
-    TypesVector<Type>& entity(long i, const Reset& resetType = Reset::Automatic) {
-        return slice(Interval(i), resetType);
     }
 
     void prepend(const Type& type) { insert(type,0); }
@@ -50,21 +61,16 @@ public:
         InsertableVector<int>::insert(elem,i);
     }
 
-    Type type(long i, const Usage& usage = Usage::NotFinished){
-        if( resetType_ == Reset::Automatic
-            || (resetType_ == Reset::OnFinished && usage == Usage::Finished))
-            return RETURN_AND_RESET<TypesVector<Type>,Type>(*this,dataRef().segment(calculateIndex(i),entityLength())).returnAndReset();
-        else
-            return dataRef().segment(calculateIndex(i),entityLength());
+    Type type(long i) {
+        return operator[](i);
     }
 
     Type operator[](long i) const {
         return static_cast<Type>(data_[calculateIndex(i)]);
     }
-
-    //TODO make double template?
+    
     bool operator==(const TypesVector<Type> &other) const {
-        return SliceableDataVector<int>::operator==(other);
+        return DataVector<int>::operator==(other);
     }
 
     bool operator!=(const TypesVector<Type> &other) const {
@@ -72,7 +78,7 @@ public:
     }
 
     friend std::ostream& operator<<(std::ostream& os, const TypesVector& tv){
-        for (unsigned long i = 0; i < tv.numberOfEntities(); i++) {
+        for (long i = 0; i < tv.numberOfEntities(); i++) {
             os << tv[i] << std::endl;
         }
         return os;
@@ -80,14 +86,14 @@ public:
 
     unsigned countOccurence(const Type &type) const { // cannot handle slices
         unsigned count = 0;
-        for (int i = 0; i < this->numberOfEntities(); ++i) {
+        for (long i = 0; i < this->numberOfEntities(); ++i) {
             if (this->operator[](i) == type)
                 count++;
         }
         return count;
     }
 
-    NumberedType<Type> getNumberedTypeByIndex(long i) const { // cannot handle slices
+    EnumeratedType<Type> getEnumeratedTypeByIndex(long i) const { // cannot handle slices
         auto type = this->operator[](i);
         unsigned count = 0;
 
@@ -98,12 +104,12 @@ public:
         return {type,count};
     };
 
-    std::pair<bool,long> findIndexOfNumberedType(NumberedType<Type> indexedType) const { // cannot handle slices
+    std::pair<bool,long> findIndexOfEnumeratedType(EnumeratedType<Type> indexedType) const { // cannot handle slices
         assert(indexedType.number_ < numberOfEntities() &&
                "This index is out of bounds.");
 
         unsigned count = 0;
-        for (unsigned j = 0; j < numberOfEntities(); ++j) {
+        for (long j = 0; j < numberOfEntities(); ++j) {
             if(this->operator[](j) == indexedType.type_) count++;
             if(count-1 == indexedType.number_) return {true, j};
         }
@@ -111,9 +117,9 @@ public:
     }
 
     //TODO dirty - refactor
-    std::vector<std::pair<Type,unsigned>> countTypes() const {
+    std::vector<EnumeratedType<Type>> countTypes() const {
 
-        std::vector<std::pair<Type,unsigned>> typeCountsPair;
+        std::vector<EnumeratedType<Type>> typeCountsPair;
         if(numberOfEntities() > 0) {
             if(numberOfEntities() == 1) {
                 return {{this->operator[](0),1}};
@@ -122,26 +128,26 @@ public:
             std::sort(copy.data(), copy.data()+numberOfEntities());
 
             unsigned count = 1;
-            for (int i = 1; i < numberOfEntities(); ++i) {
+            for (long i = 1; i < numberOfEntities(); ++i) {
                 const auto& lastType = copy[i - 1];
                 const auto& currentType = copy[i];
 
                 if (currentType == lastType)
                     count++;
                 else {
-                    typeCountsPair.push_back({Type(lastType), count}); // cast redundant?
+                    typeCountsPair.emplace_back(EnumeratedType<Type>(Type(lastType), count));
                     count = 1;
                 }
                 // treat last element
                 if(i == numberOfEntities()-1)
-                    typeCountsPair.push_back({Type(currentType), count});
+                    typeCountsPair.emplace_back(EnumeratedType<Type>(Type(currentType), count));
             }
         }
         return typeCountsPair;
     }
 
     unsigned multiplicity() = delete;
-
+    void flipSpins() = delete;
 };
 
 using IntegerTypesVector = TypesVector<int>;
@@ -159,17 +165,17 @@ SpinTypesVector::TypesVector(std::vector<Spin> types);
 template<>
 unsigned SpinTypesVector::multiplicity();
 
+template<>
+void SpinTypesVector::flipSpins();
 
 template<>
 ElementTypesVector::TypesVector(std::vector<Element> types);
-
-
 
 namespace YAML {
     template<typename Type> struct convert<TypesVector<Type>> {
     static Node encode(const TypesVector<Type> & tv){
         Node node;
-        for (unsigned long i = 0; i < tv.numberOfEntities(); i++) {
+        for (long i = 0; i < tv.numberOfEntities(); i++) {
             node.push_back(tv[i]);
         }
         return node;
@@ -200,4 +206,4 @@ Emitter& operator<< (Emitter& out, const TypesVector<Type>& tv){
 
 
 
-#endif //AMOLQCPP_TYPESVECTOR_H
+#endif //INPSIGHTS_TYPESVECTOR_H

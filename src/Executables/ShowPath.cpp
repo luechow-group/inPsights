@@ -1,11 +1,26 @@
-//
-// Created by Michael Heuer on 27.09.18.
-//
+/* Copyright (C) 2018-2019 Michael Heuer.
+ *
+ * This file is part of inPsights.
+ * inPsights is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * inPsights is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with inPsights. If not, see <https://www.gnu.org/licenses/>.
+ */
 
 #include <iostream>
-#include <AmolqcFileImport/WfFileImporter.h>
-#include <AmolqcFileImport/OptimizationPathFileImporter.h>
+#include <WfFileImporter.h>
+#include <OptimizationPathFileImporter.h>
 #include <Visualization.h>
+#include <MoleculeWidget.h>
+#include <ParticlesVectorPath3D.h>
 
 bool handleCommandlineArguments(int argc, char **argv,
                                 std::string &pathFilename,
@@ -48,10 +63,31 @@ int main(int argc, char *argv[]) {
         if (!inputArgumentsFoundQ) return 0;
     }
 
+    QApplication app(argc, argv);
+    setlocale(LC_NUMERIC,"C");
 
     OptimizationPathFileImporter optimizationPathFileImporter(pathFilename);
     auto path = optimizationPathFileImporter.getPath(pathId);
     auto atoms = optimizationPathFileImporter.getAtomsVector();
 
-    return Visualization::visualizeOptPath(argc, argv, atoms, path);
+    long nWanted = 1000;
+    ElectronsVectorCollection visualizationPath;
+    if (nWanted < path.numberOfEntities())
+        visualizationPath = Visualization::shortenPath(path, nWanted);
+    else 
+        visualizationPath = path;
+
+    auto moleculeWidget = new MoleculeWidget();
+    moleculeWidget->setSharedAtomsVector(atoms);
+    moleculeWidget->addElectronsVector(visualizationPath[-1]); // Last ElectronsVector of the path
+    moleculeWidget->drawAtoms();
+    moleculeWidget->drawBonds();
+
+    ParticlesVectorPath3D(moleculeWidget->getMoleculeEntity(), visualizationPath);
+
+    moleculeWidget->infoText_->setText(QString::fromStdString(pathFilename));
+    moleculeWidget->resize(1024,768);
+    moleculeWidget->show();
+
+    return app.exec();
 }

@@ -1,44 +1,43 @@
-//
-// Created by heuer on 06.12.16.
-//
+/* Copyright (C) 2016-2019 Michael Heuer.
+ *
+ * This file is part of inPsights.
+ * inPsights is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * inPsights is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with inPsights. If not, see <https://www.gnu.org/licenses/>.
+ */
 
-#ifndef AMOLQC_ABSTRACT3DOBJECT_H
-#define AMOLQC_ABSTRACT3DOBJECT_H
+#ifndef INPSIGHTS_ABSTRACT3DOBJECT_H
+#define INPSIGHTS_ABSTRACT3DOBJECT_H
 
 #include <QVector3D>
 #include <Qt3DCore/QEntity>
 #include <Qt3DCore/QTransform>
 #include <Qt3DExtras/QPhongAlphaMaterial>
-#include <Qt3DExtras/QSphereMesh>
 #include <Qt3DRender/QObjectPicker>
+#include <QToolTip>
 
 class Abstract3dObject : public Qt3DCore::QEntity {
-  //Q_OBJECT
 public:
-  Abstract3dObject(){};
-  Abstract3dObject(Qt3DCore::QEntity *root, QColor color, const QVector3D location);
-  //~Abstract3dObject(){};
+    Abstract3dObject(Qt3DCore::QEntity *root, QColor color, const QVector3D &location, float alpha = 1.0);
 
-  Qt3DCore::QEntity* entity;
-  Qt3DExtras::QPhongAlphaMaterial* material;
-  Qt3DCore::QTransform* transform;
-  //Qt3DRender::QObjectPicker *picker;
+    QColor color() const;
 
-  //void setColor(const QColor& color){ this->color = color;};
-  //void setLocation(const QVector3D& location){ this->location = location;};
+    Qt3DExtras::QPhongAlphaMaterial *material;
+    Qt3DCore::QTransform *transform;
+public:
+    Qt3DRender::QObjectPicker *picker;
 
-  void setAlpha(float alpha);
-
-  QColor getColor() const { return color_; };
-  QVector3D getLocation() const { return location_; };
-
-//public slots:
-  //void onPressed(bool pressed);
-
-protected:
-  QColor color_;
-  float alpha_;
-  QVector3D location_;
+private:
+    QColor color_;
 };
 
-#endif //AMOLQC_ABSTRACT3DOBJECT_H
+#endif //INPSIGHTS_ABSTRACT3DOBJECT_H

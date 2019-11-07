@@ -1,9 +1,25 @@
-//
-// Created by Michael Heuer on 08.05.18.
-//
+/* Copyright (C) 2018-2019 Michael Heuer.
+ *
+ * This file is part of inPsights.
+ * inPsights is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * inPsights is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with inPsights. If not, see <https://www.gnu.org/licenses/>.
+ */
 
 #include <utility>
 #include "MolecularGeometry.h"
+#include <Metrics.h>
+#include <algorithm>
+#include <numeric>
 
 MolecularGeometry::MolecularGeometry()
         : atoms_(),electrons_()
@@ -37,30 +53,69 @@ long MolecularGeometry::numberOfEntities() const {
 }
 
 
-NumberedType<int> MolecularGeometry::findNumberedTypeByIndex(unsigned idx) const {
+EnumeratedType<int> MolecularGeometry::findEnumeratedTypeByIndex(unsigned idx) const {
     assert(idx < numberOfEntities() && "The index cannot be greater than the number of particles - 1");
 
     auto M = atoms().numberOfEntities();
     if(idx < M) {
-        return atoms().typesVector().getNumberedTypeByIndex(idx).toIntType();
+        return atoms().typesVector().getEnumeratedTypeByIndex(idx).toIntType();
     } else {
-        return electrons().typesVector().getNumberedTypeByIndex(idx-M).toIntType();
+        return electrons().typesVector().getEnumeratedTypeByIndex(idx-M).toIntType();
     }
 }
 
-std::pair<bool,long> MolecularGeometry::findIndexByNumberedType(const NumberedType<int> &numberedType) const {
-    if(numberedType.type_ >= int(Spins::first()) && numberedType.type_ <= int(Spins::last())) {
-        auto boolIdx = electrons().typesVector().findIndexOfNumberedType(
-                NumberedSpin(Spins::spinFromInt(numberedType.type_), numberedType.number_));
+std::pair<bool,long> MolecularGeometry::findIndexByEnumeratedType(const EnumeratedType<int> &enumeratedType) const {
+    if(enumeratedType.type_ >= int(Spins::first()) && enumeratedType.type_ <= int(Spins::last())) {
+        auto boolIdx = electrons().typesVector().findIndexOfEnumeratedType(
+                EnumeratedSpin(Spins::spinFromInt(enumeratedType.type_), enumeratedType.number_));
 
         boolIdx.second += atoms().numberOfEntities(); // TODO is this the way it should be?
         return boolIdx;
-    } else if(numberedType.type_ >= int(Elements::first()) && numberedType.type_ <= int(Elements::last())) {
-        return atoms().typesVector().findIndexOfNumberedType(
-                NumberedElement(Elements::elementFromInt(numberedType.type_), numberedType.number_));
+    } else if(enumeratedType.type_ >= int(Elements::first()) && enumeratedType.type_ <= int(Elements::last())) {
+        return atoms().typesVector().findIndexOfEnumeratedType(
+                EnumeratedElement(Elements::elementFromInt(enumeratedType.type_), enumeratedType.number_));
     } else {
         return {false,0};
     }
+}
+
+std::tuple<bool,Eigen::Index> MolecularGeometry::coreElectronQ(long i, double threshold) const {
+    for (Eigen::Index k = 0; k < atoms_.numberOfEntities(); ++k)
+        if(Metrics::distance(electrons_[i].position(), atoms_[k].position()) <= threshold)
+            return {true, k};
+
+    return {false, 0};
+}
+
+std::list<long> MolecularGeometry::coreElectronsIndices(long k, double threshold) const {
+    std::list<long> indices{};
+
+    for (long i = 0; i < electrons().numberOfEntities(); ++i)
+        if (Metrics::distance(electrons_[i].position(), atoms_[k].position()) <= threshold)
+            indices.emplace_back(i);
+
+    return indices;
+}
+
+std::list<long> MolecularGeometry::coreElectronsIndices(double threshold) const {
+    std::list<long> indices{};
+
+    for (long k = 0; k < atoms_.numberOfEntities(); ++k)
+        indices.splice(indices.end(), coreElectronsIndices(k, threshold));
+
+    indices.sort();
+    indices.erase(std::unique( indices.begin(), indices.end() ), indices.end()); // erase duplicates
+    return indices;
+}
+
+std::list<long> MolecularGeometry::nonCoreElectronsIndices(double threshold) const {
+    std::list<long> diff{}, indices = std::list<long>(size_t(electrons().numberOfEntities()));
+    std::iota(indices.begin(), indices.end(), 0);
+
+    auto coreIndices = coreElectronsIndices(threshold);
+    std::set_difference(indices.begin(), indices.end(), coreIndices.begin(), coreIndices.end(),
+                        std::inserter(diff, diff.begin()));
+    return diff;
 }
 
 namespace YAML {

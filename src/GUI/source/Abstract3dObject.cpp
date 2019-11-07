@@ -1,43 +1,44 @@
-//
-// Created by heuer on 06.12.16.
-//
-
-#include "Abstract3dObject.h"
+/* Copyright (C) 2016-2019 Michael Heuer.
+ *
+ * This file is part of inPsights.
+ * inPsights is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * inPsights is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with inPsights. If not, see <https://www.gnu.org/licenses/>.
+ */
 
 #include <iostream>
+#include <Abstract3dObject.h>
+#include <Eigen/Core>
 
-Abstract3dObject::Abstract3dObject(Qt3DCore::QEntity *root, QColor color, const QVector3D location)
+Abstract3dObject::Abstract3dObject(Qt3DCore::QEntity *root, QColor color, const QVector3D& location, float alpha)
   : QEntity(root),
-    color_(color),
-    alpha_(1.0f),
-    location_(location)
+    material(new Qt3DExtras::QPhongAlphaMaterial(this)),
+    transform(new Qt3DCore::QTransform),
+    picker(new Qt3DRender::QObjectPicker),
+    color_(std::move(color))
 {
-
-  entity = new Qt3DCore::QEntity(root);
-  material = new Qt3DExtras::QPhongAlphaMaterial(root);
-  transform = new Qt3DCore::QTransform;
-  //picker = new Qt3DRender::QObjectPicker;
-
   material->setSpecular(Qt::white);
-  material->setShininess(0);
+  material->setShininess(4.0f);
   material->setAmbient(color);
-  material->setAlpha(1.0f);
+  material->setAlpha(alpha);
   transform->setTranslation(location);
 
-  entity->addComponent(transform);
-  entity->addComponent(material);
-  //entity->addComponent(picker);
+  addComponent(transform);
+  addComponent(material);
+  addComponent(picker);
 
-  //connect(picker, &Qt3DRender::QObjectPicker::pressedChanged, this, &Abstract3dObject::onPressed);
+  picker->setHoverEnabled(true);
 }
 
-void Abstract3dObject::setAlpha(float alpha) {
-  alpha_ = alpha;
-  material->setAlpha(alpha);
-};
-
-/*
-void Abstract3dObject::onPressed(bool pressed) {
-  if (pressed) std::cout << "pressed" << std::endl;
-  else std::cout << "not pressed" << std::endl;
-}*/
+QColor Abstract3dObject::color() const {
+    return color_;
+}

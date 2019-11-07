@@ -1,7 +1,4 @@
-//
-// Created by Michael Heuer on 11.03.18.
-//
-#include <gtest/gtest.h>
+#include <gmock/gmock.h>
 
 int main(int ac, char* av[])
 {

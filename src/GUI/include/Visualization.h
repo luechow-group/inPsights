@@ -1,40 +1,42 @@
-//
-// Created by Leonard Reuter on 14.03.18.
-//
+/* Copyright (C) 2018-2019 Michael Heuer.
+ *
+ * This file is part of inPsights.
+ * inPsights is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * inPsights is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with inPsights. If not, see <https://www.gnu.org/licenses/>.
+ */
 
-#ifndef AMOLQCPP_VISUALIZATION_H
-#define AMOLQCPP_VISUALIZATION_H
+#ifndef INPSIGHTS_VISUALIZATION_H
+#define INPSIGHTS_VISUALIZATION_H
 
 
 #include <Qt3DCore>
 #include <Qt3DRender>
 #include <Qt3DExtras>
-
 #include <QtWidgets/QApplication>
+#include <ParticlesVectorCollection.h>
 
-#include "MoleculeWidget.h"
-#include "AtomsVector3D.h"
-#include "ElectronsVector3D.h"
-
-#include "ParticlesVectorPath3D.h"
-#include "Polyline.h"
-
-
-namespace Visualization{
+namespace Visualization {
     int visualizeOptPath(int &argc, char **argv,
                          const AtomsVector &atoms,
                          const ElectronsVectorCollection &optimizationPath,
-                         const unsigned long &nwanted = 300);
+                         long nwanted = 300);
 
     ElectronsVectorCollection shortenPath(const ElectronsVectorCollection &optimizationPath,
-                                const unsigned long &nwanted);
+                                          long nwanted);
 
     void drawEigenVector(Qt3DCore::QEntity *root,
-                         const Eigen::MatrixXd eigenvectors,
-                         const Eigen::VectorXd& origin, int eigenvectorIndex);
-
-
-
+                         const Eigen::MatrixXd &eigenvectors,
+                         const Eigen::VectorXd &origin, int eigenvectorIndex);
 }
 
-#endif //AMOLQCPP_VISUALIZATION_H
+#endif //INPSIGHTS_VISUALIZATION_H

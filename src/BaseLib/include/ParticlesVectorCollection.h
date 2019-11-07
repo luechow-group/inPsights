@@ -1,9 +1,22 @@
-//
-// Created by Michael Heuer on 30.10.17.
-//
+/* Copyright (C) 2017-2019 Michael Heuer.
+ *
+ * This file is part of inPsights.
+ * inPsights is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * inPsights is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with inPsights. If not, see <https://www.gnu.org/licenses/>.
+ */
 
-#ifndef AMOLQCPP_PARTICLESVECTORCOLLECTION_H
-#define AMOLQCPP_PARTICLESVECTORCOLLECTION_H
+#ifndef INPSIGHTS_PARTICLESVECTORCOLLECTION_H
+#define INPSIGHTS_PARTICLESVECTORCOLLECTION_H
 
 #include <vector>
 #include "ParticlesVector.h"
@@ -81,8 +94,8 @@ public:
 
     void insert(const ParticlesVector<Type> &particlesVector, long i) {
         if (typesVector_.numberOfEntities() != 0) {
-            assert(typesVector_.asEigenVector()
-                   == particlesVector.typesVector().asEigenVector());
+            assert(typesVector_.asEigenVector() == particlesVector.typesVector().asEigenVector()
+            && "Typevectors must be identical.");
         }
         else{
             typesVector_ = particlesVector.typesVector();
@@ -105,7 +118,7 @@ public:
     }
 
     friend std::ostream& operator<<(std::ostream& os, const ParticlesVectorCollection<Type> & pvc){
-        for (unsigned long i = 0; i < pvc.numberOfEntities(); i++) {
+        for (long i = 0; i < pvc.numberOfEntities(); i++) {
 
             os << "Vector " <<std::to_string(i + 1) << ":"
                << std::endl
@@ -157,4 +170,4 @@ namespace YAML {
     };
 }
 
-#endif //AMOLQCPP_PARTICLESVECTORCOLLECTION_H
+#endif //INPSIGHTS_PARTICLESVECTORCOLLECTION_H

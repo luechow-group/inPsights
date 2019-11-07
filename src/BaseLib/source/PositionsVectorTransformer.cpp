@@ -1,6 +1,19 @@
-//
-// Created by Michael Heuer on 10.04.18.
-//
+/* Copyright (C) 2018-2019 Michael Heuer.
+ *
+ * This file is part of inPsights.
+ * inPsights is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * inPsights is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with inPsights. If not, see <https://www.gnu.org/licenses/>.
+ */
 
 #include "PositionsVectorTransformer.h"
 
@@ -40,25 +53,6 @@ void PositionsVectorTransformer::translateCenterOfMassToOrigin(PositionsVector& 
     auto center = PositionsVectorTransformer::calculateCenterOfMass(positionsVector);
     positionsVector.translate(-center);
 };
-
-void PositionsVectorTransformer::rotateAroundAxis(PositionsVector &p, double angle,
-                                                  const Eigen::Vector3d &axisStart,
-                                                  const Eigen::Vector3d &axisEnd){
-    auto rotMat = rotationMatrixFromQuaternion(
-            quaternionFromAngleAndAxis(angle, axisEnd - axisStart));
-
-    p.translate(-axisStart);
-
-    for (unsigned i = 0; i < p.numberOfEntities(); i++)
-        p.entity(i).dataRef() = p[i].transpose()*rotMat;
-
-    p.translate(axisStart);
-}
-
-void PositionsVectorTransformer::rotateAroundAxis(PositionsVector &positionsVector, double angle,
-                                                  const Eigen::Vector3d &axis){
-    return rotateAroundAxis(positionsVector, angle, Eigen::Vector3d::Zero(), axis);
-}
 
 Eigen::Vector3d PositionsVectorTransformer::calculateCenterOfMass(const PositionsVector& positionsVector,
                                       const Eigen::VectorXd& weights){

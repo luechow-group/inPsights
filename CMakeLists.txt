@@ -1,9 +1,16 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.11)
+
+option(BUILD_GUI   "ON/OFF - Do/Don't build the graphical user interface." OFF)
+option(BUILD_EIGEN "ON/OFF - Build/Try to find the required Eigen3 library." OFF)
+
+option(YAML_CPP_BUILD_TESTS "ON/OFF - yaml test" OFF)
+
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake/Modules")
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-project(Amolqcpp)
+project(inPsights)
 include(cmake/SetCompilers.cmake)
 
 # Prevent error from policy CMP0042. See >>> cmake  --help-policy CMP0042
@@ -20,17 +27,20 @@ endif(DEFINED ENV{BOOST_ROOT})
 find_package(Boost)
 include_directories(${Boost_INCLUDE_DIRS})
 
-if (DEFINED BUILD_EIGEN AND (${BUILD_EIGEN}))
-    message("BUILD_EIGEN build eigen is ON. Building Eigen3...")
+if (${BUILD_EIGEN})
+    message("BUILD_EIGEN=${BUILD_GUI} Building Eigen3...")
     include(cmake/DownloadEigen.cmake)
 else()
-    message("BUILD_EIGEN build eigen is undefined or OFF. Trying to find Eigen3...")
+    message("BUILD_EIGEN=${BUILD_GUI} Trying to find Eigen3...")
     find_package(Eigen3 REQUIRED)
     include_directories(${EIGEN3_INCLUDE_DIR})
 endif()
 
+# putting all executables in cmake-build-*/bin
+set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR}/bin)
+
 # Ctest related
 enable_testing()
-add_custom_target(AmolqcppTests COMMAND "")
+add_custom_target(inPsightsTests COMMAND "")
 include(cmake/add_gtest_subdirectory_with_dependency.cmake)
 add_subdirectory(src)

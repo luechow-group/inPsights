@@ -24,8 +24,12 @@ namespace Elements {
         return internal::pElementInfo::instance()[e].Z();
     }
 
-    int ElementInfo::valElectrons(ElementType e) {
+    int ElementInfo::valenceElectrons(ElementType e) {
         return internal::pElementInfo::instance()[e].valElectrons();
+    }
+
+    int ElementInfo::innerShellElectrons(ElementType e) {
+        return internal::pElementInfo::instance()[e].innerShellElectrons();
     }
 
     int ElementInfo::sElectrons(ElementType e) {

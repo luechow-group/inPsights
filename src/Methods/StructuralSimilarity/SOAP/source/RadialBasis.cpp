@@ -1,44 +1,59 @@
-//
-// Created by Michael Heuer on 20.04.18.
-//
+/* Copyright (C) 2018-2019 Michael Heuer.
+ *
+ * This file is part of inPsights.
+ * inPsights is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * inPsights is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with inPsights. If not, see <https://www.gnu.org/licenses/>.
+ */
 
 #include <Eigen/Eigenvalues>
 #include <Eigen/Cholesky>
 #include <unsupported/Eigen/MatrixFunctions>
 #include <SpecialMathFunctions/ModifiedSphericalBesser1stKind.h>
+#include <NaturalConstants.h>
 #include "RadialBasis.h"
-#include "ExpansionSettings.h"
+#include "SOAPSettings.h"
 
+using namespace SOAP;
 
 RadialBasis::RadialBasis()
         : basis_(createBasis()),
-          Sab_(Sab(ExpansionSettings::Radial::nmax)),
+          Sab_(Sab(Radial::settings.nmax())),
           radialTransform_(calculateRadialTransform(Sab_))
 {}
 
 std::vector<Gaussian> RadialBasis::createBasis() {
-    const auto& nmax = ExpansionSettings::Radial::nmax;
-    const auto& lmax = ExpansionSettings::Angular::lmax;
-    const auto& sigmaAtom = ExpansionSettings::Radial::sigmaAtom;
+    const auto& nmax = Radial::settings.nmax();
+    const auto& lmax = Angular::settings.lmax();
+    const auto& sigmaAtom = Radial::settings.sigmaAtom();
 
     assert(nmax > 1 && "nmax must be greater than 1");
 
     std::vector<Gaussian> basis;
     double basisFunctionCenter = 0;
 
-    switch (ExpansionSettings::Radial::basisType){
-        case ExpansionSettings::Radial::BasisType::equispaced : {
-            for (int i = 0; i < nmax; ++i) {
-                basisFunctionCenter = (ExpansionSettings::Cutoff::radius*double(i)) /double(nmax-1);
+    switch (Radial::settings.basisType()){
+        case Radial::BasisType::equispaced : {
+            for (unsigned i = 0; i < nmax; ++i) {
+                basisFunctionCenter = (Cutoff::settings.radius()*double(i)) /double(nmax-1);
                 basis.emplace_back(basisFunctionCenter, sigmaAtom);
             }
             return basis;
         }
-        case ExpansionSettings::Radial::BasisType::adaptive :{
+        case Radial::BasisType::adaptive :{
             basisFunctionCenter = 0;
             double sigmaStride = 1/2.;
-            
-            for (int i = 0; i < nmax; ++i) {
+
+            for (unsigned i = 0; i < nmax; ++i) {
                 double sigmaAdaptive = std::sqrt( 4./(2.*lmax + 1) * pow(basisFunctionCenter,2)+ pow(sigmaAtom,2) );
                 basis.emplace_back(basisFunctionCenter, sigmaAdaptive);
                 basisFunctionCenter += sigmaStride*sigmaAdaptive;
@@ -48,7 +63,7 @@ std::vector<Gaussian> RadialBasis::createBasis() {
                     // this can interfere with the global variable we use in ExpansionSettings::Radial::cutoff
                     // add lock function?
                     //TODO CHANGE THIS or don't use this method!
-            ExpansionSettings::Cutoff::radius = (*basis_.end()).center(); //TODO check this: is the last basis function centered at the cutoff radius?
+            Cutoff::settings.radius = (*basis_.end()).center(); //TODO check this: is the last basis function centered at the cutoff radius?
             return basis;
         }
         default:
@@ -59,13 +74,13 @@ std::vector<Gaussian> RadialBasis::createBasis() {
 
 
 double RadialBasis::operator()(double r, unsigned n) const{
-    const auto& nmax  = ExpansionSettings::Radial::nmax;
+    const auto& nmax  = Radial::settings.nmax();
     assert(n > 0 && "The radial basis function index must be positive");
     assert(n <= nmax && "The radial basis function index must be smaller than or equal to nmax");
 
     Eigen::VectorXd hvec(nmax);
 
-    for (int i = 0; i < nmax; ++i) {
+    for (unsigned i = 0; i < nmax; ++i) {
         hvec(i) = basis_[i].g2_r2_normalizedValue(r); //TODO store this?
     }
     return radialTransform_.col(n-1).dot(hvec);
@@ -82,8 +97,8 @@ Eigen::MatrixXd RadialBasis::radialTransform() const{
 Eigen::MatrixXd RadialBasis::Sab(unsigned nmax) const{
     Eigen::MatrixXd S(nmax,nmax);
 
-    for (int i = 0; i < nmax; ++i) {
-        for (int j = 0; j < nmax; ++j) { // skip iterations
+    for (unsigned i = 0; i < nmax; ++i) {
+        for (unsigned j = 0; j < nmax; ++j) { // skip iterations
             double a = basis_[i].alpha();
             double b = basis_[j].alpha();
             double rCenterA = basis_[i].center();
@@ -94,7 +109,7 @@ Eigen::MatrixXd RadialBasis::Sab(unsigned nmax) const{
             double s = 1./(4.*pow(w, 2.5));
             s *= exp(-a*rCenterA*rCenterA-b*rCenterB*rCenterB);
             s *= 2.0*sqrt(w)*W0
-                 + sqrt(M_PI)*exp(std::pow(W0,2)/w)*(w+2*std::pow(W0,2))
+                 + sqrt(Constant::pi)*exp(std::pow(W0,2)/w)*(w+2*std::pow(W0,2))
                  * erfc(-W0/sqrt(w)); // TODO which one is faster (with MKL)
                  //*boost::math::erfc<double>(-W0/sqrt(w));
             s *= basis_[i].normalizationConstant_g2_r2()*basis_[j].normalizationConstant_g2_r2();
@@ -114,8 +129,8 @@ Eigen::MatrixXd RadialBasis::calculateRadialTransform(const Eigen::MatrixXd &Sab
 // Compute integrals S r^2 dr i_l(2*ai*ri*r) exp(-beta_ik*(r-rho_ik)^2) //TODO what is the difference between r and ri
 std::vector<double> RadialBasis::calculateIntegrals(double ai, double ri, double rho_ik,double beta_ik) const {
 
-    auto lmax = ExpansionSettings::Angular::lmax;
-    auto n_steps = ExpansionSettings::Radial::integrationSteps;
+    auto lmax = Angular::settings.lmax();
+    auto n_steps = Radial::settings.integrationSteps();
 
     double sigma_ik = sqrt(0.5/beta_ik);
     double r_min = rho_ik - 4*sigma_ik;
@@ -147,7 +162,7 @@ std::vector<double> RadialBasis::calculateIntegrals(double ai, double ri, double
 
     // ... integrate (à la Simpson)
     std::vector<double> ints(lmax+1);
-    for (int s = 0; s < n_steps; ++s) {
+    for (unsigned s = 0; s < n_steps; ++s) {
         for (unsigned l = 0; l  != lmax+1; ++l ) {
             ints[l] += delta_r_step/6.*(
                     integrand_l_at_r(l, 2*s)+
@@ -162,13 +177,12 @@ std::vector<double> RadialBasis::calculateIntegrals(double ai, double ri, double
 
 /* Copied code from soapxx */
 Eigen::MatrixXd RadialBasis::computeCoefficients(double centerToNeighborDistance, double neighborSigma) const {
-    const auto lmax = ExpansionSettings::Angular::lmax;
-    const auto nmax = ExpansionSettings::Radial::nmax;
+    const auto lmax = Angular::settings.lmax();
+    const auto nmax = Radial::settings.nmax();
 
-    //TODO just resize?
     Eigen::MatrixXd radialCoeffsGnl = Eigen::MatrixXd::Zero(nmax,lmax+1);
 
-    if (neighborSigma < ExpansionSettings::Radial::radiusZero) {
+    if (neighborSigma < Radial::settings.sigmaZeroThreshold()) {
 
         for (unsigned n = 0; n < nmax; ++n) {
             double gn_at_r = basis_[n].value(centerToNeighborDistance);
@@ -176,8 +190,8 @@ Eigen::MatrixXd RadialBasis::computeCoefficients(double centerToNeighborDistance
                 radialCoeffsGnl(n, l) = gn_at_r;
             }
         }
-      } else {
-        double ai = 1 / (2. * pow(neighborSigma, 2));
+    } else {
+        double ai = 1.0 / (2.0 * pow(neighborSigma, 2));
         double ri = centerToNeighborDistance;
         SphericalGaussian gi_sph(Eigen::Vector3d::Zero(),
                                  neighborSigma); // <- position should not matter, as only normalization used here
@@ -191,14 +205,15 @@ Eigen::MatrixXd RadialBasis::computeCoefficients(double centerToNeighborDistance
             double basisFunctionCenter = basis_[n].center(); //rk
             double norm_r2_g2_dr_rad_k = basis_[n].normalizationConstant_g2_r2();
             double beta_ik = ai + basisFunctionAlpha;
-            double rho_ik = basisFunctionAlpha * basisFunctionCenter / beta_ik;
+
             double prefac =
-                    4 * M_PI *
+                    4.0 * Constant::pi *
                     norm_r2_g2_dr_rad_k * norm_g_dV_sph_i *
                     exp(-ai * ri * ri) *
                     exp(-basisFunctionAlpha * pow(basisFunctionCenter, 2) *
-                        (1 - basisFunctionAlpha / beta_ik)); // eq 32 bzw. 33
+                        (1.0 - basisFunctionAlpha / beta_ik)); // eq 32 bzw. 33
 
+            double rho_ik = basisFunctionAlpha * basisFunctionCenter / beta_ik;
             auto integrals = calculateIntegrals(ai, ri, rho_ik, beta_ik);
 
             for (unsigned l = 0; l <= lmax; ++l) {

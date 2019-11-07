@@ -1,9 +1,22 @@
-//
-// Created by heuer on 12.05.17.
-//
+/* Copyright (C) 2017-2019 Michael Heuer.
+ *
+ * This file is part of inPsights.
+ * inPsights is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * inPsights is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with inPsights. If not, see <https://www.gnu.org/licenses/>.
+ */
 
-#ifndef AMOLQCPP_BSPLINEPLOTTER_H
-#define AMOLQCPP_BSPLINEPLOTTER_H
+#ifndef INPSIGHTS_BSPLINEPLOTTER_H
+#define INPSIGHTS_BSPLINEPLOTTER_H
 
 #include "Polyline.h"
 #include "Sphere.h"
@@ -40,7 +53,7 @@ public:
       int p = arcLengthParametrizedBSpline.getDegree();
       int nCP = arcLengthParametrizedBSpline.getControlPointNumber();
       for (int j = 0+p; j < U.size()-p; ++j) {
-        //Polyline pl(root, Spin::QColorFromSpinType(Spin::Alpha), pointsList[j], radius, true);
+        //Polyline pl(root, Spin::QColorFromType<Spin>(Spin::Alpha), pointsList[j], radius, true);
         Eigen::VectorXd uStructure= arcLengthParametrizedBSpline.reducedEvaluate(U(j), 0).tail(reducedDim);
 
         for (int k = 0; k < reducedDim/3; ++k) {
@@ -53,10 +66,10 @@ public:
       }*/
 
       for (int j = 0; j < pointsList.size()/2; ++j) {
-        new Polyline(root, Spins::QColorFromSpinType(Spin::alpha), pointsList[j], radius, true);
+        new Polyline(root, GuiHelper::QColorFromType<Spin>(Spin::alpha), pointsList[j], radius, true);
       }
       for (int j = pointsList.size()/2; j < pointsList.size(); ++j) {
-       new Polyline(root, Spins::QColorFromSpinType(Spin ::beta), pointsList[j], radius, true);
+       new Polyline(root, GuiHelper::QColorFromType<Spin>(Spin ::beta), pointsList[j], radius, true);
       }
 
     }
@@ -66,4 +79,4 @@ private:
 
 };
 
-#endif //AMOLQCPP_BSPLINEPLOTTER_H
+#endif //INPSIGHTS_BSPLINEPLOTTER_H

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.11)
 
 project(GUI CXX)
 
@@ -7,8 +7,6 @@ set ( PROJECT_PATH ${PROJECT_NAME})
 set ( OUTPUT_NAME "${PROJECT_FOLDER_NAME}" )
 message ( "-- ++ CREATING PROJECT OR MAKEFILE ---> ${OUTPUT_NAME}" )
 
-# Instruct CMake to run moc automatically when needed. Required for Qt to detect Q_OBJECT
-set(CMAKE_AUTOMOC ON)
 
 find_package(Qt5 REQUIRED COMPONENTS
         Core
@@ -20,6 +18,13 @@ find_package(Qt5 REQUIRED COMPONENTS
         Charts
         )
 
+qt5_add_resources(QT_RESOURCES myresources.qrc)
+
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
+set(CMAKE_AUTOUIC ON)
+
+
 set(HEADER_FILES
         include/Abstract3dObject.h
         include/Sphere.h
@@ -27,17 +32,29 @@ set(HEADER_FILES
         include/DividedCylinder.h
         include/Polyline.h
         include/Cone.h
-        include/Atom3D.h
         include/Bond3D.h
-        include/Helper.h
-        include/Electron3D.h
+        include/GuiHelper.h
         include/StringMethodCoordinatesPlotter.h
         include/StringMethodValuePlotter.h
-        include/AtomsVector3D.h
-        include/ElectronsVector3D.h
         include/MoleculeWidget.h
         include/ParticlesVectorPath3D.h
         include/Visualization.h
+        include/InPsightsWidget.h
+        include/Line3D.h
+        include/Particle3D.h
+        include/ParticlesVector3D.h
+        include/IConnection.h
+        include/Bonds3D.h
+        include/SpinCorrelations3D.h
+        include/SameSpinConnections3D.h
+        include/IntegerSortedTreeWidgetItem.h
+        include/MaximaProcessingWidget.h
+        include/SurfaceMesh.h
+        include/Surface.h
+        include/Arrow.h
+        include/CartesianAxes.h
+        include/ColorPalette.h
+        include/X3domConverter.h
         )
 
 set(SOURCE_FILES
@@ -47,17 +64,29 @@ set(SOURCE_FILES
         source/DividedCylinder.cpp
         source/Polyline.cpp
         source/Cone.cpp
-        source/Atom3D.cpp
         source/Bond3D.cpp
-        source/Electron3D.cpp
-        source/AtomsVector3D.cpp
-        source/ElectronsVector3D.cpp
+        source/GuiHelper.cpp
         source/MoleculeWidget.cpp
         source/ParticlesVectorPath3D.cpp
         source/Visualization.cpp
-        )
+        source/ParticlesVector3D.cpp
+        source/Line3D.cpp
+        source/Bonds3D.cpp
+        source/SpinCorrelations3D.cpp
+        source/InPsightsWidget.cpp
+        source/SameSpinConnections3D.cpp
+        source/IntegerSortedTreeWidgetItem.cpp
+        source/MaximaProcessingWidget.cpp
+        source/SurfaceMesh.cpp
+        source/Surface.cpp
+        source/Arrow.cpp
+        source/CartesianAxes.cpp
+        source/X3domConverter.cpp)
 
-add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES}
+add_library(${PROJECT_NAME} STATIC
+        ${SOURCE_FILES}
+        ${HEADER_FILES}
+        ${QT_RESOURCES}
         )
 target_include_directories(${PROJECT_NAME}
         PUBLIC include
@@ -65,7 +94,9 @@ target_include_directories(${PROJECT_NAME}
         )
 
 target_link_libraries(${PROJECT_NAME}
-        BaseLib #includes eigen already
+        BaseLib # includes eigen
+        MaximaProcessing
+        SurfaceGeneration # includes dualmc
         Qt5::Core
         Qt5::Gui
         Qt5::Widgets
@@ -75,4 +106,4 @@ target_link_libraries(${PROJECT_NAME}
         Qt5::Charts
         )
 
-add_gtest_subdirectory_with_dependency(tests "gtest;pthread")
+add_gtest_subdirectory_with_dependency(tests "gmock;pthread")

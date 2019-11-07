@@ -1,18 +1,20 @@
 function(add_gtest_subdirectory_with_dependency directoryName libraries)
     FILE(GLOB TEST_SOURCE_FILES ${directoryName}/*)
 
-    add_executable(${PROJECT_NAME}_${directoryName}.exe ${TEST_SOURCE_FILES})
+    set(TEST_EXECUTABLE_NAME "${PROJECT_NAME}_${directoryName}")
 
-    add_dependencies(AmolqcppTests ${PROJECT_NAME}_${directoryName}.exe)
+    add_executable(${TEST_EXECUTABLE_NAME} ${TEST_SOURCE_FILES})
 
-    target_link_libraries(${PROJECT_NAME}_${directoryName}.exe
+    add_dependencies(inPsightsTests ${TEST_EXECUTABLE_NAME})
+
+    target_link_libraries(${TEST_EXECUTABLE_NAME}
             ${PROJECT_NAME}
             ${libraries}
             )
 
-    add_test(NAME ${PROJECT_NAME}_${directoryName}
-            COMMAND ${PROJECT_NAME}_${directoryName}.exe)
+    add_test(NAME ${TEST_EXECUTABLE_NAME}
+            COMMAND ${TEST_EXECUTABLE_NAME})
 
-    set_tests_properties(${PROJECT_NAME}_${directoryName}
+    set_tests_properties(${TEST_EXECUTABLE_NAME}
             PROPERTIES LABELS ${PROJECT_NAME})
 endfunction(add_gtest_subdirectory_with_dependency)

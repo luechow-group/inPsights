@@ -1,12 +1,26 @@
-//
-// Created by Michael Heuer on 17.05.18.
-//
+/* Copyright (C) 2018-2019 Michael Heuer.
+ *
+ * This file is part of inPsights.
+ * inPsights is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * inPsights is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with inPsights. If not, see <https://www.gnu.org/licenses/>.
+ */
 
-#include <gtest/gtest.h>
+#include <gmock/gmock.h>
 #include <Eigen/Core>
 #include "Sinkhorn.h"
 
 using namespace testing;
+using namespace SOAP;
 
 class ASinkhornTest : public ::testing::Test {
 public:
@@ -14,7 +28,7 @@ public:
     double eps = std::numeric_limits<double>::epsilon()*1e2;
 
     Eigen::MatrixXd sinkhornSoapxxReference(const Eigen::MatrixXd& matrix,
-                                            double gamma = ExpansionSettings::gamma,
+                                            double gamma = General::settings.sinkhornGamma(),
                                             double eps = std::numeric_limits<double>::epsilon()) {
         long nx = matrix.rows();
         long ny = matrix.cols();
@@ -65,7 +79,7 @@ public:
     }
 
     Eigen::MatrixXd sinkhornSoapPythonReference(const Eigen::MatrixXd& matrix,
-                                                double gamma = ExpansionSettings::gamma,
+                                                double gamma = General::settings.sinkhornGamma(),
                                                 double eps = std::numeric_limits<double>::epsilon()) {
 /* Sinkhorn algorithm */
         auto MAX_TOTAL = matrix.rows();
@@ -121,7 +135,6 @@ void doublyStochasticCheck(const Eigen::MatrixXd& regularizedMatrix,
     long N = regularizedMatrix.rows();
     long M = regularizedMatrix.cols();
 
-    double totalSum = 0;
     for (unsigned i = 0; i < N; ++i) {
         ASSERT_NEAR(regularizedMatrix.row(i).sum(), 1./double(N), eps);
     }

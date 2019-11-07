@@ -1,8 +1,21 @@
-//
-// Created by Michael Heuer on 15.09.18.
-//
+/* Copyright (C) 2018-2019 Michael Heuer.
+ *
+ * This file is part of inPsights.
+ * inPsights is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * inPsights is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with inPsights. If not, see <https://www.gnu.org/licenses/>.
+ */
 
-#include <gtest/gtest.h>
+#include <gmock/gmock.h>
 #include <Statistics.h>
 #include <iostream>
 
@@ -36,29 +49,56 @@ public:
     }
 };
 
-TEST_F(AStatisticsTest, Matrix){
-    Statistics::RunningStatistics<Eigen::MatrixXd> meanAndVariance;
-    meanAndVariance.add(mat1);
-    meanAndVariance.add(mat2);
-    meanAndVariance.add(mat3);
+TEST_F(AStatisticsTest, Constructor) {
+    unsigned N = 3;
+    auto mean = mat2;
+    auto standardError = mat1 * 1/std::sqrt(N);
+    auto cwiseMin = mat1;
+    auto cwiseMax = mat3;
+    auto stats = Statistics::RunningStatistics<Eigen::MatrixXd>(mean, standardError, cwiseMin, cwiseMax, N);
 
-    ASSERT_TRUE(meanAndVariance.mean().isApprox(mat2));
-    ASSERT_TRUE(meanAndVariance.standardDeviation().isApprox(mat1));
+    stats.add(mat2);
+
+    auto expectedStats = Statistics::RunningStatistics<Eigen::MatrixXd>();
+    expectedStats.add(mat1);
+    expectedStats.add(mat2);
+    expectedStats.add(mat3);
+    expectedStats.add(mat2);
+
+    ASSERT_TRUE(stats.mean().isApprox(expectedStats.mean()));
+    ASSERT_TRUE(stats.standardDeviation().isApprox(expectedStats.standardDeviation()));
+    ASSERT_TRUE(stats.cwiseMin().isApprox(expectedStats.cwiseMin()));
+    ASSERT_TRUE(stats.cwiseMax().isApprox(expectedStats.cwiseMax()));
+    ASSERT_EQ(stats.getTotalWeight(), expectedStats.getTotalWeight());
+}
+
+TEST_F(AStatisticsTest, Matrix){
+    Statistics::RunningStatistics<Eigen::MatrixXd> stats;
+    stats.add(mat1);
+    stats.add(mat2);
+    stats.add(mat3);
+
+    ASSERT_TRUE(stats.mean().isApprox(mat2));
+    ASSERT_TRUE(stats.standardDeviation().isApprox(mat1));
+    ASSERT_TRUE(stats.cwiseMin().isApprox(mat1));
+    ASSERT_TRUE(stats.cwiseMax().isApprox(mat3));
 }
 
 TEST_F(AStatisticsTest, Vector){
-    Statistics::RunningStatistics<Eigen::VectorXd> meanAndVariance;
-    meanAndVariance.add(vec1);
-    meanAndVariance.add(vec2);
-    meanAndVariance.add(vec3);
+    Statistics::RunningStatistics<Eigen::VectorXd> stats;
+    stats.add(vec1);
+    stats.add(vec2);
+    stats.add(vec3);
 
-    ASSERT_TRUE(meanAndVariance.mean().isApprox(vec2));
-    ASSERT_TRUE(meanAndVariance.standardDeviation().isApprox(vec1));
+    ASSERT_TRUE(stats.mean().isApprox(vec2));
+    ASSERT_TRUE(stats.standardDeviation().isApprox(vec1));
+    ASSERT_TRUE(stats.cwiseMin().isApprox(vec1));
+    ASSERT_TRUE(stats.cwiseMax().isApprox(vec3));
 }
 
 TEST_F(AStatisticsTest, UnsignedIntegerWeights){
     // unsigned is the default template parameter
-    Statistics::RunningStatistics<Eigen::VectorXd> meanAndVariance;
+    Statistics::RunningStatistics<Eigen::VectorXd> stats;
 
     Eigen::VectorXd vec1(2);
     vec1 << -2,-4;
@@ -66,54 +106,208 @@ TEST_F(AStatisticsTest, UnsignedIntegerWeights){
     vec2 << 1,2;
 
 
-    meanAndVariance.add(vec1,1);
-    meanAndVariance.add(vec2,2);
+    stats.add(vec1,1);
+    stats.add(vec2,2);
 
     Eigen::VectorXd expectedMean(2);
     expectedMean << 0,0;
     Eigen::VectorXd expectedVariance(2);
     expectedVariance << 3,12;
 
-    ASSERT_TRUE(meanAndVariance.mean().isApprox(expectedMean));
-    ASSERT_TRUE(meanAndVariance.variance().isApprox(expectedVariance));
-
+    ASSERT_TRUE(stats.mean().isApprox(expectedMean));
+    ASSERT_TRUE(stats.variance().isApprox(expectedVariance));
+    ASSERT_TRUE(stats.cwiseMin().isApprox(vec1));
+    ASSERT_TRUE(stats.cwiseMax().isApprox(vec2));
+    
     // Reset
-    meanAndVariance.reset();
+    stats.reset();
 
-    meanAndVariance.add(vec1,1);
-    meanAndVariance.add(vec2,1);
-    meanAndVariance.add(vec2,1);
+    stats.add(vec1,1);
+    stats.add(vec2,1);
+    stats.add(vec2,1);
 
-    ASSERT_TRUE(meanAndVariance.mean().isApprox(expectedMean));
-    ASSERT_TRUE(meanAndVariance.variance().isApprox(expectedVariance));
+    ASSERT_TRUE(stats.mean().isApprox(expectedMean));
+    ASSERT_TRUE(stats.variance().isApprox(expectedVariance));
+    ASSERT_TRUE(stats.cwiseMin().isApprox(vec1));
+    ASSERT_TRUE(stats.cwiseMax().isApprox(vec2));
 }
 
 TEST_F(AStatisticsTest, DoublePrecisionWeights){
-    Statistics::RunningStatistics<Eigen::VectorXd,double> meanAndVariance;
+    Statistics::RunningStatistics<Eigen::VectorXd,double> stats;
 
     Eigen::VectorXd vec1(2);
     vec1 << -2,-4;
     Eigen::VectorXd vec2(2);
     vec2 << 1,2;
 
-    meanAndVariance.add(vec1,1.0);
-    meanAndVariance.add(vec2,2.0);
+    stats.add(vec1,1.0);
+    stats.add(vec2,2.0);
 
     Eigen::VectorXd expectedMean(2);
     expectedMean << 0,0;
     Eigen::VectorXd expectedVariance(2);
     expectedVariance << 3,12;
 
-    ASSERT_TRUE(meanAndVariance.mean().isApprox(expectedMean));
-    ASSERT_TRUE(meanAndVariance.variance().isApprox(expectedVariance));
+    ASSERT_TRUE(stats.mean().isApprox(expectedMean));
+    ASSERT_TRUE(stats.variance().isApprox(expectedVariance));
+    ASSERT_TRUE(stats.cwiseMin().isApprox(vec1));
+    ASSERT_TRUE(stats.cwiseMax().isApprox(vec2));
 
     // Reset
-    meanAndVariance.reset();
+    stats.reset();
 
-    meanAndVariance.add(vec1);
-    meanAndVariance.add(vec2);
-    meanAndVariance.add(vec2);
+    stats.add(vec1);
+    stats.add(vec2);
+    stats.add(vec2);
 
-    ASSERT_TRUE(meanAndVariance.mean().isApprox(expectedMean));
-    ASSERT_TRUE(meanAndVariance.variance().isApprox(expectedVariance));
+    ASSERT_TRUE(stats.mean().isApprox(expectedMean));
+    ASSERT_TRUE(stats.variance().isApprox(expectedVariance));
+    ASSERT_TRUE(stats.cwiseMin().isApprox(vec1));
+    ASSERT_TRUE(stats.cwiseMax().isApprox(vec2));
+}
+
+TEST_F(AStatisticsTest, MinMax){
+    Statistics::RunningStatistics<Eigen::VectorXd> stats;
+    
+    Eigen::VectorXd v1(2),v2(2);
+    v1 << -1, 2;
+    v2 << 1,-2;
+    
+    stats.add(v1);
+    stats.add(v2);
+
+    Eigen::VectorXd min(2),max(2);
+    min << -1,-2;
+    max <<  1, 2;
+    
+    ASSERT_TRUE(stats.cwiseMin().isApprox(min));
+    ASSERT_TRUE(stats.cwiseMax().isApprox(max));
+    
+}
+
+TEST_F(AStatisticsTest, SingleValue){
+    Statistics::RunningStatistics<Eigen::Matrix<double,1,1>> stats;
+
+    Eigen::VectorXd v1(1),v2(1);
+    v1 << -1;
+    v2 << 1;
+
+    stats.add(v1);
+    stats.add(v2);
+
+    Eigen::VectorXd min(1),max(1);
+    min << -1;
+    max <<  1;
+
+    ASSERT_TRUE(stats.cwiseMin().isApprox(min));
+    ASSERT_TRUE(stats.cwiseMax().isApprox(max));
+}
+
+TEST_F(AStatisticsTest, YAMLMatrixConversion){
+    Statistics::RunningStatistics<Eigen::MatrixXd,unsigned,false> stats;
+    stats.add(mat1);
+    stats.add(mat2);
+    stats.add(mat3);
+
+    YAML::Emitter out;
+    out << stats;
+
+    auto expectedString = "0:\n  0: [4, 1.1547005383792517, 2, 6]\n  1: [8, 2.3094010767585034, 4, 12]\n"\
+                          "1:\n  0: [12, 3.4641016151377548, 6, 18]\n  1: [16, 4.6188021535170067, 8, 24]\n"\
+                          "N: 3";
+    ASSERT_STREQ(out.c_str(), expectedString);
+    auto loaded = YAML::Load(out.c_str());
+    auto emitterStats = loaded.as<Statistics::RunningStatistics<Eigen::MatrixXd,unsigned,false>>();
+
+    ASSERT_TRUE(emitterStats.mean().isApprox(stats.mean()));
+    ASSERT_TRUE(emitterStats.standardDeviation().isApprox(stats.standardDeviation()));
+    ASSERT_TRUE(emitterStats.cwiseMin().isApprox(stats.cwiseMin()));
+    ASSERT_TRUE(emitterStats.cwiseMax().isApprox(stats.cwiseMax()));
+    ASSERT_EQ(emitterStats.getTotalWeight(), stats.getTotalWeight());
+
+
+    YAML::Node node;
+    node = stats;
+    auto nodeStats = node.as<Statistics::RunningStatistics<Eigen::MatrixXd,unsigned,false>>();
+
+    ASSERT_TRUE(nodeStats.mean().isApprox(stats.mean()));
+    ASSERT_TRUE(nodeStats.standardDeviation().isApprox(stats.standardDeviation()));
+    ASSERT_TRUE(nodeStats.cwiseMin().isApprox(stats.cwiseMin()));
+    ASSERT_TRUE(nodeStats.cwiseMax().isApprox(stats.cwiseMax()));
+    ASSERT_EQ(nodeStats.getTotalWeight(), stats.getTotalWeight());
+}
+
+TEST_F(AStatisticsTest, YAMLVectorConversion){
+    Statistics::RunningStatistics<Eigen::VectorXd,unsigned,false> stats;
+    stats.add(vec1);
+    stats.add(vec2);
+    stats.add(vec3);
+
+    YAML::Emitter out;
+    out << stats;
+
+    auto expectedString = "0: [4, 1.1547005383792517, 2, 6]\n"\
+                          "1: [8, 2.3094010767585034, 4, 12]\n"\
+                          "2: [12, 3.4641016151377548, 6, 18]\n"\
+                          "3: [16, 4.6188021535170067, 8, 24]\n"\
+                          "N: 3";
+    ASSERT_STREQ(out.c_str(), expectedString);
+    auto loaded = YAML::Load(out.c_str());
+    auto emitterStats = loaded.as<Statistics::RunningStatistics<Eigen::VectorXd,unsigned,false>>();
+
+    ASSERT_TRUE(emitterStats.mean().isApprox(stats.mean()));
+    ASSERT_TRUE(emitterStats.standardDeviation().isApprox(stats.standardDeviation()));
+    ASSERT_TRUE(emitterStats.cwiseMin().isApprox(stats.cwiseMin()));
+    ASSERT_TRUE(emitterStats.cwiseMax().isApprox(stats.cwiseMax()));
+    ASSERT_EQ(emitterStats.getTotalWeight(), stats.getTotalWeight());
+
+
+    YAML::Node node;
+    node = stats;
+    auto nodeStats = node.as<Statistics::RunningStatistics<Eigen::VectorXd,unsigned,false>>();
+
+    ASSERT_TRUE(nodeStats.mean().isApprox(stats.mean()));
+    ASSERT_TRUE(nodeStats.standardDeviation().isApprox(stats.standardDeviation()));
+    ASSERT_TRUE(nodeStats.cwiseMin().isApprox(stats.cwiseMin()));
+    ASSERT_TRUE(nodeStats.cwiseMax().isApprox(stats.cwiseMax()));
+    ASSERT_EQ(nodeStats.getTotalWeight(), stats.getTotalWeight());
+}
+
+TEST_F(AStatisticsTest, YAMLConversionTriangularExport){
+    TriangularMatrixStatistics stats;
+    stats.add(mat1);
+    stats.add(mat2);
+    stats.add(mat3);
+
+    Eigen::MatrixXd expectedMean(2,2),expectedStandardDeviation(2,2),expectedCwiseMin(2,2),expectedCwiseMax(2,2);
+    expectedMean << 0,8,0,0;
+    expectedStandardDeviation << 0,4,0,0;
+    expectedCwiseMin << 0,4,0,0;
+    expectedCwiseMax << 0,12,0,0;
+
+    YAML::Emitter out;
+    out << stats;
+    auto expectedString = "0:\n"\
+                          "  1: [8, 2.3094010767585034, 4, 12]\n"\
+                          "N: 3";
+    ASSERT_STREQ(out.c_str(), expectedString);
+    auto loaded = YAML::Load(out.c_str());
+    auto emitterStats = loaded.as<TriangularMatrixStatistics>();
+
+    ASSERT_TRUE(emitterStats.mean().isApprox(expectedMean));
+    ASSERT_TRUE(emitterStats.standardDeviation().isApprox(expectedStandardDeviation));
+    ASSERT_TRUE(emitterStats.cwiseMin().isApprox(expectedCwiseMin));
+    ASSERT_TRUE(emitterStats.cwiseMax().isApprox(expectedCwiseMax));
+    ASSERT_EQ(emitterStats.getTotalWeight(), stats.getTotalWeight());
+
+
+    YAML::Node node;
+    node = stats;
+    auto nodeStats = node.as<TriangularMatrixStatistics>();
+
+    ASSERT_TRUE(nodeStats.mean().isApprox(expectedMean));
+    ASSERT_TRUE(nodeStats.standardDeviation().isApprox(expectedStandardDeviation));
+    ASSERT_TRUE(nodeStats.cwiseMin().isApprox(expectedCwiseMin));
+    ASSERT_TRUE(nodeStats.cwiseMax().isApprox(expectedCwiseMax));
+    ASSERT_EQ(nodeStats.getTotalWeight(), stats.getTotalWeight());
 }
