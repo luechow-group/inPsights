@@ -25,7 +25,7 @@
 #include <QTimer>
 #include <QHeaderView>
 #include "IntegerSortedTreeWidgetItem.h"
-#include <iterator>
+#include <inPsightsVersion.h>
 #include <vector>
 #include <ParticlesVector.h>
 #include <SurfaceDataGenerator.h>
@@ -241,9 +241,10 @@ void InPsightsWidget::showSplashScreen() {
 
     splashScreen->setPixmap(pixmap);
     splashScreen->show();
-    splashScreen->showMessage(
-            "Version 0.1.0 (pre-release)\n"
-            "Copyright © 2016-2019  Michael A. Heuer.", Qt::AlignBottom, Qt::gray);
+
+    std::string message = "Version " + inPsights::version + " (pre-release)\n "\
+                          "Copyright © 2016-2019  Michael A. Heuer.";
+    splashScreen->showMessage(message.c_str(), Qt::AlignBottom, Qt::gray);
 
     splashScreen->finish(this);
 }

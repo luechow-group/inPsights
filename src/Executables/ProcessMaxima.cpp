@@ -117,6 +117,7 @@ int main(int argc, char *argv[]) {
 
     YAML::Emitter outputYaml;
     spdlog::info("Executable: {}", argv[0]);
+    spdlog::info("Version: {}", inPsights::version);
     spdlog::info("Validating input from file {}:\n{}...", inputFilename, emitter.c_str());
     validateInput(inputYaml);
 

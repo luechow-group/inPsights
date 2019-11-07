@@ -18,9 +18,7 @@
 #ifndef INPSIGHTS_ASCIIART_H
 #define INPSIGHTS_ASCIIART_H
 
-
-
-#include <string>
+#include <inPsightsVersion.h>
 
 namespace AsciiArt {
     const std::string inPsightsLogo = "                  ▀▓▓▓▓▀ ▄▄■■■■▄▄\n"
@@ -34,6 +32,9 @@ namespace AsciiArt {
                                       "▐▌  ▐▌    ▐▌        ▓▓            ▀▄▄▄▀▐▌  ▐▌    ▐▌    ■■   ▀▄▄▄▀\n"
                                       "                  ▄▓▓▓▓▄               ▐▌\n"
                                       "                                  ▀■■■■▀\n"
+                                      "Version:\n"
+                                      "  " + inPsights::version + "\n"
+                                      "\n"
                                       " Main author:\n"
                                       "  Michael A. Heuer, RWTH Aachen University\n"
                                       "\n"

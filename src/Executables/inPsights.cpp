@@ -16,6 +16,7 @@
  */
 
 #include <InPsightsWidget.h>
+#include <inPsightsVersion.h>
 #include <QApplication>
 #include <memory>
 #include <spdlog/spdlog.h>
@@ -29,7 +30,7 @@ int main(int argc, char *argv[]) {
     app.setWindowIcon(QIcon(":inPsightsIcon.png"));
     app.setApplicationName("inPsights");
 
-    spdlog::info("Welcome to inPsights!");
+    spdlog::info("Welcome to inPsights (Version: {})!", inPsights::version);
 
     std::unique_ptr<InPsightsWidget> widget;
 

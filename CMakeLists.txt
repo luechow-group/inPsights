@@ -12,6 +12,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 project(inPsights)
 include(cmake/SetCompilers.cmake)
+include(cmake/inPsightsVersion.cmake)
 
 # Prevent error from policy CMP0042. See >>> cmake  --help-policy CMP0042
 set(CMAKE_MACOSX_RPATH 1)

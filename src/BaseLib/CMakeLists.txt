@@ -1,14 +1,17 @@
 cmake_minimum_required(VERSION 3.11)
 
 project(BaseLib CXX)
-
 set ( PROJECT_FOLDER_NAME ${PROJECT_NAME} )
 set ( PROJECT_PATH ${PROJECT_NAME})
 set ( OUTPUT_NAME "${PROJECT_FOLDER_NAME}" )
 message ( "-- ++ CREATING PROJECT OR MAKEFILE ---> ${OUTPUT_NAME}" )
 
-#find_package(Eigen3 REQUIRED)
-#include_directories( ${EIGEN3_INCLUDE_DIR} )
+set_source_files_properties(source/inPsightsVersion.cpp PROPERTIES COMPILE_FLAGS ${INPSIGHTS_VERSION_FLAG})
+add_library(inPsightsVersion STATIC include/inPsightsVersion.h source/inPsightsVersion.cpp)
+target_include_directories(inPsightsVersion
+        PUBLIC include
+        PRIVATE source
+        )
 
 set(HEADER_FILES
         resources/TestMolecules.h
@@ -56,6 +59,7 @@ set(HEADER_FILES
         include/SpinPairClassification.h
         )
 
+
 set(SOURCE_FILES
         source/pElementInfo.cpp
         source/ElementInfo.cpp
@@ -91,6 +95,7 @@ target_include_directories(${PROJECT_NAME}
 )
 
 target_link_libraries(${PROJECT_NAME}
+        inPsightsVersion
         yaml-cpp
         spdlog
         )
