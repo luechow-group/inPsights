@@ -159,9 +159,7 @@ void InPsightsWidget::selectedStructure(QTreeWidgetItem *item, int column) {
     auto structureId = id[1].toInt();
 
     auto createQ = item->checkState(0) == Qt::CheckState::Checked;
-    spdlog::info("Selected structure {0} from cluster {1} for {2}.", structureId, clusterId,
-                  createQ ? "creation" : "deletion");
-
+    
     if (createQ) {
         moleculeWidget->addElectronsVector(clusterCollection_[clusterId].exemplaricStructures_[structureId], clusterId, structureId);
         maximaProcessingWidget->updateData(clusterCollection_[clusterId]);
