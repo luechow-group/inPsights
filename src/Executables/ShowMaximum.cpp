@@ -15,10 +15,8 @@
  * along with inPsights. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <Serialization.h>
 #include "RefFileImporter.h"
 #include <MoleculeWidget.h>
-#include <ParticlesVector3D.h>
 #include <QApplication>
 #include <iostream>
 #include <exception>

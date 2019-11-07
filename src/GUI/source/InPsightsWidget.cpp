@@ -18,7 +18,6 @@
 #include <InPsightsWidget.h>
 #include <QFileDialog>
 #include <QString>
-
 #include <QGridLayout>
 #include <QGroupBox>
 #include <QSplashScreen>
@@ -28,7 +27,6 @@
 #include <inPsightsVersion.h>
 #include <vector>
 #include <ParticlesVector.h>
-#include <SurfaceDataGenerator.h>
 #include <spdlog/spdlog.h>
 
 
@@ -37,7 +35,7 @@ InPsightsWidget::InPsightsWidget(QWidget *parent, const std::string& filename)
         QWidget(parent),
         filename_(filename),
         moleculeWidget(new MoleculeWidget(this)),
-        maximaProcessingWidget(new MaximaProcessingWidget(this)), // TODO refator, should it be an additional window?
+        maximaProcessingWidget(new MaximaProcessingWidget(this)),
         atomsCheckBox(new QCheckBox("Atoms", this)),
         bondsCheckBox(new QCheckBox("Bonds", this)),
         axesCheckBox(new QCheckBox("Axes", this)),
