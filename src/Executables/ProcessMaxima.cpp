@@ -25,7 +25,6 @@
 #include <MaximaProcessor.h>
 #include <GeneralStatistics.h>
 #include <algorithm>
-#include <utility>
 #include <MaximaProcessingSettings.h>
 #include <VoxelCubeGeneration.h>
 #include <VoxelCubeOverlapCalculation.h>
@@ -117,7 +116,7 @@ int main(int argc, char *argv[]) {
 
     YAML::Emitter outputYaml;
     spdlog::info("Executable: {}", argv[0]);
-    spdlog::info("Version: {}", inPsights::version);
+    spdlog::info("Version: {}", inPsights::version());
     spdlog::info("Validating input from file {}:\n{}...", inputFilename, emitter.c_str());
     validateInput(inputYaml);
 
