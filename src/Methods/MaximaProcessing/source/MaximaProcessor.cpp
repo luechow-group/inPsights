@@ -14,6 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with inPsights. If not, see <https://www.gnu.org/licenses/>.
  */
+
 #include <MaximaProcessor.h>
 #include <MaximaProcessingSettings.h>
 #include <ClusterData.h>
@@ -22,10 +23,11 @@
 #include <CoulombPotential.h>
 #include <EnergyPartitioning.h>
 #include <VoxelCubeGeneration.h>
+#include <VoxelCubeOverlapCalculation.h>
 #include <EnergyPartitioning.h>
 #include <spdlog/spdlog.h>
 
-MaximaProcessor::MaximaProcessor(YAML::Emitter& yamlDocument, const std::vector<Sample>& samples, AtomsVector atoms)
+MaximaProcessor::MaximaProcessor(YAML::Emitter& yamlDocument, const std::vector<Sample>& samples, const AtomsVector& atoms)
         :
         yamlDocument_(yamlDocument),
         samples_(samples),
@@ -67,6 +69,8 @@ unsigned long MaximaProcessor::addReference(const Reference &reference) {
         Etot << EnergyPartitioning::calculateTotalEnergy(Te,Vee,Ven, Vnn_);
         EtotalStats_.add(Etot);
     }
+    
+    
     return count;
 }
 
@@ -139,18 +143,28 @@ void MaximaProcessor::calculateStatistics(const Group &maxima){
         
         doMotifBasedEnergyPartitioning(group);
 
+        // SEDs
         std::vector<VoxelCube> voxelCubes;
         if(VoxelCubeGeneration::settings.generateVoxelCubesQ())
             voxelCubes = VoxelCubeGeneration::fromCluster(group, samples_);
 
+        // SED overlaps
+        Eigen::MatrixXd overlaps;
+        if(VoxelCubeOverlapCalculation::settings.calculateOverlapQ())
+            overlaps = VoxelCubeOverlapCalculation::fromCluster(group, samples_);
 
         auto weight = double(TeStats_.getTotalWeight())/double(samples_.size());
         if(weight >= MaximaProcessing::settings.minimalClusterWeight.get()) {
             totalWeight += weight;
-            yamlDocument_ << ClusterData(TeStats_.getTotalWeight(), structures, valueStats_, TeStats_, EeStats_,
+
+            if(MaximaProcessing::settings.showSampleAverageQ.get())
+            structures = {group.electronsVectorFromAveragedPositionsVector(group.averagedSamplePositionsVector(samples_))};
+
+            yamlDocument_ << ClusterData(TeStats_.getTotalWeight(), structures,
+                    valueStats_, TeStats_, EeStats_,
                                          SeeStats_, VeeStats_, VenStats_,
                                          motifs_, EtotalStats_, intraMotifEnergyStats_, interMotifEnergyStats_,
-                                         ReeStats_, RenStats_, voxelCubes);
+                                         ReeStats_, RenStats_, voxelCubes,overlaps);
         }
     }
     spdlog::info("Overall count {}. Some structures might be lost "

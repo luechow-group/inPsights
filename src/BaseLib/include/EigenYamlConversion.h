@@ -20,39 +20,7 @@
 
 #include<Eigen/Core>
 
-/*
-namespace YAML {
-    template<typename Scalar>
-    struct convert<Eigen::Matrix<Scalar,3,1>> {
-    static Node encode(const Eigen::Matrix<Scalar,3,1> & rhs){
-        Node node;
-        node.push_back(rhs[0]);
-        node.push_back(rhs[1]);
-        node.push_back(rhs[2]);
-        return node;
-    }
-
-    static bool decode(const Node& nodes, Eigen::Matrix<Scalar,3,1> & rhs){
-        if(!nodes.IsSequence())
-            return false;
-
-        Eigen::Matrix<Scalar,3,1> vec;
-        for (const auto &i : nodes)
-            rhs.append(i.as<Scalar>());
-
-        rhs = vec;
-        return true;
-    }
-};
-
-template<typename Scalar>
-Emitter& operator<< (Emitter& out, const Eigen::Matrix<Scalar,3,1>& rhs){
-    out << YAML::Flow << YAML::BeginSeq;
-    out << rhs[0] << rhs[1] << rhs[3];
-    out << YAML::EndSeq;
-    return out;
-};
-}*/
+using TriangularMatrixXd = Eigen::MatrixXd::SelfAdjointViewReturnType<Eigen::Upper>::Type;//Eigen::MatrixBase<Eigen::MatrixXd>::SelfAdjointViewReturnType<Eigen::Upper>::Type;
 
 namespace YAML {
     class Node; class Emitter;
@@ -86,6 +54,19 @@ namespace YAML {
     };
     Emitter& operator<< (Emitter& out, const Eigen::VectorXd& rhs);
 
+    template<>
+    struct convert<Eigen::MatrixXd> {
+        static Node encode(const Eigen::MatrixXd& rhs);
+        static bool decode(const Node& node, Eigen::MatrixXd& rhs);
+    };
+    Emitter& operator<< (Emitter& out, const Eigen::MatrixXd& rhs);
+
+    template<>
+    struct convert<TriangularMatrixXd> {
+        static Node encode(const TriangularMatrixXd& rhs);
+        static bool decode(const Node& node, TriangularMatrixXd& rhs);
+    };
+    Emitter& operator<< (Emitter& out, const TriangularMatrixXd& rhs);
 }
 
 #endif //INPSIGHTS_EIGENYAMLCONVERSION_H

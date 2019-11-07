@@ -72,7 +72,8 @@ void SOAPClusterer::cluster(Group& group){
     for (auto it = group.begin(); it < group.end(); ++it) {
 
         // use average structure to facilitate obtaining better soap similarities
-        it->representative()->setSpectrum(MolecularSpectrum({atoms_, it->averagedRepresentativeElectronsVector()}));
+        it->representative()->setSpectrum(MolecularSpectrum(
+                {atoms_, it->electronsVectorFromAveragedPositionsVector(it->averagedMaximumPositionsVector())}));
         spdlog::info("calculated spectrum {}", std::distance(group.begin(), it));
     }
 

@@ -28,7 +28,7 @@
 class MaximaProcessor {
 public:
 
-    MaximaProcessor(YAML::Emitter& yamlDocument, const std::vector<Sample> &samples, AtomsVector atoms);
+    MaximaProcessor(YAML::Emitter& yamlDocument, const std::vector<Sample> &samples, const AtomsVector& atoms);
 
     size_t addReference(const Reference &reference);
 

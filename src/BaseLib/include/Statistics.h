@@ -23,7 +23,6 @@
 #include <iostream>
 
 namespace Statistics {
-
     template<typename Derived, typename WeightType = unsigned, bool triangularExport = false>
     class RunningStatistics {
 
@@ -234,13 +233,10 @@ namespace YAML {
             auto rows = node.size() - 1;
             size_t cols;
 
-            if (node.IsMap())
-                if(node.begin()->second.IsMap())
-                    cols = node.begin()->second.size();
-                else if(node.begin()->second.IsSequence())
-                    cols = 1;
-                else
-                    return false;
+            if(node.begin()->second.IsMap())
+                cols = node.begin()->second.size();
+            else if(node.begin()->second.IsSequence())
+                cols = 1;
             else
                 return false;
 

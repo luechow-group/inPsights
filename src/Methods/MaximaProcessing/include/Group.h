@@ -57,9 +57,12 @@ public:
         unsigned weight;
     };
 
-    AveragedPositionsVector averagedPositionsVector() const;
-    ElectronsVector averagedRepresentativeElectronsVector() const;
+    AveragedPositionsVector averagedMaximumPositionsVector() const;
 
+    ElectronsVector electronsVectorFromAveragedPositionsVector(const AveragedPositionsVector& averagedPositionsVector)  const;
+
+    AveragedPositionsVector averagedSamplePositionsVector(const std::vector<Sample>& samples) const;
+    
     std::shared_ptr<const Reference> representative() const;
     std::shared_ptr<Reference> representative();
 

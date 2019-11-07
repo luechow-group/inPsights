@@ -14,6 +14,11 @@ target_link_libraries(ProcessMaxima
         BaseLib
         MaximaProcessing
         )
+add_executable(FetchOverlaps fetchOverlaps.cpp)
+target_link_libraries(FetchOverlaps
+        BaseLib
+        MaximaProcessing
+        )
 
 if (${BUILD_GUI})
     add_executable(inPsights inPsights.cpp)

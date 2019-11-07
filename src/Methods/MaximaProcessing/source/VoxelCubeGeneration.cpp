@@ -20,7 +20,6 @@
 #include <Reference.h>
 #include <Group.h>
 
-
 namespace Settings {
     VoxelCubeGeneration::VoxelCubeGeneration()
     : ISettings(VARNAME(VoxelCubeGeneration::)) {}
@@ -51,18 +50,27 @@ std::vector<VoxelCube> VoxelCubeGeneration::fromCluster(const Group &maxima, con
     auto length = settings.length.get();
     auto smoothingQ = settings.smoothingQ.get();
     auto smoothingNeighbors = settings.smoothingNeighbors.get();
+    auto centerCubesAtElectronsQ = settings.centerCubesAtElectronsQ.get();
+
+    return getVoxels(maxima, samples, dimension, length, centerCubesAtElectronsQ, smoothingQ, smoothingNeighbors);
+}
+
+std::vector<VoxelCube>
+VoxelCubeGeneration::getVoxels(const Group &maxima, const std::vector<Sample> &samples, uint16_t dimension,
+                               VoxelCube::VertexComponentsType length, bool centerCubesAtElectronsQ,
+                               bool smoothingQ, uint16_t smoothingNeighbors) {
 
     ElectronsVector representativeMax = maxima.representative()->maximum(); //TODO use averaged point
     std::vector<VoxelCube> voxels(static_cast<unsigned long>(representativeMax.numberOfEntities()));
 
+    auto allSampleIds = maxima.allSampleIds();
+
     for (long i = 0; i <representativeMax.numberOfEntities(); ++i) {
         Eigen::Vector3f cubeOrigin = Eigen::Vector3f::Zero();
-        if(settings.centerCubesAtElectronsQ.get())
+        if(centerCubesAtElectronsQ)
             cubeOrigin = representativeMax.positionsVector()[i].cast<float>();
 
         VoxelCube voxel(dimension, length, cubeOrigin, smoothingQ);
-
-        auto allSampleIds = maxima.allSampleIds();
 
         for (auto id : allSampleIds)
             voxel.add(samples[id].sample_[i].position());
