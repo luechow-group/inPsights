@@ -62,8 +62,8 @@ Eigen::MatrixXd VoxelCubeOverlapCalculation::calculateOverlaps(const std::vector
             for (VoxelCube::IndexType i = 0; i < dimension; ++i) {
                 for (VoxelCube::IndexType j = 0; j < dimension; ++j) {
                     for (VoxelCube::IndexType k = 0; k < dimension; ++k) {
-                        auto S = double(voxels[a].getData(i, j, k) * voxels[b].getData(i, j, k));
-                        overlap(a, b) += std::sqrt(S);
+                        overlap(a, b) += std::sqrt(double(voxels[a].getData(i, j, k)))
+                                * std::sqrt(double(voxels[b].getData(i, j, k)));
                     }
                 }
             }
