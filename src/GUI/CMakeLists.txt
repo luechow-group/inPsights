@@ -34,8 +34,6 @@ set(HEADER_FILES
         include/Cone.h
         include/Bond3D.h
         include/GuiHelper.h
-        include/StringMethodCoordinatesPlotter.h
-        include/StringMethodValuePlotter.h
         include/MoleculeWidget.h
         include/ParticlesVectorPath3D.h
         include/Visualization.h
