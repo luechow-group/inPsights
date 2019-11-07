@@ -31,7 +31,7 @@
 #include <VoxelCubeOverlapCalculation.h>
 #include <spdlog/spdlog.h>
 #include <SOAPSettings.h>
-#include <AsciiArt.h>
+#include <Logo.h>
 #include <fstream>
 #include <IPosition.h>
 
@@ -269,7 +269,7 @@ int main(int argc, char *argv[]) {
     << Comment("input from \"" + inputFilename + "\"") << inputYaml << EndDoc;
     outputYaml << BeginDoc
                << BeginMap
-               << Comment(AsciiArt::inPsightsLogo)
+               << Comment(inPsights::logo)
                << Key << "Atoms" << Value << atoms << Comment("[a0]")
                << Key << "NSamples" << Value << samples.size()
                << Key << "OverallResults" << Value << results;

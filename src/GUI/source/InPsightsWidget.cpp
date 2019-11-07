@@ -24,7 +24,7 @@
 #include <QTimer>
 #include <QHeaderView>
 #include "IntegerSortedTreeWidgetItem.h"
-#include <inPsightsVersion.h>
+#include <Version.h>
 #include <vector>
 #include <ParticlesVector.h>
 #include <spdlog/spdlog.h>

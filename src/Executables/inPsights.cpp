@@ -16,7 +16,7 @@
  */
 
 #include <InPsightsWidget.h>
-#include <inPsightsVersion.h>
+#include <Version.h>
 #include <QApplication>
 #include <memory>
 #include <spdlog/spdlog.h>

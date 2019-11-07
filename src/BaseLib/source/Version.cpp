@@ -15,7 +15,7 @@
  * along with inPsights. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <inPsightsVersion.h>
+#include <Version.h>
 
 
 #ifdef INPSIGHTS_VERSION

@@ -15,8 +15,8 @@
  * along with inPsights. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef INPSIGHTS_INPSIGHTSVERSION_H
-#define INPSIGHTS_INPSIGHTSVERSION_H
+#ifndef INPSIGHTS_VERSION_H
+#define INPSIGHTS_VERSION_H
 
 #include <string>
 
@@ -24,4 +24,4 @@ namespace inPsights {
     extern const std::string version;
 }
 
-#endif //INPSIGHTS_INPSIGHTSVERSION_H
+#endif //INPSIGHTS_VERSION_H
