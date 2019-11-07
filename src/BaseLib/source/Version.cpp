@@ -17,11 +17,15 @@
 
 #include <Version.h>
 
-
+std::string inPsights::version() {
+    std::string version;
 #ifdef INPSIGHTS_VERSION
 #define STRINGIFY(x) #x
 #define TOSTRING(x) STRINGIFY(x)
-    const std::string inPsights::version = TOSTRING(INPSIGHTS_VERSION);
+    version = TOSTRING(INPSIGHTS_VERSION);
+
 #else
-    const std::string inPsights::version = "unkown!";
+    version = "unkown!";
 #endif
+    return version;
+}

@@ -33,7 +33,7 @@ namespace inPsights {
                              "                  ▄▓▓▓▓▄               ▐▌\n"
                              "                                  ▀■■■■▀\n"
                              "Version:\n"
-                             "  " + inPsights::version + "\n"
+                             "  " + inPsights::version() + "\n"
                              "\n"
                              " Main author:\n"
                              "  Michael A. Heuer, RWTH Aachen University\n"

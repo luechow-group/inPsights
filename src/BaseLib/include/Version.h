@@ -21,7 +21,7 @@
 #include <string>
 
 namespace inPsights {
-    extern const std::string version;
+    std::string version();
 }
 
 #endif //INPSIGHTS_VERSION_H

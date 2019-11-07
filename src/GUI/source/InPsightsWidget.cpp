@@ -159,7 +159,7 @@ void InPsightsWidget::selectedStructure(QTreeWidgetItem *item, int column) {
     auto structureId = id[1].toInt();
 
     auto createQ = item->checkState(0) == Qt::CheckState::Checked;
-    
+
     if (createQ) {
         moleculeWidget->addElectronsVector(clusterCollection_[clusterId].exemplaricStructures_[structureId], clusterId, structureId);
         maximaProcessingWidget->updateData(clusterCollection_[clusterId]);
@@ -238,7 +238,7 @@ void InPsightsWidget::showSplashScreen() {
     splashScreen->setPixmap(pixmap);
     splashScreen->show();
 
-    std::string message = "Version " + inPsights::version + " (pre-release)\n "\
+    std::string message = "Version " + inPsights::version() + " (pre-release)\n "\
                           "Copyright © 2016-2019  Michael A. Heuer.";
     splashScreen->showMessage(message.c_str(), Qt::AlignBottom, Qt::gray);
 
