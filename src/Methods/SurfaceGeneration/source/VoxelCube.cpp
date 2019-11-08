@@ -168,7 +168,9 @@ namespace YAML {
         if (!node.IsMap())
             return false;
 
-        auto smoothed = node["smoothed"].as<bool>();
+        bool smoothed = false;
+        if(node["smoothed"])
+            smoothed = node["smoothed"].as<bool>();
         auto dimension = node["dimension"].as<VoxelCube::IndexType>();
         auto length = node["length"].as<VoxelCube::VertexComponentsType>();
         auto origin = node["origin"].as<Eigen::Matrix<VoxelCube::VertexComponentsType, 3, 1>>();
