@@ -130,7 +130,7 @@ namespace YAML {
         out << BeginMap
             << Key << "N" << Value << rhs.N_
             << Key << "ValueRange" << Value << Comment("[]") << rhs.valueStats_
-            << Key << "SampleAverage" << Comment("[a0]") << Value << rhs.sampleAverage_
+            << Key << "SampleAverage" << Comment("[a0]") << Value << rhs.sampleAverage_<< Newline
             << Key << "Motifs" << Value << rhs.motifs_.motifVector_
             << Key << "Etotal" << Comment("[Eh]") << Value << rhs.EtotalStats_
             << Key << "IntraMotifEnergies" << Comment("[Eh]") << Value << rhs.intraMotifEnergyStats_
