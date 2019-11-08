@@ -20,6 +20,7 @@
 
 ClusterData::ClusterData(unsigned totalNumberOfStructures,
             const std::vector<ElectronsVector>& exemplaricStructures,
+            const ElectronsVector& sampleAverage,
             const SingleValueStatistics & valueStats,
             const VectorStatistics & TeStats,
             const VectorStatistics & EeStats,
@@ -38,6 +39,7 @@ ClusterData::ClusterData(unsigned totalNumberOfStructures,
         :
         N_(totalNumberOfStructures),
         exemplaricStructures_(exemplaricStructures),
+        sampleAverage_(sampleAverage),
         motifs_(motifs),
         valueStats_(valueStats),
         EtotalStats_(EtotalStats),
@@ -63,9 +65,11 @@ namespace YAML {
         node["ValueRange"] = rhs.valueStats_;
         node["Motifs"] = rhs.motifs_.motifVector_;
         node["Etotal"] = rhs.EtotalStats_;
+        node["SampleAverage"] = rhs.sampleAverage_;
         node["IntraMotifEnergies"] = rhs.intraMotifEnergyStats_;
         node["InterMotifEnergies"] = rhs.interMotifEnergyStats_;
         node["Structures"] = rhs.exemplaricStructures_;
+        node["AverageStructure"] = rhs.exemplaricStructures_;
         node["SpinCorrelations"] = rhs.SeeStats_;
         node["Ree"] = rhs.ReeStats_;
         node["Ren"] = rhs.RenStats_;
@@ -79,7 +83,6 @@ namespace YAML {
 
     bool convert<ClusterData>::decode(const Node &node, ClusterData &rhs) {
 
-        // TODO temporary - remove
         std::vector<VoxelCube> cubes = {};
         if(node["VoxelCubes"])
             if (node["VoxelCubes"].IsSequence() && node["VoxelCubes"].size() > 0)
@@ -92,9 +95,18 @@ namespace YAML {
 
         auto motifVector = node["Motifs"].as<std::vector<Motif>>();
 
+        auto structures = node["Structures"].as<std::vector<ElectronsVector>>();
+
+        ElectronsVector sampleAverage;
+        if(node["SampleAverage"])
+            sampleAverage = node["SampleAverage"].as<ElectronsVector>();
+        else
+            sampleAverage = {};
+
         rhs = ClusterData(
                 node["N"].as<unsigned>(),
-                node["Structures"].as<std::vector<ElectronsVector>>(),
+                structures,
+                sampleAverage,
                 node["ValueRange"].as<SingleValueStatistics>(),
                 node["Te"].as<VectorStatistics>(),
                 node["Ee"].as<VectorStatistics>(),
@@ -118,6 +130,7 @@ namespace YAML {
         out << BeginMap
             << Key << "N" << Value << rhs.N_
             << Key << "ValueRange" << Value << Comment("[]") << rhs.valueStats_
+            << Key << "SampleAverage" << Comment("[a0]") << Value << rhs.sampleAverage_
             << Key << "Motifs" << Value << rhs.motifs_.motifVector_
             << Key << "Etotal" << Comment("[Eh]") << Value << rhs.EtotalStats_
             << Key << "IntraMotifEnergies" << Comment("[Eh]") << Value << rhs.intraMotifEnergyStats_

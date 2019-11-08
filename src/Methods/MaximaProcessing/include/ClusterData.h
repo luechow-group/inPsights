@@ -30,6 +30,7 @@ public:
 
     ClusterData(unsigned totalNumberOfStructures,
                 const std::vector<ElectronsVector> & exemplaricStructures,
+                const ElectronsVector& sampleAverage,
                 const SingleValueStatistics & valueStats,
                 const VectorStatistics & TeStats,
                 const VectorStatistics & EeStats,
@@ -50,6 +51,7 @@ public:
 
     unsigned N_;
     std::vector<ElectronsVector> exemplaricStructures_;
+    ElectronsVector sampleAverage_;
     Motifs motifs_;
     SingleValueStatistics valueStats_, EtotalStats_;
     VectorStatistics EeStats_, intraMotifEnergyStats_; //TODO remove EeStats

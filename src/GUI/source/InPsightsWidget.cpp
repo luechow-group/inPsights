@@ -39,6 +39,7 @@ InPsightsWidget::InPsightsWidget(QWidget *parent, const std::string& filename)
         atomsCheckBox(new QCheckBox("Atoms", this)),
         bondsCheckBox(new QCheckBox("Bonds", this)),
         axesCheckBox(new QCheckBox("Axes", this)),
+        sampleAverageCheckBox(new QCheckBox("Sample Average", this)),
         spinConnectionsCheckBox(new QCheckBox("Spin Connections", this)),
         spinCorrelationsCheckBox(new QCheckBox("Spin Correlations", this)),
         sedsCheckBox(new QCheckBox("SEDs", this)),
@@ -91,6 +92,7 @@ void InPsightsWidget::createWidget() {
     checkboxGrid->addWidget(atomsCheckBox,0,0);
     checkboxGrid->addWidget(bondsCheckBox,1,0);
     checkboxGrid->addWidget(axesCheckBox,2,0);
+    checkboxGrid->addWidget(sampleAverageCheckBox,3,0);
 
     checkboxGrid->addWidget(spinConnectionsCheckBox,0,1);
     checkboxGrid->addWidget(maximaHullsCheckBox,1,1);
@@ -161,7 +163,21 @@ void InPsightsWidget::selectedStructure(QTreeWidgetItem *item, int column) {
     auto createQ = item->checkState(0) == Qt::CheckState::Checked;
 
     if (createQ) {
-        moleculeWidget->addElectronsVector(clusterCollection_[clusterId].exemplaricStructures_[structureId], clusterId, structureId);
+        auto sampleAverage = clusterCollection_[clusterId].sampleAverage_;
+
+        if(sampleAverageCheckBox->checkState() == Qt::CheckState::Checked
+        && sampleAverage.numberOfEntities() > 0) {
+            moleculeWidget->addElectronsVector(sampleAverage, clusterId, structureId);
+        } else if (sampleAverageCheckBox->checkState() == Qt::CheckState::Checked
+        && sampleAverage.numberOfEntities() == 0) {
+            moleculeWidget->addElectronsVector(clusterCollection_[clusterId].exemplaricStructures_[structureId],
+                                               clusterId, structureId);
+            spdlog::warn("Sample averaged vectors were not calculated. Plotting the first maximum instead...");
+        } else {
+            moleculeWidget->addElectronsVector(clusterCollection_[clusterId].exemplaricStructures_[structureId],
+                                               clusterId, structureId);
+        }
+
         maximaProcessingWidget->updateData(clusterCollection_[clusterId]);
 
         if(sedsCheckBox->checkState() == Qt::CheckState::Checked
