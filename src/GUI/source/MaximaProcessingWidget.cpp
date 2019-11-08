@@ -167,13 +167,6 @@ void MaximaProcessingWidget::updateData(const ClusterData &clusterData) {
     auto electrons = clusterData.representativeStructure();
     auto Vnn = CoulombPotential::energies(atoms_);
 
-    YAML::Emitter out;
-    out
-    << clusterData.motifs_.motifVector_
-    << clusterData.EtotalStats_
-    << clusterData.intraMotifEnergyStats_
-    << clusterData.interMotifEnergyStats_;
-
     updateEnergies(Ee_, clusterData.EeStats_.mean(), clusterData.EeStats_.standardError());
     updateEnergies(En_, EnStats_.mean(), EnStats_.standardError());
 }
@@ -187,11 +180,11 @@ void MaximaProcessingWidget::updateEnergies(QTreeWidget &tree,
     && "The number of tree items and energy values must match.");
 
     tree.setSortingEnabled(false);
-    for (int i = 0; i < energies.size(); ++i) {
+    for (Eigen::Index i = 0; i < energies.size(); ++i) {
         auto item = tree.topLevelItem(i);
         item->setData(0, Qt::UserRole, energies[i]);
         item->setData(1, Qt::UserRole, errors[i]);
-        item->setData(2, Qt::UserRole, i);
+        item->setData(2, Qt::UserRole, int(i));
         item->setText(0, QString::number(energies[i], 'f', 4));
         item->setText(1, QString::number(errors[i], 'f', 4));
         item->setText(2, QString::number(i));
