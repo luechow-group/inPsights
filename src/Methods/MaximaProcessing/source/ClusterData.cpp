@@ -90,7 +90,7 @@ namespace YAML {
 
         Eigen::MatrixXd sedOverlaps;
         if(node["SedOverlaps"])
-            if (node["SedOverlaps"].IsMap() && node["SedOverlaps"][0].IsMap())
+            if (node["SedOverlaps"].IsMap()  && node["SedOverlaps"][0])
                 sedOverlaps= node["SedOverlaps"].as<Eigen::MatrixXd>();
 
         auto motifVector = node["Motifs"].as<std::vector<Motif>>();
