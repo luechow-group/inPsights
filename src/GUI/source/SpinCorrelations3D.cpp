@@ -21,16 +21,16 @@
 
 SpinCorrelations3D::SpinCorrelations3D(ElectronsVector3D *electronsVector3D,
                                        const TriangularMatrixStatistics& SeeStats,
-                                       double spinCorrelationThreshold)
+                                       double spinCorrelationThreshold, bool drawSameSpinCorrelationsQ)
         :
         IConnection(electronsVector3D->correlations_) {
 
-    createConnections(*electronsVector3D, SeeStats, spinCorrelationThreshold);
+    createConnections(*electronsVector3D, SeeStats, spinCorrelationThreshold, drawSameSpinCorrelationsQ);
 }
 
 void SpinCorrelations3D::createConnections(const ElectronsVector &electronsVector,
                                            const TriangularMatrixStatistics &SeeStats,
-                                           double spinCorrelationThreshold)  {
+                                           double spinCorrelationThreshold, bool drawSameSpinCorrelationsQ)  {
 
     auto pairTypes = SpinPairClassification::classify(electronsVector);
     auto electronRadius = float(GuiHelper::radiusFromType(Spin::alpha));
@@ -63,9 +63,9 @@ void SpinCorrelations3D::createConnections(const ElectronsVector &electronsVecto
                     if (corr < 0) {
                         c = new Cylinder(this, Qt::green, positionPair, electronRadius / 7.5f, std::abs(corr));
                         c->material->setShininess(0);
-                    } else {
-                        c = new Cylinder(this, Qt::magenta, positionPair, electronRadius / 7.5f, std::abs(corr));
-                        c->material->setShininess(0);
+                    } else if(drawSameSpinCorrelationsQ)  {
+                            c = new Cylinder(this, Qt::magenta, positionPair, electronRadius / 7.5f, std::abs(corr));
+                            c->material->setShininess(0);
                     }
                 }
             }
