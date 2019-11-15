@@ -79,7 +79,9 @@ set(SOURCE_FILES
         source/Surface.cpp
         source/Arrow.cpp
         source/CartesianAxes.cpp
-        source/X3domConverter.cpp)
+        source/X3domConverter.cpp
+        source/ColorPalette.cpp
+        )
 
 add_library(${PROJECT_NAME} STATIC
         ${SOURCE_FILES}

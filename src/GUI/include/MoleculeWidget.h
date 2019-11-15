@@ -52,7 +52,7 @@ public:
 
 
     void setSharedAtomsVector(AtomsVector atomsVector);
-    void addElectronsVector(const ElectronsVector& electronsVector, int clusterId = 0, int structureId = 0);
+    void addElectronsVector(const ElectronsVector& electronsVector, int clusterId = 0, int structureId = 0, bool coloredQ = false);
     void removeElectronsVector(int clusterId = 0, int structureId = 0);
 
     void addSeds(int clusterId, const std::vector<ClusterData> &clusterData, double includedPercentage);
