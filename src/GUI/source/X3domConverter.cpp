@@ -36,8 +36,8 @@ void X3domConverter::startScene(const std::string& title, const std::string& com
             "<link rel='stylesheet' type='text/css' href='http://www.x3dom.org/download/x3dom.css'></link>\n"
             "</head>\n"
             "<body>\n"
-            "<h1>" + title + "</h1>\n"
-            "<p>" + comment + "</p>\n"
+            /*"<h1>" + title + "</h1>\n"
+            "<p>" + comment + "</p>\n"*/
             "<center> \n"
             "<x3d width='600px' height='400px'> \n"
             "<scene>\n"
@@ -55,7 +55,7 @@ void X3domConverter::addCylinder(const Cylinder & cylinder, unsigned sortKey){
 void X3domConverter::closeScene(){
     file << "</scene>\n"
             "</x3d>\n"
-            "<center>\n"
+            "</center>\n"
             "</body>\n"
             "</html>";
     file.close();

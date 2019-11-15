@@ -88,6 +88,7 @@ public:
     std::map<int, std::vector<Surface*>> activeSedsMap_, activeMaximaHullsMap_;
     std::map<int, std::map<int,ElectronsVector3D*>> activeElectronsVectorsMap_;
 
+    std::string createFilenameFromActiveElectronvectors() const;
 };
 
 #endif //INPSIGHTS_MOLECULEWIDGET_H

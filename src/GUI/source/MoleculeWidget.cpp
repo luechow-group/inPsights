@@ -15,16 +15,14 @@
  * along with inPsights. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <Qt3DRender>
 #include <QtWidgets>
 #include <QScreen>
 #include <MoleculeWidget.h>
 
+#include <InPsightsWidget.h>
 #include <Metrics.h>
 #include <Line3D.h>
 #include <Bond3D.h>
-#include <Cylinder.h>
-#include <Particle3D.h>
 #include <ColorPalette.h>
 #include <Surface.h>
 #include <SurfaceDataGenerator.h>
@@ -190,28 +188,20 @@ void MoleculeWidget::onAtomsHighlighted(std::vector<int> selectedParticles) {
 
 
 void MoleculeWidget::onElectronsChecked(std::vector<int> selectedParticles) {
-    if(activeElectronsVectorsMap_.size() != 1)
-        spdlog::warn("Make sure only one electrons vector is checked!");
-    else {
-        auto &particles = activeElectronsVectorsMap_.begin()->second.begin()->second->particles3D_;
+    auto &particles = activeElectronsVectorsMap_.begin()->second.begin()->second->particles3D_;
 
-        for (int i = 0; i < static_cast<int>(particles.size()); ++i) {
-            auto foundQ = std::find(selectedParticles.begin(), selectedParticles.end(), i) != selectedParticles.end();
-            particles[i]->onSelected(foundQ);
-        }
+    for (int i = 0; i < static_cast<int>(particles.size()); ++i) {
+        auto foundQ = std::find(selectedParticles.begin(), selectedParticles.end(), i) != selectedParticles.end();
+        particles[i]->onSelected(foundQ);
     }
+
 }
 
 void MoleculeWidget::onElectronsHighlighted(std::vector<int> selectedParticles) {
-    if(activeElectronsVectorsMap_.size() != 1)
-        spdlog::warn("Make sure only one electrons vector is checked!");
-    else {
-        auto &particles = activeElectronsVectorsMap_.begin()->second.begin()->second->particles3D_;
-
-        for (int i = 0; i < static_cast<int>(particles.size()); ++i) {
-            auto foundQ = std::find(selectedParticles.begin(), selectedParticles.end(), i) != selectedParticles.end();
-            particles[i]->onHighlighted(foundQ);
-        }
+    auto &particles = activeElectronsVectorsMap_.begin()->second.begin()->second->particles3D_;
+    for (int i = 0; i < static_cast<int>(particles.size()); ++i) {
+        auto foundQ = std::find(selectedParticles.begin(), selectedParticles.end(), i) != selectedParticles.end();
+        particles[i]->onHighlighted(foundQ);
     }
 }
 
@@ -257,18 +247,45 @@ void MoleculeWidget::onScreenshot(bool) {
         screen = window->screen();
     if (!screen)
         return;
+    std::string name = createFilenameFromActiveElectronvectors() + ".png";
 
-    QFile file(QDateTime::currentDateTime().toString(Qt::ISODate) + QString(".png"));
+    QFile file(name.c_str());
     file.open(QIODevice::WriteOnly);
     screen->grabWindow(qt3DWindow_->winId()).save(&file, "PNG");
     file.close();
 }
 
+std::string MoleculeWidget::createFilenameFromActiveElectronvectors() const {
+    std::string name;
+
+    // if  the inPsightsWidget is the parent
+    auto inPsightsWidget = dynamic_cast<InPsightsWidget*>(parent());
+    if(inPsightsWidget) {
+        name = inPsightsWidget->filenameWithoutExtension().c_str();
+
+        for (auto [key, submap] : activeElectronsVectorsMap_) {
+            name += "-";
+            name += std::to_string(key);
+            name += "-[";
+            for (auto [subkey, value] : submap) {
+                name += std::to_string(subkey);
+                name += ",";
+            }
+            name = name.substr(0, name.size()-1);
+            name += "]";
+        }
+    } else {
+        name = QDateTime::currentDateTime().toString(Qt::ISODate).toStdString();
+    }
+    return name;
+}
+
 
 void MoleculeWidget::onX3dExport(bool) {
 
-    auto filename = QDateTime::currentDateTime().toString(Qt::ISODate) + QString(".html");
-    X3domConverter x3Dconverter(filename.toStdString(), filename.toStdString(), "");
+    auto filename = createFilenameFromActiveElectronvectors() + ".html";
+
+    X3domConverter x3Dconverter(filename, filename, "");
     auto atoms3d = atomsVector3D_->particles3D_;
 
     for (const auto & a : atoms3d) {
