@@ -90,7 +90,7 @@ void Cylinder::addToXml(std::ostream &os, unsigned int sortKey) const  {
        << cylinderColor.blueF()
        << "' transparency='" << 0.75*(1.0f-material->alpha()) << "'></material></appearance>\n";
 
-    os << "<cylinder top='false' bottom='false' height='"
+    os << "<cylinder height='"
        << length()
        << "' radius='"
        << getRadius()

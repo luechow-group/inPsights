@@ -39,6 +39,7 @@ public slots:
     void onSpinConnectionsChecked(int stateId = 0);
     void onSpinCorrelationsChecked(int stateId= 0);
     void onSpinCorrelationsBoxChanged(double value);
+    std::string filenameWithoutExtension();
 
 private:
     std::string filename_;

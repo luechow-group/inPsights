@@ -329,3 +329,8 @@ void InPsightsWidget::initialView() {
     axesCheckBox->setCheckState(Qt::CheckState::Unchecked);
     maximaList->topLevelItem(0)->setCheckState(0, Qt::CheckState::Checked);
 }
+
+std::string InPsightsWidget::filenameWithoutExtension(){
+    size_t lastindex = filename_.find_last_of(".");
+    return filename_.substr(0, lastindex);
+};

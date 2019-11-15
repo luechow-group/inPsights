@@ -20,6 +20,7 @@
 #include <QScreen>
 #include <MoleculeWidget.h>
 
+#include <InPsightsWidget.h>
 #include <Metrics.h>
 #include <Line3D.h>
 #include <Bond3D.h>
@@ -257,18 +258,45 @@ void MoleculeWidget::onScreenshot(bool) {
         screen = window->screen();
     if (!screen)
         return;
+    std::string name = createFilenameFromActiveElectronvectors() + ".png";
 
-    QFile file(QDateTime::currentDateTime().toString(Qt::ISODate) + QString(".png"));
+    QFile file(name.c_str());
     file.open(QIODevice::WriteOnly);
     screen->grabWindow(qt3DWindow_->winId()).save(&file, "PNG");
     file.close();
 }
 
+std::string MoleculeWidget::createFilenameFromActiveElectronvectors() const {
+    std::string name;
+
+    // if  the inPsightsWidget is the parent
+    auto inPsightsWidget = dynamic_cast<InPsightsWidget*>(parent());
+    if(inPsightsWidget) {
+        name = inPsightsWidget->filenameWithoutExtension().c_str();
+
+        for (auto [key, submap] : activeElectronsVectorsMap_) {
+            name += "-";
+            name += std::to_string(key);
+            name += "-[";
+            for (auto [subkey, value] : submap) {
+                name += std::to_string(subkey);
+                name += ",";
+            }
+            name = name.substr(0, name.size()-1);
+            name += "]";
+        }
+    } else {
+        name = QDateTime::currentDateTime().toString(Qt::ISODate).toStdString();
+    }
+    return name;
+}
+
 
 void MoleculeWidget::onX3dExport(bool) {
 
-    auto filename = QDateTime::currentDateTime().toString(Qt::ISODate) + QString(".html");
-    X3domConverter x3Dconverter(filename.toStdString(), filename.toStdString(), "");
+    auto filename = createFilenameFromActiveElectronvectors() + ".html";
+
+    X3domConverter x3Dconverter(filename, filename, "");
     auto atoms3d = atomsVector3D_->particles3D_;
 
     for (const auto & a : atoms3d) {
