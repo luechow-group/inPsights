@@ -48,7 +48,7 @@ public:
     void drawSpinConnections(bool drawQ = true);
     void drawSpinCorrelations(bool drawQ,
                               const std::vector<ClusterData> &clusterData,
-                              double spinCorrelationThreshold);
+                              double spinCorrelationThreshold, bool drawSameSpinCorrelationsQ);
 
 
     void setSharedAtomsVector(AtomsVector atomsVector);

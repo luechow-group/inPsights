@@ -44,8 +44,8 @@ InPsightsWidget::InPsightsWidget(QWidget *parent, const std::string& filename)
         spinCorrelationsCheckBox(new QCheckBox("Spin Correlations", this)),
         sedsCheckBox(new QCheckBox("SEDs", this)),
         maximaHullsCheckBox(new QCheckBox("Maxima Hulls", this)),
-        plotAllCheckBox(new QCheckBox("Plot All", this)),
-        coloredCheckBox(new QCheckBox("Small & Colored", this)),
+        plotAllCheckBox(new QCheckBox("All of Cluster", this)),
+        coloredCheckBox(new QCheckBox("Multicolored", this)),
         spinCorrelationBox(new QDoubleSpinBox(this)),
         sedPercentageBox(new QDoubleSpinBox(this)),
         maximaList(new QTreeWidget(this)) {
@@ -91,19 +91,25 @@ void InPsightsWidget::createWidget() {
 
     auto checkboxGrid = new QGridLayout();
     vboxInner->addLayout(checkboxGrid,1);
+
+    // first column
     checkboxGrid->addWidget(atomsCheckBox,0,0);
     checkboxGrid->addWidget(bondsCheckBox,1,0);
     checkboxGrid->addWidget(axesCheckBox,2,0);
     checkboxGrid->addWidget(sampleAverageCheckBox,3,0);
-    checkboxGrid->addWidget(plotAllCheckBox,4,0);
-    checkboxGrid->addWidget(coloredCheckBox,5,0);
 
+    // second column
     checkboxGrid->addWidget(spinConnectionsCheckBox,0,1);
     checkboxGrid->addWidget(maximaHullsCheckBox,1,1);
     checkboxGrid->addWidget(spinCorrelationsCheckBox,2,1);
-    checkboxGrid->addWidget(spinCorrelationBox,2,2);
     checkboxGrid->addWidget(sedsCheckBox,3,1);
+
+    // third column
+    checkboxGrid->addWidget(plotAllCheckBox,0,2);
+    checkboxGrid->addWidget(coloredCheckBox,1,2);
+    checkboxGrid->addWidget(spinCorrelationBox,2,2);
     checkboxGrid->addWidget(sedPercentageBox,3,2);
+
 
     setupSpinBoxes();
 }
@@ -261,14 +267,23 @@ void InPsightsWidget::onSpinConnectionsChecked(int stateId) {
 }
 
 void InPsightsWidget::onSpinCorrelationsChecked(int stateId) {
-    moleculeWidget->drawSpinCorrelations(Qt::CheckState(stateId) == Qt::CheckState::Checked,
-                                         clusterCollection_, spinCorrelationBox->value());
+    if(Qt::CheckState(stateId) == Qt::Checked)
+        moleculeWidget->drawSpinCorrelations(true,clusterCollection_, spinCorrelationBox->value(),true);
+    else if(Qt::CheckState(stateId) == Qt::PartiallyChecked)
+        moleculeWidget->drawSpinCorrelations(true,clusterCollection_, spinCorrelationBox->value(),false);
+    else
+        moleculeWidget->drawSpinCorrelations(false,clusterCollection_, spinCorrelationBox->value(),false);
 }
 
 void InPsightsWidget::onSpinCorrelationsBoxChanged(double value) {
     if (spinCorrelationsCheckBox->checkState() == Qt::CheckState::Checked) {
         onSpinCorrelationsChecked(Qt::CheckState::Unchecked); //TODO ugly, create update() function in SpinCorrelation3D and make it accessible
         onSpinCorrelationsChecked(Qt::CheckState::Checked);
+    } else if (spinCorrelationsCheckBox->checkState() == Qt::CheckState::PartiallyChecked) {
+            onSpinCorrelationsChecked(Qt::CheckState::Unchecked);
+            onSpinCorrelationsChecked(Qt::CheckState::PartiallyChecked);
+    }else {
+         onSpinCorrelationsChecked(Qt::CheckState::Unchecked);
     }
 }
 
@@ -348,6 +363,7 @@ void InPsightsWidget::loadData() {
 }
 
 void InPsightsWidget::initialView() {
+    spinCorrelationsCheckBox->setTristate();
     maximaList->sortItems(0,Qt::SortOrder::AscendingOrder);
     atomsCheckBox->setCheckState(Qt::CheckState::Checked);
     bondsCheckBox->setCheckState(Qt::CheckState::Checked);

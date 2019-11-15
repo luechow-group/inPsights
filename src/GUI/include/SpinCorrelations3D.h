@@ -28,11 +28,11 @@ class SpinCorrelations3D : public IConnection {
 public:
     SpinCorrelations3D(ElectronsVector3D *electronsVector3D,
                        const TriangularMatrixStatistics& SeeStats,
-                       double spinCorrelationThreshold);
+                       double spinCorrelationThreshold, bool drawSameSpinCorrelationsQ = false);
 
     void createConnections(const ElectronsVector &electronsVector,
                            const TriangularMatrixStatistics &SeeStats,
-                           double spinCorrelationThreshold);
+                           double spinCorrelationThreshold, bool drawSameSpinCorrelationsQ);
 };
 
 #endif //INPSIGHTS_SPINCORRELATIONS3D_H
