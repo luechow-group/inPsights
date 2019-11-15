@@ -15,7 +15,6 @@
  * along with inPsights. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <Qt3DRender>
 #include <QtWidgets>
 #include <QScreen>
 #include <MoleculeWidget.h>
@@ -24,8 +23,6 @@
 #include <Metrics.h>
 #include <Line3D.h>
 #include <Bond3D.h>
-#include <Cylinder.h>
-#include <Particle3D.h>
 #include <ColorPalette.h>
 #include <Surface.h>
 #include <SurfaceDataGenerator.h>
@@ -191,28 +188,20 @@ void MoleculeWidget::onAtomsHighlighted(std::vector<int> selectedParticles) {
 
 
 void MoleculeWidget::onElectronsChecked(std::vector<int> selectedParticles) {
-    if(activeElectronsVectorsMap_.size() != 1)
-        spdlog::warn("Make sure only one electrons vector is checked!");
-    else {
-        auto &particles = activeElectronsVectorsMap_.begin()->second.begin()->second->particles3D_;
+    auto &particles = activeElectronsVectorsMap_.begin()->second.begin()->second->particles3D_;
 
-        for (int i = 0; i < static_cast<int>(particles.size()); ++i) {
-            auto foundQ = std::find(selectedParticles.begin(), selectedParticles.end(), i) != selectedParticles.end();
-            particles[i]->onSelected(foundQ);
-        }
+    for (int i = 0; i < static_cast<int>(particles.size()); ++i) {
+        auto foundQ = std::find(selectedParticles.begin(), selectedParticles.end(), i) != selectedParticles.end();
+        particles[i]->onSelected(foundQ);
     }
+
 }
 
 void MoleculeWidget::onElectronsHighlighted(std::vector<int> selectedParticles) {
-    if(activeElectronsVectorsMap_.size() != 1)
-        spdlog::warn("Make sure only one electrons vector is checked!");
-    else {
-        auto &particles = activeElectronsVectorsMap_.begin()->second.begin()->second->particles3D_;
-
-        for (int i = 0; i < static_cast<int>(particles.size()); ++i) {
-            auto foundQ = std::find(selectedParticles.begin(), selectedParticles.end(), i) != selectedParticles.end();
-            particles[i]->onHighlighted(foundQ);
-        }
+    auto &particles = activeElectronsVectorsMap_.begin()->second.begin()->second->particles3D_;
+    for (int i = 0; i < static_cast<int>(particles.size()); ++i) {
+        auto foundQ = std::find(selectedParticles.begin(), selectedParticles.end(), i) != selectedParticles.end();
+        particles[i]->onHighlighted(foundQ);
     }
 }
 

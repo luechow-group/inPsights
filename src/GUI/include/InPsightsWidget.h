@@ -38,6 +38,7 @@ public slots:
     void onAxesChecked(int stateId);
     void onSpinConnectionsChecked(int stateId = 0);
     void onSpinCorrelationsChecked(int stateId= 0);
+    void onPlotAllChecked(int stateId= 0);
     void onSpinCorrelationsBoxChanged(double value);
     std::string filenameWithoutExtension();
 
@@ -46,7 +47,7 @@ private:
     MoleculeWidget *moleculeWidget;
     MaximaProcessingWidget *maximaProcessingWidget;
     QCheckBox *atomsCheckBox, *bondsCheckBox, *axesCheckBox, *sampleAverageCheckBox, *spinConnectionsCheckBox, *spinCorrelationsCheckBox,
-    *sedsCheckBox,*maximaHullsCheckBox;
+    *sedsCheckBox,*maximaHullsCheckBox, *plotAllCheckBox;
     QDoubleSpinBox *spinCorrelationBox, *sedPercentageBox;
     QTreeWidget *maximaList;
     std::vector<ClusterData> clusterCollection_;

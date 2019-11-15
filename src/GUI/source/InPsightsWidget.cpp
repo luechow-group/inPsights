@@ -44,6 +44,7 @@ InPsightsWidget::InPsightsWidget(QWidget *parent, const std::string& filename)
         spinCorrelationsCheckBox(new QCheckBox("Spin Correlations", this)),
         sedsCheckBox(new QCheckBox("SEDs", this)),
         maximaHullsCheckBox(new QCheckBox("Maxima Hulls", this)),
+        plotAllCheckBox(new QCheckBox("Plot All", this)),
         spinCorrelationBox(new QDoubleSpinBox(this)),
         sedPercentageBox(new QDoubleSpinBox(this)),
         maximaList(new QTreeWidget(this)) {
@@ -93,6 +94,7 @@ void InPsightsWidget::createWidget() {
     checkboxGrid->addWidget(bondsCheckBox,1,0);
     checkboxGrid->addWidget(axesCheckBox,2,0);
     checkboxGrid->addWidget(sampleAverageCheckBox,3,0);
+    checkboxGrid->addWidget(plotAllCheckBox,4,0);
 
     checkboxGrid->addWidget(spinConnectionsCheckBox,0,1);
     checkboxGrid->addWidget(maximaHullsCheckBox,1,1);
@@ -125,6 +127,9 @@ void InPsightsWidget::connectSignals() {
 
     connect(spinCorrelationsCheckBox, &QCheckBox::stateChanged,
             this, &InPsightsWidget::onSpinCorrelationsChecked);
+
+    connect(plotAllCheckBox, &QCheckBox::stateChanged,
+            this, &InPsightsWidget::onPlotAllChecked);
 
     connect(spinCorrelationBox, qOverload<double>(&QDoubleSpinBox::valueChanged),
             this, &InPsightsWidget::onSpinCorrelationsBoxChanged);
@@ -207,6 +212,23 @@ void InPsightsWidget::selectedStructure(QTreeWidgetItem *item, int column) {
     }
     redrawSpinDecorations();
 };
+
+void InPsightsWidget::onPlotAllChecked(int stateId)  {
+    auto plotAllQ = Qt::CheckState(stateId);
+
+    auto* root = maximaList->invisibleRootItem();
+
+    // iterate over topLevelItems
+    for (int i = 0; i < root->childCount(); ++i) {
+        if(root->child(i)->checkState(0) == Qt::Checked) {
+
+            // iterate over childs of topLevelItem i
+            for (int j = 0; j < root->child(i)->childCount(); ++j)
+                if (root->child(i)->child(j)->checkState(0) != plotAllQ)
+                    root->child(i)->child(j)->setCheckState(0, plotAllQ);
+        }
+    }
+}
 
 void InPsightsWidget::redrawSpinDecorations() {
     if(spinConnectionsCheckBox->checkState() == Qt::CheckState::Checked){
