@@ -45,6 +45,7 @@ InPsightsWidget::InPsightsWidget(QWidget *parent, const std::string& filename)
         sedsCheckBox(new QCheckBox("SEDs", this)),
         maximaHullsCheckBox(new QCheckBox("Maxima Hulls", this)),
         plotAllCheckBox(new QCheckBox("Plot All", this)),
+        coloredCheckBox(new QCheckBox("Small & Colored", this)),
         spinCorrelationBox(new QDoubleSpinBox(this)),
         sedPercentageBox(new QDoubleSpinBox(this)),
         maximaList(new QTreeWidget(this)) {
@@ -95,6 +96,7 @@ void InPsightsWidget::createWidget() {
     checkboxGrid->addWidget(axesCheckBox,2,0);
     checkboxGrid->addWidget(sampleAverageCheckBox,3,0);
     checkboxGrid->addWidget(plotAllCheckBox,4,0);
+    checkboxGrid->addWidget(coloredCheckBox,5,0);
 
     checkboxGrid->addWidget(spinConnectionsCheckBox,0,1);
     checkboxGrid->addWidget(maximaHullsCheckBox,1,1);
@@ -130,6 +132,7 @@ void InPsightsWidget::connectSignals() {
 
     connect(plotAllCheckBox, &QCheckBox::stateChanged,
             this, &InPsightsWidget::onPlotAllChecked);
+
 
     connect(spinCorrelationBox, qOverload<double>(&QDoubleSpinBox::valueChanged),
             this, &InPsightsWidget::onSpinCorrelationsBoxChanged);
@@ -172,15 +175,15 @@ void InPsightsWidget::selectedStructure(QTreeWidgetItem *item, int column) {
 
         if(sampleAverageCheckBox->checkState() == Qt::CheckState::Checked
         && sampleAverage.numberOfEntities() > 0) {
-            moleculeWidget->addElectronsVector(sampleAverage, clusterId, structureId);
+            moleculeWidget->addElectronsVector(sampleAverage, clusterId, structureId, coloredCheckBox->checkState() == Qt::Checked);
         } else if (sampleAverageCheckBox->checkState() == Qt::CheckState::Checked
         && sampleAverage.numberOfEntities() == 0) {
             moleculeWidget->addElectronsVector(clusterCollection_[clusterId].exemplaricStructures_[structureId],
-                                               clusterId, structureId);
+                                               clusterId, structureId, coloredCheckBox->checkState() == Qt::Checked);
             spdlog::warn("Sample averaged vectors were not calculated. Plotting the first maximum instead...");
         } else {
             moleculeWidget->addElectronsVector(clusterCollection_[clusterId].exemplaricStructures_[structureId],
-                                               clusterId, structureId);
+                                               clusterId, structureId, coloredCheckBox->checkState() == Qt::Checked);
         }
 
         maximaProcessingWidget->updateData(clusterCollection_[clusterId]);

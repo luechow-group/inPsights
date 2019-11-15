@@ -47,7 +47,7 @@ private:
     MoleculeWidget *moleculeWidget;
     MaximaProcessingWidget *maximaProcessingWidget;
     QCheckBox *atomsCheckBox, *bondsCheckBox, *axesCheckBox, *sampleAverageCheckBox, *spinConnectionsCheckBox, *spinCorrelationsCheckBox,
-    *sedsCheckBox,*maximaHullsCheckBox, *plotAllCheckBox;
+    *sedsCheckBox,*maximaHullsCheckBox, *plotAllCheckBox, *coloredCheckBox;
     QDoubleSpinBox *spinCorrelationBox, *sedPercentageBox;
     QTreeWidget *maximaList;
     std::vector<ClusterData> clusterCollection_;

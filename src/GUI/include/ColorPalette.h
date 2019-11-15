@@ -19,6 +19,7 @@
 #define INPSIGHTS_COLORPALETTE_H
 
 #include <QColor>
+#include <vector>
 
 namespace ColorPalette {
     const std::vector<QColor> palette = {
@@ -51,12 +52,7 @@ namespace ColorPalette {
             {40,  24,  0}
     };
 
-    const QColor& colorFunction(size_t i) {
-        while (i >= palette.size())
-            i -= palette.size();
-
-        return palette[i];
-    }
+    const QColor& colorFunction(size_t i);
 }
 
 #endif //INPSIGHTS_COLORPALETTE_H

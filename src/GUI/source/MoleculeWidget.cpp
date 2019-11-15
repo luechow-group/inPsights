@@ -112,8 +112,8 @@ void MoleculeWidget::drawSpinConnections(bool drawQ) {
                 structure.second->deleteConnections();
 }
 
-void MoleculeWidget::addElectronsVector(const ElectronsVector &electronsVector, int clusterId, int structureId) {
-    activeElectronsVectorsMap_[clusterId][structureId] = new ElectronsVector3D(moleculeEntity_, electronsVector);
+void MoleculeWidget::addElectronsVector(const ElectronsVector &electronsVector, int clusterId, int structureId, bool coloredQ) {
+    activeElectronsVectorsMap_[clusterId][structureId] = new ElectronsVector3D(moleculeEntity_, electronsVector, coloredQ);
 }
 
 void MoleculeWidget::removeElectronsVector(int clusterId, int structureId) {
