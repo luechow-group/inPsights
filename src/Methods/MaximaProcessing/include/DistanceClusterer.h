@@ -25,7 +25,7 @@
 namespace Settings {
     class DistanceClusterer : public ISettings {
     public:
-        Property<double> radius = {0.1, VARNAME(radius)};
+        Property<double> radius = {0.01, VARNAME(radius)};
         Property<double> valueIncrement = {1e-5, VARNAME(valueIncrement)};
 
         DistanceClusterer();
