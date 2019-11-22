@@ -24,6 +24,7 @@
 #include <QVBoxLayout>
 #include <QLabel>
 #include <QPushButton>
+#include <QSpinBox>
 #include <ParticlesVector3D.h>
 #include <Statistics.h>
 #include <ClusterData.h>
@@ -50,6 +51,8 @@ public:
                               const std::vector<ClusterData> &clusterData,
                               double spinCorrelationThreshold, bool drawSameSpinCorrelationsQ);
 
+    void initialCameraSetup();
+    void defaultCameraView();
 
     void setSharedAtomsVector(AtomsVector atomsVector);
     void addElectronsVector(const ElectronsVector& electronsVector, int clusterId = 0, int structureId = 0, bool coloredQ = false);
@@ -68,22 +71,26 @@ public Q_SLOTS:
     void onAtomsHighlighted(std::vector<int>);
     void onElectronsHighlighted(std::vector<int>);
 
+    void onCameraSpinBoxesChanged(int);
     void onScreenshot(bool);
     void onX3dExport(bool);
+
+    void setupSpinBoxes();
 
 private:
     Qt3DExtras::Qt3DWindow *qt3DWindow_;
     Qt3DCore::QEntity *root_, *moleculeEntity_;
     Qt3DExtras::QOrbitCameraController *cameraController_;
-    QPushButton *screenshotButton_;
-    QPushButton *x3dExportButton_;
+    QPushButton *screenshotButton_, *x3dExportButton_;
+    QSpinBox *pan_, *tilt_, *roll_;
+    float defaultCameraDistance_;
+
 public:
-    QLabel* infoText_;
+    QLabel* fileInfoText_, *panTiltRollText_;
 private:
     std::shared_ptr<AtomsVector> sharedAtomsVector_;
     AtomsVector3D *atomsVector3D_;
     CartesianAxes *cartesianAxes_;
-
 public:
     std::map<int, std::vector<Surface*>> activeSedsMap_, activeMaximaHullsMap_;
     std::map<int, std::map<int,ElectronsVector3D*>> activeElectronsVectorsMap_;

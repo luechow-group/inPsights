@@ -73,7 +73,7 @@ int main(int argc, char *argv[]) {
     moleculeWidget->drawAtoms();
     moleculeWidget->drawBonds();
     moleculeWidget->drawSpinConnections();
-    moleculeWidget->infoText_->setText(QString::fromStdString(refFilename));
+    moleculeWidget->fileInfoText_->setText(QString::fromStdString(refFilename));
     moleculeWidget->resize(1024,768);
     moleculeWidget->show();
 
