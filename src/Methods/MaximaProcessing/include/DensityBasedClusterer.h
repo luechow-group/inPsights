@@ -29,7 +29,7 @@
 namespace Settings {
     class DensityBasedClusterer : public ISettings {
     public:
-        Property<double> radius = {::DistanceClusterer::settings.radius(), VARNAME(radius)};
+        Property<double> radius = {0.2, VARNAME(radius)};
         Property<size_t> minimalClusterSize = {1, VARNAME(minimalClusterSize)};
 
         DensityBasedClusterer();

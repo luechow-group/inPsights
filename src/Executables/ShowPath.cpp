@@ -85,7 +85,7 @@ int main(int argc, char *argv[]) {
 
     ParticlesVectorPath3D(moleculeWidget->getMoleculeEntity(), visualizationPath);
 
-    moleculeWidget->infoText_->setText(QString::fromStdString(pathFilename));
+    moleculeWidget->fileInfoText_->setText(QString::fromStdString(pathFilename));
     moleculeWidget->resize(1024,768);
     moleculeWidget->show();
 

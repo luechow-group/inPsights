@@ -41,8 +41,14 @@ MoleculeWidget::MoleculeWidget(QWidget *parent)
         cameraController_(new Qt3DExtras::QOrbitCameraController(root_)),
         screenshotButton_(new QPushButton("Save image", this)),
         x3dExportButton_(new QPushButton("Save x3d", this)),
-        infoText_(new QLabel("Info text")),
-        atomsVector3D_(nullptr) {
+        pan_(new QSpinBox(this)),
+        tilt_(new QSpinBox(this)),
+        roll_(new QSpinBox(this)),
+        defaultCameraDistance_(8.0f),
+        fileInfoText_(new QLabel("Info text")),
+        panTiltRollText_(new QLabel("pan/tilt/roll")),
+        atomsVector3D_(nullptr),
+        cartesianAxes_(nullptr){
 
     auto outerLayout = new QVBoxLayout(this);
     auto innerLayout = new QHBoxLayout();
@@ -50,27 +56,75 @@ MoleculeWidget::MoleculeWidget(QWidget *parent)
     setLayout(outerLayout);
     outerLayout->addWidget(createWindowContainer(qt3DWindow_),1);
     outerLayout->addLayout(innerLayout,0);
-    innerLayout->addWidget(screenshotButton_,1);
-    innerLayout->addWidget(x3dExportButton_,1);
-    innerLayout->addWidget(infoText_,3);
+    innerLayout->addWidget(screenshotButton_,2);
+    innerLayout->addWidget(x3dExportButton_,2);
+    innerLayout->addWidget(fileInfoText_, 5);
+    innerLayout->addWidget(panTiltRollText_,1);
+    innerLayout->addWidget(pan_,1);
+    innerLayout->addWidget(tilt_,1);
+    innerLayout->addWidget(roll_,1);
 
     qt3DWindow_->setRootEntity(root_);
-    qt3DWindow_->camera()->lens()->setPerspectiveProjection(45.0f, 16.0f / 9.0f, 0.1f, 100.0f);
-    qt3DWindow_->camera()->setPosition(QVector3D(2.5, -8, 0.0));
-    qt3DWindow_->camera()->setViewCenter(QVector3D(0, 0, 0));
-
-    cameraController_->setLinearSpeed(50.f);
-    cameraController_->setLookSpeed(180.f);
-    cameraController_->setCamera(qt3DWindow_->camera());
 
     connect(screenshotButton_, &QPushButton::clicked, this, &MoleculeWidget::onScreenshot);
     connect(x3dExportButton_, &QPushButton::clicked, this, &MoleculeWidget::onX3dExport);
 
+    connect(pan_, qOverload<int>(&QSpinBox::valueChanged),
+            this, &MoleculeWidget::onCameraSpinBoxesChanged);
+    connect(tilt_, qOverload<int>(&QSpinBox::valueChanged),
+            this, &MoleculeWidget::onCameraSpinBoxesChanged);
+    connect(roll_, qOverload<int>(&QSpinBox::valueChanged),
+            this, &MoleculeWidget::onCameraSpinBoxesChanged);
+
+    initialCameraSetup();
     setMouseTracking(true);
+}
+
+void MoleculeWidget::onCameraSpinBoxesChanged(int) {
+    defaultCameraView();
+    qt3DWindow_->camera()->panAboutViewCenter(float(pan_->value()));
+    qt3DWindow_->camera()->tiltAboutViewCenter(float(tilt_->value()));
+    qt3DWindow_->camera()->rollAboutViewCenter(float(roll_->value()));
 }
 
 Qt3DCore::QEntity *MoleculeWidget::getMoleculeEntity() {
     return moleculeEntity_;
+}
+
+void MoleculeWidget::setupSpinBoxes(float pan, float tilt, float roll) {
+    pan_->setRange(-180,180);
+    pan_->setSingleStep(5);
+    pan_->setValue(static_cast<int>(pan));
+    pan_->setSuffix("°");
+
+    tilt_->setRange(-90,90);
+    tilt_->setSingleStep(5);
+    tilt_->setValue(static_cast<int>(tilt));
+    tilt_->setSuffix("°");
+
+    roll_->setRange(-180,180);
+    roll_->setSingleStep(5);
+    roll_->setValue(static_cast<int>(roll));
+    roll_->setSuffix("°");
+}
+
+void MoleculeWidget::initialCameraSetup(float distance, float pan, float tilt, float roll) {
+    defaultCameraDistance_ = distance;
+    setupSpinBoxes(pan, tilt, roll);
+
+    cameraController_->setLinearSpeed(50.f);
+    cameraController_->setLookSpeed(180.f);
+
+    cameraController_->setCamera(qt3DWindow_->camera());
+    defaultCameraView();
+    onCameraSpinBoxesChanged(0);
+}
+
+void MoleculeWidget::defaultCameraView() {
+    qt3DWindow_->camera()->setViewCenter({0,0,0});
+    qt3DWindow_->camera()->setUpVector({1,0,0});
+    qt3DWindow_->camera()->setPosition({0,1,0});
+    qt3DWindow_->camera()->viewSphere({0, 0, 0}, defaultCameraDistance_);
 }
 
 void MoleculeWidget::drawAxes(bool drawQ) {
@@ -137,7 +191,7 @@ void MoleculeWidget::addSeds(int clusterId, const std::vector<ClusterData> &clus
 
     const auto& voxelData = clusterData[clusterId].voxelCubes_;
 
-    for (std::size_t i = 0; i < spins.numberOfEntities(); ++i) {
+    for (long i = 0; i < spins.numberOfEntities(); ++i) {
         SurfaceDataGenerator surfaceDataGenerator(voxelData[i]);
         auto surfaceData = surfaceDataGenerator.computeSurfaceData(includedPercentage);
         seds[i] = new Surface(getMoleculeEntity(), surfaceData, GuiHelper::QColorFromType(spins[i]), 0.15);
@@ -213,7 +267,7 @@ void MoleculeWidget::addMaximaHulls(int clusterId, const std::vector<ClusterData
 
     quickhull::QuickHull<float> qh;
 
-    for (std::size_t i = 0; i < spins.numberOfEntities(); ++i) {
+    for (long i = 0; i < spins.numberOfEntities(); ++i) {
         std::vector<Eigen::Vector3f> electronPointCloud;
         for(const auto & ev : clusterData[clusterId].exemplaricStructures_)
             electronPointCloud.emplace_back(ev[i].position().cast<float>());
@@ -239,7 +293,6 @@ void MoleculeWidget::removeMaximaHulls(int clusterId) {
     if (!activeMaximaHullsMap_[clusterId].empty())
         activeMaximaHullsMap_.erase(clusterId);
 }
-
 
 void MoleculeWidget::onScreenshot(bool) {
     QScreen *screen = QGuiApplication::primaryScreen();

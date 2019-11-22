@@ -1,4 +1,4 @@
-/* Copyright (C) 2018-2019 Michael Heuer.
+/* Copyright (C) 2019 Michael Heuer.
  *
  * This file is part of inPsights.
  * inPsights is free software: you can redistribute it and/or modify
@@ -15,36 +15,28 @@
  * along with inPsights. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef INPSIGHTS_DISTANCECLUSTERER_H
-#define INPSIGHTS_DISTANCECLUSTERER_H
+#ifndef INPSIGHTS_CAMERASETTINGS_H
+#define INPSIGHTS_CAMERASETTINGS_H
 
-#include <BestMatch.h>
-#include <IClusterer.h>
 #include <ISettings.h>
 
 namespace Settings {
-    class DistanceClusterer : public ISettings {
+    class Camera : public ISettings {
     public:
-        Property<double> radius = {0.01, VARNAME(radius)};
-        Property<double> valueIncrement = {1e-5, VARNAME(valueIncrement)};
+        Property<float> distance = {8.0f, VARNAME(distance)};
+        Property<float> pan = {0.0f, VARNAME(pan)};
+        Property<float> tilt = {45.0f, VARNAME(tilt)};
+        Property<float> roll = {0.0f, VARNAME(roll)};
 
-        DistanceClusterer();
-        explicit DistanceClusterer(const YAML::Node &node);
+        Camera();
+        explicit Camera(const YAML::Node &node);
         void appendToNode(YAML::Node &node) const override;
     };
 }
-YAML_SETTINGS_DECLARATION(Settings::DistanceClusterer)
+YAML_SETTINGS_DECLARATION(Settings::Camera)
 
-class DistanceClusterer : public IClusterer {
-public:
-    static Settings::DistanceClusterer settings;
+namespace Camera {
+    extern Settings::Camera settings;
+}
 
-    DistanceClusterer(std::vector<Sample> &samples);
-    void cluster(Group& group) override;
-
-private:
-    std::vector<Sample>& samples_;
-};
-
-
-#endif //INPSIGHTS_DISTANCECLUSTERER_H
+#endif //INPSIGHTS_CAMERASETTINGS_H

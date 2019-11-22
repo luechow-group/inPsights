@@ -16,7 +16,6 @@
  */
 
 #include "MaximaProcessingSettings.h"
-#include <assert.h>
 #include <spdlog/spdlog.h>
 
 namespace Settings {

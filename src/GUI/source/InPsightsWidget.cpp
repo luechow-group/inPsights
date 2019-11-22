@@ -27,6 +27,7 @@
 #include <Version.h>
 #include <vector>
 #include <ParticlesVector.h>
+#include <CameraSettings.h>
 #include <spdlog/spdlog.h>
 
 
@@ -109,7 +110,6 @@ void InPsightsWidget::createWidget() {
     checkboxGrid->addWidget(coloredCheckBox,1,2);
     checkboxGrid->addWidget(spinCorrelationBox,2,2);
     checkboxGrid->addWidget(sedPercentageBox,3,2);
-
 
     setupSpinBoxes();
 }
@@ -310,7 +310,7 @@ void InPsightsWidget::loadData() {
                                                 QString("YAML files (*.yml *.yaml *.json)")).toStdString();
     }
 
-    moleculeWidget->infoText_->setText(filename_.c_str());
+    moleculeWidget->fileInfoText_->setText(filename_.c_str());
 
     YAML::Node doc = YAML::LoadAllFromFile(filename_)[1]; // load results
     auto atoms = doc["Atoms"].as<AtomsVector>();
@@ -325,6 +325,27 @@ void InPsightsWidget::loadData() {
 
 
     moleculeWidget->setSharedAtomsVector(atoms);
+
+    // load camera settings
+    if(doc[Camera::settings.name()]) {
+        Camera::settings = Settings::Camera(doc);
+    }
+
+    if (!doc[Camera::settings.name()][Camera::settings.distance.name()]) {
+        float maxDistanceFromCenter = 0.0;
+        for (Eigen::Index i = 0; i < atoms.numberOfEntities(); ++i) {
+            auto distanceFromCenter = static_cast<float>(atoms[i].position().norm())
+                                      + GuiHelper::radiusFromType<Element>(atoms[i].type());
+            if (distanceFromCenter > maxDistanceFromCenter)
+                maxDistanceFromCenter = distanceFromCenter;
+        }
+
+        // add padding
+        maxDistanceFromCenter += GuiHelper::radiusFromType<Element>(Element::H) / 2.0f;
+        Camera::settings.distance = maxDistanceFromCenter;
+        spdlog::info("Determined camera distance from atoms with {} [a0]", Camera::settings.distance.get());
+    }
+
 
 
     for (int clusterId = 0; clusterId < static_cast<int>(doc["Clusters"].size()); ++clusterId) {
@@ -369,6 +390,12 @@ void InPsightsWidget::initialView() {
     bondsCheckBox->setCheckState(Qt::CheckState::Checked);
     axesCheckBox->setCheckState(Qt::CheckState::Unchecked);
     maximaList->topLevelItem(0)->setCheckState(0, Qt::CheckState::Checked);
+    moleculeWidget->initialCameraSetup(
+            Camera::settings.distance.get(),
+            Camera::settings.pan.get(),
+            Camera::settings.tilt.get(),
+            Camera::settings.roll.get()
+            );
 }
 
 std::string InPsightsWidget::filenameWithoutExtension(){

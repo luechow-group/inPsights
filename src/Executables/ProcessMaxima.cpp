@@ -17,6 +17,7 @@
 
 #include <RawDataReader.h>
 #include <Group.h>
+#include <ElementInfo.h>
 #include <IdentityClusterer.h>
 #include <DistanceClusterer.h>
 #include <DensityBasedClusterer.h>
@@ -26,6 +27,7 @@
 #include <GeneralStatistics.h>
 #include <algorithm>
 #include <MaximaProcessingSettings.h>
+#include <CameraSettings.h>
 #include <VoxelCubeGeneration.h>
 #include <VoxelCubeOverlapCalculation.h>
 #include <spdlog/spdlog.h>
@@ -94,6 +96,22 @@ void validateInput(const YAML::Node &inputYaml) {
 
     spdlog::set_level(spdlog::level::info);
     spdlog::info("Input is valid.");
+}
+
+float calculateViewDistance(const AtomsVector& atoms){
+    float maxDistanceFromCenter = 0.0;
+    for (Eigen::Index i = 0; i < atoms.numberOfEntities(); ++i) {
+        auto distanceFromCenter = static_cast<float>(atoms[i].position().norm())
+                                + Elements::ElementInfo::vdwRadius(atoms[i].type())/10.0f;
+
+        if(distanceFromCenter > maxDistanceFromCenter)
+            maxDistanceFromCenter = distanceFromCenter;
+    }
+
+    // add padding
+    maxDistanceFromCenter += static_cast<float>(Elements::ElementInfo::vdwRadius(Element::H)/10.0f);
+
+    return maxDistanceFromCenter;
 }
 
 int main(int argc, char *argv[]) {
@@ -268,8 +286,16 @@ int main(int argc, char *argv[]) {
     << Comment("input from \"" + inputFilename + "\"") << inputYaml << EndDoc;
     outputYaml << BeginDoc
                << BeginMap
-               << Comment(inPsights::logo)
-               << Key << "Atoms" << Value << atoms << Comment("[a0]")
+               << Comment(inPsights::logo);
+
+
+    YAML::Node cameraNode;
+    Camera::settings.distance = calculateViewDistance(atoms);
+    Camera::settings.appendToNode(cameraNode);
+
+    outputYaml << Key << "Camera" << Value << cameraNode["Camera"] << Comment("[a0,°,°,°]");
+
+    outputYaml << Key << "Atoms" << Value << atoms << Comment("[a0]")
                << Key << "NSamples" << Value << samples.size()
                << Key << "OverallResults" << Value << results;
     spdlog::info("Calculating statistics...");
