@@ -44,10 +44,11 @@ MoleculeWidget::MoleculeWidget(QWidget *parent)
         pan_(new QSpinBox(this)),
         tilt_(new QSpinBox(this)),
         roll_(new QSpinBox(this)),
-        defaultCameraDistance_(0),
+        defaultCameraDistance_(8.0f),
         fileInfoText_(new QLabel("Info text")),
         panTiltRollText_(new QLabel("pan/tilt/roll")),
-        atomsVector3D_(nullptr) {
+        atomsVector3D_(nullptr),
+        cartesianAxes_(nullptr){
 
     auto outerLayout = new QVBoxLayout(this);
     auto innerLayout = new QHBoxLayout();
@@ -75,7 +76,7 @@ MoleculeWidget::MoleculeWidget(QWidget *parent)
     connect(roll_, qOverload<int>(&QSpinBox::valueChanged),
             this, &MoleculeWidget::onCameraSpinBoxesChanged);
 
-    setupSpinBoxes();
+    initialCameraSetup();
     setMouseTracking(true);
 }
 
@@ -90,40 +91,29 @@ Qt3DCore::QEntity *MoleculeWidget::getMoleculeEntity() {
     return moleculeEntity_;
 }
 
-void MoleculeWidget::setupSpinBoxes() {
+void MoleculeWidget::setupSpinBoxes(float pan, float tilt, float roll) {
     pan_->setRange(-180,180);
     pan_->setSingleStep(5);
-    pan_->setValue(0);
+    pan_->setValue(static_cast<int>(pan));
     pan_->setSuffix("°");
 
     tilt_->setRange(-90,90);
     tilt_->setSingleStep(5);
-    tilt_->setValue(45);
+    tilt_->setValue(static_cast<int>(tilt));
     tilt_->setSuffix("°");
 
     roll_->setRange(-180,180);
     roll_->setSingleStep(5);
-    roll_->setValue(0);
+    roll_->setValue(static_cast<int>(roll));
     roll_->setSuffix("°");
 }
 
-void MoleculeWidget::initialCameraSetup() {
+void MoleculeWidget::initialCameraSetup(float distance, float pan, float tilt, float roll) {
+    defaultCameraDistance_ = distance;
+    setupSpinBoxes(pan, tilt, roll);
+
     cameraController_->setLinearSpeed(50.f);
     cameraController_->setLookSpeed(180.f);
-
-    auto atoms = *sharedAtomsVector_;
-
-    float maxDistanceFromCenter = 0.0;
-    for (Eigen::Index i = 0; i < atoms.numberOfEntities(); ++i) {
-        auto distanceFromCenter = static_cast<float>(atoms[i].position().norm())
-                                  + GuiHelper::radiusFromType<Element>(atoms[i].type());
-        if(distanceFromCenter > maxDistanceFromCenter)
-            maxDistanceFromCenter = distanceFromCenter;
-    }
-
-    // add padding
-    maxDistanceFromCenter += GuiHelper::radiusFromType<Element>(Element::H)/2.0f;
-    defaultCameraDistance_ = maxDistanceFromCenter;
 
     cameraController_->setCamera(qt3DWindow_->camera());
     defaultCameraView();

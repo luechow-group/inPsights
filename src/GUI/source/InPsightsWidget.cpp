@@ -27,7 +27,7 @@
 #include <Version.h>
 #include <vector>
 #include <ParticlesVector.h>
-#include <Metrics.h>
+#include <CameraSettings.h>
 #include <spdlog/spdlog.h>
 
 
@@ -326,6 +326,28 @@ void InPsightsWidget::loadData() {
 
     moleculeWidget->setSharedAtomsVector(atoms);
 
+    // load camera settings
+    if(doc[Camera::settings.name()]) {
+        Camera::settings = Settings::Camera(doc);
+    }
+
+    if (!doc[Camera::settings.name()][Camera::settings.distance.name()]) {
+        float maxDistanceFromCenter = 0.0;
+        for (Eigen::Index i = 0; i < atoms.numberOfEntities(); ++i) {
+            auto distanceFromCenter = static_cast<float>(atoms[i].position().norm())
+                                      + GuiHelper::radiusFromType<Element>(atoms[i].type());
+            if (distanceFromCenter > maxDistanceFromCenter)
+                maxDistanceFromCenter = distanceFromCenter;
+        }
+
+        // add padding
+        maxDistanceFromCenter += GuiHelper::radiusFromType<Element>(Element::H) / 2.0f;
+        Camera::settings.distance = maxDistanceFromCenter;
+        spdlog::info("Determined camera distance from atoms with {} [a0]", Camera::settings.distance.get());
+    }
+
+
+
     for (int clusterId = 0; clusterId < static_cast<int>(doc["Clusters"].size()); ++clusterId) {
 
         ClusterData clusterData = doc["Clusters"][clusterId].as<ClusterData>();
@@ -368,8 +390,12 @@ void InPsightsWidget::initialView() {
     bondsCheckBox->setCheckState(Qt::CheckState::Checked);
     axesCheckBox->setCheckState(Qt::CheckState::Unchecked);
     maximaList->topLevelItem(0)->setCheckState(0, Qt::CheckState::Checked);
-    moleculeWidget->initialCameraSetup();
-
+    moleculeWidget->initialCameraSetup(
+            Camera::settings.distance.get(),
+            Camera::settings.pan.get(),
+            Camera::settings.tilt.get(),
+            Camera::settings.roll.get()
+            );
 }
 
 std::string InPsightsWidget::filenameWithoutExtension(){

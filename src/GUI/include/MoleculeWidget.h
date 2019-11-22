@@ -51,7 +51,8 @@ public:
                               const std::vector<ClusterData> &clusterData,
                               double spinCorrelationThreshold, bool drawSameSpinCorrelationsQ);
 
-    void initialCameraSetup();
+    void initialCameraSetup(float distance = 8.0f,float pan = 0.0f, float tilt = 45.0f, float roll = 0.0f);
+    void setupSpinBoxes(float pan, float tilt, float roll);
     void defaultCameraView();
 
     void setSharedAtomsVector(AtomsVector atomsVector);
@@ -65,7 +66,6 @@ public:
     void removeMaximaHulls(int clusterId);
 
 public Q_SLOTS:
-
     void onAtomsChecked(std::vector<int>);
     void onElectronsChecked(std::vector<int>);
     void onAtomsHighlighted(std::vector<int>);
@@ -74,8 +74,6 @@ public Q_SLOTS:
     void onCameraSpinBoxesChanged(int);
     void onScreenshot(bool);
     void onX3dExport(bool);
-
-    void setupSpinBoxes();
 
 private:
     Qt3DExtras::Qt3DWindow *qt3DWindow_;
