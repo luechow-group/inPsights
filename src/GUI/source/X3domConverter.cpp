@@ -39,7 +39,7 @@ void X3domConverter::startScene(const std::string& title, const std::string& com
             /*"<h1>" + title + "</h1>\n"
             "<p>" + comment + "</p>\n"*/
             "<center> \n"
-            "<x3d width='600px' height='400px'> \n"
+            "<x3d width='100%' height='100%'> \n"
             "<scene>\n"
             "<DirectionalLight direction='0,0,-1' global='true'></DirectionalLight>\n";
 };
