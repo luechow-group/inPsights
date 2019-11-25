@@ -36,13 +36,13 @@ namespace Settings {
                 });
         tilt.onChange_.connect(
                 [&](float value) {
-                    float limit = 90.0f;
+                    float limit = 180.0f;
                     if (std::abs(value) > limit)
                         throw std::invalid_argument("The tilt angle must be inbetween ["
                                                     + std::to_string(-limit) + "," + std::to_string(limit) + "]");
                 });
         roll.onChange_.connect(
-                [&](int value) {
+                [&](float value) {
                     float limit = 180.0f;
                     if (std::abs(value) > limit)
                         throw std::invalid_argument("The roll angle must be inbetween ["
