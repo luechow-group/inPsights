@@ -402,3 +402,7 @@ std::string InPsightsWidget::filenameWithoutExtension(){
     size_t lastindex = filename_.find_last_of(".");
     return filename_.substr(0, lastindex);
 };
+
+bool InPsightsWidget::plotAllActiveQ() {
+    return plotAllCheckBox->checkState() == Qt::Checked;
+}

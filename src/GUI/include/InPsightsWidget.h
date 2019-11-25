@@ -30,6 +30,8 @@ class InPsightsWidget : public QWidget {
 Q_OBJECT
 public:
     explicit InPsightsWidget(QWidget *parent = nullptr, const std::string &filename = "");
+    bool plotAllActiveQ();
+    std::string filenameWithoutExtension();
 
 public slots:
     void selectedStructure(QTreeWidgetItem *item, int column);
@@ -40,7 +42,6 @@ public slots:
     void onSpinCorrelationsChecked(int stateId= 0);
     void onPlotAllChecked(int stateId= 0);
     void onSpinCorrelationsBoxChanged(double value);
-    std::string filenameWithoutExtension();
 
 private:
     std::string filename_;

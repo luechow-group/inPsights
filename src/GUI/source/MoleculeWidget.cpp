@@ -320,12 +320,16 @@ std::string MoleculeWidget::createFilenameFromActiveElectronvectors() const {
             name += "-";
             name += std::to_string(key);
             name += "-[";
-            for (auto [subkey, value] : submap) {
-                name += std::to_string(subkey);
-                name += ",";
+            if(inPsightsWidget->plotAllActiveQ()){
+                name  += "all]";
+            } else {
+                for (auto[subkey, value] : submap) {
+                    name += std::to_string(subkey);
+                    name += ",";
+                }
+                name = name.substr(0, name.size() - 1);
+                name += "]";
             }
-            name = name.substr(0, name.size()-1);
-            name += "]";
         }
     } else {
         name = QDateTime::currentDateTime().toString(Qt::ISODate).toStdString();
