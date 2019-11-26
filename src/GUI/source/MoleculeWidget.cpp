@@ -97,7 +97,7 @@ void MoleculeWidget::setupSpinBoxes(float pan, float tilt, float roll) {
     pan_->setValue(static_cast<int>(pan));
     pan_->setSuffix("°");
 
-    tilt_->setRange(-90,90);
+    tilt_->setRange(-180,180);
     tilt_->setSingleStep(5);
     tilt_->setValue(static_cast<int>(tilt));
     tilt_->setSuffix("°");
