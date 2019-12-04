@@ -35,6 +35,7 @@
 #include <Logo.h>
 #include <fstream>
 #include <IPosition.h>
+#include <Metrics.h>
 
 using namespace YAML;
 
@@ -296,6 +297,7 @@ int main(int argc, char *argv[]) {
     outputYaml << Key << "Camera" << Value << cameraNode["Camera"] << Comment("[a0,°,°,°]");
 
     outputYaml << Key << "Atoms" << Value << atoms << Comment("[a0]")
+               << Key << "Rnn" << Value << Metrics::positionalDistances(atoms.positionsVector()) << Comment("[a0]")
                << Key << "NSamples" << Value << samples.size()
                << Key << "OverallResults" << Value << results;
     spdlog::info("Calculating statistics...");
