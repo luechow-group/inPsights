@@ -104,9 +104,12 @@ size_t  MaximaProcessor::addAllReferences(const Group &group) {
 
 std::vector<ElectronsVector> MaximaProcessor::getAllRepresentativeMaxima(const Group &group) {
     std::vector<ElectronsVector> representativeMaxima;
-    for(auto & i : group) {
-        representativeMaxima.emplace_back(i.representative()->maximum());
-    }
+    if(group.empty())
+        representativeMaxima.emplace_back(group.representative()->maximum());
+    else
+        for(auto & i : group)
+            representativeMaxima.emplace_back(i.representative()->maximum());
+
     return representativeMaxima;
 }
 
