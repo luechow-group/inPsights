@@ -38,24 +38,14 @@ sudo apt-get -y install \
 Alternatively, Qt5 can be downloaded from the [Qt webpage](https://www.qt.io/download). 
 During the installation make sure to install Qt for the `x86_64` architecture and select `sources`, `Qt3D`, and additionally `QtCharts` (which will be required in future versions as well).
 
-#### Cloning inPsights
-Make sure you are registered for the GitLab service of https://git.rwth-aachen.de and that you have an SSH-Key for your account on the local machine you are using.
-Furthermore, make sure you have permission to all repositiories by asking the git-administrator of the luechow-group.
-
-```bash
-git clone git@git.rwth-aachen.de:luechow-group/inpsights.git
-```
-and check out the branch of interest e.g.`git checkout develop`. Next, execute
+#### Submodules in inPsights
+After cloning the repository, make sure to initialize and update the submodules
 ```bash
 git submodule update --init --recursive
 ```
 to initialize all the submodules.
 
-The next time you checkout a branch e.g.
-```bash
-git checkout develop
-```
-the submodules do not need to be initialized again afterwards. Thus
+The next time you checkout a branch e.g. the submodules do not need to be initialized again afterwards. Thus
 ```bash
 git submodule update --recursive
 ```
@@ -65,7 +55,6 @@ should be sufficient.
 
 #### Amolqc
 The path to `Amolqc` *must* be exported as an environment variable e.g.
-
 ```bash
 export AMOLQC=/Users/michaelheuer/Projects/inPsights/src/AmolqcInterface/Amolqc
 ```
@@ -97,27 +86,29 @@ If Qt was download from the webpage, the following environment variable must be 
 export Qt5_DIR=/home/<username>/Qt/5.XX.X/gcc_64
 ```
 
-## Running inPsights from the Command-Line
+## Building inPsights
 
 Create a build directory e.g.
 ```bash
 mkdir cmake-build-release
 cd cmake-build-release
 ```
-and perform an out-of-source release build:
-
+and configure CMake for an out-of-source release build:
 ```bash
 cmake ..
-make
 ```
-To build the GUI, set the following cmake variables:
+CMake options can be specified to build the GUI or to use a precompiled version of the Eigen library
 ```bash
 cmake .. -DBUILD_GUI=ON -DBUILD_EIGEN=OFF
 ```
 
-To build only a specific target write
+To build the `ProcessMaxima` executable run
 ```bash
-make TargetName
+make ProcessMaxima
 ```
-instead. 
+To build the `inPsights` executable run
+```bash
+make inPsights
+```
+which requires `-DBUILD_GUI=ON`.
 

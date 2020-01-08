@@ -1,5 +1,5 @@
 # Download and unpack Eigen Library at configure time
-configure_file(cmake/DownloadEigen.in
+configure_file(cmake/downloadEigen.in
         eigen-download/CMakeLists.txt)
 execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
         WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/eigen-download )

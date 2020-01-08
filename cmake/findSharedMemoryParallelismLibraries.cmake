@@ -1,5 +1,3 @@
-
-
 find_package(OpenMP)
 find_package(OpenACC)
 

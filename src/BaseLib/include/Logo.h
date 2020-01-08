@@ -39,6 +39,6 @@ namespace inPsights {
                              "  Michael A. Heuer, RWTH Aachen University\n"
                              "\n"
                              " With contributions from:\n"
-                             "  Leonard Reuter\n";
+                             "  Leonard Reuter, RWTH Aachen University\n";
 }
 #endif //INPSIGHTS_LOGO_H

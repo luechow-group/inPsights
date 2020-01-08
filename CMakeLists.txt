@@ -11,13 +11,13 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 project(inPsights)
-include(cmake/SetCompilers.cmake)
+include(cmake/setCompilers.cmake)
 include(cmake/inPsightsVersion.cmake)
 
 # Prevent error from policy CMP0042. See >>> cmake  --help-policy CMP0042
 set(CMAKE_MACOSX_RPATH 1)
 
-include(cmake/FindSharedMemoryParallelismLibraries.cmake)
+include(cmake/findSharedMemoryParallelismLibraries.cmake)
 
 if(DEFINED ENV{BOOST_ROOT})
     set(BOOST_ROOT "$ENV{BOOST_ROOT}")
@@ -30,7 +30,7 @@ include_directories(${Boost_INCLUDE_DIRS})
 
 if (${BUILD_EIGEN})
     message("BUILD_EIGEN=${BUILD_GUI} Building Eigen3...")
-    include(cmake/DownloadEigen.cmake)
+    include(cmake/downloadEigen.cmake)
 else()
     message("BUILD_EIGEN=${BUILD_GUI} Trying to find Eigen3...")
     find_package(Eigen3 REQUIRED)
@@ -43,5 +43,5 @@ set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR}/bin)
 # Ctest related
 enable_testing()
 add_custom_target(inPsightsTests COMMAND "")
-include(cmake/add_gtest_subdirectory_with_dependency.cmake)
+include(cmake/addGtestSubdirectoryWithDependency.cmake)
 add_subdirectory(src)
