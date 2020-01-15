@@ -24,8 +24,8 @@
 #include <EnergyPartitioning.h>
 #include <VoxelCubeGeneration.h>
 #include <VoxelCubeOverlapCalculation.h>
-#include <EnergyPartitioning.h>
 #include <spdlog/spdlog.h>
+#include <SpinCorrelationValueDistribution.h>
 
 MaximaProcessor::MaximaProcessor(YAML::Emitter& yamlDocument, const std::vector<Sample>& samples, const AtomsVector& atoms)
         :
@@ -122,6 +122,9 @@ void MaximaProcessor::calculateStatistics(const Group &maxima){
 
     size_t totalCount = 0;
     double totalWeight = 0.0;
+
+    SpinCorrelationValueDistribution spinCorrelationDistribution(12); // => 25 bns in total
+
     for (auto& group : maxima) {
 
         valueStats_.reset();
@@ -137,8 +140,11 @@ void MaximaProcessor::calculateStatistics(const Group &maxima){
         RenStats_.reset();
 
 
-        totalCount += addAllReferences(group);
+        totalCount += addAllReferences(group); // this sets all statistic objects internally
         auto structures = getAllRepresentativeMaxima(group);
+
+        // SpinCorrelationDistribution
+        spinCorrelationDistribution.addSpinStatistic(SeeStats_);
         
         // Motif analysis (requires spin correlation data)
         auto adjacencyMatrix = GraphAnalysis::filter(SeeStats_.mean().cwiseAbs(), 1.00);
@@ -166,7 +172,7 @@ void MaximaProcessor::calculateStatistics(const Group &maxima){
                     valueStats_, TeStats_, EeStats_,
                                          SeeStats_, VeeStats_, VenStats_,
                                          motifs_, EtotalStats_, intraMotifEnergyStats_, interMotifEnergyStats_,
-                                         ReeStats_, RenStats_, voxelCubes,overlaps);
+                                         ReeStats_, RenStats_, voxelCubes, overlaps);
         }
     }
     spdlog::info("Overall count {}. Some structures might be lost "
@@ -174,6 +180,13 @@ void MaximaProcessor::calculateStatistics(const Group &maxima){
     spdlog::info("Considered weight: {}, discarded weight: {}", totalWeight, 1.0 - totalWeight);
 
     yamlDocument_ << EndSeq;
+
+    // add spinCorrelationDistribution
+    auto hist = spinCorrelationDistribution.getHistogramVector();
+    hist /= hist.sum();
+    yamlDocument_ << Key << "SpinCorrelationDistribution" << Value << hist;
+
+
     assert(yamlDocument_.good());
 }
 
