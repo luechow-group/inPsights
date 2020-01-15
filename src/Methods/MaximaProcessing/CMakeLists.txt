@@ -48,6 +48,7 @@ set(SOURCE_FILES
         source/IClusterer.cpp
         source/ReferencePositionsClusterer.cpp
         source/VoxelCubeOverlapCalculation.cpp
+        source/SpinCorrelationValueDistribution.cpp
         )
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES})

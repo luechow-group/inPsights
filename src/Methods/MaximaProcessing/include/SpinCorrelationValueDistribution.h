@@ -19,42 +19,20 @@
 #define INPSIGHTS_SPINCORRELATIONVALUEDISTRIBUTION_H
 
 #include <Statistics.h>
-#include <limits>
 
-class SpinCorrelationValueDistribution { //TODO rename to histogram
+class SpinCorrelationValueDistribution {
 public:
-    SpinCorrelationValueDistribution(Eigen::Index oneSidedNonzeroBinCount = 25)
-    :
-    oneSidedNonzeroBinCount_(oneSidedNonzeroBinCount),
-    binCount_(oneSidedNonzeroBinCount_ * 2 + 1),
-    bins_(Eigen::VectorXd::Zero(binCount_)){};
+    SpinCorrelationValueDistribution(Eigen::Index oneSidedNonzeroBinCount = 12);
 
-    Eigen::Index calculateBinIndex(double spinCorrelation){
-        auto binLength = 2.0 / static_cast<double>(binCount_);
-        Eigen::Index binIndex = std::ceil(std::abs(spinCorrelation) / binLength - 0.5);
-        return spinCorrelation >= 0 ? oneSidedNonzeroBinCount_ + binIndex : oneSidedNonzeroBinCount_ - binIndex;
-    };
+    Eigen::Index calculateBinIndex(double spinCorrelation);
 
-    void addSpinStatistic(const TriangularMatrixStatistics& spinCorrelations) {
-        assert(spinCorrelations.mean().minCoeff() >= -1.0);
-        assert(spinCorrelations.mean().maxCoeff() <= 1.0);
+    void addSpinStatistic(const TriangularMatrixStatistics& spinCorrelations);
 
-        for (Eigen::Index i = 0; i < spinCorrelations.rows()-1; ++i) {
-            for (Eigen::Index j = i+1; j < spinCorrelations.cols(); ++j) {
-                auto spinCorrelationValue = spinCorrelations.mean()(i,j);
-                bins_[calculateBinIndex(spinCorrelationValue)]  += static_cast<double>(spinCorrelations.getTotalWeight());
-            }
-        }
-    }
-
-    Eigen::VectorXd getHistogramVector(){
-        return bins_;
-    };
+    Eigen::VectorXd getHistogramVector();
 
 private:
     Eigen::Index oneSidedNonzeroBinCount_,binCount_;
     Eigen::VectorXd bins_;
-
 };
 
 #endif //INPSIGHTS_SPINCORRELATIONVALUEDISTRIBUTION_H
