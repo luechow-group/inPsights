@@ -27,7 +27,7 @@ set(HEADER_FILES
         include/IClusterer.h
         include/ReferencePositionsClusterer.h
         include/VoxelCubeOverlapCalculation.h
-        )
+        include/SpinCorrelationValueDistribution.h)
 
 set(SOURCE_FILES
         source/RawDataReader.cpp
