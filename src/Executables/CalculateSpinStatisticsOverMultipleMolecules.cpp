@@ -24,18 +24,23 @@
 #include <fstream>
 
 int main(int argc, char *argv[]) {
-    if (argc < 2) {
-        std::cerr << "Usage: " << argv[0] << " input.yml " << std::endl;
+    if (argc < 2 || argc > 3) {
+        std::cerr << "Usage: " << argv[0] << " input.yml " << " oneSidedBinCount" << std::endl;
         return 1;
     }
     std::string inputFilename = argv[1];
+
+    int oneSidedBinCount = 12;
+    if (argc == 3)
+        oneSidedBinCount = std::atoi(argv[2]);
+    std::cout << oneSidedBinCount << std::endl;
 
     YAML::Node doc = YAML::LoadFile(inputFilename);
     const YAML::Node& filenamesNode = doc["files"];
 
     YAML::Emitter outputYamlDoc;
 
-    auto oneSidedBinCount = 12;
+
     Eigen::VectorXd globalStats = Eigen::VectorXd::Zero(2*oneSidedBinCount+1);
 
     if(filenamesNode.IsSequence()) {
@@ -81,7 +86,17 @@ int main(int argc, char *argv[]) {
     std::string resultsBaseName = inputFilename.substr(0,inputFilename.find('.')) + "-out";
     std::string resultsFilename = resultsBaseName + ".yml";
 
+    if (std::ifstream(resultsFilename).good()){
+        for (int i = 1; i < 100; i++){
+            resultsFilename = resultsBaseName + "-" + std::to_string(i) + ".yml";
+            if (not std::ifstream(resultsFilename).good()){
+                break;
+            }
+        }
+    }
+
     std::ofstream yamlFile(resultsFilename);
     yamlFile << outputYamlDoc.c_str();
     yamlFile.close();
+    std::cout << "output wrote to file " << resultsFilename << std::endl;
 }
