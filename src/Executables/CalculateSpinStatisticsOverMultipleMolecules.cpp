@@ -59,9 +59,14 @@ int main(int argc, char *argv[]) {
 
             auto nClusters = static_cast<int>(molDoc["Clusters"].size());
             for (int clusterId = 0; clusterId < nClusters; ++clusterId) {
-                auto spinCorrStats = molDoc["Clusters"][clusterId]["SpinCorrelations"].as<TriangularMatrixStatistics>();
-                distribution.addSpinStatistic(spinCorrStats);
+
+                // skip if clusters contain only one maximum
+                if(molDoc["Clusters"][clusterId]["N"].as<unsigned>() > 1) {
+                    auto spinCorrStats = molDoc["Clusters"][clusterId]["SpinCorrelations"].as<TriangularMatrixStatistics>();
+                    distribution.addSpinStatistic(spinCorrStats);
+                }
             }
+
             molecularStats += distribution.getHistogramVector();
 
             outputYamlDoc << YAML::Key << filename << YAML::Value << molecularStats;
