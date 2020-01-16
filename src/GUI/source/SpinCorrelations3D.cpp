@@ -31,45 +31,56 @@ SpinCorrelations3D::SpinCorrelations3D(ElectronsVector3D *electronsVector3D,
 void SpinCorrelations3D::createConnections(const ElectronsVector &electronsVector,
                                            const TriangularMatrixStatistics &SeeStats,
                                            double spinCorrelationThreshold, bool drawSameSpinCorrelationsQ)  {
-
-    auto pairTypes = SpinPairClassification::classify(electronsVector);
     auto electronRadius = float(GuiHelper::radiusFromType(Spin::alpha));
 
-    for (auto &idxPair : pairTypes) {
-        auto i = idxPair.first.first;
-        auto j = idxPair.first.second;
+    // make list of electrons at same positions
+    std::list<Eigen::Index> electronsAtSamePositions;
+    for (auto i = 0; i < electronsVector.numberOfEntities()-1; ++i) {
+        for (auto j = i+1; j < electronsVector.numberOfEntities(); ++j) {
+            if(SpinPairClassification::atSamePositionQ({i,j},electronsVector)) {
+                electronsAtSamePositions.push_back(i);
+                electronsAtSamePositions.push_back(j);
+            }
+        }
+    }
 
-        if (idxPair.second == SpinPairClassification::PairType::closeBy
-        && !SpinPairClassification::isAtSamePositionQ(pairTypes,i)
-        && !SpinPairClassification::isAtSamePositionQ(pairTypes,j)
-        ) {
-            auto corr = float(SeeStats.mean()(i, j));
+    // iterate over all pairs
+    for (auto i = 0; i < electronsVector.numberOfEntities()-1; ++i) {
+        for (auto j = i + 1; j < electronsVector.numberOfEntities(); ++j) {
 
-            auto positionPair = GuiHelper::sphericalSurfacePositionPair(
-                    electronsVector.positionsVector()[i], electronRadius,
-                    electronsVector.positionsVector()[j], electronRadius);
+            // if i or j are not in the list of electrons at same positions
+            if (std::find(electronsAtSamePositions.begin(), electronsAtSamePositions.end(), i) ==
+                electronsAtSamePositions.end()
+                && std::find(electronsAtSamePositions.begin(), electronsAtSamePositions.end(), j) ==
+                   electronsAtSamePositions.end()) {
 
-            bool thinLineMode = false;
-            if(thinLineMode) {
-                if (std::abs(corr) >= spinCorrelationThreshold) {
-                    if (corr < 0)
-                        new Line3D(this, Qt::green, positionPair, std::abs(corr));
-                    else
-                        new Line3D(this, Qt::magenta, positionPair, std::abs(corr));
-                }
-            } else {
-                if (std::abs(corr) >= spinCorrelationThreshold) {
-                    Cylinder* c;
-                    if (corr < 0) {
-                        c = new Cylinder(this, Qt::green, positionPair, electronRadius / 7.5f, std::abs(corr));
-                        c->material->setShininess(0);
-                    } else if(drawSameSpinCorrelationsQ)  {
+                auto corr = float(SeeStats.mean()(i, j));
+
+                auto positionPair = GuiHelper::sphericalSurfacePositionPair(
+                        electronsVector.positionsVector()[i], electronRadius,
+                        electronsVector.positionsVector()[j], electronRadius);
+
+                bool thinLineMode = false;
+                if (thinLineMode) {
+                    if (std::abs(corr) >= spinCorrelationThreshold) {
+                        if (corr < 0)
+                            new Line3D(this, Qt::green, positionPair, std::abs(corr));
+                        else
+                            new Line3D(this, Qt::magenta, positionPair, std::abs(corr));
+                    }
+                } else {
+                    if (std::abs(corr) >= spinCorrelationThreshold) {
+                        Cylinder *c;
+                        if (corr < 0) {
+                            c = new Cylinder(this, Qt::green, positionPair, electronRadius / 7.5f, std::abs(corr));
+                            c->material->setShininess(0);
+                        } else if (drawSameSpinCorrelationsQ) {
                             c = new Cylinder(this, Qt::magenta, positionPair, electronRadius / 7.5f, std::abs(corr));
                             c->material->setShininess(0);
+                        }
                     }
                 }
             }
-
         }
     }
 }
