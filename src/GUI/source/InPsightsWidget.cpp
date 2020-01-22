@@ -27,7 +27,7 @@
 #include <Version.h>
 #include <vector>
 #include <ParticlesVector.h>
-#include <CameraSettings.h>
+#include "CameraSettings.h"
 #include <spdlog/spdlog.h>
 
 

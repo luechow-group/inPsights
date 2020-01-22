@@ -14,8 +14,15 @@ target_link_libraries(ProcessMaxima
         BaseLib
         MaximaProcessing
         )
+
 add_executable(FetchOverlaps fetchOverlaps.cpp)
 target_link_libraries(FetchOverlaps
+        BaseLib
+        MaximaProcessing
+        )
+
+add_executable(CalculateSpinStatisticsOverMultipleMolecules CalculateSpinStatisticsOverMultipleMolecules.cpp)
+target_link_libraries(CalculateSpinStatisticsOverMultipleMolecules
         BaseLib
         MaximaProcessing
         )

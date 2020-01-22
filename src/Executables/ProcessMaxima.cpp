@@ -27,7 +27,7 @@
 #include <GeneralStatistics.h>
 #include <algorithm>
 #include <MaximaProcessingSettings.h>
-#include <CameraSettings.h>
+#include "CameraSettings.h"
 #include <VoxelCubeGeneration.h>
 #include <VoxelCubeOverlapCalculation.h>
 #include <spdlog/spdlog.h>

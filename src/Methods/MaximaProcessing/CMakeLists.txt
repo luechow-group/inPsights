@@ -27,8 +27,7 @@ set(HEADER_FILES
         include/IClusterer.h
         include/ReferencePositionsClusterer.h
         include/VoxelCubeOverlapCalculation.h
-        include/CameraSettings.h
-        )
+        include/SpinCorrelationValueDistribution.h)
 
 set(SOURCE_FILES
         source/RawDataReader.cpp
@@ -49,7 +48,7 @@ set(SOURCE_FILES
         source/IClusterer.cpp
         source/ReferencePositionsClusterer.cpp
         source/VoxelCubeOverlapCalculation.cpp
-        source/CameraSettings.cpp
+        source/SpinCorrelationValueDistribution.cpp
         )
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES})
