@@ -28,6 +28,8 @@ IClusterer::Type IClusterer::typeFromString(const std::string& clustererName) {
         return Type::ReferencePositionsClusterer;
     else if(clustererName == "SOAPClusterer")
         return Type::SOAPClusterer;
+    else if(clustererName == "GraphClusterer")
+        return Type::GraphClusterer;
     else
         return Type::invalid;
 };

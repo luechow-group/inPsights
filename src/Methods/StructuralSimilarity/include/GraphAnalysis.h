@@ -31,6 +31,8 @@ namespace GraphAnalysis {
     // filter to obtain an adjacency matrix
     Eigen::MatrixXb filter(const Eigen::MatrixXd & matrix, double threshold = 1.0);
 
+    Eigen::MatrixXb lowerOrEqualFilter(const Eigen::MatrixXd & matrix, double threshold = 1.0);
+
     std::list<Eigen::Index> findConnectedVertices(const Eigen::MatrixXb &adjacencyMatrix, Eigen::Index startVertex);
 
     std::vector<std::list<Eigen::Index>> findGraphClusters(const Eigen::MatrixXb &adjacencyMatrix);
