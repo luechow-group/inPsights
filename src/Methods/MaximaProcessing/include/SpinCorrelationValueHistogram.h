@@ -15,14 +15,14 @@
  * along with inPsights. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef INPSIGHTS_SPINCORRELATIONVALUEDISTRIBUTION_H
-#define INPSIGHTS_SPINCORRELATIONVALUEDISTRIBUTION_H
+#ifndef INPSIGHTS_SPINCORRELATIONVALUEHISTOGRAM_H
+#define INPSIGHTS_SPINCORRELATIONVALUEHISTOGRAM_H
 
 #include <Statistics.h>
 
-class SpinCorrelationValueDistribution {
+class SpinCorrelationValueHistogram {
 public:
-    SpinCorrelationValueDistribution(Eigen::Index oneSidedNonzeroBinCount = 12);
+    SpinCorrelationValueHistogram(Eigen::Index oneSidedNonzeroBinCount = 12);
 
     Eigen::Index calculateBinIndex(double spinCorrelation);
 
@@ -35,4 +35,4 @@ private:
     Eigen::VectorXd bins_;
 };
 
-#endif //INPSIGHTS_SPINCORRELATIONVALUEDISTRIBUTION_H
+#endif //INPSIGHTS_SPINCORRELATIONVALUEHISTOGRAM_H

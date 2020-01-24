@@ -27,7 +27,7 @@ set(HEADER_FILES
         include/IClusterer.h
         include/ReferencePositionsClusterer.h
         include/VoxelCubeOverlapCalculation.h
-        include/SpinCorrelationValueDistribution.h)
+        include/SpinCorrelationValueHistogram.h)
 
 set(SOURCE_FILES
         source/RawDataReader.cpp
@@ -48,7 +48,7 @@ set(SOURCE_FILES
         source/IClusterer.cpp
         source/ReferencePositionsClusterer.cpp
         source/VoxelCubeOverlapCalculation.cpp
-        source/SpinCorrelationValueDistribution.cpp
+        source/SpinCorrelationValueHistogram.cpp
         )
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES})

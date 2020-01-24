@@ -25,7 +25,7 @@
 #include <VoxelCubeGeneration.h>
 #include <VoxelCubeOverlapCalculation.h>
 #include <spdlog/spdlog.h>
-#include <SpinCorrelationValueDistribution.h>
+#include <SpinCorrelationValueHistogram.h>
 
 MaximaProcessor::MaximaProcessor(YAML::Emitter& yamlDocument, const std::vector<Sample>& samples, const AtomsVector& atoms)
         :
@@ -123,7 +123,7 @@ void MaximaProcessor::calculateStatistics(const Group &maxima){
     size_t totalCount = 0;
     double totalWeight = 0.0;
 
-    SpinCorrelationValueDistribution spinCorrelationDistribution(12); // => 25 bns in total
+    SpinCorrelationValueHistogram spinCorrelationDistribution(12); // => 25 bns in total
 
     for (auto& group : maxima) {
 
