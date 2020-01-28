@@ -23,6 +23,7 @@
 #include <DensityBasedClusterer.h>
 #include <SOAPClusterer.h>
 #include <ReferencePositionsClusterer.h>
+#include <GraphClusterer.h>
 #include <MaximaProcessor.h>
 #include <GeneralStatistics.h>
 #include <algorithm>
@@ -80,6 +81,11 @@ void validateClusteringSettings(const YAML::Node &inputYaml) {
                     SOAP::Angular::settings = Settings::SOAP::Angular(soapSettings);
                 if (soapSettings[SOAP::Cutoff::settings.name()])
                     SOAP::Cutoff::settings = Settings::SOAP::Cutoff(soapSettings);
+                break;
+            }
+            case IClusterer::Type::GraphClusterer: {
+                GraphClusterer::settings
+                        = Settings::GraphClusterer(clusteringNode);
                 break;
             }
             default:
@@ -172,6 +178,8 @@ int main(int argc, char *argv[]) {
 
     auto clusteringNode = inputYaml["Clustering"];
 
+    std::vector<std::vector<std::size_t >> clusterNumberGraphAnalysisResults;
+
     for (auto node : clusteringNode) {
         auto methodName = node.first.as<std::string>();
         spdlog::info("Starting {}...", methodName);
@@ -214,6 +222,19 @@ int main(int argc, char *argv[]) {
 
                 DensityBasedClusterer densityBasedClusterer(samples);
                 densityBasedClusterer.cluster(maxima);
+
+                settings.appendToNode(usedClusteringSettings);
+                break;
+            }
+            case IClusterer::Type::GraphClusterer: {
+                auto &settings = GraphClusterer::settings;
+
+                settings = Settings::GraphClusterer(node.second);
+
+                GraphClusterer graphClusterer(maxima);
+                auto clusterSizes = graphClusterer.scanClusterSizeWithDistance();
+
+                clusterNumberGraphAnalysisResults.emplace_back(clusterSizes);
 
                 settings.appendToNode(usedClusteringSettings);
                 break;
@@ -299,7 +320,13 @@ int main(int argc, char *argv[]) {
     outputYaml << Key << "Atoms" << Value << atoms << Comment("[a0]")
                << Key << "Rnn" << Value << Metrics::positionalDistances(atoms.positionsVector()) << Comment("[a0]")
                << Key << "NSamples" << Value << samples.size()
-               << Key << "OverallResults" << Value << results;
+               << Key << "OverallResults" << Value << results
+               << Key << "ClusterNumberGraphAnalysis" << BeginSeq;
+    for (auto results : clusterNumberGraphAnalysisResults) {
+        outputYaml << YAML::Flow << results;
+    }
+    outputYaml << EndSeq;
+
     spdlog::info("Calculating statistics...");
 
     MaximaProcessor maximaProcessor(outputYaml, samples, atoms);

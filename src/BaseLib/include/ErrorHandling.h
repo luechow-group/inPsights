@@ -1,4 +1,4 @@
-/* Copyright (C) 2019 Michael Heuer.
+/* Copyright 2020 Michael Heuer
  *
  * This file is part of inPsights.
  * inPsights is free software: you can redistribute it and/or modify
@@ -15,26 +15,15 @@
  * along with inPsights. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef INPSIGHTS_ICLUSTERER_H
-#define INPSIGHTS_ICLUSTERER_H
+#ifndef INPSIGHTS_ERRORHANDLING_H
+#define INPSIGHTS_ERRORHANDLING_H
 
-#include <Group.h>
+#include <stdexcept>
 
-class IClusterer{
+class NotImplemented : public std::logic_error
+{
 public:
-    enum class Type {
-        IdentityClusterer,
-        DistanceClusterer,
-        DensityBasedClusterer,
-        SOAPClusterer,
-        ReferencePositionsClusterer,
-        GraphClusterer,
-        invalid
-    };
-
-    virtual void cluster(Group& group) = 0;
-
-    static Type typeFromString(const std::string& clustererName);
+    NotImplemented();
 };
 
-#endif //INPSIGHTS_ICLUSTERER_H
+#endif //INPSIGHTS_ERRORHANDLING_H

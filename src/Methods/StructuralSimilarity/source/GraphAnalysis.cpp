@@ -20,12 +20,19 @@
 namespace GraphAnalysis {
     Eigen::MatrixXb filter(const Eigen::MatrixXd & matrix, double threshold) {
         assert( (matrix.array() >= 0.0).all() );
-        assert( (matrix.array() <= 1.0).all() );
-
         assert( threshold >= 0.0);
+
+        assert( (matrix.array() <= 1.0).all() );
         assert( threshold <= 1.0);
 
         return matrix.unaryExpr([&](const double x) { return (x >= threshold) ? 1.0 : 0.0; }).cast<bool>();
+    }
+
+    Eigen::MatrixXb lowerOrEqualFilter(const Eigen::MatrixXd & matrix, double threshold) {
+        assert( (matrix.array() >= 0.0).all() );
+        assert( threshold >= 0.0);
+
+        return matrix.unaryExpr([&](const double x) { return (x <= threshold) ? 1.0 : 0.0; }).cast<bool>();
     }
 
     std::list<Eigen::Index> findConnectedVertices(const Eigen::MatrixXb &adjacencyMatrix, Eigen::Index startVertex) {
