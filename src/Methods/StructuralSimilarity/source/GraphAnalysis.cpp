@@ -67,6 +67,7 @@ namespace GraphAnalysis {
         return connectedVertices;
     }
 
+    // returns a vector of lists containing
     std::vector<std::list<Eigen::Index>> findGraphClusters(const Eigen::MatrixXb &adjacencyMatrix) {
         assert(adjacencyMatrix.rows() == adjacencyMatrix.cols());
 

@@ -28,6 +28,7 @@ namespace Settings {
         Property<double> startRadius = {0.0, VARNAME(startRadius)};
         Property<double> endRadius = {1.0, VARNAME(endRadius)};
         Property<double> radiusIncrement = {0.05, VARNAME(radiusIncrement)};
+        Property<double> minimalWeight = {0.0, VARNAME(minimalWeight)};
 
         GraphClusterer();
         explicit GraphClusterer(const YAML::Node &node);
@@ -42,7 +43,7 @@ public:
     GraphClusterer(Group& group);
     Eigen::MatrixXd calculateAdjacencyMatrix(Group& group);
     void cluster(Group& group) override;
-    std::vector<std::size_t> scanClusterSizeWithDistance();
+    std::vector<std::size_t> scanClusterSizeWithDistance(const Group& group);
 
 private:
     //std::vector<Sample> &samples_;

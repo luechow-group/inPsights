@@ -36,7 +36,6 @@
 
 #include <GraphClusterer.h>
 #include <GraphAnalysis.h>
-#include <DistanceClusterer.h>
 #include <BestMatchDistance.h>
 #include <ValueSorter.h>
 #include <spdlog/spdlog.h>
@@ -51,12 +50,14 @@ namespace Settings {
         doubleProperty::decode(node, startRadius);
         doubleProperty::decode(node, endRadius);
         doubleProperty::decode(node, radiusIncrement);
+        doubleProperty::decode(node, minimalWeight);
     }
 
     void GraphClusterer::appendToNode(YAML::Node &node) const {
         node[className][startRadius.name()] = startRadius();
         node[className][endRadius.name()] = endRadius();
         node[className][radiusIncrement.name()] = radiusIncrement();
+        node[className][minimalWeight.name()] = minimalWeight();
     }
 }
 YAML_SETTINGS_DEFINITION(Settings::GraphClusterer)
@@ -67,6 +68,7 @@ Settings::GraphClusterer GraphClusterer::settings = Settings::GraphClusterer();
 GraphClusterer::GraphClusterer(Group& group)
         : mat_(calculateAdjacencyMatrix(group)) {}
 
+// constructs an adjacency matrix with indices being determined from the order in the group
 Eigen::MatrixXd  GraphClusterer::calculateAdjacencyMatrix(Group& group) {
     assert(!group.empty() && "The group cannot be empty.");
 
@@ -94,20 +96,46 @@ void GraphClusterer::cluster(Group& group) {
     throw NotImplemented();
 }
 
-std::vector<std::size_t >  GraphClusterer::scanClusterSizeWithDistance() {
+std::vector<std::size_t >  GraphClusterer::scanClusterSizeWithDistance(const Group& group) {
     double b = settings.endRadius();
     double h = settings.radiusIncrement();
-
     auto dist = settings.startRadius();
+    auto minimalWeight = settings.minimalWeight();
 
-    std::vector<std::size_t > clusterSizes;
-    clusterSizes.emplace_back(mat_.size());
+    std::size_t totalNumberOfMaxima = group.numberOfLeaves();
+
+    std::vector<std::size_t> clusterSizes;
+    std::size_t significantClusterCount = 0;
+
+    for(const auto& subgroup : group){
+        auto weight = static_cast<double>(subgroup.numberOfLeaves()) / static_cast<double>(totalNumberOfMaxima);
+        if(weight > minimalWeight)
+            significantClusterCount++;
+    }
+    clusterSizes.emplace_back(significantClusterCount);
 
     while( dist <= b){
         dist += h;
         auto adjacencyMatrix = GraphAnalysis::lowerOrEqualFilter(mat_, dist);
         auto graphClusters = GraphAnalysis::findGraphClusters(adjacencyMatrix);
-        clusterSizes.emplace_back(graphClusters.size());
+
+        // filter the number of significant clusters in the set of found clusters
+        significantClusterCount = 0;
+        for(const auto& cluster : graphClusters){
+
+            // calculate weight for cluster
+            std::size_t summedMaxima = 0;
+            for(auto index : cluster)
+                summedMaxima += group[index].numberOfLeaves();
+            auto weight = static_cast<double>(summedMaxima) / static_cast<double>(totalNumberOfMaxima);
+
+            // check if weight is significant enough
+            if(weight > minimalWeight)
+                significantClusterCount++;
+        }
+        clusterSizes.emplace_back(significantClusterCount);
+
+
     }
     return clusterSizes;
 }

@@ -232,7 +232,7 @@ int main(int argc, char *argv[]) {
                 settings = Settings::GraphClusterer(node.second);
 
                 GraphClusterer graphClusterer(maxima);
-                auto clusterSizes = graphClusterer.scanClusterSizeWithDistance();
+                auto clusterSizes = graphClusterer.scanClusterSizeWithDistance(maxima);
 
                 clusterNumberGraphAnalysisResults.emplace_back(clusterSizes);
 
