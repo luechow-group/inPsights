@@ -80,19 +80,20 @@ namespace GraphAnalysis {
 
         std::vector<std::list<Eigen::Index>> clusters;
 
-        do {
+        while (!remainingVertices.empty()) {
+            // breadth-first search of connected vertices in the adjacency matrix
+            // starting at the first of the remaining vertices
             auto connectedVertices = findConnectedVertices(adjacencyMatrix, remainingVertices.front());
             clusters.push_back(connectedVertices);
 
             std::list<Eigen::Index> difference;
 
+            // determine remaining vertices from the difference to the newly found connected vertices
             std::set_difference(
                     remainingVertices.begin(), remainingVertices.end(),
                     connectedVertices.begin(), connectedVertices.end(), std::back_inserter(difference));
-
             remainingVertices = difference;
-
-        } while (!remainingVertices.empty());
+        };
 
         return clusters;
     }
