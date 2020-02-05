@@ -178,7 +178,8 @@ int main(int argc, char *argv[]) {
 
     auto clusteringNode = inputYaml["Clustering"];
 
-    std::vector<std::vector<std::size_t >> clusterNumberGraphAnalysisResults;
+    std::vector<std::vector<std::size_t>> clusterNumberGraphAnalysisResults;
+    std::vector<std::vector<double>> clusterTotalWeightDifferenceAnalysis;
 
     for (auto node : clusteringNode) {
         auto methodName = node.first.as<std::string>();
@@ -233,8 +234,10 @@ int main(int argc, char *argv[]) {
 
                 GraphClusterer graphClusterer(maxima);
                 auto clusterSizes = graphClusterer.scanClusterSizeWithDistance(maxima);
+                auto totalClusterWeightDifferences = graphClusterer.scanTotalWeightDifferenceWithDistance(maxima);
 
                 clusterNumberGraphAnalysisResults.emplace_back(clusterSizes);
+                clusterTotalWeightDifferenceAnalysis.emplace_back(totalClusterWeightDifferences);
 
                 settings.appendToNode(usedClusteringSettings);
                 break;
@@ -323,6 +326,11 @@ int main(int argc, char *argv[]) {
                << Key << "OverallResults" << Value << results
                << Key << "ClusterNumberGraphAnalysis" << BeginSeq;
     for (auto results : clusterNumberGraphAnalysisResults) {
+        outputYaml << YAML::Flow << results;
+    }
+    outputYaml << EndSeq;
+    outputYaml << Key << "TotalClusterWeightDifferenceAnalysis" << BeginSeq;
+    for (auto results : clusterTotalWeightDifferenceAnalysis) {
         outputYaml << YAML::Flow << results;
     }
     outputYaml << EndSeq;

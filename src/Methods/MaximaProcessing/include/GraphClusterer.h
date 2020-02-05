@@ -44,10 +44,33 @@ public:
     Eigen::MatrixXd calculateAdjacencyMatrix(Group& group);
     void cluster(Group& group) override;
     std::vector<std::size_t> scanClusterSizeWithDistance(const Group& group);
+    std::vector<double> scanTotalWeightDifferenceWithDistance(const Group& group);
 
 private:
     //std::vector<Sample> &samples_;
     Eigen::MatrixXd mat_;
 };
+
+template<typename K, typename V>
+bool findByValue(std::vector<K> & vec, std::map<K, V> mapOfElemen, V value)
+{
+    bool bResult = false;
+    auto it = mapOfElemen.begin();
+    // Iterate through the map
+    while(it != mapOfElemen.end())
+    {
+        // Check if value of this entry matches with given value
+        if(it->second == value)
+        {
+            // Yes found
+            bResult = true;
+            // Push the key in given map
+            vec.push_back(it->first);
+        }
+        // Go to next entry in map
+        it++;
+    }
+    return bResult;
+}
 
 #endif //INPSIGHTS_GRAPHCLUSTERER_H

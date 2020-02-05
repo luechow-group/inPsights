@@ -40,6 +40,7 @@
 #include <ValueSorter.h>
 #include <spdlog/spdlog.h>
 #include <ErrorHandling.h>
+#include <Enumerate.h>
 
 namespace Settings {
     GraphClusterer::GraphClusterer()
@@ -134,8 +135,63 @@ std::vector<std::size_t >  GraphClusterer::scanClusterSizeWithDistance(const Gro
                 significantClusterCount++;
         }
         clusterSizes.emplace_back(significantClusterCount);
-
-
     }
     return clusterSizes;
+}
+
+
+
+std::vector<double>  GraphClusterer::scanTotalWeightDifferenceWithDistance(const Group& group) {
+    double b = settings.endRadius();
+    double h = settings.radiusIncrement();
+    auto dist = settings.startRadius();
+
+    std::size_t totalNumberOfMaxima = group.numberOfLeaves();
+
+    std::vector<double> totalWeightDifferences;
+
+    std::vector<std::list<Eigen::Index>> previousClusters;
+    std::vector<double> prevWeights;
+    for (const auto & [i, cluster] : enumerate(group)) {
+        previousClusters.emplace_back(std::list<Eigen::Index>({static_cast<Eigen::Index>(i)}));
+        prevWeights.emplace_back(static_cast<double>(cluster.numberOfLeaves()) / static_cast<double>(totalNumberOfMaxima));
+    }
+
+    while(dist <= b){
+        dist += h;
+        auto adjacencyMatrix = GraphAnalysis::lowerOrEqualFilter(mat_, dist);
+        auto currentClusters = GraphAnalysis::findGraphClusters(adjacencyMatrix);
+               auto prevToCurrMap = GraphAnalysis::findMergeMap(previousClusters, currentClusters);
+
+        double totalWeightDifference = 0.0;
+        std::vector<double> newWeights;
+
+        for (const auto& [i, currentCluster] : enumerate(currentClusters)) {
+
+            double currentWeight = 0;
+            for(auto member : currentCluster)
+                currentWeight += group[member].numberOfLeaves();
+            currentWeight /= double(totalNumberOfMaxima);
+            newWeights.emplace_back(currentWeight);
+
+            // find all prev clusters that were merged into
+            std::vector<Eigen::Index> vec;
+            bool foundQ = findByValue(vec, prevToCurrMap, Eigen::Index(i));
+            assert(foundQ);
+            assert(vec.size() > 0 && vec.size() <= currentCluster.size());
+
+            // determine max weights of those
+            double maxPrevWeight = 0.0;
+            for(auto prevIndex : vec) {
+                auto weight = prevWeights[prevIndex];
+                if(weight > maxPrevWeight)
+                    maxPrevWeight = weight;
+            }
+            totalWeightDifference += currentWeight - maxPrevWeight;
+        }
+
+        totalWeightDifferences.emplace_back(totalWeightDifference);
+        prevWeights = newWeights;
+    }
+    return totalWeightDifferences;
 }
