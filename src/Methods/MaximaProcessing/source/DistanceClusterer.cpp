@@ -50,10 +50,6 @@ void DistanceClusterer::cluster(Group& group) {
     auto similarityRadius = settings.radius();
     auto valueIncrement = settings.valueIncrement();
 
-
-    // first, make sure group is sorted
-    group.sort(); // TODO use sortAll?
-
     // insert first element
     Group supergroup({Group({*group.begin()})});
     group.erase(group.begin());
@@ -137,4 +133,7 @@ void DistanceClusterer::cluster(Group& group) {
         }
     }
     group = supergroup;
+
+    // sort by function value before leaving
+    group.sort();
 }

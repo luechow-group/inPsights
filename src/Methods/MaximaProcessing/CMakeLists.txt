@@ -24,10 +24,14 @@ set(HEADER_FILES
         include/EnergyPartitioning.h
         include/EnergyStatistics.h
         include/Group.h
-        include/IClusterer.h
+        include/IBlock.h
         include/ReferencePositionsClusterer.h
         include/VoxelCubeOverlapCalculation.h
-        include/SpinCorrelationValueDistribution.h)
+        include/SpinCorrelationValueHistogram.h
+        include/ClusterNumberAnalyzer.h
+        include/GroupAnalysis.h
+        include/TotalWeightDifferenceAnalyzer.h
+        )
 
 set(SOURCE_FILES
         source/RawDataReader.cpp
@@ -45,10 +49,13 @@ set(SOURCE_FILES
         source/EnergyPartitioning.cpp
         source/EnergyStatistics.cpp
         source/Group.cpp
-        source/IClusterer.cpp
+        source/IBlock.cpp
         source/ReferencePositionsClusterer.cpp
         source/VoxelCubeOverlapCalculation.cpp
-        source/SpinCorrelationValueDistribution.cpp
+        source/SpinCorrelationValueHistogram.cpp
+        source/ClusterNumberAnalyzer.cpp
+        source/GroupAnalysis.cpp
+        source/TotalWeightDifferenceAnalyzer.cpp
         )
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES})

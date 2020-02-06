@@ -25,7 +25,7 @@
 #include <VoxelCubeGeneration.h>
 #include <VoxelCubeOverlapCalculation.h>
 #include <spdlog/spdlog.h>
-#include <SpinCorrelationValueDistribution.h>
+#include <SpinCorrelationValueHistogram.h>
 
 MaximaProcessor::MaximaProcessor(YAML::Emitter& yamlDocument, const std::vector<Sample>& samples, const AtomsVector& atoms)
         :
@@ -123,7 +123,7 @@ void MaximaProcessor::calculateStatistics(const Group &maxima){
     size_t totalCount = 0;
     double totalWeight = 0.0;
 
-    SpinCorrelationValueDistribution spinCorrelationDistribution(12); // => 25 bns in total
+    SpinCorrelationValueHistogram spinCorrelationDistribution(12); // => 25 bns in total
 
     for (auto& group : maxima) {
 
@@ -176,7 +176,7 @@ void MaximaProcessor::calculateStatistics(const Group &maxima){
         }
     }
     spdlog::info("Overall count {}. Some structures might be lost "
-                 "by being classified as noise during density based clustering.", totalCount);
+                 "by being classified as noise during density-based clustering.", totalCount);
     spdlog::info("Considered weight: {}, discarded weight: {}", totalWeight, 1.0 - totalWeight);
 
     yamlDocument_ << EndSeq;

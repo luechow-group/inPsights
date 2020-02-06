@@ -15,21 +15,21 @@
  * along with inPsights. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <SpinCorrelationValueDistribution.h>
+#include <SpinCorrelationValueHistogram.h>
 
-SpinCorrelationValueDistribution::SpinCorrelationValueDistribution(Eigen::Index oneSidedNonzeroBinCount)
+SpinCorrelationValueHistogram::SpinCorrelationValueHistogram(Eigen::Index oneSidedNonzeroBinCount)
 :
 oneSidedNonzeroBinCount_(oneSidedNonzeroBinCount),
 binCount_(oneSidedNonzeroBinCount_ * 2 + 1),
 bins_(Eigen::VectorXd::Zero(binCount_)){};
 
-Eigen::Index SpinCorrelationValueDistribution::calculateBinIndex(double spinCorrelation){
+Eigen::Index SpinCorrelationValueHistogram::calculateBinIndex(double spinCorrelation){
     auto binLength = 2.0 / static_cast<double>(binCount_);
     Eigen::Index binIndex = std::ceil(std::abs(spinCorrelation) / binLength - 0.5);
     return spinCorrelation >= 0 ? oneSidedNonzeroBinCount_ + binIndex : oneSidedNonzeroBinCount_ - binIndex;
 };
 
-void SpinCorrelationValueDistribution::addSpinStatistic(const TriangularMatrixStatistics& spinCorrelations) {
+void SpinCorrelationValueHistogram::addSpinStatistic(const TriangularMatrixStatistics& spinCorrelations) {
     assert(spinCorrelations.mean().minCoeff() >= -1.0);
     assert(spinCorrelations.mean().maxCoeff() <= 1.0);
 
@@ -41,6 +41,6 @@ void SpinCorrelationValueDistribution::addSpinStatistic(const TriangularMatrixSt
     }
 }
 
-Eigen::VectorXd SpinCorrelationValueDistribution::getHistogramVector(){
+Eigen::VectorXd SpinCorrelationValueHistogram::getHistogramVector(){
     return bins_;
 };

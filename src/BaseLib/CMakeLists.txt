@@ -58,6 +58,7 @@ set(HEADER_FILES
         include/NearestElectrons.h
         include/SpinPairClassification.h
         include/CameraSettings.h
+        include/ErrorHandling.h
         )
 
 
@@ -87,6 +88,7 @@ set(SOURCE_FILES
         source/NearestElectrons.cpp
         source/SpinPairClassification.cpp
         source/CameraSettings.cpp
+        source/ErrorHandling.cpp
         )
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES})

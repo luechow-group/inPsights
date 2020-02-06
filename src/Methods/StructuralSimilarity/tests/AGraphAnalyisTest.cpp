@@ -84,3 +84,30 @@ TEST_F(AGraphAnalysisTest, Filter) {
     m = m.array() - 1.0;
     EXPECT_DEATH(GraphAnalysis::filter(m,0.5),"");
 }
+
+
+TEST_F(AGraphAnalysisTest, FindSubsets) {
+
+    std::vector<std::list<Eigen::Index>> subsets{{0, 1}, {2}, {3}};
+    std::vector<std::list<Eigen::Index>> referenceSets{{0, 1, 2}, {3}};
+
+    auto map = GraphAnalysis::findMergeMap(subsets, referenceSets);
+
+    ASSERT_THAT(map,Contains(std::pair<Eigen::Index, Eigen::Index>(0,0)));
+    ASSERT_THAT(map,Contains(std::pair<Eigen::Index, Eigen::Index>(1,0)));
+    ASSERT_THAT(map,Contains(std::pair<Eigen::Index, Eigen::Index>(2,1)));
+}
+
+TEST_F(AGraphAnalysisTest, ReferenceSetWithoutMatchingSubsetDeath) {
+    std::vector<std::list<Eigen::Index>> subsets{{0,1}, {2}, {3}};
+    std::vector<std::list<Eigen::Index>> referenceSets{{0,1,2},{3},{4}};
+
+    EXPECT_DEATH(GraphAnalysis::findMergeMap(subsets, referenceSets), "");
+}
+
+TEST_F(AGraphAnalysisTest, SubsetNotFoundInReferenceSetDeath) {
+    std::vector<std::list<Eigen::Index>> subsets{{0,1}, {2}, {3}, {4}};
+    std::vector<std::list<Eigen::Index>> referenceSets{{0,1,2},{3}};
+
+    EXPECT_DEATH(GraphAnalysis::findMergeMap(subsets, referenceSets), "");
+}

@@ -20,7 +20,7 @@
 #include <spdlog/spdlog.h>
 #include <Eigen/Core>
 #include <ParticlesVector.h>
-#include <SpinCorrelationValueDistribution.h>
+#include <SpinCorrelationValueHistogram.h>
 #include <fstream>
 
 int main(int argc, char *argv[]) {
@@ -52,7 +52,7 @@ int main(int argc, char *argv[]) {
 
             YAML::Node molDoc = YAML::LoadAllFromFile(filename)[1];
 
-            SpinCorrelationValueDistribution distribution(oneSidedBinCount);
+            SpinCorrelationValueHistogram distribution(oneSidedBinCount);
             Eigen::VectorXd molecularStats = Eigen::VectorXd::Zero(2*oneSidedBinCount+1);
 
             //auto nElectrons = molDoc["Clusters"][0]["Structures"][0].as<ElectronsVector>().numberOfEntities();

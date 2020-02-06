@@ -17,7 +17,7 @@
 
 #include <gmock/gmock.h>
 #include <spdlog/spdlog.h>
-#include <SpinCorrelationValueDistribution.h>
+#include <SpinCorrelationValueHistogram.h>
 
 using namespace testing;
 
@@ -41,7 +41,7 @@ public:
 };
 
 TEST_F(ASpinCorrelationValueDistributionTest, fiveBins) {
-    SpinCorrelationValueDistribution distribution(2);
+    SpinCorrelationValueHistogram distribution(2);
     distribution.addSpinStatistic(spinCorrelationsStatistic);
 
     auto hist = distribution.getHistogramVector();
@@ -56,7 +56,7 @@ TEST_F(ASpinCorrelationValueDistributionTest, fiveBins) {
 }
 
 TEST_F(ASpinCorrelationValueDistributionTest, calculateBinIndex) {
-    SpinCorrelationValueDistribution distribution(2);
+    SpinCorrelationValueHistogram distribution(2);
     distribution.addSpinStatistic(spinCorrelationsStatistic);
 
     ASSERT_EQ(distribution.calculateBinIndex(1.0), 4);

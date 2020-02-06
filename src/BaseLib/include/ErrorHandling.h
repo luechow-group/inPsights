@@ -1,4 +1,4 @@
-/* Copyright (C) 2019 Michael Heuer.
+/* Copyright 2020 Michael Heuer
  *
  * This file is part of inPsights.
  * inPsights is free software: you can redistribute it and/or modify
@@ -15,19 +15,15 @@
  * along with inPsights. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "IClusterer.h"
+#ifndef INPSIGHTS_ERRORHANDLING_H
+#define INPSIGHTS_ERRORHANDLING_H
 
-IClusterer::Type IClusterer::typeFromString(const std::string& clustererName) {
-    if(clustererName == "IdentityClusterer")
-        return Type::IdentityClusterer;
-    else if(clustererName == "DistanceClusterer")
-        return Type::DistanceClusterer;
-    else if(clustererName == "DensityBasedClusterer")
-        return Type::DensityBasedClusterer;
-    else if(clustererName == "ReferencePositionsClusterer")
-        return Type::ReferencePositionsClusterer;
-    else if(clustererName == "SOAPClusterer")
-        return Type::SOAPClusterer;
-    else
-        return Type::invalid;
+#include <stdexcept>
+
+class NotImplemented : public std::logic_error
+{
+public:
+    NotImplemented();
 };
+
+#endif //INPSIGHTS_ERRORHANDLING_H

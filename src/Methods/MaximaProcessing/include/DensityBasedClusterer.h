@@ -22,8 +22,7 @@
 #include <DistanceClusterer.h>
 #include <ISettings.h>
 #include <spdlog/spdlog.h>
-
-#include <IClusterer.h>
+#include <IBlock.h>
 #include <Group.h>
 
 namespace Settings {
@@ -52,7 +51,6 @@ private:
     std::vector<Sample> &samples_;
 
     static double wrapper(const Group &g1, const Group &g2);
-
     void orderByBestMatchDistance(Group &supergroup, double threshold) const;
 };
 

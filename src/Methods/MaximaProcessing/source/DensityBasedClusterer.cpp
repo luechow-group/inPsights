@@ -71,8 +71,6 @@ double DensityBasedClusterer::wrapper(const Group &g1, const Group &g2) {
 void DensityBasedClusterer::cluster(Group& group) {
     assert(!group.empty() && "The group cannot be empty.");
 
-    group.sortAll();
-
     auto eps = settings.radius();
     auto minPts = settings.minimalClusterSize();
 
@@ -89,6 +87,9 @@ void DensityBasedClusterer::cluster(Group& group) {
     orderByBestMatchDistance(supergroup, eps);
 
     group = supergroup;
+
+    // sort by function value before leaving
+    group.sort();
 }
 
 void DensityBasedClusterer::orderByBestMatchDistance(Group &supergroup, double threshold) const {
