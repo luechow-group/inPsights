@@ -62,6 +62,7 @@ public:
                      Eigen::VectorXd::Random(2));
             tripletSamples.emplace_back(std::move(s));
         }
+        tripletMaxima.sortAll();
         return {tripletMaxima, tripletSamples};
     }
 
@@ -97,6 +98,7 @@ public:
                      Eigen::VectorXd::Random(2));
             singletSamples.emplace_back(std::move(s));
         }
+        singletMaxima.sortAll();
         return {singletMaxima, singletSamples};
     }
 };

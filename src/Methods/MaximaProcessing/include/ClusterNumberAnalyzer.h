@@ -1,4 +1,4 @@
-/* Copyright 2020 heuer
+/* Copyright 2020 Michael Heuer.
  *
  * This file is part of inPsights.
  * inPsights is free software: you can redistribute it and/or modify
@@ -15,38 +15,36 @@
  * along with inPsights. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef INPSIGHTS_GRAPHCLUSTERER_H
-#define INPSIGHTS_GRAPHCLUSTERER_H
+#ifndef INPSIGHTS_CLUSTERNUMBERANALYZER_H
+#define INPSIGHTS_CLUSTERNUMBERANALYZER_H
 
-#include "Sample.h"
-#include "IClusterer.h"
+#include "IBlock.h"
 #include <ISettings.h>
 
 namespace Settings {
-    class GraphClusterer : public ISettings {
+    class ClusterNumberAnalyzer : public ISettings {
     public:
         Property<double> startRadius = {0.0, VARNAME(startRadius)};
-        Property<double> endRadius = {1.0, VARNAME(endRadius)};
         Property<double> radiusIncrement = {0.05, VARNAME(radiusIncrement)};
+        Property<unsigned> increments = {30, VARNAME(increments)};
+        Property<double> minimalWeight = {0.0, VARNAME(minimalWeight)};
 
-        GraphClusterer();
-        explicit GraphClusterer(const YAML::Node &node);
+        ClusterNumberAnalyzer();
+        explicit ClusterNumberAnalyzer(const YAML::Node &node);
         void appendToNode(YAML::Node &node) const override;
     };
 }
-YAML_SETTINGS_DECLARATION(Settings::GraphClusterer)
-class GraphClusterer : public IClusterer{
+YAML_SETTINGS_DECLARATION(Settings::ClusterNumberAnalyzer)
+class ClusterNumberAnalyzer : public IAnalyzer {
 public:
-    static Settings::GraphClusterer settings;
+    static Settings::ClusterNumberAnalyzer settings;
 
-    GraphClusterer(Group& group);
-    Eigen::MatrixXd calculateAdjacencyMatrix(Group& group);
-    void cluster(Group& group) override;
-    std::vector<std::size_t> scanClusterSizeWithDistance();
+    void analyze(const Group& group) override;
+    std::vector<std::size_t> getResults();
 
 private:
-    //std::vector<Sample> &samples_;
-    Eigen::MatrixXd mat_;
+    std::vector<std::size_t> clusterNumbers_;
 };
 
-#endif //INPSIGHTS_GRAPHCLUSTERER_H
+
+#endif //INPSIGHTS_CLUSTERNUMBERANALYZER_H

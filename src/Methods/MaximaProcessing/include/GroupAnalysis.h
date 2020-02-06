@@ -1,4 +1,4 @@
-/* Copyright (C) 2019 Michael Heuer.
+/* Copyright 2020 Michael Heuer.
  *
  * This file is part of inPsights.
  * inPsights is free software: you can redistribute it and/or modify
@@ -15,26 +15,13 @@
  * along with inPsights. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef INPSIGHTS_ICLUSTERER_H
-#define INPSIGHTS_ICLUSTERER_H
+#ifndef INPSIGHTS_GROUPANALYSIS_H
+#define INPSIGHTS_GROUPANALYSIS_H
 
-#include <Group.h>
+#include "Group.h"
 
-class IClusterer{
-public:
-    enum class Type {
-        IdentityClusterer,
-        DistanceClusterer,
-        DensityBasedClusterer,
-        SOAPClusterer,
-        ReferencePositionsClusterer,
-        GraphClusterer,
-        invalid
-    };
+namespace GroupAnalysis {
+    Eigen::MatrixXd calculateAdjacencyMatrix(const Group &group);
+}
 
-    virtual void cluster(Group& group) = 0;
-
-    static Type typeFromString(const std::string& clustererName);
-};
-
-#endif //INPSIGHTS_ICLUSTERER_H
+#endif //INPSIGHTS_GROUPANALYSIS_H

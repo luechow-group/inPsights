@@ -19,7 +19,7 @@
 #define INPSIGHTS_DISTANCECLUSTERER_H
 
 #include <BestMatch.h>
-#include <IClusterer.h>
+#include <IBlock.h>
 #include <ISettings.h>
 
 namespace Settings {

@@ -22,6 +22,7 @@
 #include <queue>
 #include <list>
 #include <algorithm>
+#include <map>
 
 namespace Eigen {
     using MatrixXb = Matrix<bool, Eigen::Dynamic, Eigen::Dynamic>;
@@ -36,6 +37,11 @@ namespace GraphAnalysis {
     std::list<Eigen::Index> findConnectedVertices(const Eigen::MatrixXb &adjacencyMatrix, Eigen::Index startVertex);
 
     std::vector<std::list<Eigen::Index>> findGraphClusters(const Eigen::MatrixXb &adjacencyMatrix);
+
+    std::map<Eigen::Index, Eigen::Index> findMergeMap(
+            std::vector<std::list<Eigen::Index>> subsets,
+            std::vector<std::list<Eigen::Index>> referenceSets);
+
 }
 
 #endif //INPSIGHTS_GRAPHANALYSIS_H

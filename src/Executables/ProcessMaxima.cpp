@@ -23,7 +23,8 @@
 #include <DensityBasedClusterer.h>
 #include <SOAPClusterer.h>
 #include <ReferencePositionsClusterer.h>
-#include <GraphClusterer.h>
+#include <ClusterNumberAnalyzer.h>
+#include <TotalWeightDifferenceAnalyzer.h>
 #include <MaximaProcessor.h>
 #include <GeneralStatistics.h>
 #include <algorithm>
@@ -47,30 +48,25 @@ void validateClusteringSettings(const YAML::Node &inputYaml) {
     for (auto node : clusteringNode) {
         auto methodName = node.first.as<std::string>();
 
-        switch (IClusterer::typeFromString(methodName)) {
-            case IClusterer::Type::IdentityClusterer: {
-                IdentityClusterer::settings
-                        = Settings::IdentityClusterer(clusteringNode);
+        switch (IBlock::typeFromString(methodName)) {
+            case IBlock::BlockType::IdentityClusterer: {
+                IdentityClusterer::settings = Settings::IdentityClusterer(clusteringNode);
                 break;
             }
-            case IClusterer::Type::DistanceClusterer: {
-                DistanceClusterer::settings
-                        = Settings::DistanceClusterer(clusteringNode);
+            case IBlock::BlockType::DistanceClusterer: {
+                DistanceClusterer::settings = Settings::DistanceClusterer(clusteringNode);
                 break;
             }
-            case IClusterer::Type::DensityBasedClusterer: {
-                DensityBasedClusterer::settings
-                        = Settings::DensityBasedClusterer(clusteringNode);
+            case IBlock::BlockType::DensityBasedClusterer: {
+                DensityBasedClusterer::settings = Settings::DensityBasedClusterer(clusteringNode);
                 break;
             }
-            case IClusterer::Type::ReferencePositionsClusterer: {
-                ReferencePositionsClusterer::settings
-                        = Settings::ReferencePositionsClusterer(clusteringNode);
+            case IBlock::BlockType::ReferencePositionsClusterer: {
+                ReferencePositionsClusterer::settings = Settings::ReferencePositionsClusterer(clusteringNode);
                 break;
             }
-            case IClusterer::Type::SOAPClusterer: {
-                SOAPClusterer::settings
-                        = Settings::SOAPClusterer(clusteringNode);
+            case IBlock::BlockType::SOAPClusterer: {
+                SOAPClusterer::settings = Settings::SOAPClusterer(clusteringNode);
 
                 auto soapSettings = node.second["SOAP"];
                 if (soapSettings[SOAP::General::settings.name()])
@@ -83,9 +79,12 @@ void validateClusteringSettings(const YAML::Node &inputYaml) {
                     SOAP::Cutoff::settings = Settings::SOAP::Cutoff(soapSettings);
                 break;
             }
-            case IClusterer::Type::GraphClusterer: {
-                GraphClusterer::settings
-                        = Settings::GraphClusterer(clusteringNode);
+            case IBlock::BlockType::ClusterNumberAnalyzer: {
+                ClusterNumberAnalyzer::settings = Settings::ClusterNumberAnalyzer(clusteringNode);
+                break;
+            }
+            case IBlock::BlockType::TotalWeightDifferenceAnalyzer: {
+                TotalWeightDifferenceAnalyzer::settings = Settings::TotalWeightDifferenceAnalyzer(clusteringNode);
                 break;
             }
             default:
@@ -163,6 +162,7 @@ int main(int argc, char *argv[]) {
     Group maxima;
     std::vector<Sample> samples;
     RawDataReader reader(maxima, samples);
+    maxima.sortAll();
     reader.read(MaximaProcessing::settings.binaryFileBasename(), MaximaProcessing::settings.samplesToAnalyze());
     auto atoms = reader.getAtoms();
 
@@ -178,7 +178,8 @@ int main(int argc, char *argv[]) {
 
     auto clusteringNode = inputYaml["Clustering"];
 
-    std::vector<std::vector<std::size_t >> clusterNumberGraphAnalysisResults;
+    std::vector<std::vector<std::size_t>> clusterNumberGraphAnalysisResults;
+    std::vector<std::vector<double>> totalWeightDifferencesAnalysisResults;
 
     for (auto node : clusteringNode) {
         auto methodName = node.first.as<std::string>();
@@ -187,8 +188,8 @@ int main(int argc, char *argv[]) {
         if (usedClusteringSettings[methodName])
             spdlog::warn("Method \"{}\" is being applied multiple times! Overwriting old settings...", methodName);
 
-        switch (IClusterer::typeFromString(methodName)) {
-            case IClusterer::Type::IdentityClusterer: {
+        switch (IBlock::typeFromString(methodName)) {
+            case IBlock::BlockType::IdentityClusterer: {
                 auto &settings = IdentityClusterer::settings;
 
                 settings = Settings::IdentityClusterer(node.second);
@@ -202,7 +203,7 @@ int main(int argc, char *argv[]) {
                 settings.appendToNode(usedClusteringSettings);
                 break;
             }
-            case IClusterer::Type::DistanceClusterer: {
+            case IBlock::BlockType::DistanceClusterer: {
                 auto &settings = DistanceClusterer::settings;
 
                 settings = Settings::DistanceClusterer(node.second);
@@ -215,7 +216,7 @@ int main(int argc, char *argv[]) {
                 settings.appendToNode(usedClusteringSettings);
                 break;
             }
-            case IClusterer::Type::DensityBasedClusterer: {
+            case IBlock::BlockType::DensityBasedClusterer: {
                 auto &settings = DensityBasedClusterer::settings;
 
                 settings = Settings::DensityBasedClusterer(node.second);
@@ -226,20 +227,31 @@ int main(int argc, char *argv[]) {
                 settings.appendToNode(usedClusteringSettings);
                 break;
             }
-            case IClusterer::Type::GraphClusterer: {
-                auto &settings = GraphClusterer::settings;
+            case IBlock::BlockType::ClusterNumberAnalyzer: {
+                auto &settings = ClusterNumberAnalyzer::settings;
+                settings = Settings::ClusterNumberAnalyzer(node.second);
 
-                settings = Settings::GraphClusterer(node.second);
-
-                GraphClusterer graphClusterer(maxima);
-                auto clusterSizes = graphClusterer.scanClusterSizeWithDistance();
-
-                clusterNumberGraphAnalysisResults.emplace_back(clusterSizes);
+                ClusterNumberAnalyzer analyzer;
+                maxima.sortAll(); // TODO necessary?
+                analyzer.analyze(maxima);
+                clusterNumberGraphAnalysisResults.emplace_back(analyzer.getResults());
 
                 settings.appendToNode(usedClusteringSettings);
                 break;
             }
-            case IClusterer::Type::ReferencePositionsClusterer: {
+            case IBlock::BlockType::TotalWeightDifferenceAnalyzer: {
+                auto &settings = TotalWeightDifferenceAnalyzer::settings;
+                settings = Settings::TotalWeightDifferenceAnalyzer(node.second);
+
+                TotalWeightDifferenceAnalyzer analyzer;
+                maxima.sortAll(); // TODO necessary?
+                analyzer.analyze(maxima);
+                totalWeightDifferencesAnalysisResults.emplace_back(analyzer.getResults());
+
+                settings.appendToNode(usedClusteringSettings);
+                break;
+            }
+            case IBlock::BlockType::ReferencePositionsClusterer: {
                 auto &settings = ReferencePositionsClusterer::settings;
 
                 settings = Settings::ReferencePositionsClusterer(node.second);
@@ -262,7 +274,7 @@ int main(int argc, char *argv[]) {
                 settings.appendToNode(usedClusteringSettings);
                 break;
             }
-            case IClusterer::Type::SOAPClusterer: {
+            case IBlock::BlockType::SOAPClusterer: {
                 auto &settings = SOAPClusterer::settings;
 
                 settings = Settings::SOAPClusterer(node.second);
@@ -323,6 +335,11 @@ int main(int argc, char *argv[]) {
                << Key << "OverallResults" << Value << results
                << Key << "ClusterNumberGraphAnalysis" << BeginSeq;
     for (auto results : clusterNumberGraphAnalysisResults) {
+        outputYaml << YAML::Flow << results;
+    }
+    outputYaml << EndSeq;
+    outputYaml << Key << "TotalClusterWeightDifferenceAnalysis" << BeginSeq;
+    for (auto results : totalWeightDifferencesAnalysisResults) {
         outputYaml << YAML::Flow << results;
     }
     outputYaml << EndSeq;

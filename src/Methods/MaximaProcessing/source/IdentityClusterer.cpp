@@ -50,8 +50,7 @@ void IdentityClusterer::cluster(Group& group) {
     auto identityRadius = settings.radius();
     auto valueIncrement = settings.valueIncrement();
 
-    // first, sort references by value
-    group.sortAll();
+
 
     auto beginIt = group.begin();
 
@@ -74,6 +73,8 @@ void IdentityClusterer::cluster(Group& group) {
             beginIt = endIt;
         } else ++beginIt; // range is zero
     }
+    // sort by function value before leaving
+    group.sort();
 }
 
 void IdentityClusterer::subLoop(Group& group,

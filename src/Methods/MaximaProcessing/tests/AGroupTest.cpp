@@ -20,8 +20,6 @@
 #include <Group.h>
 #include <Reference.h>
 #include <TestMolecules.h>
-#include <Enumerate.h>
-#include <sstream>
 
 using namespace testing;
 
