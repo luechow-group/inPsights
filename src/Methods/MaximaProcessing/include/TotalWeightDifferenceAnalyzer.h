@@ -15,49 +15,43 @@
  * along with inPsights. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef INPSIGHTS_GRAPHCLUSTERER_H
-#define INPSIGHTS_GRAPHCLUSTERER_H
+#ifndef INPSIGHTS_TOTALWEIGHTDIFFERENCEANALYZER_H
+#define INPSIGHTS_TOTALWEIGHTDIFFERENCEANALYZER_H
 
-#include "Sample.h"
-#include "IClusterer.h"
+#include "IBlock.h"
 #include <ISettings.h>
 
 namespace Settings {
-    class GraphClusterer : public ISettings {
+    class TotalWeightDifferenceAnalyzer : public ISettings {
     public:
         Property<double> startRadius = {0.0, VARNAME(startRadius)};
-        Property<double> endRadius = {1.0, VARNAME(endRadius)};
+        Property<unsigned> increments = {30, VARNAME(increments)};
         Property<double> radiusIncrement = {0.05, VARNAME(radiusIncrement)};
-        Property<double> minimalWeight = {0.0, VARNAME(minimalWeight)};
 
-        GraphClusterer();
-        explicit GraphClusterer(const YAML::Node &node);
+        TotalWeightDifferenceAnalyzer();
+        explicit TotalWeightDifferenceAnalyzer(const YAML::Node &node);
         void appendToNode(YAML::Node &node) const override;
     };
 }
-YAML_SETTINGS_DECLARATION(Settings::GraphClusterer)
-class GraphClusterer : public IClusterer{
+YAML_SETTINGS_DECLARATION(Settings::TotalWeightDifferenceAnalyzer)
+class TotalWeightDifferenceAnalyzer : public IAnalyzer {
 public:
-    static Settings::GraphClusterer settings;
+    static Settings::TotalWeightDifferenceAnalyzer settings;
 
-    GraphClusterer(Group& group);
-    Eigen::MatrixXd calculateAdjacencyMatrix(Group& group);
-    void cluster(Group& group) override;
-    std::vector<std::size_t> scanClusterSizeWithDistance(const Group& group);
-    std::vector<double> scanTotalWeightDifferenceWithDistance(const Group& group);
+    void analyze(const Group& group) override;
+    std::vector<double> getResults();
 
 private:
-    //std::vector<Sample> &samples_;
-    Eigen::MatrixXd mat_;
+    std::vector<double> totalWeightDifferences_;
 };
 
 template<typename K, typename V>
-bool findByValue(std::vector<K> & vec, std::map<K, V> mapOfElemen, V value)
+bool findByValue(std::vector<K> & vec, std::map<K, V> mapOfElement, V value)
 {
     bool bResult = false;
-    auto it = mapOfElemen.begin();
+    auto it = mapOfElement.begin();
     // Iterate through the map
-    while(it != mapOfElemen.end())
+    while(it != mapOfElement.end())
     {
         // Check if value of this entry matches with given value
         if(it->second == value)
@@ -73,4 +67,4 @@ bool findByValue(std::vector<K> & vec, std::map<K, V> mapOfElemen, V value)
     return bResult;
 }
 
-#endif //INPSIGHTS_GRAPHCLUSTERER_H
+#endif //INPSIGHTS_TOTALWEIGHTDIFFERENCEANALYZER_H

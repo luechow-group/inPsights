@@ -18,6 +18,7 @@
 #include <GraphAnalysis.h>
 #include <numeric>
 #include <Enumerate.h>
+#include <algorithm>
 
 namespace GraphAnalysis {
     Eigen::MatrixXb filter(const Eigen::MatrixXd & matrix, double threshold) {
@@ -103,19 +104,26 @@ namespace GraphAnalysis {
 
 std::map<Eigen::Index, Eigen::Index> GraphAnalysis::findMergeMap(
         std::vector<std::list<Eigen::Index>> subsets,
-        std::vector<std::list<Eigen::Index>> referenceSets
-){
+        std::vector<std::list<Eigen::Index>> referenceSets) {
     // identify, which sets are subsets of the previous ones
     std::map<Eigen::Index, Eigen::Index> map;
 
-    for(const auto & [currentClusterIndex, currentCluster]  : enumerate(referenceSets)){
-        for(const auto & [prevClusterIndex, prevCluster] : enumerate(subsets)){
-            auto isSubsetQ = std::includes(
-                    currentCluster.begin(), currentCluster.end(),
-                    prevCluster.begin(), prevCluster.end());
-            if(isSubsetQ)
-                map[prevClusterIndex] = currentClusterIndex;
+    std::vector<bool> foundQ(subsets.size(),false);
+    for(const auto & [referenceSetIndex, referenceSet]  : enumerate(referenceSets)){
+
+        bool matchedQ = false;
+        for(const auto & [subsetIndex, subset] : enumerate(subsets)){
+            auto isSubsetQ = std::includes(referenceSet.begin(), referenceSet.end(), subset.begin(), subset.end());
+            if(isSubsetQ) {
+                map[subsetIndex] = referenceSetIndex;
+                foundQ[subsetIndex] = true;
+                matchedQ = true;
+            }
         }
+        assert(matchedQ && "A set of the reference sets has no matching subset.");
     }
+    assert(std::all_of(foundQ.begin(), foundQ.end(), [](bool foundQ) {
+        return foundQ == true;}) && "All subsets should appear in the reference set.");
+
     return map;
 };

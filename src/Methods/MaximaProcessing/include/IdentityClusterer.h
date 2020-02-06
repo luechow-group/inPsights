@@ -19,7 +19,7 @@
 #define INPSIGHTS_IDENTITYCLUSTERER_H
 
 #include "Sample.h"
-#include "IClusterer.h"
+#include "IBlock.h"
 #include <ISettings.h>
 
 namespace Settings {
@@ -35,7 +35,7 @@ namespace Settings {
 }
 YAML_SETTINGS_DECLARATION(Settings::IdentityClusterer)
 
-class IdentityClusterer : public IClusterer{
+class IdentityClusterer : public IClusterer {
 public:
     static Settings::IdentityClusterer settings;
 

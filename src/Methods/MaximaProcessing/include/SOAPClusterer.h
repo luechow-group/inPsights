@@ -19,7 +19,7 @@
 #define INPSIGHTS_SOAPCLUSTERER_H
 
 #include "Sample.h"
-#include "IClusterer.h"
+#include "IBlock.h"
 #include <ISettings.h>
 #include <MolecularSpectrum.h>
 

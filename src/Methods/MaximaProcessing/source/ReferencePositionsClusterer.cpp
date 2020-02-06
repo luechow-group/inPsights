@@ -93,9 +93,6 @@ void ReferencePositionsClusterer::cluster(Group &group) {
     auto similarityRadius = settings.radius();
     long electronsNumber = group.representative()->maximum().numberOfEntities();
 
-    // sorts 'group' by the value ( -ln(|\Psi|^2) )
-    group.sort();
-
     std::list<long> subIndices;
     Eigen::PermutationMatrix<Eigen::Dynamic> permutation;
 
@@ -170,6 +167,9 @@ void ReferencePositionsClusterer::cluster(Group &group) {
         countIterator++;
     }
     group = superGroup;
+
+    // sort by function value before leaving
+    group.sort();
 }
 
 std::list<long> ReferencePositionsClusterer::getRelevantIndices(const ElectronsVector &electrons) {

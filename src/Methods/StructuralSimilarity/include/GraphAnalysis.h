@@ -40,8 +40,8 @@ namespace GraphAnalysis {
 
     std::map<Eigen::Index, Eigen::Index> findMergeMap(
             std::vector<std::list<Eigen::Index>> subsets,
-            std::vector<std::list<Eigen::Index>> referenceSets
-    );
+            std::vector<std::list<Eigen::Index>> referenceSets);
+
 }
 
 #endif //INPSIGHTS_GRAPHANALYSIS_H
