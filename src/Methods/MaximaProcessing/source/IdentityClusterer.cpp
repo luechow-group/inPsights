@@ -74,7 +74,7 @@ void IdentityClusterer::cluster(Group& group) {
         } else ++beginIt; // range is zero
     }
     // sort by function value before leaving
-    group.sort();
+    group.sortAll();
 }
 
 void IdentityClusterer::subLoop(Group& group,

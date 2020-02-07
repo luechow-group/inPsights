@@ -63,8 +63,6 @@ SOAPClusterer::SOAPClusterer(
 void SOAPClusterer::cluster(Group& group){
     assert(!group.isLeaf() && "The group cannot be a leaf.");
 
-    group.sortAll(); // sort, to make sure that the most probable structures are the representatives
-
     // Calculate spectra
     spdlog::info("Calculating {} spectra in {} mode...",
             group.size(),SOAP::General::toString(SOAP::General::settings.mode.get()));
@@ -117,4 +115,7 @@ void SOAPClusterer::cluster(Group& group){
             supergroup.emplace_back(Group({*groupIt}));
     }
     group = supergroup;
+
+    // sort by function value before leaving
+    group.sortAll();
 }

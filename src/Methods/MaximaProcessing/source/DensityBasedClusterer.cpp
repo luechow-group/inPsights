@@ -89,7 +89,7 @@ void DensityBasedClusterer::cluster(Group& group) {
     group = supergroup;
 
     // sort by function value before leaving
-    group.sort();
+    group.sortAll();
 }
 
 void DensityBasedClusterer::orderByBestMatchDistance(Group &supergroup, double threshold) const {
