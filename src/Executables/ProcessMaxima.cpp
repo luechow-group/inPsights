@@ -162,7 +162,7 @@ int main(int argc, char *argv[]) {
     Group maxima;
     std::vector<Sample> samples;
     RawDataReader reader(maxima, samples);
-    maxima.sortAll();
+
     reader.read(MaximaProcessing::settings.binaryFileBasename(), MaximaProcessing::settings.samplesToAnalyze());
     auto atoms = reader.getAtoms();
 
@@ -181,6 +181,7 @@ int main(int argc, char *argv[]) {
     std::vector<std::vector<std::size_t>> clusterNumberGraphAnalysisResults;
     std::vector<std::vector<double>> totalWeightDifferencesAnalysisResults;
 
+    maxima.sortAll();
     for (auto node : clusteringNode) {
         auto methodName = node.first.as<std::string>();
         spdlog::info("Starting {}...", methodName);

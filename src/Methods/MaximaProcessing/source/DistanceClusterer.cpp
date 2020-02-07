@@ -135,5 +135,5 @@ void DistanceClusterer::cluster(Group& group) {
     group = supergroup;
 
     // sort by function value before leaving
-    group.sort();
+    group.sortAll();
 }
