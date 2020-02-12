@@ -88,15 +88,16 @@ void TotalWeightDifferenceAnalyzer::analyze(const Group& group) {
     auto startRadius = settings.startRadius();
 
     // prepare data needed for the analysis
+    std::size_t totalNumberOfMaxima = group.numberOfLeaves();
     auto mat = GroupAnalysis::calculateAdjacencyMatrix(group);
     totalWeightDifferences_.clear();
 
-    std::size_t totalNumberOfMaxima = group.numberOfLeaves();
 
+    // get weight of the clusters in group and put it in prev weights
     std::vector<std::list<Eigen::Index>> previousClusters;
     std::vector<double> prevWeights;
-    for (const auto & [i, cluster] : enumerate(group)) {
-        previousClusters.emplace_back(std::list<Eigen::Index>({static_cast<Eigen::Index>(i)}));
+    for (const auto & [clusterIndex, cluster] : enumerate(group)) {
+        previousClusters.emplace_back(std::list<Eigen::Index>({static_cast<Eigen::Index>(clusterIndex)}));
         prevWeights.emplace_back(static_cast<double>(cluster.numberOfLeaves()) / static_cast<double>(totalNumberOfMaxima));
     }
 
@@ -104,25 +105,27 @@ void TotalWeightDifferenceAnalyzer::analyze(const Group& group) {
         double radius = startRadius + i*h;
 
         auto adjacencyMatrix = GraphAnalysis::lowerOrEqualFilter(mat, radius);
-        auto currentClusters = GraphAnalysis::findGraphClusters(adjacencyMatrix);
-        auto prevToCurrMap = GraphAnalysis::findMergeMap(previousClusters, currentClusters);
+        auto currentClustersMembersIndices = GraphAnalysis::findGraphClusters(adjacencyMatrix);
+        auto prevToCurrMap = GraphAnalysis::findMergeMap(previousClusters, currentClustersMembersIndices);
 
         double totalWeightDifference = 0.0;
         std::vector<double> newWeights;
 
-        for (const auto& [i, currentCluster] : enumerate(currentClusters)) {
+        for (const auto& [currentClusterIndex, currentClusterMemberIndices] : enumerate(currentClustersMembersIndices)) {
 
             double currentWeight = 0;
-            for(auto member : currentCluster)
-                currentWeight += group[member].numberOfLeaves();
+            for(auto memberIndex : currentClusterMemberIndices)
+                currentWeight += group[memberIndex].numberOfLeaves();
             currentWeight /= double(totalNumberOfMaxima);
             newWeights.emplace_back(currentWeight);
 
-            // find all prev clusters that were merged into
+            // find all prev clusters that were merged into the current cluster
             std::vector<Eigen::Index> vec;
-            bool foundQ = findByValue(vec, prevToCurrMap, Eigen::Index(i));
+
+            // find all members in the previous map currentClusterMemberIndices
+            bool foundQ = GraphAnalysis::findByValue(vec, prevToCurrMap, Eigen::Index(currentClusterIndex)); //TODO°!!!!
             assert(foundQ);
-            assert(vec.size() > 0 && vec.size() <= currentCluster.size());
+            assert(vec.size() > 0 && vec.size() <= currentClusterMemberIndices.size());
 
             // determine max weights of those
             double maxPrevWeight = 0.0;
