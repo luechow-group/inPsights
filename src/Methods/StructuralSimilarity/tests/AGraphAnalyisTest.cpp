@@ -23,6 +23,7 @@ using namespace testing;
 class AGraphAnalysisTest : public ::testing::Test {
 public:
     Eigen::MatrixXb A, B, C;
+    Eigen::MatrixXd distMatA;
 
     void SetUp() override {
         A = Eigen::MatrixXb(4, 4);
@@ -45,8 +46,58 @@ public:
              0, 0, 0, 0, \
              0, 0, 1, 0, \
              0, 0, 0, 1;
+
+        distMatA = Eigen::MatrixXd(4, 4);
+        distMatA << 0.0, 0.0, 0.2, 0.4, \
+                    0.0, 0.0, 0.4, 0.8, \
+                    0.2, 0.4, 0.0, 1.2, \
+                    0.4, 0.8, 1.2, 0.0;
     };
 };
+
+TEST_F(AGraphAnalysisTest, findConnectedVertices) {
+    Eigen::MatrixXb expected02 (4,4);
+    expected02 << 1, 1, 1, 0, \
+                  1, 1, 0, 0, \
+                  1, 0, 1, 0, \
+                  0, 0, 0, 1;
+    ASSERT_TRUE(GraphAnalysis::lowerOrEqualFilter(distMatA,0.2).isApprox(expected02));
+
+    Eigen::MatrixXb expected04 (4,4);
+    expected04 << 1, 1, 1, 1, \
+                  1, 1, 1, 0, \
+                  1, 1, 1, 0, \
+                  1, 0, 0, 1;
+    ASSERT_TRUE(GraphAnalysis::lowerOrEqualFilter(distMatA,0.4).isApprox(expected04));
+
+    Eigen::MatrixXb expected08 (4,4);
+    expected08 << 1, 1, 1, 1, \
+                  1, 1, 1, 1, \
+                  1, 1, 1, 0, \
+                  1, 1, 0, 1;
+    ASSERT_TRUE( GraphAnalysis::lowerOrEqualFilter(distMatA,0.8).isApprox(expected08));
+
+    Eigen::MatrixXb expected12 (4,4);
+    expected12 << 1, 1, 1, 1, \
+                  1, 1, 1, 1, \
+                  1, 1, 1, 1, \
+                  1, 1, 1, 1;
+    ASSERT_TRUE(GraphAnalysis::lowerOrEqualFilter(distMatA,1.2).isApprox(expected12));
+}
+
+TEST_F(AGraphAnalysisTest, LowerOrEqualFilter) {
+    auto adjacencyMat02 = GraphAnalysis::lowerOrEqualFilter(distMatA,0.2);
+    ASSERT_THAT(GraphAnalysis::findConnectedVertices(adjacencyMat02, 0), ElementsAre(0,1,2));
+    ASSERT_THAT(GraphAnalysis::findConnectedVertices(adjacencyMat02, 1), ElementsAre(0,1,2));
+    ASSERT_THAT(GraphAnalysis::findConnectedVertices(adjacencyMat02, 2), ElementsAre(0,1,2));
+    ASSERT_THAT(GraphAnalysis::findConnectedVertices(adjacencyMat02, 3), ElementsAre(3));
+
+    auto adjacencyMat04 = GraphAnalysis::lowerOrEqualFilter(distMatA,0.4);
+    ASSERT_THAT(GraphAnalysis::findConnectedVertices(adjacencyMat04, 0), ElementsAre(0,1,2,3));
+    ASSERT_THAT(GraphAnalysis::findConnectedVertices(adjacencyMat04, 1), ElementsAre(0,1,2,3));
+    ASSERT_THAT(GraphAnalysis::findConnectedVertices(adjacencyMat04, 2), ElementsAre(0,1,2,3));
+    ASSERT_THAT(GraphAnalysis::findConnectedVertices(adjacencyMat04, 3), ElementsAre(0,1,2,3));
+}
 
 TEST_F(AGraphAnalysisTest, TwoPairs) {
     auto clusters = GraphAnalysis::findGraphClusters(A);
