@@ -38,7 +38,7 @@ namespace GraphAnalysis {
 
     std::vector<std::list<Eigen::Index>> findGraphClusters(const Eigen::MatrixXb &adjacencyMatrix);
 
-    std::map<Eigen::Index, Eigen::Index> findMergeMap(
+    std::map<std::size_t, std::size_t> findMergeMap(
             std::vector<std::list<Eigen::Index>> subsets,
             std::vector<std::list<Eigen::Index>> referenceSets);
 

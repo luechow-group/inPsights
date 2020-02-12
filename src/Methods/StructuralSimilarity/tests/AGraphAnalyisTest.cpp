@@ -151,26 +151,26 @@ TEST_F(AGraphAnalysisTest, Filter) {
 
 TEST_F(AGraphAnalysisTest, FindSubsets) {
 
-    std::vector<std::list<Eigen::Index>> subsets{{0, 1}, {2}, {3}};
-    std::vector<std::list<Eigen::Index>> referenceSets{{0, 1, 2}, {3}};
+    std::vector<std::list<Eigen::Index>> subsets{{90, 91}, {92}, {93}};
+    std::vector<std::list<Eigen::Index>> referenceSets{{90, 91, 92}, {93}};
 
     auto map = GraphAnalysis::findMergeMap(subsets, referenceSets);
 
-    ASSERT_THAT(map,Contains(std::pair<Eigen::Index, Eigen::Index>(0,0)));
-    ASSERT_THAT(map,Contains(std::pair<Eigen::Index, Eigen::Index>(1,0)));
-    ASSERT_THAT(map,Contains(std::pair<Eigen::Index, Eigen::Index>(2,1)));
+    ASSERT_THAT(map,Contains(std::pair<std::size_t, std::size_t>(0,0)));
+    ASSERT_THAT(map,Contains(std::pair<std::size_t, std::size_t>(1,0)));
+    ASSERT_THAT(map,Contains(std::pair<std::size_t, std::size_t>(2,1)));
 }
 
 TEST_F(AGraphAnalysisTest, FindSubsetsUnorderd) {
 
-    std::vector<std::list<Eigen::Index>> subsets{{2}, {3}, {0, 1}};
-    std::vector<std::list<Eigen::Index>> referenceSets{{3}, {0, 1, 2}};
+    std::vector<std::list<Eigen::Index>> subsets{{92}, {93}, {90, 91}};
+    std::vector<std::list<Eigen::Index>> referenceSets{{93}, {90, 91, 92}};
 
     auto map = GraphAnalysis::findMergeMap(subsets, referenceSets);
 
-    ASSERT_THAT(map,Contains(std::pair<Eigen::Index, Eigen::Index>(0,1)));
-    ASSERT_THAT(map,Contains(std::pair<Eigen::Index, Eigen::Index>(1,0)));
-    ASSERT_THAT(map,Contains(std::pair<Eigen::Index, Eigen::Index>(2,1)));
+    ASSERT_THAT(map,Contains(std::pair<std::size_t, std::size_t>(0,1)));
+    ASSERT_THAT(map,Contains(std::pair<std::size_t, std::size_t>(1,0)));
+    ASSERT_THAT(map,Contains(std::pair<std::size_t, std::size_t>(2,1)));
 }
 
 TEST_F(AGraphAnalysisTest, FindKeysToValueInMap) {
@@ -193,6 +193,28 @@ TEST_F(AGraphAnalysisTest, FindKeysToValueInMap) {
     ASSERT_THAT(keysMappedToValueA,ElementsAre(1));
     ASSERT_THAT(keysMappedToValueB,ElementsAre(0,2));
     ASSERT_THAT(keysMappedToValueC,IsEmpty());
+}
+
+TEST_F(AGraphAnalysisTest, FindKeysToValueAppendToSameVector) {
+
+    std::map<int, std::string> map = {
+            {0, "b"},
+            {1, "a"},
+            {2, "b"}};
+
+    std::vector<int> keysMappedToValueAB;
+
+    auto foundA = GraphAnalysis::findByValue(keysMappedToValueAB, map, std::string("a"));
+    ASSERT_THAT(keysMappedToValueAB,ElementsAre(1));
+    ASSERT_TRUE(foundA);
+
+    auto foundB = GraphAnalysis::findByValue(keysMappedToValueAB, map, std::string("b"));
+    ASSERT_THAT(keysMappedToValueAB,ElementsAre(1,0,2));
+    ASSERT_TRUE(foundB);
+
+    auto foundC = GraphAnalysis::findByValue(keysMappedToValueAB, map, std::string("c"));
+    ASSERT_THAT(keysMappedToValueAB,ElementsAre(1,0,2));
+    ASSERT_FALSE(foundC);
 }
 
 TEST_F(AGraphAnalysisTest, ReferenceSetWithoutMatchingSubsetDeath) {

@@ -48,8 +48,13 @@ TEST_F(ATotalWeightDifferenceAnalyzerTest, emptyGroupDeathTest){
     EXPECT_DEATH(analyzer.analyze(group),"");
 }
 
+#include <GroupAnalysis.h>
+#include <GraphAnalysis.h>
 TEST_F(ATotalWeightDifferenceAnalyzerTest, Ungrouped){
     Group group({g1,g2,g3a,g3b});
+
+
+    std::vector<std::list<Eigen::Index>> previousClusterIndicesOfGroup;
 
     TotalWeightDifferenceAnalyzer::settings.startRadius = 0.4;
     TotalWeightDifferenceAnalyzer::settings.increments = 2;

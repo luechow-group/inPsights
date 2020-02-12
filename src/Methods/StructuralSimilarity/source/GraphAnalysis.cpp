@@ -102,11 +102,11 @@ namespace GraphAnalysis {
     }
 }
 
-std::map<Eigen::Index, Eigen::Index> GraphAnalysis::findMergeMap(
+std::map<std::size_t, std::size_t> GraphAnalysis::findMergeMap(
         std::vector<std::list<Eigen::Index>> subsets,
         std::vector<std::list<Eigen::Index>> referenceSets) {
     // identify, which sets are subsets of the previous ones
-    std::map<Eigen::Index, Eigen::Index> map;
+    std::map<std::size_t, std::size_t> map;
 
     std::vector<bool> foundQ(subsets.size(),false);
     for(const auto & [referenceSetIndex, referenceSet]  : enumerate(referenceSets)){
