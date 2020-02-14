@@ -1,4 +1,4 @@
-/* Copyright 2020 heuer
+/* Copyright 2020 Michael Heuer.
  *
  * This file is part of inPsights.
  * inPsights is free software: you can redistribute it and/or modify
@@ -16,49 +16,11 @@
  */
 
 #include "TotalWeightDifferenceAnalyzer.h"
-
-/* Copyright 2020 heuer
- *
- * This file is part of inPsights.
- * inPsights is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * inPsights is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with inPsights. If not, see <https://www.gnu.org/licenses/>.
- */
-
-#include <ClusterNumberAnalyzer.h>
-
-/* Copyright (C) 2018-2019 Michael Heuer.
- *
- * This file is part of inPsights.
- * inPsights is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * inPsights is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with inPsights. If not, see <https://www.gnu.org/licenses/>.
- */
-
-#include <ClusterNumberAnalyzer.h>
 #include <GraphAnalysis.h>
 #include <GroupAnalysis.h>
 #include <ValueSorter.h>
 #include <spdlog/spdlog.h>
-#include <ErrorHandling.h>
+#include <algorithm>
 
 
 namespace Settings {
@@ -89,7 +51,7 @@ void TotalWeightDifferenceAnalyzer::analyze(const Group& group) {
 
     // prepare data needed for the analysis
     std::size_t totalNumberOfMaxima = group.numberOfLeaves();
-    auto mat = GroupAnalysis::calculateAdjacencyMatrix(group);
+    auto mat = GroupAnalysis::calculateBestMatchDistanceMatrix(group);
     totalWeightDifferences_.clear();
 
 
@@ -113,13 +75,12 @@ void TotalWeightDifferenceAnalyzer::analyze(const Group& group) {
         std::vector<double> weightsOfCurrentRadiusClustering;
 
         // iterate over clusters found for the specified radius
-        std::vector<bool> allPreviousClustersFound(group.size(), false);
         for (const auto [currentClusterId, groupIdsListOfCurrentCluster] : enumerate(groupIdsListsOfCurrentRadiusClustering)) {
 
             // calculate weight of a cluster of connected group ids
             double currentClusterWeight = 0;
             for(auto groupId : groupIdsListOfCurrentCluster)
-                currentClusterWeight += group[groupId].numberOfLeaves();
+                currentClusterWeight += double(group[groupId].numberOfLeaves());
 
             currentClusterWeight /= double(totalNumberOfMaxima);
             weightsOfCurrentRadiusClustering.emplace_back(currentClusterWeight);
@@ -134,18 +95,29 @@ void TotalWeightDifferenceAnalyzer::analyze(const Group& group) {
             assert(clusterIdsOfPreviousClustersMergedIntoCurrentCluster.size() <= groupIdsListOfCurrentCluster.size()
             && "Maximally, all previous clusters can be merged into the current one.");
 
+            // find clusterId of previous cluster with the largest weight
+            auto heaviestPreviousClusterId = std::max_element(
+                    clusterIdsOfPreviousClustersMergedIntoCurrentCluster.begin(),
+                    clusterIdsOfPreviousClustersMergedIntoCurrentCluster.end(),
+                                                  [weightsOfPreviousRadiusClustering] (std::size_t lhs, size_t rhs) {
+                                                      return weightsOfPreviousRadiusClustering[lhs] < weightsOfPreviousRadiusClustering[rhs];
+            });
+            
+            // remove it
+            clusterIdsOfPreviousClustersMergedIntoCurrentCluster.erase(heaviestPreviousClusterId);
+
             // calculate weight difference
-            double maxPrevWeight = 0.0;
-            for(auto previousClusterId : clusterIdsOfPreviousClustersMergedIntoCurrentCluster) {
-                auto weight = weightsOfPreviousRadiusClustering[previousClusterId];
-                if(weight > maxPrevWeight)
-                    maxPrevWeight = weight;
+            double weightMergedIntoCurrentCluster = 0.0;
+            for(auto previousClusterIdMergedIntoCurrent : clusterIdsOfPreviousClustersMergedIntoCurrentCluster) {
+                weightMergedIntoCurrentCluster += weightsOfPreviousRadiusClustering[previousClusterIdMergedIntoCurrent];
             }
 
-            totalWeightDifference += currentClusterWeight - maxPrevWeight;
+            totalWeightDifference += weightMergedIntoCurrentCluster;
+
         }
         totalWeightDifferences_.emplace_back(totalWeightDifference);
         weightsOfPreviousRadiusClustering = weightsOfCurrentRadiusClustering;
+        groupIdsListsOfPreviousRadiusClustering = groupIdsListsOfCurrentRadiusClustering;
     }
 }
 

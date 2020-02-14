@@ -20,7 +20,7 @@
 #include <Reference.h>
 
 // constructs an adjacency matrix with indices being determined from the order in the group
-Eigen::MatrixXd  GroupAnalysis::calculateAdjacencyMatrix(const Group& group) {
+Eigen::MatrixXd  GroupAnalysis::calculateBestMatchDistanceMatrix(const Group& group) {
     assert(!group.empty() && "The group cannot be empty.");
 
     // construct matrix
@@ -28,10 +28,9 @@ Eigen::MatrixXd  GroupAnalysis::calculateAdjacencyMatrix(const Group& group) {
     Eigen::Index nClusters = group.size();
     for (Eigen::Index i = 0; i < nClusters-1; ++i) {
         for (Eigen::Index j = i+1; j < nClusters; ++j) {
-
-            auto [norm, perm] = BestMatch::Distance::compare<Spin, Eigen::Infinity, 2>(
-                    group[i].representative()->maximum(),
-                    group[j].representative()->maximum());
+            auto [norm, perm] = BestMatch::Distance::compare< Eigen::Infinity, 2>(
+                    group[i].representative()->maximum().positionsVector(),
+                    group[j].representative()->maximum().positionsVector());
             mat(i,j) = norm;
         }
     }
