@@ -39,6 +39,7 @@ namespace NearestElectrons {
     std::list<long>
     getNearestElectronsIndices(const ElectronsVector &electrons, const Eigen::Vector3d &position,
                                const long &count);
+    std::list<long> invertedIndices(const std::list<long>& indices, std::size_t size);
 }
 
 #endif //INPSIGHTS_NEARESTELECTRONS_H

@@ -80,6 +80,20 @@ TEST_F(ANearestElectronsTest, GetValenceByPosition) {
     ASSERT_THAT(indices, ElementsAre(6,7));
 };
 
+TEST_F(ANearestElectronsTest, InvertedIndices) {
+    std::list<long> indices = {0,2,4,6};
+    ASSERT_THAT(NearestElectrons::invertedIndices(indices, 7), ElementsAre(1,3,5));
+    ASSERT_THAT(NearestElectrons::invertedIndices(indices, 8), ElementsAre(1,3,5,7));
+
+    ASSERT_THAT(NearestElectrons::invertedIndices(std::list<long>{0,1,2}, 3), ElementsAre());
+
+    EXPECT_DEATH(NearestElectrons::invertedIndices(std::list<long>{}, 1),"");
+    EXPECT_DEATH(NearestElectrons::invertedIndices(std::list<long>{0}, 0),"");
+    EXPECT_DEATH(NearestElectrons::invertedIndices(std::list<long>{0,1,2}, -1),"");
+    EXPECT_DEATH(NearestElectrons::invertedIndices(std::list<long>{0,-1,2}, 3),"");
+};
+
+
 TEST_F(ANearestElectronsTest, PickElements) {
     ElectronsVector reference;
     reference.append(electrons[6]);

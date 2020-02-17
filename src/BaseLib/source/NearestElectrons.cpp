@@ -102,4 +102,17 @@ namespace NearestElectrons {
 
         return indices;
     };
+    std::list<long> invertedIndices(const std::list<long>& indices, std::size_t size){
+        assert( indices.size() > 0 && size > 0);
+        assert(*std::min_element(indices.begin(),indices.end()) >= 0);
+        assert(*std::max_element(indices.begin(),indices.end()) < long(size));
+
+        std::list<long> inverted{}, all(size);
+        std::iota(all.begin(), all.end(), 0);
+
+        std::set_difference(all.begin(), all.end(), indices.begin(), indices.end(),
+                std::inserter(inverted, inverted.begin()));
+
+        return inverted;
+    };
 }
