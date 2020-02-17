@@ -262,9 +262,7 @@ int main(int argc, char *argv[]) {
                 if(nearestElectronSettings)
                     NearestElectrons::settings = Settings::NearestElectrons(nearestElectronSettings, atoms);
 
-                std::vector<Eigen::Vector3d> positions;
-
-                ReferencePositionsClusterer ReferencePositionsClusterer(samples, atoms, positions);
+                ReferencePositionsClusterer ReferencePositionsClusterer(samples);
                 ReferencePositionsClusterer.cluster(maxima);
 
                 settings.appendToNode(usedClusteringSettings);
@@ -279,7 +277,7 @@ int main(int argc, char *argv[]) {
 
                 settings = Settings::SOAPClusterer(node.second);
 
-                auto soapSettings = node.second["SOAP"];
+                auto soapSettings = node.second["SOAP"]; //TODO what if node "SOAP" is not present?
                 if (soapSettings[SOAP::General::settings.name()])
                     SOAP::General::settings = Settings::SOAP::General(soapSettings);
                 if (soapSettings[SOAP::Radial::settings.name()])

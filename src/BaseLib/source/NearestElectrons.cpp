@@ -98,7 +98,7 @@ namespace NearestElectrons {
     std::list<long>
     getNearestElectronsIndices(const ElectronsVector &electrons, const AtomsVector &nuclei,
                                const std::vector<Eigen::Vector3d> &positions,
-                               const long &maximalCount, const double &maximalDistance,
+                               const long &maximalCount, const double &maximalDistance,//TODO remove const ref
                                std::function<double(const Eigen::Vector3d &,
                                                     const std::vector<Eigen::Vector3d> &)>
                                &distanceFunction,
@@ -118,6 +118,9 @@ namespace NearestElectrons {
         std::list<long> excludedIndices;
         if (valenceOnly) excludedIndices = getNonValenceIndices(electrons, nuclei);
 
+        //TODO refactor : very similar to getNearestElectronsIndices(const ElectronsVector &electrons,
+        //                                                           const Eigen::Vector3d &position,
+        //                                                           const long &count)
         std::list<long> indices;
         for (long j = 0; j < maximalCount; ++j) {
             // pop queue if index in pair q.top() is in excludedIndices

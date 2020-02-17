@@ -87,6 +87,8 @@ std::tuple<bool,Eigen::Index> MolecularGeometry::coreElectronQ(long i, double th
     return {false, 0};
 }
 
+//TODO REPLACE
+
 std::list<long> MolecularGeometry::coreElectronsIndices(long k, double threshold) const {
     std::list<long> indices{};
 
