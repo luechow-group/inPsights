@@ -54,13 +54,13 @@ namespace NearestElectrons {
     std::list<long>
     getNearestElectronsIndices(const ElectronsVector &electrons, const AtomsVector &nuclei,
                                const std::vector<Eigen::Vector3d> &positions,
-                               const long &maximalCount, const double &maximalDistance,
+                               long maximalCount, double maximalDistance,
                                std::function<double(const Eigen::Vector3d &,
                                                     const std::vector<Eigen::Vector3d> &)> &distanceFunction,
                                const bool &valenceOnly);
 
     std::list<long>
-    getNearestElectronsIndices(const ElectronsVector &electrons, const Eigen::Vector3d &position, const long &count);
+    getNearestElectronsIndices(const ElectronsVector &electrons, const Eigen::Vector3d &position, long count);
 
     std::list<long> invertedIndices(const std::list<long>& indices, std::size_t size);
 

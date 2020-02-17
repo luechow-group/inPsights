@@ -98,7 +98,7 @@ namespace NearestElectrons {
     std::list<long>
     getNearestElectronsIndices(const ElectronsVector &electrons, const AtomsVector &nuclei,
                                const std::vector<Eigen::Vector3d> &positions,
-                               const long &maximalCount, const double &maximalDistance,//TODO remove const ref
+                               long maximalCount, double maximalDistance,//TODO remove const ref
                                std::function<double(const Eigen::Vector3d &,
                                                     const std::vector<Eigen::Vector3d> &)>
                                &distanceFunction,
@@ -138,7 +138,7 @@ namespace NearestElectrons {
 
     std::list<long> getNearestElectronsIndices(const ElectronsVector &electrons,
                                                const Eigen::Vector3d &position,
-                                               const long &count) {
+                                               long count) {
         // returns indices of the 'count' electrons closest to 'position' (without restrictions)
         std::priority_queue<
         std::pair<double, int>,
