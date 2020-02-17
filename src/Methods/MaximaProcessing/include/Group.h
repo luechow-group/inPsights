@@ -45,6 +45,7 @@ public:
 
     void sort();
     void sortAll();
+    void permuteRelevantElectronsToFront(std::vector<Sample> & samples);
 
     Group& operator+= (const Group& other);
 

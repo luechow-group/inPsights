@@ -23,6 +23,7 @@
 #include <DensityBasedClusterer.h>
 #include <SOAPClusterer.h>
 #include <ReferencePositionsClusterer.h>
+#include <NearestElectrons.h>
 #include <ClusterNumberAnalyzer.h>
 #include <TotalWeightDifferenceAnalyzer.h>
 #include <MaximaProcessor.h>
@@ -257,22 +258,20 @@ int main(int argc, char *argv[]) {
 
                 settings = Settings::ReferencePositionsClusterer(node.second);
 
+                auto nearestElectronSettings = node.second[VARNAME(NearestElectrons)];
+                if(nearestElectronSettings)
+                    NearestElectrons::settings = Settings::NearestElectrons(nearestElectronSettings, atoms);
+
                 std::vector<Eigen::Vector3d> positions;
-
-                auto positionNodes = node.second["positions"];
-                for (const auto &positionNode : positionNodes){
-                    positions.emplace_back(YAML::decodePosition(positionNode, atoms));
-                }
-
-                spdlog::info("Using the following positions:");
-                for (const auto &position : positions){
-                    spdlog::info("{} {} {}", position[0], position[1], position[2]);
-                }
 
                 ReferencePositionsClusterer ReferencePositionsClusterer(samples, atoms, positions);
                 ReferencePositionsClusterer.cluster(maxima);
 
                 settings.appendToNode(usedClusteringSettings);
+
+                auto usedSoapSettings = usedClusteringSettings[settings.name()][VARNAME(NearestElectrons)]; // TODO Push back
+                NearestElectrons::settings.appendToNode(usedSoapSettings);
+
                 break;
             }
             case IBlock::BlockType::SOAPClusterer: {

@@ -1,4 +1,5 @@
 /* Copyright (C) 2019 Leonard Reuter.
+ * Copyright (C) 2020 Michael Heuer.
  *
  * This file is part of inPsights.
  * inPsights is free software: you can redistribute it and/or modify
@@ -17,9 +18,62 @@
 
 #include <NearestElectrons.h>
 #include <Metrics.h>
+#include <IPosition.h>
 #include <ElementInfo.h>
 #include <queue>
 #include <algorithm>
+
+namespace Settings {
+    NearestElectrons::NearestElectrons(const AtomsVector& atoms)
+            :
+            ISettings(VARNAME(NearestElectrons)),
+            atoms(atoms){
+        distanceMode.onChange_.connect(
+                [&](const std::string& value) {
+                    if (value != "minimum" || value != "average")
+                        throw std::invalid_argument("The distanceMode has to be minimum or average."); //TODO ADD ENUM
+                });
+        maximalDistance.onChange_.connect(
+                [&](double value) {
+                    if (value <= 0.0)
+                        throw std::invalid_argument("The maximalDistance has to be larger than zero.");
+                });
+        maximalCount.onChange_.connect(
+                [&](long value) {
+                    if (value <= 0)
+                        throw std::invalid_argument("The maximalCount has to be larger than zero.");
+                });
+    };
+
+    NearestElectrons::NearestElectrons(const YAML::Node &node, const AtomsVector& atoms)
+            : NearestElectrons(atoms) {
+        doubleProperty::decode(node, maximalDistance);
+        longProperty::decode(node, maximalCount);
+        stringProperty::decode(node, distanceMode);
+        boolProperty::decode(node, valenceOnly);
+        boolProperty::decode(node, invertSelection);
+
+        auto positionNodes = node[VARNAME(positions)];
+        for (const auto &positionNode : positionNodes){
+            positions.emplace_back(YAML::decodePosition(positionNode, atoms));
+        }
+        spdlog::info("Using the following positions:");
+        for (const auto &position : positions){
+            spdlog::info("{} {} {}", position[0], position[1], position[2]);
+        }
+    };
+
+    void NearestElectrons::appendToNode(YAML::Node &node) const {
+        node[className][maximalDistance.name()] = maximalDistance();
+        node[className][maximalCount.name()] = maximalCount();
+        node[className][distanceMode.name()] = distanceMode();
+        node[className][valenceOnly.name()] = valenceOnly();
+        node[className][invertSelection.name()] = invertSelection();
+
+        for(const auto & p : positions)
+            node[className][VARNAME(positions)].push_back(p);
+    };
+}
 
 namespace NearestElectrons {
     std::list<long>
@@ -102,6 +156,36 @@ namespace NearestElectrons {
 
         return indices;
     };
+
+    std::list<long> getRelevantIndices(const ElectronsVector &electrons) {
+
+        auto nuclei = NearestElectrons::settings.atoms;
+        auto positions = NearestElectrons::settings.positions;
+
+        std::function<double(const Eigen::Vector3d &, const std::vector<Eigen::Vector3d> &)> distanceFunction;
+
+        if (settings.distanceMode() == "average") { //TODO use enum
+            distanceFunction = Metrics::averageDistance<2>;
+        } else if (settings.distanceMode() == "minimum") {
+            distanceFunction = Metrics::minimalDistance<2>;
+        }
+
+        auto indices = getNearestElectronsIndices(electrons, nuclei, positions,
+                                                  settings.maximalCount(), settings.maximalDistance(),
+                                                  distanceFunction, settings.valenceOnly());
+
+        if (NearestElectrons::settings.invertSelection()) {
+            if (NearestElectrons::settings.valenceOnly()) {
+                // since selection should be inverted, core indices have to be added to 'subIndices' before inverting
+                indices.splice(indices.end(), NearestElectrons::getNonValenceIndices(electrons, nuclei));
+
+            }
+            return invertedIndices(indices, electrons.numberOfEntities());
+            // sorting will take the front indices. Since the invertSelection is true,
+        }
+        return indices;
+    }
+
     std::list<long> invertedIndices(const std::list<long>& indices, std::size_t size){
         assert( indices.size() > 0 && size > 0);
         assert(*std::min_element(indices.begin(),indices.end()) >= 0);

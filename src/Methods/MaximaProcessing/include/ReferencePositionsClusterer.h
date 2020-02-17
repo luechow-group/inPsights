@@ -28,11 +28,6 @@ namespace Settings {
     class ReferencePositionsClusterer : public ISettings {
     public:
         Property<double> radius = {0.1, VARNAME(radius)};
-        Property<double> maximalDistance = {10.0, VARNAME(maximalDistance)};
-        Property<long> maximalCount = {2, VARNAME(maximalCount)};
-        Property<std::string> distanceMode = {"minimum", VARNAME(distanceMode)};
-        Property<bool> invertSelection = {false, VARNAME(invertSelection)};
-        Property<bool> valenceOnly = {true, VARNAME(valenceOnly)};
         Property<bool> sortRemainder = {false, VARNAME(sortRemainder)};
 
         ReferencePositionsClusterer();
@@ -42,19 +37,16 @@ namespace Settings {
 }
 YAML_SETTINGS_DECLARATION(Settings::ReferencePositionsClusterer)
 
-class ReferencePositionsClusterer : public IClusterer {
+
+class ReferencePositionsClusterer : public IClusterer{
 public:
     static Settings::ReferencePositionsClusterer settings;
 
-    ReferencePositionsClusterer(std::vector<Sample> &samples, AtomsVector &nuclei,
-            std::vector<Eigen::Vector3d> &positions);
+    ReferencePositionsClusterer(std::vector<Sample> &samples);
 
     void cluster(Group& group) override;
-    std::list<long> getRelevantIndices(const ElectronsVector &electronsVector);
 
 private:
-    AtomsVector nuclei_;
-    std::vector<Eigen::Vector3d> positions_;
     std::function<double(const Eigen::Vector3d &, const std::vector<Eigen::Vector3d> &)> distanceFunction_;
 };
 
