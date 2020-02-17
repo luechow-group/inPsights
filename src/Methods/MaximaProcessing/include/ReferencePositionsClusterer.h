@@ -53,7 +53,6 @@ public:
     std::list<long> getRelevantIndices(const ElectronsVector &electronsVector);
 
 private:
-    std::vector<Sample> &samples_;
     AtomsVector nuclei_;
     std::vector<Eigen::Vector3d> positions_;
     std::function<double(const Eigen::Vector3d &, const std::vector<Eigen::Vector3d> &)> distanceFunction_;

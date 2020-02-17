@@ -48,8 +48,6 @@ public:
     void cluster(Group& group) override;
 
 private:
-    std::vector<Sample> &samples_;
-
     static double wrapper(const Group &g1, const Group &g2);
     void orderByBestMatchDistance(Group &supergroup, double threshold) const;
 };

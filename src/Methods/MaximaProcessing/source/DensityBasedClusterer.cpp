@@ -60,7 +60,7 @@ Settings::DensityBasedClusterer DensityBasedClusterer::settings = Settings::Dens
 
 
 DensityBasedClusterer::DensityBasedClusterer(std::vector<Sample> &samples)
-        : samples_(samples) {};
+        : IClusterer(samples) {};
 
 double DensityBasedClusterer::wrapper(const Group &g1, const Group &g2) {
     return BestMatch::Distance::compare<Eigen::Infinity, 2>(

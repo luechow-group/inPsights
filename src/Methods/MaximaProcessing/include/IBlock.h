@@ -43,7 +43,12 @@ public:
 
 class IClusterer : public IBlock {
 public:
+    explicit IClusterer(std::vector<Sample> & samples);
+
     virtual void cluster(Group& group) = 0;
+
+protected:
+    std::vector<Sample> &samples_;
 };
 
 class IAnalyzer : public IBlock {

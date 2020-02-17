@@ -76,7 +76,7 @@ Settings::ReferencePositionsClusterer ReferencePositionsClusterer::settings = Se
 
 ReferencePositionsClusterer::ReferencePositionsClusterer(std::vector<Sample> &samples, AtomsVector &nuclei,
         std::vector<Eigen::Vector3d> &positions)
-        : samples_(samples),
+        : IClusterer(samples),
           nuclei_(nuclei),
           positions_(positions){
     if (settings.distanceMode() == "average"){

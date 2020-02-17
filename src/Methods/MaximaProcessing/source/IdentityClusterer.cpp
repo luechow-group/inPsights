@@ -42,7 +42,7 @@ Settings::IdentityClusterer IdentityClusterer::settings = Settings::IdentityClus
 
 
 IdentityClusterer::IdentityClusterer(std::vector<Sample> &samples)
-        : samples_(samples) {}
+        : IClusterer(samples) {}
 
 void IdentityClusterer::cluster(Group& group) {
     assert(!group.empty() && "The group cannot be empty.");
