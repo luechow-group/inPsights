@@ -97,12 +97,10 @@ namespace NearestElectrons {
 
     std::list<long>
     getNearestElectronsIndices(const ElectronsVector &electrons, const AtomsVector &nuclei,
-                               const std::vector<Eigen::Vector3d> &positions,
-                               long maximalCount, double maximalDistance,//TODO remove const ref
+                               const std::vector<Eigen::Vector3d> &positions, long maximalCount,
+                               const bool &valenceOnly, double maximalDistance,
                                std::function<double(const Eigen::Vector3d &,
-                                                    const std::vector<Eigen::Vector3d> &)>
-                               &distanceFunction,
-                               const bool &valenceOnly) {
+                                                    const std::vector<Eigen::Vector3d> &)> &distanceFunction) {
         // returns indices of electrons closest to a vector of 'positions'
         // the metric is defined by the 'distanceFunction'
         // the indices are chosen beginning with the closest one, until 'maximalCount' or 'maximalDistance' is reached
@@ -162,8 +160,8 @@ namespace NearestElectrons {
 
     std::list<long> getRelevantIndices(const ElectronsVector &electrons) {
 
-        auto nuclei = NearestElectrons::settings.atoms;
-        auto positions = NearestElectrons::settings.positions;
+        auto nuclei = settings.atoms;
+        auto positions = settings.positions;
 
         std::function<double(const Eigen::Vector3d &, const std::vector<Eigen::Vector3d> &)> distanceFunction;
 
@@ -174,13 +172,14 @@ namespace NearestElectrons {
         }
 
         auto indices = getNearestElectronsIndices(electrons, nuclei, positions,
-                                                  settings.maximalCount(), settings.maximalDistance(),
-                                                  distanceFunction, settings.valenceOnly());
+                                                  settings.maximalCount(), settings.valenceOnly(),
+                                                  settings.maximalDistance(),
+                                                  distanceFunction);
 
-        if (NearestElectrons::settings.invertSelection()) {
-            if (NearestElectrons::settings.valenceOnly()) {
+        if (settings.invertSelection()) {
+            if (settings.valenceOnly()) {
                 // since selection should be inverted, core indices have to be added to 'subIndices' before inverting
-                indices.splice(indices.end(), NearestElectrons::getNonValenceIndices(electrons, nuclei));
+                indices.splice(indices.end(), getNonValenceIndices(electrons, nuclei));
 
             }
             return invertedIndices(indices, electrons.numberOfEntities());

@@ -52,7 +52,8 @@ TEST_F(ANearestElectronsTest, GetElectronsByPositionInverted) {
 TEST_F(ANearestElectronsTest, GetValenceByPosition) {
     std::function<double(const Eigen::Vector3d &,const std::vector<Eigen::Vector3d> &)> distanceFunction = Metrics::minimalDistance<2>;
 
-    auto indices = NearestElectrons::getNearestElectronsIndices(electrons, nuclei, {nuclei[0].position()}, 2, 20.0, distanceFunction, true);
+    auto indices = NearestElectrons::getNearestElectronsIndices(electrons, nuclei, {nuclei[0].position()}, 2, true,
+                                                                20.0, distanceFunction);
     ASSERT_THAT(indices, ElementsAre(6,7));
 };
 
