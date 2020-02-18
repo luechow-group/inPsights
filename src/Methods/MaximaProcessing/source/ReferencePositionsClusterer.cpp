@@ -22,6 +22,7 @@
 #include <Reference.h>
 #include <Group.h>
 #include <functional>
+#include <ErrorHandling.h>
 
 namespace Settings {
     ReferencePositionsClusterer::ReferencePositionsClusterer()
@@ -54,12 +55,6 @@ ReferencePositionsClusterer::ReferencePositionsClusterer(std::vector<Sample> &sa
 void ReferencePositionsClusterer::cluster(Group &group) {
     assert(!group.empty() && "The group cannot be empty.");
 
-    auto similarityRadius = settings.radius();
-    long electronsNumber = group.representative()->maximum().numberOfEntities();
-
-    std::list<long> subIndices;
-    Eigen::PermutationMatrix<Eigen::Dynamic> permutation;
-
     // sorting relevant electrons to the front
     group.permuteRelevantElectronsToFront(samples_);
 
@@ -69,6 +64,9 @@ void ReferencePositionsClusterer::cluster(Group &group) {
     // bool to decide, whether subGroup of group is added to a sortedGroup of superGroup
     // or to superGroup as a new sortedGroup
     bool isSimilarQ;
+
+    auto similarityRadius = settings.radius();
+    long electronsNumber = group.representative()->maximum().numberOfEntities();
 
     for (auto subGroup = std::next(group.begin()); subGroup != group.end(); ++subGroup) {
         isSimilarQ = false;
