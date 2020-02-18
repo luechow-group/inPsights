@@ -34,7 +34,7 @@ namespace Settings {
         Property<std::string> binaryFileBasename = {"raw", VARNAME(binaryFileBasename)};
         Property<unsigned> samplesToAnalyze = {unsigned(SamplesToAnalyze::small), VARNAME(samplesToAnalyze)};
         Property<double> minimalClusterWeight = {0.01, VARNAME(minimalClusterWeight)};
-        Property<bool> valenceElectronsOnly = {false, VARNAME(valenceElectronsOnly)};
+        Property<bool> deleteCoreElectrons = {false, VARNAME(deleteCoreElectrons)};
 
         MaximaProcessing();
         explicit MaximaProcessing(const YAML::Node &node);

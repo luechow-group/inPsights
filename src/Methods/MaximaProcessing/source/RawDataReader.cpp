@@ -76,7 +76,7 @@ void RawDataReader::readSamplesAndMaxima(std::ifstream &input, int fileLength, s
         auto r = Reference(value, ElectronsVector(PositionsVector(maximum), spins_), id_);
 
 
-        if(MaximaProcessing::settings.valenceElectronsOnly())
+        if(MaximaProcessing::settings.deleteCoreElectrons())
             removeNonValenceElectrons(r, s);
 
         samples_.emplace_back(std::move(s));

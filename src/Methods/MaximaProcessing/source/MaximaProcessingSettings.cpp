@@ -40,14 +40,14 @@ namespace Settings {
         YAML::convert<Property<std::string>>::decode(node[className], binaryFileBasename);
         unsignedProperty::decode(node[className], samplesToAnalyze);
         doubleProperty ::decode(node[className], minimalClusterWeight);
-        boolProperty ::decode(node[className], valenceElectronsOnly);
+        boolProperty ::decode(node[className], deleteCoreElectrons);
     }
 
     void MaximaProcessing::appendToNode(YAML::Node &node) const {
         node[className][binaryFileBasename.name()] = binaryFileBasename.get();
         node[className][samplesToAnalyze.name()] = samplesToAnalyze.get();
         node[className][minimalClusterWeight.name()] = minimalClusterWeight.get();
-        node[className][valenceElectronsOnly.name()] = valenceElectronsOnly.get();
+        node[className][deleteCoreElectrons.name()] = deleteCoreElectrons.get();
     }
 }
 
