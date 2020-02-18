@@ -32,15 +32,25 @@ namespace Settings {
                     if (value <= 0.0)
                         throw std::invalid_argument("The radius has to be larger than zero.");
                 });
+
+        local.onChange_.connect(
+                [&](bool value) {
+                    if (value) spdlog::info("Clustering is local");
+                    else spdlog::info("Clustering is global.");
+                });
     };
 
     ReferencePositionsClusterer::ReferencePositionsClusterer(const YAML::Node &node)
             : ReferencePositionsClusterer() {
         doubleProperty::decode(node, radius);
+        boolProperty::decode(node, sortRemainder);
+        boolProperty::decode(node, local);
     };
 
     void ReferencePositionsClusterer::appendToNode(YAML::Node &node) const {
         node[className][radius.name()] = radius();
+        node[className][sortRemainder.name()] = sortRemainder();
+        node[className][local.name()] = local();
     };
 }
 
@@ -52,49 +62,34 @@ ReferencePositionsClusterer::ReferencePositionsClusterer(std::vector<Sample> &sa
         : IClusterer(samples)
           {}
 
+
 void ReferencePositionsClusterer::cluster(Group &group) {
     assert(!group.empty() && "The group cannot be empty.");
 
+    auto localQ = settings.local();
+    auto similarityRadius = settings.radius();
+
     // sorting relevant electrons to the front
-    group.permuteRelevantElectronsToFront(samples_);
+    if(localQ) group.permuteRelevantElectronsToFront(samples_);
 
     // initialize supergroup
     Group superGroup({Group({*group.begin()})});
 
-    // bool to decide, whether subGroup of group is added to a sortedGroup of superGroup
-    // or to superGroup as a new sortedGroup
-    bool isSimilarQ;
-
-    auto similarityRadius = settings.radius();
-    long electronsNumber = group.representative()->maximum().numberOfEntities();
-
     for (auto subGroup = std::next(group.begin()); subGroup != group.end(); ++subGroup) {
-        isSimilarQ = false;
+        // bool to decide, whether subGroup of group is added to a sortedGroup of superGroup
+        // or to superGroup as a new sortedGroup
+        bool isSimilarQ = false;
         for (auto sortedGroup = superGroup.begin(); sortedGroup != superGroup.end(); ++sortedGroup) {
-            // only check similarity of sortedGroup and subGroup, if the number of selected indices is equal
-            if (subGroup->getSelectedElectronsCount() == superGroup.getSelectedElectronsCount()) {
-                auto[norm, perm] = BestMatch::Distance::compare<Eigen::Infinity, 2>(
-                        subGroup->representative()->maximum().getFirstParticles(
-                                subGroup->getSelectedElectronsCount()).positionsVector(),
-                        sortedGroup->representative()->maximum().getFirstParticles(
-                                superGroup.getSelectedElectronsCount()).positionsVector());
 
-                if (norm < similarityRadius) {
-                    subGroup->permuteAll(BestMatch::headToFullPermutation(perm, electronsNumber), samples_);
-                    if (settings.sortRemainder()) {
-                        auto[norm, perm] = BestMatch::Distance::compare<Eigen::Infinity, 2>(
-                                subGroup->representative()->maximum().tail(
-                                        electronsNumber - subGroup->getSelectedElectronsCount()).positionsVector(),
-                                sortedGroup->representative()->maximum().tail(
-                                        electronsNumber - superGroup.getSelectedElectronsCount()).positionsVector());
-                        subGroup->permuteAll(BestMatch::tailToFullPermutation(perm, electronsNumber), samples_);
-                    }
-                    sortedGroup->emplace_back(*subGroup);
-                    isSimilarQ = true;
-                    break;
-                }
-            }
+            if(localQ) //sortedGroup->setSelectedElectronsCount(superGroup.getSelectedElectronsCount()); //TODO should be not necessary
+                isSimilarQ = compareLocal(sortedGroup, subGroup, similarityRadius);
+            else
+                isSimilarQ = compareGlobal(sortedGroup, subGroup, similarityRadius);
+
+
+            if (isSimilarQ) break;
         }
+        // if loop ended and no similar group was found
         if (!isSimilarQ) {
             // adds subGroup as a new sortedGroup to superGroup
             superGroup.emplace_back(Group({*subGroup}));
@@ -104,4 +99,53 @@ void ReferencePositionsClusterer::cluster(Group &group) {
 
     // sort by function value before leaving
     group.sort();
+}
+
+bool ReferencePositionsClusterer::compareLocal(std::vector<Group>::iterator &sortedGroup, std::vector<Group>::iterator &subGroup,
+                                     double similarityRadius) const {
+    bool isSimilarQ = false;
+
+    // only check similarity of sortedGroup and subGroup, if the number of selected indices is equal
+    // this requires sortedGroup having the correct electrons count
+    if (subGroup->getSelectedElectronsCount() == sortedGroup->getSelectedElectronsCount()) {
+        auto[norm, perm] = BestMatch::Distance::compare<Eigen::Infinity, 2>(
+                subGroup->representative()->maximum().getFirstParticles(
+                        subGroup->getSelectedElectronsCount()).positionsVector(),
+                sortedGroup->representative()->maximum().getFirstParticles(
+                        sortedGroup->getSelectedElectronsCount()).positionsVector());
+
+        if (norm < similarityRadius) {
+            auto  electronsNumber = sortedGroup->representative()->maximum().numberOfEntities();
+            subGroup->permuteAll(BestMatch::headToFullPermutation(perm, electronsNumber), samples_);
+            if (settings.sortRemainder()) { //TODO remove dependency
+                auto[norm, perm] = BestMatch::Distance::compare<Eigen::Infinity, 2>(
+                        subGroup->representative()->maximum().tail(
+                                electronsNumber - subGroup->getSelectedElectronsCount()).positionsVector(),
+                        sortedGroup->representative()->maximum().tail(
+                                electronsNumber - sortedGroup->getSelectedElectronsCount()).positionsVector());
+                subGroup->permuteAll(BestMatch::tailToFullPermutation(perm, electronsNumber), samples_);
+            }
+            sortedGroup->emplace_back(*subGroup);
+            isSimilarQ = true;
+        }
+    }
+    return isSimilarQ;
+}
+
+bool ReferencePositionsClusterer::compareGlobal(std::vector<Group>::iterator &sortedGroup, std::vector<Group>::iterator &subGroup,
+                                               double similarityRadius) const {
+    bool isSimilarQ = false;
+
+    auto[norm, perm] = BestMatch::Distance::compare<Eigen::Infinity, 2>(
+            subGroup->representative()->maximum().positionsVector(),
+            sortedGroup->representative()->maximum().positionsVector());
+
+    if (norm < similarityRadius) {
+        subGroup->permuteAll(perm, samples_);
+
+        sortedGroup->emplace_back(*subGroup);
+        isSimilarQ = true;
+    }
+
+    return isSimilarQ;
 }

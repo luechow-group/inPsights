@@ -29,6 +29,7 @@ namespace Settings {
     public:
         Property<double> radius = {0.1, VARNAME(radius)};
         Property<bool> sortRemainder = {false, VARNAME(sortRemainder)};
+        Property<bool> local =  {false, VARNAME(local)}; // TODO unite all general clusterer settigns in a parent settings class
 
         ReferencePositionsClusterer();
         explicit ReferencePositionsClusterer(const YAML::Node &node);
@@ -48,6 +49,11 @@ public:
 
 private:
     std::function<double(const Eigen::Vector3d &, const std::vector<Eigen::Vector3d> &)> distanceFunction_;
+    bool compareLocal(std::vector<Group>::iterator &sortedGroup, std::vector<Group>::iterator &subGroup,
+            double similarityRadius) const;
+
+    bool compareGlobal(std::vector<Group>::iterator &sortedGroup, std::vector<Group>::iterator &subGroup,
+            double similarityRadius) const;
 };
 
 #endif //INPSIGHTS_REFERENCEPOSITIONSCLUSTERER_H

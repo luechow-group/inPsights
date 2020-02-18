@@ -212,6 +212,8 @@ long Group::getSelectedElectronsCount() const{
 
 void Group::setSelectedElectronsCount(const long &count){
     selectedElectronsCount_ = count;
+    for(auto & subgroup : (*this))
+        subgroup.setSelectedElectronsCount(count);
 };
 
 void Group::permuteRelevantElectronsToFront(std::vector<Sample> & samples){
