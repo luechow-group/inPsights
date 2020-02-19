@@ -223,32 +223,18 @@ int main(int argc, char *argv[]) {
 
                 settings = Settings::DensityBasedClusterer(node.second);
 
+                if(settings.local()) {
+                    auto nearestElectronSettings = node.second[VARNAME(NearestElectrons)];
+                    if (nearestElectronSettings)
+                        NearestElectrons::settings = Settings::NearestElectrons(nearestElectronSettings, atoms);
+                }
+
                 DensityBasedClusterer densityBasedClusterer(samples);
                 densityBasedClusterer.cluster(maxima);
 
-                settings.appendToNode(usedClusteringSettings);
-                break;
-            }
-            case IBlock::BlockType::ClusterNumberAnalyzer: {
-                auto &settings = ClusterNumberAnalyzer::settings;
-                settings = Settings::ClusterNumberAnalyzer(node.second);
-
-                ClusterNumberAnalyzer analyzer;
-                maxima.sortAll(); // TODO necessary?
-                analyzer.analyze(maxima);
-                clusterNumberGraphAnalysisResults.emplace_back(analyzer.getResults());
-
-                settings.appendToNode(usedClusteringSettings);
-                break;
-            }
-            case IBlock::BlockType::TotalWeightDifferenceAnalyzer: {
-                auto &settings = TotalWeightDifferenceAnalyzer::settings;
-                settings = Settings::TotalWeightDifferenceAnalyzer(node.second);
-
-                TotalWeightDifferenceAnalyzer analyzer;
-                maxima.sortAll(); // TODO necessary?
-                analyzer.analyze(maxima);
-                totalWeightDifferencesAnalysisResults.emplace_back(analyzer.getResults());
+                if(settings.local()) {
+                    NearestElectrons::settings.appendToNode(usedClusteringSettings); // TODO FIX USED SETTINGS APPEND
+                }
 
                 settings.appendToNode(usedClusteringSettings);
                 break;
@@ -299,6 +285,30 @@ int main(int argc, char *argv[]) {
                 SOAP::Angular::settings.appendToNode(usedSoapSettings);
                 SOAP::Cutoff::settings.appendToNode(usedSoapSettings);
 
+                break;
+            }
+            case IBlock::BlockType::ClusterNumberAnalyzer: {
+                auto &settings = ClusterNumberAnalyzer::settings;
+                settings = Settings::ClusterNumberAnalyzer(node.second);
+
+                ClusterNumberAnalyzer analyzer;
+                maxima.sortAll(); // TODO necessary?
+                analyzer.analyze(maxima);
+                clusterNumberGraphAnalysisResults.emplace_back(analyzer.getResults());
+
+                settings.appendToNode(usedClusteringSettings);
+                break;
+            }
+            case IBlock::BlockType::TotalWeightDifferenceAnalyzer: {
+                auto &settings = TotalWeightDifferenceAnalyzer::settings;
+                settings = Settings::TotalWeightDifferenceAnalyzer(node.second);
+
+                TotalWeightDifferenceAnalyzer analyzer;
+                maxima.sortAll(); // TODO necessary?
+                analyzer.analyze(maxima);
+                totalWeightDifferencesAnalysisResults.emplace_back(analyzer.getResults());
+
+                settings.appendToNode(usedClusteringSettings);
                 break;
             }
             default:

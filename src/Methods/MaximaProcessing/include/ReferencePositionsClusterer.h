@@ -28,8 +28,8 @@ namespace Settings {
     class ReferencePositionsClusterer : public ISettings {
     public:
         Property<double> radius = {0.1, VARNAME(radius)};
-        Property<bool> sortRemainder = {false, VARNAME(sortRemainder)};
         Property<bool> local =  {false, VARNAME(local)}; // TODO unite all general clusterer settigns in a parent settings class
+        Property<bool> sortRemainder = {false, VARNAME(sortRemainder)};
 
         ReferencePositionsClusterer();
         explicit ReferencePositionsClusterer(const YAML::Node &node);

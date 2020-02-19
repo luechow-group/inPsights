@@ -30,6 +30,8 @@ namespace Settings {
     public:
         Property<double> radius = {0.2, VARNAME(radius)};
         Property<size_t> minimalClusterSize = {1, VARNAME(minimalClusterSize)};
+        Property<bool> local =  {false, VARNAME(local)}; // TODO unite all general clusterer settigns in a parent settings class
+        Property<bool> sortRemainder = {false, VARNAME(sortRemainder)};
 
         DensityBasedClusterer();
         explicit DensityBasedClusterer(const YAML::Node &node);
@@ -49,7 +51,16 @@ public:
 
 private:
     static double wrapper(const Group &g1, const Group &g2);
-    void orderByBestMatchDistance(Group &supergroup, double threshold) const;
+    static double wrapperLocal(const Group &g1, const Group &g2);
+    void orderByBestMatchDistance(Group &supergroup, double threshold, bool local = false) const;
+
+    bool compare(double threshold, Group &subgroup, Group &newGroups,
+            const std::vector<Group>::iterator &i,
+            std::vector<Group>::iterator &j) const;
+
+    bool compareLocal(double threshold, Group &subgroup, Group &newGroups,
+            const std::vector<Group>::iterator &i,
+            std::vector<Group>::iterator &j) const;
 };
 
 #endif //INPSIGHTS_DENSITYBASEDCLUSTERER_H
