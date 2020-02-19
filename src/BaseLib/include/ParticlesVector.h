@@ -92,7 +92,7 @@ public:
         return newVector;
     }
 
-    ParticlesVector<Type> getFirstParticles(long n) {
+    ParticlesVector<Type> head(long n) {
         assert(n >= 0);
         assert(n < numberOfEntities());
 

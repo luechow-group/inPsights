@@ -109,9 +109,9 @@ bool ReferencePositionsClusterer::compareLocal(std::vector<Group>::iterator &sor
     // this requires sortedGroup having the correct electrons count
     if (subGroup->getSelectedElectronsCount() == sortedGroup->getSelectedElectronsCount()) {
         auto[norm, perm] = BestMatch::Distance::compare<Eigen::Infinity, 2>(
-                subGroup->representative()->maximum().getFirstParticles(
+            subGroup->representative()->maximum().head(
                         subGroup->getSelectedElectronsCount()).positionsVector(),
-                sortedGroup->representative()->maximum().getFirstParticles(
+            sortedGroup->representative()->maximum().head(
                         sortedGroup->getSelectedElectronsCount()).positionsVector());
 
         if (norm < similarityRadius) {
