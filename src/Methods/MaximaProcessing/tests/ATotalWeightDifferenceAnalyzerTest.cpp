@@ -41,22 +41,41 @@ TEST_F(ATotalWeightDifferenceAnalyzerTest, emptyGroupDeathTest){
     Group group({});
 
     TotalWeightDifferenceAnalyzer::settings.startRadius = 0.4;
-    TotalWeightDifferenceAnalyzer::settings.increments = 2;
-    TotalWeightDifferenceAnalyzer::settings.radiusIncrement = 0.2;  // Radii: before, 0.4, 0.6, 0.8
+    TotalWeightDifferenceAnalyzer::settings.increments = 3;
+    TotalWeightDifferenceAnalyzer::settings.radiusIncrement = 0.2;  // Radii: before, 0.4, 0.6, 0.8, 1.2
 
     TotalWeightDifferenceAnalyzer analyzer;
     EXPECT_DEATH(analyzer.analyze(group),"");
 }
 
-TEST_F(ATotalWeightDifferenceAnalyzerTest, normalUse){
-    Group group({g1,g2,g3});
+TEST_F(ATotalWeightDifferenceAnalyzerTest, Ungrouped){
+    Group group({g1,g2,g3a,g3b});
+
+
+    std::vector<std::list<Eigen::Index>> previousClusterIndicesOfGroup;
 
     TotalWeightDifferenceAnalyzer::settings.startRadius = 0.4;
-    TotalWeightDifferenceAnalyzer::settings.increments = 2;
-    TotalWeightDifferenceAnalyzer::settings.radiusIncrement = 0.2;
+    TotalWeightDifferenceAnalyzer::settings.increments = 3;
+    TotalWeightDifferenceAnalyzer::settings.radiusIncrement = 0.2; // Radii: before, 0.4, 0.6, 0.8, 1.2
 
     TotalWeightDifferenceAnalyzer analyzer;
     analyzer.analyze(group);
 
-    ASSERT_THAT(analyzer.getResults(), ElementsAre(0.0, 0.0, 0.5)); // Radii: before, 0.4, 0.6, 0.8
+    ASSERT_THAT(analyzer.getResults(), ElementsAre(0.25, 0.0, 0.5, 0.0));
+    //r=0.4: w(3a+3b)=0.5, w(3a)=0.25, Delta=0.25
+    //r=0.6: w(1+2+3a+3b)=1.0, w(3a+3b)=0.5, Delta=0.5
+}
+
+TEST_F(ATotalWeightDifferenceAnalyzerTest, Pregrouped){
+    Group group({g1,g2,g3});
+
+    TotalWeightDifferenceAnalyzer::settings.startRadius = 0.4;
+    TotalWeightDifferenceAnalyzer::settings.increments = 3;
+    TotalWeightDifferenceAnalyzer::settings.radiusIncrement = 0.2; // Radii: before, 0.4, 0.6, 0.8, 1.2
+
+    TotalWeightDifferenceAnalyzer analyzer;
+    analyzer.analyze(group);
+
+    ASSERT_THAT(analyzer.getResults(), ElementsAre(0.0, 0.0, 0.5, 0.0));
+    //r=0.6: w(1+2+3a+3b)=1.0, w(3a+3b)=0.5, Delta=0.5
 }

@@ -16,8 +16,8 @@
  */
 
 #include "Motifs.h"
+#include <Metrics.h>
 #include <spdlog/spdlog.h>
-#include <Motifs.h>
 #include <ElementInfo.h>
 
 
@@ -46,58 +46,45 @@ std::vector<Motif> Motifs::motifsFromAdjacencyMatrix(const Eigen::MatrixXb &adja
 }
 
 void Motifs::classifyMotifs(const MolecularGeometry& molecule) {
+        std::list<Eigen::Index> remainingNuclei(molecule.atoms().numberOfEntities());
+    std::iota(remainingNuclei.begin(), remainingNuclei.end(), 0);
 
-    std::vector<Motif> newMotifVector{};
 
+    // check all motifs
     for(auto& motif : motifVector_) {
-        std::list<Eigen::Index> involvedCores;
+        std::list<Eigen::Index> involvedNuclei;
 
-        for (const auto & e : motif.electronIndices()) {
-            auto[atCoreQ, coreIndex] = molecule.coreElectronQ(e);
+        // check for each electron if it is at an nucleus
+        for (const auto &e : motif.electronIndices()) {
+            auto[atNucleusQ, nucleusIndex] = molecule.electronAtNucleusQ(e);
 
-            if (atCoreQ)
-                involvedCores.push_back(coreIndex);
+            // electrons at H or He nuclei are still valence electrons so the nucleus is not involved in the motif
+            if (atNucleusQ
+                && !(molecule.atoms()[nucleusIndex].type() == Elements::ElementType::H
+                     || molecule.atoms()[nucleusIndex].type() == Elements::ElementType::He))
+                involvedNuclei.push_back(nucleusIndex);
         }
-        involvedCores.sort();
-        involvedCores.unique();
+        involvedNuclei.sort();
+        involvedNuclei.unique(); // remove doubly counted nuclei
 
-        motif.setAtomIndices(involvedCores);
-    }
-
-    for(auto& motif : motifVector_) {
-
-        if(motif.atomIndices().empty()) {
+        if(involvedNuclei.empty()) {
             motif.setType(MotifType::Valence);
-            newMotifVector.emplace_back(motif);
         } else {
-            for(const auto & k : motif.atomIndices()) {
-                auto electronsAtCore = molecule.coreElectronsIndices(k);
-
-                //! assert that electronsAtCore is subset of motif.electronIndices()
-                if(electronsAtCore.size() == 2) {
-                    if (molecule.atoms()[k].type() == Elements::ElementType::H
-                    || molecule.atoms()[k].type() == Elements::ElementType::He) {
-
-                        newMotifVector.emplace_back(Motif({}, {k}, MotifType::Core));
-                        newMotifVector.emplace_back(Motif(electronsAtCore, {}, MotifType::Valence));
-                    } else {
-                        newMotifVector.emplace_back(Motif(electronsAtCore, {k}, MotifType::Core));
-                    }
-                } else if(electronsAtCore.size() == 1) {
-                    if (molecule.atoms()[k].type() == Elements::ElementType::H
-                    || molecule.atoms()[k].type() == Elements::ElementType::He) {
-
-                        newMotifVector.emplace_back(Motif({}, {k}, MotifType::Core));
-                        newMotifVector.emplace_back(Motif(motif.electronIndices(), {}, MotifType::Valence));
-                    } else {
-                        spdlog::warn("Unexpected motif: only one electron at non-hydrogen core {}",
-                                Elements::ElementInfo::symbol(molecule.atoms()[k].type()));
-                    }
-                }
-            }
+            motif.setAtomIndices(involvedNuclei);
+            motif.setType(MotifType::Core);
         }
+
+        std::list<long> diff{};
+        std::set_difference(remainingNuclei.begin(), remainingNuclei.end(), involvedNuclei.begin(),
+                            involvedNuclei.end(),
+                            std::inserter(diff, diff.begin()));
+        remainingNuclei = diff;
     }
-    motifVector_ = newMotifVector;
+
+    // remaing nuclei (only H, He) being not involved in any motifs are separate core motifs
+    for(auto & nucleusIndex : remainingNuclei)
+        motifVector_.emplace_back(Motif({}, {nucleusIndex}, MotifType::Core));
+
     sort();
 }
 

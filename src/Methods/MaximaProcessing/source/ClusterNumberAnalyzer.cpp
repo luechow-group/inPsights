@@ -73,7 +73,7 @@ void  ClusterNumberAnalyzer::analyze(const Group& group) {
     auto startRadius = settings.startRadius();
     auto minimalWeight = settings.minimalWeight();
 
-    auto mat = GroupAnalysis::calculateAdjacencyMatrix(group);
+    auto mat = GroupAnalysis::calculateBestMatchDistanceMatrix(group);
     clusterNumbers_.clear();
 
     std::size_t totalNumberOfMaxima = group.numberOfLeaves();

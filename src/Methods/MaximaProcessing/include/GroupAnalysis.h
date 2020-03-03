@@ -21,7 +21,7 @@
 #include "Group.h"
 
 namespace GroupAnalysis {
-    Eigen::MatrixXd calculateAdjacencyMatrix(const Group &group);
+    Eigen::MatrixXd calculateBestMatchDistanceMatrix(const Group &group);
 }
 
 #endif //INPSIGHTS_GROUPANALYSIS_H
