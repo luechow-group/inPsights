@@ -23,9 +23,9 @@ using namespace testing;
 
 class AMotifsTest : public ::testing::Test {
 public:
-    Eigen::MatrixXb LiH_filteredSpinCorr, H2_filteredSpinCorr, BH3_filteredSpinCorr;
+    Eigen::MatrixXb LiH_filteredSpinCorr, H2_filteredSpinCorr, BH3_filteredSpinCorr, Li2_filteredSpinCorr;
 
-    Motifs LiH, H2covalent, H2ionicRight, BH3covalent;
+    Motifs LiH, H2covalent, H2ionicRight, BH3covalent, Li2;
 
     void SetUp() override {
 
@@ -67,8 +67,34 @@ public:
         0, 0, 1, 0, 0, 0, 0, 0, \
         0, 0, 0, 1, 0, 0, 0, 0;
         BH3covalent = Motifs(BH3_filteredSpinCorr, TestMolecules::BH3::normal);
+
+        Li2_filteredSpinCorr = Eigen::MatrixXb(6, 6);
+        Li2_filteredSpinCorr <<
+        0, 1, 1, 1, 0, 0, \
+        1, 0, 1, 1, 0, 0, \
+        1, 1, 0, 1, 0, 0, \
+        1, 1, 1, 0, 0, 0, \
+        0, 0, 0, 0, 0, 1, \
+        0, 0, 0, 0, 1, 0;
+        Li2 = Motifs(Li2_filteredSpinCorr, TestMolecules::Li2::normal);
     };
 };
+
+TEST_F(AMotifsTest, Li2) {
+    // The connected first four electrons are split into two core motifs
+    ASSERT_THAT(Li2.motifVector_[0].electronIndices(), ElementsAre(0, 1));
+    ASSERT_THAT(Li2.motifVector_[0].atomIndices(), ElementsAre(0));
+    ASSERT_EQ(Li2.motifVector_[0].type(), MotifType::Core);
+
+    ASSERT_THAT(Li2.motifVector_[1].electronIndices(), ElementsAre(2, 3));
+    ASSERT_THAT(Li2.motifVector_[1].atomIndices(), ElementsAre(1));
+    ASSERT_EQ(Li2.motifVector_[1].type(), MotifType::Core);
+
+    // Valence elctrons are not influenced by this
+    ASSERT_THAT(Li2.motifVector_[2].electronIndices(), ElementsAre(4, 5));
+    ASSERT_THAT(Li2.motifVector_[2].atomIndices(), ElementsAre());
+    ASSERT_EQ(Li2.motifVector_[2].type(), MotifType::Valence);
+}
 
 TEST_F(AMotifsTest, LiH) {
 

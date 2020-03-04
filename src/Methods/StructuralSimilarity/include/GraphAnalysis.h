@@ -41,30 +41,6 @@ namespace GraphAnalysis {
     std::map<std::size_t, std::size_t> findMergeMap(
             std::vector<std::list<Eigen::Index>> subsets,
             std::vector<std::list<Eigen::Index>> referenceSets);
-
-
-    template<typename K, typename V>
-    bool findByValue(std::vector<K> & vec, std::map<K, V> mapOfElement, V value)
-    {
-        bool bResult = false;
-        auto it = mapOfElement.begin();
-        // Iterate through the map
-        while(it != mapOfElement.end())
-        {
-            // Check if value of this entry matches with given value
-            if(it->second == value)
-            {
-                // Yes found
-                bResult = true;
-                // Push the key in given map
-                vec.push_back(it->first);
-            }
-            // Go to next entry in map
-            it++;
-        }
-        return bResult;
-    }
-
 }
 
 #endif //INPSIGHTS_GRAPHANALYSIS_H

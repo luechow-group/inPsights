@@ -15,7 +15,6 @@
  * along with inPsights. If not, see <https://www.gnu.org/licenses/>.
  */
 
-
 #include <gmock/gmock.h>
 #include <spdlog/spdlog.h>
 #include <TotalWeightDifferenceAnalyzer.h>

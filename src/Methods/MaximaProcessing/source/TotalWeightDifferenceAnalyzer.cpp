@@ -21,7 +21,7 @@
 #include <ValueSorter.h>
 #include <spdlog/spdlog.h>
 #include <algorithm>
-
+#include <MapUtils.h>
 
 namespace Settings {
     TotalWeightDifferenceAnalyzer::TotalWeightDifferenceAnalyzer()
@@ -86,10 +86,9 @@ void TotalWeightDifferenceAnalyzer::analyze(const Group& group) {
             weightsOfCurrentRadiusClustering.emplace_back(currentClusterWeight);
 
             // find all clusterIds merged into the current clusterId in the map
-            std::vector<std::size_t> clusterIdsOfPreviousClustersMergedIntoCurrentCluster;
-            auto foundQ = GraphAnalysis::findByValue(clusterIdsOfPreviousClustersMergedIntoCurrentCluster, prevToCurrClusterIdMap, std::size_t(currentClusterId));
-            assert(foundQ
-            && "Every current cluster should have a merge from a previous one.");
+            auto clusterIdsOfPreviousClustersMergedIntoCurrentCluster
+            = MapUtils::findByValue(prevToCurrClusterIdMap, std::size_t(currentClusterId));
+
             assert(clusterIdsOfPreviousClustersMergedIntoCurrentCluster.size() > 0
             && "Every current cluster should have a merge from a previous one.");
             assert(clusterIdsOfPreviousClustersMergedIntoCurrentCluster.size() <= groupIdsListOfCurrentCluster.size()
@@ -99,8 +98,8 @@ void TotalWeightDifferenceAnalyzer::analyze(const Group& group) {
             auto heaviestPreviousClusterId = std::max_element(
                     clusterIdsOfPreviousClustersMergedIntoCurrentCluster.begin(),
                     clusterIdsOfPreviousClustersMergedIntoCurrentCluster.end(),
-                                                  [weightsOfPreviousRadiusClustering] (std::size_t lhs, size_t rhs) {
-                                                      return weightsOfPreviousRadiusClustering[lhs] < weightsOfPreviousRadiusClustering[rhs];
+                    [weightsOfPreviousRadiusClustering] (std::size_t lhs, size_t rhs) {
+                        return weightsOfPreviousRadiusClustering[lhs] < weightsOfPreviousRadiusClustering[rhs];
             });
             
             // remove it
