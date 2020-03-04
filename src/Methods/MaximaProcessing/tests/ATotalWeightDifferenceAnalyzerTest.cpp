@@ -37,8 +37,8 @@ public:
     }
 };
 
-TEST_F(ATotalWeightDifferenceAnalyzerTest, emptyGroupDeathTest){
-    Group group({});
+TEST_F(ATotalWeightDifferenceAnalyzerTest, DISABLED_emptyGroupDeathTest){
+    Group group;
 
     TotalWeightDifferenceAnalyzer::settings.startRadius = 0.4;
     TotalWeightDifferenceAnalyzer::settings.increments = 2;
@@ -48,8 +48,6 @@ TEST_F(ATotalWeightDifferenceAnalyzerTest, emptyGroupDeathTest){
     EXPECT_DEATH(analyzer.analyze(group),"");
 }
 
-#include <GroupAnalysis.h>
-#include <GraphAnalysis.h>
 TEST_F(ATotalWeightDifferenceAnalyzerTest, Ungrouped){
     Group group({g1,g2,g3a,g3b});
 

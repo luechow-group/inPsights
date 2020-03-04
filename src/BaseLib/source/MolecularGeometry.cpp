@@ -75,16 +75,16 @@ std::pair<bool,long> MolecularGeometry::findIndexByEnumeratedType(const Enumerat
         return atoms().typesVector().findIndexOfEnumeratedType(
                 EnumeratedElement(Elements::elementFromInt(enumeratedType.type_), enumeratedType.number_));
     } else {
-        return {false,0};
+        return std::pair<bool,long>(false,0);
     }
 }
 
 std::tuple<bool,Eigen::Index> MolecularGeometry::coreElectronQ(long i, double threshold) const {
     for (Eigen::Index k = 0; k < atoms_.numberOfEntities(); ++k)
         if(Metrics::distance(electrons_[i].position(), atoms_[k].position()) <= threshold)
-            return {true, k};
+            return std::pair<bool,long>(true, k);
 
-    return {false, 0};
+    return std::pair<bool,long>(false,0);
 }
 
 //TODO REPLACE

@@ -37,8 +37,8 @@ public:
     }
 };
 
-TEST_F(AClusterNumberAnalyzerTest, emptyGroupDeathTest){
-    Group group({});
+TEST_F(AClusterNumberAnalyzerTest, DISABLED_emptyGroupDeathTest){
+    Group group;
 
     ClusterNumberAnalyzer::settings.startRadius = 0.4;
     ClusterNumberAnalyzer::settings.increments = 2;
