@@ -95,12 +95,6 @@ TEST_F(AGroupTest, ListInitialization_Constructor){
     ASSERT_EQ(supergroup[2].representative()->value(), 1.0);
 }
 
-TEST_F(AGroupTest, DISABLED_NestedListInitializationWithOneObject_Constructor_Death){
-    Group supergroup({{g1}});
-
-    EXPECT_DEATH(supergroup.isLeaf(),"");
-}
-
 TEST_F(AGroupTest, NestedListInitializationWithOneObject_Constructor){
     Group supergroup({Group({g1})});
     ASSERT_FALSE(supergroup.isLeaf());
@@ -121,8 +115,8 @@ TEST_F(AGroupTest, NestedListInitialization_Constructor){
     ASSERT_EQ(supergroup[0][2].representative()->value(), 1.0);
 }
 
-TEST_F(AGroupTest, DISABLED_ListInitialization_Empty){
-    Group supergroup({});
+TEST_F(AGroupTest, ListInitialization_Empty){
+    Group supergroup; // Careful, Group supergroup({}); will fail for intel compilers.
     ASSERT_EQ(supergroup.representative(), nullptr);
     ASSERT_TRUE(supergroup.isLeaf());
 }
