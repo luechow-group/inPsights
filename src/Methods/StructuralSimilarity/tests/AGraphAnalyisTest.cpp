@@ -173,50 +173,6 @@ TEST_F(AGraphAnalysisTest, FindSubsetsUnorderd) {
     ASSERT_THAT(map,Contains(std::pair<std::size_t, std::size_t>(2,1)));
 }
 
-TEST_F(AGraphAnalysisTest, FindKeysToValueInMap) {
-
-    std::map<int, std::string> map = {
-            {0, "b"},
-            {1, "a"},
-            {2, "b"}};
-
-    std::vector<int> keysMappedToValueA, keysMappedToValueB, keysMappedToValueC;
-
-    auto foundA = GraphAnalysis::findByValue(keysMappedToValueA, map, std::string("a"));
-    auto foundB = GraphAnalysis::findByValue(keysMappedToValueB, map, std::string("b"));
-    auto foundC = GraphAnalysis::findByValue(keysMappedToValueC, map, std::string("c"));
-
-    ASSERT_TRUE(foundA);
-    ASSERT_TRUE(foundB);
-    ASSERT_FALSE(foundC);
-
-    ASSERT_THAT(keysMappedToValueA,ElementsAre(1));
-    ASSERT_THAT(keysMappedToValueB,ElementsAre(0,2));
-    ASSERT_THAT(keysMappedToValueC,IsEmpty());
-}
-
-TEST_F(AGraphAnalysisTest, FindKeysToValueAppendToSameVector) {
-
-    std::map<int, std::string> map = {
-            {0, "b"},
-            {1, "a"},
-            {2, "b"}};
-
-    std::vector<int> keysMappedToValueAB;
-
-    auto foundA = GraphAnalysis::findByValue(keysMappedToValueAB, map, std::string("a"));
-    ASSERT_THAT(keysMappedToValueAB,ElementsAre(1));
-    ASSERT_TRUE(foundA);
-
-    auto foundB = GraphAnalysis::findByValue(keysMappedToValueAB, map, std::string("b"));
-    ASSERT_THAT(keysMappedToValueAB,ElementsAre(1,0,2));
-    ASSERT_TRUE(foundB);
-
-    auto foundC = GraphAnalysis::findByValue(keysMappedToValueAB, map, std::string("c"));
-    ASSERT_THAT(keysMappedToValueAB,ElementsAre(1,0,2));
-    ASSERT_FALSE(foundC);
-}
-
 TEST_F(AGraphAnalysisTest, ReferenceSetWithoutMatchingSubsetDeath) {
     std::vector<std::list<Eigen::Index>> subsets{{0,1}, {2}, {3}};
     std::vector<std::list<Eigen::Index>> referenceSets{{0,1,2},{3},{4}};

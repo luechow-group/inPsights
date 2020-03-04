@@ -97,7 +97,6 @@ int Electron::charge() const;
 template<>
 int Atom::charge() const;
 
-
 namespace YAML {
     class Node; class Emitter;
     template <typename Type> struct convert;

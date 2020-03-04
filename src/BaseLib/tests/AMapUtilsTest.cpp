@@ -1,4 +1,4 @@
-/* Copyright (C) 2019 Michael Heuer.
+/* Copyright (C) 2020 Michael Heuer.
  *
  * This file is part of inPsights.
  * inPsights is free software: you can redistribute it and/or modify
@@ -15,31 +15,22 @@
  * along with inPsights. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef INPSIGHTS_MOTIFS_H
-#define INPSIGHTS_MOTIFS_H
+#include <gmock/gmock.h>
+#include <MapUtils.h>
 
-#include <GraphAnalysis.h>
-#include <Motif.h>
-#include <MolecularGeometry.h>
+using namespace testing;
 
-class Motifs{
-public:
+TEST(AMapUtilsTest, FindKeysToValueInMap) {
+    std::map<int, std::string> map = {
+            {0, "b"},
+            {1, "a"},
+            {2, "b"}};
 
-    Motifs();
-    Motifs(const Eigen::MatrixXb &adjacencyMatrix);
-    Motifs(const Eigen::MatrixXb &adjacencyMatrix,
-            const MolecularGeometry& molecule);
+    auto keysMappedToValueA = MapUtils::findByValue(map, std::string("a"));
+    auto keysMappedToValueB = MapUtils::findByValue(map, std::string("b"));
+    auto keysMappedToValueC = MapUtils::findByValue(map, std::string("c"));
 
-    Motifs(std::vector<Motif>  motifs);
-
-
-    void classifyMotifs(const MolecularGeometry& molecule);
-
-    void sort();
-
-    std::vector<Motif> motifVector_;
-
-    static std::vector<Motif> motifsFromAdjacencyMatrix(const Eigen::MatrixXb &adjacencyMatrix);
-};
-
-#endif //INPSIGHTS_MOTIFS_H
+    ASSERT_THAT(keysMappedToValueA,ElementsAre(1));
+    ASSERT_THAT(keysMappedToValueB,ElementsAre(0,2));
+    ASSERT_THAT(keysMappedToValueC,IsEmpty());
+}

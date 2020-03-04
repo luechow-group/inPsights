@@ -34,39 +34,46 @@ namespace TestMolecules {
     namespace twoElectrons {
         const MolecularGeometry oppositeSpin = {
                 AtomsVector(),
-                ElectronsVector({{Spin::alpha, {0, 0, 0.37}},
-                                 {Spin::beta,  {0, 0,-0.37}}})};
+                ElectronsVector({
+                    {Spin::alpha, {0, 0, 0.37}},
+                    {Spin::beta,  {0, 0,-0.37}}})};
 
         const MolecularGeometry oppositeSpinReversedOrder = {
                 AtomsVector(),
-                ElectronsVector({{Spin::beta,  {0, 0, 0.37}},
-                                 {Spin::alpha, {0, 0,-0.37}}})};
+                ElectronsVector({
+                    {Spin::beta,  {0, 0, 0.37}},
+                    {Spin::alpha, {0, 0,-0.37}}})};
 
         const MolecularGeometry sameSpinAlpha= {
                 AtomsVector(),
-                ElectronsVector({{Spin::alpha, {0, 0, 0.37}},
-                                 {Spin::alpha, {0, 0,-0.37}}})};
+                ElectronsVector({
+                    {Spin::alpha, {0, 0, 0.37}},
+                    {Spin::alpha, {0, 0,-0.37}}})};
         const MolecularGeometry sameSpinBeta = {
                 AtomsVector(),
-                ElectronsVector({{Spin::beta, {0, 0, 0.37}},
-                                 {Spin::beta, {0, 0,-0.37}}})};
+                ElectronsVector({
+                    {Spin::beta, {0, 0, 0.37}},
+                    {Spin::beta, {0, 0,-0.37}}})};
     }
     namespace threeElectrons {
         const MolecularGeometry normal = {
                 AtomsVector(),
-                ElectronsVector({{Spin::alpha, {0, 0, 0.37}},
-                                 {Spin::alpha, {0, 0, 0.0}},
-                                 {Spin::beta,  {0, 0,-0.37}}})};
+                ElectronsVector({
+                    {Spin::alpha, {0, 0, 0.37}},
+                    {Spin::alpha, {0, 0, 0.0}},
+                    {Spin::beta,  {0, 0,-0.37}}})};
         const MolecularGeometry spinFlipped = {
                 AtomsVector(),
-                ElectronsVector({{Spin::beta,  {0, 0, 0.37}},
-                                 {Spin::beta,  {0, 0, 0.0}},
-                                 {Spin::alpha, {0, 0,-0.37}}})};
+                ElectronsVector({
+                    {Spin::beta,  {0, 0, 0.37}},
+                    {Spin::beta,  {0, 0, 0.0}},
+                    {Spin::alpha, {0, 0,-0.37}}})};
         const MolecularGeometry ionic = {
                 AtomsVector(),
-                ElectronsVector({{Spin::alpha, {0, 0, 0.37}},
-                                 {Spin::alpha, {0, 0,-0.37}},
-                                 {Spin::beta,  {0, 0,-0.37}}})};
+                ElectronsVector({
+                    {Spin::alpha, {0, 0, 0.37}},
+                    {Spin::alpha, {0, 0,-0.37}},
+                    {Spin::beta,  {0, 0,-0.37}}})};
     }
 
     namespace fourElectrons {
@@ -136,56 +143,67 @@ namespace TestMolecules {
 
     namespace H2 {
         const MolecularGeometry nuclei = {
-                AtomsVector({{Element::H, {0, 0, 0.37}},
-                             {Element::H, {0, 0, -0.37}}}),{}};
+                AtomsVector({
+                    {Element::H, {0, 0, 0.37}},
+                    {Element::H, {0, 0, -0.37}}}),{}};
         namespace ElectronsInCores {
             const MolecularGeometry normal = {
                     nuclei.atoms(),
-                    ElectronsVector({{Spin::alpha, {0, 0, 0.37}},
-                                     {Spin::beta,  {0, 0,-0.37}}})};
+                    ElectronsVector({
+                        {Spin::alpha, {0, 0, 0.37}},
+                        {Spin::beta,  {0, 0,-0.37}}})};
 
             const MolecularGeometry ionicLeft = {
                     nuclei.atoms(),
-                    ElectronsVector({{Spin::alpha, {0, 0,-0.37}},
-                                     {Spin::beta,  {0, 0,-0.37}}})};
+                    ElectronsVector({
+                        {Spin::alpha, {0, 0,-0.37}},
+                        {Spin::beta,  {0, 0,-0.37}}})};
 
             const MolecularGeometry ionicRight = {
                     nuclei.atoms(),
-                    ElectronsVector({{Spin::alpha, {0, 0, 0.37}},
-                                     {Spin::beta,  {0, 0, 0.37}}})};
+                    ElectronsVector({
+                        {Spin::alpha, {0, 0, 0.37}},
+                        {Spin::beta,  {0, 0, 0.37}}})};
 
             const MolecularGeometry translated = {
-                    AtomsVector({{Element::H, {0+1, 0+1, 0.37+1}},
-                                 {Element::H, {0+1, 0+1, -0.37+1}}}),
-                    ElectronsVector({{Spin::alpha, {0+1, 0+1, 0.37+1}},
-                                     {Spin::beta,  {0+1, 0+1,-0.37+1}}})};
+                    AtomsVector({
+                        {Element::H, {0+1, 0+1, 0.37+1}},
+                        {Element::H, {0+1, 0+1, -0.37+1}}}),
+                    ElectronsVector({
+                        {Spin::alpha, {0+1, 0+1, 0.37+1}},
+                        {Spin::beta,  {0+1, 0+1,-0.37+1}}})};
 
             const MolecularGeometry reversedElectronOrder = {
                     nuclei.atoms(),
-                    ElectronsVector({{Spin::beta,  {0, 0, 0.37}},
-                                     {Spin::alpha, {0, 0,-0.37}}})};
+                    ElectronsVector({
+                        {Spin::beta,  {0, 0, 0.37}},
+                        {Spin::alpha, {0, 0,-0.37}}})};
 
             const MolecularGeometry flippedSpins = {
                     nuclei.atoms(),
-                    ElectronsVector({{Spin::alpha, {0, 0, -0.37}},
-                                     {Spin::beta,  {0, 0, 0.37}}})};
+                    ElectronsVector({
+                        {Spin::alpha, {0, 0, -0.37}},
+                        {Spin::beta,  {0, 0, 0.37}}})};
         }
 
         namespace ElectronsOutsideCores{
             const MolecularGeometry normal = {
                     nuclei.atoms(),
-                    ElectronsVector({{Spin::alpha, {0, 0, 0.2}},
-                                     {Spin::beta,  {0, 0,-0.2}}})};
+                    ElectronsVector({
+                        {Spin::alpha, {0, 0, 0.2}},
+                        {Spin::beta,  {0, 0,-0.2}}})};
 
             const MolecularGeometry offCenter = {
                     nuclei.atoms(),
-                    ElectronsVector({{Spin::alpha, {0, 0.1, 0.2}},
-                                     {Spin::beta,  {0,-0.1,-0.2}}})};
+                    ElectronsVector({
+                        {Spin::alpha, {0, 0.1, 0.2}},
+                        {Spin::beta,  {0,-0.1,-0.2}}})};
 
             const MolecularGeometry offCenterRotated90 = {
                     nuclei.atoms(),
-                    ElectronsVector({{Spin::alpha, { 0.1, 0, 0.2}},
-                                     {Spin::beta,  {-0.1, 0,-0.2}}})};
+                    ElectronsVector({
+                        {Spin::alpha, { 0.1, 0, 0.2}},
+                        {Spin::beta,  {-0.1, 0,-0.2}}})};
         }
     }
 
@@ -198,6 +216,25 @@ namespace TestMolecules {
                                      {Spin::alpha,{0, 0, 0.37}},
                                      {Spin::beta, {0, 0,-0.37}}})};
         }
+    }
+
+    namespace Li2 {
+        const AtomsVector nuclei = {
+                AtomsVector({
+                                    {Element::Li, {0, 0, 2.673 / 2.0}},
+                                    {Element::Li, {0, 0, -2.673 / 2.0}}}
+                )};
+
+        const MolecularGeometry normal = {
+                nuclei,
+                ElectronsVector({
+                                        {Spin::alpha, nuclei[0].position()},
+                                        {Spin::beta,  nuclei[0].position()},
+                                        {Spin::alpha, nuclei[1].position()},
+                                        {Spin::beta,  nuclei[1].position()},
+                                        {Spin::alpha, inbetween(nuclei, {0, 1}) + Eigen::Vector3d{0, 0.5, 0}},
+                                        {Spin::alpha, inbetween(nuclei, {0, 1}) - Eigen::Vector3d{0, 0.5, 0}}
+                                })};
     }
 
     namespace H6 {
@@ -362,7 +399,7 @@ namespace TestMolecules {
          */
 
         namespace {
-            const double a = 0.7623 * 1.89;
+            const double a = 0.7623 * 1.89; // Angstrom to Bohr
             const double b = 1.1544 * 1.89;
             const double c = 0.5053 * 1.89;
             const double d = 0.8752 * 1.89;

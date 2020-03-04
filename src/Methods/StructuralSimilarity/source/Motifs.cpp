@@ -17,9 +17,10 @@
 
 #include "Motifs.h"
 #include <Metrics.h>
-#include <spdlog/spdlog.h>
 #include <ElementInfo.h>
-
+#include <MapUtils.h>
+#include <spdlog/spdlog.h>
+#include <utility>
 
 Motifs::Motifs()
 : motifVector_({}) {}
@@ -27,8 +28,8 @@ Motifs::Motifs()
 Motifs::Motifs(const Eigen::MatrixXb &adjacencyMatrix)
         : Motifs(motifsFromAdjacencyMatrix(adjacencyMatrix)) {};
 
-Motifs::Motifs(const std::vector<Motif>& motifs)
-        : motifVector_(motifs) {};
+Motifs::Motifs(std::vector<Motif> motifs)
+        : motifVector_(std::move(motifs)) {};
 
 Motifs::Motifs(const Eigen::MatrixXb &adjacencyMatrix, const MolecularGeometry & molecule)
         : Motifs(adjacencyMatrix) {
@@ -49,19 +50,24 @@ void Motifs::classifyMotifs(const MolecularGeometry& molecule) {
         std::list<Eigen::Index> remainingNuclei(molecule.atoms().numberOfEntities());
     std::iota(remainingNuclei.begin(), remainingNuclei.end(), 0);
 
+    std::vector<Motif> newMotifsVector;
 
     // check all motifs
     for(auto& motif : motifVector_) {
         std::list<Eigen::Index> involvedNuclei;
 
+        std::map<long, long> electronToNucleusMap;
+
         // check for each electron if it is at an nucleus
-        for (const auto &e : motif.electronIndices()) {
-            auto[atNucleusQ, nucleusIndex] = molecule.electronAtNucleusQ(e);
+        for (const auto &electronIndex : motif.electronIndices()) {
+            auto[atNucleusQ, nucleusIndex] = molecule.electronAtNucleusQ(electronIndex);
+
+            electronToNucleusMap.emplace(electronIndex, nucleusIndex);
 
             // electrons at H or He nuclei are still valence electrons so the nucleus is not involved in the motif
-            if (atNucleusQ
-                && !(molecule.atoms()[nucleusIndex].type() == Elements::ElementType::H
-                     || molecule.atoms()[nucleusIndex].type() == Elements::ElementType::He))
+            if (atNucleusQ &&
+            !(molecule.atoms()[nucleusIndex].type() == Elements::ElementType::H
+            || molecule.atoms()[nucleusIndex].type() == Elements::ElementType::He))
                 involvedNuclei.push_back(nucleusIndex);
         }
         involvedNuclei.sort();
@@ -69,9 +75,15 @@ void Motifs::classifyMotifs(const MolecularGeometry& molecule) {
 
         if(involvedNuclei.empty()) {
             motif.setType(MotifType::Valence);
+            newMotifsVector.emplace_back(motif);
         } else {
-            motif.setAtomIndices(involvedNuclei);
-            motif.setType(MotifType::Core);
+            // create a core motifs fro every involved nuclei with all electrons in it.
+            for(const auto & nucleusIndex : involvedNuclei) {
+                auto electronKeys = MapUtils::findByValue(electronToNucleusMap, nucleusIndex);
+                assert(!electronKeys.empty() && "Some electrons must be at involved nuclei at this point.");
+
+                newMotifsVector.emplace_back(Motif{electronKeys, {nucleusIndex}, MotifType::Core});
+            }
         }
 
         std::list<long> diff{};
@@ -83,7 +95,9 @@ void Motifs::classifyMotifs(const MolecularGeometry& molecule) {
 
     // remaing nuclei (only H, He) being not involved in any motifs are separate core motifs
     for(auto & nucleusIndex : remainingNuclei)
-        motifVector_.emplace_back(Motif({}, {nucleusIndex}, MotifType::Core));
+        newMotifsVector.emplace_back(Motif({}, {nucleusIndex}, MotifType::Core));
+
+    motifVector_ = newMotifsVector;
 
     sort();
 }
