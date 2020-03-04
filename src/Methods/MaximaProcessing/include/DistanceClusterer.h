@@ -41,9 +41,6 @@ public:
 
     DistanceClusterer(std::vector<Sample> &samples);
     void cluster(Group& group) override;
-
-private:
-    std::vector<Sample>& samples_;
 };
 
 

@@ -40,3 +40,6 @@ IBlock::BlockType IBlock::typeFromString(const std::string& blockName) {
     else
         return BlockType::invalid;
 };
+
+IClusterer::IClusterer(std::vector<Sample> & samples)
+: samples_(samples) {}

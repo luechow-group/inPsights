@@ -51,17 +51,19 @@
 #include "VantagePointTree.h"
 #include <BestMatch.h>
 
+
+
+struct ClusterLabels{
+    int32_t numberOfClusters;
+    std::vector<int32_t> labels;
+};
+
+
 template<typename Scalar,
         typename VectorType,
         Scalar (*distance)(const VectorType &,const VectorType &)>
 class DensityBasedScan {
 public:
-    
-    struct Result{
-        int32_t numberOfClusters;
-        std::vector<int32_t> labels;
-    };
-    
     DensityBasedScan(const DensityBasedScan &) = delete;
 
     DensityBasedScan &operator=(const DensityBasedScan &) = delete;
@@ -95,7 +97,7 @@ public:
         return std::move(predictedEps);
     }
 
-    Result findClusters(Scalar eps, size_t minPts) {
+    ClusterLabels findClusters(Scalar eps, size_t minPts) {
         std::vector<Eigen::Index> candidates, newCandidates;
         std::vector<std::pair<size_t, Scalar>> neighborIndices;
         std::vector<int32_t> labels(data_.size(), -1);

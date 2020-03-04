@@ -1,4 +1,4 @@
-/* Copyright (C) 2019 Michael Heuer.
+/* Copyright (C) 2019-2020 Michael Heuer.
  *
  * This file is part of inPsights.
  * inPsights is free software: you can redistribute it and/or modify
@@ -34,13 +34,14 @@ public:
         h1 = Group({g1});
         h2 = Group({g2});
         h3 = Group({g3});
-
     }
 };
+
 
 TEST_F(AGroupTest, DefaultConstructor) {
     Group supergroup0;
     ASSERT_EQ(supergroup0.representative(), nullptr);
+    ASSERT_EQ(supergroup0.getSelectedElectronsCount(), 0);
     ASSERT_TRUE(supergroup0.isLeaf());
 }
 
@@ -48,6 +49,7 @@ TEST_F(AGroupTest, CopyConstructor){
     Group group(g1);
     ASSERT_TRUE(group.isLeaf());
     ASSERT_EQ(group.representative()->value(), 1.1);
+    ASSERT_EQ(group.getSelectedElectronsCount(), 2);
 }
 
 TEST_F(AGroupTest, Preallocation){
@@ -55,6 +57,7 @@ TEST_F(AGroupTest, Preallocation){
 
     ASSERT_FALSE(supergroup.isLeaf());
     ASSERT_TRUE(supergroup[0].isLeaf());
+    ASSERT_EQ(supergroup.getSelectedElectronsCount(), 0);
 
     ASSERT_EQ(supergroup.representative(), supergroup.front().representative());
     ASSERT_EQ(supergroup.front().representative(), nullptr);
@@ -68,6 +71,7 @@ TEST_F(AGroupTest, Preallocation){
     ASSERT_FALSE(supergroup.isLeaf());
     ASSERT_EQ(supergroup.representative(), g1.representative());
     ASSERT_EQ(supergroup[0].representative(), g1.representative());
+    ASSERT_EQ(supergroup.front().getSelectedElectronsCount(), 2);
 }
 
 TEST_F(AGroupTest, ListInitialization){
@@ -75,11 +79,11 @@ TEST_F(AGroupTest, ListInitialization){
     ASSERT_FALSE(supergroup.isLeaf());
 
     ASSERT_EQ(supergroup.representative()->value(), 1.1);
+    ASSERT_EQ(supergroup.getSelectedElectronsCount(), 2);
     ASSERT_EQ(supergroup[0].representative()->value(), 1.1);
     ASSERT_EQ(supergroup[1].representative()->value(), 1.2);
     ASSERT_EQ(supergroup[2].representative()->value(), 1.0);
 }
-
 
 TEST_F(AGroupTest, ListInitialization_Constructor){
     Group supergroup({g1, g2, g3});
@@ -89,12 +93,6 @@ TEST_F(AGroupTest, ListInitialization_Constructor){
     ASSERT_EQ(supergroup[0].representative()->value(), 1.1);
     ASSERT_EQ(supergroup[1].representative()->value(), 1.2);
     ASSERT_EQ(supergroup[2].representative()->value(), 1.0);
-}
-
-TEST_F(AGroupTest, DISABLED_NestedListInitializationWithOneObject_Constructor_Death){
-    Group supergroup({{g1}});
-
-    EXPECT_DEATH(supergroup.isLeaf(),"");
 }
 
 TEST_F(AGroupTest, NestedListInitializationWithOneObject_Constructor){
@@ -118,7 +116,7 @@ TEST_F(AGroupTest, NestedListInitialization_Constructor){
 }
 
 TEST_F(AGroupTest, ListInitialization_Empty){
-    Group supergroup({});
+    Group supergroup; // Careful, Group supergroup({}); will fail for intel compilers.
     ASSERT_EQ(supergroup.representative(), nullptr);
     ASSERT_TRUE(supergroup.isLeaf());
 }

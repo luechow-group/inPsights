@@ -1,4 +1,4 @@
-/* Copyright 2020 Michael Heuer.
+/* Copyright (C) 2020 Michael Heuer.
  *
  * This file is part of inPsights.
  * inPsights is free software: you can redistribute it and/or modify
@@ -37,8 +37,8 @@ public:
     }
 };
 
-TEST_F(AClusterNumberAnalyzerTest, emptyGroupDeathTest){
-    Group group({});
+TEST_F(AClusterNumberAnalyzerTest, DISABLED_emptyGroupDeathTest){
+    Group group;
 
     ClusterNumberAnalyzer::settings.startRadius = 0.4;
     ClusterNumberAnalyzer::settings.increments = 2;

@@ -55,8 +55,6 @@ private:
             const Group::iterator &beginIt,
             Group::iterator &it,
             const Eigen::PermutationMatrix<Eigen::Dynamic> &bestMatch) const;
-
-    std::vector<Sample> &samples_;
 };
 
 

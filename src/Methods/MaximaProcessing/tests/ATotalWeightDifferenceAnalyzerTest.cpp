@@ -1,4 +1,4 @@
-/* Copyright 2020 Michael Heuer.
+/* Copyright (C) 2020 Michael Heuer.
  *
  * This file is part of inPsights.
  * inPsights is free software: you can redistribute it and/or modify
@@ -36,8 +36,8 @@ public:
     }
 };
 
-TEST_F(ATotalWeightDifferenceAnalyzerTest, emptyGroupDeathTest){
-    Group group({});
+TEST_F(ATotalWeightDifferenceAnalyzerTest, DISABLED_emptyGroupDeathTest){
+    Group group;
 
     TotalWeightDifferenceAnalyzer::settings.startRadius = 0.4;
     TotalWeightDifferenceAnalyzer::settings.increments = 3;

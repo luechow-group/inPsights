@@ -53,10 +53,8 @@ YAML_SETTINGS_DEFINITION(Settings::SOAPClusterer)
 Settings::SOAPClusterer SOAPClusterer::settings = Settings::SOAPClusterer();
 
 
-SOAPClusterer::SOAPClusterer(
-        const AtomsVector& atoms,
-        std::vector<Sample> &samples)
-        : atoms_(atoms), samples_(samples) {
+SOAPClusterer::SOAPClusterer(const AtomsVector& atoms, std::vector<Sample> &samples)
+    : IClusterer(samples), atoms_(atoms) {
     ParticleKit::create(atoms_, (*samples.begin()).sample_);
 };
 
