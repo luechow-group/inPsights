@@ -16,22 +16,33 @@
  */
 
 #include <Group.h>
+#include <NearestElectrons.h>
+#include <BestMatch.h>
 #include <Reference.h>
 #include <Eigen/Core>
 
+Group::Group()
+        : std::vector<Group>(0),
+          representative_(nullptr),
+          selectedElectronsCount_(0){
+}
+
 Group::Group(Reference reference)
         : std::vector<Group>(0),
-        representative_(std::make_shared<Reference>(std::move(reference))) {
+        representative_(std::make_shared<Reference>(std::move(reference))),
+        selectedElectronsCount_(representative_->maximum().numberOfEntities()){
 }
 
 Group::Group(std::vector<Group>::size_type size)
         : std::vector<Group>(size),
-        representative_(nullptr){
+        representative_(nullptr),
+        selectedElectronsCount_(0){
 }
 
 Group::Group(std::initializer_list<Group> group)
         : std::vector<Group>(group),
-        representative_( empty()? nullptr : front().representative()) {
+        representative_( empty()? nullptr : front().representative()),
+        selectedElectronsCount_(group.begin()->getSelectedElectronsCount()){
 }
 
 // Sort only this group and update the representative structure.
@@ -193,4 +204,28 @@ std::ostream &operator<<(std::ostream &os, const Group &g) {
     os  << "}";
     
     return os;
+}
+
+long Group::getSelectedElectronsCount() const{
+    return selectedElectronsCount_;
+};
+
+void Group::setSelectedElectronsCount(const long &count){
+    selectedElectronsCount_ = count;
+    for(auto & subgroup : (*this))
+        subgroup.setSelectedElectronsCount(count);
+};
+
+void Group::permuteRelevantElectronsToFront(std::vector<Sample> & samples){
+    Eigen::PermutationMatrix<Eigen::Dynamic> permutation;
+    auto electronsNumber = (*this).representative()->maximum().numberOfEntities();
+
+    for (auto & subGroup : *this) {
+        auto subIndices = NearestElectrons::getRelevantIndices(subGroup.representative()->maximum());
+
+        // permute all relevant electrons to the front
+        subGroup.setSelectedElectronsCount(subIndices.size());
+        permutation = BestMatch::getPermutationToFront(subIndices, electronsNumber);
+        subGroup.permuteAll(permutation, samples);
+    }
 }

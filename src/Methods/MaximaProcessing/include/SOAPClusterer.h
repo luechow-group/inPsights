@@ -45,7 +45,6 @@ public:
 
 private:
     AtomsVector atoms_;
-    std::vector<Sample> &samples_;
 };
 
 #endif //INPSIGHTS_SOAPCLUSTERER_H

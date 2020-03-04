@@ -41,7 +41,7 @@ Settings::DistanceClusterer DistanceClusterer::settings = Settings::DistanceClus
 
 
 DistanceClusterer::DistanceClusterer(std::vector<Sample> &samples)
-        : samples_(samples){}
+        : IClusterer(samples){}
         
 // assumes a sorted reference vector
 void DistanceClusterer::cluster(Group& group) {

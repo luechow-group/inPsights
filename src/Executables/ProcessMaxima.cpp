@@ -23,6 +23,7 @@
 #include <DensityBasedClusterer.h>
 #include <SOAPClusterer.h>
 #include <ReferencePositionsClusterer.h>
+#include <NearestElectrons.h>
 #include <ClusterNumberAnalyzer.h>
 #include <TotalWeightDifferenceAnalyzer.h>
 #include <MaximaProcessor.h>
@@ -222,10 +223,68 @@ int main(int argc, char *argv[]) {
 
                 settings = Settings::DensityBasedClusterer(node.second);
 
+                if(settings.local()) {
+                    auto nearestElectronSettings = node.second[VARNAME(NearestElectrons)];
+                    if (nearestElectronSettings)
+                        NearestElectrons::settings = Settings::NearestElectrons(nearestElectronSettings, atoms);
+                }
+
                 DensityBasedClusterer densityBasedClusterer(samples);
                 densityBasedClusterer.cluster(maxima);
 
+                if(settings.local()) {
+                    NearestElectrons::settings.appendToNode(usedClusteringSettings); // TODO FIX USED SETTINGS APPEND
+                }
+
                 settings.appendToNode(usedClusteringSettings);
+                break;
+            }
+            case IBlock::BlockType::ReferencePositionsClusterer: {
+                auto &settings = ReferencePositionsClusterer::settings;
+
+                settings = Settings::ReferencePositionsClusterer(node.second);
+
+                if(settings.local()) {
+                    auto nearestElectronSettings = node.second[VARNAME(NearestElectrons)];
+                    if (nearestElectronSettings)
+                        NearestElectrons::settings = Settings::NearestElectrons(nearestElectronSettings, atoms);
+                }
+                ReferencePositionsClusterer ReferencePositionsClusterer(samples);
+                ReferencePositionsClusterer.cluster(maxima);
+
+                settings.appendToNode(usedClusteringSettings);
+
+                if(settings.local()) {
+                    NearestElectrons::settings.appendToNode(usedClusteringSettings); // TODO FIX USED SETTINGS APPEND
+                }
+
+                break;
+            }
+            case IBlock::BlockType::SOAPClusterer: {
+                auto &settings = SOAPClusterer::settings;
+
+                settings = Settings::SOAPClusterer(node.second);
+
+                auto soapSettings = node.second["SOAP"]; //TODO what if node "SOAP" is not present?
+                if (soapSettings[SOAP::General::settings.name()])
+                    SOAP::General::settings = Settings::SOAP::General(soapSettings);
+                if (soapSettings[SOAP::Radial::settings.name()])
+                    SOAP::Radial::settings = Settings::SOAP::Radial(soapSettings);
+                if (soapSettings[SOAP::Angular::settings.name()])
+                    SOAP::Angular::settings = Settings::SOAP::Angular(soapSettings);
+                if (soapSettings[SOAP::Cutoff::settings.name()])
+                    SOAP::Cutoff::settings = Settings::SOAP::Cutoff(soapSettings);
+
+                SOAPClusterer sOAPClusterer(atoms, samples);
+                sOAPClusterer.cluster(maxima);
+
+                settings.appendToNode(usedClusteringSettings);
+                auto usedSoapSettings = usedClusteringSettings[settings.name()]["SOAP"];
+                SOAP::General::settings.appendToNode(usedSoapSettings);
+                SOAP::Radial::settings.appendToNode(usedSoapSettings);
+                SOAP::Angular::settings.appendToNode(usedSoapSettings);
+                SOAP::Cutoff::settings.appendToNode(usedSoapSettings);
+
                 break;
             }
             case IBlock::BlockType::ClusterNumberAnalyzer: {
@@ -250,56 +309,6 @@ int main(int argc, char *argv[]) {
                 totalWeightDifferencesAnalysisResults.emplace_back(analyzer.getResults());
 
                 settings.appendToNode(usedClusteringSettings);
-                break;
-            }
-            case IBlock::BlockType::ReferencePositionsClusterer: {
-                auto &settings = ReferencePositionsClusterer::settings;
-
-                settings = Settings::ReferencePositionsClusterer(node.second);
-
-                std::vector<Eigen::Vector3d> positions;
-
-                auto positionNodes = node.second["positions"];
-                for (const auto &positionNode : positionNodes){
-                    positions.emplace_back(YAML::decodePosition(positionNode, atoms));
-                }
-
-                spdlog::info("Using the following positions:");
-                for (const auto &position : positions){
-                    spdlog::info("{} {} {}", position[0], position[1], position[2]);
-                }
-
-                ReferencePositionsClusterer ReferencePositionsClusterer(samples, atoms, positions);
-                ReferencePositionsClusterer.cluster(maxima);
-
-                settings.appendToNode(usedClusteringSettings);
-                break;
-            }
-            case IBlock::BlockType::SOAPClusterer: {
-                auto &settings = SOAPClusterer::settings;
-
-                settings = Settings::SOAPClusterer(node.second);
-
-                auto soapSettings = node.second["SOAP"];
-                if (soapSettings[SOAP::General::settings.name()])
-                    SOAP::General::settings = Settings::SOAP::General(soapSettings);
-                if (soapSettings[SOAP::Radial::settings.name()])
-                    SOAP::Radial::settings = Settings::SOAP::Radial(soapSettings);
-                if (soapSettings[SOAP::Angular::settings.name()])
-                    SOAP::Angular::settings = Settings::SOAP::Angular(soapSettings);
-                if (soapSettings[SOAP::Cutoff::settings.name()])
-                    SOAP::Cutoff::settings = Settings::SOAP::Cutoff(soapSettings);
-
-                SOAPClusterer sOAPClusterer(atoms, samples);
-                sOAPClusterer.cluster(maxima);
-
-                settings.appendToNode(usedClusteringSettings);
-                auto usedSoapSettings = usedClusteringSettings[settings.name()]["SOAP"];
-                SOAP::General::settings.appendToNode(usedSoapSettings);
-                SOAP::Radial::settings.appendToNode(usedSoapSettings);
-                SOAP::Angular::settings.appendToNode(usedSoapSettings);
-                SOAP::Cutoff::settings.appendToNode(usedSoapSettings);
-
                 break;
             }
             default:
