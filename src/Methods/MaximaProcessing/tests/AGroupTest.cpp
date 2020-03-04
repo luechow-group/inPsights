@@ -1,4 +1,4 @@
-/* Copyright (C) 2019 Michael Heuer.
+/* Copyright (C) 2019-2020 Michael Heuer.
  *
  * This file is part of inPsights.
  * inPsights is free software: you can redistribute it and/or modify
@@ -84,7 +84,6 @@ TEST_F(AGroupTest, ListInitialization){
     ASSERT_EQ(supergroup[1].representative()->value(), 1.2);
     ASSERT_EQ(supergroup[2].representative()->value(), 1.0);
 }
-
 
 TEST_F(AGroupTest, ListInitialization_Constructor){
     Group supergroup({g1, g2, g3});
