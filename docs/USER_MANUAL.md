@@ -47,7 +47,7 @@ General settings have to be given under the top-level YAML node `MaximaProcessin
 * `binaryFileBasename` (`string`): basename of the `.bin` files (without file-extension and counters) created by an Amolqc run.  E.g. for `raw`, all `raw-00.bin`, `raw-01.bin` [...] files are considered.
 * `samplesToAnalyze` (`unsigned integer`): Samples/maxima to analyze. A value of `0` means all samples/maxima from the subsequent `.bin` files are processed.
 * `minimalClusterWeight` (`positive float`): minimal weight of clusters to be printed in the output file .
-* `deleteCoreElectrons` (`bool`):  # If `true`, all core electrons are deleted and thus not considered in the clustering or any statistic.
+* `deleteCoreElectrons` (`bool`):  If `true`, all core electrons are deleted and thus not considered in the clustering or any statistic.
 
 #### Clustering
 The clustering process is specified under the top level YAML node `Clustering` and consists of a list of clusterers.
