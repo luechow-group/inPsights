@@ -6,7 +6,7 @@ The essential executables are
 
 The input for these executables has to be specified in YAML-format.
 
-##`ProcessMaxima`  Executable
+## `ProcessMaxima`  Executable
 The executable `ProcessMaxima` processes binary files created with `Amolqc` in `rawdata` mode.
 Exemplary `.bin` files can be found in the `Amolqc/examples/MAX/RAW` folder for acetone and ethane.
 
