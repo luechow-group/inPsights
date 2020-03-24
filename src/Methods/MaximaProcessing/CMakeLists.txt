@@ -13,7 +13,7 @@ set(HEADER_FILES
         include/Reference.h
         include/ClusterData.h
         include/IdentityClusterer.h
-        include/DistanceClusterer.h
+        include/PreClusterer.h
         include/DensityBasedClusterer.h
         include/SOAPClusterer.h
         include/MaximaProcessor.h
@@ -39,7 +39,7 @@ set(SOURCE_FILES
         source/Reference.cpp
         source/ClusterData.cpp
         source/IdentityClusterer.cpp
-        source/DistanceClusterer.cpp
+        source/PreClusterer.cpp
         source/DensityBasedClusterer.cpp
         source/SOAPClusterer.cpp
         source/MaximaProcessor.cpp

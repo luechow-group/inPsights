@@ -16,7 +16,7 @@
  */
 
 #include <IdentityClusterer.h>
-#include <DistanceClusterer.h>
+#include <PreClusterer.h>
 #include <BestMatchDistance.h>
 #include <ValueSorter.h>
 #include <spdlog/spdlog.h>

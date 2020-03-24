@@ -21,7 +21,7 @@ MaximaProcessing:
   minimalClusterWeight: 0.0
   deleteCoreElectrons: false
 Clustering:
-  DistanceClusterer:
+  PreClusterer:
     radius: 0.01 # [a0]
   DensityBasedClusterer:
     radius: 0.2  # [a0]
@@ -56,7 +56,7 @@ Subsequently, all specified clusterers are applied in their specified order and 
 Example:
 ```yaml
 Clustering:
-  DistanceClusterer:      # 1. spherical pre-clustering with the DistanceClusterer and a small radius of 0.01 a0
+  PreClusterer:      # 1. spherical pre-clustering with the PreClusterer and a small radius of 0.01 a0
     radius: 0.01  # [a0]
   DensityBasedClusterer:  # 2. density-based clustering with the DensityBasedClusterer and a radius of 0.2 a0
     radius: 0.2  # [a0]
@@ -66,11 +66,16 @@ Each clusterer starts with the clusters of the previous one clustering step and 
 In the beginning, each maximum constitues an individual cluster. 
 Note that only the last two clustering hierarchy levels are stored in the `-out.yml`.
 
-##### DistanceClusterer
+##### PreClusterer
 Greedy spherical clusterer employing a spin-agnostic best-match distance metric.
 * `radius` (`positive float`,`[a0]`): Radius in which similar maxima (irrespective of spin) are clustered together.
 * `valueIncrement`  (`positive float`,`[a0]`): Function value increment used in the greedy clusterer. This value is determined automatically from the standard error of the `-ln(|Ψ|^2)` if not specified.
+
+##### SphericalClusterer
+Spherical clusterer employing a spin-agnostic best-match distance metric.
+* `radius` (`positive float`,`[a0]`): Radius in which similar maxima (irrespective of spin) are clustered together.
 * `local` (`bool`): true unlocks the `NearestElectrons` Options in which the subset of considered electrons can be specified.
+
 
 ##### DensityBasedClusterer
 Density-based clusterer employing a spin-agnostic best-match distance metric.
@@ -79,7 +84,7 @@ Density-based clusterer employing a spin-agnostic best-match distance metric.
 
 
 ##### Local Clustering with the `NearestElectrons` Option
-`NearestElectrons` is A sub-node that can be added to a `DistanceClusterer` or `DensityBasedClusterer` node.
+`NearestElectrons` is A sub-node that can be added to a `SphericalClusterer` or `DensityBasedClusterer` node.
 The following options can be specified:
 * `maximalCount` (`unsigned int`): Maximal number of electrons that are compared for clustering (the subset).
 * `maximalDistance` (`positive float`,`[a0]`): Maximal distance of electrons from the reference positions to be included in the subset for comparison.
@@ -97,7 +102,7 @@ The following options can be specified:
 Example: Density-based clustering of the four valence electrons closest to the point in between the 4. and 5. atom and sort the remaining electrons.
 ```yaml
 Clustering:
-  DistanceClusterer:
+  PreClusterer:
     radius: 0.01
   DensityBasedClusterer:
     radius: 0.2

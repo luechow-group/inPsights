@@ -17,7 +17,7 @@
 
 #include <gmock/gmock.h>
 #include <SOAPClusterer.h>
-#include <DistanceClusterer.h>
+#include <PreClusterer.h>
 #include <SOAPSettings.h>
 #include <TestMolecules.h>
 #include <Group.h>
