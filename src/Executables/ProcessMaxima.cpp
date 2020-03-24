@@ -156,10 +156,8 @@ int main(int argc, char *argv[]) {
     // if binary file basename is not specified, use the name of  the input file
     if(!inputYaml["MaximaProcessing"][MaximaProcessing::settings.binaryFileBasename.name()]) {
         idx = inputFilename.rfind('.');
-        if (idx != std::string::npos) {
+        if (idx != std::string::npos)
             MaximaProcessing::settings.binaryFileBasename = inputFilename.substr(0, idx);
-            spdlog::info("{}", MaximaProcessing::settings.binaryFileBasename());
-        }
     }
         // Read maxima and samples
     Group maxima;

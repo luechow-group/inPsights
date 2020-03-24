@@ -31,7 +31,7 @@ enum class SamplesToAnalyze{
 namespace Settings {
     class MaximaProcessing : public ISettings {
     public:
-        Property<std::string> binaryFileBasename = {"", VARNAME(binaryFileBasename)};
+        Property<std::string> binaryFileBasename = {"(name of the .yml input file)", VARNAME(binaryFileBasename)};
         Property<unsigned> samplesToAnalyze = {unsigned(SamplesToAnalyze::small), VARNAME(samplesToAnalyze)};
         Property<double> minimalClusterWeight = {0.01, VARNAME(minimalClusterWeight)};
         Property<bool> deleteCoreElectrons = {false, VARNAME(deleteCoreElectrons)};
