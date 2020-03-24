@@ -17,7 +17,7 @@ It can be downloaded and installed from the command line as follows:
 ```bash
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
 ```
-To download the packages with homebrew` execute the following command in the terminal:
+To download the packages with `homebrew` execute the following command in the terminal:
 ```bash
 brew update
 brew upgrade
