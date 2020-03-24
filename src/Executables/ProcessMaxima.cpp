@@ -19,7 +19,7 @@
 #include <Group.h>
 #include <ElementInfo.h>
 #include <IdentityClusterer.h>
-#include <DistanceClusterer.h>
+#include <PreClusterer.h>
 #include <DensityBasedClusterer.h>
 #include <SOAPClusterer.h>
 #include <ReferencePositionsClusterer.h>
@@ -46,7 +46,7 @@ void validateClusteringSettings(const YAML::Node &inputYaml) {
 
     auto clusteringNode = inputYaml["Clustering"];
 
-    for (auto node : clusteringNode) {
+    for (const auto& node : clusteringNode) {
         auto methodName = node.first.as<std::string>();
 
         switch (IBlock::typeFromString(methodName)) {
@@ -55,7 +55,7 @@ void validateClusteringSettings(const YAML::Node &inputYaml) {
                 break;
             }
             case IBlock::BlockType::DistanceClusterer: {
-                DistanceClusterer::settings = Settings::DistanceClusterer(clusteringNode);
+                DistanceClusterer::settings = Settings::PreClusterer(clusteringNode);
                 break;
             }
             case IBlock::BlockType::DensityBasedClusterer: {
@@ -157,7 +157,7 @@ int main(int argc, char *argv[]) {
     if(!inputYaml["MaximaProcessing"][MaximaProcessing::settings.binaryFileBasename.name()]) {
         idx = inputFilename.rfind('.');
         if (idx != std::string::npos)
-            MaximaProcessing::settings.binaryFileBasename = inputFilename.substr(0,idx);
+            MaximaProcessing::settings.binaryFileBasename = inputFilename.substr(0, idx);
     }
         // Read maxima and samples
     Group maxima;
@@ -183,7 +183,7 @@ int main(int argc, char *argv[]) {
     std::vector<std::vector<double>> totalWeightDifferencesAnalysisResults;
 
     maxima.sortAll();
-    for (auto node : clusteringNode) {
+    for (const auto& node : clusteringNode) {
         auto methodName = node.first.as<std::string>();
         spdlog::info("Starting {}...", methodName);
 
@@ -208,7 +208,7 @@ int main(int argc, char *argv[]) {
             case IBlock::BlockType::DistanceClusterer: {
                 auto &settings = DistanceClusterer::settings;
 
-                settings = Settings::DistanceClusterer(node.second);
+                settings = Settings::PreClusterer(node.second);
 
                 DistanceClusterer distanceClusterer(samples);
                 if (!node.second[settings.valueIncrement.name()])
@@ -344,13 +344,13 @@ int main(int argc, char *argv[]) {
                << Key << "NSamples" << Value << samples.size()
                << Key << "OverallResults" << Value << results
                << Key << "ClusterNumberGraphAnalysis" << BeginSeq;
-    for (auto results : clusterNumberGraphAnalysisResults) {
-        outputYaml << YAML::Flow << results;
+    for (const auto & graphAnalysisResult : clusterNumberGraphAnalysisResults) {
+        outputYaml << YAML::Flow << graphAnalysisResult;
     }
     outputYaml << EndSeq;
     outputYaml << Key << "TotalClusterWeightDifferenceAnalysis" << BeginSeq;
-    for (auto results : totalWeightDifferencesAnalysisResults) {
-        outputYaml << YAML::Flow << results;
+    for (const auto & weightDifferenceAnalysisResult  : totalWeightDifferencesAnalysisResults) {
+        outputYaml << YAML::Flow << weightDifferenceAnalysisResult;
     }
     outputYaml << EndSeq;
 

@@ -17,7 +17,7 @@
  */
 
 #include <DensityBasedClusterer.h>
-#include <DistanceClusterer.h>
+#include <PreClusterer.h>
 #include <BestMatchDistance.h>
 #include <Enumerate.h>
 #include <Reference.h>

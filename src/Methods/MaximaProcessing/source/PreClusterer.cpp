@@ -16,28 +16,28 @@
  */
 
 #include <IdentityClusterer.h>
-#include <DistanceClusterer.h>
+#include <PreClusterer.h>
 #include <BestMatchDistance.h>
 #include <ValueSorter.h>
 
 namespace Settings {
-    DistanceClusterer::DistanceClusterer()
-    : ISettings(VARNAME(DistanceClusterer)) {}
+    PreClusterer::PreClusterer()
+    : ISettings(VARNAME(PreClusterer)) {}
 
-    DistanceClusterer::DistanceClusterer(const YAML::Node &node)
-            : DistanceClusterer() {
+    PreClusterer::PreClusterer(const YAML::Node &node)
+            : PreClusterer() {
         doubleProperty::decode(node, radius);
         doubleProperty::decode(node, valueIncrement);
     }
 
-    void DistanceClusterer::appendToNode(YAML::Node &node) const {
+    void PreClusterer::appendToNode(YAML::Node &node) const {
         node[className][radius.name()] = radius();
         node[className][valueIncrement.name()] = valueIncrement();
     }
 }
-YAML_SETTINGS_DEFINITION(Settings::DistanceClusterer)
+YAML_SETTINGS_DEFINITION(Settings::PreClusterer)
 
-Settings::DistanceClusterer DistanceClusterer::settings = Settings::DistanceClusterer();
+Settings::PreClusterer DistanceClusterer::settings = Settings::PreClusterer();
 
 
 DistanceClusterer::DistanceClusterer(std::vector<Sample> &samples)

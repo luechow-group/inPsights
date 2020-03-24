@@ -15,33 +15,33 @@
  * along with inPsights. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef INPSIGHTS_DISTANCECLUSTERER_H
-#define INPSIGHTS_DISTANCECLUSTERER_H
+#ifndef INPSIGHTS_PRECLUSTERER_H
+#define INPSIGHTS_PRECLUSTERER_H
 
 #include <BestMatch.h>
 #include <IBlock.h>
 #include <ISettings.h>
 
 namespace Settings {
-    class DistanceClusterer : public ISettings {
+    class PreClusterer : public ISettings {
     public:
         Property<double> radius = {0.01, VARNAME(radius)};
         Property<double> valueIncrement = {1e-5, VARNAME(valueIncrement)};
 
-        DistanceClusterer();
-        explicit DistanceClusterer(const YAML::Node &node);
+        PreClusterer();
+        explicit PreClusterer(const YAML::Node &node);
         void appendToNode(YAML::Node &node) const override;
     };
 }
-YAML_SETTINGS_DECLARATION(Settings::DistanceClusterer)
+YAML_SETTINGS_DECLARATION(Settings::PreClusterer)
 
 class DistanceClusterer : public IClusterer {
 public:
-    static Settings::DistanceClusterer settings;
+    static Settings::PreClusterer settings;
 
     DistanceClusterer(std::vector<Sample> &samples);
     void cluster(Group& group) override;
 };
 
 
-#endif //INPSIGHTS_DISTANCECLUSTERER_H
+#endif //INPSIGHTS_PRECLUSTERER_H

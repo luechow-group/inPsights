@@ -18,7 +18,7 @@
 #include <gmock/gmock.h>
 #include <Reference.h>
 #include <Sample.h>
-#include <DistanceClusterer.h>
+#include <PreClusterer.h>
 #include <IdentityClusterer.h>
 #include <algorithm>
 #include <random>

@@ -19,7 +19,7 @@
 #include <Reference.h>
 #include <Sample.h>
 #include <IdentityClusterer.h>
-#include <DistanceClusterer.h>
+#include <PreClusterer.h>
 #include <algorithm>
 #include <random>
 

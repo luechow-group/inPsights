@@ -16,7 +16,7 @@
  */
 
 #include "SOAPClusterer.h"
-#include "DistanceClusterer.h"
+#include "PreClusterer.h"
 #include <StructuralSimilarity.h>
 #include <spdlog/spdlog.h>
 #include <BestMatchSimilarity.h>

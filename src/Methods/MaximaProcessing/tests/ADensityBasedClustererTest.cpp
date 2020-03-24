@@ -17,7 +17,7 @@
 
 #include <gmock/gmock.h>
 #include <DensityBasedClusterer.h>
-#include <DistanceClusterer.h>
+#include <PreClusterer.h>
 #include <random>
 #include <TestMolecules.h>
 #include <Sample.h>

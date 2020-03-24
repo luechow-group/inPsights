@@ -19,7 +19,7 @@
 #define INPSIGHTS_DENSITYBASEDCLUSTERER_H
 
 #include <DensityBasedScan.h>
-#include <DistanceClusterer.h>
+#include <PreClusterer.h>
 #include <ISettings.h>
 #include <spdlog/spdlog.h>
 #include <IBlock.h>
