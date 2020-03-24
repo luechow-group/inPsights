@@ -15,7 +15,7 @@ xcode-select --install
 To install the required packages on MacOS, the [homebrew package manager](https://brew.sh) can be used. 
 It can be downloaded and installed from the command line as follows:
 ```bash
-/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
 ```
 To download the packages with homebrew` execute the following command in the terminal:
 ```bash
