@@ -86,16 +86,16 @@ If Qt5 was download from the webpage and installed via the installer, the follow
 export Qt5_DIR=/home/<username>/Qt/5.XX.X/gcc_64
 ```
 
-If Qt5 was installed via `apt-get`, `cmake` should automatically find the library (not tested).
+If Qt5 was installed via `apt-get`, CMake should automatically find the library (not tested).
 
 #### Amolqc
 If the `AmolqcInterface` module is required, the path to `Amolqc` must be exported as an environment variable e.g.
 ```bash
 export AMOLQC=/Users/michaelheuer/Projects/inPsights/src/AmolqcInterface/Amolqc
 ```
-This is *not* necessary for building the `inPsights` and `ProcessMaxima` executable.
+This is **not** necessary for building the `inPsights` and `ProcessMaxima` executable.
 
-## Building inPsights
+## Building ProcessMaxima and inPsights
 
 Create a build directory e.g.
 ```bash
