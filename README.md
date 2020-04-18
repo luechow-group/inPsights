@@ -24,19 +24,28 @@ brew upgrade
 brew install -y git cmake gcc lapack eigen boost qt
 ```
 
+Alternatively, the Qt5 online installer can be used, which is found on the [Qt webpage](https://www.qt.io/download).
+During the installation, make sure to install Qt for the `x86_64` architecture and select `sources`, `Qt3D`, and additionally `QtCharts` (which will be required in future versions as well).
+
+
 #### Ubuntu
-To install the required packages on Ubuntu, the package manager `aptitude` can be used.
-To download the required packages with aptitude` execute the following command in the terminal:
+On Ubuntu, the package manager `aptitude` can be used.
+To download the required packages with `aptitude` execute the following command in the terminal:
 ```bash
 sudo apt-get -y install \
     build-essential git cmake \
     gcc g++ gfortran \
     libgomp1 libblas-dev liblapack-dev libeigen3-dev libboost-all-dev \ 
-    qtbase5-dev qt3d5-dev 
-
 ```
-Alternatively, Qt5 can be downloaded from the [Qt webpage](https://www.qt.io/download). 
-During the installation make sure to install Qt for the `x86_64` architecture and select `sources`, `Qt3D`, and additionally `QtCharts` (which will be required in future versions as well).
+
+The preferred method to install Qt5 on Ubuntu is the Qt5 online installer, which is found on the [Qt webpage](https://www.qt.io/download).
+During the installation, make sure to install Qt for the `x86_64` architecture and select `sources`, `Qt3D`, and additionally `QtCharts` (which will be required in future versions as well).
+
+Alternatively, the package manager `aptitude` can be used:
+```bash
+sudo apt-get -y install qtbase5-dev qt3d5-dev 
+```
+This might cause problems during the build of the inPsights GUI.
 
 #### Submodules in inPsights
 After cloning the repository, make sure to initialize and update the submodules
