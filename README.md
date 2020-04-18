@@ -53,22 +53,14 @@ should be sufficient.
 
 ### Setting environment variables
 
-#### Amolqc
-The path to `Amolqc` *must* be exported as an environment variable e.g.
-```bash
-export AMOLQC=/Users/michaelheuer/Projects/inPsights/src/AmolqcInterface/Amolqc
-```
-to allow for interfacing `Amolqc` in the `AmolqcInterface` module.
-
 #### Compilers
-Environment variables for the different compilers and the libraries must be specified e.g. 
+Environment variables for different compilers and associated libraries can be specified e.g. 
 
 for the `GNU Compiler Collection`
 ```bash
 export CC=/usr/local/bin/gcc-8
 export CXX=/usr/local/bin/g++-8
 export FC=/usr/local/bin/gfortran-8
-export CMAKE_PREFIX_PATH=/usr/local/Cellar/qt/5.11.2
 ```
 or `Intel Parallel Studio XE`
 ```bash
@@ -77,14 +69,31 @@ export CC=/opt/intel/bin/icc
 export CXX=/opt/intel/bin/icpc
 export INTELROOT=/opt/intel/
 export MKLROOT=/opt/intel/mkl
-export CMAKE_PREFIX_PATH=/usr/local/Cellar/qt/5.11.2
 ```
 Otherwise the default compilers are used.
 
-If Qt was download from the webpage, the following environment variable must be exported:
+#### Qt5
+To build the inPsights GUI, environment variables to the Qt5 libraries are required.
+
+If Qt5 was installed via homebrew, the following environment variable must be exported:
+
+```bash
+export CMAKE_PREFIX_PATH=/usr/local/Cellar/qt/5.XX.X
+```
+
+If Qt5 was download from the webpage and installed via the installer, the following environment variable must be exported:
 ```bash
 export Qt5_DIR=/home/<username>/Qt/5.XX.X/gcc_64
 ```
+
+If Qt5 was installed via `apt-get`, `cmake` should automatically find the library (not tested).
+
+#### Amolqc
+If the `AmolqcInterface` module is required, the path to `Amolqc` must be exported as an environment variable e.g.
+```bash
+export AMOLQC=/Users/michaelheuer/Projects/inPsights/src/AmolqcInterface/Amolqc
+```
+This is *not* necessary for building the `inPsights` and `ProcessMaxima` executable.
 
 ## Building inPsights
 
