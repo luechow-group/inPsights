@@ -21,7 +21,7 @@ To download the packages with `homebrew` execute the following command in the te
 ```bash
 brew update
 brew upgrade
-brew install git cmake gcc lapack eigen boost qt
+brew install git cmake gcc@9 lapack eigen boost qt
 ```
 
 Alternatively, the Qt5 online installer can be used, which is found on the [Qt webpage](https://www.qt.io/download).
@@ -67,9 +67,9 @@ Environment variables for different compilers and associated libraries can be sp
 
 for the `GNU Compiler Collection`
 ```bash
-export CC=/usr/local/bin/gcc-8
-export CXX=/usr/local/bin/g++-8
-export FC=/usr/local/bin/gfortran-8
+export CC=/usr/local/bin/gcc-9
+export CXX=/usr/local/bin/g++-9
+export FC=/usr/local/bin/gfortran-9
 ```
 or `Intel Parallel Studio XE`
 ```bash
