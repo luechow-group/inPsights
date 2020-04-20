@@ -21,7 +21,7 @@ To download the packages with `homebrew` execute the following command in the te
 ```bash
 brew update
 brew upgrade
-brew install -y git cmake gcc lapack eigen boost qt
+brew install git cmake gcc lapack eigen boost qt
 ```
 
 Alternatively, the Qt5 online installer can be used, which is found on the [Qt webpage](https://www.qt.io/download).
