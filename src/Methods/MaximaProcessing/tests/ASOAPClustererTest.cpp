@@ -37,30 +37,37 @@ public:
     AtomsVector atoms;
 
     void SetUp() override {
-        spdlog::set_level(spdlog::level::off);
+        //spdlog::set_level(spdlog::level::off);
 
         double a = 1.0, b = a / 2.0, c = a * 2.0;
-        atoms = AtomsVector({{Elements::ElementType::H, {0, 0, -a}},
-                             {Elements::ElementType::H, {0, 0, +a}}});
+        atoms = AtomsVector({
+            {Elements::ElementType::H, {0, 0, -a}},
+            {Elements::ElementType::H, {0, 0, +a}}});
 
-        A = Group({1.0, ElectronsVector({{Spin::alpha, {0, 0,-a}},
-                                         {Spin::alpha, {0, 0, a}},
-                                         {Spin::beta,  {0, b, 0}}}), 0}); // covalent
-        B = Group({1.1, ElectronsVector({{Spin::beta,  {0, b, 0}},
-                                         {Spin::alpha, {0, 0, a-0.05}},
-                                         {Spin::alpha, {0, 0,-a+0.05}}}), 1}); // A permuted and shifted
-        C = Group({1.1, ElectronsVector({{Spin::beta,  {0, b, 0}},
-                                         {Spin::alpha, {0, 0, a+0.05}},
-                                         {Spin::alpha, {0, 0,-a-0.05}}}), 2}); // A permuted and shifted
-        D = Group({1.3, ElectronsVector({{Spin::alpha, {0, 0,-a}},
-                                         {Spin::beta,  {0,-b, 0}},
-                                         {Spin::alpha, {0, 0, a}}}), 3}); // A reflected and permuted
-        E = Group({1.4, ElectronsVector({{Spin::alpha, {0, 0,-a}},
-                                         {Spin::beta,  {0, c, 0}},
-                                         {Spin::alpha, {0, 0, a}}}), 4}); // ionic
-        F = Group({1.5, ElectronsVector({{Spin::alpha, {0, 0,-a}},
-                                         {Spin::beta,  {0, c, 0}},
-                                         {Spin::alpha, {0, 0, a}}}), 5}); // E reflected
+        A = Group({1.0, ElectronsVector({
+            {Spin::alpha, {0, 0,-a}},
+            {Spin::alpha, {0, 0, a}},
+            {Spin::beta,  {0, b, 0}}}), 0}); // covalent
+        B = Group({1.1, ElectronsVector({
+            {Spin::beta,  {0, b, 0}},
+            {Spin::alpha, {0, 0, a-0.05}},
+            {Spin::alpha, {0, 0,-a+0.05}}}), 1}); // A permuted and shifted
+        C = Group({1.1, ElectronsVector({
+            {Spin::beta,  {0, b, 0}},
+            {Spin::alpha, {0, 0, a+0.05}},
+            {Spin::alpha, {0, 0,-a-0.05}}}), 2}); // A permuted and shifted
+        D = Group({1.3, ElectronsVector({
+            {Spin::alpha, {0, 0,-a}},
+            {Spin::beta,  {0,-b, 0}},
+            {Spin::alpha, {0, 0, a}}}), 3}); // A reflected and permuted
+        E = Group({1.4, ElectronsVector({
+            {Spin::alpha, {0, 0,-a}},
+            {Spin::beta,  {0, c, 0}},
+            {Spin::alpha, {0, 0, a}}}), 4}); // ionic
+        F = Group({1.5, ElectronsVector({
+            {Spin::alpha, {0, 0,-a}},
+            {Spin::beta,  {0, c, 0}},
+            {Spin::alpha, {0, 0, a}}}), 5}); // E reflected
         ekin = Eigen::VectorXd::Zero(3);
 
         ea = {Spin::alpha, {0, 0, 0}};
@@ -78,7 +85,6 @@ public:
 
 TEST_F(ASOAPClustererTest, VerifyTestCluster) {
     ParticleKit::create(atoms, A.representative()->maximum());
-    SOAPClusterer sOAPClusterer(atoms, samples);
 
     General::settings.mode = General::Mode::chemical;
     double soapThreshold = 1.0;
@@ -113,20 +119,20 @@ TEST_F(ASOAPClustererTest, VerifyTestCluster) {
     ASSERT_EQ(BestMatch::SOAPSimilarity::compare(
             specF, specE, soapThreshold, distanceTolerance).metric, 1);
 }
-/*
+
 TEST_F(ASOAPClustererTest, TwoClusters) {
     ParticleKit::create(atoms, A.representative()->maximum());
-    SOAPClusterer sOAPClusterer(atoms, samples);
+    SOAPClusterer clusterer(atoms, samples);
 
     General::settings.mode = General::Mode::chemical;
     SOAPClusterer::settings.similarityThreshold = 1.0;
-    SOAPClusterer::settings.toleranceRadius = 0.1;
+    SOAPClusterer::settings.distanceMatrixCovarianceTolerance = 0.1;
     Angular::settings.lmax = 3;
     Radial::settings.nmax = 3;
 
     Group maxima({A, {B, C}, D, E, F});
 
-    sOAPClusterer.cluster(maxima);
+    clusterer.cluster(maxima);
 
     ASSERT_EQ(maxima.size(), 2);
     ASSERT_EQ(maxima[0].size(), 3);
@@ -147,18 +153,18 @@ TEST_F(ASOAPClustererTest, TwoClusters) {
 
 TEST_F(ASOAPClustererTest, TwoClusters_Alchemical) {
     ParticleKit::create(atoms, A.representative()->maximum());
-    SOAPClusterer sOAPClusterer(atoms, samples);
+    SOAPClusterer clusterer(atoms, samples);
 
     General::settings.mode = General::Mode::alchemical;
     General::settings.pairSimilarities[{int(Spin::alpha), int(Spin::beta)}] = 1.0;
     SOAPClusterer::settings.similarityThreshold = 1.0;
-    SOAPClusterer::settings.toleranceRadius = 0.1;
+    SOAPClusterer::settings.distanceMatrixCovarianceTolerance = 0.1;
     Angular::settings.lmax = 3;
     Radial::settings.nmax = 3;
 
     Group maxima({A, {B, C}, D, E, F});
 
-    sOAPClusterer.cluster(maxima);
+    clusterer.cluster(maxima);
 
     ASSERT_EQ(maxima.size(), 2);
     ASSERT_EQ(maxima[0].size(), 3);
@@ -176,4 +182,171 @@ TEST_F(ASOAPClustererTest, TwoClusters_Alchemical) {
 
     // Group expected({{A,{B,C},D},{E,F}});
 }
- */
+
+
+TEST_F(ASOAPClustererTest, BH3_Alchemical) {
+    using namespace TestMolecules;
+    auto nuclei = BH3::nuclei.atoms();
+
+    const MolecularGeometry B = {
+            nuclei,
+            ElectronsVector({
+                                    {Spin::alpha, nuclei.positionsVector()[1]},
+                                    {Spin::beta, nuclei.positionsVector()[2]},
+                                    {Spin::beta,inbetween(nuclei,{0,1},0.25)}
+                            })};
+
+    const MolecularGeometry A = {
+            nuclei,
+            ElectronsVector({
+                                    {Spin::beta, nuclei.positionsVector()[1]+Eigen::Vector3d(0,0.01,0.03)},
+                                    {Spin::beta,inbetween(nuclei,{0,2},0.26)},
+                                    {Spin::alpha, nuclei.positionsVector()[2]},
+                            })};
+
+    Eigen::VectorXd ekin = Eigen::VectorXd::Zero(3);
+    std::vector<Sample> samples = {{A.electrons(),ekin},{B.electrons(),ekin}};
+
+
+    ParticleKit::create(A);
+
+    General::settings.mode = General::Mode::alchemical;
+    General::settings.pairSimilarities[{int(Spin::alpha), int(Spin::beta)}] = 1.0;
+    SOAPClusterer::settings.similarityThreshold = 0.99;
+    SOAPClusterer::settings.distanceMatrixCovarianceTolerance = 0.1;
+    Angular::settings.lmax = 3;
+    Radial::settings.nmax = 3;
+    Cutoff::settings.radius = 4.0;
+    Cutoff::settings.width = 3.0;
+
+    Group gA({1.0, A.electrons(), 0});
+    Group gB({2.0, B.electrons(), 1});
+    Group maxima({gA,gB});
+    maxima.sortAll();
+
+    SOAPClusterer clusterer(nuclei, samples);
+
+    std::cout  << std::endl;
+    std::cout << maxima << std::endl;
+
+    clusterer.cluster(maxima);
+
+    std::cout << maxima << std::endl;
+
+    ASSERT_EQ(maxima.size(), 1);
+    ASSERT_EQ(maxima[0].size(), 2);
+    ASSERT_THAT(maxima[0].allSampleIds(), ElementsAre(0, 1));
+    //ASSERT_THAT(maxima[0][0].allSampleIds(), ElementsAre(0));
+    //ASSERT_THAT(maxima[0][1].allSampleIds(), ElementsAre(1, 2));
+    //ASSERT_THAT(maxima[0][1][0].allSampleIds(), ElementsAre(1));
+    //ASSERT_THAT(maxima[0][1][1].allSampleIds(), ElementsAre(2));
+    //ASSERT_THAT(maxima[0][2].allSampleIds(), ElementsAre(3));
+
+
+    // Group expected({{A,{B,C},D},{E,F}});
+}
+
+class H4test : public ::testing::Test {
+public:
+    Group A, B, C;
+    std::vector<Sample> samples;
+    Eigen::VectorXd ekin;
+
+    AtomsVector atoms;
+
+    void SetUp() override {
+        //spdlog::set_level(spdlog::level::off);
+
+        atoms = TestMolecules::H4::linear::nuclei.atoms();
+        A = Group({1.0, TestMolecules::H4::linear::ionicA.electrons(), 0});
+        B = Group({1.0, TestMolecules::H4::linear::ionicB.electrons(), 1});
+        C = Group({1.0, TestMolecules::H4::linear::ionicC.electrons(), 1});
+
+        ekin = Eigen::VectorXd::Zero(4);
+
+        samples = {
+                {A.representative()->maximum(), ekin},
+                {B.representative()->maximum(), ekin}};
+    }
+};
+
+TEST_F(H4test, TwoClusters_chemical) {
+    ParticleKit::create(atoms, A.representative()->maximum());
+    SOAPClusterer clusterer(atoms, samples);
+
+    General::settings.mode = General::Mode::chemical;
+    //General::settings.pairSimilarities[{int(Spin::alpha), int(Spin::beta)}] = 1.0;
+    SOAPClusterer::settings.similarityThreshold = 0.999;
+    SOAPClusterer::settings.distanceMatrixCovarianceTolerance = 0.001;
+
+    Angular::settings.lmax = 3;
+    Radial::settings.nmax = 3;
+    Cutoff::settings.radius = 4.0;
+    Cutoff::settings.width = 3.0;
+
+    Group maxima({A, B});
+
+    clusterer.cluster(maxima);
+
+    ASSERT_EQ(maxima.size(), 1);
+    ASSERT_EQ(maxima[0].size(), 2);
+    ASSERT_THAT(maxima[0].allSampleIds(), ElementsAre(0, 1));
+    ASSERT_THAT(maxima[0][0].allSampleIds(), ElementsAre(0));
+    ASSERT_THAT(maxima[0][1].allSampleIds(), ElementsAre(1));
+
+    // Group expected({{A,B}});
+}
+
+TEST_F(H4test, TwoClusters_alchemical) {
+    ParticleKit::create(atoms, A.representative()->maximum());
+    SOAPClusterer clusterer(atoms, samples);
+
+    General::settings.mode = General::Mode::alchemical;
+    General::settings.pairSimilarities[{int(Spin::alpha), int(Spin::beta)}] = 1.0;
+    SOAPClusterer::settings.similarityThreshold = 0.999;
+    SOAPClusterer::settings.distanceMatrixCovarianceTolerance = 0.001;
+
+    Angular::settings.lmax = 3;
+    Radial::settings.nmax = 3;
+    Cutoff::settings.radius = 4.0;
+    Cutoff::settings.width = 3.0;
+
+    Group maxima({B, A}); // A is permutee, B reference
+
+    clusterer.cluster(maxima);
+
+    ASSERT_EQ(maxima.size(), 1);
+    ASSERT_EQ(maxima[0].size(), 2);
+    ASSERT_THAT(maxima[0].allSampleIds(), ElementsAre(0, 1));
+    ASSERT_THAT(maxima[0][0].allSampleIds(), ElementsAre(0));
+    ASSERT_THAT(maxima[0][1].allSampleIds(), ElementsAre(1));
+
+    // Group expected({{A,B}});
+}
+
+TEST_F(H4test, TwoClusters_alchemical_spinswap) {
+    ParticleKit::create(atoms, A.representative()->maximum());
+    SOAPClusterer clusterer(atoms, samples);
+
+    General::settings.mode = General::Mode::alchemical;
+    General::settings.pairSimilarities[{int(Spin::alpha), int(Spin::beta)}] = 1.0;
+    SOAPClusterer::settings.similarityThreshold = 0.999;
+    SOAPClusterer::settings.distanceMatrixCovarianceTolerance = 0.001;
+
+    Angular::settings.lmax = 3;
+    Radial::settings.nmax = 3;
+    Cutoff::settings.radius = 4.0;
+    Cutoff::settings.width = 3.0;
+
+    Group maxima({C, A}); // A is permutee, C reference
+
+    clusterer.cluster(maxima);
+
+    ASSERT_EQ(maxima.size(), 1);
+    ASSERT_EQ(maxima[0].size(), 2);
+    ASSERT_THAT(maxima[0].allSampleIds(), ElementsAre(0, 1));
+    ASSERT_THAT(maxima[0][0].allSampleIds(), ElementsAre(0));
+    ASSERT_THAT(maxima[0][1].allSampleIds(), ElementsAre(1));
+
+    // Group expected({{C,A}});
+}

@@ -40,12 +40,12 @@ namespace Settings {
     SOAPClusterer::SOAPClusterer(const YAML::Node &node)
             : SOAPClusterer() {
         doubleProperty::decode(node, similarityThreshold);
-        doubleProperty::decode(node, toleranceRadius);
+        doubleProperty::decode(node, distanceMatrixCovarianceTolerance);
     }
 
     void SOAPClusterer::appendToNode(YAML::Node &node) const {
         node[className][similarityThreshold.name()] = similarityThreshold();
-        node[className][toleranceRadius.name()] = toleranceRadius();
+        node[className][distanceMatrixCovarianceTolerance.name()] = distanceMatrixCovarianceTolerance();
     }
 }
 YAML_SETTINGS_DEFINITION(Settings::SOAPClusterer)
@@ -73,7 +73,7 @@ void SOAPClusterer::cluster(Group& group){
     }
 
     auto similarityThreshold = settings.similarityThreshold();
-    auto toleranceRadius = settings.toleranceRadius();
+    auto toleranceRadius = settings.distanceMatrixCovarianceTolerance();
 
     Group supergroup({{*group.begin()}});
 

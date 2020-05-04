@@ -36,39 +36,38 @@ namespace BestMatch {
         Result compare(
                 const SOAP::MolecularSpectrum &permutee,
                 const SOAP::MolecularSpectrum &reference,
-                double similarityRadius, double soapThreshold);
+                double distanceMatrixCovarianceTolerance, double soapThreshold);
 
         std::vector<Result> getBestMatchResults(
                 const SOAP::MolecularSpectrum &permutee,
                 const SOAP::MolecularSpectrum &reference,
-                double similarityRadius, double soapThreshold);
+                double distanceMatrixCovarianceTolerance, double soapThreshold);
 
-        std::vector<std::deque<std::pair<Eigen::Index,Eigen::Index>>> getListOfDependentIndicesLists(
+        std::vector<std::deque<std::pair<Eigen::Index,Eigen::Index>>> getBlockwiseDependentIndexPairs(
                 const Eigen::MatrixXd &environmentalSimilarities,
                 const Eigen::PermutationMatrix<Eigen::Dynamic> &bestMatch,
                 double soapThreshold);
 
-
-        void varySimilarEnvironments(
+        void varySimilarEnvironmentsInBlock(
                 const MolecularGeometry &permutee,
                 const MolecularGeometry &reference,
-                std::deque<std::pair<Eigen::Index,Eigen::Index>> remaining,
-                std::deque<std::pair<Eigen::Index,Eigen::Index>> surviving,
-                std::vector<std::deque<std::pair<Eigen::Index,Eigen::Index>>> &allPerms,
-                double similarityRadius);
+                std::deque<std::pair<Eigen::Index,Eigen::Index>> remainingIndexPairs,
+                const std::deque<std::pair<Eigen::Index,Eigen::Index>>& survivingIndexPairs,
+                std::vector<std::deque<std::pair<Eigen::Index,Eigen::Index>>> &distancePreservingEnvironmentCombinations,
+                double distanceMatrixCovarianceTolerance);
 
         std::vector<std::deque<std::pair<Eigen::Index,Eigen::Index>>> combineBlocks(
                 const MolecularGeometry &permutee,
                 const MolecularGeometry &reference,
-                const std::deque<std::vector<std::deque<std::pair<Eigen::Index,Eigen::Index>>>> &distancePreservingEnvironmentCombinationsOfRemainingBlocks,
-                double similarityRadius);
+                const std::deque<std::vector<std::deque<std::pair<Eigen::Index,Eigen::Index>>>> &intraBlockDistanceCombinations,
+                double distanceMatrixCovarianceTolerance);
 
         std::vector<Eigen::Index> unblockDependentIndicesOfPreservingCombinations(
                 const std::deque<std::vector<std::deque<std::pair<Eigen::Index, Eigen::Index>>>> &distancePreservingEnvironmentCombinationsOfAllBlocks);
 
-        Eigen::MatrixXd indicesBlockCovariance(
+        Eigen::MatrixXd calculateDistanceCovarianceMatrixOfSelectedIndices(
                 const ElectronsVector &electronsVector,
-                std::deque<Eigen::Index> indices);
+                std::deque<Eigen::Index> kitSystemIndices);
     }
 }
 

@@ -33,6 +33,7 @@ public:
     double distanceTolerance, soapThreshold, shakeSoapThreshold, eps;
 
     void SetUp() override {
+        spdlog::set_level(spdlog::level::debug);
         //spdlog::set_level(spdlog::level::off);
 
         distanceTolerance = 0.1;
@@ -53,24 +54,25 @@ public:
                  double distTolerance, double soapThresh,bool lessThan = false){
 
         ParticleKit::create(A);
+        ASSERT_TRUE(ParticleKit::isSubsetQ(A));
+        ASSERT_TRUE(ParticleKit::isSubsetQ(B));
 
         auto specA = MolecularSpectrum(A);
         auto specB = MolecularSpectrum(B);
 
         auto results = BestMatch::SOAPSimilarity::getBestMatchResults(specA, specB, distTolerance, soapThresh);
 
-        for (auto& i : results)
-            std::cout << i.metric << ", " << i.permutation.indices().transpose() << std::endl;
-        for (auto& i : expectedPermutationIndices)
-            std::cout << "   " << i.transpose() << std::endl;
+        for (auto& perm : expectedPermutationIndices)
+            spdlog::debug("Expected permutation (lab system): {}", ToString::vectorXiToString(perm));
 
-            ASSERT_EQ(results.size(), expectedPermutationIndices.size());
-        for (auto& i : results) {
+
+        ASSERT_EQ(results.size(), expectedPermutationIndices.size());
+        for (auto& result : results) {
             if(!lessThan)
-                ASSERT_NEAR(i.metric, 1.0, eps);
+                ASSERT_NEAR(result.metric, 1.0, eps);
             else
-                ASSERT_LT(i.metric, 1.0);
-            ASSERT_THAT(i.permutation.indices(), AnyOfArray(expectedPermutationIndices));
+                ASSERT_LT(result.metric, 1.0);
+            ASSERT_THAT(result.permutation.indices(), AnyOfArray(expectedPermutationIndices));
         }
     }
 };
@@ -119,14 +121,18 @@ TEST_F(ABestMatchSimilarityTest, ListOfDependentIndices) {
     expectedPerm.setIdentity();
     ASSERT_TRUE(bestMatch.indices().isApprox(expectedPerm.indices()));
 
-    auto    result = BestMatch::SOAPSimilarity::getListOfDependentIndicesLists(mat,bestMatch,1.0);
+    auto result = BestMatch::SOAPSimilarity::getBlockwiseDependentIndexPairs(mat, bestMatch, 1.0);
 
     ASSERT_EQ(result.size(),2);
     ASSERT_EQ(result[0][0].first, 0);
+    ASSERT_EQ(result[0][0].second, 0);
     ASSERT_EQ(result[0][1].first, 2);
+    ASSERT_EQ(result[0][1].second, 2);
 
     ASSERT_EQ(result[1][0].first, 1);
+    ASSERT_EQ(result[1][0].second, 1);
     ASSERT_EQ(result[1][1].first, 3);
+    ASSERT_EQ(result[1][1].second, 3);
 }
 
 TEST_F(ABestMatchSimilarityTest, ListOfDependentIndices2) {
@@ -143,14 +149,18 @@ TEST_F(ABestMatchSimilarityTest, ListOfDependentIndices2) {
     expectedPerm.setIdentity();
     ASSERT_TRUE(bestMatch.indices().isApprox(expectedPerm.indices()));
 
-    auto result = BestMatch::SOAPSimilarity::getListOfDependentIndicesLists(mat,bestMatch,1.0);
+    auto result = BestMatch::SOAPSimilarity::getBlockwiseDependentIndexPairs(mat, bestMatch, 1.0);
 
     ASSERT_EQ(result.size(),2);
     ASSERT_EQ(result[0][0].first, 0);
+    ASSERT_EQ(result[0][0].second, 0);
     ASSERT_EQ(result[0][1].first, 1);
+    ASSERT_EQ(result[0][1].second, 1);
 
     ASSERT_EQ(result[1][0].first, 2);
+    ASSERT_EQ(result[1][0].second, 2);
     ASSERT_EQ(result[1][1].first, 3);
+    ASSERT_EQ(result[1][1].second, 3);
 }
 
 TEST_F(ABestMatchSimilarityTest, ListOfDependentIndices3) {
@@ -170,7 +180,7 @@ TEST_F(ABestMatchSimilarityTest, ListOfDependentIndices3) {
     Eigen::PermutationMatrix<Eigen::Dynamic> expectedPerm(expectedPermIndices);
     ASSERT_TRUE(bestMatch.indices().isApprox(expectedPerm.indices()));
 
-    auto result = BestMatch::SOAPSimilarity::getListOfDependentIndicesLists(mat,bestMatch,1.0);
+    auto result = BestMatch::SOAPSimilarity::getBlockwiseDependentIndexPairs(mat, bestMatch, 1.0);
 
     ASSERT_EQ(result.size(),3);
 
@@ -193,9 +203,68 @@ TEST_F(ABestMatchSimilarityTest, ListOfDependentIndices3) {
     ASSERT_EQ(result[2][2].second,5);
 }
 
+TEST_F(ABestMatchSimilarityTest, ListOfDependentIndices4) {
+    Eigen::MatrixXd mat(6,6);
+    mat <<
+    0,1,0,0,0,0,\
+    0,0,1,0,0,0,\
+    1,0,0,0,0,0,\
+    0,0,0,1,1,1,\
+    0,0,0,1,1,1,\
+    0,0,0,1,1,1;
 
-TEST_F(ABestMatchSimilarityTest, DISABLED_VarySimilarEnvironments) {
-    //TODO
+    auto bestMatch = Hungarian<double>::findMatching(mat, Matchtype::MAX);
+
+    Eigen::VectorXi expectedPermIndices(mat.rows());
+    expectedPermIndices << 1,2,0,3,4,5; // row are permuted
+    Eigen::PermutationMatrix<Eigen::Dynamic> expectedPerm(expectedPermIndices);
+    ASSERT_TRUE(bestMatch.indices().isApprox(expectedPerm.indices()));
+
+    auto result = BestMatch::SOAPSimilarity::getBlockwiseDependentIndexPairs(mat, bestMatch, 1.0);
+
+    ASSERT_EQ(result.size(),4);
+
+    ASSERT_EQ(result[0].size(),1);
+    ASSERT_EQ(result[0][0].first, 2);
+    ASSERT_EQ(result[0][0].second,0);
+
+    ASSERT_EQ(result[1].size(),1);
+    ASSERT_EQ(result[1][0].first, 0);
+    ASSERT_EQ(result[1][0].second,1);
+
+    ASSERT_EQ(result[2].size(),1);
+    ASSERT_EQ(result[2][0].first, 1);
+    ASSERT_EQ(result[2][0].second,2);
+
+    ASSERT_EQ(result[3].size(),3);
+    ASSERT_EQ(result[3][0].first, 3);
+    ASSERT_EQ(result[3][0].second,3);
+    ASSERT_EQ(result[3][1].first, 4);
+    ASSERT_EQ(result[3][1].second,4);
+    ASSERT_EQ(result[3][2].first, 5);
+    ASSERT_EQ(result[3][2].second,5);
+}
+
+
+TEST_F(ABestMatchSimilarityTest, H4linear_alchemical) {
+    auto A = TestMolecules::H4::linear::ionicA;
+    auto B = TestMolecules::H4::linear::ionicB;
+    auto C = TestMolecules::H4::linear::ionicC;
+
+    General::settings.pairSimilarities[{int(Spin::alpha), int(Spin::beta)}] = 1.0;
+    General::settings.mode = General::Mode::alchemical;
+
+    std::vector<Eigen::VectorXi> expectedPermIndicesAB(2, Eigen::VectorXi(A.electrons().numberOfEntities()));
+    expectedPermIndicesAB[0] << 1,0,3,2;
+    expectedPermIndicesAB[1] << 3,0,1,2;
+
+    routine(A, B, expectedPermIndicesAB, distanceTolerance, soapThreshold);
+
+    std::vector<Eigen::VectorXi> expectedPermIndicesAC(2, Eigen::VectorXi(A.electrons().numberOfEntities()));
+    expectedPermIndicesAC[0] << 1,2,3,0;
+    expectedPermIndicesAC[1] << 2,1,3,0;
+
+    routine(A, C, expectedPermIndicesAC, distanceTolerance, soapThreshold);
 }
 
 TEST_F(ABestMatchSimilarityTest, H4ring_Chemical) {
@@ -261,7 +330,14 @@ TEST_F(ABestMatchSimilarityTest, H4ring_Alchemical_Shaked) {
 
     auto B = TestMolecules::H4::ring::fourAlpha;
     auto A = B;
-    
+
+
+    std::vector<Eigen::VectorXi> permsIndices(4, Eigen::VectorXi(B.electrons().numberOfEntities()));
+    permsIndices[0] << 0, 1, 2, 3;
+    permsIndices[1] << 0, 1, 3, 2;
+    permsIndices[2] << 1, 0, 2, 3;
+    permsIndices[3] << 1, 0, 3, 2;
+
     auto randomSeed = static_cast<unsigned long>(std::clock());
     std::cout << "random seed: " << randomSeed << std::endl;
 
@@ -272,12 +348,6 @@ TEST_F(ABestMatchSimilarityTest, H4ring_Alchemical_Shaked) {
                 A.electrons().positionsVector(),
                 B.electrons().positionsVector()) == 0.0)
             A.electrons().positionsVector().shake(distanceTolerance / 2.0, rng);
-
-        std::vector<Eigen::VectorXi> permsIndices(4, Eigen::VectorXi(B.electrons().numberOfEntities()));
-        permsIndices[0] << 0, 1, 2, 3;
-        permsIndices[1] << 0, 1, 3, 2;
-        permsIndices[2] << 1, 0, 2, 3;
-        permsIndices[3] << 1, 0, 3, 2;
 
         routine(A, B, permsIndices, distanceTolerance, shakeSoapThreshold, true);
     }
@@ -422,19 +492,6 @@ TEST_F(ABestMatchSimilarityTest, BH3Ionic_Chemical) {
     routine(A,B,permsIndices,distanceTolerance, soapThreshold);
 }
 
-/*TEST_F(ABestMatchSimilarityTest, FindDistanceConservingPermutations_Chemical_EthaneIonic) {
-    General::settings.mode = General::Mode::chemical;
-
-    auto B = TestMolecules::Ethane::doublyIonicMinimal;
-    auto A = TestMolecules::Ethane::doublyIonicMinimalDoublyRotated;
-
-    std::vector<Eigen::VectorXi> permsIndices(2, Eigen::VectorXi(B.electrons().numberOfEntities()));
-    permsIndices[0] << 0,1, 2,3, 4,5, 6,7;
-    permsIndices[1] << 1,0, 3,2, 5,4, 7,6;
-
-    routine(A,B,permsIndices,distanceTolerance, soapThreshold);
-}*/
-
 TEST_F(ABestMatchSimilarityTest, EthaneIonic) {
     General::settings.mode = General::Mode::chemical;
 
@@ -492,6 +549,48 @@ TEST_F(ABestMatchSimilarityTest, EthaneSinglyIonicMinimal) {
     permIndices[1] << 0, 2, 1, 3, 5, 4; // reflection along H2-C0-C1-H5 plane
 
     routine(A,B,permIndices,distanceTolerance, soapThreshold);
+}
+
+
+TEST_F(ABestMatchSimilarityTest, EthaneSinglyIonicMinimal_shaked_alchemical) {
+    using namespace TestMolecules;
+    MolecularGeometry B = {
+            Ethane::nuclei.atoms(),
+            ElectronsVector({
+                                    {Spin::alpha /*12*/,inbetween(Ethane::nuclei.atoms(),{0,2},0.25)},
+                                    {Spin::alpha /*13*/,inbetween(Ethane::nuclei.atoms(),{0,3},0.25)},
+                                    {Spin::alpha /*14*/,inbetween(Ethane::nuclei.atoms(),{0,4},0.25)},
+                                    {Spin::beta/*15*/,inbetween(Ethane::nuclei.atoms(),{1,5},0.25)},
+                                    {Spin::beta/*16*/,inbetween(Ethane::nuclei.atoms(),{1,6},0.25)},
+                                    {Spin::beta/*17*/,Ethane::nuclei.atoms().positionsVector()[7]}
+                            })};
+    MolecularGeometry A = {
+            Ethane::nuclei.atoms(),
+            ElectronsVector({
+                                    {Spin::alpha /*12*/,inbetween(Ethane::nuclei.atoms(),{0,2},0.25)},
+                                    {Spin::alpha /*13*/,inbetween(Ethane::nuclei.atoms(),{0,3},0.25)},
+                                    {Spin::alpha /*14*/,inbetween(Ethane::nuclei.atoms(),{0,4},0.25)},
+                                    {Spin::beta/*15*/,inbetween(Ethane::nuclei.atoms(),{1,5},0.25)},
+                                    {Spin::beta/*16*/,Ethane::nuclei.atoms().positionsVector()[6]},
+                                    {Spin::beta/*17*/,inbetween(Ethane::nuclei.atoms(),{1,7},0.25)}
+                            })};
+
+    std::vector<Eigen::VectorXi> permIndices(2, Eigen::VectorXi(B.electrons().numberOfEntities()));
+    permIndices[0] << 1, 2, 0, 4, 5, 3; // 120° rotation around z
+    permIndices[1] << 0, 2, 1, 3, 5, 4; // reflection along H2-C0-C1-H5 plane
+
+
+    General::settings.mode = General::Mode::alchemical;
+
+    //auto randomSeed = static_cast<unsigned long>(123);
+    //std::cout << "random seed: " << randomSeed << std::endl;
+
+    auto rng = std::default_random_engine(123);
+    std::cout<< std::endl << A.electrons() << std::endl;
+    A.electrons().positionsVector().shake(distanceTolerance / 10.0, rng);
+    std::cout << A.electrons() << std::endl;
+
+    routine(A, B, permIndices, distanceTolerance, shakeSoapThreshold, true);
 }
 
 TEST_F(ABestMatchSimilarityTest, EthaneSinglyIonic) {
@@ -558,7 +657,7 @@ TEST_F(ABestMatchSimilarityTest, EthaneSinglyIonic) {
     routine(A,B,permIndices,distanceTolerance, soapThreshold);
 }
 
-TEST_F(ABestMatchSimilarityTest, DISABLED_EthaneSinglyIonicPermutedMinimal) {
+TEST_F(ABestMatchSimilarityTest, EthaneSinglyIonicPermutedMinimal) {
     General::settings.mode = General::Mode::chemical;
 
     using namespace TestMolecules;
@@ -588,7 +687,6 @@ TEST_F(ABestMatchSimilarityTest, DISABLED_EthaneSinglyIonicPermutedMinimal) {
     std::iota(indices.begin(), indices.end(), 0);
 
     Combinatorics::Permutations<int> indexSwapPerms(indices);
-
     for(auto indexSwap : indexSwapPerms) {
         //Eigen::VectorXi indexSwap(A.electrons().numberOfEntities());
         ////indexSwap << 0, 1, 3, 2, 4, 5; // works
@@ -599,7 +697,7 @@ TEST_F(ABestMatchSimilarityTest, DISABLED_EthaneSinglyIonicPermutedMinimal) {
         //Eigen::PermutationMatrix<Eigen::Dynamic> indexSwapPerm(indexSwap);
 
         Eigen::Map<Eigen::VectorXi> v(indexSwap.data(),indexSwap.size());
-        std::cout << "new perm to try:" << v.transpose() << std::endl;
+        std::cout << " try:" << v.transpose() << std::endl;
         Eigen::PermutationMatrix<Eigen::Dynamic> indexSwapPerm(v);
         std::cout << "new perm to try:" << indexSwapPerm.indices().transpose() << std::endl;
 
