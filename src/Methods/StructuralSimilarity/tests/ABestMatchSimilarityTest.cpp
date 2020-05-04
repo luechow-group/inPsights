@@ -198,10 +198,10 @@ TEST_F(ABestMatchSimilarityTest, DISABLED_VarySimilarEnvironments) {
     //TODO
 }
 
-TEST_F(ABestMatchSimilarityTest, H4_Chemical) {
+TEST_F(ABestMatchSimilarityTest, H4ring_Chemical) {
     General::settings.mode = General::Mode::chemical;
 
-    auto B = TestMolecules::H4::fourAlpha;
+    auto B = TestMolecules::H4::ring::fourAlpha;
     auto A = B;
 
     std::vector<Eigen::VectorXi> permsIndices(4,Eigen::VectorXi(B.electrons().numberOfEntities()));
@@ -213,10 +213,10 @@ TEST_F(ABestMatchSimilarityTest, H4_Chemical) {
     routine(A,B,permsIndices,distanceTolerance, soapThreshold);
 }
 
-TEST_F(ABestMatchSimilarityTest, H4_Chemical_Shaked) {
+TEST_F(ABestMatchSimilarityTest, H4ring_Chemical_Shaked) {
     General::settings.mode = General::Mode::chemical;
 
-    auto B = TestMolecules::H4::fourAlpha;
+    auto B = TestMolecules::H4::ring::fourAlpha;
     auto A = B;
     ParticleKit::create(A);
     
@@ -241,10 +241,10 @@ TEST_F(ABestMatchSimilarityTest, H4_Chemical_Shaked) {
     }
 }
 
-TEST_F(ABestMatchSimilarityTest, H4_Alchemical) {
+TEST_F(ABestMatchSimilarityTest, H4ring_Alchemical) {
     General::settings.mode = General::Mode::alchemical;
 
-    auto B = TestMolecules::H4::fourAlpha;
+    auto B = TestMolecules::H4::ring::fourAlpha;
     auto A = B;
 
     std::vector<Eigen::VectorXi> permsIndices(4,Eigen::VectorXi(B.electrons().numberOfEntities()));
@@ -256,10 +256,10 @@ TEST_F(ABestMatchSimilarityTest, H4_Alchemical) {
     routine(A,B,permsIndices,distanceTolerance, soapThreshold);
 }
 
-TEST_F(ABestMatchSimilarityTest, H4_Alchemical_Shaked) {
+TEST_F(ABestMatchSimilarityTest, H4ring_Alchemical_Shaked) {
     General::settings.mode = General::Mode::alchemical;
 
-    auto B = TestMolecules::H4::fourAlpha;
+    auto B = TestMolecules::H4::ring::fourAlpha;
     auto A = B;
     
     auto randomSeed = static_cast<unsigned long>(std::clock());

@@ -85,6 +85,32 @@ TEST_F(AStructuralSimilarityTest, PermutationalSymmetry_FlippedSpins) {
     ASSERT_NEAR(StructuralSimilarity::kernel(A, B, regularizationParameter), 1.0, eps);
 }
 
+TEST_F(AStructuralSimilarityTest, H4linear_Identity) {
+    auto A = TestMolecules::H4::linear::ionicA;
+    auto B = TestMolecules::H4::linear::ionicB;
+
+    General::settings.pairSimilarities[{int(Spin::alpha),int(Spin::beta)}] = 1.0;
+    General::settings.mode = General::Mode::alchemical;
+    ParticleKit::create(A);
+
+    ASSERT_TRUE(ParticleKit::isSubsetQ(A));
+    ASSERT_TRUE(ParticleKit::isSubsetQ(B));
+    ASSERT_NEAR(StructuralSimilarity::kernel(A, B, regularizationParameter), 1.0, eps);
+}
+
+TEST_F(AStructuralSimilarityTest, H6linear_Identity) {
+    auto A = TestMolecules::H6::linear::ionicA;
+    auto B = TestMolecules::H6::linear::ionicB;
+
+    General::settings.pairSimilarities[{int(Spin::alpha),int(Spin::beta)}] = 1.0;
+    General::settings.mode = General::Mode::alchemical;
+    ParticleKit::create(A);
+
+    ASSERT_TRUE(ParticleKit::isSubsetQ(A));
+    ASSERT_TRUE(ParticleKit::isSubsetQ(B));
+    ASSERT_NEAR(StructuralSimilarity::kernel(A, B, regularizationParameter), 1.0, eps);
+}
+
 TEST_F(AStructuralSimilarityTest, RotationalSymmetry) {
     auto A = TestMolecules::H2::ElectronsOutsideCores::offCenter;
     General::settings.mode = General::Mode::chemical;

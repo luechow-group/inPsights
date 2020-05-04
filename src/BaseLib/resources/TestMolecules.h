@@ -237,72 +237,150 @@ namespace TestMolecules {
                                 })};
     }
 
-    namespace H6 {
-        const double a = 1.0;
-        const MolecularGeometry nuclei = {
-                AtomsVector({
-                             {Element::H,{ a, 0, 0}},
-                             {Element::H,{ a/2.0, std::sqrt(3)*a/2.0, 0}},
-                             {Element::H,{-a/2.0, std::sqrt(3)*a/2.0, 0}},
-                             {Element::H,{-a, 0, 0}},
-                             {Element::H,{-a/2.0,-std::sqrt(3)*a/2.0, 0}},
-                             {Element::H,{ a/2.0,-std::sqrt(3)*a/2.0, 0}},
-                            }),
-                {}
-        };
-        const MolecularGeometry alphaOnly = {
-                nuclei.atoms(),
-                ElectronsVector({{Spin::alpha, nuclei.atoms().positionsVector()[0]},
-                                 {Spin::alpha, nuclei.atoms().positionsVector()[1]},
-                                 {Spin::alpha, nuclei.atoms().positionsVector()[2]},
-                                 {Spin::alpha, nuclei.atoms().positionsVector()[3]},
-                                 {Spin::alpha, nuclei.atoms().positionsVector()[4]},
-                                 {Spin::alpha, nuclei.atoms().positionsVector()[5]},
-                                })
-        };
-        const MolecularGeometry alphaShuffle = {
-                nuclei.atoms(),
-                ElectronsVector({
-                    alphaOnly.electrons()[3],
-                    alphaOnly.electrons()[1],
-                    alphaOnly.electrons()[2],
-                    alphaOnly.electrons()[0],
-                    alphaOnly.electrons()[5],
-                    alphaOnly.electrons()[4]
-                })
-        };
-     }
 
     namespace H4 {
         const double a = 1.0;
-        const MolecularGeometry nuclei = {
-                AtomsVector({
-                    {Element::H,{ a, 0, 0}},
-                    {Element::H,{-a, 0, 0}},
-                    {Element::H,{ 0, a, 0}},
-                    {Element::H,{ 0,-a, 0}}}),
-                {}
-        };
 
-        const MolecularGeometry fourAlpha = {
-                nuclei.atoms(),
-                ElectronsVector({
-                    {Spin::alpha, nuclei.atoms().positionsVector()[0]},
-                    {Spin::alpha, nuclei.atoms().positionsVector()[1]},
-                    {Spin::alpha, nuclei.atoms().positionsVector()[2]},
-                    {Spin::alpha, nuclei.atoms().positionsVector()[3]}
-                                })
-        };
+        namespace ring {
+            const MolecularGeometry nuclei = {
+                    AtomsVector({
+                        {Element::H, {a,  0,  0}},
+                        {Element::H, {-a, 0,  0}},
+                        {Element::H, {0,  a,  0}},
+                        {Element::H, {0,  -a, 0}}}),
+                    {}
+            };
+
+            const MolecularGeometry fourAlpha = {
+                    nuclei.atoms(),
+                    ElectronsVector({
+                        {Spin::alpha, nuclei.atoms().positionsVector()[0]},
+                        {Spin::alpha, nuclei.atoms().positionsVector()[1]},
+                        {Spin::alpha, nuclei.atoms().positionsVector()[2]},
+                        {Spin::alpha, nuclei.atoms().positionsVector()[3]}
+                    })
+            };
+        }
+
+        namespace linear {
+            const MolecularGeometry nuclei = {
+                    AtomsVector({
+                        {Element::H, {0, 0, -1.5 * a}},
+                        {Element::H, {0, 0, -0.5 * a}},
+                        {Element::H, {0, 0, +0.5 * a}},
+                        {Element::H, {0, 0, +1.5 * a}}}),
+                    {}
+            };
+
+            const MolecularGeometry ionicA = {
+                    nuclei.atoms(),
+                    ElectronsVector({
+                        {Spin::alpha, nuclei.atoms().positionsVector()[1]},
+                        {Spin::beta,  nuclei.atoms().positionsVector()[1]},
+                        {Spin::alpha, nuclei.atoms().positionsVector()[2]},
+                        {Spin::beta,  nuclei.atoms().positionsVector()[3]}
+                    })
+            };
+
+            const MolecularGeometry ionicB = {
+                    nuclei.atoms(),
+                    ElectronsVector({
+                        {Spin::alpha, nuclei.atoms().positionsVector()[0]},
+                        {Spin::beta,  nuclei.atoms().positionsVector()[1]},
+                        {Spin::alpha, nuclei.atoms().positionsVector()[2]},
+                        {Spin::beta,  nuclei.atoms().positionsVector()[2]}
+                    })
+            };
+        }
+    }
+
+    namespace H6 {
+        const double a = 1.0;
+        namespace ring {
+            const MolecularGeometry nuclei = {
+                    AtomsVector({
+                                        {Element::H, {a,        0,                       0}},
+                                        {Element::H, {a / 2.0,  std::sqrt(3) * a / 2.0,  0}},
+                                        {Element::H, {-a / 2.0, std::sqrt(3) * a / 2.0,  0}},
+                                        {Element::H, {-a,       0,                       0}},
+                                        {Element::H, {-a / 2.0, -std::sqrt(3) * a / 2.0, 0}},
+                                        {Element::H, {a / 2.0,  -std::sqrt(3) * a / 2.0, 0}},
+                                }),
+                    {}
+            };
+            const MolecularGeometry alphaOnly = {
+                    nuclei.atoms(),
+                    ElectronsVector({
+                        {Spin::alpha, nuclei.atoms().positionsVector()[0]},
+                        {Spin::alpha, nuclei.atoms().positionsVector()[1]},
+                        {Spin::alpha, nuclei.atoms().positionsVector()[2]},
+                        {Spin::alpha, nuclei.atoms().positionsVector()[3]},
+                        {Spin::alpha, nuclei.atoms().positionsVector()[4]},
+                        {Spin::alpha, nuclei.atoms().positionsVector()[5]},
+                        })
+            };
+            const MolecularGeometry alphaShuffle = {
+                    nuclei.atoms(),
+                    ElectronsVector({
+                        alphaOnly.electrons()[3],
+                        alphaOnly.electrons()[1],
+                        alphaOnly.electrons()[2],
+                        alphaOnly.electrons()[0],
+                        alphaOnly.electrons()[5],
+                        alphaOnly.electrons()[4]
+                    })
+            };
+        }
+
+        namespace linear {
+            const MolecularGeometry nuclei = {
+                    AtomsVector({
+                        {Element::H, {0, 0, -2.5 * a}},
+                        {Element::H, {0, 0, -1.5 * a}},
+                        {Element::H, {0, 0, -0.5 * a}},
+                        {Element::H, {0, 0, +0.5 * a}},
+                        {Element::H, {0, 0, +1.5 * a}},
+                        {Element::H, {0, 0, +2.5 * a}}
+                    }),
+                    {}
+            };
+
+            const MolecularGeometry ionicA = {
+                    nuclei.atoms(),
+                    ElectronsVector({
+                        {Spin::alpha, nuclei.atoms().positionsVector()[0]},
+                        {Spin::beta,  nuclei.atoms().positionsVector()[0]},
+                        {Spin::alpha, nuclei.atoms().positionsVector()[2]},
+                        {Spin::beta,  nuclei.atoms().positionsVector()[3]},
+                        {Spin::alpha,  nuclei.atoms().positionsVector()[4]},
+                        {Spin::beta,  nuclei.atoms().positionsVector()[5]},
+
+                    })
+            };
+
+            const MolecularGeometry ionicB = {
+                    nuclei.atoms(),
+                    ElectronsVector({
+                        {Spin::alpha, nuclei.atoms().positionsVector()[0]},
+                        {Spin::beta,  nuclei.atoms().positionsVector()[1]},
+                        {Spin::alpha, nuclei.atoms().positionsVector()[2]},
+                        {Spin::beta,  nuclei.atoms().positionsVector()[3]},
+                        {Spin::alpha,  nuclei.atoms().positionsVector()[5]},
+                        {Spin::beta,  nuclei.atoms().positionsVector()[5]},
+                        })
+            };
+        }
     }
 
     namespace BH3 {
         const double a = 1.15;
         const MolecularGeometry nuclei = {
-                AtomsVector({{Element::B,{ 0, 0, 0}},
-                             {Element::H,{ 0, 2.*a, 0}},
-                             {Element::H,{-std::sqrt(3)*a,-1.*a, 0}},
-                             {Element::H,{ std::sqrt(3)*a,-1.*a, 0}},
-                            }),
+                AtomsVector({
+                    {Element::B,{ 0, 0, 0}},
+                    {Element::H,{ 0, 2.*a, 0}},
+                    {Element::H,{-std::sqrt(3)*a,-1.*a, 0}},
+                    {Element::H,{ std::sqrt(3)*a,-1.*a, 0}},
+                    }),
                 {}
         };
 
