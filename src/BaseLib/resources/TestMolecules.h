@@ -274,20 +274,30 @@ namespace TestMolecules {
 
             const MolecularGeometry ionicA = {
                     nuclei.atoms(),
-                    ElectronsVector({
+                    ElectronsVector({ // sorted as in particle kit
                         {Spin::alpha, nuclei.atoms().positionsVector()[1]},
-                        {Spin::beta,  nuclei.atoms().positionsVector()[1]},
                         {Spin::alpha, nuclei.atoms().positionsVector()[2]},
+                        {Spin::beta,  nuclei.atoms().positionsVector()[1]},
                         {Spin::beta,  nuclei.atoms().positionsVector()[3]}
                     })
             };
 
             const MolecularGeometry ionicB = {
                     nuclei.atoms(),
-                    ElectronsVector({
-                        {Spin::alpha, nuclei.atoms().positionsVector()[0]},
-                        {Spin::beta,  nuclei.atoms().positionsVector()[1]},
+                    ElectronsVector({ // sorted for as in particle kit
+                        {Spin::alpha, nuclei.atoms().positionsVector()[1]},
                         {Spin::alpha, nuclei.atoms().positionsVector()[2]},
+                        {Spin::beta,  nuclei.atoms().positionsVector()[0]},
+                        {Spin::beta,  nuclei.atoms().positionsVector()[2]}
+                    })
+            };
+
+            const MolecularGeometry ionicC = {
+                    nuclei.atoms(),
+                    ElectronsVector({ // sorted as in particle kit
+                        {Spin::alpha, nuclei.atoms().positionsVector()[0]},
+                        {Spin::alpha, nuclei.atoms().positionsVector()[2]},
+                        {Spin::beta,  nuclei.atoms().positionsVector()[1]},
                         {Spin::beta,  nuclei.atoms().positionsVector()[2]}
                     })
             };
