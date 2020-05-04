@@ -34,7 +34,7 @@ std::string ToString::vector3dToString(const Eigen::Vector3d &vector,
 }
 
 std::string ToString::doubleToString(double a, unsigned decimalPlaces, unsigned leadingSpaces) {
-    std::ostringstream sstream;
+    std::stringstream sstream;
     if (a >= 0){
         sstream << " ";
     }
@@ -47,11 +47,25 @@ std::string ToString::doubleToString(double a, unsigned decimalPlaces, unsigned 
     return sstream.str();
 }
 
-std::string ToString::vectorXdToString(const Eigen::VectorXd &vector,
-                                       unsigned decimalPlaces, unsigned leadingSpaces) {
-    std::ostringstream sstream;
-    for (int i = 0; i < vector.size(); i++){
+std::string ToString::vectorXdToString(const Eigen::VectorXd &vector, unsigned decimalPlaces, unsigned leadingSpaces) {
+    std::stringstream sstream;
+    for (Eigen::Index i = 0; i < vector.size(); i++){
         sstream << " " << doubleToString(vector(i), decimalPlaces, leadingSpaces);
     }
     return sstream.str();
 }
+
+std::string ToString::matrixXdToString(const Eigen::MatrixXd &matrix, unsigned decimalPlaces, unsigned leadingSpaces) {
+    std::stringstream ss;
+    for (Eigen::Index i = 0; i < matrix.rows(); i++) {
+        ss << ToString::vectorXdToString(matrix.row(i), decimalPlaces, leadingSpaces) << std::endl;
+    }
+    return ss.str();
+}
+
+std::string ToString::vectorXiToString(const Eigen::VectorXi &vector) {
+    std::stringstream ss;
+    ss << vector.transpose();
+    return ss.str();
+}
+
