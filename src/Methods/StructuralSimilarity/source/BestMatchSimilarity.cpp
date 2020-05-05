@@ -24,6 +24,7 @@
 #include <vector>
 #include <Eigen/Core>
 #include <ToString.h>
+#include <EnvironmentBlock.h>
 
 using namespace SOAP;
 
@@ -75,7 +76,7 @@ Eigen::MatrixXd BestMatch::SOAPSimilarity::calculateEnvironmentalSimilarityMatri
     return environmentalSimilarities;
 }
 
-std::vector<BestMatch::Result> BestMatch::SOAPSimilarity::getBestMatchResults(
+std::vector<BestMatch::DescendingMetricResult> BestMatch::SOAPSimilarity::getBestMatchResults(
         const MolecularSpectrum &permutee,
         const MolecularSpectrum &reference,
         double distanceMatrixCovarianceTolerance, double soapThreshold) {
@@ -119,6 +120,94 @@ std::vector<BestMatch::Result> BestMatch::SOAPSimilarity::getBestMatchResults(
     auto blockwiseDependentIndexPairs =
             BestMatch::SOAPSimilarity::getBlockwiseDependentIndexPairs(environmentalSimilarities, bestMatch, soapThreshold);
 
+    spdlog::debug("Dependent indice pairs");
+    for (const auto & dependentIndexPairs : blockwiseDependentIndexPairs) {
+        for (const auto & dependentIndexPair : dependentIndexPairs) {
+            spdlog::debug("({} {})", dependentIndexPair.first, dependentIndexPair.second);
+        }
+        spdlog::debug(" ");
+    }
+    spdlog::debug(" ");
+
+
+    // MAKE and check Environment blocks
+    std::vector<EnvironmentBlock> blocks;
+    for(const auto& indexPairsOfBlock : blockwiseDependentIndexPairs){
+
+        auto block = EnvironmentBlock(indexPairsOfBlock,
+                permutee.molecule_.electrons(),
+                reference.molecule_.electrons());
+
+        auto filteredPerms = block.filterPermutations(distanceMatrixCovarianceTolerance);
+
+        if(filteredPerms.empty()){
+            // no distant preserving permutation could be found
+            spdlog::debug("exited early (not intra-block distance preserving");
+            auto soapMetric = bestMatchPermutedEnvironmentalSimilarities.diagonal().sum() / N;
+            //auto soapMetric = environmentalSimilarities.diagonal().minCoeff() / N; // TODO: average or better smallest component
+            return {{soapMetric, bestMatch}};//TODO better return zero or bool?
+        } else {
+            blocks.emplace_back(block);
+        }
+    }
+
+    // Build Sequence of blocks and test again
+    EnvironmentBlockSequence sequence(permutee.molecule_.electrons(), reference.molecule_.electrons());
+    for(const auto& block : blocks){
+        auto conservingQ = sequence.addBlock(block, distanceMatrixCovarianceTolerance);
+
+        if(!conservingQ){
+            // no distant preserving permutation could be found
+            spdlog::debug("exited early (not intra-block distance preserving");
+            auto soapMetric = bestMatchPermutedEnvironmentalSimilarities.diagonal().sum() / N;
+            //auto soapMetric = environmentalSimilarities.diagonal().minCoeff() / N; // TODO: average or better smallest component
+            return {{soapMetric, bestMatch}};//TODO better return zero or bool?
+        }
+    }
+
+    std::vector<BestMatch::DescendingMetricResult> results;
+
+    for(const auto& jointPermutedPermuteeIndices : sequence.jointPermutedPermuteeIndicesCollection_) {
+        assert(jointPermutedPermuteeIndices.size() == N && "The found index ordering size must match the number of electrons.");
+
+        auto jointReferenceIndices = sequence.jointReferenceIndices_;
+
+        // construct permutations in the kit system
+        Eigen::VectorXi finalPermIndicesInKitSystem(N);
+
+        // determine final permutation indices and lowest environmental similarity value for each electron
+        double lowestEnvironmentalSimilarityOfParticle = 1.0; // start with maximal value
+        for (size_t i = 0; i < N; ++i) {
+
+            auto permIdx = jointPermutedPermuteeIndices[i];
+            auto refIdx = jointReferenceIndices[i];
+
+            // create permuation vector
+            finalPermIndicesInKitSystem[permIdx] = refIdx;
+            spdlog::debug("({} {})", permIdx, refIdx);
+
+            // determine lowest similarity
+            auto environmentalSimilarity = environmentalSimilarities(permIdx, refIdx);
+            if(environmentalSimilarity < lowestEnvironmentalSimilarityOfParticle)
+                lowestEnvironmentalSimilarityOfParticle = environmentalSimilarity;
+        }
+        spdlog::debug("Permutation (particle-kit system): {}",ToString::vectorXiToString(finalPermIndicesInKitSystem));
+
+        Eigen::PermutationMatrix<Eigen::Dynamic> perm(finalPermIndicesInKitSystem);
+
+        results.emplace_back(BestMatch::DescendingMetricResult({lowestEnvironmentalSimilarityOfParticle, referenceFromKit * perm * permuteeToKit}));
+    }
+    std::sort(results.begin(), results.end()); // higher metric values come first
+
+    for(auto r : results)
+        spdlog::debug("Metric: {}, Permutation: {} (lab system)", r.metric, ToString::vectorXiToString(r.permutation.indices()));
+
+    return results;
+}
+/*
+    // for each block, validate distance preservance
+
+
     std::deque<std::vector<std::deque<std::pair<Eigen::Index,Eigen::Index>>>> intraBlockTestedEnvironmentCombinations;
     for(const auto& blockOfDependentIndexPairs : blockwiseDependentIndexPairs) {
         // vary systematically
@@ -138,6 +227,18 @@ std::vector<BestMatch::Result> BestMatch::SOAPSimilarity::getBestMatchResults(
             intraBlockTestedEnvironmentCombinations.emplace_back(intraBlockTestedEnvironmentCombination);
         }
     }
+
+    spdlog::debug("Intra-tested dependent indice pairs");
+    for (const auto & TestedEnvironmentCombinations : intraBlockTestedEnvironmentCombinations) {
+        for (const auto &dependentIndexPairs : TestedEnvironmentCombinations) {
+            for (const auto &dependentIndexPair : dependentIndexPairs) {
+                spdlog::debug("({} {})", dependentIndexPair.first, dependentIndexPair.second);
+            }
+            spdlog::debug(" ");
+        }
+        spdlog::debug(" ");
+    }
+    spdlog::debug(" ");
 
     auto interBlockTestedEnvironmentCombinations = combineBlocks(
             permutee.molecule_, reference.molecule_,
@@ -191,24 +292,27 @@ std::vector<BestMatch::Result> BestMatch::SOAPSimilarity::getBestMatchResults(
 
     return results;
 }
+    */
 
-BestMatch::Result BestMatch::SOAPSimilarity::compare(
+
+
+BestMatch::DescendingMetricResult BestMatch::SOAPSimilarity::compare(
         const MolecularSpectrum &permutee,
         const MolecularSpectrum &reference,
         double distanceMatrixCovarianceTolerance, double soapThreshold) {
 
     return BestMatch::SOAPSimilarity::getBestMatchResults(permutee, reference, distanceMatrixCovarianceTolerance, soapThreshold).back();
 }
-
 /*
- * This method finds combinations of similar environments that are distance preserving across all blocks
- */
+//
+//This method finds combinations of similar environments that are distance preserving across all blocks
+//
 std::vector<std::deque<std::pair<Eigen::Index,Eigen::Index>>> BestMatch::SOAPSimilarity::combineBlocks(
         const MolecularGeometry &permutee,
         const MolecularGeometry &reference,
-        const std::deque<std::vector<std::deque<std::pair<Eigen::Index,Eigen::Index>>>> &intraBlockDistanceCombinations, /*
-        contains blocks of index pairs of dependent similar environments. The first and second index belong to the permutee and reference, respectively.
-        For each block, it was checked that the dependent indices are distance preserving under permutation(via the covariance distance matrix difference)*/
+        const std::deque<std::vector<std::deque<std::pair<Eigen::Index,Eigen::Index>>>> &intraBlockDistanceCombinations,
+        //contains blocks of index pairs of dependent similar environments. The first and second index belong to the permutee and reference, respectively.
+        //For each block, it was checked that the dependent indices are distance preserving under permutation(via the covariance distance matrix difference)
         double distanceMatrixCovarianceTolerance){
 
 
@@ -277,13 +381,11 @@ std::vector<std::deque<std::pair<Eigen::Index,Eigen::Index>>> BestMatch::SOAPSim
     return interBlockTestedCombinations;
 }
 
-/*
- * Recursive function!
- * Vary similar environments initially gets a list containing blocks of pairs of dependent indices from the environmental similarity matrix.
- *
- * PURPOSE:
- * Checks the covariance matrix to assert that distances between the selected electrons of a block of similar environments are preserved during their permutation () all
- */
+//
+//Recursive function!
+//Vary similar environments initially gets a list containing blocks of pairs of dependent indices from the environmental similarity matrix.
+//if for one block, no valid environment permutation exists, there is no overall distance preserving permutation
+//
 void BestMatch::SOAPSimilarity::varySimilarEnvironmentsInBlock(
         const MolecularGeometry &permutee,
         const MolecularGeometry &reference,
@@ -303,6 +405,8 @@ void BestMatch::SOAPSimilarity::varySimilarEnvironmentsInBlock(
 
         potentialSurvivingIndexPairs.emplace_back(*it);
 
+        // generate combinations
+
         // collect all indices that are dependent in the block for both, the permutee and the reference
         std::deque<Eigen::Index> potentiallySurvingPermuteeIndices, potentiallySurvivingReferenceIndices;
         for(auto i : potentialSurvivingIndexPairs) {
@@ -321,9 +425,14 @@ void BestMatch::SOAPSimilarity::varySimilarEnvironmentsInBlock(
         auto covB = calculateDistanceCovarianceMatrixOfSelectedIndices(reference.electrons(), potentiallySurvivingReferenceIndices);
 
         // check if distance covariance is preserved for all combinations of the dependent indices //TODO do we potentially loose conbinations here?
-        auto conservingQ = (covB-covA).array().abs().maxCoeff() <= distanceMatrixCovarianceTolerance;
+
+        auto covarianceDifference = (covB - covA);
+        spdlog::debug("Distance covariance matrix difference:\n{}", ToString::matrixXdToString(covarianceDifference, 3));
+
+        auto conservingQ = covarianceDifference.array().abs().maxCoeff() <= distanceMatrixCovarianceTolerance;
 
         if(conservingQ) { // go deeper
+            spdlog::debug(" + intra-distance conserving");
             auto updatedRemainingIndexPairsOfAllBlocks = remainingIndexPairs;
 
             updatedRemainingIndexPairsOfAllBlocks.erase(updatedRemainingIndexPairsOfAllBlocks.begin() + std::distance(remainingIndexPairs.begin(), it));
@@ -331,15 +440,17 @@ void BestMatch::SOAPSimilarity::varySimilarEnvironmentsInBlock(
             varySimilarEnvironmentsInBlock(permutee, reference, updatedRemainingIndexPairsOfAllBlocks,
                                            potentialSurvivingIndexPairs,
                                            distancePreservingEnvironmentCombinations, distanceMatrixCovarianceTolerance);
+        } else {
+            spdlog::debug(" NOT intra-distance conserving");
         }
     }
 };
-
-/*
- * Returns pairs of indices in the kit system for each block of dependent environments from the environment similarity matrix in the kit system
- * first index: permutee environment index in the kit system
- * second index: reference environment index in the kit system
- */
+*/
+//
+//Returns pairs of indices in the kit system for each block of dependent environments from the environment similarity matrix in the kit system
+//first index: permutee environment index in the kit system
+//second index: reference environment index in the kit system
+//
 std::vector<std::deque<std::pair<Eigen::Index,Eigen::Index>>>
 BestMatch::SOAPSimilarity::getBlockwiseDependentIndexPairs(
         const Eigen::MatrixXd &environmentalSimilarities,
@@ -386,14 +497,13 @@ BestMatch::SOAPSimilarity::getBlockwiseDependentIndexPairs(
  * Calculates the positional distances in the kit system of the electrons specified by the indices
  */
 Eigen::MatrixXd BestMatch::SOAPSimilarity::calculateDistanceCovarianceMatrixOfSelectedIndices(const ElectronsVector &electronsVector,
-                                                                                              std::deque<Eigen::Index> kitSystemIndices){
+                                                                                              const std::vector<Eigen::Index>& kitSystemIndices){
     Eigen::MatrixXd positionalDistances(kitSystemIndices.size(), kitSystemIndices.size());
 
     const auto& positions = electronsVector.positionsVector();
 
     // the fromKit permutation is needed to find the indices in the Kit system
     auto fromKit = ParticleKit::fromKitPermutation(electronsVector).indices(); // TODO refactor into class that stores fromKit and toKit permutations
-
     assert(fromKit.size() >= kitSystemIndices.size());
 
     for (Eigen::size_t i = 0; i < kitSystemIndices.size(); ++i)

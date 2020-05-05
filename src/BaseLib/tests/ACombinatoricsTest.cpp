@@ -131,5 +131,4 @@ TEST(ACombinatoricsTest, Permutations) {
     ASSERT_THAT(permutations.get()[3], ElementsAre(1, 2, 0));
     ASSERT_THAT(permutations.get()[4], ElementsAre(2, 0, 1));
     ASSERT_THAT(permutations.get()[5], ElementsAre(2, 1, 0));
-
 }

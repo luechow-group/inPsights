@@ -24,6 +24,7 @@
 #include <Metrics.h>
 #include <Hungarian.h>
 #include <Combinatorics.h>
+#include <Enumerate.h>
 
 using namespace testing;
 using namespace SOAP;
@@ -61,22 +62,36 @@ public:
         auto specB = MolecularSpectrum(B);
 
         auto results = BestMatch::SOAPSimilarity::getBestMatchResults(specA, specB, distTolerance, soapThresh);
+        std::sort(results.begin(), results.end());
 
-        for (auto& perm : expectedPermutationIndices)
-            spdlog::debug("Expected permutation (lab system): {}", ToString::vectorXiToString(perm));
+        size_t i = 0;
+        while(i < results.size() || i < expectedPermutationIndices.size()){
 
+            if(i < expectedPermutationIndices.size())
+                spdlog::debug("Expected: metric {} {}, permutation = {} (lab system)", lessThan? "<" : "=", soapThresh,  ToString::vectorXiToString(expectedPermutationIndices[i]));
+            else
+                spdlog::debug("Unexpected result:");
+
+            if(i < results.size())
+                spdlog::debug("Result:   metric = {}, permutation = {} (lab system)", results[i].metric, ToString::vectorXiToString(results[i].permutation.indices()));
+            else
+                spdlog::debug("Result missing");
+
+            if(i < results.size() && i < expectedPermutationIndices.size()) {
+                if (!lessThan)
+                    ASSERT_NEAR(results[i].metric, soapThresh, eps);
+                else
+                    ASSERT_LT(results[i].metric, soapThresh);
+
+                ASSERT_EQ(results[i].permutation.indices(), expectedPermutationIndices[i]);
+            } else break;
+
+            i++;
+        }
 
         ASSERT_EQ(results.size(), expectedPermutationIndices.size());
-        for (auto& result : results) {
-            if(!lessThan)
-                ASSERT_NEAR(result.metric, 1.0, eps);
-            else
-                ASSERT_LT(result.metric, 1.0);
-            ASSERT_THAT(result.permutation.indices(), AnyOfArray(expectedPermutationIndices));
-        }
     }
 };
-
 
 TEST_F(ABestMatchSimilarityTest, PrermuteEnvironmentsToLabSystem) {
     General::settings.mode = General::Mode::chemical;
@@ -250,6 +265,7 @@ TEST_F(ABestMatchSimilarityTest, H4linear_alchemical) {
     auto A = TestMolecules::H4::linear::ionicA;
     auto B = TestMolecules::H4::linear::ionicB;
     auto C = TestMolecules::H4::linear::ionicC;
+    auto D = TestMolecules::H4::linear::ionicD;
 
     General::settings.pairSimilarities[{int(Spin::alpha), int(Spin::beta)}] = 1.0;
     General::settings.mode = General::Mode::alchemical;
@@ -264,7 +280,11 @@ TEST_F(ABestMatchSimilarityTest, H4linear_alchemical) {
     expectedPermIndicesAC[0] << 1,2,3,0;
     expectedPermIndicesAC[1] << 2,1,3,0;
 
+    // permutationen sortieren und nicht mit any of array abfragen (verhindert test-passing)
+
     routine(A, C, expectedPermIndicesAC, distanceTolerance, soapThreshold);
+
+    routine(A, D, expectedPermIndicesAC, distanceTolerance, soapThreshold);
 }
 
 TEST_F(ABestMatchSimilarityTest, H4ring_Chemical) {

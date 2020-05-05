@@ -62,15 +62,16 @@ namespace BestMatch {
         return Eigen::PermutationMatrix<Eigen::Dynamic>(typeSerparatingPermutationIndices);
     }
 
+    template <bool ascending=true>
     struct Result {
         double metric;
         Eigen::PermutationMatrix<Eigen::Dynamic> permutation;
 
         bool operator<(const Result& rhs);
-
     };
 
-
+    using AscendingMetricResult = Result<true>;
+    using DescendingMetricResult = Result<false>;
 };
 
 #endif //INPSIGHTS_BESTMATCH_H

@@ -111,6 +111,7 @@ TEST(ABestMatchDistanceTest, TypeSpecificHungarian_Odrered) {
     ASSERT_TRUE(bestMatchFlippedInverse.indices().base().isApprox(p.indices().base()));
 }
 
+#include <tuple>
 TEST(ABestMatchDistanceTest, BestMatchNorm) {
     ElectronsVector v1({
         {Spin::alpha, {0, 1, 2}},

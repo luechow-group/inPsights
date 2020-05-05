@@ -301,6 +301,15 @@ namespace TestMolecules {
                         {Spin::beta,  nuclei.atoms().positionsVector()[2]}
                     })
             };
+            const MolecularGeometry ionicD = {
+                    nuclei.atoms(),
+                    ElectronsVector({ // sorted as in particle kit
+                                            {Spin::beta, nuclei.atoms().positionsVector()[0]},
+                                            {Spin::alpha, nuclei.atoms().positionsVector()[2]},
+                                            {Spin::alpha,  nuclei.atoms().positionsVector()[1]},
+                                            {Spin::beta,  nuclei.atoms().positionsVector()[2]}
+                                    })
+            };
         }
     }
 

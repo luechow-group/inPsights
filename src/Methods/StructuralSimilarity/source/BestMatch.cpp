@@ -18,8 +18,32 @@
 
 #include <BestMatch.h>
 
-bool BestMatch::Result::operator<(const BestMatch::Result &rhs) {
+template <>
+bool BestMatch::AscendingMetricResult::operator<(const BestMatch::Result<true> &rhs) {
+
+    if(metric != rhs.metric)
+        return metric < rhs.metric;
+    else
+        for (Eigen::Index i = 0; i < permutation.indices().size(); ++i) {
+            if(permutation.indices()[i] != rhs.permutation.indices()[i])
+                return permutation.indices()[i] < rhs.permutation.indices()[i];
+        }
+
     return metric < rhs.metric;
+}
+
+template <>
+bool BestMatch::DescendingMetricResult::operator<(const BestMatch::Result<false> &rhs) {
+
+    if(metric != rhs.metric)
+        return metric > rhs.metric;
+    else
+        for (Eigen::Index i = 0; i < permutation.indices().size(); ++i) {
+            if(permutation.indices()[i] != rhs.permutation.indices()[i])
+                return permutation.indices()[i] < rhs.permutation.indices()[i];
+        }
+
+    return metric > rhs.metric;
 }
 
 Eigen::PermutationMatrix<Eigen::Dynamic> BestMatch::combinePermutations(

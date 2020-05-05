@@ -33,12 +33,12 @@ namespace BestMatch {
                 const SOAP::MolecularSpectrum &permutee,
                 const SOAP::MolecularSpectrum &reference);
 
-        Result compare(
+        DescendingMetricResult compare(
                 const SOAP::MolecularSpectrum &permutee,
                 const SOAP::MolecularSpectrum &reference,
                 double distanceMatrixCovarianceTolerance, double soapThreshold);
 
-        std::vector<Result> getBestMatchResults(
+        std::vector<DescendingMetricResult> getBestMatchResults(
                 const SOAP::MolecularSpectrum &permutee,
                 const SOAP::MolecularSpectrum &reference,
                 double distanceMatrixCovarianceTolerance, double soapThreshold);
@@ -67,7 +67,7 @@ namespace BestMatch {
 
         Eigen::MatrixXd calculateDistanceCovarianceMatrixOfSelectedIndices(
                 const ElectronsVector &electronsVector,
-                std::deque<Eigen::Index> kitSystemIndices);
+                const std::vector<Eigen::Index>& kitSystemIndices);
     }
 }
 
