@@ -109,14 +109,19 @@ std::vector<BestMatch::DescendingMetricResult> BestMatch::SOAPSimilarity::getBes
     // find the best match permutation of the environments (of the permutee => rows are permuted) that maximizes the diagonal)
     auto bestMatch = Hungarian<double>::findMatching(environmentalSimilarities, Matchtype::MAX);
 
-    //TODO currently nothing happens if no element is above soap threshold
-    // check for each row or column, if at least one element is larger than soap threshold-epsilon
-
     auto bestMatchPermutedEnvironmentalSimilarities = bestMatch * environmentalSimilarities;
+
     spdlog::debug("Best-Match permutation: {}\n Best-match permuted environmental similarity matrix "
                   "(in the particle kit system, permutee = rows, reference = cols)\n{}",
                   ToString::vectorXiToString(bestMatch.indices()),
                   ToString::matrixXdToString(bestMatchPermutedEnvironmentalSimilarities, 3));
+
+    auto metricForEarlyExit = earlyExitMetric(bestMatchPermutedEnvironmentalSimilarities);
+
+    if (metricForEarlyExit < soapThreshold) {
+        spdlog::debug("exited early (similarity below threshold)");
+        return {};
+    }
 
     // some indices might depend on each other (are equivalent, e.g. two electrons in a nucleus might be swapped)
     // obtain dependent indices in the kit system (blocks of indices might )
@@ -135,7 +140,7 @@ std::vector<BestMatch::DescendingMetricResult> BestMatch::SOAPSimilarity::getBes
     spdlog::debug(" ");
 
 
-    // MAKE and check Environment blocks
+    // Check each environment block
     std::vector<EnvironmentBlock> blocks;
     for (const auto &indexPairsOfBlock : blockwiseDependentIndexPairs) {
 
@@ -147,33 +152,30 @@ std::vector<BestMatch::DescendingMetricResult> BestMatch::SOAPSimilarity::getBes
 
         if (filteredPerms.empty()) { // no distant preserving permutation could be found
             spdlog::debug("exited early (not intra-block distance preserving");
-            return {{earlyExitMetric(bestMatchPermutedEnvironmentalSimilarities), bestMatch}};//TODO better return zero or bool?
+            return {};
         } else {
             blocks.emplace_back(block);
         }
     }
 
-    spdlog::info("SEQUENCE BUILD");
-
     // Build Sequence of blocks and test again
-    EnvironmentBlockSequence sequence(permutee.molecule_.electrons(), reference.molecule_.electrons());
+    EnvironmentBlockSequence jointBlocks(permutee.molecule_.electrons(), reference.molecule_.electrons());
     for (const auto &block : blocks) {
-        auto conservingQ = sequence.addBlock(block, distanceMatrixCovarianceTolerance);
+        auto conservingQ = jointBlocks.addBlock(block, distanceMatrixCovarianceTolerance);
 
         if (!conservingQ) {
-            // no distant preserving permutation could be found
             spdlog::debug("exited early (not inter-block distance preserving)");
-            return {{earlyExitMetric(bestMatchPermutedEnvironmentalSimilarities), bestMatch}};//TODO better return zero or bool?
+            return {};
         }
     }
 
     std::vector<BestMatch::DescendingMetricResult> results;
 
-    for (const auto &jointPermutedPermuteeIndices : sequence.jointPermutedPermuteeIndicesCollection_) {
+    for (const auto &jointPermutedPermuteeIndices : jointBlocks.jointPermutedPermuteeIndicesCollection_) {
         assert(jointPermutedPermuteeIndices.size() == size_t(N) &&
                "The found index ordering size must match the number of electrons.");
 
-        auto jointReferenceIndices = sequence.jointReferenceIndices_;
+        auto jointReferenceIndices = jointBlocks.jointReferenceIndices_;
 
         // construct permutations in the kit system
         Eigen::VectorXi finalPermIndicesInKitSystem(N);
@@ -241,6 +243,8 @@ BestMatch::SOAPSimilarity::getBlockwiseDependentIndexPairs(
     auto numberOfEnvironments = environmentalSimilarities.rows();
 
     auto permutedEnvironments = bestMatch * environmentalSimilarities;// apply environmental best match
+    // TODO: giving a reference to the best-match permuted environmental similarity matrix
+    //  results in failure of test ListOfDependentIndices4
 
     std::set<Eigen::Index> indicesToSkip;
     auto epsilon = sqrt(std::numeric_limits<double>::epsilon());
@@ -248,8 +252,7 @@ BestMatch::SOAPSimilarity::getBlockwiseDependentIndexPairs(
     for (Eigen::Index i = 0; i < numberOfEnvironments; ++i) {
 
         if (indicesToSkip.find(i) == indicesToSkip.end()) {
-            std::deque temp = {std::pair<Eigen::Index, Eigen::Index>(0, i)};
-            listOfDependentIndicesLists.emplace_back(temp); // TODO refactor: remove temp
+            listOfDependentIndicesLists.emplace_back(std::deque({std::pair<Eigen::Index, Eigen::Index>(0, i)}));
 
             for (Eigen::Index j = i + 1; j < numberOfEnvironments; ++j) {
                 if (permutedEnvironments(i, j) >= soapThreshold - epsilon) {
