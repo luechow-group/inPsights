@@ -100,65 +100,6 @@ TEST(AEnvironmentBlockTest, WrongWithAdditionalPair) {
 
     auto filteredPerms = block1.filterPermutations(0.1);
     ASSERT_EQ(filteredPerms.size(), 2);
-    ASSERT_THAT(filteredPerms[0], ElementsAre(0,1,2)); // TODO understand why they survive
+    ASSERT_THAT(filteredPerms[0], ElementsAre(0,1,2));
     ASSERT_THAT(filteredPerms[1], ElementsAre(2,1,0));
-}
-
-TEST(AEnvironmentBlockTest, UnderstandingEffectOfPermutationOnCovarianceDifference) {
-    auto A = TestMolecules::H4::linear::ionicA;
-    auto C = TestMolecules::H4::linear::ionicAreflectedReorderedNumbering; // check with B in chemical mode
-
-    General::settings.pairSimilarities[{int(Spin::alpha), int(Spin::beta)}] = 1.0;
-    General::settings.mode = General::Mode::chemical;
-    ParticleKit::create(A);
-
-    // Dependent indices blocks of AC
-    // (3 0)
-    // (0 1) (2 3)
-    // (1 2)
-
-    // In this test, we analyze if (0 1) (2 3) [0] give a different covariance matrix
-    // as (2 3) (0 1) [1]
-    // or (0 3) (2 1) or (2 1) (0 3)  [2,3]
-
-    auto permutee = A.electrons();
-    auto reference = C.electrons();
-
-    std::vector<Eigen::Index> permuteeIndicesOriginal = {0,2};
-    std::vector<Eigen::Index> permuteeIndicesOrdered = permuteeIndicesOriginal;
-    std::vector<Eigen::Index> permuteeIndicesPermuted = {2,0};
-
-    std::vector<Eigen::Index> referenceIndicesOriginal = {1,3};
-    std::vector<Eigen::Index> referenceIndicesOrdered = referenceIndicesOriginal;
-    std::vector<Eigen::Index> referenceIndicesPermuted = {3,1};
-
-
-    spdlog::set_level(spdlog::level::debug);
-
-    double distanceMatrixCovarianceTolerance = 0.01;
-
-    auto orig_orig = DistanceCovariance::conservingQ(
-            permuteeIndicesOriginal, permutee,
-            referenceIndicesOriginal, reference,
-            distanceMatrixCovarianceTolerance);
-    spdlog::debug("orig_orig: {}",orig_orig);
-
-    auto perm_orig = DistanceCovariance::conservingQ(
-            permuteeIndicesPermuted, permutee,
-            referenceIndicesOriginal, reference,
-            distanceMatrixCovarianceTolerance);
-    spdlog::debug("perm_orig: {}",perm_orig);
-
-    auto orig_perm = DistanceCovariance::conservingQ(
-            permuteeIndicesOriginal, permutee,
-            referenceIndicesPermuted, reference,
-            distanceMatrixCovarianceTolerance);
-    spdlog::debug("orig_perm: {}",orig_perm);
-
-    auto perm_perm = DistanceCovariance::conservingQ(
-            permuteeIndicesPermuted, permutee,
-            referenceIndicesPermuted, reference,
-            distanceMatrixCovarianceTolerance);
-    spdlog::debug("perm_perm: {}",perm_perm);
-
 }

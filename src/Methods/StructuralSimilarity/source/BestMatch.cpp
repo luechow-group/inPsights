@@ -70,7 +70,7 @@ Eigen::PermutationMatrix<Eigen::Dynamic> BestMatch::getPermutationToFront(const 
         i++;
     }
 
-    for (long j=0; j<size; j++) {
+    for (size_t j=0; j<size; j++) {
         if (std::find(relevantIndices.begin(), relevantIndices.end(), j) == relevantIndices.end()){
             indices[i] = j;
             i++;
@@ -88,7 +88,7 @@ Eigen::PermutationMatrix<Eigen::Dynamic> BestMatch::getPermutationToBack(const s
     Eigen::VectorXi indices(size);
     size_t i = 0;
 
-    for (long j=0; j<size; j++) {
+    for (size_t j=0; j<size; j++) {
         if (std::find(relevantIndices.begin(), relevantIndices.end(), j) == relevantIndices.end()){
             indices[i] = j;
             i++;
@@ -107,7 +107,7 @@ Eigen::PermutationMatrix<Eigen::Dynamic> BestMatch::getPermutationToBack(const s
 
 Eigen::PermutationMatrix<Eigen::Dynamic> BestMatch::headToFullPermutation(const Eigen::PermutationMatrix<Eigen::Dynamic> &permutation, size_t size){
     // builds full permutation from head permutation
-    assert(permutation.indices().size() <= size);
+    assert(size_t(permutation.indices().size()) <= size);
 
     Eigen::VectorXi indices(size);
     long i = 0;
@@ -116,7 +116,7 @@ Eigen::PermutationMatrix<Eigen::Dynamic> BestMatch::headToFullPermutation(const 
         i++;
     }
 
-    for (long j=permutation.indices().size(); j<size; j++) {
+    for (size_t j=permutation.indices().size(); j<size; j++) {
         indices[i] = j;
         i++;
     }
@@ -128,7 +128,7 @@ Eigen::PermutationMatrix<Eigen::Dynamic> BestMatch::headToFullPermutation(const 
 
 Eigen::PermutationMatrix<Eigen::Dynamic> BestMatch::tailToFullPermutation(const Eigen::PermutationMatrix<Eigen::Dynamic> &permutation, size_t size){
     // builds full permutation from tail permutation
-    assert(permutation.indices().size() <= size);
+    assert(size_t(permutation.indices().size()) <= size);
 
     Eigen::VectorXi indices(size);
 
