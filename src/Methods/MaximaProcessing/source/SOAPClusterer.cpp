@@ -94,7 +94,7 @@ void SOAPClusterer::cluster(Group& group){
                     groupIt->representative()->spectrum(),
                     subgroupOfSupergroupIt->representative()->spectrum(),
                     toleranceRadius,
-                    similarityThreshold);
+                    similarityThreshold, numericalPrecisionEpsilon);
 
             spdlog::info("  comparing it with {} out of {}: {}",
                     std::distance(supergroup.begin(), subgroupOfSupergroupIt)+1,
@@ -102,7 +102,7 @@ void SOAPClusterer::cluster(Group& group){
                     comparisionResult.metric);
 
             // if so, put permute the current group and put it into the supergroup subgroup and stop searching
-            if (comparisionResult.metric >= similarityThreshold) {
+            if (comparisionResult.metric >= (similarityThreshold-numericalPrecisionEpsilon)) {
                 groupIt->permuteAll(comparisionResult.permutation, samples_);
 
                 subgroupOfSupergroupIt->emplace_back(*groupIt);

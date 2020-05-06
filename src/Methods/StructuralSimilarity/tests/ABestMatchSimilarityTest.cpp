@@ -34,8 +34,7 @@ public:
     double distanceTolerance, soapThreshold, shakeSoapThreshold, numericalPrecisionEpsilon;
 
     void SetUp() override {
-        spdlog::set_level(spdlog::level::debug);
-        spdlog::flush_on(spdlog::level::debug);
+        //spdlog::set_level(spdlog::level::debug);
 
         distanceTolerance = 0.1;
         soapThreshold = 1.0;
@@ -383,7 +382,7 @@ TEST_F(ABestMatchSimilarityTest, DISABLED_H4linear_not_in_particle_kit) {
     routine(A, B, expectedPermIndices, distanceTolerance, soapThreshold);
 }
 
-TEST_F(ABestMatchSimilarityTest, H4linear_real_maxima1_failing_in_soap_clusterer) {
+TEST_F(ABestMatchSimilarityTest, DISABLED_H4linear_real_maxima1_failing_in_soap_clusterer) {
     auto A = TestMolecules::H4::linear::ionicRealMax1Var1;
     auto B = TestMolecules::H4::linear::ionicRealMax1Var2;
 
@@ -395,13 +394,9 @@ TEST_F(ABestMatchSimilarityTest, H4linear_real_maxima1_failing_in_soap_clusterer
     General::settings.mode = General::Mode::alchemical;
     routine(A, B, expectedPermIndices, distanceTolerance, soapThreshold);
 
-    //TODO also fails in this test => some cases are not considered, elementary problem?
-
-
-    //TODO
-    // expectedPermIndices.erase(expectedPermIndices.begin()+1);
-    // General::settings.mode = General::Mode::chemical;
-    // routine(A, B, expectedPermIndices, distanceTolerance, soapThreshold);
+    //TODO expectedPermIndices = {expectedPermIndices[0]};
+    //General::settings.mode = General::Mode::chemical;
+    //routine(A, B, expectedPermIndices, distanceTolerance, soapThreshold);
 }
 
 TEST_F(ABestMatchSimilarityTest, H4linear_real_maxima2_failing_in_soap_clusterer) {
@@ -418,32 +413,34 @@ TEST_F(ABestMatchSimilarityTest, H4linear_real_maxima2_failing_in_soap_clusterer
     General::settings.mode = General::Mode::alchemical;
     routine(A, B, expectedPermIndices, distanceTolerance, soapThreshold);
 
-    //TODO also fails in this test => some cases are not considered, elementary problem?
-
-    //TODO
-    // expectedPermIndices.erase(expectedPermIndices.begin()+1);
-    // General::settings.mode = General::Mode::chemical;
-    // routine(A, B, expectedPermIndices, distanceTolerance, soapThreshold);
+    //TODO expectedPermIndices = {expectedPermIndices[0]};
+    //General::settings.mode = General::Mode::chemical;
+    //routine(A, B, expectedPermIndices, distanceTolerance, soapThreshold);
 }
 
-TEST_F(ABestMatchSimilarityTest, H4ring_Chemical) {
-    General::settings.mode = General::Mode::chemical;
-
+TEST_F(ABestMatchSimilarityTest, H4ring) {
     auto B = TestMolecules::H4::ring::fourAlpha;
     auto A = B;
 
-    std::vector<Eigen::VectorXi> permsIndices(4,Eigen::VectorXi(B.electrons().numberOfEntities()));
+    std::vector<Eigen::VectorXi> permsIndices(8,Eigen::VectorXi(B.electrons().numberOfEntities()));
     permsIndices[0] << 0,1,2,3;
     permsIndices[1] << 0,1,3,2;
     permsIndices[2] << 1,0,2,3;
     permsIndices[3] << 1,0,3,2;
+    permsIndices[4] << 2,3,0,1;
+    permsIndices[5] << 2,3,1,0;
+    permsIndices[6] << 3,2,0,1;
+    permsIndices[7] << 3,2,1,0;
 
+    General::settings.pairSimilarities[{int(Spin::alpha), int(Spin::beta)}] = 1.0;
+    General::settings.mode = General::Mode::alchemical;
+    routine(A,B,permsIndices,distanceTolerance, soapThreshold);
+
+    General::settings.mode = General::Mode::chemical;
     routine(A,B,permsIndices,distanceTolerance, soapThreshold);
 }
 
-TEST_F(ABestMatchSimilarityTest, H4ring_Chemical_Shaked) {
-    General::settings.mode = General::Mode::chemical;
-
+TEST_F(ABestMatchSimilarityTest, H4ring_Shaked) {
     auto B = TestMolecules::H4::ring::fourAlpha;
     auto A = B;
     ParticleKit::create(A);
@@ -459,54 +456,21 @@ TEST_F(ABestMatchSimilarityTest, H4ring_Chemical_Shaked) {
                 B.electrons().positionsVector()) == 0.0)
             A.electrons().positionsVector().shake(distanceTolerance / 2.0, rng);
 
-        std::vector<Eigen::VectorXi> permsIndices(4, Eigen::VectorXi(B.electrons().numberOfEntities()));
-        permsIndices[0] << 0, 1, 2, 3;
-        permsIndices[1] << 0, 1, 3, 2;
-        permsIndices[2] << 1, 0, 2, 3;
-        permsIndices[3] << 1, 0, 3, 2;
+        std::vector<Eigen::VectorXi> permsIndices(8, Eigen::VectorXi(B.electrons().numberOfEntities()));
+        permsIndices[0] << 0,1,2,3;
+        permsIndices[1] << 0,1,3,2;
+        permsIndices[2] << 1,0,2,3;
+        permsIndices[3] << 1,0,3,2;
+        permsIndices[4] << 2,3,0,1;
+        permsIndices[5] << 2,3,1,0;
+        permsIndices[6] << 3,2,0,1;
+        permsIndices[7] << 3,2,1,0;
 
+        General::settings.pairSimilarities[{int(Spin::alpha), int(Spin::beta)}] = 1.0;
+        General::settings.mode = General::Mode::alchemical;
         routine(A, B, permsIndices, distanceTolerance, shakeSoapThreshold, true);
-    }
-}
 
-TEST_F(ABestMatchSimilarityTest, H4ring_Alchemical) {
-    General::settings.mode = General::Mode::alchemical;
-
-    auto B = TestMolecules::H4::ring::fourAlpha;
-    auto A = B;
-
-    std::vector<Eigen::VectorXi> permsIndices(4,Eigen::VectorXi(B.electrons().numberOfEntities()));
-    permsIndices[0] << 0,1,2,3;
-    permsIndices[1] << 0,1,3,2;
-    permsIndices[2] << 1,0,2,3;
-    permsIndices[3] << 1,0,3,2;
-
-    routine(A,B,permsIndices,distanceTolerance, soapThreshold);
-}
-
-TEST_F(ABestMatchSimilarityTest, H4ring_Alchemical_Shaked) {
-    General::settings.mode = General::Mode::alchemical;
-
-    auto B = TestMolecules::H4::ring::fourAlpha;
-    auto A = B;
-    
-    std::vector<Eigen::VectorXi> permsIndices(4, Eigen::VectorXi(B.electrons().numberOfEntities()));
-    permsIndices[0] << 0, 1, 2, 3;
-    permsIndices[1] << 0, 1, 3, 2;
-    permsIndices[2] << 1, 0, 2, 3;
-    permsIndices[3] << 1, 0, 3, 2;
-
-    auto randomSeed = static_cast<unsigned long>(std::clock());
-    std::cout << "random seed: " << randomSeed << std::endl;
-
-    for(auto seed : std::vector<unsigned long>{0,randomSeed}) {
-        auto rng = std::default_random_engine(seed);
-
-        while (Metrics::positionalNormsVectorNorm<Eigen::Dynamic, 2>(
-                A.electrons().positionsVector(),
-                B.electrons().positionsVector()) == 0.0)
-            A.electrons().positionsVector().shake(distanceTolerance / 2.0, rng);
-
+        General::settings.mode = General::Mode::chemical;
         routine(A, B, permsIndices, distanceTolerance, shakeSoapThreshold, true);
     }
 }
@@ -816,7 +780,7 @@ TEST_F(ABestMatchSimilarityTest, EthaneSinglyIonic) {
     routine(A,B,permIndices,distanceTolerance, soapThreshold);
 }
 
-TEST_F(ABestMatchSimilarityTest, EthaneSinglyIonicPermutedMinimal) {
+TEST_F(ABestMatchSimilarityTest, DISABLED_EthaneSinglyIonicPermutedMinimal) {
     General::settings.mode = General::Mode::chemical;
 
     using namespace TestMolecules;
