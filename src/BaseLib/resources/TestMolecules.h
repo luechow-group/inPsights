@@ -333,13 +333,43 @@ namespace TestMolecules {
                         // => different to ionicAreflected in chemical mode
                     })
             };
-            const MolecularGeometry ionicD = {
+            const MolecularGeometry ionicRealMax1Var1 = { // -lnPsi^2 = -5.585
                     nuclei.atoms(),
-                    ElectronsVector({
-                         {Spin::beta, nuclei.atoms().positionsVector()[0]},
+                    ElectronsVector({ // a0b3-____-__b2-a1__
+                         {Spin::alpha, nuclei.atoms().positionsVector()[0]},
                          {Spin::alpha, nuclei.atoms().positionsVector()[2]},
-                         {Spin::alpha,  nuclei.atoms().positionsVector()[1]},
-                         {Spin::beta,  nuclei.atoms().positionsVector()[2]}
+                         {Spin::beta,  nuclei.atoms().positionsVector()[1]},
+                         {Spin::beta,  nuclei.atoms().positionsVector()[0]}
+                    })
+            };
+
+            const MolecularGeometry ionicRealMax1Var2 = { // -lnPsi^2 = -5.585
+                    nuclei.atoms(),
+                    ElectronsVector({ // __b2-a1__-___-a0b3
+                        {Spin::alpha, nuclei.atoms().positionsVector()[3]},
+                        {Spin::alpha, nuclei.atoms().positionsVector()[1]},
+                        {Spin::beta,  nuclei.atoms().positionsVector()[0]},
+                        {Spin::beta,  nuclei.atoms().positionsVector()[3]}
+                    })
+            };
+
+            const MolecularGeometry ionicRealMax2Var1 = { // -lnPsi^2 = -4.589
+                    nuclei.atoms(), // sorted for as in particle kit
+                    ElectronsVector({ // a0b3-____-a1b2-____
+                        {Spin::alpha, nuclei.atoms().positionsVector()[0]},
+                        {Spin::alpha, nuclei.atoms().positionsVector()[2]},
+                        {Spin::beta,  nuclei.atoms().positionsVector()[2]},
+                        {Spin::beta,  nuclei.atoms().positionsVector()[0]}
+                    })
+            };
+
+            const MolecularGeometry ionicRealMax2Var2 = { // -lnPsi^2 = -4.589
+                    nuclei.atoms(), // sorted for as in particle kit
+                    ElectronsVector({ // ____-a0b3-____-a1b2
+                        {Spin::alpha, nuclei.atoms().positionsVector()[1]},
+                        {Spin::alpha, nuclei.atoms().positionsVector()[3]},
+                        {Spin::beta,  nuclei.atoms().positionsVector()[3]},
+                        {Spin::beta,  nuclei.atoms().positionsVector()[1]}
                     })
             };
         }

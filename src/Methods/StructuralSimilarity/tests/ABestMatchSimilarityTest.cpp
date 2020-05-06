@@ -361,6 +361,68 @@ TEST_F(ABestMatchSimilarityTest, H4linear_ionic_reflected_reordered_numbering) {
     routine(A, B, {}, distanceTolerance, soapThreshold);
 }
 
+TEST_F(ABestMatchSimilarityTest, DISABLED_H4linear_not_in_particle_kit) {
+    auto A = TestMolecules::H4::linear::ionicA;
+    auto B = TestMolecules::H4::linear::ionicNOTinParticleKit;
+
+    std::vector<Eigen::VectorXi> expectedPermIndices(0, Eigen::VectorXi(A.electrons().numberOfEntities()));
+    //expectedPermIndices[0] << 0,1,2,3;
+    //expectedPermIndices[1] << 2,1,0,3;
+    //TODO
+
+    General::settings.pairSimilarities[{int(Spin::alpha), int(Spin::beta)}] = 1.0;
+    General::settings.mode = General::Mode::alchemical;
+    routine(A, B, expectedPermIndices, distanceTolerance, soapThreshold);
+
+    // second perm is not conserving in chemical mode
+    expectedPermIndices.erase(expectedPermIndices.begin()+1);
+    General::settings.mode = General::Mode::chemical;
+    routine(A, B, expectedPermIndices, distanceTolerance, soapThreshold);
+}
+
+TEST_F(ABestMatchSimilarityTest, H4linear_real_maxima1_failing_in_soap_clusterer) {
+    auto A = TestMolecules::H4::linear::ionicRealMax1Var1;
+    auto B = TestMolecules::H4::linear::ionicRealMax1Var2;
+
+    std::vector<Eigen::VectorXi> expectedPermIndices(2, Eigen::VectorXi(A.electrons().numberOfEntities()));
+    expectedPermIndices[0] << 0,2,1,3;
+    expectedPermIndices[1] << 3,2,1,0;
+
+    General::settings.pairSimilarities[{int(Spin::alpha), int(Spin::beta)}] = 1.0;
+    General::settings.mode = General::Mode::alchemical;
+    routine(A, B, expectedPermIndices, distanceTolerance, soapThreshold);
+
+    //TODO also fails in this test => some cases are not considered, elementary problem?
+
+
+    //TODO
+    // expectedPermIndices.erase(expectedPermIndices.begin()+1);
+    // General::settings.mode = General::Mode::chemical;
+    // routine(A, B, expectedPermIndices, distanceTolerance, soapThreshold);
+}
+
+TEST_F(ABestMatchSimilarityTest, H4linear_real_maxima2_failing_in_soap_clusterer) {
+    auto A = TestMolecules::H4::linear::ionicRealMax2Var1;
+    auto B = TestMolecules::H4::linear::ionicRealMax2Var2;
+
+    std::vector<Eigen::VectorXi> expectedPermIndices(4, Eigen::VectorXi(A.electrons().numberOfEntities()));
+    expectedPermIndices[0] << 1,0,3,2;
+    expectedPermIndices[1] << 1,3,0,2;
+    expectedPermIndices[2] << 2,0,3,1;
+    expectedPermIndices[3] << 2,3,0,1;
+
+    General::settings.pairSimilarities[{int(Spin::alpha), int(Spin::beta)}] = 1.0;
+    General::settings.mode = General::Mode::alchemical;
+    routine(A, B, expectedPermIndices, distanceTolerance, soapThreshold);
+
+    //TODO also fails in this test => some cases are not considered, elementary problem?
+
+    //TODO
+    // expectedPermIndices.erase(expectedPermIndices.begin()+1);
+    // General::settings.mode = General::Mode::chemical;
+    // routine(A, B, expectedPermIndices, distanceTolerance, soapThreshold);
+}
+
 TEST_F(ABestMatchSimilarityTest, H4ring_Chemical) {
     General::settings.mode = General::Mode::chemical;
 
