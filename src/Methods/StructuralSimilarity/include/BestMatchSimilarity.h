@@ -44,26 +44,11 @@ namespace BestMatch {
                 double distanceMatrixCovarianceTolerance, double soapThreshold);
 
         std::vector<std::deque<std::pair<Eigen::Index,Eigen::Index>>> getBlockwiseDependentIndexPairs(
-                const Eigen::MatrixXd &environmentalSimilarities,
+                const Eigen::MatrixXd &bestMatchPermutedEnvironmentalSimilarities,
                 const Eigen::PermutationMatrix<Eigen::Dynamic> &bestMatch,
                 double soapThreshold);
 
-        void varySimilarEnvironmentsInBlock(
-                const MolecularGeometry &permutee,
-                const MolecularGeometry &reference,
-                std::deque<std::pair<Eigen::Index,Eigen::Index>> remainingIndexPairs,
-                const std::deque<std::pair<Eigen::Index,Eigen::Index>>& survivingIndexPairs,
-                std::vector<std::deque<std::pair<Eigen::Index,Eigen::Index>>> &distancePreservingEnvironmentCombinations,
-                double distanceMatrixCovarianceTolerance);
-
-        std::vector<std::deque<std::pair<Eigen::Index,Eigen::Index>>> combineBlocks(
-                const MolecularGeometry &permutee,
-                const MolecularGeometry &reference,
-                const std::deque<std::vector<std::deque<std::pair<Eigen::Index,Eigen::Index>>>> &intraBlockDistanceCombinations,
-                double distanceMatrixCovarianceTolerance);
-
-        std::vector<Eigen::Index> unblockDependentIndicesOfPreservingCombinations(
-                const std::deque<std::vector<std::deque<std::pair<Eigen::Index, Eigen::Index>>>> &distancePreservingEnvironmentCombinationsOfAllBlocks);
+        double earlyExitMetric(const Eigen::MatrixXd &bestMatchPermutedEnvironmentalSimilarities);
 
         Eigen::MatrixXd calculateDistanceCovarianceMatrixOfSelectedIndices(
                 const ElectronsVector &electronsVector,
