@@ -22,6 +22,7 @@
 #include <ElementType.h>
 #include <SpinType.h>
 #include <NaturalConstants.h>
+#include <limits>
 
 #include <ISettings.h>
 
@@ -48,7 +49,9 @@ namespace Settings{
             Property<::SOAP::General::Mode> mode = {::SOAP::General::Mode::typeAgnostic, VARNAME(mode)};
             Property<double> zeta = {2.0, VARNAME(zeta)};
             Property<double> sinkhornGamma = {0.1, VARNAME(sinkhornGamma)};
-            Property<double> sinkhornEpsilon = {1e-8, VARNAME(sinkhornEpsilon)};
+            Property<double> numericalPrecisionEpsilon = {
+                    std::sqrt(std::numeric_limits<double>::epsilon()), // conservative default
+                    VARNAME(numericalPrecisionEpsilon)};
 
             std::map<std::pair<int, int>, double> pairSimilarities = {
                     {{int(Spin::alpha), int(Spin::beta)}, 0.5}

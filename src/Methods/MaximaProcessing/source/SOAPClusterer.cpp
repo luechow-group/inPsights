@@ -76,6 +76,7 @@ void SOAPClusterer::cluster(Group& group){
 
     auto similarityThreshold = settings.similarityThreshold();
     auto toleranceRadius = settings.distanceMatrixCovarianceTolerance();
+    auto numericalPrecisionEpsilon = SOAP::General::settings.numericalPrecisionEpsilon.get();
 
     Group supergroup({{*group.begin()}});
 

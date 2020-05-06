@@ -17,6 +17,7 @@
 
 #include <gmock/gmock.h>
 #include <BestMatch.h>
+#include <spdlog/spdlog.h>
 
 using namespace testing;
 
@@ -161,6 +162,7 @@ TEST(ABestMatchTest, ComplexDescendingMetricSort) {
     p4 << 1,0,2;
     p5 << 2,0,1;
     p6 << 2,1,0;
+
 
     std::vector<BestMatch::DescendingMetricResult > results = {
             {1.0, Eigen::PermutationMatrix<Eigen::Dynamic>(p2)},

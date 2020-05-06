@@ -81,7 +81,7 @@ namespace Settings {
 
             doubleProperty::decode(node[className], zeta);
             doubleProperty::decode(node[className], sinkhornGamma);
-            doubleProperty::decode(node[className], sinkhornEpsilon);
+            doubleProperty::decode(node[className], numericalPrecisionEpsilon);
         }
 
         void General::appendToNode(YAML::Node &node) const {
@@ -107,7 +107,7 @@ namespace Settings {
             node[className][mode.name()] = ::SOAP::General::toString(::SOAP::General::Mode(mode()));
             node[className][zeta.name()] = zeta();
             node[className][sinkhornGamma.name()] = sinkhornGamma();
-            node[className][sinkhornEpsilon.name()] = sinkhornEpsilon();
+            node[className][numericalPrecisionEpsilon.name()] = numericalPrecisionEpsilon();
         }
 
 

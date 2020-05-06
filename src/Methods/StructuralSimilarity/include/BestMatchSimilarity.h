@@ -36,23 +36,28 @@ namespace BestMatch {
         DescendingMetricResult compare(
                 const SOAP::MolecularSpectrum &permutee,
                 const SOAP::MolecularSpectrum &reference,
-                double distanceMatrixCovarianceTolerance, double soapThreshold);
+                double distanceMatrixCovarianceTolerance,
+                double soapThreshold,
+                double numericalPrecisionEpsilon = std::numeric_limits<double>::epsilon());
 
         std::vector<DescendingMetricResult> getBestMatchResults(
                 const SOAP::MolecularSpectrum &permutee,
                 const SOAP::MolecularSpectrum &reference,
-                double distanceMatrixCovarianceTolerance, double soapThreshold);
+                double distanceMatrixCovarianceTolerance,
+                double soapThreshold,
+                double numericalPrecisionEpsilon = std::numeric_limits<double>::epsilon());
 
-        std::vector<std::deque<std::pair<Eigen::Index,Eigen::Index>>> getBlockwiseDependentIndexPairs(
+        std::vector<std::deque<std::pair<Eigen::Index, Eigen::Index>>> getBlockwiseDependentIndexPairs(
                 const Eigen::MatrixXd &bestMatchPermutedEnvironmentalSimilarities,
                 const Eigen::PermutationMatrix<Eigen::Dynamic> &bestMatch,
-                double soapThreshold);
+                double soapThreshold,
+                double numericalPrecisionEpsilon = std::numeric_limits<double>::epsilon());
 
         double earlyExitMetric(const Eigen::MatrixXd &bestMatchPermutedEnvironmentalSimilarities);
 
         Eigen::MatrixXd calculateDistanceCovarianceMatrixOfSelectedIndices(
                 const ElectronsVector &electronsVector,
-                const std::vector<Eigen::Index>& kitSystemIndices);
+                const std::vector<Eigen::Index> &kitSystemIndices);
     }
 }
 

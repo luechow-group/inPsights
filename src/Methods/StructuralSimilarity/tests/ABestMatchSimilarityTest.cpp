@@ -31,15 +31,16 @@ using namespace SOAP;
 
 class ABestMatchSimilarityTest : public ::testing::Test {
 public:
-    double distanceTolerance, soapThreshold, shakeSoapThreshold, eps;
+    double distanceTolerance, soapThreshold, shakeSoapThreshold, numericalPrecisionEpsilon;
 
     void SetUp() override {
         spdlog::set_level(spdlog::level::debug);
+        spdlog::flush_on(spdlog::level::debug);
 
         distanceTolerance = 0.1;
         soapThreshold = 1.0;
         shakeSoapThreshold = 0.90;
-        eps = 1E-9;
+        numericalPrecisionEpsilon = SOAP::General::settings.numericalPrecisionEpsilon.get();
 
         Radial::settings.nmax = 2;
         Radial::settings.sigmaAtom = 2.0;
@@ -60,7 +61,10 @@ public:
         auto specA = MolecularSpectrum(A);
         auto specB = MolecularSpectrum(B);
 
-        auto results = BestMatch::SOAPSimilarity::getBestMatchResults(specA, specB, distTolerance, soapThresh);
+        auto results = BestMatch::SOAPSimilarity::getBestMatchResults(
+                specA, specB,
+                distTolerance, soapThresh, numericalPrecisionEpsilon);
+
         std::sort(results.begin(), results.end());
 
         spdlog::debug("Expected:");
@@ -71,21 +75,20 @@ public:
 
         unsigned removedCounter = 0;
         for(auto it = results.begin(); it != results.end(); it++) {
-            if(it->metric < soapThresh) {
+            if(it->metric < (soapThresh-numericalPrecisionEpsilon)) {
                 results.erase(it--);
                 removedCounter++;
             }
         }
-        spdlog::debug("Removed {} results below threshold.", removedCounter);
+        spdlog::debug("Removed {} result(s) below threshold.", removedCounter);
 
         spdlog::debug("Got:");
         for (auto[i, result] : enumerate(results)) {
-            spdlog::debug("{}: metric = {}, permutation = {} (lab system)", i, result.metric,
+            spdlog::debug("{}: metric = {:01.16f}, permutation = {} (lab system)", i, result.metric,
                           ToString::vectorXiToString(result.permutation.indices()));
         }
 
         size_t i = 0;
-
         while (i < results.size() || i < expectedPermutationIndices.size()) {
 
             if (i >= results.size()) {
@@ -95,7 +98,7 @@ public:
             }
 
             if (i < expectedPermutationIndices.size()) {
-                if (!greaterThan) ASSERT_NEAR(results[i].metric, soapThresh, eps);
+                if (!greaterThan) ASSERT_NEAR(results[i].metric, soapThresh, numericalPrecisionEpsilon);
                 else ASSERT_GT(results[i].metric, soapThresh);
 
                 ASSERT_EQ(results[i].permutation.indices(), expectedPermutationIndices[i]);
