@@ -138,7 +138,7 @@ TEST_F(ABestMatchSimilarityTest, ListOfDependentIndices) {
     auto bestMatch = Hungarian<double>::findMatching(mat, Matchtype::MAX);
 
     Eigen::PermutationMatrix<Eigen::Dynamic> expectedPerm(mat.rows());
-    expectedPerm.setIdentity();
+    expectedPerm.setIdentity();  // rows are permuted
     ASSERT_TRUE(bestMatch.indices().isApprox(expectedPerm.indices()));
 
     auto result = BestMatch::SOAPSimilarity::getBlockwiseDependentIndexPairs(mat, bestMatch, 1.0);
@@ -196,7 +196,7 @@ TEST_F(ABestMatchSimilarityTest, ListOfDependentIndices3) {
     auto bestMatch = Hungarian<double>::findMatching(mat, Matchtype::MAX);
 
     Eigen::VectorXi expectedPermIndices(mat.rows());
-    expectedPermIndices << 0,2,1,3,4,5;
+    expectedPermIndices << 0,2,1,3,4,5; // rows are permuted
     Eigen::PermutationMatrix<Eigen::Dynamic> expectedPerm(expectedPermIndices);
     ASSERT_TRUE(bestMatch.indices().isApprox(expectedPerm.indices()));
 
@@ -236,7 +236,7 @@ TEST_F(ABestMatchSimilarityTest, ListOfDependentIndices4) {
     auto bestMatch = Hungarian<double>::findMatching(mat, Matchtype::MAX);
 
     Eigen::VectorXi expectedPermIndices(mat.rows());
-    expectedPermIndices << 1,2,0,3,4,5; // row are permuted
+    expectedPermIndices << 1,2,0,3,4,5; // rows are permuted
     Eigen::PermutationMatrix<Eigen::Dynamic> expectedPerm(expectedPermIndices);
     ASSERT_TRUE(bestMatch.indices().isApprox(expectedPerm.indices()));
 
