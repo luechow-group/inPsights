@@ -61,6 +61,8 @@ SOAPClusterer::SOAPClusterer(const AtomsVector& atoms, std::vector<Sample> &samp
 void SOAPClusterer::cluster(Group& group){
     assert(!group.isLeaf() && "The group cannot be a leaf.");
 
+    // TODO use function value to narrow down guesses => presort lists
+
     // Calculate spectra
     spdlog::info("Calculating {} spectra in {} mode...",
             group.size(),SOAP::General::toString(SOAP::General::settings.mode.get()));
@@ -94,7 +96,7 @@ void SOAPClusterer::cluster(Group& group){
                     similarityThreshold);
 
             spdlog::info("  comparing it with {} out of {}: {}",
-                    std::distance(supergroup.begin(), subgroupOfSupergroupIt),
+                    std::distance(supergroup.begin(), subgroupOfSupergroupIt)+1,
                     std::distance(supergroup.begin(), supergroup.end()),
                     comparisionResult.metric);
 
