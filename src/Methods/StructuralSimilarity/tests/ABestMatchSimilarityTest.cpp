@@ -703,8 +703,8 @@ TEST_F(ABestMatchSimilarityTest, EthaneSinglyIonicMinimal) {
             })};
 
     std::vector<Eigen::VectorXi> permIndices(2, Eigen::VectorXi(B.electrons().numberOfEntities()));
-    permIndices[0] << 1, 2, 0, 4, 5, 3; // 120° rotation around z
-    permIndices[1] << 0, 2, 1, 3, 5, 4; // reflection along H2-C0-C1-H5 plane
+    permIndices[0] << 0, 2, 1, 3, 5, 4; // reflection along H2-C0-C1-H5 plane
+    permIndices[1] << 1, 2, 0, 4, 5, 3; // 120° rotation around z
 
     routine(A,B,permIndices,distanceTolerance, soapThreshold);
 }
@@ -734,8 +734,9 @@ TEST_F(ABestMatchSimilarityTest, EthaneSinglyIonicMinimal_shaked_alchemical) {
                             })};
 
     std::vector<Eigen::VectorXi> permIndices(2, Eigen::VectorXi(B.electrons().numberOfEntities()));
-    permIndices[0] << 1, 2, 0, 4, 5, 3; // 120° rotation around z
-    permIndices[1] << 0, 2, 1, 3, 5, 4; // reflection along H2-C0-C1-H5 plane
+    permIndices[0] << 0, 2, 1, 3, 5, 4; // reflection along H2-C0-C1-H5 plane
+    permIndices[1] << 1, 2, 0, 4, 5, 3; // 120° rotation around z
+
 
 
     General::settings.mode = General::Mode::alchemical;
@@ -809,8 +810,8 @@ TEST_F(ABestMatchSimilarityTest, EthaneSinglyIonic) {
             })};
 
     std::vector<Eigen::VectorXi> permIndices(2, Eigen::VectorXi(B.electrons().numberOfEntities()));
-    permIndices[0] << 0,1,2,3,  5,6,4, 8,9,7,  10,11,  13,14,12, 16,17,15; // 120° rotation around z
-    permIndices[1] << 0,1,2,3,  4,6,5, 7,9,8,  10,11,  12,14,13, 15,17,16; // reflection along H2-C0-C1-H5 plane
+    permIndices[0] << 0,1,2,3,  4,6,5, 7,9,8,  10,11,  12,14,13, 15,17,16; // reflection along H2-C0-C1-H5 plane
+    permIndices[1] << 0,1,2,3,  5,6,4, 8,9,7,  10,11,  13,14,12, 16,17,15; // 120° rotation around z
 
     routine(A,B,permIndices,distanceTolerance, soapThreshold);
 }
@@ -863,11 +864,12 @@ TEST_F(ABestMatchSimilarityTest, EthaneSinglyIonicPermutedMinimal) {
         Acopy.electrons().permute(indexSwapPerm);
 
         std::vector<Eigen::VectorXi> permIndices(2, Eigen::VectorXi(B.electrons().numberOfEntities()));
-        permIndices[0] << 1, 2, 0, 4, 5, 3; // 120° rotation around z
-        permIndices[1] << 0, 2, 1, 3, 5, 4; // reflection along H2-C0-C1-H5 plane
+        permIndices[0] << 0, 2, 1, 3, 5, 4; // reflection along H2-C0-C1-H5 plane
+        permIndices[1] << 1, 2, 0, 4, 5, 3; // 120° rotation around z
 
-        permIndices[0] = indexSwapPerm * permIndices[0];
-        permIndices[1] = indexSwapPerm * permIndices[1];
+        permIndices[0] = indexSwapPerm * permIndices[1];
+        permIndices[1] = indexSwapPerm * permIndices[0];
+
 
         routine(Acopy, B, permIndices, distanceTolerance, soapThreshold);
     }
@@ -900,8 +902,8 @@ TEST_F(ABestMatchSimilarityTest, EthaneDoublyIonicAntiMinimal) {
             })};
 
     std::vector<Eigen::VectorXi> permIndices(2, Eigen::VectorXi(B.electrons().numberOfEntities()));
-    permIndices[0] << 1, 2, 0, 4, 5, 3; // 120° rotation around z
-    permIndices[1] << 0, 2, 1, 3, 5, 4; // reflection along H2-C0-C1-H5 plane
+    permIndices[0] << 0, 2, 1, 3, 5, 4; // reflection along H2-C0-C1-H5 plane
+    permIndices[1] << 1, 2, 0, 4, 5, 3; // 120° rotation around z
 
     routine(A,B,permIndices,distanceTolerance, soapThreshold);
 }
@@ -964,8 +966,8 @@ TEST_F(ABestMatchSimilarityTest, EthaneDoublyIonicAnti) {
             })};
 
     std::vector<Eigen::VectorXi> permIndices(2, Eigen::VectorXi(B.electrons().numberOfEntities()));
-    permIndices[0] << 0,1,2,3,  5,6,4, 8,9,7,  10,11,  13,14,12, 16,17,15; // 120° rotation around z
-    permIndices[1] << 0,1,2,3,  4,6,5, 7,9,8,  10,11,  12,14,13, 15,17,16; // reflection along H2-C0-C1-H5 plane
+    permIndices[0] << 0,1,2,3,  4,6,5, 7,9,8,  10,11,  12,14,13, 15,17,16; // reflection along H2-C0-C1-H5 plane
+    permIndices[1] << 0,1,2,3,  5,6,4, 8,9,7,  10,11,  13,14,12, 16,17,15; // 120° rotation around z
 
     routine(A,B,permIndices,distanceTolerance, soapThreshold);
 }
