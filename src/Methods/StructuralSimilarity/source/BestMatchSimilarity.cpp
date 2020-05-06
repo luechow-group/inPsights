@@ -88,7 +88,15 @@ std::vector<BestMatch::DescendingMetricResult> BestMatch::SOAPSimilarity::getBes
 
     auto permuteeToKit = ParticleKit::toKitPermutation(permutee.molecule_.electrons());
     auto permuteeFromKit = ParticleKit::toKitPermutation(permutee.molecule_.electrons());
+    auto referenceToKit = ParticleKit::fromKitPermutation(reference.molecule_.electrons());
     auto referenceFromKit = ParticleKit::fromKitPermutation(reference.molecule_.electrons());
+    Eigen::PermutationMatrix<Eigen::Dynamic> identity(permutee.molecule_.electrons().numberOfEntities());
+
+    spdlog::debug("Electrons of permutee are{} in particle-kit system.",
+            permuteeToKit.indices() == identity.indices() ?  "": " NOT");
+    spdlog::debug("Electrons of reference are{} in particle-kit system.",
+                  referenceToKit.indices() == identity.indices() ?  "": " NOT");
+
 
     // TODO assert that identical number of electrons and same atom geometry? Is this constraint needed? What happens with rows/cols of zero?
     auto N = size_t(permutee.molecule_.electrons().numberOfEntities());
@@ -206,10 +214,11 @@ std::vector<BestMatch::DescendingMetricResult> BestMatch::SOAPSimilarity::getBes
     }
     std::sort(results.begin(), results.end()); // higher metric values come first
 
+    spdlog::set_level(spdlog::level::debug);
     for (auto r : results)
         spdlog::debug("Metric: {}, Permutation: {} (lab system)", r.metric,
                       ToString::vectorXiToString(r.permutation.indices()));
-
+    spdlog::set_level(spdlog::level::info);
     return results;
 }
 
@@ -224,7 +233,6 @@ BestMatch::DescendingMetricResult BestMatch::SOAPSimilarity::compare(
         const MolecularSpectrum &permutee,
         const MolecularSpectrum &reference,
         double distanceMatrixCovarianceTolerance, double soapThreshold) {
-
     return BestMatch::SOAPSimilarity::getBestMatchResults(permutee, reference, distanceMatrixCovarianceTolerance,
                                                           soapThreshold).front();
 }

@@ -282,9 +282,19 @@ namespace TestMolecules {
                     })
             };
 
-            const MolecularGeometry ionicAreflected = {
+            const MolecularGeometry ionicNOTinParticleKit = {
                     nuclei.atoms(),
-                    ElectronsVector({ // sorted for as in particle kit
+                    ElectronsVector({
+                        {Spin::beta, nuclei.atoms().positionsVector()[1]},
+                        {Spin::alpha, nuclei.atoms().positionsVector()[2]},
+                        {Spin::alpha, nuclei.atoms().positionsVector()[1]},
+                        {Spin::beta, nuclei.atoms().positionsVector()[3]}
+                    })
+            };
+
+            const MolecularGeometry ionicAreflected = {
+                    nuclei.atoms(), // sorted for as in particle kit
+                    ElectronsVector({
                         {Spin::alpha, nuclei.atoms().positionsVector()[2]},
                         {Spin::alpha, nuclei.atoms().positionsVector()[1]},
                         {Spin::beta,  nuclei.atoms().positionsVector()[2]},
@@ -293,8 +303,8 @@ namespace TestMolecules {
             };
 
             const MolecularGeometry ionicAreflectedAlphaPermuted = {
-                    nuclei.atoms(),
-                    ElectronsVector({ // sorted for as in particle kit
+                    nuclei.atoms(), // sorted for as in particle kit
+                    ElectronsVector({
                         {Spin::alpha, nuclei.atoms().positionsVector()[1]},//permuted w.r.t ionicArefleced
                         {Spin::alpha, nuclei.atoms().positionsVector()[2]},//permuted w.r.t ionicArefleced
                         {Spin::beta,  nuclei.atoms().positionsVector()[2]},
@@ -314,8 +324,8 @@ namespace TestMolecules {
 
 
             const MolecularGeometry ionicAreflectedReorderedNumbering = {
-                    nuclei.atoms(),
-                    ElectronsVector({ // sorted as in particle kit
+                    nuclei.atoms(), // sorted as in particle kit
+                    ElectronsVector({
                         {Spin::alpha, nuclei.atoms().positionsVector()[0]},
                         {Spin::alpha, nuclei.atoms().positionsVector()[2]},
                         {Spin::beta,  nuclei.atoms().positionsVector()[1]},
@@ -340,12 +350,12 @@ namespace TestMolecules {
         namespace ring {
             const MolecularGeometry nuclei = {
                     AtomsVector({
-                                        {Element::H, {a,        0,                       0}},
-                                        {Element::H, {a / 2.0,  std::sqrt(3) * a / 2.0,  0}},
-                                        {Element::H, {-a / 2.0, std::sqrt(3) * a / 2.0,  0}},
-                                        {Element::H, {-a,       0,                       0}},
-                                        {Element::H, {-a / 2.0, -std::sqrt(3) * a / 2.0, 0}},
-                                        {Element::H, {a / 2.0,  -std::sqrt(3) * a / 2.0, 0}},
+                        {Element::H, {a,        0,                       0}},
+                        {Element::H, {a / 2.0,  std::sqrt(3) * a / 2.0,  0}},
+                        {Element::H, {-a / 2.0, std::sqrt(3) * a / 2.0,  0}},
+                        {Element::H, {-a,       0,                       0}},
+                        {Element::H, {-a / 2.0, -std::sqrt(3) * a / 2.0, 0}},
+                        {Element::H, {a / 2.0,  -std::sqrt(3) * a / 2.0, 0}},
                                 }),
                     {}
             };
