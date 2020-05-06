@@ -28,8 +28,10 @@ bool DistanceCovariance::conservingQ(
     auto covA = BestMatch::SOAPSimilarity::calculateDistanceCovarianceMatrixOfSelectedIndices(permutee, permuteeIndices);
     auto covB = BestMatch::SOAPSimilarity::calculateDistanceCovarianceMatrixOfSelectedIndices(reference, referenceIndices);
 
-    spdlog::debug("Distance covariance matrix difference:\n{}", ToString::matrixXdToString((covB - covA), 3));
     auto conservingQ = (covB - covA).array().abs().maxCoeff() <= distanceMatrixCovarianceTolerance;
+    if(!conservingQ)
+        spdlog::debug("Distance covariance matrix difference:\n{}", ToString::matrixXdToString((covB - covA), 3));
+
 
     return conservingQ;
 };
@@ -104,6 +106,9 @@ bool EnvironmentBlockSequence::addBlock(const EnvironmentBlock& block, double di
     // for each joint permutation that survived so far, append and test all permutations from the new block
     for(const auto& jointPermutedPermuteeIndices : jointPermutedPermuteeIndicesCollection_){
 
+        // TODO Add printouts here
+        // TODO compare method with old successful method
+
         // insert new indices
         for(auto newIndices: block.permutedPermuteeIndicesCollection) {
             auto jointPermutedPermuteeIndicesCopy = jointPermutedPermuteeIndices;
@@ -113,7 +118,6 @@ bool EnvironmentBlockSequence::addBlock(const EnvironmentBlock& block, double di
                     jointPermutedPermuteeIndicesCopy.end(),
                     newIndices.begin(), newIndices.end());
 
-            std::cout << jointPermutedPermuteeIndicesCopy.size() << " " << jointReferenceIndices_.size() << std::endl;
             assert(jointPermutedPermuteeIndicesCopy.size() == jointReferenceIndices_.size());
             auto conservingQ = DistanceCovariance::conservingQ(
                     jointPermutedPermuteeIndicesCopy, permutee_,

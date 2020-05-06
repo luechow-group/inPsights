@@ -91,7 +91,7 @@ std::vector<BestMatch::DescendingMetricResult> BestMatch::SOAPSimilarity::getBes
     auto referenceFromKit = ParticleKit::fromKitPermutation(reference.molecule_.electrons());
 
     // TODO assert that identical number of electrons and same atom geometry? Is this constraint needed? What happens with rows/cols of zero?
-    auto N = permutee.molecule_.electrons().numberOfEntities();
+    auto N = size_t(permutee.molecule_.electrons().numberOfEntities());
 
     assert(permutee.molecule_.electrons().typesVector().countOccurence(Spin::alpha)
            == reference.molecule_.electrons().typesVector().countOccurence(Spin::alpha)
@@ -151,6 +151,8 @@ std::vector<BestMatch::DescendingMetricResult> BestMatch::SOAPSimilarity::getBes
         }
     }
 
+    spdlog::info("SEQUENCE BUILD");
+
     // Build Sequence of blocks and test again
     EnvironmentBlockSequence sequence(permutee.molecule_.electrons(), reference.molecule_.electrons());
     for(const auto& block : blocks){
@@ -158,7 +160,7 @@ std::vector<BestMatch::DescendingMetricResult> BestMatch::SOAPSimilarity::getBes
 
         if(!conservingQ){
             // no distant preserving permutation could be found
-            spdlog::debug("exited early (not intra-block distance preserving");
+            spdlog::debug("exited early (not inter-block distance preserving");
             auto soapMetric = bestMatchPermutedEnvironmentalSimilarities.diagonal().sum() / N;
             //auto soapMetric = environmentalSimilarities.diagonal().minCoeff() / N; // TODO: average or better smallest component
             return {{soapMetric, bestMatch}};//TODO better return zero or bool?
@@ -168,7 +170,7 @@ std::vector<BestMatch::DescendingMetricResult> BestMatch::SOAPSimilarity::getBes
     std::vector<BestMatch::DescendingMetricResult> results;
 
     for(const auto& jointPermutedPermuteeIndices : sequence.jointPermutedPermuteeIndicesCollection_) {
-        assert(jointPermutedPermuteeIndices.size() == N && "The found index ordering size must match the number of electrons.");
+        assert(jointPermutedPermuteeIndices.size() == size_t(N) && "The found index ordering size must match the number of electrons.");
 
         auto jointReferenceIndices = sequence.jointReferenceIndices_;
 
@@ -301,7 +303,7 @@ BestMatch::DescendingMetricResult BestMatch::SOAPSimilarity::compare(
         const MolecularSpectrum &reference,
         double distanceMatrixCovarianceTolerance, double soapThreshold) {
 
-    return BestMatch::SOAPSimilarity::getBestMatchResults(permutee, reference, distanceMatrixCovarianceTolerance, soapThreshold).back();
+    return BestMatch::SOAPSimilarity::getBestMatchResults(permutee, reference, distanceMatrixCovarianceTolerance, soapThreshold).front();
 }
 /*
 //
