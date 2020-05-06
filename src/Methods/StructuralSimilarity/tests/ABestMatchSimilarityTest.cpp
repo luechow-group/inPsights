@@ -39,7 +39,7 @@ public:
         distanceTolerance = 0.1;
         soapThreshold = 1.0;
         shakeSoapThreshold = 0.90;
-        numericalPrecisionEpsilon = SOAP::General::settings.numericalPrecisionEpsilon.get();
+        numericalPrecisionEpsilon = SOAP::General::settings.comparisonEpsilon.get();
 
         Radial::settings.nmax = 2;
         Radial::settings.sigmaAtom = 2.0;

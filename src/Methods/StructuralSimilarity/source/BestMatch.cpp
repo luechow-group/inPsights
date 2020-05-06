@@ -32,7 +32,7 @@ bool BestMatch::AscendingMetricResult::operator<(const BestMatch::Result<true> &
 
 template <>
 bool BestMatch::DescendingMetricResult::operator<(const BestMatch::Result<false> &rhs) {
-    auto numericalPrecisionEpsilon = SOAP::General::settings.numericalPrecisionEpsilon.get();
+    auto numericalPrecisionEpsilon = SOAP::General::settings.comparisonEpsilon.get();
 
     if(abs(metric - rhs.metric) < numericalPrecisionEpsilon)
         for (Eigen::Index i = 0; i < permutation.indices().size(); ++i) {

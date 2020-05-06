@@ -32,7 +32,7 @@ public:
     Group A, B, C, D, E, F;
     std::vector<Sample> samples;
     Eigen::VectorXd ekin;
-    double eps = SOAP::General::settings.numericalPrecisionEpsilon();
+    double eps = SOAP::General::settings.comparisonEpsilon();
 
     Electron ea, eb;
     AtomsVector atoms;
