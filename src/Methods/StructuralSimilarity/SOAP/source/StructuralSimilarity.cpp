@@ -102,11 +102,9 @@ namespace SOAP {
             auto CAA = selfCorrelationMatrix(spectrumA);
             auto CBB = selfCorrelationMatrix(spectrumB);
 
-            double eps = SOAP::General::settings.numericalPrecisionEpsilon.get();
-
-            auto kAB = Sinkhorn::distance(CAB, gamma, eps);
-            auto kAA = Sinkhorn::distance(CAA, gamma, eps);
-            auto kBB = Sinkhorn::distance(CBB, gamma, eps);
+            auto kAB = Sinkhorn::distance(CAB, gamma);
+            auto kAA = Sinkhorn::distance(CAA, gamma);
+            auto kBB = Sinkhorn::distance(CBB, gamma);
 
             return kAB / sqrt(kAA * kBB);
         }
