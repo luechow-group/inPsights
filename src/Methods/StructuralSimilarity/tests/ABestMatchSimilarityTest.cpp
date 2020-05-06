@@ -702,9 +702,6 @@ TEST_F(ABestMatchSimilarityTest, EthaneSinglyIonicMinimal_shaked_alchemical) {
     permIndices[1] << 1, 2, 0, 4, 5, 3; // 120° rotation around z
 
 
-
-    General::settings.mode = General::Mode::alchemical;
-
     //auto randomSeed = static_cast<unsigned long>(123);
     //std::cout << "random seed: " << randomSeed << std::endl;
 
@@ -713,6 +710,8 @@ TEST_F(ABestMatchSimilarityTest, EthaneSinglyIonicMinimal_shaked_alchemical) {
     A.electrons().positionsVector().shake(distanceTolerance / 10.0, rng);
     std::cout << A.electrons() << std::endl;
 
+    General::settings.pairSimilarities[{int(Spin::alpha), int(Spin::beta)}] = 1.0;
+    General::settings.mode = General::Mode::alchemical;
     routine(A, B, permIndices, distanceTolerance, shakeSoapThreshold, true);
 }
 

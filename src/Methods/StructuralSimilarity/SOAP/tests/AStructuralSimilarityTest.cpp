@@ -87,7 +87,7 @@ TEST_F(AStructuralSimilarityTest, PermutationalSymmetry_FlippedSpins) {
 
 TEST_F(AStructuralSimilarityTest, H4linear_Identity) {
     auto A = TestMolecules::H4::linear::ionicA;
-    auto B = TestMolecules::H4::linear::ionicB;
+    auto B = TestMolecules::H4::linear::ionicAreflected;
 
     General::settings.pairSimilarities[{int(Spin::alpha),int(Spin::beta)}] = 1.0;
     General::settings.mode = General::Mode::alchemical;
