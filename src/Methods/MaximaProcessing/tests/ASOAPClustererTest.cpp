@@ -260,7 +260,7 @@ public:
         atoms = TestMolecules::H4::linear::nuclei.atoms();
         A = Group({1.0, TestMolecules::H4::linear::ionicA.electrons(), 0});
         B = Group({1.0, TestMolecules::H4::linear::ionicB.electrons(), 1});
-        C = Group({1.0, TestMolecules::H4::linear::ionicC.electrons(), 1});
+        C = Group({1.0, TestMolecules::H4::linear::ionicAreflectedReorderedNumbering.electrons(), 1});
 
         ekin = Eigen::VectorXd::Zero(4);
 

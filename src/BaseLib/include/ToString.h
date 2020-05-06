@@ -42,6 +42,11 @@ namespace ToString {
     std::string matrixXdToString(const Eigen::MatrixXd &matrix,
                                  unsigned decimalPlaces = 5,
                                  unsigned leadingSpaces = 1);
+
+    std::string stdvectorIntToString(const std::vector<int>& vector);
+    std::string stdvectorUIntToString(const std::vector<unsigned>& vector);
+    std::string stdvectorLongIntToString(const std::vector<long int>& vector);
+    std::string stdvectorLongUIntToString(const std::vector<long unsigned>& vector);
 }
 
 #endif //INPSIGHTS_TOSTRING_H

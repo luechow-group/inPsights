@@ -27,44 +27,44 @@
 #include <spdlog/spdlog.h>
 
 
-namespace DistanceCovariance{
+namespace DistanceCovariance {
     bool conservingQ(
-            const std::vector<Eigen::Index>& permuteeIndices,
-            const ElectronsVector & permutee,
-            const std::vector<Eigen::Index>& referenceIndices,
-            const ElectronsVector & reference,
+            const std::vector<Eigen::Index> &permuteeIndices,
+            const ElectronsVector &permutee,
+            const std::vector<Eigen::Index> &referenceIndices,
+            const ElectronsVector &reference,
             double distanceMatrixCovarianceTolerance);
 }
 
 
-class EnvironmentBlock{
+class EnvironmentBlock {
 public:
     EnvironmentBlock(
-            std::deque<std::pair<Eigen::Index,Eigen::Index>> indexPairs,
-            const ElectronsVector & permutee,
-            const ElectronsVector & reference);
+            std::deque<std::pair<Eigen::Index, Eigen::Index>> indexPairs,
+            const ElectronsVector &permutee,
+            const ElectronsVector &reference);
 
 
-    void initialize(std::deque<std::pair<Eigen::Index,Eigen::Index>> indexPairs);
+    void initialize(std::deque<std::pair<Eigen::Index, Eigen::Index>> indexPairs);
 
     std::vector<std::vector<Eigen::Index>> filterPermutations(double distanceMatrixCovarianceTolerance);
 
-
-    std::vector<std::vector<Eigen::Index>> permutedPermuteeIndicesCollection; // of the permutee indices
+    std::vector<std::vector<Eigen::Index>> permutedPermuteeIndicesCollection_; // of the permutee indices
     std::vector<Eigen::Index> permuteeIndices_, referenceIndices_;
-    const ElectronsVector & permutee_, &reference_;
+    const ElectronsVector &permutee_, &reference_;
 };
 
-class EnvironmentBlockSequence{
+class EnvironmentBlockSequence {
 public:
-    EnvironmentBlockSequence(const ElectronsVector& permutee, const ElectronsVector& reference);
-    void initialize(const EnvironmentBlock& initialBlock);
+    EnvironmentBlockSequence(const ElectronsVector &permutee, const ElectronsVector &reference);
 
-    bool addBlock(const EnvironmentBlock& initialBlock, double distanceMatrixCovarianceTolerance);
+    void initialize(const EnvironmentBlock &initialBlock);
+
+    bool addBlock(const EnvironmentBlock &initialBlock, double distanceMatrixCovarianceTolerance);
 
     std::vector<std::vector<Eigen::Index>> jointPermutedPermuteeIndicesCollection_;
     std::vector<Eigen::Index> jointReferenceIndices_;
-    const ElectronsVector & permutee_, &reference_;
+    const ElectronsVector &permutee_, &reference_;
 };
 
 

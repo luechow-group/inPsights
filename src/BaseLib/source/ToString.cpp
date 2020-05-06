@@ -69,3 +69,30 @@ std::string ToString::vectorXiToString(const Eigen::VectorXi &vector) {
     return ss.str();
 }
 
+std::string ToString::stdvectorIntToString(const std::vector<int>& vector) {
+    std::stringstream ss;
+    for(auto i : vector)
+        ss << i << " ";
+    return ss.str();
+}
+
+std::string ToString::stdvectorUIntToString(const std::vector<unsigned >& vector) {
+    std::stringstream ss;
+    for(auto i : vector)
+        ss << i << " ";
+    return ss.str();
+}
+
+std::string ToString::stdvectorLongIntToString(const std::vector<long int>& vector) {
+    std::stringstream ss;
+    for(auto i : vector)
+        ss << i << " ";
+    return ss.str();
+}
+
+std::string ToString::stdvectorLongUIntToString(const std::vector<long unsigned>& vector) {
+    std::stringstream ss;
+    for(auto i : vector)
+        ss << i << " ";
+    return ss.str();
+}

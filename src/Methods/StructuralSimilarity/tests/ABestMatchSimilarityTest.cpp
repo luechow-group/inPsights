@@ -35,7 +35,6 @@ public:
 
     void SetUp() override {
         spdlog::set_level(spdlog::level::debug);
-        //spdlog::set_level(spdlog::level::off);
 
         distanceTolerance = 0.1;
         soapThreshold = 1.0;
@@ -50,9 +49,9 @@ public:
         General::settings.pairSimilarities[{int(Spin::alpha),int(Spin::beta)}] = 1.0;
     };
 
-    void routine(const MolecularGeometry & A, const MolecularGeometry & B,
+    void routine(const MolecularGeometry &A, const MolecularGeometry &B,
                  const std::vector<Eigen::VectorXi> &expectedPermutationIndices,
-                 double distTolerance, double soapThresh,bool lessThan = false){
+                 double distTolerance, double soapThresh, bool lessThan = false) {
 
         ParticleKit::create(A);
         ASSERT_TRUE(ParticleKit::isSubsetQ(A));
@@ -64,33 +63,39 @@ public:
         auto results = BestMatch::SOAPSimilarity::getBestMatchResults(specA, specB, distTolerance, soapThresh);
         std::sort(results.begin(), results.end());
 
+        spdlog::debug("Expected:");
+        for (auto[i, expected] : enumerate(expectedPermutationIndices))
+            spdlog::debug("{}: metric {} {}, permutation = {} (lab system)", i, lessThan ? "<" : "=", soapThresh,
+                          ToString::vectorXiToString(expected));
+
+        spdlog::debug("Got:");
+        for (auto[i, result] : enumerate(results))
+            spdlog::debug("{}: metric = {}, permutation = {} (lab system)", i, result.metric,
+                          ToString::vectorXiToString(result.permutation.indices()));
+
         size_t i = 0;
-        while(i < results.size() || i < expectedPermutationIndices.size()){
 
-            if(i < expectedPermutationIndices.size())
-                spdlog::debug("Expected: metric {} {}, permutation = {} (lab system)", lessThan? "<" : "=", soapThresh,  ToString::vectorXiToString(expectedPermutationIndices[i]));
-            else
-                spdlog::debug("Unexpected result(s):");
+        while (i < results.size() || i < expectedPermutationIndices.size()) {
 
-            if(i < results.size())
-                spdlog::debug("Result:   metric = {}, permutation = {} (lab system)", results[i].metric, ToString::vectorXiToString(results[i].permutation.indices()));
-            else
-                spdlog::debug("Result(s) missing");
+            if (i >= results.size()) {
+                spdlog::debug(" {}: missing", i);
+                i++;
+                continue;
+            }
 
-            if(i < results.size() && i < expectedPermutationIndices.size()) {
-                if (!lessThan)
-                    ASSERT_NEAR(results[i].metric, soapThresh, eps);
-                else
-                    ASSERT_LT(results[i].metric, soapThresh);
+            if (i < expectedPermutationIndices.size()) {
+                if (!lessThan) ASSERT_NEAR(results[i].metric, soapThresh, eps);
+                else ASSERT_LT(results[i].metric, soapThresh);
 
                 ASSERT_EQ(results[i].permutation.indices(), expectedPermutationIndices[i]);
-            } else break;
-
+            } else {
+                spdlog::debug("Found unexpected result {}", i);
+            };
             i++;
-        }
 
+        }
         ASSERT_EQ(results.size(), expectedPermutationIndices.size());
-    }
+    };
 };
 
 TEST_F(ABestMatchSimilarityTest, PrermuteEnvironmentsToLabSystem) {
@@ -263,24 +268,86 @@ TEST_F(ABestMatchSimilarityTest, ListOfDependentIndices4) {
 
 TEST_F(ABestMatchSimilarityTest, H4linear_alchemical) {
     auto A = TestMolecules::H4::linear::ionicA;
-    auto B = TestMolecules::H4::linear::ionicB;
-    auto C = TestMolecules::H4::linear::ionicC;
-    auto D = TestMolecules::H4::linear::ionicD;
+    auto C = TestMolecules::H4::linear::ionicAreflectedReorderedNumbering;
 
     General::settings.pairSimilarities[{int(Spin::alpha), int(Spin::beta)}] = 1.0;
     General::settings.mode = General::Mode::alchemical;
 
-    //std::vector<Eigen::VectorXi> expectedPermIndicesAB(2, Eigen::VectorXi(A.electrons().numberOfEntities()));
-    //expectedPermIndicesAB[0] << 1,0,3,2;
-    //expectedPermIndicesAB[1] << 3,0,1,2;
-    //routine(A, B, expectedPermIndicesAB, distanceTolerance, soapThreshold);
+    std::vector<Eigen::VectorXi> expectedPermIndices(2, Eigen::VectorXi(A.electrons().numberOfEntities()));
+    expectedPermIndices[0] << 1,2,3,0;
+    expectedPermIndices[1] << 3,2,1,0;
+    routine(A, C, expectedPermIndices, distanceTolerance, soapThreshold);
+}
 
-    std::vector<Eigen::VectorXi> expectedPermIndicesAC(2, Eigen::VectorXi(A.electrons().numberOfEntities()));
-    expectedPermIndicesAC[0] << 1,2,3,0;
-    expectedPermIndicesAC[1] << 2,1,3,0;
-    routine(A, C, expectedPermIndicesAC, distanceTolerance, soapThreshold);
+TEST_F(ABestMatchSimilarityTest, H4linear_ionic_reflected) {
+    auto A = TestMolecules::H4::linear::ionicA;
+    auto B = TestMolecules::H4::linear::ionicAreflected;
 
-    //routine(A, D, expectedPermIndicesAC, distanceTolerance, soapThreshold);
+    std::vector<Eigen::VectorXi> expectedPermIndices(2, Eigen::VectorXi(A.electrons().numberOfEntities()));
+    expectedPermIndices[0] << 0,1,2,3;
+    expectedPermIndices[1] << 2,1,0,3;
+
+    General::settings.pairSimilarities[{int(Spin::alpha), int(Spin::beta)}] = 1.0;
+    General::settings.mode = General::Mode::alchemical;
+    routine(A, B, expectedPermIndices, distanceTolerance, soapThreshold);
+
+    // second perm is not conserving in chemical mode
+    expectedPermIndices.erase(expectedPermIndices.begin()+1);
+    General::settings.mode = General::Mode::chemical;
+    routine(A, B, expectedPermIndices, distanceTolerance, soapThreshold);
+}
+
+TEST_F(ABestMatchSimilarityTest, H4linear_ionic_reflected_alpha_permuted) {
+    auto A = TestMolecules::H4::linear::ionicA;
+    auto B = TestMolecules::H4::linear::ionicAreflectedAlphaPermuted;
+
+    std::vector<Eigen::VectorXi> expectedPermIndices(2, Eigen::VectorXi(A.electrons().numberOfEntities()));
+    expectedPermIndices[0] << 1,0,2,3;
+    expectedPermIndices[1] << 2,0,1,3;
+
+    General::settings.pairSimilarities[{int(Spin::alpha), int(Spin::beta)}] = 1.0;
+    General::settings.mode = General::Mode::alchemical;
+    routine(A, B, expectedPermIndices, distanceTolerance, soapThreshold);
+
+    // second perm is not conserving in chemical mode
+    expectedPermIndices.erase(expectedPermIndices.begin()+1);
+    General::settings.mode = General::Mode::chemical;
+    routine(A, B, expectedPermIndices, distanceTolerance, soapThreshold);
+}
+
+TEST_F(ABestMatchSimilarityTest, H4linear_ionic_reflected_beta_permuted) {
+    auto A = TestMolecules::H4::linear::ionicA;
+    auto B = TestMolecules::H4::linear::ionicAreflectedBetaPermuted;
+
+    std::vector<Eigen::VectorXi> expectedPermIndices(2, Eigen::VectorXi(A.electrons().numberOfEntities()));
+    expectedPermIndices[0] << 0,1,3,2;
+    expectedPermIndices[1] << 3,1,0,2;
+
+    General::settings.pairSimilarities[{int(Spin::alpha), int(Spin::beta)}] = 1.0;
+    General::settings.mode = General::Mode::alchemical;
+    routine(A, B, expectedPermIndices, distanceTolerance, soapThreshold);
+
+    // second perm is not conserving in chemical mode
+    expectedPermIndices.erase(expectedPermIndices.begin()+1);
+    General::settings.mode = General::Mode::chemical;
+    routine(A, B, expectedPermIndices, distanceTolerance, soapThreshold);
+}
+
+TEST_F(ABestMatchSimilarityTest, H4linear_ionic_reflected_reordered_numbering) {
+    auto A = TestMolecules::H4::linear::ionicA;
+    auto B = TestMolecules::H4::linear::ionicAreflectedReorderedNumbering;
+
+    std::vector<Eigen::VectorXi> expectedPermIndices(2, Eigen::VectorXi(A.electrons().numberOfEntities()));
+    expectedPermIndices[0] << 1,2,3,0;
+    expectedPermIndices[1] << 3,2,1,0;
+
+    General::settings.pairSimilarities[{int(Spin::alpha), int(Spin::beta)}] = 1.0;
+    General::settings.mode = General::Mode::alchemical;
+    routine(A, B, expectedPermIndices, distanceTolerance, soapThreshold);
+
+    // both perms are not conserving in chemical mode
+    General::settings.mode = General::Mode::chemical;
+    routine(A, B, {}, distanceTolerance, soapThreshold);
 }
 
 TEST_F(ABestMatchSimilarityTest, H4ring_Chemical) {
@@ -304,7 +371,7 @@ TEST_F(ABestMatchSimilarityTest, H4ring_Chemical_Shaked) {
     auto B = TestMolecules::H4::ring::fourAlpha;
     auto A = B;
     ParticleKit::create(A);
-    
+
     auto randomSeed = static_cast<unsigned long>(std::clock());
     std::cout << "random seed: " << randomSeed << std::endl;
 

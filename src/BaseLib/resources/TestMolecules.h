@@ -282,33 +282,55 @@ namespace TestMolecules {
                     })
             };
 
-            const MolecularGeometry ionicB = {
+            const MolecularGeometry ionicAreflected = {
                     nuclei.atoms(),
                     ElectronsVector({ // sorted for as in particle kit
-                        {Spin::alpha, nuclei.atoms().positionsVector()[1]},
                         {Spin::alpha, nuclei.atoms().positionsVector()[2]},
-                        {Spin::beta,  nuclei.atoms().positionsVector()[0]},
-                        {Spin::beta,  nuclei.atoms().positionsVector()[2]}
+                        {Spin::alpha, nuclei.atoms().positionsVector()[1]},
+                        {Spin::beta,  nuclei.atoms().positionsVector()[2]},
+                        {Spin::beta,  nuclei.atoms().positionsVector()[0]}
                     })
             };
 
-            const MolecularGeometry ionicC = {
+            const MolecularGeometry ionicAreflectedAlphaPermuted = {
+                    nuclei.atoms(),
+                    ElectronsVector({ // sorted for as in particle kit
+                        {Spin::alpha, nuclei.atoms().positionsVector()[1]},//permuted w.r.t ionicArefleced
+                        {Spin::alpha, nuclei.atoms().positionsVector()[2]},//permuted w.r.t ionicArefleced
+                        {Spin::beta,  nuclei.atoms().positionsVector()[2]},
+                        {Spin::beta,  nuclei.atoms().positionsVector()[0]}
+                    })
+            };
+
+            const MolecularGeometry ionicAreflectedBetaPermuted = {
+                    nuclei.atoms(),
+                    ElectronsVector({ // sorted for as in particle kit
+                        {Spin::alpha, nuclei.atoms().positionsVector()[2]},
+                        {Spin::alpha, nuclei.atoms().positionsVector()[1]},
+                        {Spin::beta,  nuclei.atoms().positionsVector()[0]},//permuted w.r.t ionicArefleced
+                        {Spin::beta,  nuclei.atoms().positionsVector()[2]} //permuted w.r.t ionicArefleced
+                    })
+            };
+
+
+            const MolecularGeometry ionicAreflectedReorderedNumbering = {
                     nuclei.atoms(),
                     ElectronsVector({ // sorted as in particle kit
                         {Spin::alpha, nuclei.atoms().positionsVector()[0]},
                         {Spin::alpha, nuclei.atoms().positionsVector()[2]},
                         {Spin::beta,  nuclei.atoms().positionsVector()[1]},
                         {Spin::beta,  nuclei.atoms().positionsVector()[2]}
+                        // => different to ionicAreflected in chemical mode
                     })
             };
             const MolecularGeometry ionicD = {
                     nuclei.atoms(),
-                    ElectronsVector({ // sorted as in particle kit
-                                            {Spin::beta, nuclei.atoms().positionsVector()[0]},
-                                            {Spin::alpha, nuclei.atoms().positionsVector()[2]},
-                                            {Spin::alpha,  nuclei.atoms().positionsVector()[1]},
-                                            {Spin::beta,  nuclei.atoms().positionsVector()[2]}
-                                    })
+                    ElectronsVector({
+                         {Spin::beta, nuclei.atoms().positionsVector()[0]},
+                         {Spin::alpha, nuclei.atoms().positionsVector()[2]},
+                         {Spin::alpha,  nuclei.atoms().positionsVector()[1]},
+                         {Spin::beta,  nuclei.atoms().positionsVector()[2]}
+                    })
             };
         }
     }

@@ -18,18 +18,18 @@
 #include <EnvironmentBlock.h>
 
 bool DistanceCovariance::conservingQ(
-        const std::vector<Eigen::Index>& permuteeIndices,
-        const ElectronsVector & permutee,
-        const std::vector<Eigen::Index>& referenceIndices,
-        const ElectronsVector & reference,
+        const std::vector<Eigen::Index> &permuteeIndices,
+        const ElectronsVector &permutee,
+        const std::vector<Eigen::Index> &referenceIndices,
+        const ElectronsVector &reference,
         double distanceMatrixCovarianceTolerance
-        ) {
+) {
 
     auto covA = BestMatch::SOAPSimilarity::calculateDistanceCovarianceMatrixOfSelectedIndices(permutee, permuteeIndices);
     auto covB = BestMatch::SOAPSimilarity::calculateDistanceCovarianceMatrixOfSelectedIndices(reference, referenceIndices);
 
     auto conservingQ = (covB - covA).array().abs().maxCoeff() <= distanceMatrixCovarianceTolerance;
-    if(!conservingQ)
+    if (!conservingQ)
         spdlog::debug("Distance covariance matrix difference:\n{}", ToString::matrixXdToString((covB - covA), 3));
 
 
@@ -56,67 +56,81 @@ void EnvironmentBlock::initialize(std::deque<std::pair<Eigen::Index, Eigen::Inde
     std::sort(permuteeIndices_.begin(), permuteeIndices_.end());
     std::sort(referenceIndices_.begin(), referenceIndices_.end());
 
-    permutedPermuteeIndicesCollection = Combinatorics::Permutations<Eigen::Index>(permuteeIndices_).get();
+    permutedPermuteeIndicesCollection_ = Combinatorics::Permutations<Eigen::Index>(permuteeIndices_).get();
+
+    spdlog::debug("Reference indices of current block:");
+    spdlog::debug(ToString::stdvectorLongIntToString(referenceIndices_));
+    spdlog::debug("Permuted permutee indices for current block:");
+
+    for(const auto& permutedPermuteeIndices : permutedPermuteeIndicesCollection_)
+        spdlog::debug(ToString::stdvectorLongIntToString(permutedPermuteeIndices));
 };
 
 std::vector<std::vector<Eigen::Index>> EnvironmentBlock::filterPermutations(double distanceMatrixCovarianceTolerance) {
 
-    for (auto it = permutedPermuteeIndicesCollection.begin(); it != permutedPermuteeIndicesCollection.end(); it++) {
+    for (auto it = permutedPermuteeIndicesCollection_.begin(); it != permutedPermuteeIndicesCollection_.end(); it++) {
         auto conservingQ = DistanceCovariance::conservingQ(
                 *it, permutee_,
                 referenceIndices_, reference_,
                 distanceMatrixCovarianceTolerance);
         if (!conservingQ)
-            permutedPermuteeIndicesCollection.erase(it--); // decrements iterator after erase
+            permutedPermuteeIndicesCollection_.erase(it--); // decrements iterator after erase
     }
-    return permutedPermuteeIndicesCollection;
+    return permutedPermuteeIndicesCollection_;
 };
 
 
-
-EnvironmentBlockSequence::EnvironmentBlockSequence(const ElectronsVector& permutee, const ElectronsVector& reference)
+EnvironmentBlockSequence::EnvironmentBlockSequence(const ElectronsVector &permutee, const ElectronsVector &reference)
         : jointPermutedPermuteeIndicesCollection_(0),
           jointReferenceIndices_(0),
           permutee_(permutee),
-          reference_(reference)
-        {}
+          reference_(reference) {}
 
 void EnvironmentBlockSequence::initialize(const EnvironmentBlock &initialBlock) {
-    jointPermutedPermuteeIndicesCollection_ = initialBlock.permutedPermuteeIndicesCollection;
+    jointPermutedPermuteeIndicesCollection_ = initialBlock.permutedPermuteeIndicesCollection_;
     jointReferenceIndices_ = initialBlock.referenceIndices_;
 }
 
-bool EnvironmentBlockSequence::addBlock(const EnvironmentBlock& block, double distanceMatrixCovarianceTolerance) {
+bool EnvironmentBlockSequence::addBlock(const EnvironmentBlock &block, double distanceMatrixCovarianceTolerance) {
     assert(block.permutee_ == permutee_);
     assert(block.reference_ == reference_);
 
     // initialize
-    if(jointReferenceIndices_.empty() && jointPermutedPermuteeIndicesCollection_.empty()){
+    if (jointReferenceIndices_.empty() && jointPermutedPermuteeIndicesCollection_.empty()) {
         initialize(block);
         return true; // blocks are already distance conserving
     }
 
     // add reference indices of new block and don't permute them
-    for(auto i : block.referenceIndices_) {
+    for (auto i : block.referenceIndices_) {
         jointReferenceIndices_.emplace_back(i);
     }
+
+    spdlog::debug("Reference indices of current block:");
+    spdlog::debug(ToString::stdvectorLongIntToString(jointReferenceIndices_));
+
 
     std::vector<std::vector<Eigen::Index>> updatedJointPermutedPermuteeIndicesCollection;
 
     // for each joint permutation that survived so far, append and test all permutations from the new block
-    for(const auto& jointPermutedPermuteeIndices : jointPermutedPermuteeIndicesCollection_){
+    for (const auto &jointPermutedPermuteeIndices : jointPermutedPermuteeIndicesCollection_) {
 
         // TODO Add printouts here
         // TODO compare method with old successful method
 
         // insert new indices
-        for(auto newIndices: block.permutedPermuteeIndicesCollection) {
+        for (auto newIndices: block.permutedPermuteeIndicesCollection_) {
             auto jointPermutedPermuteeIndicesCopy = jointPermutedPermuteeIndices;
+
+
 
             // start with copy and add new indices
             jointPermutedPermuteeIndicesCopy.insert(
                     jointPermutedPermuteeIndicesCopy.end(),
                     newIndices.begin(), newIndices.end());
+
+            spdlog::debug("Try new joint permuted permutee indices:");
+            spdlog::debug(ToString::stdvectorLongIntToString(jointPermutedPermuteeIndicesCopy));
 
             assert(jointPermutedPermuteeIndicesCopy.size() == jointReferenceIndices_.size());
             auto conservingQ = DistanceCovariance::conservingQ(
@@ -124,12 +138,14 @@ bool EnvironmentBlockSequence::addBlock(const EnvironmentBlock& block, double di
                     jointReferenceIndices_, reference_,
                     distanceMatrixCovarianceTolerance);
 
-            if(conservingQ)
+            spdlog::debug("{}",conservingQ? "OK" : "NOT CONSERVING");
+
+            if (conservingQ)
                 updatedJointPermutedPermuteeIndicesCollection.emplace_back(jointPermutedPermuteeIndicesCopy);
         }
     }
 
     jointPermutedPermuteeIndicesCollection_ = updatedJointPermutedPermuteeIndicesCollection;
 
-    return jointPermutedPermuteeIndicesCollection_.empty();
+    return !jointPermutedPermuteeIndicesCollection_.empty();
 }
