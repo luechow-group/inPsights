@@ -51,7 +51,7 @@ public:
 
     void routine(const MolecularGeometry &A, const MolecularGeometry &B,
                  const std::vector<Eigen::VectorXi> &expectedPermutationIndices,
-                 double distTolerance, double soapThresh, bool lessThan = false) {
+                 double distTolerance, double soapThresh, bool greaterThan = false) {
 
         ParticleKit::create(A);
         ASSERT_TRUE(ParticleKit::isSubsetQ(A));
@@ -65,13 +65,24 @@ public:
 
         spdlog::debug("Expected:");
         for (auto[i, expected] : enumerate(expectedPermutationIndices))
-            spdlog::debug("{}: metric {} {}, permutation = {} (lab system)", i, lessThan ? "<" : "=", soapThresh,
+            spdlog::debug("{}: metric {} {}, permutation = {} (lab system)", i, greaterThan ? ">" : "=", soapThresh,
                           ToString::vectorXiToString(expected));
 
+
+        unsigned removedCounter = 0;
+        for(auto it = results.begin(); it != results.end(); it++) {
+            if(it->metric < soapThresh) {
+                results.erase(it--);
+                removedCounter++;
+            }
+        }
+        spdlog::debug("Removed {} results below threshold.", removedCounter);
+
         spdlog::debug("Got:");
-        for (auto[i, result] : enumerate(results))
+        for (auto[i, result] : enumerate(results)) {
             spdlog::debug("{}: metric = {}, permutation = {} (lab system)", i, result.metric,
                           ToString::vectorXiToString(result.permutation.indices()));
+        }
 
         size_t i = 0;
 
@@ -84,8 +95,8 @@ public:
             }
 
             if (i < expectedPermutationIndices.size()) {
-                if (!lessThan) ASSERT_NEAR(results[i].metric, soapThresh, eps);
-                else ASSERT_LT(results[i].metric, soapThresh);
+                if (!greaterThan) ASSERT_NEAR(results[i].metric, soapThresh, eps);
+                else ASSERT_GT(results[i].metric, soapThresh);
 
                 ASSERT_EQ(results[i].permutation.indices(), expectedPermutationIndices[i]);
             } else {
@@ -95,7 +106,7 @@ public:
 
         }
         ASSERT_EQ(results.size(), expectedPermutationIndices.size());
-    };
+    }
 };
 
 TEST_F(ABestMatchSimilarityTest, PrermuteEnvironmentsToLabSystem) {
@@ -413,8 +424,7 @@ TEST_F(ABestMatchSimilarityTest, H4ring_Alchemical_Shaked) {
 
     auto B = TestMolecules::H4::ring::fourAlpha;
     auto A = B;
-
-
+    
     std::vector<Eigen::VectorXi> permsIndices(4, Eigen::VectorXi(B.electrons().numberOfEntities()));
     permsIndices[0] << 0, 1, 2, 3;
     permsIndices[1] << 0, 1, 3, 2;

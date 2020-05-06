@@ -116,11 +116,12 @@ std::vector<BestMatch::DescendingMetricResult> BestMatch::SOAPSimilarity::getBes
                   ToString::vectorXiToString(bestMatch.indices()),
                   ToString::matrixXdToString(bestMatchPermutedEnvironmentalSimilarities, 3));
 
-    auto metricForEarlyExit = earlyExitMetric(bestMatchPermutedEnvironmentalSimilarities);
+    auto earlyExitResult = BestMatch::DescendingMetricResult(
+            {earlyExitMetric(bestMatchPermutedEnvironmentalSimilarities), bestMatch});
 
-    if (metricForEarlyExit < soapThreshold) {
+    if (earlyExitResult.metric < soapThreshold) {
         spdlog::debug("exited early (similarity below threshold)");
-        return {};
+        return {earlyExitResult};
     }
 
     // some indices might depend on each other (are equivalent, e.g. two electrons in a nucleus might be swapped)
@@ -152,7 +153,7 @@ std::vector<BestMatch::DescendingMetricResult> BestMatch::SOAPSimilarity::getBes
 
         if (filteredPerms.empty()) { // no distant preserving permutation could be found
             spdlog::debug("exited early (not intra-block distance preserving");
-            return {};
+            return {earlyExitResult};
         } else {
             blocks.emplace_back(block);
         }
@@ -165,7 +166,7 @@ std::vector<BestMatch::DescendingMetricResult> BestMatch::SOAPSimilarity::getBes
 
         if (!conservingQ) {
             spdlog::debug("exited early (not inter-block distance preserving)");
-            return {};
+            return {earlyExitResult};
         }
     }
 
