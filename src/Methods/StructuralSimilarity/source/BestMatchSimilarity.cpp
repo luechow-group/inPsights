@@ -131,7 +131,7 @@ std::vector<BestMatch::DescendingMetricResult> BestMatch::SOAPSimilarity::getBes
 
     // find equivalent indices
     auto blockwiseDependentIndexPairs = BestMatch::SOAPSimilarity::findEquivalentEnvironments(
-            environmentalSimilarities, bestMatch, similarityThreshold, comparisionEpsilon);
+            bestMatchPermutedEnvironmentalSimilarities, bestMatch, similarityThreshold, comparisionEpsilon);
 
     spdlog::debug("Dependent indice pairs");
     for (const auto &dependentIndexPairs : blockwiseDependentIndexPairs) {
@@ -237,16 +237,12 @@ BestMatch::DescendingMetricResult BestMatch::SOAPSimilarity::compare(
  */
 std::vector<std::deque<std::pair<Eigen::Index, Eigen::Index>>>
 BestMatch::SOAPSimilarity::findEquivalentEnvironments(
-        const Eigen::MatrixXd &environmentalSimilarities,
+        const Eigen::MatrixXd &bestMatchPermutedEnvironmentalSimilarities,
         const Eigen::PermutationMatrix<Eigen::Dynamic> &bestMatch,
         double soapThreshold, double numericalPrecisionEpsilon) {
     std::vector<std::deque<std::pair<Eigen::Index, Eigen::Index>>> listOfDependentIndicesLists;
 
-    auto numberOfEnvironments = environmentalSimilarities.rows();
-
-    auto permutedEnvironments = bestMatch * environmentalSimilarities;// apply environmental best match
-    // TODO: giving a reference to the best-match permuted environmental similarity matrix
-    //  results in failure of test ListOfDependentIndices4
+    auto numberOfEnvironments = bestMatchPermutedEnvironmentalSimilarities.rows();
 
     std::set<Eigen::Index> indicesToSkip;
 
@@ -257,7 +253,7 @@ BestMatch::SOAPSimilarity::findEquivalentEnvironments(
             listOfDependentIndicesLists.emplace_back(std::deque({std::pair<Eigen::Index, Eigen::Index>(0, i)}));
 
             for (Eigen::Index j = i + 1; j < numberOfEnvironments; ++j) {
-                if (permutedEnvironments(i, j) >= soapThreshold - numericalPrecisionEpsilon) {
+                if (bestMatchPermutedEnvironmentalSimilarities(i, j) >= soapThreshold - numericalPrecisionEpsilon) {
                     indicesToSkip.emplace(j);
                     listOfDependentIndicesLists.back().emplace_back(std::make_pair(0, j));
                 }
@@ -265,9 +261,8 @@ BestMatch::SOAPSimilarity::findEquivalentEnvironments(
         }
     }
 
-    // permutee
+    // change permutee indices from best-match permuted kit system to kit system
     Eigen::PermutationMatrix<Eigen::Dynamic> inverseBestMatch = bestMatch.inverse();
-    // change indices back from best-match permuted kit system to to kit system
     for (auto &list : listOfDependentIndicesLists) {
         auto copy = list;
         for (size_t i = 0; i < list.size(); ++i) {

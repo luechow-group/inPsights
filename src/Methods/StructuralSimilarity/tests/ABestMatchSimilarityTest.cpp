@@ -141,7 +141,7 @@ TEST_F(ABestMatchSimilarityTest, PrermuteEnvironmentsToLabSystem) {
     ASSERT_NEAR(environmentalSimilaritiesInLabSystem(3,3), 1.0, eps);
 }
 
-TEST_F(ABestMatchSimilarityTest, ListOfDependentIndices) {
+TEST_F(ABestMatchSimilarityTest, ListOfDependentIndicesCase1) {
     Eigen::MatrixXd mat(4,4);
     mat <<
     1,0,1,0,\
@@ -155,7 +155,8 @@ TEST_F(ABestMatchSimilarityTest, ListOfDependentIndices) {
     expectedPerm.setIdentity();  // rows are permuted
     ASSERT_TRUE(bestMatch.indices().isApprox(expectedPerm.indices()));
 
-    auto result = BestMatch::SOAPSimilarity::findEquivalentEnvironments(mat, bestMatch, 1.0);
+    auto bestMatchPermutedEnvironments = bestMatch*mat;
+    auto result = BestMatch::SOAPSimilarity::findEquivalentEnvironments(bestMatchPermutedEnvironments, bestMatch, 1.0);
 
     ASSERT_EQ(result.size(),2);
     ASSERT_EQ(result[0][0].first, 0);
@@ -169,7 +170,7 @@ TEST_F(ABestMatchSimilarityTest, ListOfDependentIndices) {
     ASSERT_EQ(result[1][1].second, 3);
 }
 
-TEST_F(ABestMatchSimilarityTest, ListOfDependentIndices2) {
+TEST_F(ABestMatchSimilarityTest, ListOfDependentIndicesCase2) {
     Eigen::MatrixXd mat(4,4);
     mat <<
     1,1,0,0,\
@@ -183,7 +184,8 @@ TEST_F(ABestMatchSimilarityTest, ListOfDependentIndices2) {
     expectedPerm.setIdentity();
     ASSERT_TRUE(bestMatch.indices().isApprox(expectedPerm.indices()));
 
-    auto result = BestMatch::SOAPSimilarity::findEquivalentEnvironments(mat, bestMatch, 1.0);
+    auto bestMatchPermutedEnvironments = bestMatch*mat;
+    auto result = BestMatch::SOAPSimilarity::findEquivalentEnvironments(bestMatchPermutedEnvironments, bestMatch, 1.0);
 
     ASSERT_EQ(result.size(),2);
     ASSERT_EQ(result[0][0].first, 0);
@@ -197,7 +199,7 @@ TEST_F(ABestMatchSimilarityTest, ListOfDependentIndices2) {
     ASSERT_EQ(result[1][1].second, 3);
 }
 
-TEST_F(ABestMatchSimilarityTest, ListOfDependentIndices3) {
+TEST_F(ABestMatchSimilarityTest, ListOfDependentIndicesCase3) {
     Eigen::MatrixXd mat(6,6);
     mat <<
     1,1,0,0,0,0,\
@@ -214,7 +216,8 @@ TEST_F(ABestMatchSimilarityTest, ListOfDependentIndices3) {
     Eigen::PermutationMatrix<Eigen::Dynamic> expectedPerm(expectedPermIndices);
     ASSERT_TRUE(bestMatch.indices().isApprox(expectedPerm.indices()));
 
-    auto result = BestMatch::SOAPSimilarity::findEquivalentEnvironments(mat, bestMatch, 1.0);
+    auto bestMatchPermutedEnvironments = bestMatch*mat;
+    auto result = BestMatch::SOAPSimilarity::findEquivalentEnvironments(bestMatchPermutedEnvironments, bestMatch, 1.0);
 
     ASSERT_EQ(result.size(),3);
 
@@ -237,7 +240,7 @@ TEST_F(ABestMatchSimilarityTest, ListOfDependentIndices3) {
     ASSERT_EQ(result[2][2].second,5);
 }
 
-TEST_F(ABestMatchSimilarityTest, ListOfDependentIndices4) {
+TEST_F(ABestMatchSimilarityTest, FindEquivalentEnvironmentsCase4) {
     Eigen::MatrixXd mat(6,6);
     mat <<
     0,1,0,0,0,0,\
@@ -254,7 +257,8 @@ TEST_F(ABestMatchSimilarityTest, ListOfDependentIndices4) {
     Eigen::PermutationMatrix<Eigen::Dynamic> expectedPerm(expectedPermIndices);
     ASSERT_TRUE(bestMatch.indices().isApprox(expectedPerm.indices()));
 
-    auto result = BestMatch::SOAPSimilarity::findEquivalentEnvironments(mat, bestMatch, 1.0);
+    auto bestMatchPermutedEnvironments = bestMatch*mat;
+    auto result = BestMatch::SOAPSimilarity::findEquivalentEnvironments(bestMatchPermutedEnvironments, bestMatch, 1.0);
 
     ASSERT_EQ(result.size(),4);
 
