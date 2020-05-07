@@ -79,7 +79,11 @@ void SOAPClusterer::cluster(Group& group){
 
     spdlog::debug("Group before start: {}", ToString::groupToString(group));
 
-    Group supergroup({{*group.begin()}});
+    //Group supergroup({{*group.begin()}}); // works on gnu, fails for intel
+    Group supergroup = {{*group.begin()}}; // works on gnu,
+    //Group supergroup = Group(*group.begin()); // fails on gnu
+    //Group supergroup = Group({*group.begin()}); // fails on gnu
+
     spdlog::debug("Supergroup before start: {}", ToString::groupToString(supergroup));
 
     for(auto groupIt = std::next(group.begin()); groupIt !=group.end(); groupIt++) {
@@ -114,7 +118,8 @@ void SOAPClusterer::cluster(Group& group){
             if (comparisionResult.metric >= (similarityThreshold-numericalPrecisionEpsilon)) {
                 groupIt->permuteAll(comparisionResult.permutation, samples_);
 
-                subgroupOfSupergroupIt->emplace_back(*groupIt);
+                auto copy = *groupIt;
+                subgroupOfSupergroupIt->emplace_back(std::move(copy));
 
                 spdlog::debug("    Match: Inner loop subgroupOfSupergroupIt {}: {}",
                               std::distance(supergroup.begin(),subgroupOfSupergroupIt),
@@ -123,13 +128,13 @@ void SOAPClusterer::cluster(Group& group){
                 foundMatchQ = true;
                 break;
             }
-            spdlog::debug("    No match.");
 
+            spdlog::debug("    No match. End of inner loop. Supergroup status: {}", ToString::groupToString(supergroup));
         }
         if(!foundMatchQ) {
             supergroup.emplace_back(Group({*groupIt}));
 
-            spdlog::debug(" No match found. Group {} was {} to supergroup: {}",
+            spdlog::debug(" No match found. Group {} {} was added to supergroup: {}",
                           std::distance(group.begin(), groupIt),
                           ToString::groupToString(*groupIt),
                           ToString::groupToString(supergroup));
