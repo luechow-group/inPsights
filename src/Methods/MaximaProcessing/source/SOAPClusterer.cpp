@@ -77,7 +77,7 @@ void SOAPClusterer::cluster(Group& group){
     auto numericalPrecisionEpsilon = SOAP::General::settings.comparisonEpsilon.get();
 
     spdlog::debug("Group before start: {}", ToString::groupToString(group));
-    
+
     Group supergroup;
     spdlog::debug("Supergroup before start: {}", ToString::groupToString(supergroup));
     for(auto [i, subgroup] : enumerate(group)) {
@@ -87,7 +87,6 @@ void SOAPClusterer::cluster(Group& group){
 
         spdlog::debug("  Outer loop groupIt {}: {}", i, ToString::groupToString(subgroup));
         // check if current group matches any of the supergroup subgroups
-        //for(const auto& subgroupOfSupergroupIt = supergroup.begin(); subgroupOfSupergroupIt != supergroup.end(); ++subgroupOfSupergroupIt) {
         for(auto [j, subgroupOfSupergroup] : enumerate(supergroup)){
             spdlog::debug("    Inner loop subgroupOfSupergroupIt {}: {}", j, ToString::groupToString(subgroupOfSupergroup));
 

@@ -38,7 +38,8 @@ public:
     AtomsVector atoms;
 
     void SetUp() override {
-        spdlog::set_level(spdlog::level::debug);
+        spdlog::set_level(spdlog::level::off);
+        //spdlog::set_level(spdlog::level::debug);
 
         double a = 1.0, b = a / 2.0, c = a * 2.0;
         atoms = AtomsVector({
@@ -245,7 +246,8 @@ public:
     AtomsVector atoms;
 
     void SetUp() override {
-        spdlog::set_level(spdlog::level::debug);
+        spdlog::set_level(spdlog::level::off);
+        //spdlog::set_level(spdlog::level::debug);
 
         atoms = TestMolecules::H4::linear::nuclei.atoms();
         A = Group({1.0, TestMolecules::H4::linear::ionicA.electrons(), 0});
