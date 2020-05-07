@@ -22,6 +22,7 @@
 #include <ElementType.h>
 #include <SpinType.h>
 #include <NaturalConstants.h>
+#include <limits>
 
 #include <ISettings.h>
 
@@ -33,7 +34,7 @@ namespace SOAP {
         };
     }
 
-    namespace Radial{
+    namespace Radial {
         enum class BasisType {
             undefined = -1,
             equispaced = 0, adaptive = 1,
@@ -41,73 +42,73 @@ namespace SOAP {
     }
 }
 
-namespace Settings{
-    namespace SOAP {
-        class General : public ISettings {
-        public:
-            Property<::SOAP::General::Mode> mode = {::SOAP::General::Mode::typeAgnostic, VARNAME(mode)};
-            Property<double> zeta = {2.0, VARNAME(zeta)};
-            Property<double> sinkhornGamma = {0.1, VARNAME(sinkhornGamma)};
-            Property<double> sinkhornEpsilon = {1e-8, VARNAME(sinkhornEpsilon)};
+namespace Settings::SOAP {
+    class General : public ISettings {
+    public:
+        Property<::SOAP::General::Mode> mode = {::SOAP::General::Mode::alchemical, VARNAME(mode)};
+        Property<double> zeta = {2.0, VARNAME(zeta)};
+        Property<double> sinkhornGamma = {0.1, VARNAME(sinkhornGamma)};
+        Property<double> comparisonEpsilon = {
+                std::numeric_limits<double>::epsilon()*1e5,
+                VARNAME(comparisonEpsilon)};
 
-            std::map<std::pair<int, int>, double> pairSimilarities = {
-                    {{int(Spin::alpha), int(Spin::beta)}, 0.5}
-            };
-
-            General();
-
-            explicit General(const YAML::Node &node);
-
-            void appendToNode(YAML::Node &node) const override;
+        std::map<std::pair<int, int>, double> pairSimilarities = {
+                {{int(Spin::alpha), int(Spin::beta)}, 1.0}
         };
 
-        class Angular : public ISettings {
-        public:
-            Property<unsigned> lmax = {5, VARNAME(lmax)};
+        General();
 
-            Angular();
+        explicit General(const YAML::Node &node);
 
-            explicit Angular(const YAML::Node &node);
+        void appendToNode(YAML::Node &node) const override;
+    };
 
-            void appendToNode(YAML::Node &node) const override;
-        };
+    class Angular : public ISettings {
+    public:
+        Property<unsigned> lmax = {3, VARNAME(lmax)};
 
+        Angular();
 
-        class Radial : public ISettings {
-        public:
-            Property<double> radiusZero = 1e-10;
+        explicit Angular(const YAML::Node &node);
 
-            Property<::SOAP::Radial::BasisType> basisType =
-                    {::SOAP::Radial::BasisType::equispaced, VARNAME(mode)};
-
-            Property<unsigned> nmax = {5, VARNAME(nmax)};
-            Property<double> sigmaAtom = {1.0, VARNAME(sigmaAtom)};
-            Property<double> sigmaZeroThreshold = {1e-10, VARNAME(sigmaZeroThreshold)};
-            Property<unsigned> integrationSteps = {100, VARNAME(integrationSteps)};
-            Property<double> desiredAbsoluteError = {0.0, VARNAME(desiredAbsoluteError)};
-            Property<double> desiredRelativeError = {1e-6, VARNAME(desiredRelativeError)};
-
-            Radial();
-
-            explicit Radial(const YAML::Node &node);
-
-            void appendToNode(YAML::Node &node) const override;
-        };
+        void appendToNode(YAML::Node &node) const override;
+    };
 
 
-        class Cutoff : public ISettings {
-        public:
-            Property<double> radius = {4.0 * ConversionFactors::angstrom2bohr, VARNAME(radius)};
-            Property<double> width = {1.0 * ConversionFactors::angstrom2bohr, VARNAME(width)};
-            Property<double> centerWeight = {1.0, VARNAME(centerWeight)}; //TODO
+    class Radial : public ISettings {
+    public:
+        Property<double> radiusZero = 1e-10;
 
-            Cutoff();
+        Property<::SOAP::Radial::BasisType> basisType =
+                {::SOAP::Radial::BasisType::equispaced, VARNAME(mode)};
 
-            explicit Cutoff(const YAML::Node &node);
+        Property<unsigned> nmax = {3, VARNAME(nmax)};
+        Property<double> sigmaAtom = {1.0, VARNAME(sigmaAtom)};
+        Property<double> sigmaZeroThreshold = {1e-10, VARNAME(sigmaZeroThreshold)};
+        Property<unsigned> integrationSteps = {100, VARNAME(integrationSteps)};
+        Property<double> desiredAbsoluteError = {0.0, VARNAME(desiredAbsoluteError)};
+        Property<double> desiredRelativeError = {1e-6, VARNAME(desiredRelativeError)};
 
-            void appendToNode(YAML::Node &node) const override;
-        };
-    }
+        Radial();
+
+        explicit Radial(const YAML::Node &node);
+
+        void appendToNode(YAML::Node &node) const override;
+    };
+
+
+    class Cutoff : public ISettings {
+    public:
+        Property<double> radius = {6.0 * ConversionFactors::angstrom2bohr, VARNAME(radius)};
+        Property<double> width = {4.0 * ConversionFactors::angstrom2bohr, VARNAME(width)};
+        Property<double> centerWeight = {1.0, VARNAME(centerWeight)}; //TODO
+
+        Cutoff();
+
+        explicit Cutoff(const YAML::Node &node);
+
+        void appendToNode(YAML::Node &node) const override;
+    };
 }
 YAML_SETTINGS_DECLARATION(Settings::SOAP::General)
 YAML_SETTINGS_DECLARATION(Settings::SOAP::Angular)
@@ -150,7 +151,6 @@ namespace SOAP {
         double innerPlateauRadius();
     }
 }
-
 
 
 #endif //INPSIGHTS_SOAPSETTINGS_H

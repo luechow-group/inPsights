@@ -30,6 +30,10 @@
 class Group;
 class Reference;
 
+namespace ToString {
+    std::string groupToString(const Group& group);
+}
+
 class Group : public std::vector<Group> {
 public:
     Group();

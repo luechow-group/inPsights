@@ -20,55 +20,41 @@
 
 #include "BestMatch.h"
 #include <MolecularSpectrum.h>
-
-
 #include <vector>
 #include <deque>
 
 namespace BestMatch {
     namespace SOAPSimilarity {
 
-
-        Eigen::MatrixXd calculateEnvironmentalSimilarityMatrix(
+        Eigen::MatrixXd calculateEnvironmentSimilarityMatrix(
                 const SOAP::MolecularSpectrum &permutee,
                 const SOAP::MolecularSpectrum &reference);
 
-        Result compare(
+        DescendingMetricResult compare(
                 const SOAP::MolecularSpectrum &permutee,
                 const SOAP::MolecularSpectrum &reference,
-                double similarityRadius, double soapThreshold);
+                double distanceMatrixCovarianceTolerance,
+                double soapThreshold,
+                double numericalPrecisionEpsilon = std::numeric_limits<double>::epsilon());
 
-        std::vector<Result> getBestMatchResults(
+        std::vector<DescendingMetricResult> getBestMatchResults(
                 const SOAP::MolecularSpectrum &permutee,
                 const SOAP::MolecularSpectrum &reference,
-                double similarityRadius, double soapThreshold);
+                double distanceMatrixCovarianceTolerance,
+                double similarityThreshold,
+                double comparisionEpsilon = std::numeric_limits<double>::epsilon());
 
-        std::vector<std::deque<std::pair<Eigen::Index,Eigen::Index>>> getListOfDependentIndicesLists(
-                const Eigen::MatrixXd &environmentalSimilarities,
+        std::vector<std::deque<std::pair<Eigen::Index, Eigen::Index>>> findEquivalentEnvironments(
+                const Eigen::MatrixXd &bestMatchPermutedEnvironmentSimilarities,
                 const Eigen::PermutationMatrix<Eigen::Dynamic> &bestMatch,
-                double soapThreshold);
+                double soapThreshold,
+                double numericalPrecisionEpsilon = std::numeric_limits<double>::epsilon());
 
+        double earlyExitMetric(const Eigen::MatrixXd &bestMatchPermutedEnvironmentSimilarities);
 
-        void varySimilarEnvironments(
-                const MolecularGeometry &permutee,
-                const MolecularGeometry &reference,
-                std::deque<std::pair<Eigen::Index,Eigen::Index>> remaining,
-                std::deque<std::pair<Eigen::Index,Eigen::Index>> surviving,
-                std::vector<std::deque<std::pair<Eigen::Index,Eigen::Index>>> &allPerms,
-                double similarityRadius);
-
-        std::vector<std::deque<std::pair<Eigen::Index,Eigen::Index>>> combineBlocks(
-                const MolecularGeometry &permutee,
-                const MolecularGeometry &reference,
-                const std::deque<std::vector<std::deque<std::pair<Eigen::Index,Eigen::Index>>>> &distancePreservingEnvironmentCombinationsOfRemainingBlocks,
-                double similarityRadius);
-
-        std::vector<Eigen::Index> unblockDependentIndicesOfPreservingCombinations(
-                const std::deque<std::vector<std::deque<std::pair<Eigen::Index, Eigen::Index>>>> &distancePreservingEnvironmentCombinationsOfAllBlocks);
-
-        Eigen::MatrixXd indicesBlockCovariance(
+        Eigen::MatrixXd calculateDistanceCovarianceMatrixOfSelectedIndices(
                 const ElectronsVector &electronsVector,
-                std::deque<Eigen::Index> indices);
+                const std::vector<Eigen::Index> &kitSystemIndices);
     }
 }
 

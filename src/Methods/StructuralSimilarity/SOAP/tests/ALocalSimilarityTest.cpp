@@ -235,7 +235,7 @@ TEST_F(ALocalSimilarityTest, twoBetaElectrons) {
     ASSERT_NEAR(LocalSimilarity::kernel(e0, e1),1.0,eps);
 }
 
-TEST_F(ALocalSimilarityTest, TypeSpecificAndAlchemicalComparison) {
+TEST_F(ALocalSimilarityTest, ChemicalAndAlchemicalComparison) {
     auto mol1 = TestMolecules::twoElectrons::oppositeSpin;
     auto mol2 = TestMolecules::twoElectrons::oppositeSpinReversedOrder;
     ParticleKit::create(mol1);
@@ -254,6 +254,7 @@ TEST_F(ALocalSimilarityTest, TypeSpecificAndAlchemicalComparison) {
     ASSERT_NEAR(LocalSimilarity::kernel(mol2e0, mol1e1), 1.0, eps);
 
 
+    General::settings.pairSimilarities[{int(Spin::alpha),int(Spin::beta)}] = 0.5;
     General::settings.mode = General::Mode::alchemical;
     auto simMol1e0e1 = LocalSimilarity::kernel(mol1e0, mol1e1);
     auto simMol2e0e1 = LocalSimilarity::kernel(mol2e0, mol2e1);

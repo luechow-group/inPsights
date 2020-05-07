@@ -269,6 +269,13 @@ TEST_F(AGroupTest, Print) {
     ASSERT_EQ(ss.str(), std::string("{{0},{{1},{2}}}"));
 }
 
+TEST_F(AGroupTest, EmptyPrint) {
+    Group g;
+    std::stringstream ss;
+    ss << g;
+    ASSERT_EQ(ss.str(), std::string("{}"));
+}
+
 TEST_F(AGroupTest, Average) {
     Group g({g1,g3});
 

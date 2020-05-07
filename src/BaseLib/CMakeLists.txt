@@ -59,7 +59,8 @@ set(HEADER_FILES
         include/SpinPairClassification.h
         include/CameraSettings.h
         include/ErrorHandling.h
-        include/MapUtils.h)
+        include/MapUtils.h
+        )
 
 
 set(SOURCE_FILES
