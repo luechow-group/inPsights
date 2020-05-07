@@ -16,11 +16,11 @@
  */
 
 #include <gmock/gmock.h>
+#include <limits>
+#include <random>
 #include <BestMatchSimilarity.h>
 #include <SOAPSettings.h>
 #include <TestMolecules.h>
-#include <limits>
-#include <random>
 #include <Metrics.h>
 #include <Hungarian.h>
 #include <Combinatorics.h>
@@ -783,8 +783,7 @@ TEST_F(ABestMatchSimilarityTest, EthaneSinglyIonic) {
     routine(A,B,permIndices,distanceTolerance, soapThreshold);
 }
 
-TEST_F(ABestMatchSimilarityTest, DISABLED_EthaneSinglyIonicPermutedMinimal) {
-    General::settings.mode = General::Mode::chemical;
+TEST_F(ABestMatchSimilarityTest, EthaneSinglyIonic10RandomIndexSwapPermutations) {
 
     using namespace TestMolecules;
     MolecularGeometry B = {
@@ -808,35 +807,47 @@ TEST_F(ABestMatchSimilarityTest, DISABLED_EthaneSinglyIonicPermutedMinimal) {
                 {Spin::beta/*17*/,inbetween(Ethane::nuclei.atoms(),{1,7},0.25)}
             })};
 
+    General::settings.pairSimilarities[{int(Spin::alpha), int(Spin::beta)}] = 1.0;
+    General::settings.mode = General::Mode::alchemical;
 
     std::vector<int> indices(A.electrons().numberOfEntities());
     std::iota(indices.begin(), indices.end(), 0);
 
-    Combinatorics::Permutations<int> indexSwapPerms(indices);
-    for(auto indexSwap : indexSwapPerms) {
-        //Eigen::VectorXi indexSwap(A.electrons().numberOfEntities());
-        ////indexSwap << 0, 1, 3, 2, 4, 5; // works
-        ////indexSwap << 0, 1, 4, 2, 3, 5; // works
-        //indexSwap << 0, 1, 2, 4, 3, 5; // works
-        ////indexSwap << 1, 0, 2, 3, 4, 5; // works
-        ////indexSwap << 0, 1, 2, 3, 5, 4; // works
-        //Eigen::PermutationMatrix<Eigen::Dynamic> indexSwapPerm(indexSwap);
+    auto allIndexSwaps = Combinatorics::Permutations<int>(indices).get();
 
-        Eigen::Map<Eigen::VectorXi> v(indexSwap.data(),indexSwap.size());
-        std::cout << " try:" << v.transpose() << std::endl;
-        Eigen::PermutationMatrix<Eigen::Dynamic> indexSwapPerm(v);
-        std::cout << "new perm to try:" << indexSwapPerm.indices().transpose() << std::endl;
+    std::random_device random_device;
+    auto randomSeed = random_device();
+    std::cout << "Random seed: " << randomSeed << std::endl;
+    std::mt19937 engine{random_device()};
+    std::uniform_int_distribution<unsigned > dist(0, allIndexSwaps.size() - 1);
+
+    for (unsigned i = 0; i < 10; ++i) {
+        auto randomIndexSwap = allIndexSwaps[dist(engine)];
+        spdlog::debug("Picked permutation: {}",ToString::stdvectorIntToString(randomIndexSwap));
+        Eigen::Map<Eigen::VectorXi> temp(randomIndexSwap.data(), randomIndexSwap.size());
+        Eigen::PermutationMatrix<Eigen::Dynamic> randomIndexSwapPerm(temp);
 
         auto Acopy = A;
-        Acopy.electrons().permute(indexSwapPerm);
+        Acopy.electrons().permute(randomIndexSwapPerm);
 
         std::vector<Eigen::VectorXi> permIndices(2, Eigen::VectorXi(B.electrons().numberOfEntities()));
         permIndices[0] << 0, 2, 1, 3, 5, 4; // reflection along H2-C0-C1-H5 plane
         permIndices[1] << 1, 2, 0, 4, 5, 3; // 120° rotation around z
 
-        permIndices[0] = indexSwapPerm * permIndices[1];
-        permIndices[1] = indexSwapPerm * permIndices[0];
+        permIndices[0] = randomIndexSwapPerm * permIndices[0];
+        permIndices[1] = randomIndexSwapPerm * permIndices[1];
 
+        // sort the permutations
+        std::sort(std::begin(permIndices), std::end(permIndices),
+                [](const Eigen::VectorXi& a,const Eigen::VectorXi& b) {
+
+            assert(a.size() == b.size());
+            for (Eigen::Index i = 0; i < a.size(); ++i) {
+                if (a[i] != b[i])
+                    return a[i] < b[i];
+            }
+            return a[0] < b[0];
+        });
 
         routine(Acopy, B, permIndices, distanceTolerance, soapThreshold);
     }
