@@ -183,9 +183,12 @@ void Group::makeSubgroup(std::vector<Group::iterator> its) {
 }
 
 std::vector<size_t> Group::allSampleIds() const {
-    if(isLeaf())
-        return representative()->sampleIds();
-    else {
+    if(isLeaf()) {
+        if(representative())
+            return representative()->sampleIds();
+        else
+            return {};
+    } else {
         std::vector<size_t> ids;
         for (const auto & subgroup : *this) {
             auto subgroupSampleIds = subgroup.allSampleIds();
@@ -199,9 +202,11 @@ std::ostream &operator<<(std::ostream &os, const Group &g) {
     os << "{";
     if(g.isLeaf()) {
         auto ids = g.allSampleIds();
-        for (auto it = ids.begin(); it != std::prev(ids.end()); it++)
-            os << *it << ",";
-        os << *std::prev(ids.end());
+        if(!ids.empty()) {
+            for (auto it = ids.begin(); it != std::prev(ids.end()); it++)
+                os << *it << ",";
+            os << *std::prev(ids.end());
+        }
     } else {
         for (auto it = g.begin(); it != std::prev(g.end()); it++)
             os << *it << ",";
