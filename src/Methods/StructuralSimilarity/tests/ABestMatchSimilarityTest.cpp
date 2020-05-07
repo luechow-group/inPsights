@@ -155,7 +155,7 @@ TEST_F(ABestMatchSimilarityTest, ListOfDependentIndices) {
     expectedPerm.setIdentity();  // rows are permuted
     ASSERT_TRUE(bestMatch.indices().isApprox(expectedPerm.indices()));
 
-    auto result = BestMatch::SOAPSimilarity::getBlockwiseDependentIndexPairs(mat, bestMatch, 1.0);
+    auto result = BestMatch::SOAPSimilarity::findEquivalentEnvironments(mat, bestMatch, 1.0);
 
     ASSERT_EQ(result.size(),2);
     ASSERT_EQ(result[0][0].first, 0);
@@ -183,7 +183,7 @@ TEST_F(ABestMatchSimilarityTest, ListOfDependentIndices2) {
     expectedPerm.setIdentity();
     ASSERT_TRUE(bestMatch.indices().isApprox(expectedPerm.indices()));
 
-    auto result = BestMatch::SOAPSimilarity::getBlockwiseDependentIndexPairs(mat, bestMatch, 1.0);
+    auto result = BestMatch::SOAPSimilarity::findEquivalentEnvironments(mat, bestMatch, 1.0);
 
     ASSERT_EQ(result.size(),2);
     ASSERT_EQ(result[0][0].first, 0);
@@ -214,7 +214,7 @@ TEST_F(ABestMatchSimilarityTest, ListOfDependentIndices3) {
     Eigen::PermutationMatrix<Eigen::Dynamic> expectedPerm(expectedPermIndices);
     ASSERT_TRUE(bestMatch.indices().isApprox(expectedPerm.indices()));
 
-    auto result = BestMatch::SOAPSimilarity::getBlockwiseDependentIndexPairs(mat, bestMatch, 1.0);
+    auto result = BestMatch::SOAPSimilarity::findEquivalentEnvironments(mat, bestMatch, 1.0);
 
     ASSERT_EQ(result.size(),3);
 
@@ -254,7 +254,7 @@ TEST_F(ABestMatchSimilarityTest, ListOfDependentIndices4) {
     Eigen::PermutationMatrix<Eigen::Dynamic> expectedPerm(expectedPermIndices);
     ASSERT_TRUE(bestMatch.indices().isApprox(expectedPerm.indices()));
 
-    auto result = BestMatch::SOAPSimilarity::getBlockwiseDependentIndexPairs(mat, bestMatch, 1.0);
+    auto result = BestMatch::SOAPSimilarity::findEquivalentEnvironments(mat, bestMatch, 1.0);
 
     ASSERT_EQ(result.size(),4);
 

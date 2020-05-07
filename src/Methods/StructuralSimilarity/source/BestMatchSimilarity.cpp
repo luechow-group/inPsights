@@ -1,4 +1,4 @@
-/* Copyright (C) 2019 Michael Heuer.
+/* Copyright (C) 2019-2020 Michael Heuer.
  *
  * This file is part of inPsights.
  * inPsights is free software: you can redistribute it and/or modify
@@ -79,7 +79,7 @@ Eigen::MatrixXd BestMatch::SOAPSimilarity::calculateEnvironmentalSimilarityMatri
 std::vector<BestMatch::DescendingMetricResult> BestMatch::SOAPSimilarity::getBestMatchResults(
         const MolecularSpectrum &permutee,
         const MolecularSpectrum &reference,
-        double distanceMatrixCovarianceTolerance, double soapThreshold, double numericalPrecisionEpsilon) {
+        double distanceMatrixCovarianceTolerance, double similarityThreshold, double comparisionEpsilon) {
 
     assert(ParticleKit::isSubsetQ(permutee.molecule_)
            && "The permutee must be a subset of the particle kit.");
@@ -97,8 +97,6 @@ std::vector<BestMatch::DescendingMetricResult> BestMatch::SOAPSimilarity::getBes
     spdlog::debug("Electrons of reference are{} in particle-kit system.",
                   referenceToKit.indices() == identity.indices() ?  "": " NOT");
 
-
-    // TODO assert that identical number of electrons and same atom geometry? Is this constraint needed? What happens with rows/cols of zero?
     auto N = size_t(permutee.molecule_.electrons().numberOfEntities());
 
     assert(permutee.molecule_.electrons().typesVector().countOccurence(Spin::alpha)
@@ -114,7 +112,7 @@ std::vector<BestMatch::DescendingMetricResult> BestMatch::SOAPSimilarity::getBes
                   "(in the particle kit system, permutee = rows, reference = cols)\n{}",
                   ToString::matrixXdToString(environmentalSimilarities, 3));
 
-    // find the best-match permutation of the environments (of the permutee => rows are permuted) that maximizes the diagonal)
+    // find the best-match (row) permutation of the environments (of the permutee) maximizing the diagonal)
     auto bestMatch = Hungarian<double>::findMatching(environmentalSimilarities, Matchtype::MAX);
 
     auto bestMatchPermutedEnvironmentalSimilarities = bestMatch * environmentalSimilarities;
@@ -127,17 +125,14 @@ std::vector<BestMatch::DescendingMetricResult> BestMatch::SOAPSimilarity::getBes
     auto earlyExitResult = BestMatch::DescendingMetricResult({
             earlyExitMetric(bestMatchPermutedEnvironmentalSimilarities), bestMatch});
 
-    if (earlyExitResult.metric < (soapThreshold - numericalPrecisionEpsilon)) {
-        spdlog::debug("exited early (similarity < (threshold - epsilon) {:01.16f} < {:01.16f} - {:01.16f})", earlyExitResult.metric, soapThreshold, numericalPrecisionEpsilon);
+    if (earlyExitResult.metric < (similarityThreshold - comparisionEpsilon)) {
+        spdlog::debug("exited early (similarity < (threshold - epsilon) {:01.16f} < {:01.16f} - {:01.16f})", earlyExitResult.metric, similarityThreshold, comparisionEpsilon);
         return {earlyExitResult};
     }
 
-    // some indices might depend on each other (are equivalent, e.g. two electrons in a nucleus might be swapped)
-    // obtain dependent indices in the kit system (blocks of indices might )
-    auto blockwiseDependentIndexPairs =
-            BestMatch::SOAPSimilarity::getBlockwiseDependentIndexPairs(
-                    environmentalSimilarities,
-                    bestMatch, soapThreshold, numericalPrecisionEpsilon);
+    // find equivalent indices
+    auto blockwiseDependentIndexPairs = BestMatch::SOAPSimilarity::findEquivalentEnvironments(
+            environmentalSimilarities, bestMatch, similarityThreshold, comparisionEpsilon);
 
     spdlog::debug("Dependent indice pairs");
     for (const auto &dependentIndexPairs : blockwiseDependentIndexPairs) {
@@ -235,13 +230,14 @@ BestMatch::DescendingMetricResult BestMatch::SOAPSimilarity::compare(
                                                           soapThreshold, numericalPrecisionEpsilon).front();
 }
 
-//
-//Returns pairs of indices in the kit system for each block of dependent environments from the environment similarity matrix in the kit system
-//first index: permutee environment index in the kit system
-//second index: reference environment index in the kit system
-//
+/*
+ * Finds pairs of indices (particle-kit system) of equivalent environments in the permutee and reference
+ * in the best-match permuted environment similarity matrix in the particle-kit system
+ *  first index: permutee environment index in the particle-kit system
+ *  second index: reference environment index in the particle-kit system
+ */
 std::vector<std::deque<std::pair<Eigen::Index, Eigen::Index>>>
-BestMatch::SOAPSimilarity::getBlockwiseDependentIndexPairs(
+BestMatch::SOAPSimilarity::findEquivalentEnvironments(
         const Eigen::MatrixXd &environmentalSimilarities,
         const Eigen::PermutationMatrix<Eigen::Dynamic> &bestMatch,
         double soapThreshold, double numericalPrecisionEpsilon) {

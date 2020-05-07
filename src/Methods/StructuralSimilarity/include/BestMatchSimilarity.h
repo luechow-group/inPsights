@@ -44,10 +44,10 @@ namespace BestMatch {
                 const SOAP::MolecularSpectrum &permutee,
                 const SOAP::MolecularSpectrum &reference,
                 double distanceMatrixCovarianceTolerance,
-                double soapThreshold,
-                double numericalPrecisionEpsilon = std::numeric_limits<double>::epsilon());
+                double similarityThreshold,
+                double comparisionEpsilon = std::numeric_limits<double>::epsilon());
 
-        std::vector<std::deque<std::pair<Eigen::Index, Eigen::Index>>> getBlockwiseDependentIndexPairs(
+        std::vector<std::deque<std::pair<Eigen::Index, Eigen::Index>>> findEquivalentEnvironments(
                 const Eigen::MatrixXd &bestMatchPermutedEnvironmentalSimilarities,
                 const Eigen::PermutationMatrix<Eigen::Dynamic> &bestMatch,
                 double soapThreshold,
