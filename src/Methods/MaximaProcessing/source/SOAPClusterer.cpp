@@ -103,16 +103,21 @@ void SOAPClusterer::cluster(Group& group){
             assert(!groupIt->representative()->spectrum().molecularCenters_.empty() && "Spectrum cannot be empty.");
             assert(!subgroupOfSupergroupIt->representative()->spectrum().molecularCenters_.empty() && "Spectrum cannot be empty.");
 
+
+            spdlog::debug("    Supergroup status before Comparision: {}", ToString::groupToString(supergroup));
+
             auto comparisionResult = BestMatch::SOAPSimilarity::compare(
                     groupIt->representative()->spectrum(),
                     subgroupOfSupergroupIt->representative()->spectrum(),
                     toleranceRadius,
                     similarityThreshold, numericalPrecisionEpsilon);
 
-            spdlog::info("  comparing it with {} out of {}: {}",
-                    std::distance(supergroup.begin(), subgroupOfSupergroupIt)+1,
-                    std::distance(supergroup.begin(), supergroup.end()),
-                    comparisionResult.metric);
+            spdlog::debug("    Supergroup status before Ccmparision: {}", ToString::groupToString(supergroup));
+
+            //spdlog::info("  comparing it with {} out of {}: {}",
+            //        std::distance(supergroup.begin(), subgroupOfSupergroupIt)+1,
+            //        std::distance(supergroup.begin(), supergroup.end()),
+            //        comparisionResult.metric);
 
             // if so, put permute the current group and put it into the supergroup subgroup and stop searching
             if (comparisionResult.metric >= (similarityThreshold-numericalPrecisionEpsilon)) {
@@ -124,7 +129,7 @@ void SOAPClusterer::cluster(Group& group){
                 spdlog::debug("    Match: Inner loop subgroupOfSupergroupIt {}: {}",
                               std::distance(supergroup.begin(),subgroupOfSupergroupIt),
                               ToString::groupToString(*subgroupOfSupergroupIt));
-
+                spdlog::debug("    Match. End of inner loop. Supergroup status: {}", ToString::groupToString(supergroup));
                 foundMatchQ = true;
                 break;
             }
