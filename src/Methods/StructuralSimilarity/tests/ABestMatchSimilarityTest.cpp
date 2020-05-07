@@ -34,6 +34,7 @@ public:
     double distanceTolerance, soapThreshold, shakeSoapThreshold, numericalPrecisionEpsilon;
 
     void SetUp() override {
+        spdlog::set_level(spdlog::level::off);
         //spdlog::set_level(spdlog::level::debug);
 
         distanceTolerance = 0.1;
@@ -44,8 +45,8 @@ public:
         Radial::settings.nmax = 2;
         Radial::settings.sigmaAtom = 2.0;
         Angular::settings.lmax = 2;
-        Cutoff::settings.radius = 8.0;
-        Cutoff::settings.width = 2.0;
+        Cutoff::settings.radius = 6.0;
+        Cutoff::settings.width = 4.0;
         General::settings.pairSimilarities[{int(Spin::alpha),int(Spin::beta)}] = 1.0;
     };
 
@@ -305,7 +306,7 @@ TEST_F(ABestMatchSimilarityTest, H4linear_ionic_reflected) {
     routine(A, B, expectedPermIndices, distanceTolerance, soapThreshold);
 
     // second perm is not conserving in chemical mode
-    expectedPermIndices.erase(expectedPermIndices.begin()+1);
+    expectedPermIndices = {expectedPermIndices[0]};
     General::settings.mode = General::Mode::chemical;
     routine(A, B, expectedPermIndices, distanceTolerance, soapThreshold);
 }
@@ -323,7 +324,7 @@ TEST_F(ABestMatchSimilarityTest, H4linear_ionic_reflected_alpha_permuted) {
     routine(A, B, expectedPermIndices, distanceTolerance, soapThreshold);
 
     // second perm is not conserving in chemical mode
-    expectedPermIndices.erase(expectedPermIndices.begin()+1);
+    expectedPermIndices = {expectedPermIndices[0]};
     General::settings.mode = General::Mode::chemical;
     routine(A, B, expectedPermIndices, distanceTolerance, soapThreshold);
 }
@@ -341,7 +342,7 @@ TEST_F(ABestMatchSimilarityTest, H4linear_ionic_reflected_beta_permuted) {
     routine(A, B, expectedPermIndices, distanceTolerance, soapThreshold);
 
     // second perm is not conserving in chemical mode
-    expectedPermIndices.erase(expectedPermIndices.begin()+1);
+    expectedPermIndices = {expectedPermIndices[0]};
     General::settings.mode = General::Mode::chemical;
     routine(A, B, expectedPermIndices, distanceTolerance, soapThreshold);
 }
@@ -356,33 +357,33 @@ TEST_F(ABestMatchSimilarityTest, H4linear_ionic_reflected_reordered_numbering) {
 
     General::settings.pairSimilarities[{int(Spin::alpha), int(Spin::beta)}] = 1.0;
     General::settings.mode = General::Mode::alchemical;
-    //routine(A, B, expectedPermIndices, distanceTolerance, soapThreshold);
+    routine(A, B, expectedPermIndices, distanceTolerance, soapThreshold);
 
     // both perms are not conserving in chemical mode
+    expectedPermIndices = {};
     General::settings.mode = General::Mode::chemical;
-    routine(A, B, {}, distanceTolerance, soapThreshold);
+    routine(A, B, expectedPermIndices, distanceTolerance, soapThreshold);
 }
 
-TEST_F(ABestMatchSimilarityTest, DISABLED_H4linear_not_in_particle_kit) {
-    auto A = TestMolecules::H4::linear::ionicA;
-    auto B = TestMolecules::H4::linear::ionicNOTinParticleKit;
+TEST_F(ABestMatchSimilarityTest, H4linear_not_in_particle_kit) {
+    auto B = TestMolecules::H4::linear::ionicA;
+    auto A = TestMolecules::H4::linear::ionicNotinParticleKitSystem;
 
-    std::vector<Eigen::VectorXi> expectedPermIndices(0, Eigen::VectorXi(A.electrons().numberOfEntities()));
-    //expectedPermIndices[0] << 0,1,2,3;
-    //expectedPermIndices[1] << 2,1,0,3;
-    //TODO
+    std::vector<Eigen::VectorXi> expectedPermIndices(2, Eigen::VectorXi(A.electrons().numberOfEntities()));
+    expectedPermIndices[0] << 0,1,2,3;
+    expectedPermIndices[1] << 2,1,0,3;
 
     General::settings.pairSimilarities[{int(Spin::alpha), int(Spin::beta)}] = 1.0;
     General::settings.mode = General::Mode::alchemical;
     routine(A, B, expectedPermIndices, distanceTolerance, soapThreshold);
 
     // second perm is not conserving in chemical mode
-    expectedPermIndices.erase(expectedPermIndices.begin()+1);
+    expectedPermIndices = {expectedPermIndices[1]};
     General::settings.mode = General::Mode::chemical;
     routine(A, B, expectedPermIndices, distanceTolerance, soapThreshold);
 }
 
-TEST_F(ABestMatchSimilarityTest, DISABLED_H4linear_real_maxima1_failing_in_soap_clusterer) {
+TEST_F(ABestMatchSimilarityTest, H4linear_real_maxima1) {
     auto A = TestMolecules::H4::linear::ionicRealMax1Var1;
     auto B = TestMolecules::H4::linear::ionicRealMax1Var2;
 
@@ -394,12 +395,15 @@ TEST_F(ABestMatchSimilarityTest, DISABLED_H4linear_real_maxima1_failing_in_soap_
     General::settings.mode = General::Mode::alchemical;
     routine(A, B, expectedPermIndices, distanceTolerance, soapThreshold);
 
-    //TODO expectedPermIndices = {expectedPermIndices[0]};
-    //General::settings.mode = General::Mode::chemical;
-    //routine(A, B, expectedPermIndices, distanceTolerance, soapThreshold);
+    General::settings.mode = General::Mode::chemical;
+    auto envSimMat = BestMatch::SOAPSimilarity::calculateEnvironmentalSimilarityMatrix(MolecularSpectrum(A), MolecularSpectrum(B));
+    ASSERT_GT(envSimMat.minCoeff(), 0.0);
+    ASSERT_LT(envSimMat.maxCoeff(), 1.0); // no equivalent environments exist in chemical mode.
+    expectedPermIndices = {};
+    routine(A, B, expectedPermIndices, distanceTolerance, soapThreshold);
 }
 
-TEST_F(ABestMatchSimilarityTest, H4linear_real_maxima2_failing_in_soap_clusterer) {
+TEST_F(ABestMatchSimilarityTest, H4linear_real_maxima2) {
     auto A = TestMolecules::H4::linear::ionicRealMax2Var1;
     auto B = TestMolecules::H4::linear::ionicRealMax2Var2;
 
@@ -413,9 +417,9 @@ TEST_F(ABestMatchSimilarityTest, H4linear_real_maxima2_failing_in_soap_clusterer
     General::settings.mode = General::Mode::alchemical;
     routine(A, B, expectedPermIndices, distanceTolerance, soapThreshold);
 
-    //TODO expectedPermIndices = {expectedPermIndices[0]};
-    //General::settings.mode = General::Mode::chemical;
-    //routine(A, B, expectedPermIndices, distanceTolerance, soapThreshold);
+    expectedPermIndices = {expectedPermIndices[0]};
+    General::settings.mode = General::Mode::chemical;
+    routine(A, B, expectedPermIndices, distanceTolerance, soapThreshold);
 }
 
 TEST_F(ABestMatchSimilarityTest, H4ring) {

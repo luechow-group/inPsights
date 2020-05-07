@@ -273,8 +273,8 @@ namespace TestMolecules {
             };
 
             const MolecularGeometry ionicA = {
-                    nuclei.atoms(),
-                    ElectronsVector({ // sorted as in particle kit
+                    nuclei.atoms(), // sorted as in particle kit
+                    ElectronsVector({  // ____-a0b2-a1__-__b3
                         {Spin::alpha, nuclei.atoms().positionsVector()[1]},
                         {Spin::alpha, nuclei.atoms().positionsVector()[2]},
                         {Spin::beta,  nuclei.atoms().positionsVector()[1]},
@@ -282,9 +282,9 @@ namespace TestMolecules {
                     })
             };
 
-            const MolecularGeometry ionicNOTinParticleKit = {
+            const MolecularGeometry ionicNotinParticleKitSystem = {
                     nuclei.atoms(),
-                    ElectronsVector({
+                    ElectronsVector({ // ____-a2b0-a1__-__b3
                         {Spin::beta, nuclei.atoms().positionsVector()[1]},
                         {Spin::alpha, nuclei.atoms().positionsVector()[2]},
                         {Spin::alpha, nuclei.atoms().positionsVector()[1]},
@@ -314,7 +314,7 @@ namespace TestMolecules {
 
             const MolecularGeometry ionicAreflectedBetaPermuted = {
                     nuclei.atoms(),
-                    ElectronsVector({ // sorted for as in particle kit
+                    ElectronsVector({ // a0b3-____-__b2-a1__
                         {Spin::alpha, nuclei.atoms().positionsVector()[2]},
                         {Spin::alpha, nuclei.atoms().positionsVector()[1]},
                         {Spin::beta,  nuclei.atoms().positionsVector()[0]},//permuted w.r.t ionicArefleced
@@ -337,8 +337,8 @@ namespace TestMolecules {
                     nuclei.atoms(),
                     ElectronsVector({ // a0b3-____-__b2-a1__
                          {Spin::alpha, nuclei.atoms().positionsVector()[0]},
-                         {Spin::alpha, nuclei.atoms().positionsVector()[2]},
-                         {Spin::beta,  nuclei.atoms().positionsVector()[1]},
+                         {Spin::alpha, nuclei.atoms().positionsVector()[3]},
+                         {Spin::beta,  nuclei.atoms().positionsVector()[2]},
                          {Spin::beta,  nuclei.atoms().positionsVector()[0]}
                     })
             };
