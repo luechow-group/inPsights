@@ -30,16 +30,16 @@ namespace BestMatch {
             const Eigen::PermutationMatrix<Eigen::Dynamic> &p2, bool flipSpinsQ = false);
 
     Eigen::PermutationMatrix<Eigen::Dynamic>
-    getPermutationToFront(const std::list<long> &relevantIndices, const long &size);
+    getPermutationToFront(const std::list<long> &relevantIndices, size_t size);
 
     Eigen::PermutationMatrix<Eigen::Dynamic>
-    getPermutationToBack(const std::list<long> &relevantIndices, const long &size);
+    getPermutationToBack(const std::list<long> &relevantIndices, size_t size);
 
     Eigen::PermutationMatrix<Eigen::Dynamic>
-    headToFullPermutation(const Eigen::PermutationMatrix<Eigen::Dynamic> &permutation, const long &size);
+    headToFullPermutation(const Eigen::PermutationMatrix<Eigen::Dynamic> &permutation, size_t size);
 
     Eigen::PermutationMatrix<Eigen::Dynamic>
-    tailToFullPermutation(const Eigen::PermutationMatrix<Eigen::Dynamic> &permutation, const long &size);
+    tailToFullPermutation(const Eigen::PermutationMatrix<Eigen::Dynamic> &permutation, size_t size);
 
     template<typename Type>
     Eigen::PermutationMatrix<Eigen::Dynamic> findTypeSeparatingPermutation(
@@ -62,15 +62,16 @@ namespace BestMatch {
         return Eigen::PermutationMatrix<Eigen::Dynamic>(typeSerparatingPermutationIndices);
     }
 
+    template<bool ascending = true>
     struct Result {
         double metric;
         Eigen::PermutationMatrix<Eigen::Dynamic> permutation;
 
-        bool operator<(const Result& rhs);
-
+        bool operator<(const Result &rhs);
     };
 
-
+    using AscendingMetricResult = Result<true>;
+    using DescendingMetricResult = Result<false>;
 };
 
 #endif //INPSIGHTS_BESTMATCH_H

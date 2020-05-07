@@ -80,7 +80,7 @@ namespace BestMatch {
          * of ParticleVectors.
          */
         template<int overallNorm = Eigen::Infinity, int positionalNorm = 2>
-        Result compare(PositionsVector permutee, const PositionsVector &reference) {
+        AscendingMetricResult compare(PositionsVector permutee, const PositionsVector &reference) {
 
             auto perm = findPermutation<positionalNorm>(permutee, reference);
 
@@ -92,7 +92,7 @@ namespace BestMatch {
 
         // Type specific comparison
         template<typename Type, int overallNorm = Eigen::Infinity, int positionalNorm = 2>
-        Result compare(ParticlesVector<Type> permutee, const ParticlesVector<Type> &reference) {
+        AscendingMetricResult compare(ParticlesVector<Type> permutee, const ParticlesVector<Type> &reference) {
 
             auto perm = findTypeSpecificPermutation<Type,positionalNorm>(permutee, reference);
 

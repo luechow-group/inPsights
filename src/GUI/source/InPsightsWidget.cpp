@@ -346,18 +346,17 @@ void InPsightsWidget::loadData() {
         spdlog::info("Determined camera distance from atoms with {} [a0]", Camera::settings.distance.get());
     }
 
-
-
     for (int clusterId = 0; clusterId < static_cast<int>(doc["Clusters"].size()); ++clusterId) {
+        spdlog::info("{} out of {} clusters loaded...", clusterId+1, static_cast<int>(doc["Clusters"].size()));
 
-        ClusterData clusterData = doc["Clusters"][clusterId].as<ClusterData>();
+        clusterCollection_.emplace_back(doc["Clusters"][clusterId].as<ClusterData>());
+        const auto & cluster = clusterCollection_.back();
 
-        clusterCollection_.emplace_back(clusterData);
         auto item = new IntegerSortedTreeWidgetItem(
                 maximaList, {QString::number(clusterId),
-                 QString::number(1.0 * clusterData.N_ / doc["NSamples"].as<unsigned>(), 'f', 4),
-                 QString::number(clusterData.valueStats_.cwiseMin()[0], 'f', 3),
-                 QString::number(clusterData.valueStats_.cwiseMax()[0], 'f', 3)});
+                 QString::number(1.0 * cluster.N_ / doc["NSamples"].as<unsigned>(), 'f', 4),
+                 QString::number(cluster.valueStats_.cwiseMin()[0], 'f', 3),
+                 QString::number(cluster.valueStats_.cwiseMax()[0], 'f', 3)});
 
         item->setCheckState(0, Qt::CheckState::Unchecked);
 

@@ -99,7 +99,7 @@ TEST_F(ASOAPPerformanceTest, DISABLED_GlobalSimPerformance){
             ms = MolecularSpectrum(mol);
             double t1a = omp_get_wtime() - start;
             start = omp_get_wtime();
-            double generic = StructuralSimilarity::kernel(ms, ms, regularizationParameter);
+            [[maybe_unused]] double generic = StructuralSimilarity::kernel(ms, ms, regularizationParameter);
             double t1b = omp_get_wtime() - start;
 
             General::settings.mode = General::Mode::chemical;
@@ -107,7 +107,7 @@ TEST_F(ASOAPPerformanceTest, DISABLED_GlobalSimPerformance){
             ms = MolecularSpectrum(mol);
             double t2a = omp_get_wtime() - start;
             start = omp_get_wtime();
-            double chemical = StructuralSimilarity::kernel(ms, ms, regularizationParameter);
+            [[maybe_unused]] double chemical = StructuralSimilarity::kernel(ms, ms, regularizationParameter);
             double t2b = omp_get_wtime() - start;
 
             General::settings.mode = General::Mode::alchemical;
@@ -115,7 +115,7 @@ TEST_F(ASOAPPerformanceTest, DISABLED_GlobalSimPerformance){
             ms = MolecularSpectrum(mol);
             double t3a = omp_get_wtime() - start;
             start = omp_get_wtime();
-            double alchemical = StructuralSimilarity::kernel(ms, ms, regularizationParameter);
+            [[maybe_unused]] double alchemical = StructuralSimilarity::kernel(ms, ms, regularizationParameter);
             double t3b = omp_get_wtime() - start;
 
             printf("{%d,%f,%f,%f,%f,%f,%f},\n", i+nSkip,t1a,t2a,t3a,t1b,t2b,t3b);
@@ -137,7 +137,6 @@ TEST_F(ASOAPPerformanceTest, DISABLED_LocalSimPerformance){
         //calculate a molecular spectrum
         Radial::settings.nmax = nmax;
         Angular::settings.lmax = lmax;
-        //ExpansionSettings::Alchemical::pairSimilarities[{int(Spin::alpha),int(Spin::beta)}] = 0.5;
 
         //Distribute the particles on a unit circle
         double radius = 1.0;

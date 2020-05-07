@@ -24,7 +24,7 @@ using namespace SOAP;
 
 class AStructuralSimilarityTest : public ::testing::Test {
 public:
-    double eps = std::numeric_limits<double>::epsilon()*1e3;
+    double comparisionEps = SOAP::General::settings.comparisonEpsilon();
     double regularizationParameter = 1.0;
 
     void SetUp() override {
@@ -39,7 +39,7 @@ TEST_F(AStructuralSimilarityTest , Identity) {
     ParticleKit::create(A);
     
     ASSERT_TRUE(ParticleKit::isSubsetQ(A));
-    ASSERT_NEAR(StructuralSimilarity::kernel(A, A, regularizationParameter), 1.0, eps);
+    ASSERT_NEAR(StructuralSimilarity::kernel(A, A, regularizationParameter), 1.0, comparisionEps);
 }
 
 TEST_F(AStructuralSimilarityTest , nmax2) {
@@ -49,7 +49,7 @@ TEST_F(AStructuralSimilarityTest , nmax2) {
     ParticleKit::create(A);
 
     ASSERT_TRUE(ParticleKit::isSubsetQ(A));
-    ASSERT_NEAR(StructuralSimilarity::kernel(A, A, regularizationParameter), 1.0, eps);
+    ASSERT_NEAR(StructuralSimilarity::kernel(A, A, regularizationParameter), 1.0, comparisionEps);
 }
 
 TEST_F(AStructuralSimilarityTest , TranslationalSymmetry) {
@@ -60,7 +60,7 @@ TEST_F(AStructuralSimilarityTest , TranslationalSymmetry) {
     
     ASSERT_TRUE(ParticleKit::isSubsetQ(A));
     ASSERT_TRUE(ParticleKit::isSubsetQ(B));
-    ASSERT_NEAR(StructuralSimilarity::kernel(A, B, regularizationParameter), 1.0, eps);
+    ASSERT_NEAR(StructuralSimilarity::kernel(A, B, regularizationParameter), 1.0, comparisionEps);
 }
 
 TEST_F(AStructuralSimilarityTest, PermutationalSymmetry_ReversedOrder) {
@@ -71,7 +71,7 @@ TEST_F(AStructuralSimilarityTest, PermutationalSymmetry_ReversedOrder) {
 
     ASSERT_TRUE(ParticleKit::isSubsetQ(A));
     ASSERT_TRUE(ParticleKit::isSubsetQ(B));
-    ASSERT_NEAR(StructuralSimilarity::kernel(A, B, regularizationParameter), 1.0, eps);
+    ASSERT_NEAR(StructuralSimilarity::kernel(A, B, regularizationParameter), 1.0, comparisionEps);
 }
 
 TEST_F(AStructuralSimilarityTest, PermutationalSymmetry_FlippedSpins) {
@@ -82,7 +82,33 @@ TEST_F(AStructuralSimilarityTest, PermutationalSymmetry_FlippedSpins) {
 
     ASSERT_TRUE(ParticleKit::isSubsetQ(A));
     ASSERT_TRUE(ParticleKit::isSubsetQ(B));
-    ASSERT_NEAR(StructuralSimilarity::kernel(A, B, regularizationParameter), 1.0, eps);
+    ASSERT_NEAR(StructuralSimilarity::kernel(A, B, regularizationParameter), 1.0, comparisionEps);
+}
+
+TEST_F(AStructuralSimilarityTest, H4linear_Identity) {
+    auto A = TestMolecules::H4::linear::ionicA;
+    auto B = TestMolecules::H4::linear::ionicAreflected;
+
+    General::settings.pairSimilarities[{int(Spin::alpha),int(Spin::beta)}] = 1.0;
+    General::settings.mode = General::Mode::alchemical;
+    ParticleKit::create(A);
+
+    ASSERT_TRUE(ParticleKit::isSubsetQ(A));
+    ASSERT_TRUE(ParticleKit::isSubsetQ(B));
+    ASSERT_NEAR(StructuralSimilarity::kernel(A, B, regularizationParameter), 1.0, comparisionEps);
+}
+
+TEST_F(AStructuralSimilarityTest, H6linear_Identity) {
+    auto A = TestMolecules::H6::linear::ionicA;
+    auto B = TestMolecules::H6::linear::ionicB;
+
+    General::settings.pairSimilarities[{int(Spin::alpha),int(Spin::beta)}] = 1.0;
+    General::settings.mode = General::Mode::alchemical;
+    ParticleKit::create(A);
+
+    ASSERT_TRUE(ParticleKit::isSubsetQ(A));
+    ASSERT_TRUE(ParticleKit::isSubsetQ(B));
+    ASSERT_NEAR(StructuralSimilarity::kernel(A, B, regularizationParameter), 1.0, comparisionEps);
 }
 
 TEST_F(AStructuralSimilarityTest, RotationalSymmetry) {
@@ -100,7 +126,7 @@ TEST_F(AStructuralSimilarityTest, RotationalSymmetry) {
         ElectronsVector rotatedElectrons(pos,A.electrons().typesVector());
         MolecularGeometry molRotated = {A.atoms(),rotatedElectrons};
 
-        ASSERT_NEAR(StructuralSimilarity::kernel(A, molRotated, regularizationParameter),1.0,eps);
+        ASSERT_NEAR(StructuralSimilarity::kernel(A, molRotated, regularizationParameter),1.0,comparisionEps);
     }
 }
 
@@ -113,12 +139,18 @@ TEST_F(AStructuralSimilarityTest, AlchemicalSimilarity) {
 
     General::settings.mode = General::Mode::chemical;
     auto chemical = StructuralSimilarity::kernel(A, B, regularizationParameter);
-    ASSERT_NEAR(chemical, 0.0, eps);
+    ASSERT_EQ(chemical, 0.0);
 
+    General::settings.pairSimilarities[{int(Spin::alpha), int(Spin::beta)}] = 0.5;
     General::settings.mode = General::Mode::alchemical;
     auto alchemicalSim = StructuralSimilarity::kernel(A, B, regularizationParameter);
     ASSERT_GT(alchemicalSim, 0.0);
     ASSERT_LT(alchemicalSim, 1.0);
+
+    General::settings.pairSimilarities[{int(Spin::alpha), int(Spin::beta)}] = 1.0;
+    General::settings.mode = General::Mode::alchemical;
+    auto alchemicalSame = StructuralSimilarity::kernel(A, B, regularizationParameter);
+    ASSERT_EQ(alchemicalSame, 1.0);
 }
 
 TEST_F(AStructuralSimilarityTest, HeH_H2_Comparison) {
@@ -161,11 +193,11 @@ TEST_F(AStructuralSimilarityTest, AlchemicalIdentity) {
 
     General::settings.mode = General::Mode::alchemical;
     auto ab = StructuralSimilarity::kernel(A, B, regularizationParameter);
-    ASSERT_NEAR(ab, 1.0, eps);
+    ASSERT_NEAR(ab, 1.0, comparisionEps);
 
     auto bc = StructuralSimilarity::kernel(B, C, regularizationParameter);
-    ASSERT_NEAR(bc, 1.0, eps);
+    ASSERT_NEAR(bc, 1.0, comparisionEps);
 
     auto ac = StructuralSimilarity::kernel(A, C, regularizationParameter);
-    ASSERT_NEAR(ac, 1.0, eps);
+    ASSERT_NEAR(ac, 1.0, comparisionEps);
 }

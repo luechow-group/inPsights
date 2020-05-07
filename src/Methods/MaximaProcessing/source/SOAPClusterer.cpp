@@ -17,7 +17,6 @@
 
 #include "SOAPClusterer.h"
 #include "PreClusterer.h"
-#include <StructuralSimilarity.h>
 #include <spdlog/spdlog.h>
 #include <BestMatchSimilarity.h>
 #include <SOAPSettings.h>
@@ -40,12 +39,12 @@ namespace Settings {
     SOAPClusterer::SOAPClusterer(const YAML::Node &node)
             : SOAPClusterer() {
         doubleProperty::decode(node, similarityThreshold);
-        doubleProperty::decode(node, toleranceRadius);
+        doubleProperty::decode(node, distanceMatrixCovarianceTolerance);
     }
 
     void SOAPClusterer::appendToNode(YAML::Node &node) const {
         node[className][similarityThreshold.name()] = similarityThreshold();
-        node[className][toleranceRadius.name()] = toleranceRadius();
+        node[className][distanceMatrixCovarianceTolerance.name()] = distanceMatrixCovarianceTolerance();
     }
 }
 YAML_SETTINGS_DEFINITION(Settings::SOAPClusterer)
@@ -61,59 +60,83 @@ SOAPClusterer::SOAPClusterer(const AtomsVector& atoms, std::vector<Sample> &samp
 void SOAPClusterer::cluster(Group& group){
     assert(!group.isLeaf() && "The group cannot be a leaf.");
 
+    // TODO use function value to narrow down guesses => presort lists
+
     // Calculate spectra
     spdlog::info("Calculating {} spectra in {} mode...",
             group.size(),SOAP::General::toString(SOAP::General::settings.mode.get()));
 #pragma omp parallel for default(none) shared(atoms_, group)
     for (auto it = group.begin(); it < group.end(); ++it) {
-
-        // use average structure to facilitate obtaining better soap similarities
         it->representative()->setSpectrum(MolecularSpectrum(
-                {atoms_, it->electronsVectorFromAveragedPositionsVector(it->averagedMaximumPositionsVector())}));
+                {atoms_, it->representative()->maximum()}));
         spdlog::info("calculated spectrum {}", std::distance(group.begin(), it));
     }
 
     auto similarityThreshold = settings.similarityThreshold();
-    auto toleranceRadius = settings.toleranceRadius();
+    auto toleranceRadius = settings.distanceMatrixCovarianceTolerance();
+    auto numericalPrecisionEpsilon = SOAP::General::settings.comparisonEpsilon.get();
 
-    Group supergroup({{*group.begin()}});
+    spdlog::debug("Group before start: {}", ToString::groupToString(group));
 
-    for(auto groupIt = std::next(group.begin()); groupIt !=group.end(); groupIt++) {
-        spdlog::info("{} out of {}", std::distance(group.begin(), groupIt), std::distance(group.begin(), group.end()));
+    Group supergroup;
+    spdlog::debug("Supergroup before start: {}", ToString::groupToString(supergroup));
+    for(auto [i, subgroup] : enumerate(group)) {
+        spdlog::info("{} out of {}", i+1, group.size());
+
         bool foundMatchQ = false;
 
+        spdlog::debug("  Outer loop groupIt {}: {}", i, ToString::groupToString(subgroup));
         // check if current group matches any of the supergroup subgroups
-        for(auto subgroupOfSupergroupIt = supergroup.begin(); subgroupOfSupergroupIt != supergroup.end(); ++subgroupOfSupergroupIt) {
+        for(auto [j, subgroupOfSupergroup] : enumerate(supergroup)){
+            spdlog::debug("    Inner loop subgroupOfSupergroupIt {}: {}", j, ToString::groupToString(subgroupOfSupergroup));
 
-            assert(!groupIt->representative()->spectrum().molecularCenters_.empty() && "Spectrum cannot be empty.");
-            assert(!subgroupOfSupergroupIt->representative()->spectrum().molecularCenters_.empty() && "Spectrum cannot be empty.");
+            assert(!subgroup.representative()->spectrum().molecularCenters_.empty() && "Spectrum cannot be empty.");
+            assert(!subgroupOfSupergroup.representative()->spectrum().molecularCenters_.empty() && "Spectrum cannot be empty.");
+
+
+            spdlog::debug("    Supergroup status before Comparision: {}", ToString::groupToString(supergroup));
 
             auto comparisionResult = BestMatch::SOAPSimilarity::compare(
-                    groupIt->representative()->spectrum(),
-                    subgroupOfSupergroupIt->representative()->spectrum(),
+                    subgroup.representative()->spectrum(),
+                    subgroupOfSupergroup.representative()->spectrum(),
                     toleranceRadius,
-                    similarityThreshold);
+                    similarityThreshold, numericalPrecisionEpsilon);
+
+            spdlog::debug("    Supergroup status after Cpmparision: {}", ToString::groupToString(supergroup));
 
             spdlog::info("  comparing it with {} out of {}: {}",
-                    std::distance(supergroup.begin(), subgroupOfSupergroupIt),
-                    std::distance(supergroup.begin(), supergroup.end()),
+                    i+1, supergroup.size(),
                     comparisionResult.metric);
 
             // if so, put permute the current group and put it into the supergroup subgroup and stop searching
-            if (comparisionResult.metric >= similarityThreshold) {
-                groupIt->permuteAll(comparisionResult.permutation, samples_);
+            if (comparisionResult.metric >= (similarityThreshold-numericalPrecisionEpsilon)) {
+                subgroup.permuteAll(comparisionResult.permutation, samples_);
 
-                subgroupOfSupergroupIt->emplace_back(*groupIt);
+                supergroup[j].emplace_back(subgroup);
 
+                spdlog::debug("    Match: Inner loop subgroupOfSupergroupIt {}: {}",
+                              j+1, ToString::groupToString(subgroupOfSupergroup));
+                spdlog::debug("    Match. End of inner loop. Supergroup status: {}", ToString::groupToString(supergroup));
                 foundMatchQ = true;
                 break;
             }
+
+            spdlog::debug("    No match. End of inner loop. Supergroup status: {}", ToString::groupToString(supergroup));
         }
-        if(!foundMatchQ)
-            supergroup.emplace_back(Group({*groupIt}));
+        if(!foundMatchQ) {
+            supergroup.emplace_back(Group({subgroup}));
+
+            spdlog::debug(" No match found. Group {} {} was added to supergroup: {}",
+                          i, ToString::groupToString(subgroup), ToString::groupToString(supergroup));
+        }
+
     }
     group = supergroup;
 
+    spdlog::debug("Result after loop: {}", ToString::groupToString(group));
+
     // sort by function value before leaving
     group.sortAll();
+
+    spdlog::debug("Final result after sorting: {}", ToString::groupToString(group));
 }
