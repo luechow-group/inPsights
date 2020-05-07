@@ -20,14 +20,11 @@
 
 #include "BestMatch.h"
 #include <MolecularSpectrum.h>
-
-
 #include <vector>
 #include <deque>
 
 namespace BestMatch {
     namespace SOAPSimilarity {
-
 
         Eigen::MatrixXd calculateEnvironmentalSimilarityMatrix(
                 const SOAP::MolecularSpectrum &permutee,

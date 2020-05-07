@@ -20,7 +20,6 @@
 #include <Hungarian.h>
 #include <limits>
 #include <deque>
-#include <set>
 #include <vector>
 #include <Eigen/Core>
 #include <ToString.h>
