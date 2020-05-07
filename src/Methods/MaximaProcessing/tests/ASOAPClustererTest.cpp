@@ -32,13 +32,13 @@ public:
     Group A, B, C, D, E, F;
     std::vector<Sample> samples;
     Eigen::VectorXd ekin;
-    double eps = SOAP::General::settings.comparisonEpsilon();
+    double eps = SOAP::General::settings.comparisonEpsilon()*10;
 
     Electron ea, eb;
     AtomsVector atoms;
 
     void SetUp() override {
-        //spdlog::set_level(spdlog::level::debug);
+        spdlog::set_level(spdlog::level::debug);
 
         double a = 1.0, b = a / 2.0, c = a * 2.0;
         atoms = AtomsVector({
@@ -102,23 +102,23 @@ TEST_F(ASOAPClustererTest, VerifyTestCluster) {
     auto specF = MolecularSpectrum({atoms, F.representative()->maximum()});
     
     ASSERT_LT(BestMatch::SOAPSimilarity::compare(
-            specA, specB, soapThreshold, distanceTolerance, eps).metric, 1);
+            specA, specB, distanceTolerance, soapThreshold, eps).metric, 1);
 
     ASSERT_LT(BestMatch::SOAPSimilarity::compare(
-            specA, specC, soapThreshold, distanceTolerance, eps).metric, 1);
+            specA, specC,  distanceTolerance, soapThreshold, eps).metric, 1);
 
     ASSERT_EQ(BestMatch::SOAPSimilarity::compare(
-            specA, specD, soapThreshold, distanceTolerance, eps).metric, 1);
+            specA, specD,  distanceTolerance, soapThreshold, eps).metric, 1);
 
     ASSERT_LT(BestMatch::SOAPSimilarity::compare(
-            specA, specE, soapThreshold, distanceTolerance, eps).metric, 1);
+            specA, specE,  distanceTolerance, soapThreshold, eps).metric, 1);
     ASSERT_LT(BestMatch::SOAPSimilarity::compare(
-            specA, specF, soapThreshold, distanceTolerance, eps).metric, 1);
+            specA, specF,  distanceTolerance, soapThreshold, eps).metric, 1);
 
     ASSERT_EQ(BestMatch::SOAPSimilarity::compare(
-            specE, specF, soapThreshold, distanceTolerance, eps).metric, 1);
+            specE, specF,  distanceTolerance, soapThreshold, eps).metric, 1);
     ASSERT_EQ(BestMatch::SOAPSimilarity::compare(
-            specF, specE, soapThreshold, distanceTolerance, eps).metric, 1);
+            specF, specE,  distanceTolerance, soapThreshold, eps).metric, 1);
 }
 
 TEST_F(ASOAPClustererTest, TwoClusters) {
@@ -132,7 +132,6 @@ TEST_F(ASOAPClustererTest, TwoClusters) {
     Radial::settings.nmax = 3;
 
     Group maxima({A, {B, C}, D, E, F});
-
     clusterer.cluster(maxima);
 
     ASSERT_EQ(maxima.size(), 2);
@@ -184,7 +183,6 @@ TEST_F(ASOAPClustererTest, TwoClusters_Alchemical) {
     // Group expected({{A,{B,C},D},{E,F}});
 }
 
-
 TEST_F(ASOAPClustererTest, BH3_Alchemical) {
     using namespace TestMolecules;
     auto nuclei = BH3::nuclei.atoms();
@@ -192,18 +190,18 @@ TEST_F(ASOAPClustererTest, BH3_Alchemical) {
     const MolecularGeometry B = {
             nuclei,
             ElectronsVector({
-                                    {Spin::alpha, nuclei.positionsVector()[1]},
-                                    {Spin::beta, nuclei.positionsVector()[2]},
-                                    {Spin::beta,inbetween(nuclei,{0,1},0.25)}
-                            })};
+                {Spin::alpha, nuclei.positionsVector()[1]},
+                {Spin::beta, nuclei.positionsVector()[2]},
+                {Spin::beta,inbetween(nuclei,{0,1},0.25)}
+            })};
 
     const MolecularGeometry A = {
             nuclei,
             ElectronsVector({
-                                    {Spin::beta, nuclei.positionsVector()[1]+Eigen::Vector3d(0,0.01,0.03)},
-                                    {Spin::beta,inbetween(nuclei,{0,2},0.26)},
-                                    {Spin::alpha, nuclei.positionsVector()[2]},
-                            })};
+                {Spin::beta, nuclei.positionsVector()[1]+Eigen::Vector3d(0,0.01,0.03)},
+                {Spin::beta,inbetween(nuclei,{0,2},0.26)},
+                {Spin::alpha, nuclei.positionsVector()[2]}
+            })};
 
     Eigen::VectorXd ekin = Eigen::VectorXd::Zero(3);
     std::vector<Sample> samples = {{A.electrons(),ekin},{B.electrons(),ekin}};
@@ -227,24 +225,15 @@ TEST_F(ASOAPClustererTest, BH3_Alchemical) {
 
     SOAPClusterer clusterer(nuclei, samples);
 
-    std::cout  << std::endl;
-    std::cout << maxima << std::endl;
-
     clusterer.cluster(maxima);
-
-    std::cout << maxima << std::endl;
 
     ASSERT_EQ(maxima.size(), 1);
     ASSERT_EQ(maxima[0].size(), 2);
     ASSERT_THAT(maxima[0].allSampleIds(), ElementsAre(0, 1));
-    //ASSERT_THAT(maxima[0][0].allSampleIds(), ElementsAre(0));
-    //ASSERT_THAT(maxima[0][1].allSampleIds(), ElementsAre(1, 2));
-    //ASSERT_THAT(maxima[0][1][0].allSampleIds(), ElementsAre(1));
-    //ASSERT_THAT(maxima[0][1][1].allSampleIds(), ElementsAre(2));
-    //ASSERT_THAT(maxima[0][2].allSampleIds(), ElementsAre(3));
+    ASSERT_THAT(maxima[0][0].allSampleIds(), ElementsAre(0));
+    ASSERT_THAT(maxima[0][1].allSampleIds(), ElementsAre(1));
 
-
-    // Group expected({{A,{B,C},D},{E,F}});
+    // Group expected({{{A},{B}}});
 }
 
 class H4test : public ::testing::Test {
@@ -256,7 +245,7 @@ public:
     AtomsVector atoms;
 
     void SetUp() override {
-        //spdlog::set_level(spdlog::level::off);
+        spdlog::set_level(spdlog::level::debug);
 
         atoms = TestMolecules::H4::linear::nuclei.atoms();
         A = Group({1.0, TestMolecules::H4::linear::ionicA.electrons(), 0});
@@ -268,7 +257,8 @@ public:
         samples = {
                 {A.representative()->maximum(), ekin},
                 {B.representative()->maximum(), ekin},
-                {C.representative()->maximum(), ekin}};
+                {C.representative()->maximum(), ekin}
+        };
     }
 };
 

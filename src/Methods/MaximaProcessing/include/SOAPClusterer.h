@@ -26,7 +26,7 @@
 namespace Settings {
     class SOAPClusterer : public ISettings {
     public:
-        Property<double> similarityThreshold = {0.95, VARNAME(similarityThreshold)};
+        Property<double> similarityThreshold = {0.98, VARNAME(similarityThreshold)};
         Property<double> distanceMatrixCovarianceTolerance = {0.2, VARNAME(distanceMatrixCovarianceTolerance)};
         SOAPClusterer();
         explicit SOAPClusterer(const YAML::Node &node);

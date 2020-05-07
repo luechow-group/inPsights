@@ -17,7 +17,6 @@
 
 #include "SOAPClusterer.h"
 #include "PreClusterer.h"
-#include <StructuralSimilarity.h>
 #include <spdlog/spdlog.h>
 #include <BestMatchSimilarity.h>
 #include <SOAPSettings.h>
@@ -78,14 +77,24 @@ void SOAPClusterer::cluster(Group& group){
     auto toleranceRadius = settings.distanceMatrixCovarianceTolerance();
     auto numericalPrecisionEpsilon = SOAP::General::settings.comparisonEpsilon.get();
 
+    spdlog::debug("Group before start: {}", ToString::groupToString(group));
+
     Group supergroup({{*group.begin()}});
+    spdlog::debug("Supergroup before start: {}", ToString::groupToString(supergroup));
 
     for(auto groupIt = std::next(group.begin()); groupIt !=group.end(); groupIt++) {
-        spdlog::info("{} out of {}", std::distance(group.begin(), groupIt), std::distance(group.begin(), group.end()));
+        spdlog::info("{} out of {}",
+                std::distance(group.begin(), groupIt), std::distance(group.begin(), group.end()));
+
         bool foundMatchQ = false;
 
+        spdlog::debug("  Outer loop groupIt {}: {}",
+                std::distance(group.begin(), groupIt), ToString::groupToString(*groupIt));
         // check if current group matches any of the supergroup subgroups
         for(auto subgroupOfSupergroupIt = supergroup.begin(); subgroupOfSupergroupIt != supergroup.end(); ++subgroupOfSupergroupIt) {
+
+            spdlog::debug("    Inner loop subgroupOfSupergroupIt {}: {}",
+                    std::distance(supergroup.begin(),subgroupOfSupergroupIt), ToString::groupToString(*subgroupOfSupergroupIt));
 
             assert(!groupIt->representative()->spectrum().molecularCenters_.empty() && "Spectrum cannot be empty.");
             assert(!subgroupOfSupergroupIt->representative()->spectrum().molecularCenters_.empty() && "Spectrum cannot be empty.");
@@ -107,15 +116,32 @@ void SOAPClusterer::cluster(Group& group){
 
                 subgroupOfSupergroupIt->emplace_back(*groupIt);
 
+                spdlog::debug("    Match: Inner loop subgroupOfSupergroupIt {}: {}",
+                              std::distance(supergroup.begin(),subgroupOfSupergroupIt),
+                              ToString::groupToString(*subgroupOfSupergroupIt));
+
                 foundMatchQ = true;
                 break;
             }
+            spdlog::debug("    No match.");
+
         }
-        if(!foundMatchQ)
+        if(!foundMatchQ) {
             supergroup.emplace_back(Group({*groupIt}));
+
+            spdlog::debug(" No match found. Group {} was {} to supergroup: {}",
+                          std::distance(group.begin(), groupIt),
+                          ToString::groupToString(*groupIt),
+                          ToString::groupToString(supergroup));
+        }
+
     }
     group = supergroup;
 
+    spdlog::debug("Result after loop: {}", ToString::groupToString(group));
+
     // sort by function value before leaving
     group.sortAll();
+
+    spdlog::debug("Final result after sorting: {}", ToString::groupToString(group));
 }

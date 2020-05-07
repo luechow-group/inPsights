@@ -21,6 +21,12 @@
 #include <Reference.h>
 #include <Eigen/Core>
 
+std::string ToString::groupToString(const Group &group) {
+    std::stringstream ss;
+    ss << group;
+    return ss.str();
+}
+
 Group::Group()
         : std::vector<Group>(0),
           representative_(nullptr),
