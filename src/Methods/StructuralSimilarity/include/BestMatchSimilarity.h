@@ -26,7 +26,7 @@
 namespace BestMatch {
     namespace SOAPSimilarity {
 
-        Eigen::MatrixXd calculateEnvironmentalSimilarityMatrix(
+        Eigen::MatrixXd calculateEnvironmentSimilarityMatrix(
                 const SOAP::MolecularSpectrum &permutee,
                 const SOAP::MolecularSpectrum &reference);
 
@@ -45,12 +45,12 @@ namespace BestMatch {
                 double comparisionEpsilon = std::numeric_limits<double>::epsilon());
 
         std::vector<std::deque<std::pair<Eigen::Index, Eigen::Index>>> findEquivalentEnvironments(
-                const Eigen::MatrixXd &bestMatchPermutedEnvironmentalSimilarities,
+                const Eigen::MatrixXd &bestMatchPermutedEnvironmentSimilarities,
                 const Eigen::PermutationMatrix<Eigen::Dynamic> &bestMatch,
                 double soapThreshold,
                 double numericalPrecisionEpsilon = std::numeric_limits<double>::epsilon());
 
-        double earlyExitMetric(const Eigen::MatrixXd &bestMatchPermutedEnvironmentalSimilarities);
+        double earlyExitMetric(const Eigen::MatrixXd &bestMatchPermutedEnvironmentSimilarities);
 
         Eigen::MatrixXd calculateDistanceCovarianceMatrixOfSelectedIndices(
                 const ElectronsVector &electronsVector,

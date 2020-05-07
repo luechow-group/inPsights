@@ -17,21 +17,25 @@
 
 #include <EnvironmentBlock.h>
 
+/*
+ * Distance conservation is checked by calculating the difference of the distance covariance matrice of
+ * the permutee and the reference, and assuring, that the maximal distance is below a certain threshold.
+ */
 bool DistanceCovariance::conservingQ(
         const std::vector<Eigen::Index> &permuteeIndices,
         const ElectronsVector &permutee,
         const std::vector<Eigen::Index> &referenceIndices,
         const ElectronsVector &reference,
-        double distanceMatrixCovarianceTolerance
-) {
+        double distanceMatrixCovarianceTolerance) {
 
     auto covA = BestMatch::SOAPSimilarity::calculateDistanceCovarianceMatrixOfSelectedIndices(permutee, permuteeIndices);
     auto covB = BestMatch::SOAPSimilarity::calculateDistanceCovarianceMatrixOfSelectedIndices(reference, referenceIndices);
 
     auto conservingQ = (covB - covA).array().abs().maxCoeff() <= distanceMatrixCovarianceTolerance;
-    if (!conservingQ)
-        spdlog::debug("Distance covariance matrix difference:\n{}", ToString::matrixXdToString((covB - covA), 3));
 
+    if (!conservingQ)
+        spdlog::debug("Distance covariance matrix difference:\n{}",
+                ToString::matrixXdToString((covB - covA), 3));
 
     return conservingQ;
 };
@@ -80,18 +84,18 @@ std::vector<std::vector<Eigen::Index>> EnvironmentBlock::filterPermutations(doub
 };
 
 
-EnvironmentBlockSequence::EnvironmentBlockSequence(const ElectronsVector &permutee, const ElectronsVector &reference)
+EnvironmentBlockJoiner::EnvironmentBlockJoiner(const ElectronsVector &permutee, const ElectronsVector &reference)
         : jointPermutedPermuteeIndicesCollection_(0),
           jointReferenceIndices_(0),
           permutee_(permutee),
           reference_(reference) {}
 
-void EnvironmentBlockSequence::initialize(const EnvironmentBlock &initialBlock) {
+void EnvironmentBlockJoiner::initialize(const EnvironmentBlock &initialBlock) {
     jointPermutedPermuteeIndicesCollection_ = initialBlock.permutedPermuteeIndicesCollection_;
     jointReferenceIndices_ = initialBlock.referenceIndices_;
 }
 
-bool EnvironmentBlockSequence::addBlock(const EnvironmentBlock &block, double distanceMatrixCovarianceTolerance) {
+bool EnvironmentBlockJoiner::addBlock(const EnvironmentBlock &block, double distanceMatrixCovarianceTolerance) {
     assert(block.permutee_ == permutee_);
     assert(block.reference_ == reference_);
 
@@ -115,14 +119,9 @@ bool EnvironmentBlockSequence::addBlock(const EnvironmentBlock &block, double di
     // for each joint permutation that survived so far, append and test all permutations from the new block
     for (const auto &jointPermutedPermuteeIndices : jointPermutedPermuteeIndicesCollection_) {
 
-        // TODO Add printouts here
-        // TODO compare method with old successful method
-
         // insert new indices
         for (auto newIndices: block.permutedPermuteeIndicesCollection_) {
             auto jointPermutedPermuteeIndicesCopy = jointPermutedPermuteeIndices;
-
-
 
             // start with copy and add new indices
             jointPermutedPermuteeIndicesCopy.insert(

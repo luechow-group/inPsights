@@ -54,13 +54,13 @@ public:
     const ElectronsVector &permutee_, &reference_;
 };
 
-class EnvironmentBlockSequence {
+class EnvironmentBlockJoiner {
 public:
-    EnvironmentBlockSequence(const ElectronsVector &permutee, const ElectronsVector &reference);
+    EnvironmentBlockJoiner(const ElectronsVector &permutee, const ElectronsVector &reference);
 
     void initialize(const EnvironmentBlock &initialBlock);
 
-    bool addBlock(const EnvironmentBlock &initialBlock, double distanceMatrixCovarianceTolerance);
+    bool addBlock(const EnvironmentBlock &block, double distanceMatrixCovarianceTolerance);
 
     std::vector<std::vector<Eigen::Index>> jointPermutedPermuteeIndicesCollection_;
     std::vector<Eigen::Index> jointReferenceIndices_;

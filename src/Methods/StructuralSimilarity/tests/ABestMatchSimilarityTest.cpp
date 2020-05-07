@@ -122,7 +122,7 @@ TEST_F(ABestMatchSimilarityTest, PrermuteEnvironmentsToLabSystem) {
     auto specA = MolecularSpectrum(A);
     auto specB = MolecularSpectrum(B);
 
-    auto environmentalSimilarities = BestMatch::SOAPSimilarity::calculateEnvironmentalSimilarityMatrix(specA,specB);
+    auto environmentalSimilarities = BestMatch::SOAPSimilarity::calculateEnvironmentSimilarityMatrix(specA, specB);
 
     auto fromKitA = ParticleKit::fromKitPermutation(A.electrons());
     auto fromKitB = ParticleKit::fromKitPermutation(B.electrons());
@@ -400,7 +400,8 @@ TEST_F(ABestMatchSimilarityTest, H4linear_real_maxima1) {
     routine(A, B, expectedPermIndices, distanceTolerance, soapThreshold);
 
     General::settings.mode = General::Mode::chemical;
-    auto envSimMat = BestMatch::SOAPSimilarity::calculateEnvironmentalSimilarityMatrix(MolecularSpectrum(A), MolecularSpectrum(B));
+    auto envSimMat = BestMatch::SOAPSimilarity::calculateEnvironmentSimilarityMatrix(MolecularSpectrum(A),
+                                                                                     MolecularSpectrum(B));
     ASSERT_GT(envSimMat.minCoeff(), 0.0);
     ASSERT_LT(envSimMat.maxCoeff(), 1.0); // no equivalent environments exist in chemical mode.
     expectedPermIndices = {};
