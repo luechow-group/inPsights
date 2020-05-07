@@ -45,7 +45,7 @@ namespace SOAP {
 namespace Settings::SOAP {
     class General : public ISettings {
     public:
-        Property<::SOAP::General::Mode> mode = {::SOAP::General::Mode::typeAgnostic, VARNAME(mode)};
+        Property<::SOAP::General::Mode> mode = {::SOAP::General::Mode::alchemical, VARNAME(mode)};
         Property<double> zeta = {2.0, VARNAME(zeta)};
         Property<double> sinkhornGamma = {0.1, VARNAME(sinkhornGamma)};
         Property<double> comparisonEpsilon = {
@@ -53,7 +53,7 @@ namespace Settings::SOAP {
                 VARNAME(comparisonEpsilon)};
 
         std::map<std::pair<int, int>, double> pairSimilarities = {
-                {{int(Spin::alpha), int(Spin::beta)}, 0.5}
+                {{int(Spin::alpha), int(Spin::beta)}, 1.0}
         };
 
         General();
@@ -65,7 +65,7 @@ namespace Settings::SOAP {
 
     class Angular : public ISettings {
     public:
-        Property<unsigned> lmax = {5, VARNAME(lmax)};
+        Property<unsigned> lmax = {3, VARNAME(lmax)};
 
         Angular();
 
@@ -82,7 +82,7 @@ namespace Settings::SOAP {
         Property<::SOAP::Radial::BasisType> basisType =
                 {::SOAP::Radial::BasisType::equispaced, VARNAME(mode)};
 
-        Property<unsigned> nmax = {5, VARNAME(nmax)};
+        Property<unsigned> nmax = {3, VARNAME(nmax)};
         Property<double> sigmaAtom = {1.0, VARNAME(sigmaAtom)};
         Property<double> sigmaZeroThreshold = {1e-10, VARNAME(sigmaZeroThreshold)};
         Property<unsigned> integrationSteps = {100, VARNAME(integrationSteps)};
@@ -99,8 +99,8 @@ namespace Settings::SOAP {
 
     class Cutoff : public ISettings {
     public:
-        Property<double> radius = {4.0 * ConversionFactors::angstrom2bohr, VARNAME(radius)};
-        Property<double> width = {1.0 * ConversionFactors::angstrom2bohr, VARNAME(width)};
+        Property<double> radius = {6.0 * ConversionFactors::angstrom2bohr, VARNAME(radius)};
+        Property<double> width = {4.0 * ConversionFactors::angstrom2bohr, VARNAME(width)};
         Property<double> centerWeight = {1.0, VARNAME(centerWeight)}; //TODO
 
         Cutoff();
