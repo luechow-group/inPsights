@@ -75,6 +75,8 @@ void SOAPClusterer::cluster(Group& group){
     auto similarityThreshold = settings.similarityThreshold();
     auto toleranceRadius = settings.distanceMatrixCovarianceTolerance();
     auto numericalPrecisionEpsilon = SOAP::General::settings.comparisonEpsilon.get();
+    auto maxValueDelta = SOAP::General::settings.maxValueDelta();
+    auto maxEquivalentEnvironments = SOAP::General::settings.maxEquivalentEnvironments();
 
     spdlog::debug("Group before start: {}", ToString::groupToString(group));
 
@@ -95,30 +97,33 @@ void SOAPClusterer::cluster(Group& group){
 
 
             spdlog::debug("    Supergroup status before comparison: {}", ToString::groupToString(supergroup));
-            
-            auto comparisionResult = BestMatch::SOAPSimilarity::compare(
-                    subgroup.representative()->spectrum(),
-                    subgroupOfSupergroup.representative()->spectrum(),
-                    toleranceRadius,
-                    similarityThreshold, numericalPrecisionEpsilon);
 
-            spdlog::debug("    Supergroup status after comparison: {}", ToString::groupToString(supergroup));
+            if( std::abs(subgroupOfSupergroup.representative()->value() - subgroup.representative()->value()) < maxValueDelta) {
+                auto comparisionResult = BestMatch::SOAPSimilarity::compare(
+                        subgroup.representative()->spectrum(),
+                        subgroupOfSupergroup.representative()->spectrum(),
+                        toleranceRadius,
+                        similarityThreshold, numericalPrecisionEpsilon, maxEquivalentEnvironments);
 
-            spdlog::info("  comparing it with {} out of {}: {}",
-                    j+1, supergroup.size(),
-                    comparisionResult.metric);
+                spdlog::debug("    Supergroup status after comparison: {}", ToString::groupToString(supergroup));
 
-            // if so, put permute the current group and put it into the supergroup subgroup and stop searching
-            if (comparisionResult.metric >= (similarityThreshold-numericalPrecisionEpsilon)) {
-                subgroup.permuteAll(comparisionResult.permutation, samples_);
+                spdlog::info("  comparing it with {} out of {}: {}",
+                             j + 1, supergroup.size(),
+                             comparisionResult.metric);
 
-                supergroup[j].emplace_back(subgroup);
+                // if so, put permute the current group and put it into the supergroup subgroup and stop searching
+                if (comparisionResult.metric >= (similarityThreshold - numericalPrecisionEpsilon)) {
+                    subgroup.permuteAll(comparisionResult.permutation, samples_);
 
-                spdlog::debug("    Match: Inner loop subgroupOfSupergroupIt {}: {}",
-                              j+1, ToString::groupToString(subgroupOfSupergroup));
-                spdlog::debug("    Match. End of inner loop. Supergroup status: {}", ToString::groupToString(supergroup));
-                foundMatchQ = true;
-                break;
+                    supergroup[j].emplace_back(subgroup);
+
+                    spdlog::debug("    Match: Inner loop subgroupOfSupergroupIt {}: {}",
+                                  j + 1, ToString::groupToString(subgroupOfSupergroup));
+                    spdlog::debug("    Match. End of inner loop. Supergroup status: {}",
+                                  ToString::groupToString(supergroup));
+                    foundMatchQ = true;
+                    break;
+                }
             }
 
             spdlog::debug("    No match. End of inner loop. Supergroup status: {}", ToString::groupToString(supergroup));
