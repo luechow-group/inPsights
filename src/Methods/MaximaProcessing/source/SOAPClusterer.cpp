@@ -105,7 +105,7 @@ void SOAPClusterer::cluster(Group& group){
             spdlog::debug("    Supergroup status after Cpmparision: {}", ToString::groupToString(supergroup));
 
             spdlog::info("  comparing it with {} out of {}: {}",
-                    i+1, supergroup.size(),
+                    j+1, supergroup.size(),
                     comparisionResult.metric);
 
             // if so, put permute the current group and put it into the supergroup subgroup and stop searching
