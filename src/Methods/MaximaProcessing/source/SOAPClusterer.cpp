@@ -94,15 +94,15 @@ void SOAPClusterer::cluster(Group& group){
             assert(!subgroupOfSupergroup.representative()->spectrum().molecularCenters_.empty() && "Spectrum cannot be empty.");
 
 
-            spdlog::debug("    Supergroup status before Comparision: {}", ToString::groupToString(supergroup));
-
+            spdlog::debug("    Supergroup status before comparison: {}", ToString::groupToString(supergroup));
+            
             auto comparisionResult = BestMatch::SOAPSimilarity::compare(
                     subgroup.representative()->spectrum(),
                     subgroupOfSupergroup.representative()->spectrum(),
                     toleranceRadius,
                     similarityThreshold, numericalPrecisionEpsilon);
 
-            spdlog::debug("    Supergroup status after Cpmparision: {}", ToString::groupToString(supergroup));
+            spdlog::debug("    Supergroup status after comparison: {}", ToString::groupToString(supergroup));
 
             spdlog::info("  comparing it with {} out of {}: {}",
                     j+1, supergroup.size(),

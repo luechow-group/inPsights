@@ -53,6 +53,10 @@ EnvironmentBlock::EnvironmentBlock(
 
 
 void EnvironmentBlock::initialize(std::deque<std::pair<Eigen::Index, Eigen::Index>> indexPairs) {
+    if(indexPairs.size() > Combinatorics::MAX_FACTORIAL)
+        throw std::overflow_error("Overflow: Too many similar environments found. "
+                                  "Consider choosing sharper SOAP settings.");
+
     for (const auto &indexPair : indexPairs) {
         permuteeIndices_.emplace_back(indexPair.first);
         referenceIndices_.emplace_back(indexPair.second);
@@ -64,7 +68,8 @@ void EnvironmentBlock::initialize(std::deque<std::pair<Eigen::Index, Eigen::Inde
 
     spdlog::debug("Reference indices of current block:");
     spdlog::debug(ToString::stdvectorLongIntToString(referenceIndices_));
-    spdlog::debug("Permuted permutee indices for current block:");
+    spdlog::debug("Found {} permutation of the permutee indices for current block:",
+            permutedPermuteeIndicesCollection_.size());
 
     for(const auto& permutedPermuteeIndices : permutedPermuteeIndicesCollection_)
         spdlog::debug(ToString::stdvectorLongIntToString(permutedPermuteeIndices));
@@ -72,7 +77,12 @@ void EnvironmentBlock::initialize(std::deque<std::pair<Eigen::Index, Eigen::Inde
 
 std::vector<std::vector<Eigen::Index>> EnvironmentBlock::filterPermutations(double distanceMatrixCovarianceTolerance) {
 
+    spdlog::debug("Filtering intra block permutations...");
     for (auto it = permutedPermuteeIndicesCollection_.begin(); it != permutedPermuteeIndicesCollection_.end(); it++) {
+        spdlog::debug("{} remaining ...",
+                std::distance(
+                        std::begin(permutedPermuteeIndicesCollection_),
+                        std::end(permutedPermuteeIndicesCollection_)));
         auto conservingQ = DistanceCovariance::conservingQ(
                 *it, permutee_,
                 referenceIndices_, reference_,

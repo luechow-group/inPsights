@@ -23,6 +23,8 @@
 #include <algorithm>
 
 namespace Combinatorics {
+    const size_t MAX_BINOMIAL = 34;
+    const size_t MAX_FACTORIAL = 12;
 
     // C(n, k) = n! / (n-k)! / !k
     std::size_t binomial(std::size_t n, std::size_t k);
