@@ -95,7 +95,10 @@ Eigen::MatrixXd BestMatch::SOAPSimilarity::calculateEnvironmentSimilarityMatrix(
 std::vector<BestMatch::DescendingMetricResult> BestMatch::SOAPSimilarity::getBestMatchResults(
         const MolecularSpectrum &permutee,
         const MolecularSpectrum &reference,
-        double distanceMatrixCovarianceTolerance, double similarityThreshold, double comparisionEpsilon) {
+        double distanceMatrixCovarianceTolerance,
+        double similarityThreshold,
+        double comparisionEpsilon,
+        unsigned maximalNumberOfEquivalentEnvironments) {
 
     assert(ParticleKit::isSubsetQ(permutee.molecule_)
            && "The permutee must be a subset of the particle kit.");
@@ -107,10 +110,10 @@ std::vector<BestMatch::DescendingMetricResult> BestMatch::SOAPSimilarity::getBes
     const auto referenceFromKit = ParticleKit::fromKitPermutation(reference.molecule_.electrons());
     Eigen::PermutationMatrix<Eigen::Dynamic> identity(permutee.molecule_.electrons().numberOfEntities());
 
-    spdlog::debug("Electrons of permutee are{} in particle-kit system.",
-            permuteeToKit.indices() == identity.indices() ?  "": " NOT");
-    spdlog::debug("Electrons of reference are{} in particle-kit system.",
-                  referenceToKit.indices() == identity.indices() ?  "": " NOT");
+    spdlog::debug("Electrons of permutee {} in particle-kit system.",
+            permuteeToKit.indices() == identity.indices() ?  "are": "are NOT");
+    spdlog::debug("Electrons of reference {} in particle-kit system.",
+                  referenceToKit.indices() == identity.indices() ?  "are": "are NOT");
 
     const auto N = size_t(permutee.molecule_.electrons().numberOfEntities());
 
@@ -157,6 +160,13 @@ std::vector<BestMatch::DescendingMetricResult> BestMatch::SOAPSimilarity::getBes
     for (const auto &dependentIndexPairs : blockwiseDependentIndexPairs) {
         for (const auto &dependentIndexPair : dependentIndexPairs) {
             spdlog::debug("({} {})", dependentIndexPair.first, dependentIndexPair.second);
+        }
+        if(dependentIndexPairs.size() >= maximalNumberOfEquivalentEnvironments) {
+            spdlog::critical("Too many equivalent environments ({}, allowed: {})."
+                             "Consider choosing sharper SOAP settings or increasing "
+                             "the maximal number of equivalent environments. \n Exiting...",
+                             dependentIndexPairs.size(), maximalNumberOfEquivalentEnvironments);
+            return {{0, bestMatch}};
         }
         spdlog::debug(" ");
     }
@@ -243,9 +253,13 @@ BestMatch::SOAPSimilarity::earlyExitMetric(const Eigen::MatrixXd &bestMatchPermu
 BestMatch::DescendingMetricResult BestMatch::SOAPSimilarity::compare(
         const MolecularSpectrum &permutee,
         const MolecularSpectrum &reference,
-        double distanceMatrixCovarianceTolerance, double soapThreshold, double numericalPrecisionEpsilon) {
+        double distanceMatrixCovarianceTolerance,
+        double soapThreshold,
+        double numericalPrecisionEpsilon,
+        unsigned maximalNumberOfEquivalentEnvironments) {
     return BestMatch::SOAPSimilarity::getBestMatchResults(permutee, reference, distanceMatrixCovarianceTolerance,
-                                                          soapThreshold, numericalPrecisionEpsilon).front();
+                                                          soapThreshold, numericalPrecisionEpsilon,
+                                                          maximalNumberOfEquivalentEnvironments).front();
 }
 
 /*

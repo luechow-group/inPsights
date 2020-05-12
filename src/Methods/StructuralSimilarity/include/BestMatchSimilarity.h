@@ -35,14 +35,16 @@ namespace BestMatch {
                 const SOAP::MolecularSpectrum &reference,
                 double distanceMatrixCovarianceTolerance,
                 double soapThreshold,
-                double numericalPrecisionEpsilon = std::numeric_limits<double>::epsilon());
+                double numericalPrecisionEpsilon = std::numeric_limits<double>::epsilon(),
+                unsigned maximalNumberOfEquivalentEnvironments = 6);
 
         std::vector<DescendingMetricResult> getBestMatchResults(
                 const SOAP::MolecularSpectrum &permutee,
                 const SOAP::MolecularSpectrum &reference,
                 double distanceMatrixCovarianceTolerance,
                 double similarityThreshold,
-                double comparisionEpsilon = std::numeric_limits<double>::epsilon());
+                double comparisionEpsilon = std::numeric_limits<double>::epsilon(),
+                unsigned maximalNumberOfEquivalentEnvironments = 6);
 
         std::vector<std::deque<std::pair<Eigen::Index, Eigen::Index>>> findEquivalentEnvironments(
                 const Eigen::MatrixXd &bestMatchPermutedEnvironmentSimilarities,
