@@ -954,3 +954,27 @@ TEST_F(ABestMatchSimilarityTest, EthaneDoublyIonicAnti) {
 
     routine(A,B,permIndices,distanceTolerance, soapThreshold);
 }
+
+TEST_F(ABestMatchSimilarityTest, Trans13ButadieneRealMaxima) {
+    spdlog::set_level(spdlog::level::debug);
+    auto A = TestMolecules::trans13Butadiene::realA;
+    auto B = TestMolecules::trans13Butadiene::realB;
+
+    General::settings.zeta = 3;
+    Radial::settings.nmax = 4;
+    Angular::settings.lmax = 4;
+    Cutoff::settings.radius = 8.0;
+    Cutoff::settings.width = 8.0;
+    Radial::settings.sigmaAtom = 1.0;
+
+
+    std::vector<Eigen::VectorXi> expectedPermIndices(0, Eigen::VectorXi(A.electrons().numberOfEntities()));
+    //expectedPermIndices[0] << 0,1,3,2;
+    //expectedPermIndices[1] << 3,1,0,2;
+
+    // index 32 is found twice for nmax=lmax=3
+
+    General::settings.pairSimilarities[{int(Spin::alpha), int(Spin::beta)}] = 1.0;
+    General::settings.mode = General::Mode::alchemical;
+    routine(A, B, expectedPermIndices, distanceTolerance, 0.99);
+}
