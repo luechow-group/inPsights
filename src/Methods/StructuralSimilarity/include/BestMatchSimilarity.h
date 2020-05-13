@@ -52,6 +52,31 @@ namespace BestMatch {
                 double soapThreshold,
                 double numericalPrecisionEpsilon = std::numeric_limits<double>::epsilon());
 
+        struct PermuteeEnvsToReferenceEnvMatch{
+            std::set<Eigen::Index> permuteeEnvsIndices;
+            Eigen::Index referenceEnvIndex;
+        };
+
+
+        struct GrowingPerm{
+            std::set<Eigen::Index> remainingPermuteeIndices_;
+            std::deque<std::pair<Eigen::Index,Eigen::Index>> chainOfSwaps_;
+
+            GrowingPerm(const std::set<Eigen::Index>& remainingPermuteeIndices,
+                        const std::deque<std::pair<Eigen::Index,Eigen::Index>>& chainOfSwaps);
+
+            bool add(const std::pair<Eigen::Index, Eigen::Index>& envMatch);
+        };
+
+        std::deque<PermuteeEnvsToReferenceEnvMatch> findEnvironmentMatches(
+                const Eigen::MatrixXd &environmentSimilarities,
+                double soapThreshold,
+                double numericalPrecisionEpsilon = std::numeric_limits<double>::epsilon());
+
+        std::deque<std::deque<PermuteeEnvsToReferenceEnvMatch>> groupDependentMatches(
+                const std::deque<PermuteeEnvsToReferenceEnvMatch>& matches );
+
+
         double earlyExitMetric(const Eigen::MatrixXd &bestMatchPermutedEnvironmentSimilarities);
 
         Eigen::MatrixXd calculateDistanceCovarianceMatrixOfSelectedIndices(

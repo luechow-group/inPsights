@@ -141,6 +141,79 @@ TEST_F(ABestMatchSimilarityTest, PrermuteEnvironmentsToLabSystem) {
     ASSERT_NEAR(environmentalSimilaritiesInLabSystem(3,3), 1.0, eps);
 }
 
+TEST_F(ABestMatchSimilarityTest, GrowingPerm) {
+
+    auto growingPerm = BestMatch::SOAPSimilarity::GrowingPerm({0,1,2},{});
+
+    ASSERT_TRUE(growingPerm.add({0,1}));
+    ASSERT_THAT(growingPerm.remainingPermuteeIndices_,ElementsAre(1,2));
+
+    ASSERT_EQ(growingPerm.chainOfSwaps_[0].first, 0);
+    ASSERT_EQ(growingPerm.chainOfSwaps_[0].second, 1);
+
+    ASSERT_FALSE(growingPerm.add({0,2}));
+}
+
+TEST_F(ABestMatchSimilarityTest, GroupDependentMatches1) {
+    Eigen::MatrixXd mat(4,4);
+    mat <<
+    1,0,1,0,\
+    0,1,0,1,\
+    1,0,1,0,\
+    0,1,0,1;
+
+    auto matches = BestMatch::SOAPSimilarity::findEnvironmentMatches(mat, 1.0, 0.001);
+    ASSERT_THAT(matches[0].permuteeEnvsIndices, ElementsAre(0,2));
+    ASSERT_EQ(matches[0].referenceEnvIndex, 0);
+    ASSERT_THAT(matches[1].permuteeEnvsIndices, ElementsAre(1,3));
+    ASSERT_EQ(matches[1].referenceEnvIndex, 1);
+    ASSERT_THAT(matches[2].permuteeEnvsIndices, ElementsAre(0,2));
+    ASSERT_EQ(matches[2].referenceEnvIndex, 2);
+    ASSERT_THAT(matches[3].permuteeEnvsIndices, ElementsAre(1,3));
+    ASSERT_EQ(matches[3].referenceEnvIndex, 3);
+
+    auto dependentMatches = BestMatch::SOAPSimilarity::groupDependentMatches(matches);
+    ASSERT_THAT(dependentMatches[0][0].permuteeEnvsIndices, ElementsAre(0,2));
+    ASSERT_EQ(dependentMatches[0][0].referenceEnvIndex, 0);
+    ASSERT_THAT(dependentMatches[0][1].permuteeEnvsIndices, ElementsAre(0,2));
+    ASSERT_EQ(dependentMatches[0][1].referenceEnvIndex, 2);
+    ASSERT_THAT(dependentMatches[1][0].permuteeEnvsIndices, ElementsAre(1,3));
+    ASSERT_EQ(dependentMatches[1][0].referenceEnvIndex, 1);
+    ASSERT_THAT(dependentMatches[1][1].permuteeEnvsIndices, ElementsAre(1,3));
+    ASSERT_EQ(dependentMatches[1][1].referenceEnvIndex, 3);
+}
+
+TEST_F(ABestMatchSimilarityTest, GroupDependentMatches2) {
+    Eigen::MatrixXd mat(4,4);
+    mat <<
+    1,1,0,1,\
+    1,1,0,0,\
+    0,0,1,0,\
+    1,0,0,1;
+
+    auto matches = BestMatch::SOAPSimilarity::findEnvironmentMatches(mat, 1.0, 1e-8);
+    ASSERT_THAT(matches[0].permuteeEnvsIndices, ElementsAre(0,1,3));
+    ASSERT_EQ(matches[0].referenceEnvIndex, 0);
+    ASSERT_THAT(matches[1].permuteeEnvsIndices, ElementsAre(0,1));
+    ASSERT_EQ(matches[1].referenceEnvIndex, 1);
+    ASSERT_THAT(matches[2].permuteeEnvsIndices, ElementsAre(2));
+    ASSERT_EQ(matches[2].referenceEnvIndex, 2);
+    ASSERT_THAT(matches[3].permuteeEnvsIndices, ElementsAre(0,3));
+    ASSERT_EQ(matches[3].referenceEnvIndex, 3);
+
+    auto dependentMatches = BestMatch::SOAPSimilarity::groupDependentMatches(matches);
+    ASSERT_THAT(dependentMatches[0][0].permuteeEnvsIndices, ElementsAre(0,1,3));
+    ASSERT_EQ(dependentMatches[0][0].referenceEnvIndex, 0);
+    ASSERT_THAT(dependentMatches[0][1].permuteeEnvsIndices, ElementsAre(0,1));
+    ASSERT_EQ(dependentMatches[0][1].referenceEnvIndex, 1);
+    ASSERT_THAT(dependentMatches[0][2].permuteeEnvsIndices, ElementsAre(0,3));
+    ASSERT_EQ(dependentMatches[0][2].referenceEnvIndex, 3);
+
+    ASSERT_THAT(dependentMatches[1][0].permuteeEnvsIndices, ElementsAre(2));
+    ASSERT_EQ(dependentMatches[1][0].referenceEnvIndex, 2);
+}
+
+
 TEST_F(ABestMatchSimilarityTest, ListOfDependentIndicesCase1) {
     Eigen::MatrixXd mat(4,4);
     mat <<

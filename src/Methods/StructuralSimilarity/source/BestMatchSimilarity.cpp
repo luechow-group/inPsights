@@ -306,6 +306,82 @@ BestMatch::SOAPSimilarity::findEquivalentEnvironments(
     return listOfDependentIndicesLists;
 }
 
+
+
+BestMatch::SOAPSimilarity::GrowingPerm::GrowingPerm(const std::set<Eigen::Index> &remainingPermuteeIndices,
+                                                    const std::deque<std::pair<Eigen::Index, Eigen::Index>> &chainOfSwaps)
+                                                    : remainingPermuteeIndices_(remainingPermuteeIndices),
+                                                      chainOfSwaps_(chainOfSwaps){}
+
+
+bool BestMatch::SOAPSimilarity::GrowingPerm::add(const std::pair<Eigen::Index, Eigen::Index>& envMatch){
+
+    auto permuteeIndexIterator = remainingPermuteeIndices_.find(envMatch.first);
+    if(permuteeIndexIterator!= std::end(remainingPermuteeIndices_)) {
+        remainingPermuteeIndices_.erase(permuteeIndexIterator);
+        chainOfSwaps_.emplace_back(envMatch);
+        return true;
+    } else {
+        return false;
+    }
+}
+
+std::deque<BestMatch::SOAPSimilarity::PermuteeEnvsToReferenceEnvMatch>
+BestMatch::SOAPSimilarity::findEnvironmentMatches(
+        const Eigen::MatrixXd &environmentSimilarities, // TODO simlarities are also ok
+        double soapThreshold, double numericalPrecisionEpsilon) {
+
+    std::deque<PermuteeEnvsToReferenceEnvMatch> matches;
+    for (Eigen::Index j = 0; j < environmentSimilarities.cols(); ++j) {
+
+        Eigen::Index referenceEnv = j;
+        std::set<Eigen::Index> permuteeEnvs;
+
+        for (Eigen::Index i = 0; i < environmentSimilarities.rows(); ++i)
+            if (environmentSimilarities(i, j) >= soapThreshold - numericalPrecisionEpsilon)
+                permuteeEnvs.emplace(i);
+
+        matches.emplace_back(PermuteeEnvsToReferenceEnvMatch{permuteeEnvs, referenceEnv});
+    }
+
+    return matches;
+}
+
+std::deque<std::deque<BestMatch::SOAPSimilarity::PermuteeEnvsToReferenceEnvMatch>>
+BestMatch::SOAPSimilarity::groupDependentMatches(const std::deque<PermuteeEnvsToReferenceEnvMatch> &matches) {
+
+    std::deque<std::deque<BestMatch::SOAPSimilarity::PermuteeEnvsToReferenceEnvMatch>> dependentMatchesGroups;
+    assert(!matches.empty());
+
+    for(const auto& match : matches){
+
+        bool foundQ = false;
+        for ( auto& dependentMatchesGroup : dependentMatchesGroups){
+
+            for ( auto dependentMatch : dependentMatchesGroup ) {
+                // check if subset
+                std::list<Eigen::Index> intersection;
+                std::set_intersection(
+                        std::begin(match.permuteeEnvsIndices), std::end(match.permuteeEnvsIndices),
+                        std::begin(dependentMatch.permuteeEnvsIndices), std::end(dependentMatch.permuteeEnvsIndices),
+                        std::inserter(intersection,std::begin(intersection)));
+
+                if(!intersection.empty()) {
+                    dependentMatchesGroup.emplace_back(match);
+                    foundQ = true;
+                    goto breakTwoLoops;
+                }
+            }
+        }
+        breakTwoLoops:
+        if(!foundQ)
+            dependentMatchesGroups.emplace_back(std::deque<PermuteeEnvsToReferenceEnvMatch>({match}));
+    }
+
+    return dependentMatchesGroups;
+}
+
+
 /*
  * Calculates the positional distances in the kit system of the electrons specified by the indices
  */
