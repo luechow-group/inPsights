@@ -372,7 +372,7 @@ TEST_F(ABestMatchSimilarityTest, FindPossiblePermutations5) {
 
 TEST_F(ABestMatchSimilarityTest, H4linear_alchemical) {
     auto A = TestMolecules::H4::linear::ionicA;
-    auto C = TestMolecules::H4::linear::ionicAreflectedReorderedNumbering;
+    auto B = TestMolecules::H4::linear::ionicAreflectedReorderedNumbering;
 
     General::settings.pairSimilarities[{int(Spin::alpha), int(Spin::beta)}] = 1.0;
     General::settings.mode = General::Mode::alchemical;
@@ -380,7 +380,7 @@ TEST_F(ABestMatchSimilarityTest, H4linear_alchemical) {
     std::vector<Eigen::VectorXi> expectedPermIndices(2, Eigen::VectorXi(A.electrons().numberOfEntities()));
     expectedPermIndices[0] << 1,2,3,0;
     expectedPermIndices[1] << 3,2,1,0;
-    routine(A, C, expectedPermIndices, distanceTolerance, soapThreshold);
+    routine(A, B, expectedPermIndices, distanceTolerance, soapThreshold);
 }
 
 TEST_F(ABestMatchSimilarityTest, H4linear_ionic_reflected) {

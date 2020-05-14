@@ -19,58 +19,40 @@
 #include <EnvironmentBlock.h>
 #include <TestMolecules.h>
 #include <ParticleKit.h>
-
 #include <BestMatchSimilarity.h>
 #include <SOAPSettings.h>
 
 using namespace testing;
 using namespace SOAP;
 
-/*
-TEST(AEnvironmentBlockTest, CorrectFilteringAlchemical) {
+
+TEST(AEnvironmentBlockTest, FilteringOfCorrectPermutationsAlchemical) {
     auto A = TestMolecules::H4::linear::ionicA;
     auto B = TestMolecules::H4::linear::ionicAreflectedReorderedNumbering; // check with B in chemical mode
-
     General::settings.pairSimilarities[{int(Spin::alpha), int(Spin::beta)}] = 1.0;
     General::settings.mode = General::Mode::alchemical;
     ParticleKit::create(A);
 
-    // Dependent indices blocks of AB
-    // (3 0)
-    // (0 1) (2 3)
-    // (1 2)
-
-    // pairs of dependent indices
-    std::deque<std::pair<Eigen::Index,Eigen::Index>> pairs {
-        std::make_pair<Eigen::Index, Eigen::Index>(0,1),
-        std::make_pair<Eigen::Index, Eigen::Index>(2,3)};
-
-    std::deque<BestMatch::SOAPSimilarity::PermuteeEnvsToReferenceEnvMatch> dependentMatches = {
-            {{{0,2},1}}
+    std::deque<BestMatch::SOAPSimilarity::GrowingPerm> possiblePermutations = {
+            BestMatch::SOAPSimilarity::GrowingPerm({},{{0,1},{2,3}}),
+            BestMatch::SOAPSimilarity::GrowingPerm({},{{2,1},{0,3}})
     };
 
-    //BestMatch::SOAPSimilarity::GrowingPerm::findPossiblePermutations
-
-    std::deque<BestMatch::SOAPSimilarity::GrowingPerm> possiblePerms = { {{}, pairs} };
-
-    EnvironmentBlock block1(possiblePerms, A.electrons(), B.electrons());
+    auto block = EnvironmentBlock(possiblePermutations,
+            A.electrons(),
+            B.electrons());
 
     // referenceIndices are ordered
-    ASSERT_THAT(block1.referenceIndices_, ElementsAre(1,3));
+    ASSERT_THAT(block.referenceIndices_, ElementsAre(1,3));
+
+    auto filteredPerms = block.filterPermutations(0.1);
 
     // check perm
-    auto unfilteredPerms = block1.permutedPermuteeIndicesCollection_;
-    ASSERT_THAT(unfilteredPerms[0], ElementsAre(0,2));
-    ASSERT_THAT(unfilteredPerms[1], ElementsAre(2,0));
-
-    // filter perm
-    auto filteredPerms = block1.filterPermutations(0.1);
     ASSERT_THAT(filteredPerms[0], ElementsAre(0,2));
     ASSERT_THAT(filteredPerms[1], ElementsAre(2,0));
 }
 
-
-TEST(AEnvironmentBlockTest, WrongWithAdditionalPair) {
+TEST(AEnvironmentBlockTest, FilteringOfWrongPermutationsAlchemical) {
     auto A = TestMolecules::H4::linear::ionicA;
     auto B = TestMolecules::H4::linear::ionicAreflectedReorderedNumbering; // check with B in chemical mode
 
@@ -78,39 +60,20 @@ TEST(AEnvironmentBlockTest, WrongWithAdditionalPair) {
     General::settings.mode = General::Mode::alchemical;
     ParticleKit::create(A);
 
-    // Dependent indices blocks of AB
-    // (3 0)
-    // (0 1) (2 3)
-    // (1 2)
+    std::deque<BestMatch::SOAPSimilarity::GrowingPerm> possiblePermutations = {
+            // second swap is wrong
+            BestMatch::SOAPSimilarity::GrowingPerm({},{{0,1},{3,2},{2,3}}),
+            // second swap is wrong
+            BestMatch::SOAPSimilarity::GrowingPerm({},{{2,1},{3,2},{0,3}})
+    };
 
-    // pairs of dependent indices
-    std::deque<std::pair<Eigen::Index,Eigen::Index>> pairs {
-            std::make_pair<Eigen::Index, Eigen::Index>(0,1),
-            std::make_pair<Eigen::Index, Eigen::Index>(1,2),
-            std::make_pair<Eigen::Index, Eigen::Index>(2,3),
-            // wrong index pair:
-                    };
-
-    std::deque<BestMatch::SOAPSimilarity::GrowingPerm> possiblePerms = { {{}, pairs} };
-    EnvironmentBlock block1(possiblePerms, A.electrons(), B.electrons());
-
+    auto block = EnvironmentBlock(possiblePermutations,
+                                  A.electrons(),
+                                  B.electrons());
 
     // referenceIndices are ordered
-    ASSERT_THAT(block1.referenceIndices_, ElementsAre(1,2,3));
+    ASSERT_THAT(block.referenceIndices_, ElementsAre(1,2,3));
 
-    // check perm
-    auto unfilteredPerms = block1.permutedPermuteeIndicesCollection_;
-    ASSERT_EQ(unfilteredPerms.size(), 6);
-    ASSERT_THAT(unfilteredPerms[0], ElementsAre(0, 1, 2));
-    ASSERT_THAT(unfilteredPerms[1], ElementsAre(0, 2, 1));
-    ASSERT_THAT(unfilteredPerms[2], ElementsAre(1, 0, 2));
-    ASSERT_THAT(unfilteredPerms[3], ElementsAre(1, 2, 0));
-    ASSERT_THAT(unfilteredPerms[4], ElementsAre(2, 0, 1));
-    ASSERT_THAT(unfilteredPerms[5], ElementsAre(2, 1, 0));
-
-    auto filteredPerms = block1.filterPermutations(0.1);
-    ASSERT_EQ(filteredPerms.size(), 2);
-    ASSERT_THAT(filteredPerms[0], ElementsAre(0,1,2));
-    ASSERT_THAT(filteredPerms[1], ElementsAre(2,1,0));
+    auto filteredPerms = block.filterPermutations(0.1);
+    ASSERT_TRUE(filteredPerms.empty());
 }
-*/
