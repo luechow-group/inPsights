@@ -98,8 +98,7 @@ std::vector<BestMatch::DescendingMetricResult> BestMatch::SOAPSimilarity::getBes
         const MolecularSpectrum &reference,
         double distanceMatrixCovarianceTolerance,
         double similarityThreshold,
-        double comparisionEpsilon,
-        unsigned maximalNumberOfEquivalentEnvironments) {
+        double comparisionEpsilon) {
 
     assert(ParticleKit::isSubsetQ(permutee.molecule_)
            && "The permutee must be a subset of the particle kit.");
@@ -235,11 +234,9 @@ BestMatch::DescendingMetricResult BestMatch::SOAPSimilarity::compare(
         const MolecularSpectrum &reference,
         double distanceMatrixCovarianceTolerance,
         double soapThreshold,
-        double numericalPrecisionEpsilon,
-        unsigned maximalNumberOfEquivalentEnvironments) {
+        double numericalPrecisionEpsilon) {
     return BestMatch::SOAPSimilarity::getBestMatchResults(permutee, reference, distanceMatrixCovarianceTolerance,
-                                                          soapThreshold, numericalPrecisionEpsilon,
-                                                          maximalNumberOfEquivalentEnvironments).front();
+                                                          soapThreshold, numericalPrecisionEpsilon).front();
 }
 
 /*

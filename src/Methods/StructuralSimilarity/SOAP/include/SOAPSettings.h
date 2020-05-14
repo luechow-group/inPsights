@@ -48,9 +48,7 @@ namespace Settings::SOAP {
         Property<::SOAP::General::Mode> mode = {::SOAP::General::Mode::alchemical, VARNAME(mode)};
         Property<double> zeta = {2.0, VARNAME(zeta)};
         Property<double> sinkhornGamma = {0.1, VARNAME(sinkhornGamma)};
-        Property<double> comparisonEpsilon = {std::numeric_limits<double>::epsilon()*1e5,
-                                              VARNAME(comparisonEpsilon)};
-        Property<unsigned> maxEquivalentEnvironments = {6, VARNAME(maxEquivalentEnvironments)};
+        Property<double> comparisonEpsilon = {std::numeric_limits<double>::epsilon()*1e5, VARNAME(comparisonEpsilon)};
 
         std::map<std::pair<int, int>, double> pairSimilarities = {
                 {{int(Spin::alpha), int(Spin::beta)}, 1.0}

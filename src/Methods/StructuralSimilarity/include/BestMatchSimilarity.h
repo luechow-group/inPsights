@@ -1,4 +1,4 @@
-/* Copyright (C) 2019 Michael Heuer.
+/* Copyright (C) 2019-2020 Michael Heuer.
  *
  * This file is part of inPsights.
  * inPsights is free software: you can redistribute it and/or modify
@@ -35,16 +35,14 @@ namespace BestMatch {
                 const SOAP::MolecularSpectrum &reference,
                 double distanceMatrixCovarianceTolerance,
                 double soapThreshold,
-                double numericalPrecisionEpsilon = std::numeric_limits<double>::epsilon(),
-                unsigned maximalNumberOfEquivalentEnvironments = 6);
+                double numericalPrecisionEpsilon = std::numeric_limits<double>::epsilon());
 
         std::vector<DescendingMetricResult> getBestMatchResults(
                 const SOAP::MolecularSpectrum &permutee,
                 const SOAP::MolecularSpectrum &reference,
                 double distanceMatrixCovarianceTolerance,
                 double similarityThreshold,
-                double comparisionEpsilon = std::numeric_limits<double>::epsilon(),
-                unsigned maximalNumberOfEquivalentEnvironments = 6);
+                double comparisionEpsilon = std::numeric_limits<double>::epsilon());
 
         std::vector<std::deque<std::pair<Eigen::Index, Eigen::Index>>> findEquivalentEnvironments(
                 const Eigen::MatrixXd &bestMatchPermutedEnvironmentSimilarities,

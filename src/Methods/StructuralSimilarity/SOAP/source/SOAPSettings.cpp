@@ -1,4 +1,4 @@
-/* Copyright (C) 2018-2019 Michael Heuer.
+/* Copyright (C) 2018-2020 Michael Heuer.
  *
  * This file is part of inPsights.
  * inPsights is free software: you can redistribute it and/or modify
@@ -79,7 +79,6 @@ namespace Settings::SOAP {
         doubleProperty::decode(node[className], zeta);
         doubleProperty::decode(node[className], sinkhornGamma);
         doubleProperty::decode(node[className], comparisonEpsilon);
-        unsignedProperty::decode(node[className], maxEquivalentEnvironments);
     }
 
     void General::appendToNode(YAML::Node &node) const {
@@ -106,7 +105,6 @@ namespace Settings::SOAP {
         node[className][zeta.name()] = zeta();
         node[className][sinkhornGamma.name()] = sinkhornGamma();
         node[className][comparisonEpsilon.name()] = comparisonEpsilon();
-        node[className][maxEquivalentEnvironments.name()] = maxEquivalentEnvironments();
     }
 
 

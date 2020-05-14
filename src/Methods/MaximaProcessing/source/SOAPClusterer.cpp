@@ -1,4 +1,4 @@
-/* Copyright (C) 2018-2019 Michael Heuer.
+/* Copyright (C) 2018-2020 Michael Heuer.
  *
  * This file is part of inPsights.
  * inPsights is free software: you can redistribute it and/or modify
@@ -79,7 +79,6 @@ void SOAPClusterer::cluster(Group& group){
     auto toleranceRadius = settings.distanceMatrixCovarianceTolerance();
     auto numericalPrecisionEpsilon = SOAP::General::settings.comparisonEpsilon();
     auto maxValueDelta = SOAPClusterer::settings.maxValueDelta();
-    auto maxEquivalentEnvironments = SOAP::General::settings.maxEquivalentEnvironments();
 
     spdlog::debug("Group before start: {}", ToString::groupToString(group));
 
@@ -105,8 +104,7 @@ void SOAPClusterer::cluster(Group& group){
                 auto comparisionResult = BestMatch::SOAPSimilarity::compare(
                         subgroup.representative()->spectrum(),
                         subgroupOfSupergroup.representative()->spectrum(),
-                        toleranceRadius,
-                        similarityThreshold, numericalPrecisionEpsilon, maxEquivalentEnvironments);
+                        toleranceRadius, similarityThreshold, numericalPrecisionEpsilon);
 
                 spdlog::debug("    Supergroup status after comparison: {}", ToString::groupToString(supergroup));
 
