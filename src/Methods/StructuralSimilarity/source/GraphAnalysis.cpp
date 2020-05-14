@@ -20,13 +20,11 @@
 #include <Enumerate.h>
 #include <algorithm>
 
+#include <iostream>
 namespace GraphAnalysis {
     Eigen::MatrixXb filter(const Eigen::MatrixXd &matrix, double threshold) {
         assert((matrix.array() >= 0.0).all());
         assert(threshold >= 0.0);
-
-        assert((matrix.array() <= 1.0).all());
-        assert(threshold <= 1.0);
 
         return matrix.unaryExpr([&](const double x) { return (x >= threshold) ? 1.0 : 0.0; }).cast<bool>();
     }
@@ -126,8 +124,8 @@ namespace GraphAnalysis {
 }
 
 std::map<std::size_t, std::size_t> GraphAnalysis::findMergeMap(
-        std::vector<std::set<Eigen::Index>> subsets,
-        std::vector<std::set<Eigen::Index>> referenceSets) {
+        const std::vector<std::set<Eigen::Index>> &subsets,
+        const std::vector<std::set<Eigen::Index>> &referenceSets) {
     // identify, which sets are subsets of the previous ones
     std::map<std::size_t, std::size_t> map;
 

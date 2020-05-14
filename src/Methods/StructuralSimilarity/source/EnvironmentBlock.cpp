@@ -65,7 +65,7 @@ void EnvironmentBlock::initialize(const std::deque<BestMatch::SOAPSimilarity::Gr
     for(const auto& possiblePerm : possiblePerms) {
         std::vector<Eigen::Index> perm;
 
-        Eigen::Index lastIdx = -1;
+        [[maybe_unused]] Eigen::Index lastIdx = -1;
         for(const auto& indexPair : possiblePerm.chainOfSwaps_) {
             assert(indexPair.second > lastIdx && "Possible swap indices should be in ascending order...");
             perm.emplace_back(indexPair.first);
@@ -75,7 +75,6 @@ void EnvironmentBlock::initialize(const std::deque<BestMatch::SOAPSimilarity::Gr
 
         permutedPermuteeIndicesCollection_.emplace_back(perm);
     }
-
 
     spdlog::debug("Reference indices of current block:");
     spdlog::debug(ToString::stdvectorLongIntToString(referenceIndices_));
@@ -133,7 +132,6 @@ bool EnvironmentBlockJoiner::addBlock(const EnvironmentBlock &block, double dist
 
     spdlog::debug("Reference indices of current block:");
     spdlog::debug(ToString::stdvectorLongIntToString(jointReferenceIndices_));
-
 
     std::vector<std::vector<Eigen::Index>> updatedJointPermutedPermuteeIndicesCollection;
 

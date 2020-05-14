@@ -44,12 +44,6 @@ namespace BestMatch {
                 double similarityThreshold,
                 double comparisionEpsilon = std::numeric_limits<double>::epsilon());
 
-        std::vector<std::deque<std::pair<Eigen::Index, Eigen::Index>>> findEquivalentEnvironments(
-                const Eigen::MatrixXd &bestMatchPermutedEnvironmentSimilarities,
-                const Eigen::PermutationMatrix<Eigen::Dynamic> &bestMatch,
-                double soapThreshold,
-                double numericalPrecisionEpsilon = std::numeric_limits<double>::epsilon());
-
         struct PermuteeEnvsToReferenceEnvMatch {
             std::set<Eigen::Index> permuteeEnvsIndices;
             Eigen::Index referenceEnvIndex;
@@ -59,10 +53,12 @@ namespace BestMatch {
             std::set<Eigen::Index> remainingPermuteeIndices_;
             std::deque<std::pair<Eigen::Index, Eigen::Index>> chainOfSwaps_;
 
-            GrowingPerm(const std::set<Eigen::Index> &remainingPermuteeIndices,
-                        const std::deque<std::pair<Eigen::Index, Eigen::Index>> &chainOfSwaps);
+            GrowingPerm(std::set<Eigen::Index> remainingPermuteeIndices,
+                        std::deque<std::pair<Eigen::Index, Eigen::Index>> chainOfSwaps);
 
             bool add(const std::pair<Eigen::Index, Eigen::Index> &envMatch);
+
+            bool operator<(const GrowingPerm &rhs) const;
         };
 
         std::deque<PermuteeEnvsToReferenceEnvMatch> findEnvironmentMatches(
