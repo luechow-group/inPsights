@@ -76,6 +76,7 @@ namespace BestMatch {
         std::deque<std::deque<PermuteeEnvsToReferenceEnvMatch>> groupDependentMatches(
                 const std::deque<PermuteeEnvsToReferenceEnvMatch>& matches );
 
+        std::deque<GrowingPerm> findPossiblePermutations(const std::deque<PermuteeEnvsToReferenceEnvMatch>& dependentMatches);
 
         double earlyExitMetric(const Eigen::MatrixXd &bestMatchPermutedEnvironmentSimilarities);
 

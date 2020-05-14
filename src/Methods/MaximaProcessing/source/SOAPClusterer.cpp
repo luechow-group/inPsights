@@ -40,7 +40,7 @@ namespace Settings {
             : SOAPClusterer() {
         doubleProperty::decode(node, similarityThreshold);
         doubleProperty::decode(node, distanceMatrixCovarianceTolerance);
-        doubleProperty::decode(node[className], maxValueDelta);
+        doubleProperty::decode(node, maxValueDelta);
 
     }
 

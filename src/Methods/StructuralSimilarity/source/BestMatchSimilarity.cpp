@@ -153,31 +153,20 @@ std::vector<BestMatch::DescendingMetricResult> BestMatch::SOAPSimilarity::getBes
     }
 
     // Step 1.
-    auto blockwiseDependentIndexPairs = BestMatch::SOAPSimilarity::findEquivalentEnvironments(
-            bestMatchPermutedEnvironmentSimilarities, bestMatch, similarityThreshold, comparisionEpsilon);
 
-    spdlog::debug("Dependent indice pairs");
-    for (const auto &dependentIndexPairs : blockwiseDependentIndexPairs) {
-        for (const auto &dependentIndexPair : dependentIndexPairs) {
-            spdlog::debug("({} {})", dependentIndexPair.first, dependentIndexPair.second);
-        }
-        if(dependentIndexPairs.size() >= maximalNumberOfEquivalentEnvironments) {
-            spdlog::critical("Too many equivalent environments ({}, allowed: {})."
-                             "Consider choosing sharper SOAP settings or increasing "
-                             "the maximal number of equivalent environments. \n Exiting...",
-                             dependentIndexPairs.size(), maximalNumberOfEquivalentEnvironments);
-            return {{0, bestMatch}};
-        }
-        spdlog::debug(" ");
-    }
-    spdlog::debug(" ");
+    auto matches = BestMatch::SOAPSimilarity::findEnvironmentMatches(environmentSimilarities, similarityThreshold, comparisionEpsilon);
+    auto dependentMatches = BestMatch::SOAPSimilarity::groupDependentMatches(matches);
+
+
 
 
     // Step 2.
     std::vector<EnvironmentBlock> blocks;
-    for (const auto &indexPairsOfBlock : blockwiseDependentIndexPairs) {
+    for (const auto &dependentMatch : dependentMatches) {
 
-        auto block = EnvironmentBlock(indexPairsOfBlock,
+        auto possiblePermutations = BestMatch::SOAPSimilarity::findPossiblePermutations(dependentMatch);
+
+        auto block = EnvironmentBlock(possiblePermutations,
                                       permutee.molecule_.electrons(),
                                       reference.molecule_.electrons());
 
@@ -381,6 +370,37 @@ BestMatch::SOAPSimilarity::groupDependentMatches(const std::deque<PermuteeEnvsTo
     return dependentMatchesGroups;
 }
 
+std::deque<BestMatch::SOAPSimilarity::GrowingPerm> BestMatch::SOAPSimilarity::findPossiblePermutations(
+        const std::deque<BestMatch::SOAPSimilarity::PermuteeEnvsToReferenceEnvMatch>& dependentMatches){
+
+    assert(!dependentMatches.empty());
+
+    std::set<Eigen::Index> allIndices;
+    for(auto i : dependentMatches)
+        allIndices.insert(std::begin(i.permuteeEnvsIndices), std::end(i.permuteeEnvsIndices));
+
+    std::deque<GrowingPerm> possiblePerms = {{allIndices,{}}};
+
+    // try new perms by adding all swaps for all dependent matches
+    for(auto& dependentMatch : dependentMatches){
+
+        std::deque<GrowingPerm> newPossiblePerms;
+        for(auto permuteeEnvIndex : dependentMatch.permuteeEnvsIndices){
+
+            for (auto perm : possiblePerms) {
+                auto possibleQ = perm.add({permuteeEnvIndex, dependentMatch.referenceEnvIndex});
+                if (possibleQ)
+                    newPossiblePerms.emplace_back(perm);
+            }
+        }
+        if(newPossiblePerms.empty())
+            return {};
+        else
+            possiblePerms = newPossiblePerms;
+    }
+
+    return possiblePerms;
+};
 
 /*
  * Calculates the positional distances in the kit system of the electrons specified by the indices

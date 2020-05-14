@@ -211,7 +211,22 @@ TEST_F(ABestMatchSimilarityTest, GroupDependentMatches2) {
 
     ASSERT_THAT(dependentMatches[1][0].permuteeEnvsIndices, ElementsAre(2));
     ASSERT_EQ(dependentMatches[1][0].referenceEnvIndex, 2);
+
+    auto possiblePermutations = BestMatch::SOAPSimilarity::findPossiblePermutations(dependentMatches[0]);
+
+    using Pair = std::pair<Eigen::Index,Eigen::Index>;
+    ASSERT_EQ(possiblePermutations.size(), 3);
+    ASSERT_TRUE(possiblePermutations[0].remainingPermuteeIndices_.empty());
+    ASSERT_THAT(possiblePermutations[0].chainOfSwaps_, ElementsAre(Pair(3,0),Pair(1,1),Pair(0,3)));
+
+    ASSERT_TRUE(possiblePermutations[1].remainingPermuteeIndices_.empty());
+    ASSERT_THAT(possiblePermutations[1].chainOfSwaps_, ElementsAre(Pair(1,0),Pair(0,1),Pair(3,3)));
+
+    ASSERT_TRUE(possiblePermutations[2].remainingPermuteeIndices_.empty());
+    ASSERT_THAT(possiblePermutations[2].chainOfSwaps_, ElementsAre(Pair(0,0),Pair(1,1),Pair(3,3)));
+
 }
+
 
 
 TEST_F(ABestMatchSimilarityTest, ListOfDependentIndicesCase1) {
@@ -1034,8 +1049,8 @@ TEST_F(ABestMatchSimilarityTest, Trans13ButadieneRealMaxima) {
     auto B = TestMolecules::trans13Butadiene::realB;
 
     General::settings.zeta = 3;
-    Radial::settings.nmax = 4;
-    Angular::settings.lmax = 4;
+    Radial::settings.nmax = 3;
+    Angular::settings.lmax = 3;
     Cutoff::settings.radius = 8.0;
     Cutoff::settings.width = 8.0;
     Radial::settings.sigmaAtom = 1.0;
@@ -1109,7 +1124,6 @@ TEST_F(ABestMatchSimilarityTest, Trans13ButadieneRealMaxima) {
 
     // FAILS for nmax=lmax=3 - index 23 is found twice in findEquivalentEnvironments
 
-    General::settings.pairSimilarities[{int(Spin::alpha), int(Spin::beta)}] = 1.0;
-    General::settings.mode = General::Mode::alchemical;
+    General::settings.mode = General::Mode::typeAgnostic;
     routine(A, B, expectedPermIndices, distanceTolerance, 0.99, true);
 }

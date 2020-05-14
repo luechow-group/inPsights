@@ -41,35 +41,46 @@ bool DistanceCovariance::conservingQ(
 };
 
 EnvironmentBlock::EnvironmentBlock(
-        std::deque<std::pair<Eigen::Index, Eigen::Index>> indexPairs,
+        const std::deque<BestMatch::SOAPSimilarity::GrowingPerm>& possiblePerms,
         const ElectronsVector &permutee,
         const ElectronsVector &reference)
         : permuteeIndices_(),
           referenceIndices_(),
           permutee_(permutee),
           reference_(reference) {
-    initialize(indexPairs);
+    initialize(possiblePerms);
 }
+void EnvironmentBlock::initialize(const std::deque<BestMatch::SOAPSimilarity::GrowingPerm>& possiblePerms) {
 
-
-void EnvironmentBlock::initialize(std::deque<std::pair<Eigen::Index, Eigen::Index>> indexPairs) {
-    if(indexPairs.size() > Combinatorics::MAX_FACTORIAL)
-        throw std::overflow_error("Overflow: Too many similar environments found. "
-                                  "Consider choosing sharper SOAP settings.");
-
-    for (const auto &indexPair : indexPairs) {
+    // initialize index lists
+    for(const auto& indexPair : possiblePerms.front().chainOfSwaps_) {
         permuteeIndices_.emplace_back(indexPair.first);
         referenceIndices_.emplace_back(indexPair.second);
-    }
-    std::sort(permuteeIndices_.begin(), permuteeIndices_.end());
-    std::sort(referenceIndices_.begin(), referenceIndices_.end());
 
-    permutedPermuteeIndicesCollection_ = Combinatorics::Permutations<Eigen::Index>(permuteeIndices_).get();
+        std::sort(permuteeIndices_.begin(), permuteeIndices_.end());
+        std::sort(referenceIndices_.begin(), referenceIndices_.end()); // should be ordered already
+    }
+
+    // make permutations
+    for(const auto& possiblePerm : possiblePerms) {
+        std::vector<Eigen::Index> perm;
+
+        Eigen::Index lastIdx = -1;
+        for(const auto& indexPair : possiblePerm.chainOfSwaps_) {
+            assert(indexPair.second > lastIdx && "Possible swap indices should be in ascending order...");
+            perm.emplace_back(indexPair.first);
+
+            lastIdx = indexPair.second;
+        }
+
+        permutedPermuteeIndicesCollection_.emplace_back(perm);
+    }
+
 
     spdlog::debug("Reference indices of current block:");
     spdlog::debug(ToString::stdvectorLongIntToString(referenceIndices_));
-    spdlog::debug("Found {} permutation of the permutee indices for current block:",
-            permutedPermuteeIndicesCollection_.size());
+    spdlog::debug("Found {} permutations of the permutee indices for current block:",
+                  permutedPermuteeIndicesCollection_.size());
 
     for(const auto& permutedPermuteeIndices : permutedPermuteeIndicesCollection_)
         spdlog::debug(ToString::stdvectorLongIntToString(permutedPermuteeIndices));
