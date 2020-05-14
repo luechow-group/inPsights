@@ -40,11 +40,14 @@ namespace Settings {
             : SOAPClusterer() {
         doubleProperty::decode(node, similarityThreshold);
         doubleProperty::decode(node, distanceMatrixCovarianceTolerance);
+        doubleProperty::decode(node[className], maxValueDelta);
+
     }
 
     void SOAPClusterer::appendToNode(YAML::Node &node) const {
         node[className][similarityThreshold.name()] = similarityThreshold();
         node[className][distanceMatrixCovarianceTolerance.name()] = distanceMatrixCovarianceTolerance();
+        node[className][maxValueDelta.name()] = maxValueDelta();
     }
 }
 YAML_SETTINGS_DEFINITION(Settings::SOAPClusterer)
@@ -74,8 +77,8 @@ void SOAPClusterer::cluster(Group& group){
 
     auto similarityThreshold = settings.similarityThreshold();
     auto toleranceRadius = settings.distanceMatrixCovarianceTolerance();
-    auto numericalPrecisionEpsilon = SOAP::General::settings.comparisonEpsilon.get();
-    auto maxValueDelta = SOAP::General::settings.maxValueDelta();
+    auto numericalPrecisionEpsilon = SOAP::General::settings.comparisonEpsilon();
+    auto maxValueDelta = SOAPClusterer::settings.maxValueDelta();
     auto maxEquivalentEnvironments = SOAP::General::settings.maxEquivalentEnvironments();
 
     spdlog::debug("Group before start: {}", ToString::groupToString(group));

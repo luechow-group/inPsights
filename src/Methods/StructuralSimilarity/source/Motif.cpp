@@ -18,7 +18,7 @@
 #include "Motif.h"
 #include <ParticlesVector.h>
 #include <Metrics.h>
-#include <list>
+#include <set>
 #include <string>
 #include <yaml-cpp/yaml.h>
 
@@ -43,11 +43,11 @@ MotifType fromString(const std::string& string) {
 }
 
 
-Motif::Motif(const std::list<Eigen::Index> &electronIndices, MotifType type)
+Motif::Motif(const std::set<Eigen::Index> &electronIndices, MotifType type)
         : type_(type), electronIndices_(electronIndices) {};
 
-Motif::Motif(const std::list<Eigen::Index> &electronIndices,
-             const std::list<Eigen::Index> &atomIndices,
+Motif::Motif(const std::set<Eigen::Index> &electronIndices,
+             const std::set<Eigen::Index> &atomIndices,
             MotifType type)
         : type_(type), electronIndices_(electronIndices), atomIndices_(atomIndices) {};
 
@@ -79,19 +79,19 @@ void Motif::setType(MotifType type_) {
     Motif::type_ = type_;
 }
 
-const std::list<Eigen::Index> &Motif::electronIndices() const {
+const std::set<Eigen::Index> &Motif::electronIndices() const {
     return electronIndices_;
 }
 
-void Motif::setElectronIndices(const std::list<Eigen::Index> &electronIndices) {
+void Motif::setElectronIndices(const std::set<Eigen::Index> &electronIndices) {
     electronIndices_ = electronIndices;
 }
 
-const std::list<Eigen::Index> &Motif::atomIndices() const {
+const std::set<Eigen::Index> &Motif::atomIndices() const {
     return atomIndices_;
 }
 
-void Motif::setAtomIndices(const std::list<Eigen::Index> &atomIndices) {
+void Motif::setAtomIndices(const std::set<Eigen::Index> &atomIndices) {
     Motif::atomIndices_ = atomIndices;
 }
 
@@ -99,8 +99,10 @@ namespace YAML {
     Node convert<Motif>::encode(const Motif &rhs) {
         Node node;
         node["Type"] = toString(rhs.type());
-        node["ElectronIndices"] = rhs.electronIndices();
-        node["AtomIndices"] = rhs.atomIndices();
+        node["ElectronIndices"] =
+                std::list<Eigen::Index>(std::begin(rhs.electronIndices()),std::end(rhs.electronIndices()));
+        node["AtomIndices"] =
+                std::list<Eigen::Index>(std::begin(rhs.atomIndices()),std::end(rhs.atomIndices()));
         return node;
     }
 
@@ -108,8 +110,13 @@ namespace YAML {
         if (!node.IsMap())
             return false;
 
-        rhs.setElectronIndices(node["ElectronIndices"].as<std::list<Eigen::Index>>());
-        rhs.setAtomIndices(node["AtomIndices"].as<std::list<Eigen::Index>>());
+        auto electronIndices = node["ElectronIndices"].as<std::list<Eigen::Index>>();
+        auto atomIndices = node["AtomIndices"].as<std::list<Eigen::Index>>();
+
+        rhs.setElectronIndices(
+                std::set<Eigen::Index>(std::begin(electronIndices),std::end(electronIndices)));
+        rhs.setAtomIndices(
+                std::set<Eigen::Index>(std::begin(atomIndices),std::end(atomIndices)));
         rhs.setType(fromString(node["Type"].as<std::string>()));
         return true;
     }

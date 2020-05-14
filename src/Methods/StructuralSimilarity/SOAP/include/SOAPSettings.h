@@ -51,7 +51,6 @@ namespace Settings::SOAP {
         Property<double> comparisonEpsilon = {std::numeric_limits<double>::epsilon()*1e5,
                                               VARNAME(comparisonEpsilon)};
         Property<unsigned> maxEquivalentEnvironments = {6, VARNAME(maxEquivalentEnvironments)};
-        Property<double> maxValueDelta = {1e-2, VARNAME(maxValueDelta)};
 
         std::map<std::pair<int, int>, double> pairSimilarities = {
                 {{int(Spin::alpha), int(Spin::beta)}, 1.0}

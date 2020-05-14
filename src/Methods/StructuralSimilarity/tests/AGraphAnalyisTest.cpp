@@ -151,8 +151,20 @@ TEST_F(AGraphAnalysisTest, Filter) {
 
 TEST_F(AGraphAnalysisTest, FindSubsets) {
 
-    std::vector<std::list<Eigen::Index>> subsets{{90, 91}, {92}, {93}};
-    std::vector<std::list<Eigen::Index>> referenceSets{{90, 91, 92}, {93}};
+    std::vector<std::set<Eigen::Index>> subsets{{90, 91}, {92}, {93}};
+    std::vector<std::set<Eigen::Index>> referenceSets{{90, 91, 92}, {93}};
+
+    auto map = GraphAnalysis::findMergeMap(subsets, referenceSets);
+
+    ASSERT_THAT(map,Contains(std::pair<std::size_t, std::size_t>(0,0)));
+    ASSERT_THAT(map,Contains(std::pair<std::size_t, std::size_t>(1,0)));
+    ASSERT_THAT(map,Contains(std::pair<std::size_t, std::size_t>(2,1)));
+}
+
+TEST_F(AGraphAnalysisTest, FindSubsetsUnordered) {
+
+    std::vector<std::set<Eigen::Index>> subsets{{91, 90}, {92}, {93}};
+    std::vector<std::set<Eigen::Index>> referenceSets{{90, 91, 92}, {93}};
 
     auto map = GraphAnalysis::findMergeMap(subsets, referenceSets);
 
@@ -163,8 +175,8 @@ TEST_F(AGraphAnalysisTest, FindSubsets) {
 
 TEST_F(AGraphAnalysisTest, FindSubsetsUnorderd) {
 
-    std::vector<std::list<Eigen::Index>> subsets{{92}, {93}, {90, 91}};
-    std::vector<std::list<Eigen::Index>> referenceSets{{93}, {90, 91, 92}};
+    std::vector<std::set<Eigen::Index>> subsets{{92}, {93}, {90, 91}};
+    std::vector<std::set<Eigen::Index>> referenceSets{{93}, {90, 91, 92}};
 
     auto map = GraphAnalysis::findMergeMap(subsets, referenceSets);
 
@@ -174,15 +186,15 @@ TEST_F(AGraphAnalysisTest, FindSubsetsUnorderd) {
 }
 
 TEST_F(AGraphAnalysisTest, ReferenceSetWithoutMatchingSubsetDeath) {
-    std::vector<std::list<Eigen::Index>> subsets{{0,1}, {2}, {3}};
-    std::vector<std::list<Eigen::Index>> referenceSets{{0,1,2},{3},{4}};
+    std::vector<std::set<Eigen::Index>> subsets{{0,1}, {2}, {3}};
+    std::vector<std::set<Eigen::Index>> referenceSets{{0,1,2},{3},{4}};
 
     EXPECT_DEATH(GraphAnalysis::findMergeMap(subsets, referenceSets), "");
 }
 
 TEST_F(AGraphAnalysisTest, SubsetNotFoundInReferenceSetDeath) {
-    std::vector<std::list<Eigen::Index>> subsets{{0,1}, {2}, {3}, {4}};
-    std::vector<std::list<Eigen::Index>> referenceSets{{0,1,2},{3}};
+    std::vector<std::set<Eigen::Index>> subsets{{0,1}, {2}, {3}, {4}};
+    std::vector<std::set<Eigen::Index>> referenceSets{{0,1,2},{3}};
 
     EXPECT_DEATH(GraphAnalysis::findMergeMap(subsets, referenceSets), "");
 }

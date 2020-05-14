@@ -20,7 +20,7 @@
 
 #include <Eigen/Core>
 #include <queue>
-#include <list>
+#include <set>
 #include <algorithm>
 #include <map>
 
@@ -34,13 +34,17 @@ namespace GraphAnalysis {
 
     Eigen::MatrixXb lowerOrEqualFilter(const Eigen::MatrixXd & matrix, double threshold = 1.0);
 
-    std::list<Eigen::Index> findConnectedVertices(const Eigen::MatrixXb &adjacencyMatrix, Eigen::Index startVertex);
+    //std::list<Eigen::Index> findDirectedEdgesToCol
 
-    std::vector<std::list<Eigen::Index>> findGraphClusters(const Eigen::MatrixXb &adjacencyMatrix);
+    // TODO use std::set?
+    std::set<Eigen::Index> findConnectedVertices(const Eigen::MatrixXb &adjacencyMatrix, Eigen::Index startVertex);
+
+    std::vector<std::set<Eigen::Index>> findGraphClusters(const Eigen::MatrixXb &adjacencyMatrix);
+
 
     std::map<std::size_t, std::size_t> findMergeMap(
-            std::vector<std::list<Eigen::Index>> subsets,
-            std::vector<std::list<Eigen::Index>> referenceSets);
+            std::vector<std::set<Eigen::Index>> subsets,
+            std::vector<std::set<Eigen::Index>> referenceSets);
 }
 
 #endif //INPSIGHTS_GRAPHANALYSIS_H

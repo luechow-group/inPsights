@@ -79,7 +79,6 @@ namespace Settings::SOAP {
         doubleProperty::decode(node[className], zeta);
         doubleProperty::decode(node[className], sinkhornGamma);
         doubleProperty::decode(node[className], comparisonEpsilon);
-        doubleProperty::decode(node[className], maxValueDelta);
         unsignedProperty::decode(node[className], maxEquivalentEnvironments);
     }
 
@@ -107,7 +106,6 @@ namespace Settings::SOAP {
         node[className][zeta.name()] = zeta();
         node[className][sinkhornGamma.name()] = sinkhornGamma();
         node[className][comparisonEpsilon.name()] = comparisonEpsilon();
-        node[className][maxValueDelta.name()] = maxValueDelta();
         node[className][maxEquivalentEnvironments.name()] = maxEquivalentEnvironments();
     }
 
