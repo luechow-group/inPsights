@@ -30,9 +30,9 @@ namespace Eigen {
 }
 namespace GraphAnalysis {
     // filter to obtain an adjacency matrix
-    Eigen::MatrixXb filter(const Eigen::MatrixXd & matrix, double threshold = 1.0);
+    Eigen::MatrixXb filter(const Eigen::MatrixXd &matrix, double threshold = 1.0);
 
-    Eigen::MatrixXb lowerOrEqualFilter(const Eigen::MatrixXd & matrix, double threshold = 1.0);
+    Eigen::MatrixXb lowerOrEqualFilter(const Eigen::MatrixXd &matrix, double threshold = 1.0);
 
     std::set<Eigen::Index> findVerticesOfOutgoingEdges(const Eigen::MatrixXb &adjacencyMatrix, Eigen::Index vertes);
 

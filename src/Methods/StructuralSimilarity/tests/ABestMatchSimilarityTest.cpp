@@ -1044,7 +1044,6 @@ TEST_F(ABestMatchSimilarityTest, EthaneDoublyIonicAnti) {
 }
 
 TEST_F(ABestMatchSimilarityTest, Trans13ButadieneRealMaxima) {
-    spdlog::set_level(spdlog::level::debug);
     auto A = TestMolecules::trans13Butadiene::realA;
     auto B = TestMolecules::trans13Butadiene::realB;
 

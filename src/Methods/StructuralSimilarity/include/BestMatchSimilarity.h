@@ -52,20 +52,19 @@ namespace BestMatch {
                 double soapThreshold,
                 double numericalPrecisionEpsilon = std::numeric_limits<double>::epsilon());
 
-        struct PermuteeEnvsToReferenceEnvMatch{
+        struct PermuteeEnvsToReferenceEnvMatch {
             std::set<Eigen::Index> permuteeEnvsIndices;
             Eigen::Index referenceEnvIndex;
         };
 
-
-        struct GrowingPerm{
+        struct GrowingPerm {
             std::set<Eigen::Index> remainingPermuteeIndices_;
-            std::deque<std::pair<Eigen::Index,Eigen::Index>> chainOfSwaps_;
+            std::deque<std::pair<Eigen::Index, Eigen::Index>> chainOfSwaps_;
 
-            GrowingPerm(const std::set<Eigen::Index>& remainingPermuteeIndices,
-                        const std::deque<std::pair<Eigen::Index,Eigen::Index>>& chainOfSwaps);
+            GrowingPerm(const std::set<Eigen::Index> &remainingPermuteeIndices,
+                        const std::deque<std::pair<Eigen::Index, Eigen::Index>> &chainOfSwaps);
 
-            bool add(const std::pair<Eigen::Index, Eigen::Index>& envMatch);
+            bool add(const std::pair<Eigen::Index, Eigen::Index> &envMatch);
         };
 
         std::deque<PermuteeEnvsToReferenceEnvMatch> findEnvironmentMatches(
@@ -74,9 +73,10 @@ namespace BestMatch {
                 double numericalPrecisionEpsilon = std::numeric_limits<double>::epsilon());
 
         std::deque<std::deque<PermuteeEnvsToReferenceEnvMatch>> groupDependentMatches(
-                const std::deque<PermuteeEnvsToReferenceEnvMatch>& matches );
+                const std::deque<PermuteeEnvsToReferenceEnvMatch> &matches);
 
-        std::deque<GrowingPerm> findPossiblePermutations(const std::deque<PermuteeEnvsToReferenceEnvMatch>& dependentMatches);
+        std::deque<GrowingPerm>
+        findPossiblePermutations(const std::deque<PermuteeEnvsToReferenceEnvMatch> &dependentMatches);
 
         double earlyExitMetric(const Eigen::MatrixXd &bestMatchPermutedEnvironmentSimilarities);
 

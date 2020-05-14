@@ -21,19 +21,19 @@
 #include <algorithm>
 
 namespace GraphAnalysis {
-    Eigen::MatrixXb filter(const Eigen::MatrixXd & matrix, double threshold) {
-        assert( (matrix.array() >= 0.0).all() );
-        assert( threshold >= 0.0);
+    Eigen::MatrixXb filter(const Eigen::MatrixXd &matrix, double threshold) {
+        assert((matrix.array() >= 0.0).all());
+        assert(threshold >= 0.0);
 
-        assert( (matrix.array() <= 1.0).all() );
-        assert( threshold <= 1.0);
+        assert((matrix.array() <= 1.0).all());
+        assert(threshold <= 1.0);
 
         return matrix.unaryExpr([&](const double x) { return (x >= threshold) ? 1.0 : 0.0; }).cast<bool>();
     }
 
-    Eigen::MatrixXb lowerOrEqualFilter(const Eigen::MatrixXd & matrix, double threshold) {
-        assert( (matrix.array() >= 0.0).all() );
-        assert( threshold >= 0.0);
+    Eigen::MatrixXb lowerOrEqualFilter(const Eigen::MatrixXd &matrix, double threshold) {
+        assert((matrix.array() >= 0.0).all());
+        assert(threshold >= 0.0);
 
         return matrix.unaryExpr([&](const double x) { return (x <= threshold) ? 1.0 : 0.0; }).cast<bool>();
     }
@@ -42,7 +42,7 @@ namespace GraphAnalysis {
         std::set<Eigen::Index> incomingVertexIndices;
 
         for (Eigen::Index i = 0; i < adjacencyMatrix.rows(); ++i)
-            if(adjacencyMatrix(i,vertex))
+            if (adjacencyMatrix(i, vertex))
                 incomingVertexIndices.emplace(i);
 
         return incomingVertexIndices;
@@ -52,7 +52,7 @@ namespace GraphAnalysis {
         std::set<Eigen::Index> outgoingVertexIndices;
 
         for (Eigen::Index j = 0; j < adjacencyMatrix.cols(); ++j)
-            if(adjacencyMatrix(j,vertex))
+            if (adjacencyMatrix(j, vertex))
                 outgoingVertexIndices.emplace(j);
 
         return outgoingVertexIndices;
@@ -131,13 +131,13 @@ std::map<std::size_t, std::size_t> GraphAnalysis::findMergeMap(
     // identify, which sets are subsets of the previous ones
     std::map<std::size_t, std::size_t> map;
 
-    std::vector<bool> foundQ(subsets.size(),false);
-    for(const auto & [referenceSetIndex, referenceSet]  : enumerate(referenceSets)){
+    std::vector<bool> foundQ(subsets.size(), false);
+    for (const auto &[referenceSetIndex, referenceSet]  : enumerate(referenceSets)) {
 
         bool matchedQ = false;
-        for(const auto & [subsetIndex, subset] : enumerate(subsets)){
+        for (const auto &[subsetIndex, subset] : enumerate(subsets)) {
             auto isSubsetQ = std::includes(referenceSet.begin(), referenceSet.end(), subset.begin(), subset.end());
-            if(isSubsetQ) {
+            if (isSubsetQ) {
                 map[subsetIndex] = referenceSetIndex;
                 foundQ[subsetIndex] = true;
                 matchedQ = true;
@@ -146,7 +146,8 @@ std::map<std::size_t, std::size_t> GraphAnalysis::findMergeMap(
         assert(matchedQ && "A set of the reference sets has no matching subset.");
     }
     assert(std::all_of(foundQ.begin(), foundQ.end(), [](bool foundQ) {
-        return foundQ == true;}) && "All subsets should appear in the reference set.");
+        return foundQ == true;
+    }) && "All subsets should appear in the reference set.");
 
     return map;
 };
