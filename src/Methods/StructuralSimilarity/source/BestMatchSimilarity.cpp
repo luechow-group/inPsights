@@ -259,26 +259,26 @@ bool BestMatch::SOAPSimilarity::GrowingPerm::add(const std::pair<Eigen::Index, E
  * Returns list of environments in the permutee matching a reference.
  * Multiple environments can be found for each reference index.
  */
-std::deque<BestMatch::SOAPSimilarity::PermuteeEnvsToReferenceEnvMatch>
+std::deque<BestMatch::SOAPSimilarity::PermuteeToReferenceMatch>
 BestMatch::SOAPSimilarity::findEnvironmentMatches(
         const Eigen::MatrixXd &environmentSimilarities,
         double soapThreshold, double numericalPrecisionEpsilon) {
 
     auto adjacencyMatrix = GraphAnalysis::filter(environmentSimilarities, soapThreshold-numericalPrecisionEpsilon);
 
-    std::deque<PermuteeEnvsToReferenceEnvMatch> matches;
+    std::deque<PermuteeToReferenceMatch> matches;
     for (Eigen::Index j = 0; j < environmentSimilarities.cols(); ++j) {
         auto permuteeEnvs = GraphAnalysis::findVerticesOfIncomingEdges(adjacencyMatrix, j);
-        matches.emplace_back(PermuteeEnvsToReferenceEnvMatch{permuteeEnvs, j});
+        matches.emplace_back(PermuteeToReferenceMatch{permuteeEnvs, j});
     }
 
     return matches;
 }
 
-std::deque<std::deque<BestMatch::SOAPSimilarity::PermuteeEnvsToReferenceEnvMatch>>
-BestMatch::SOAPSimilarity::groupDependentMatches(const std::deque<PermuteeEnvsToReferenceEnvMatch> &matches) {
+std::deque<std::deque<BestMatch::SOAPSimilarity::PermuteeToReferenceMatch>>
+BestMatch::SOAPSimilarity::groupDependentMatches(const std::deque<PermuteeToReferenceMatch> &matches) {
 
-    std::deque<std::deque<BestMatch::SOAPSimilarity::PermuteeEnvsToReferenceEnvMatch>> dependentMatchesGroups;
+    std::deque<std::deque<BestMatch::SOAPSimilarity::PermuteeToReferenceMatch>> dependentMatchesGroups;
     assert(!matches.empty());
 
     for(const auto& match : matches){
@@ -290,8 +290,8 @@ BestMatch::SOAPSimilarity::groupDependentMatches(const std::deque<PermuteeEnvsTo
                 // check if subset
                 std::list<Eigen::Index> intersection;
                 std::set_intersection(
-                        std::begin(match.permuteeEnvsIndices), std::end(match.permuteeEnvsIndices),
-                        std::begin(dependentMatch.permuteeEnvsIndices), std::end(dependentMatch.permuteeEnvsIndices),
+                        std::begin(match.permuteeIndices), std::end(match.permuteeIndices),
+                        std::begin(dependentMatch.permuteeIndices), std::end(dependentMatch.permuteeIndices),
                         std::inserter(intersection,std::begin(intersection)));
 
                 if(!intersection.empty()) {
@@ -303,7 +303,7 @@ BestMatch::SOAPSimilarity::groupDependentMatches(const std::deque<PermuteeEnvsTo
         }
         breakTwoLoops:
         if(!foundQ)
-            dependentMatchesGroups.emplace_back(std::deque<PermuteeEnvsToReferenceEnvMatch>({match}));
+            dependentMatchesGroups.emplace_back(std::deque<PermuteeToReferenceMatch>({match}));
     }
 
     return dependentMatchesGroups;
@@ -319,13 +319,13 @@ bool BestMatch::SOAPSimilarity::GrowingPerm::operator<(const BestMatch::SOAPSimi
 }
 
 std::deque<BestMatch::SOAPSimilarity::GrowingPerm> BestMatch::SOAPSimilarity::findPossiblePermutations(
-        const std::deque<BestMatch::SOAPSimilarity::PermuteeEnvsToReferenceEnvMatch>& dependentMatches){
+        const std::deque<BestMatch::SOAPSimilarity::PermuteeToReferenceMatch>& dependentMatches){
 
     assert(!dependentMatches.empty());
 
     std::set<Eigen::Index> allIndices;
     for(auto i : dependentMatches)
-        allIndices.insert(std::begin(i.permuteeEnvsIndices), std::end(i.permuteeEnvsIndices));
+        allIndices.insert(std::begin(i.permuteeIndices), std::end(i.permuteeIndices));
 
     std::deque<GrowingPerm> possiblePerms = {{allIndices,{}}};
 
@@ -333,10 +333,10 @@ std::deque<BestMatch::SOAPSimilarity::GrowingPerm> BestMatch::SOAPSimilarity::fi
     for(auto& dependentMatch : dependentMatches){
 
         std::deque<GrowingPerm> newPossiblePerms;
-        for(auto permuteeEnvIndex : dependentMatch.permuteeEnvsIndices){
+        for(auto permuteeEnvIndex : dependentMatch.permuteeIndices){
 
             for (auto perm : possiblePerms) {
-                auto possibleQ = perm.add({permuteeEnvIndex, dependentMatch.referenceEnvIndex});
+                auto possibleQ = perm.add({permuteeEnvIndex, dependentMatch.referenceIndex});
                 if (possibleQ)
                     newPossiblePerms.emplace_back(perm);
             }

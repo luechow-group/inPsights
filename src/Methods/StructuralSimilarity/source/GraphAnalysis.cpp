@@ -1,4 +1,4 @@
-/* Copyright (C) 2019 Michael Heuer.
+/* Copyright (C) 2019-2020 Michael Heuer.
  *
  * This file is part of inPsights.
  * inPsights is free software: you can redistribute it and/or modify
@@ -20,7 +20,6 @@
 #include <Enumerate.h>
 #include <algorithm>
 
-#include <iostream>
 namespace GraphAnalysis {
     Eigen::MatrixXb filter(const Eigen::MatrixXd &matrix, double threshold) {
         assert((matrix.array() >= 0.0).all());
@@ -50,7 +49,7 @@ namespace GraphAnalysis {
         std::set<Eigen::Index> outgoingVertexIndices;
 
         for (Eigen::Index j = 0; j < adjacencyMatrix.cols(); ++j)
-            if (adjacencyMatrix(j, vertex))
+            if (adjacencyMatrix(vertex, j))
                 outgoingVertexIndices.emplace(j);
 
         return outgoingVertexIndices;

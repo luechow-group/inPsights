@@ -164,18 +164,18 @@ TEST_F(ABestMatchSimilarityTest, FindPossiblePermutations1) {
     0,1,0,1;
 
     auto matches = BestMatch::SOAPSimilarity::findEnvironmentMatches(mat, 1.0 );
-    ASSERT_THAT(matches[0].permuteeEnvsIndices, ElementsAre(0,2));
-    ASSERT_THAT(matches[1].permuteeEnvsIndices, ElementsAre(1,3));
-    ASSERT_THAT(matches[2].permuteeEnvsIndices, ElementsAre(0,2));
-    ASSERT_THAT(matches[3].permuteeEnvsIndices, ElementsAre(1,3));
+    ASSERT_THAT(matches[0].permuteeIndices, ElementsAre(0, 2));
+    ASSERT_THAT(matches[1].permuteeIndices, ElementsAre(1, 3));
+    ASSERT_THAT(matches[2].permuteeIndices, ElementsAre(0, 2));
+    ASSERT_THAT(matches[3].permuteeIndices, ElementsAre(1, 3));
     for (size_t i = 0; i < matches.size(); ++i)
-        ASSERT_EQ(matches[i].referenceEnvIndex, i);
+        ASSERT_EQ(matches[i].referenceIndex, i);
 
     auto dependentMatches = BestMatch::SOAPSimilarity::groupDependentMatches(matches);
-    ASSERT_THAT(dependentMatches[0][0].permuteeEnvsIndices, ElementsAre(0,2));
-    ASSERT_THAT(dependentMatches[0][1].permuteeEnvsIndices, ElementsAre(0,2));
-    ASSERT_THAT(dependentMatches[1][0].permuteeEnvsIndices, ElementsAre(1,3));
-    ASSERT_THAT(dependentMatches[1][1].permuteeEnvsIndices, ElementsAre(1,3));
+    ASSERT_THAT(dependentMatches[0][0].permuteeIndices, ElementsAre(0, 2));
+    ASSERT_THAT(dependentMatches[0][1].permuteeIndices, ElementsAre(0, 2));
+    ASSERT_THAT(dependentMatches[1][0].permuteeIndices, ElementsAre(1, 3));
+    ASSERT_THAT(dependentMatches[1][1].permuteeIndices, ElementsAre(1, 3));
 
     auto possiblePermutations0 = BestMatch::SOAPSimilarity::findPossiblePermutations(dependentMatches[0]);
     ASSERT_EQ(possiblePermutations0.size(), 2);
@@ -201,20 +201,20 @@ TEST_F(ABestMatchSimilarityTest, FindPossiblePermutations2) {
     1,0,0,1;
 
     auto matches = BestMatch::SOAPSimilarity::findEnvironmentMatches(mat, 1.0);
-    ASSERT_THAT(matches[0].permuteeEnvsIndices, ElementsAre(0,1,3));
-    ASSERT_THAT(matches[1].permuteeEnvsIndices, ElementsAre(0,1));
-    ASSERT_THAT(matches[2].permuteeEnvsIndices, ElementsAre(2));
-    ASSERT_THAT(matches[3].permuteeEnvsIndices, ElementsAre(0,3));
+    ASSERT_THAT(matches[0].permuteeIndices, ElementsAre(0, 1, 3));
+    ASSERT_THAT(matches[1].permuteeIndices, ElementsAre(0, 1));
+    ASSERT_THAT(matches[2].permuteeIndices, ElementsAre(2));
+    ASSERT_THAT(matches[3].permuteeIndices, ElementsAre(0, 3));
     for (size_t i = 0; i < matches.size(); ++i)
-        ASSERT_EQ(matches[i].referenceEnvIndex, i);
+        ASSERT_EQ(matches[i].referenceIndex, i);
 
     auto dependentMatches = BestMatch::SOAPSimilarity::groupDependentMatches(matches);
-    ASSERT_THAT(dependentMatches[0][0].permuteeEnvsIndices, ElementsAre(0,1,3));
-    ASSERT_THAT(dependentMatches[0][1].permuteeEnvsIndices, ElementsAre(0,1));
-    ASSERT_THAT(dependentMatches[0][2].permuteeEnvsIndices, ElementsAre(0,3));
+    ASSERT_THAT(dependentMatches[0][0].permuteeIndices, ElementsAre(0, 1, 3));
+    ASSERT_THAT(dependentMatches[0][1].permuteeIndices, ElementsAre(0, 1));
+    ASSERT_THAT(dependentMatches[0][2].permuteeIndices, ElementsAre(0, 3));
 
-    ASSERT_THAT(dependentMatches[1][0].permuteeEnvsIndices, ElementsAre(2));
-    ASSERT_EQ(dependentMatches[1][0].referenceEnvIndex, 2);
+    ASSERT_THAT(dependentMatches[1][0].permuteeIndices, ElementsAre(2));
+    ASSERT_EQ(dependentMatches[1][0].referenceIndex, 2);
 
     auto possiblePermutations0 = BestMatch::SOAPSimilarity::findPossiblePermutations(dependentMatches[0]);
     ASSERT_EQ(possiblePermutations0.size(), 3);
@@ -240,18 +240,18 @@ TEST_F(ABestMatchSimilarityTest, FindPossiblePermutations3) {
     0,0,1,1;
 
     auto matches = BestMatch::SOAPSimilarity::findEnvironmentMatches(mat, 1.0);
-    ASSERT_THAT(matches[0].permuteeEnvsIndices, ElementsAre(0,1));
-    ASSERT_THAT(matches[1].permuteeEnvsIndices, ElementsAre(0,1));
-    ASSERT_THAT(matches[2].permuteeEnvsIndices, ElementsAre(2,3));
-    ASSERT_THAT(matches[3].permuteeEnvsIndices, ElementsAre(2,3));
+    ASSERT_THAT(matches[0].permuteeIndices, ElementsAre(0, 1));
+    ASSERT_THAT(matches[1].permuteeIndices, ElementsAre(0, 1));
+    ASSERT_THAT(matches[2].permuteeIndices, ElementsAre(2, 3));
+    ASSERT_THAT(matches[3].permuteeIndices, ElementsAre(2, 3));
     for (size_t i = 0; i < matches.size(); ++i)
-        ASSERT_EQ(matches[i].referenceEnvIndex, i);
+        ASSERT_EQ(matches[i].referenceIndex, i);
 
     auto dependentMatches = BestMatch::SOAPSimilarity::groupDependentMatches(matches);
-    ASSERT_THAT(dependentMatches[0][0].permuteeEnvsIndices, ElementsAre(0,1));
-    ASSERT_THAT(dependentMatches[0][1].permuteeEnvsIndices, ElementsAre(0,1));
-    ASSERT_THAT(dependentMatches[1][0].permuteeEnvsIndices, ElementsAre(2,3));
-    ASSERT_THAT(dependentMatches[1][1].permuteeEnvsIndices, ElementsAre(2,3));
+    ASSERT_THAT(dependentMatches[0][0].permuteeIndices, ElementsAre(0, 1));
+    ASSERT_THAT(dependentMatches[0][1].permuteeIndices, ElementsAre(0, 1));
+    ASSERT_THAT(dependentMatches[1][0].permuteeIndices, ElementsAre(2, 3));
+    ASSERT_THAT(dependentMatches[1][1].permuteeIndices, ElementsAre(2, 3));
 
     auto possiblePermutations0 = BestMatch::SOAPSimilarity::findPossiblePermutations(dependentMatches[0]);
     ASSERT_EQ(possiblePermutations0.size(), 2);
@@ -279,24 +279,24 @@ TEST_F(ABestMatchSimilarityTest, FindPossiblePermutations4) {
     0,0,0,1,1,1;
 
     auto matches = BestMatch::SOAPSimilarity::findEnvironmentMatches(mat, 1.0);
-    ASSERT_THAT(matches[0].permuteeEnvsIndices, ElementsAre(0,2));
-    ASSERT_THAT(matches[1].permuteeEnvsIndices, ElementsAre(0,2));
-    ASSERT_THAT(matches[2].permuteeEnvsIndices, ElementsAre(1));
-    ASSERT_THAT(matches[3].permuteeEnvsIndices, ElementsAre(3,4,5));
-    ASSERT_THAT(matches[4].permuteeEnvsIndices, ElementsAre(3,4,5));
-    ASSERT_THAT(matches[5].permuteeEnvsIndices, ElementsAre(3,4,5));
+    ASSERT_THAT(matches[0].permuteeIndices, ElementsAre(0, 2));
+    ASSERT_THAT(matches[1].permuteeIndices, ElementsAre(0, 2));
+    ASSERT_THAT(matches[2].permuteeIndices, ElementsAre(1));
+    ASSERT_THAT(matches[3].permuteeIndices, ElementsAre(3, 4, 5));
+    ASSERT_THAT(matches[4].permuteeIndices, ElementsAre(3, 4, 5));
+    ASSERT_THAT(matches[5].permuteeIndices, ElementsAre(3, 4, 5));
     for (size_t i = 0; i < matches.size(); ++i)
-        ASSERT_EQ(matches[i].referenceEnvIndex, i);
+        ASSERT_EQ(matches[i].referenceIndex, i);
 
     auto dependentMatches = BestMatch::SOAPSimilarity::groupDependentMatches(matches);
-    ASSERT_THAT(dependentMatches[0][0].permuteeEnvsIndices, ElementsAre(0,2));
-    ASSERT_THAT(dependentMatches[0][1].permuteeEnvsIndices, ElementsAre(0,2));
+    ASSERT_THAT(dependentMatches[0][0].permuteeIndices, ElementsAre(0, 2));
+    ASSERT_THAT(dependentMatches[0][1].permuteeIndices, ElementsAre(0, 2));
 
-    ASSERT_THAT(dependentMatches[1][0].permuteeEnvsIndices, ElementsAre(1));
+    ASSERT_THAT(dependentMatches[1][0].permuteeIndices, ElementsAre(1));
 
-    ASSERT_THAT(dependentMatches[2][0].permuteeEnvsIndices, ElementsAre(3,4,5));
-    ASSERT_THAT(dependentMatches[2][1].permuteeEnvsIndices, ElementsAre(3,4,5));
-    ASSERT_THAT(dependentMatches[2][2].permuteeEnvsIndices, ElementsAre(3,4,5));
+    ASSERT_THAT(dependentMatches[2][0].permuteeIndices, ElementsAre(3, 4, 5));
+    ASSERT_THAT(dependentMatches[2][1].permuteeIndices, ElementsAre(3, 4, 5));
+    ASSERT_THAT(dependentMatches[2][2].permuteeIndices, ElementsAre(3, 4, 5));
 
     auto possiblePermutations0 = BestMatch::SOAPSimilarity::findPossiblePermutations(dependentMatches[0]);
     ASSERT_EQ(possiblePermutations0.size(), 2);
@@ -328,25 +328,25 @@ TEST_F(ABestMatchSimilarityTest, FindPossiblePermutations5) {
     0,0,0,1,1,1;
 
     auto matches = BestMatch::SOAPSimilarity::findEnvironmentMatches(mat, 1.0);
-    ASSERT_THAT(matches[0].permuteeEnvsIndices, ElementsAre(2));
-    ASSERT_THAT(matches[1].permuteeEnvsIndices, ElementsAre(0));
-    ASSERT_THAT(matches[2].permuteeEnvsIndices, ElementsAre(1));
-    ASSERT_THAT(matches[3].permuteeEnvsIndices, ElementsAre(3,4,5));
-    ASSERT_THAT(matches[4].permuteeEnvsIndices, ElementsAre(3,4,5));
-    ASSERT_THAT(matches[5].permuteeEnvsIndices, ElementsAre(3,4,5));
+    ASSERT_THAT(matches[0].permuteeIndices, ElementsAre(2));
+    ASSERT_THAT(matches[1].permuteeIndices, ElementsAre(0));
+    ASSERT_THAT(matches[2].permuteeIndices, ElementsAre(1));
+    ASSERT_THAT(matches[3].permuteeIndices, ElementsAre(3, 4, 5));
+    ASSERT_THAT(matches[4].permuteeIndices, ElementsAre(3, 4, 5));
+    ASSERT_THAT(matches[5].permuteeIndices, ElementsAre(3, 4, 5));
     for (size_t i = 0; i < matches.size(); ++i)
-        ASSERT_EQ(matches[i].referenceEnvIndex, i);
+        ASSERT_EQ(matches[i].referenceIndex, i);
 
     auto dependentMatches = BestMatch::SOAPSimilarity::groupDependentMatches(matches);
-    ASSERT_THAT(dependentMatches[0][0].permuteeEnvsIndices, ElementsAre(2));
+    ASSERT_THAT(dependentMatches[0][0].permuteeIndices, ElementsAre(2));
 
-    ASSERT_THAT(dependentMatches[1][0].permuteeEnvsIndices, ElementsAre(0));
+    ASSERT_THAT(dependentMatches[1][0].permuteeIndices, ElementsAre(0));
 
-    ASSERT_THAT(dependentMatches[2][0].permuteeEnvsIndices, ElementsAre(1));
+    ASSERT_THAT(dependentMatches[2][0].permuteeIndices, ElementsAre(1));
 
-    ASSERT_THAT(dependentMatches[3][0].permuteeEnvsIndices, ElementsAre(3,4,5));
-    ASSERT_THAT(dependentMatches[3][1].permuteeEnvsIndices, ElementsAre(3,4,5));
-    ASSERT_THAT(dependentMatches[3][2].permuteeEnvsIndices, ElementsAre(3,4,5));
+    ASSERT_THAT(dependentMatches[3][0].permuteeIndices, ElementsAre(3, 4, 5));
+    ASSERT_THAT(dependentMatches[3][1].permuteeIndices, ElementsAre(3, 4, 5));
+    ASSERT_THAT(dependentMatches[3][2].permuteeIndices, ElementsAre(3, 4, 5));
 
     auto possiblePermutations0 = BestMatch::SOAPSimilarity::findPossiblePermutations(dependentMatches[0]);
     ASSERT_EQ(possiblePermutations0.size(), 1);
@@ -796,13 +796,13 @@ TEST_F(ABestMatchSimilarityTest, EthaneSinglyIonicMinimal_shaked_alchemical) {
     permIndices[1] << 1, 2, 0, 4, 5, 3; // 120° rotation around z
 
 
-    //auto randomSeed = static_cast<unsigned long>(123);
-    //std::cout << "random seed: " << randomSeed << std::endl;
+    std::random_device rd;
+    std::uniform_int_distribution<unsigned long> dist(0, 9999);
+    auto randomSeed = dist(rd);
+    std::cout << "random seed: " << randomSeed << std::endl;
 
-    auto rng = std::default_random_engine(123);
-    std::cout<< std::endl << A.electrons() << std::endl;
+    auto rng = std::default_random_engine(randomSeed);
     A.electrons().positionsVector().shake(distanceTolerance / 10.0, rng);
-    std::cout << A.electrons() << std::endl;
 
     General::settings.pairSimilarities[{int(Spin::alpha), int(Spin::beta)}] = 1.0;
     General::settings.mode = General::Mode::alchemical;
@@ -930,19 +930,17 @@ TEST_F(ABestMatchSimilarityTest, EthaneSinglyIonic10RandomIndexSwapPermutations)
         // sort the permutations
         std::sort(std::begin(permIndices), std::end(permIndices),
                 [](const Eigen::VectorXi& a,const Eigen::VectorXi& b) {
-
             assert(a.size() == b.size());
-            for (Eigen::Index i = 0; i < a.size(); ++i) {
+            for (Eigen::Index i = 0; i < a.size(); ++i)
                 if (a[i] != b[i])
                     return a[i] < b[i];
-            }
+
             return a[0] < b[0];
         });
 
         routine(Acopy, B, permIndices, distanceTolerance, soapThreshold);
     }
 }
-
 
 TEST_F(ABestMatchSimilarityTest, EthaneDoublyIonicAntiMinimal) {
     General::settings.mode = General::Mode::chemical;
