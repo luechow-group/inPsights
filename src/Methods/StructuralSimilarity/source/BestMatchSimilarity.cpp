@@ -24,6 +24,7 @@
 #include <Eigen/Core>
 #include <ToString.h>
 #include <EnvironmentBlock.h>
+#include <GraphAnalysis.h>
 
 using namespace SOAP;
 
@@ -39,7 +40,7 @@ Eigen::MatrixXd BestMatch::SOAPSimilarity::calculateEnvironmentSimilarityMatrix(
 
     auto zeta = General::settings.zeta();
 
-    // TODO consider identical spin flip?
+    // TODO consider identical spin flip for chemical mode?
 
     TypeSpecificNeighborhoodsAtOneCenter expA, expB;
     for (unsigned i = 0; i < nAlpha; ++i) {
@@ -130,18 +131,11 @@ std::vector<BestMatch::DescendingMetricResult> BestMatch::SOAPSimilarity::getBes
                   "(in the particle kit system, permutee = rows, reference = cols)\n{}",
                   ToString::matrixXdToString(environmentSimilarities, 3));
 
-    // find the best-match (row) permutation of the environments (of the permutee) maximizing the diagonal)
+
     auto bestMatch = Hungarian<double>::findMatching(environmentSimilarities, Matchtype::MAX);
-
-    auto bestMatchPermutedEnvironmentSimilarities = bestMatch * environmentSimilarities;
-
-    spdlog::debug("Best-Match permutation: {}\n Best-match permuted environment similarity matrix "
-                  "(in the particle kit system, permutee = rows, reference = cols)\n{}",
-                  ToString::vectorXiToString(bestMatch.indices()),
-                  ToString::matrixXdToString(bestMatchPermutedEnvironmentSimilarities, 3));
-
     auto earlyExitResult = BestMatch::DescendingMetricResult({
-            earlyExitMetric(bestMatchPermutedEnvironmentSimilarities),
+        // find the best-match (row) permutation of the environments (of the permutee) maximizing the diagonal)
+            earlyExitMetric(bestMatch * environmentSimilarities),
             referenceFromKit * bestMatch * permuteeToKit //convert best-match perm from particle-kit into the lab system
     });
 
@@ -153,11 +147,8 @@ std::vector<BestMatch::DescendingMetricResult> BestMatch::SOAPSimilarity::getBes
     }
 
     // Step 1.
-
     auto matches = BestMatch::SOAPSimilarity::findEnvironmentMatches(environmentSimilarities, similarityThreshold, comparisionEpsilon);
     auto dependentMatches = BestMatch::SOAPSimilarity::groupDependentMatches(matches);
-
-
 
 
     // Step 2.
@@ -317,20 +308,15 @@ bool BestMatch::SOAPSimilarity::GrowingPerm::add(const std::pair<Eigen::Index, E
 
 std::deque<BestMatch::SOAPSimilarity::PermuteeEnvsToReferenceEnvMatch>
 BestMatch::SOAPSimilarity::findEnvironmentMatches(
-        const Eigen::MatrixXd &environmentSimilarities, // TODO simlarities are also ok
+        const Eigen::MatrixXd &environmentSimilarities,
         double soapThreshold, double numericalPrecisionEpsilon) {
+
+    auto adjacencyMatrix = GraphAnalysis::filter(environmentSimilarities, soapThreshold-numericalPrecisionEpsilon);
 
     std::deque<PermuteeEnvsToReferenceEnvMatch> matches;
     for (Eigen::Index j = 0; j < environmentSimilarities.cols(); ++j) {
-
-        Eigen::Index referenceEnv = j;
-        std::set<Eigen::Index> permuteeEnvs;
-
-        for (Eigen::Index i = 0; i < environmentSimilarities.rows(); ++i)
-            if (environmentSimilarities(i, j) >= soapThreshold - numericalPrecisionEpsilon)
-                permuteeEnvs.emplace(i);
-
-        matches.emplace_back(PermuteeEnvsToReferenceEnvMatch{permuteeEnvs, referenceEnv});
+        auto permuteeEnvs = GraphAnalysis::findVerticesOfIncomingEdges(adjacencyMatrix, j);
+        matches.emplace_back(PermuteeEnvsToReferenceEnvMatch{permuteeEnvs, j});
     }
 
     return matches;

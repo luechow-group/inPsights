@@ -1122,8 +1122,6 @@ TEST_F(ABestMatchSimilarityTest, Trans13ButadieneRealMaxima) {
     expectedPermIndices[62] << 0,18,28,11,4,5,24,7,8,29,14,3,12,13,10,15,16,25,1,26,20,21,22,23,6,17,19,27,2,9;
     expectedPermIndices[63] << 0,18,28,11,4,5,24,7,8,29,14,3,15,13,10,12,16,25,1,26,20,21,22,23,6,17,19,27,2,9;
 
-    // FAILS for nmax=lmax=3 - index 23 is found twice in findEquivalentEnvironments
-
     General::settings.mode = General::Mode::typeAgnostic;
     routine(A, B, expectedPermIndices, distanceTolerance, 0.99, true);
 }

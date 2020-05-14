@@ -34,9 +34,10 @@ namespace GraphAnalysis {
 
     Eigen::MatrixXb lowerOrEqualFilter(const Eigen::MatrixXd & matrix, double threshold = 1.0);
 
-    //std::list<Eigen::Index> findDirectedEdgesToCol
+    std::set<Eigen::Index> findVerticesOfOutgoingEdges(const Eigen::MatrixXb &adjacencyMatrix, Eigen::Index vertes);
 
-    // TODO use std::set?
+    std::set<Eigen::Index> findVerticesOfIncomingEdges(const Eigen::MatrixXb &adjacencyMatrix, Eigen::Index vertex);
+
     std::set<Eigen::Index> findConnectedVertices(const Eigen::MatrixXb &adjacencyMatrix, Eigen::Index startVertex);
 
     std::vector<std::set<Eigen::Index>> findGraphClusters(const Eigen::MatrixXb &adjacencyMatrix);

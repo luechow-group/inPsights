@@ -38,6 +38,26 @@ namespace GraphAnalysis {
         return matrix.unaryExpr([&](const double x) { return (x <= threshold) ? 1.0 : 0.0; }).cast<bool>();
     }
 
+    std::set<Eigen::Index> findVerticesOfIncomingEdges(const Eigen::MatrixXb &adjacencyMatrix, Eigen::Index vertex) {
+        std::set<Eigen::Index> incomingVertexIndices;
+
+        for (Eigen::Index i = 0; i < adjacencyMatrix.rows(); ++i)
+            if(adjacencyMatrix(i,vertex))
+                incomingVertexIndices.emplace(i);
+
+        return incomingVertexIndices;
+    }
+
+    std::set<Eigen::Index> findVerticesOfOutgoingEdges(const Eigen::MatrixXb &adjacencyMatrix, Eigen::Index vertex) {
+        std::set<Eigen::Index> outgoingVertexIndices;
+
+        for (Eigen::Index j = 0; j < adjacencyMatrix.cols(); ++j)
+            if(adjacencyMatrix(j,vertex))
+                outgoingVertexIndices.emplace(j);
+
+        return outgoingVertexIndices;
+    }
+
     std::set<Eigen::Index> findConnectedVertices(const Eigen::MatrixXb &adjacencyMatrix, Eigen::Index startVertex) {
         assert(adjacencyMatrix.rows() == adjacencyMatrix.cols());
 
