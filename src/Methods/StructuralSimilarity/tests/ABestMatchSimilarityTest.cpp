@@ -32,7 +32,7 @@ using namespace SOAP;
 class ABestMatchSimilarityTest : public ::testing::Test {
 public:
     using Pair = std::pair<Eigen::Index,Eigen::Index>;
-    double distanceTolerance, soapThreshold, shakeSoapThreshold, numericalPrecisionEpsilon;
+    double distanceTolerance, soapThreshold, shakeSoapThreshold;
 
     void SetUp() override {
         spdlog::set_level(spdlog::level::off);
@@ -41,7 +41,6 @@ public:
         distanceTolerance = 0.1;
         soapThreshold = 1.0;
         shakeSoapThreshold = 0.90;
-        numericalPrecisionEpsilon = SOAP::General::settings.comparisonEpsilon.get();
 
         Radial::settings.nmax = 2;
         Radial::settings.sigmaAtom = 2.0;
@@ -53,7 +52,10 @@ public:
 
     void routine(const MolecularGeometry &A, const MolecularGeometry &B,
                  const std::vector<Eigen::VectorXi> &expectedPermutationIndices,
-                 double distTolerance, double soapThresh, bool greaterThan = false) {
+                 double distTolerance, double soapThresh, bool greaterThan = false
+                 ) {
+
+        double eps = SOAP::General::settings.comparisonEpsilon();
 
         ParticleKit::create(A);
         ASSERT_TRUE(ParticleKit::isSubsetQ(A));
@@ -64,7 +66,7 @@ public:
 
         auto results = BestMatch::SOAPSimilarity::getBestMatchResults(
                 specA, specB,
-                distTolerance, soapThresh, numericalPrecisionEpsilon);
+                distTolerance, soapThresh, eps);
 
         std::sort(results.begin(), results.end());
 
@@ -76,7 +78,7 @@ public:
 
         unsigned removedCounter = 0;
         for(auto it = results.begin(); it != results.end(); it++) {
-            if(it->metric < (soapThresh-numericalPrecisionEpsilon)) {
+            if(it->metric < (soapThresh-eps)) {
                 results.erase(it--);
                 removedCounter++;
             }
@@ -99,7 +101,7 @@ public:
             }
 
             if (i < expectedPermutationIndices.size()) {
-                if (!greaterThan) ASSERT_NEAR(results[i].metric, soapThresh, numericalPrecisionEpsilon);
+                if (!greaterThan) ASSERT_NEAR(results[i].metric, soapThresh, eps);
                 else ASSERT_GT(results[i].metric, soapThresh);
 
                 ASSERT_EQ(results[i].permutation.indices(), expectedPermutationIndices[i]);
@@ -806,6 +808,8 @@ TEST_F(ABestMatchSimilarityTest, EthaneSinglyIonicMinimal_shaked_alchemical) {
 
     General::settings.pairSimilarities[{int(Spin::alpha), int(Spin::beta)}] = 1.0;
     General::settings.mode = General::Mode::alchemical;
+    SOAP::General::settings.comparisonEpsilon = 1e-8;
+
     routine(A, B, permIndices, distanceTolerance, shakeSoapThreshold, true);
 }
 
