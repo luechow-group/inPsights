@@ -147,7 +147,8 @@ void MaximaProcessor::calculateStatistics(const Group &maxima){
         spinCorrelationDistribution.addSpinStatistic(SeeStats_);
         
         // Motif analysis (requires spin correlation data)
-        auto adjacencyMatrix = GraphAnalysis::filter(SeeStats_.mean().cwiseAbs(), 1.00);
+
+        auto adjacencyMatrix = GraphAnalysis::filter(SeeStats_.mean().cwiseAbs(), MaximaProcessing::settings.motifThreshold());
         motifs_ = Motifs(adjacencyMatrix, MolecularGeometry(atoms_, group.representative()->maximum()));
         
         doMotifBasedEnergyPartitioning(group);

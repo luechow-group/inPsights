@@ -56,10 +56,10 @@ void TotalWeightDifferenceAnalyzer::analyze(const Group& group) {
 
 
     // get weight of the clusters in group and put it in prev weights
-    std::vector<std::list<Eigen::Index>> groupIdsListsOfPreviousRadiusClustering;
+    std::vector<std::set<Eigen::Index>> groupIdsListsOfPreviousRadiusClustering;
     std::vector<double> weightsOfPreviousRadiusClustering;
     for (const auto & [clusterGroupId, cluster] : enumerate(group)) {
-        groupIdsListsOfPreviousRadiusClustering.emplace_back(std::list<Eigen::Index>({static_cast<Eigen::Index>(clusterGroupId)}));
+        groupIdsListsOfPreviousRadiusClustering.emplace_back(std::set<Eigen::Index>({static_cast<Eigen::Index>(clusterGroupId)}));
         weightsOfPreviousRadiusClustering.emplace_back(static_cast<double>(cluster.numberOfLeaves()) / static_cast<double>(totalNumberOfMaxima));
     }
 

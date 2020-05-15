@@ -33,6 +33,13 @@ namespace Settings {
                     else if (value >= 1.0)
                         throw std::invalid_argument("The minimal cluster weight cannot be 1 or larger.");
                 });
+        motifThreshold.onChange_.connect(
+                [&](double value) {
+                    if (value < 0.0)
+                        throw std::invalid_argument("The motif threshold cannot be negative.");
+                    else if (value > 1.0)
+                        throw std::invalid_argument("The motif threshold cannot greater than 1.");
+                });
     }
 
     MaximaProcessing::MaximaProcessing(const YAML::Node &node)
@@ -40,6 +47,7 @@ namespace Settings {
         YAML::convert<Property<std::string>>::decode(node[className], binaryFileBasename);
         unsignedProperty::decode(node[className], samplesToAnalyze);
         doubleProperty ::decode(node[className], minimalClusterWeight);
+        doubleProperty ::decode(node[className], motifThreshold);
         boolProperty ::decode(node[className], deleteCoreElectrons);
     }
 
@@ -47,6 +55,7 @@ namespace Settings {
         node[className][binaryFileBasename.name()] = binaryFileBasename.get();
         node[className][samplesToAnalyze.name()] = samplesToAnalyze.get();
         node[className][minimalClusterWeight.name()] = minimalClusterWeight.get();
+        node[className][motifThreshold.name()] = motifThreshold.get();
         node[className][deleteCoreElectrons.name()] = deleteCoreElectrons.get();
     }
 }

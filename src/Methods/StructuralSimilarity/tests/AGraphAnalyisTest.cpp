@@ -1,4 +1,4 @@
-/* Copyright (C) 2019 Michael Heuer.
+/* Copyright (C) 2019-2020 Michael Heuer.
  *
  * This file is part of inPsights.
  * inPsights is free software: you can redistribute it and/or modify
@@ -87,22 +87,22 @@ TEST_F(AGraphAnalysisTest, FindConnectedVertices) {
 
 TEST_F(AGraphAnalysisTest, LowerOrEqualFilter) {
     auto adjacencyMat02 = GraphAnalysis::lowerOrEqualFilter(distMat, 0.2);
-    ASSERT_THAT(GraphAnalysis::findConnectedVertices(adjacencyMat02, 0), ElementsAre(0, 1, 2));
-    ASSERT_THAT(GraphAnalysis::findConnectedVertices(adjacencyMat02, 1), ElementsAre(0, 1, 2));
-    ASSERT_THAT(GraphAnalysis::findConnectedVertices(adjacencyMat02, 2), ElementsAre(0, 1, 2));
+    ASSERT_THAT(GraphAnalysis::findConnectedVertices(adjacencyMat02, 0), ElementsAre(0,1,2));
+    ASSERT_THAT(GraphAnalysis::findConnectedVertices(adjacencyMat02, 1), ElementsAre(0,1,2));
+    ASSERT_THAT(GraphAnalysis::findConnectedVertices(adjacencyMat02, 2), ElementsAre(0,1,2));
     ASSERT_THAT(GraphAnalysis::findConnectedVertices(adjacencyMat02, 3), ElementsAre(3));
 
     auto adjacencyMat04 = GraphAnalysis::lowerOrEqualFilter(distMat, 0.4);
-    ASSERT_THAT(GraphAnalysis::findConnectedVertices(adjacencyMat04, 0), ElementsAre(0, 1, 2, 3));
-    ASSERT_THAT(GraphAnalysis::findConnectedVertices(adjacencyMat04, 1), ElementsAre(0, 1, 2, 3));
-    ASSERT_THAT(GraphAnalysis::findConnectedVertices(adjacencyMat04, 2), ElementsAre(0, 1, 2, 3));
-    ASSERT_THAT(GraphAnalysis::findConnectedVertices(adjacencyMat04, 3), ElementsAre(0, 1, 2, 3));
+    ASSERT_THAT(GraphAnalysis::findConnectedVertices(adjacencyMat04, 0), ElementsAre(0,1,2,3));
+    ASSERT_THAT(GraphAnalysis::findConnectedVertices(adjacencyMat04, 1), ElementsAre(0,1,2,3));
+    ASSERT_THAT(GraphAnalysis::findConnectedVertices(adjacencyMat04, 2), ElementsAre(0,1,2,3));
+    ASSERT_THAT(GraphAnalysis::findConnectedVertices(adjacencyMat04, 3), ElementsAre(0,1,2,3));
 
     auto adjacencyMat08 = GraphAnalysis::lowerOrEqualFilter(distMat, 0.8);
-    ASSERT_THAT(GraphAnalysis::findConnectedVertices(adjacencyMat08, 0), ElementsAre(0, 1, 2, 3));
-    ASSERT_THAT(GraphAnalysis::findConnectedVertices(adjacencyMat08, 1), ElementsAre(0, 1, 2, 3));
-    ASSERT_THAT(GraphAnalysis::findConnectedVertices(adjacencyMat08, 2), ElementsAre(0, 1, 2, 3));
-    ASSERT_THAT(GraphAnalysis::findConnectedVertices(adjacencyMat08, 3), ElementsAre(0, 1, 2, 3));
+    ASSERT_THAT(GraphAnalysis::findConnectedVertices(adjacencyMat08, 0), ElementsAre(0,1,2,3));
+    ASSERT_THAT(GraphAnalysis::findConnectedVertices(adjacencyMat08, 1), ElementsAre(0,1,2,3));
+    ASSERT_THAT(GraphAnalysis::findConnectedVertices(adjacencyMat08, 2), ElementsAre(0,1,2,3));
+    ASSERT_THAT(GraphAnalysis::findConnectedVertices(adjacencyMat08, 3), ElementsAre(0,1,2,3));
 
     auto adjacencyMat12 = GraphAnalysis::lowerOrEqualFilter(distMat, 1.2);
     ASSERT_THAT(GraphAnalysis::findConnectedVertices(adjacencyMat12, 0), ElementsAre(0,1,2,3));
@@ -139,11 +139,10 @@ TEST_F(AGraphAnalysisTest, Filter) {
     m << 0,0.45,0.5,1;
 
     Eigen::MatrixXb expected(2,2);
-    expected << 0,0,1,1;
+    expected << false,false,true,true;
 
     ASSERT_EQ(GraphAnalysis::filter(m,0.5), expected);
 
-    EXPECT_DEATH(GraphAnalysis::filter(m,1.1),"");
     m = m.array() - 1.0;
     EXPECT_DEATH(GraphAnalysis::filter(m,0.5),"");
 }
@@ -151,8 +150,20 @@ TEST_F(AGraphAnalysisTest, Filter) {
 
 TEST_F(AGraphAnalysisTest, FindSubsets) {
 
-    std::vector<std::list<Eigen::Index>> subsets{{90, 91}, {92}, {93}};
-    std::vector<std::list<Eigen::Index>> referenceSets{{90, 91, 92}, {93}};
+    std::vector<std::set<Eigen::Index>> subsets{{90, 91}, {92}, {93}};
+    std::vector<std::set<Eigen::Index>> referenceSets{{90, 91, 92}, {93}};
+
+    auto map = GraphAnalysis::findMergeMap(subsets, referenceSets);
+
+    ASSERT_THAT(map,Contains(std::pair<std::size_t, std::size_t>(0,0)));
+    ASSERT_THAT(map,Contains(std::pair<std::size_t, std::size_t>(1,0)));
+    ASSERT_THAT(map,Contains(std::pair<std::size_t, std::size_t>(2,1)));
+}
+
+TEST_F(AGraphAnalysisTest, FindSubsetsUnordered) {
+
+    std::vector<std::set<Eigen::Index>> subsets{{91, 90}, {92}, {93}};
+    std::vector<std::set<Eigen::Index>> referenceSets{{90, 91, 92}, {93}};
 
     auto map = GraphAnalysis::findMergeMap(subsets, referenceSets);
 
@@ -163,8 +174,8 @@ TEST_F(AGraphAnalysisTest, FindSubsets) {
 
 TEST_F(AGraphAnalysisTest, FindSubsetsUnorderd) {
 
-    std::vector<std::list<Eigen::Index>> subsets{{92}, {93}, {90, 91}};
-    std::vector<std::list<Eigen::Index>> referenceSets{{93}, {90, 91, 92}};
+    std::vector<std::set<Eigen::Index>> subsets{{92}, {93}, {90, 91}};
+    std::vector<std::set<Eigen::Index>> referenceSets{{93}, {90, 91, 92}};
 
     auto map = GraphAnalysis::findMergeMap(subsets, referenceSets);
 
@@ -174,15 +185,15 @@ TEST_F(AGraphAnalysisTest, FindSubsetsUnorderd) {
 }
 
 TEST_F(AGraphAnalysisTest, ReferenceSetWithoutMatchingSubsetDeath) {
-    std::vector<std::list<Eigen::Index>> subsets{{0,1}, {2}, {3}};
-    std::vector<std::list<Eigen::Index>> referenceSets{{0,1,2},{3},{4}};
+    std::vector<std::set<Eigen::Index>> subsets{{0,1}, {2}, {3}};
+    std::vector<std::set<Eigen::Index>> referenceSets{{0,1,2},{3},{4}};
 
     EXPECT_DEATH(GraphAnalysis::findMergeMap(subsets, referenceSets), "");
 }
 
 TEST_F(AGraphAnalysisTest, SubsetNotFoundInReferenceSetDeath) {
-    std::vector<std::list<Eigen::Index>> subsets{{0,1}, {2}, {3}, {4}};
-    std::vector<std::list<Eigen::Index>> referenceSets{{0,1,2},{3}};
+    std::vector<std::set<Eigen::Index>> subsets{{0,1}, {2}, {3}, {4}};
+    std::vector<std::set<Eigen::Index>> referenceSets{{0,1,2},{3}};
 
     EXPECT_DEATH(GraphAnalysis::findMergeMap(subsets, referenceSets), "");
 }

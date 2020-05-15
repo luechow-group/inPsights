@@ -18,7 +18,7 @@
 #include <Combinatorics.h>
 
 std::size_t Combinatorics::binomial(std::size_t n, std::size_t k) {
-    assert( n <= 34
+    assert( n <= MAX_BINOMIAL
     && "The maximal binomial fitting into an unsigned long int with all of its possible k values is n=34.");
     if (k > n) {
         return 0;
@@ -32,7 +32,7 @@ std::size_t Combinatorics::binomial(std::size_t n, std::size_t k) {
 }
 
 std::size_t Combinatorics::factorial(std::size_t n) {
-    assert(n <=  12
+    assert(n <=  MAX_FACTORIAL
     && "The maximal factorial fitting into an unsigned long int is n=12.");
     return (n == 1 || n == 0) ? 1 : factorial(n - 1) * n;
 }

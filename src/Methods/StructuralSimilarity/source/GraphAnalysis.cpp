@@ -1,4 +1,4 @@
-/* Copyright (C) 2019 Michael Heuer.
+/* Copyright (C) 2019-2020 Michael Heuer.
  *
  * This file is part of inPsights.
  * inPsights is free software: you can redistribute it and/or modify
@@ -21,31 +21,48 @@
 #include <algorithm>
 
 namespace GraphAnalysis {
-    Eigen::MatrixXb filter(const Eigen::MatrixXd & matrix, double threshold) {
-        assert( (matrix.array() >= 0.0).all() );
-        assert( threshold >= 0.0);
-
-        assert( (matrix.array() <= 1.0).all() );
-        assert( threshold <= 1.0);
+    Eigen::MatrixXb filter(const Eigen::MatrixXd &matrix, double threshold) {
+        assert((matrix.array() >= 0.0).all());
+        assert(threshold >= 0.0);
 
         return matrix.unaryExpr([&](const double x) { return (x >= threshold) ? 1.0 : 0.0; }).cast<bool>();
     }
 
-    Eigen::MatrixXb lowerOrEqualFilter(const Eigen::MatrixXd & matrix, double threshold) {
-        assert( (matrix.array() >= 0.0).all() );
-        assert( threshold >= 0.0);
+    Eigen::MatrixXb lowerOrEqualFilter(const Eigen::MatrixXd &matrix, double threshold) {
+        assert((matrix.array() >= 0.0).all());
+        assert(threshold >= 0.0);
 
         return matrix.unaryExpr([&](const double x) { return (x <= threshold) ? 1.0 : 0.0; }).cast<bool>();
     }
 
-    std::list<Eigen::Index> findConnectedVertices(const Eigen::MatrixXb &adjacencyMatrix, Eigen::Index startVertex) {
+    std::set<Eigen::Index> findVerticesOfIncomingEdges(const Eigen::MatrixXb &adjacencyMatrix, Eigen::Index vertex) {
+        std::set<Eigen::Index> incomingVertexIndices;
+
+        for (Eigen::Index i = 0; i < adjacencyMatrix.rows(); ++i)
+            if (adjacencyMatrix(i, vertex))
+                incomingVertexIndices.emplace(i);
+
+        return incomingVertexIndices;
+    }
+
+    std::set<Eigen::Index> findVerticesOfOutgoingEdges(const Eigen::MatrixXb &adjacencyMatrix, Eigen::Index vertex) {
+        std::set<Eigen::Index> outgoingVertexIndices;
+
+        for (Eigen::Index j = 0; j < adjacencyMatrix.cols(); ++j)
+            if (adjacencyMatrix(vertex, j))
+                outgoingVertexIndices.emplace(j);
+
+        return outgoingVertexIndices;
+    }
+
+    std::set<Eigen::Index> findConnectedVertices(const Eigen::MatrixXb &adjacencyMatrix, Eigen::Index startVertex) {
         assert(adjacencyMatrix.rows() == adjacencyMatrix.cols());
 
         Eigen::Index vertexCount = adjacencyMatrix.rows();
         assert(vertexCount > 0);
         assert(startVertex < vertexCount);
 
-        Eigen::VectorXb marks = Eigen::VectorXb::Constant(vertexCount, 1, false);
+        Eigen::VectorXb marks = Eigen::VectorXb::Constant(vertexCount, false);
         marks(startVertex) = true;
 
 
@@ -62,39 +79,42 @@ namespace GraphAnalysis {
             queue.pop();
         }
 
-        std::list<Eigen::Index> connectedVertices;
+        std::set<Eigen::Index> connectedVertices;
 
         for (Eigen::Index i = 0; i < vertexCount; ++i)
-            if (marks(i)) connectedVertices.push_back(i);
+            if (marks(i)) connectedVertices.emplace(i);
 
         return connectedVertices;
     }
 
-    // returns a vector of lists containing
-    std::vector<std::list<Eigen::Index>> findGraphClusters(const Eigen::MatrixXb &adjacencyMatrix) {
+    // returns a vector of sets containing connected components
+    std::vector<std::set<Eigen::Index>> findGraphClusters(const Eigen::MatrixXb &adjacencyMatrix) {
         assert(adjacencyMatrix.rows() == adjacencyMatrix.cols());
 
         Eigen::Index vertexCount = adjacencyMatrix.rows();
         assert(vertexCount > 0);
 
         // create
-        std::list<Eigen::Index> remainingVertices(vertexCount);
-        std::iota(remainingVertices.begin(), remainingVertices.end(), 0);
+        std::set<Eigen::Index> remainingVertices;
+        for (Eigen::Index i = 0; i < vertexCount; ++i) {
+            remainingVertices.emplace(i);
+        }
 
-        std::vector<std::list<Eigen::Index>> clusters;
+        std::vector<std::set<Eigen::Index>> clusters;
 
         while (!remainingVertices.empty()) {
             // breadth-first search of connected vertices in the adjacency matrix
             // starting at the first of the remaining vertices
-            auto connectedVertices = findConnectedVertices(adjacencyMatrix, remainingVertices.front());
+            auto connectedVertices = findConnectedVertices(adjacencyMatrix, *std::begin(remainingVertices));
             clusters.push_back(connectedVertices);
 
-            std::list<Eigen::Index> difference;
+            std::set<Eigen::Index> difference;
 
             // determine remaining vertices from the difference to the newly found connected vertices
             std::set_difference(
                     remainingVertices.begin(), remainingVertices.end(),
-                    connectedVertices.begin(), connectedVertices.end(), std::back_inserter(difference));
+                    connectedVertices.begin(), connectedVertices.end(),
+                    std::inserter(difference, std::end(difference)));
             remainingVertices = difference;
         };
 
@@ -103,18 +123,18 @@ namespace GraphAnalysis {
 }
 
 std::map<std::size_t, std::size_t> GraphAnalysis::findMergeMap(
-        std::vector<std::list<Eigen::Index>> subsets,
-        std::vector<std::list<Eigen::Index>> referenceSets) {
+        const std::vector<std::set<Eigen::Index>> &subsets,
+        const std::vector<std::set<Eigen::Index>> &referenceSets) {
     // identify, which sets are subsets of the previous ones
     std::map<std::size_t, std::size_t> map;
 
-    std::vector<bool> foundQ(subsets.size(),false);
-    for(const auto & [referenceSetIndex, referenceSet]  : enumerate(referenceSets)){
+    std::vector<bool> foundQ(subsets.size(), false);
+    for (const auto &[referenceSetIndex, referenceSet]  : enumerate(referenceSets)) {
 
         bool matchedQ = false;
-        for(const auto & [subsetIndex, subset] : enumerate(subsets)){
+        for (const auto &[subsetIndex, subset] : enumerate(subsets)) {
             auto isSubsetQ = std::includes(referenceSet.begin(), referenceSet.end(), subset.begin(), subset.end());
-            if(isSubsetQ) {
+            if (isSubsetQ) {
                 map[subsetIndex] = referenceSetIndex;
                 foundQ[subsetIndex] = true;
                 matchedQ = true;
@@ -123,7 +143,8 @@ std::map<std::size_t, std::size_t> GraphAnalysis::findMergeMap(
         assert(matchedQ && "A set of the reference sets has no matching subset.");
     }
     assert(std::all_of(foundQ.begin(), foundQ.end(), [](bool foundQ) {
-        return foundQ == true;}) && "All subsets should appear in the reference set.");
+        return foundQ == true;
+    }) && "All subsets should appear in the reference set.");
 
     return map;
 };
