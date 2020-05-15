@@ -20,6 +20,7 @@
 #include <Metrics.h>
 #include <set>
 #include <string>
+#include <utility>
 #include <yaml-cpp/yaml.h>
 
 std::string toString(MotifType type) {
@@ -28,6 +29,8 @@ std::string toString(MotifType type) {
             return "Core";
         case MotifType::Valence :
             return "Valence";
+        case MotifType::CoreValence :
+            return "CoreValence";
         default:
             return "unassigned";
     }
@@ -38,18 +41,20 @@ MotifType fromString(const std::string& string) {
         return MotifType::Core;
     else if (string == "Valence")
         return MotifType::Valence;
+    else if (string == "CoreValence")
+        return MotifType::CoreValence;
     else
         return MotifType::unassigned;
 }
 
 
-Motif::Motif(const std::set<Eigen::Index> &electronIndices, MotifType type)
-        : type_(type), electronIndices_(electronIndices) {};
+Motif::Motif(std::set<Eigen::Index> electronIndices, MotifType type)
+        : type_(type), electronIndices_(std::move(electronIndices)) {};
 
-Motif::Motif(const std::set<Eigen::Index> &electronIndices,
-             const std::set<Eigen::Index> &atomIndices,
-            MotifType type)
-        : type_(type), electronIndices_(electronIndices), atomIndices_(atomIndices) {};
+Motif::Motif(std::set<Eigen::Index> electronIndices,
+             std::set<Eigen::Index> atomIndices,
+             MotifType type)
+        : type_(type), electronIndices_(std::move(electronIndices)), atomIndices_(std::move(atomIndices)) {};
 
 bool Motif::containsQ(Eigen::Index i) const {
     return std::find(electronIndices_.begin(), electronIndices_.end(), i) != electronIndices_.end();
@@ -75,8 +80,8 @@ MotifType Motif::type() const {
     return type_;
 }
 
-void Motif::setType(MotifType type_) {
-    Motif::type_ = type_;
+void Motif::setType(MotifType type) {
+    Motif::type_ = type;
 }
 
 const std::set<Eigen::Index> &Motif::electronIndices() const {

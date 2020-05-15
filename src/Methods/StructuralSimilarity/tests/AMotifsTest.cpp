@@ -82,97 +82,124 @@ public:
 
 TEST_F(AMotifsTest, Li2) {
     // The connected first four electrons are split into two core motifs
-    ASSERT_THAT(Li2.motifVector_[0].electronIndices(), ElementsAre(0, 1));
-    ASSERT_THAT(Li2.motifVector_[0].atomIndices(), ElementsAre(0));
-    ASSERT_EQ(Li2.motifVector_[0].type(), MotifType::Core);
+    ASSERT_THAT(Li2.motifs_[0].electronIndices(), ElementsAre(0, 1));
+    ASSERT_THAT(Li2.motifs_[0].atomIndices(), ElementsAre(0));
+    ASSERT_EQ(Li2.motifs_[0].type(), MotifType::Core);
 
-    ASSERT_THAT(Li2.motifVector_[1].electronIndices(), ElementsAre(2, 3));
-    ASSERT_THAT(Li2.motifVector_[1].atomIndices(), ElementsAre(1));
-    ASSERT_EQ(Li2.motifVector_[1].type(), MotifType::Core);
+    ASSERT_THAT(Li2.motifs_[1].electronIndices(), ElementsAre(2, 3));
+    ASSERT_THAT(Li2.motifs_[1].atomIndices(), ElementsAre(1));
+    ASSERT_EQ(Li2.motifs_[1].type(), MotifType::Core);
 
     // Valence elctrons are not influenced by this
-    ASSERT_THAT(Li2.motifVector_[2].electronIndices(), ElementsAre(4, 5));
-    ASSERT_THAT(Li2.motifVector_[2].atomIndices(), ElementsAre());
-    ASSERT_EQ(Li2.motifVector_[2].type(), MotifType::Valence);
+    ASSERT_THAT(Li2.motifs_[2].electronIndices(), ElementsAre(4, 5));
+    ASSERT_THAT(Li2.motifs_[2].atomIndices(), ElementsAre());
+    ASSERT_EQ(Li2.motifs_[2].type(), MotifType::Valence);
 }
 
 TEST_F(AMotifsTest, LiH) {
 
-    ASSERT_THAT(LiH.motifVector_[0].electronIndices(), ElementsAre(0, 1));
-    ASSERT_THAT(LiH.motifVector_[0].atomIndices(), ElementsAre(0));
-    ASSERT_EQ(LiH.motifVector_[0].type(), MotifType::Core);
+    ASSERT_THAT(LiH.motifs_[0].electronIndices(), ElementsAre(0, 1));
+    ASSERT_THAT(LiH.motifs_[0].atomIndices(), ElementsAre(0));
+    ASSERT_EQ(LiH.motifs_[0].type(), MotifType::Core);
 
-    ASSERT_THAT(LiH.motifVector_[1].electronIndices(), ElementsAre());
-    ASSERT_THAT(LiH.motifVector_[1].atomIndices(), ElementsAre(1));
-    ASSERT_EQ(LiH.motifVector_[1].type(), MotifType::Core);
+    ASSERT_THAT(LiH.motifs_[1].electronIndices(), ElementsAre());
+    ASSERT_THAT(LiH.motifs_[1].atomIndices(), ElementsAre(1));
+    ASSERT_EQ(LiH.motifs_[1].type(), MotifType::Core);
 
-    ASSERT_THAT(LiH.motifVector_[2].electronIndices(), ElementsAre(2, 3));
-    ASSERT_THAT(LiH.motifVector_[2].atomIndices(), ElementsAre());
-    ASSERT_EQ(LiH.motifVector_[2].type(), MotifType::Valence);
+    ASSERT_THAT(LiH.motifs_[2].electronIndices(), ElementsAre(2, 3));
+    ASSERT_THAT(LiH.motifs_[2].atomIndices(), ElementsAre());
+    ASSERT_EQ(LiH.motifs_[2].type(), MotifType::Valence);
 }
 
 TEST_F(AMotifsTest, H2covalent) {
 
-    ASSERT_THAT(H2covalent.motifVector_[0].electronIndices(), ElementsAre());
-    ASSERT_THAT(H2covalent.motifVector_[0].atomIndices(), ElementsAre(0));
-    ASSERT_EQ(H2covalent.motifVector_[0].type(), MotifType::Core);
+    ASSERT_THAT(H2covalent.motifs_[0].electronIndices(), ElementsAre());
+    ASSERT_THAT(H2covalent.motifs_[0].atomIndices(), ElementsAre(0));
+    ASSERT_EQ(H2covalent.motifs_[0].type(), MotifType::Core);
 
-    ASSERT_THAT(H2covalent.motifVector_[1].electronIndices(), ElementsAre());
-    ASSERT_THAT(H2covalent.motifVector_[1].atomIndices(), ElementsAre(1));
-    ASSERT_EQ(H2covalent.motifVector_[1].type(), MotifType::Core);
+    ASSERT_THAT(H2covalent.motifs_[1].electronIndices(), ElementsAre());
+    ASSERT_THAT(H2covalent.motifs_[1].atomIndices(), ElementsAre(1));
+    ASSERT_EQ(H2covalent.motifs_[1].type(), MotifType::Core);
 
-    ASSERT_THAT(H2covalent.motifVector_[2].electronIndices(), ElementsAre(0, 1));
-    ASSERT_THAT(H2covalent.motifVector_[2].atomIndices(), ElementsAre());
-    ASSERT_EQ(H2covalent.motifVector_[2].type(), MotifType::Valence);
+    ASSERT_THAT(H2covalent.motifs_[2].electronIndices(), ElementsAre(0, 1));
+    ASSERT_THAT(H2covalent.motifs_[2].atomIndices(), ElementsAre());
+    ASSERT_EQ(H2covalent.motifs_[2].type(), MotifType::Valence);
+}
+
+TEST_F(AMotifsTest, H2covalentMotifMerge) {
+
+    auto H2motifs = H2covalent;
+
+    ASSERT_EQ(H2motifs.motifs_.size(), 3);
+
+    H2motifs.mergeMotifs({0, 1});
+
+    ASSERT_EQ(H2motifs.motifs_.size(), 2);
+
+    ASSERT_THAT(H2motifs.motifs_[0].electronIndices(), ElementsAre());
+    ASSERT_THAT(H2motifs.motifs_[0].atomIndices(), ElementsAre(0,1));
+    ASSERT_EQ(H2motifs.motifs_[0].type(), MotifType::Core);
+
+    ASSERT_THAT(H2motifs.motifs_[1].electronIndices(), ElementsAre(0,1));
+    ASSERT_THAT(H2motifs.motifs_[1].atomIndices(), ElementsAre());
+    ASSERT_EQ(H2motifs.motifs_[1].type(), MotifType::Valence);
+
+    H2motifs.mergeMotifs({0, 1});
+    ASSERT_EQ(H2motifs.motifs_.size(), 1);
+
+    ASSERT_THAT(H2motifs.motifs_[0].electronIndices(), ElementsAre(0,1));
+    ASSERT_THAT(H2motifs.motifs_[0].atomIndices(), ElementsAre(0,1));
+    ASSERT_EQ(H2motifs.motifs_[0].type(), MotifType::CoreValence);
+
 }
 
 TEST_F(AMotifsTest, H2ionicRight) {
 
-    ASSERT_THAT(H2ionicRight.motifVector_[0].electronIndices(), ElementsAre());
-    ASSERT_THAT(H2ionicRight.motifVector_[0].atomIndices(), ElementsAre(0));
-    ASSERT_EQ(H2ionicRight.motifVector_[0].type(), MotifType::Core);
+    ASSERT_THAT(H2ionicRight.motifs_[0].electronIndices(), ElementsAre());
+    ASSERT_THAT(H2ionicRight.motifs_[0].atomIndices(), ElementsAre(0));
+    ASSERT_EQ(H2ionicRight.motifs_[0].type(), MotifType::Core);
 
-    ASSERT_THAT(H2ionicRight.motifVector_[1].electronIndices(), ElementsAre());
-    ASSERT_THAT(H2ionicRight.motifVector_[1].atomIndices(), ElementsAre(1));
-    ASSERT_EQ(H2ionicRight.motifVector_[1].type(), MotifType::Core);
+    ASSERT_THAT(H2ionicRight.motifs_[1].electronIndices(), ElementsAre());
+    ASSERT_THAT(H2ionicRight.motifs_[1].atomIndices(), ElementsAre(1));
+    ASSERT_EQ(H2ionicRight.motifs_[1].type(), MotifType::Core);
 
-    ASSERT_THAT(H2ionicRight.motifVector_[2].electronIndices(), ElementsAre(0, 1));
-    ASSERT_THAT(H2ionicRight.motifVector_[2].atomIndices(), ElementsAre());
-    ASSERT_EQ(H2ionicRight.motifVector_[2].type(), MotifType::Valence);
+    ASSERT_THAT(H2ionicRight.motifs_[2].electronIndices(), ElementsAre(0, 1));
+    ASSERT_THAT(H2ionicRight.motifs_[2].atomIndices(), ElementsAre());
+    ASSERT_EQ(H2ionicRight.motifs_[2].type(), MotifType::Valence);
 }
 
 TEST_F(AMotifsTest, BH3covalent) {
-    ASSERT_THAT(BH3covalent.motifVector_[0].electronIndices(), ElementsAre(0, 4));
-    ASSERT_THAT(BH3covalent.motifVector_[0].atomIndices(), ElementsAre(0));
-    ASSERT_EQ(BH3covalent.motifVector_[0].type(), MotifType::Core);
+    ASSERT_THAT(BH3covalent.motifs_[0].electronIndices(), ElementsAre(0, 4));
+    ASSERT_THAT(BH3covalent.motifs_[0].atomIndices(), ElementsAre(0));
+    ASSERT_EQ(BH3covalent.motifs_[0].type(), MotifType::Core);
 
-    ASSERT_THAT(BH3covalent.motifVector_[1].electronIndices(), ElementsAre());
-    ASSERT_THAT(BH3covalent.motifVector_[1].atomIndices(), ElementsAre(1));
-    ASSERT_EQ(BH3covalent.motifVector_[1].type(), MotifType::Core);
+    ASSERT_THAT(BH3covalent.motifs_[1].electronIndices(), ElementsAre());
+    ASSERT_THAT(BH3covalent.motifs_[1].atomIndices(), ElementsAre(1));
+    ASSERT_EQ(BH3covalent.motifs_[1].type(), MotifType::Core);
 
-    ASSERT_THAT(BH3covalent.motifVector_[2].electronIndices(), ElementsAre());
-    ASSERT_THAT(BH3covalent.motifVector_[2].atomIndices(), ElementsAre(2));
-    ASSERT_EQ(BH3covalent.motifVector_[2].type(), MotifType::Core);
+    ASSERT_THAT(BH3covalent.motifs_[2].electronIndices(), ElementsAre());
+    ASSERT_THAT(BH3covalent.motifs_[2].atomIndices(), ElementsAre(2));
+    ASSERT_EQ(BH3covalent.motifs_[2].type(), MotifType::Core);
 
-    ASSERT_THAT(BH3covalent.motifVector_[3].electronIndices(), ElementsAre());
-    ASSERT_THAT(BH3covalent.motifVector_[3].atomIndices(), ElementsAre(3));
-    ASSERT_EQ(BH3covalent.motifVector_[3].type(), MotifType::Core);
+    ASSERT_THAT(BH3covalent.motifs_[3].electronIndices(), ElementsAre());
+    ASSERT_THAT(BH3covalent.motifs_[3].atomIndices(), ElementsAre(3));
+    ASSERT_EQ(BH3covalent.motifs_[3].type(), MotifType::Core);
 
-    ASSERT_THAT(BH3covalent.motifVector_[4].electronIndices(), ElementsAre(1, 5));
-    ASSERT_THAT(BH3covalent.motifVector_[4].atomIndices(), ElementsAre());
-    ASSERT_EQ(BH3covalent.motifVector_[4].type(), MotifType::Valence);
+    ASSERT_THAT(BH3covalent.motifs_[4].electronIndices(), ElementsAre(1, 5));
+    ASSERT_THAT(BH3covalent.motifs_[4].atomIndices(), ElementsAre());
+    ASSERT_EQ(BH3covalent.motifs_[4].type(), MotifType::Valence);
 
-    ASSERT_THAT(BH3covalent.motifVector_[5].electronIndices(), ElementsAre(2, 6));
-    ASSERT_THAT(BH3covalent.motifVector_[5].atomIndices(), ElementsAre());
-    ASSERT_EQ(BH3covalent.motifVector_[5].type(), MotifType::Valence);
+    ASSERT_THAT(BH3covalent.motifs_[5].electronIndices(), ElementsAre(2, 6));
+    ASSERT_THAT(BH3covalent.motifs_[5].atomIndices(), ElementsAre());
+    ASSERT_EQ(BH3covalent.motifs_[5].type(), MotifType::Valence);
 
-    ASSERT_THAT(BH3covalent.motifVector_[6].electronIndices(), ElementsAre(3, 7));
-    ASSERT_THAT(BH3covalent.motifVector_[6].atomIndices(), ElementsAre());
-    ASSERT_EQ(BH3covalent.motifVector_[6].type(), MotifType::Valence);
+    ASSERT_THAT(BH3covalent.motifs_[6].electronIndices(), ElementsAre(3, 7));
+    ASSERT_THAT(BH3covalent.motifs_[6].atomIndices(), ElementsAre());
+    ASSERT_EQ(BH3covalent.motifs_[6].type(), MotifType::Valence);
 }
 
 TEST_F(AMotifsTest, YAML) {
-    auto node = YAML::convert<Motif>::encode(LiH.motifVector_[0]);
+    auto node = YAML::convert<Motif>::encode(LiH.motifs_[0]);
 
     Motif decodedMotif;
     YAML::convert<Motif>::decode(node, decodedMotif);

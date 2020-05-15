@@ -1,4 +1,4 @@
-/* Copyright (C) 2019 Michael Heuer.
+/* Copyright (C) 2019-2020 Michael Heuer.
  *
  * This file is part of inPsights.
  * inPsights is free software: you can redistribute it and/or modify
@@ -32,12 +32,13 @@ public:
 
     Motifs(std::vector<Motif>  motifs);
 
-
     void classifyMotifs(const MolecularGeometry& molecule);
+
+    void mergeMotifs(const std::set<size_t>& indices);
 
     void sort();
 
-    std::vector<Motif> motifVector_;
+    std::vector<Motif> motifs_;
 
     static std::vector<Motif> motifsFromAdjacencyMatrix(const Eigen::MatrixXb &adjacencyMatrix);
 };

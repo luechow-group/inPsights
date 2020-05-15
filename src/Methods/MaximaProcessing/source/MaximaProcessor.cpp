@@ -150,7 +150,7 @@ void MaximaProcessor::calculateStatistics(const Group &maxima){
 
         auto adjacencyMatrix = GraphAnalysis::filter(SeeStats_.mean().cwiseAbs(), MaximaProcessing::settings.motifThreshold());
         motifs_ = Motifs(adjacencyMatrix, MolecularGeometry(atoms_, group.representative()->maximum()));
-        
+
         doMotifBasedEnergyPartitioning(group);
 
         // SEDs
