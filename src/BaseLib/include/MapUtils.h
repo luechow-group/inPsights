@@ -22,18 +22,18 @@
 #include <list>
 
 namespace MapUtils {
-    // finds all keys mapped to a value as a list of indices
+    // finds all keys mapped to a value as a set of indices
     template<typename K, typename V>
-    std::list<K> findByValue(std::map<K, V> mapOfElement, V value) {
-        std::list<K> keyIndices;
+    std::set<K> findByValue(std::map<K, V> mapOfElement, V value) {
+        std::set<K> keyIndices;
 
         auto it = mapOfElement.begin();
         // Iterate through the map
         while (it != mapOfElement.end()) {
             // Check if value of this entry matches with given value
             if (it->second == value) {
-                // Push the key in given map
-                keyIndices.push_back(it->first);
+                // emplace the key in given map
+                keyIndices.emplace(it->first);
             }
         // Go to next entry in map
         it++;

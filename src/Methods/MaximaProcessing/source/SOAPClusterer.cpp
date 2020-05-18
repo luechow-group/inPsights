@@ -1,4 +1,4 @@
-/* Copyright (C) 2018-2019 Michael Heuer.
+/* Copyright (C) 2018-2020 Michael Heuer.
  *
  * This file is part of inPsights.
  * inPsights is free software: you can redistribute it and/or modify
@@ -40,11 +40,14 @@ namespace Settings {
             : SOAPClusterer() {
         doubleProperty::decode(node, similarityThreshold);
         doubleProperty::decode(node, distanceMatrixCovarianceTolerance);
+        doubleProperty::decode(node, maxValueDelta);
+
     }
 
     void SOAPClusterer::appendToNode(YAML::Node &node) const {
         node[className][similarityThreshold.name()] = similarityThreshold();
         node[className][distanceMatrixCovarianceTolerance.name()] = distanceMatrixCovarianceTolerance();
+        node[className][maxValueDelta.name()] = maxValueDelta();
     }
 }
 YAML_SETTINGS_DEFINITION(Settings::SOAPClusterer)
@@ -74,7 +77,8 @@ void SOAPClusterer::cluster(Group& group){
 
     auto similarityThreshold = settings.similarityThreshold();
     auto toleranceRadius = settings.distanceMatrixCovarianceTolerance();
-    auto numericalPrecisionEpsilon = SOAP::General::settings.comparisonEpsilon.get();
+    auto numericalPrecisionEpsilon = SOAP::General::settings.comparisonEpsilon();
+    auto maxValueDelta = SOAPClusterer::settings.maxValueDelta();
 
     spdlog::debug("Group before start: {}", ToString::groupToString(group));
 
@@ -94,31 +98,33 @@ void SOAPClusterer::cluster(Group& group){
             assert(!subgroupOfSupergroup.representative()->spectrum().molecularCenters_.empty() && "Spectrum cannot be empty.");
 
 
-            spdlog::debug("    Supergroup status before Comparision: {}", ToString::groupToString(supergroup));
+            spdlog::debug("    Supergroup status before comparison: {}", ToString::groupToString(supergroup));
 
-            auto comparisionResult = BestMatch::SOAPSimilarity::compare(
-                    subgroup.representative()->spectrum(),
-                    subgroupOfSupergroup.representative()->spectrum(),
-                    toleranceRadius,
-                    similarityThreshold, numericalPrecisionEpsilon);
+            if( std::abs(subgroupOfSupergroup.representative()->value() - subgroup.representative()->value()) < maxValueDelta) {
+                auto comparisionResult = BestMatch::SOAPSimilarity::compare(
+                        subgroup.representative()->spectrum(),
+                        subgroupOfSupergroup.representative()->spectrum(),
+                        toleranceRadius, similarityThreshold, numericalPrecisionEpsilon);
 
-            spdlog::debug("    Supergroup status after Cpmparision: {}", ToString::groupToString(supergroup));
+                spdlog::debug("    Supergroup status after comparison: {}", ToString::groupToString(supergroup));
 
-            spdlog::info("  comparing it with {} out of {}: {}",
-                    i+1, supergroup.size(),
-                    comparisionResult.metric);
+                spdlog::info("  comparing it with {} out of {}: {}",
+                             j + 1, supergroup.size(),
+                             comparisionResult.metric);
 
-            // if so, put permute the current group and put it into the supergroup subgroup and stop searching
-            if (comparisionResult.metric >= (similarityThreshold-numericalPrecisionEpsilon)) {
-                subgroup.permuteAll(comparisionResult.permutation, samples_);
+                // if so, put permute the current group and put it into the supergroup subgroup and stop searching
+                if (comparisionResult.metric >= (similarityThreshold - numericalPrecisionEpsilon)) {
+                    subgroup.permuteAll(comparisionResult.permutation, samples_);
 
-                supergroup[j].emplace_back(subgroup);
+                    supergroup[j].emplace_back(subgroup);
 
-                spdlog::debug("    Match: Inner loop subgroupOfSupergroupIt {}: {}",
-                              j+1, ToString::groupToString(subgroupOfSupergroup));
-                spdlog::debug("    Match. End of inner loop. Supergroup status: {}", ToString::groupToString(supergroup));
-                foundMatchQ = true;
-                break;
+                    spdlog::debug("    Match: Inner loop subgroupOfSupergroupIt {}: {}",
+                                  j + 1, ToString::groupToString(subgroupOfSupergroup));
+                    spdlog::debug("    Match. End of inner loop. Supergroup status: {}",
+                                  ToString::groupToString(supergroup));
+                    foundMatchQ = true;
+                    break;
+                }
             }
 
             spdlog::debug("    No match. End of inner loop. Supergroup status: {}", ToString::groupToString(supergroup));

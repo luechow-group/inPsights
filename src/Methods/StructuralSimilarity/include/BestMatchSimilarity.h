@@ -1,4 +1,4 @@
-/* Copyright (C) 2019 Michael Heuer.
+/* Copyright (C) 2019-2020 Michael Heuer.
  *
  * This file is part of inPsights.
  * inPsights is free software: you can redistribute it and/or modify
@@ -44,11 +44,32 @@ namespace BestMatch {
                 double similarityThreshold,
                 double comparisionEpsilon = std::numeric_limits<double>::epsilon());
 
-        std::vector<std::deque<std::pair<Eigen::Index, Eigen::Index>>> findEquivalentEnvironments(
-                const Eigen::MatrixXd &bestMatchPermutedEnvironmentSimilarities,
-                const Eigen::PermutationMatrix<Eigen::Dynamic> &bestMatch,
+        struct PermuteeToReferenceMatch {
+            std::set<Eigen::Index> permuteeIndices;
+            Eigen::Index referenceIndex;
+        };
+
+        struct GrowingPerm {
+            std::set<Eigen::Index> remainingPermuteeIndices_;
+            std::deque<std::pair<Eigen::Index, Eigen::Index>> chainOfSwaps_;
+
+            GrowingPerm(std::set<Eigen::Index> remainingPermuteeIndices,
+                        std::deque<std::pair<Eigen::Index, Eigen::Index>> chainOfSwaps);
+
+            bool add(const std::pair<Eigen::Index, Eigen::Index> &envMatch);
+
+            bool operator<(const GrowingPerm &rhs) const;
+        };
+
+        std::deque<PermuteeToReferenceMatch> findEnvironmentMatches(
+                const Eigen::MatrixXd &environmentSimilarities,
                 double soapThreshold,
                 double numericalPrecisionEpsilon = std::numeric_limits<double>::epsilon());
+
+        std::deque<std::deque<PermuteeToReferenceMatch>> groupDependentMatches(
+                const std::deque<PermuteeToReferenceMatch> &matches);
+
+        std::deque<GrowingPerm> findPossiblePermutations(const std::deque<PermuteeToReferenceMatch> &dependentMatches);
 
         double earlyExitMetric(const Eigen::MatrixXd &bestMatchPermutedEnvironmentSimilarities);
 

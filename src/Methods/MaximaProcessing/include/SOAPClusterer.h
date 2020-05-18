@@ -1,4 +1,4 @@
-/* Copyright (C) 2018-2019 Michael Heuer.
+/* Copyright (C) 2018-2020 Michael Heuer.
  *
  * This file is part of inPsights.
  * inPsights is free software: you can redistribute it and/or modify
@@ -28,6 +28,7 @@ namespace Settings {
     public:
         Property<double> similarityThreshold = {0.98, VARNAME(similarityThreshold)};
         Property<double> distanceMatrixCovarianceTolerance = {0.2, VARNAME(distanceMatrixCovarianceTolerance)};
+        Property<double> maxValueDelta = {1e-2, VARNAME(maxValueDelta)};
         SOAPClusterer();
         explicit SOAPClusterer(const YAML::Node &node);
         void appendToNode(YAML::Node &node) const override;

@@ -40,12 +40,11 @@ namespace DistanceCovariance {
 class EnvironmentBlock {
 public:
     EnvironmentBlock(
-            std::deque<std::pair<Eigen::Index, Eigen::Index>> indexPairs,
+            const std::deque<BestMatch::SOAPSimilarity::GrowingPerm>& possiblePerms,
             const ElectronsVector &permutee,
             const ElectronsVector &reference);
 
-
-    void initialize(std::deque<std::pair<Eigen::Index, Eigen::Index>> indexPairs);
+    void initialize(const std::deque<BestMatch::SOAPSimilarity::GrowingPerm>& possiblePerms);
 
     std::vector<std::vector<Eigen::Index>> filterPermutations(double distanceMatrixCovarianceTolerance);
 

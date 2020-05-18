@@ -20,10 +20,12 @@
 #include <Hungarian.h>
 #include <limits>
 #include <deque>
+#include <utility>
 #include <vector>
 #include <Eigen/Core>
 #include <ToString.h>
 #include <EnvironmentBlock.h>
+#include <GraphAnalysis.h>
 
 using namespace SOAP;
 
@@ -39,7 +41,7 @@ Eigen::MatrixXd BestMatch::SOAPSimilarity::calculateEnvironmentSimilarityMatrix(
 
     auto zeta = General::settings.zeta();
 
-    // TODO consider identical spin flip?
+    // TODO consider identical spin flip for chemical mode?
 
     TypeSpecificNeighborhoodsAtOneCenter expA, expB;
     for (unsigned i = 0; i < nAlpha; ++i) {
@@ -76,15 +78,14 @@ Eigen::MatrixXd BestMatch::SOAPSimilarity::calculateEnvironmentSimilarityMatrix(
 }
 
 /*
- * Returns a list of distance-preserving best-match permutations matching equivalent environments
- * within a given similarity threshold.
- * If no match is found above the given threshold (within a comparision epsilion compensating numerical imprecisions),
- * the best-match permutation and the most deviating environmental similarity along the diagonal of the best-match
- * permuted environmental similarity matrix is returned.
+ * Returns a list of distance-preserving permutations matching equivalent environments within a given
+ * similarity threshold. If no match is found above the given threshold (within a comparision epsilion compensating
+ * numerical imprecisions), the best-match permutation and the most deviating environmental similarity along the
+ * diagonal of the best-match permuted environmental similarity matrix is returned.
  *
  * The algorithm has five steps:
- *  1. Calculate the best-match permuted environment similar matrix of the permutee and the reference in the kit-system
- *  2. Find blocks of equivalent environments in best-match permutations matching equivalent environments.
+ *  1. Find matching dependent environments.
+ *  2. Find possible permutations between dependent environments and check of there are distance preserving.
  *  3. Check for all permutations within these blocks for distance conservation.
  *  4. Combine the blockwise distance-conserving permutations to find overall distance-conserving permutations.
  *  5. Lastly, the distance-conserving permutations are converted back into the lab system
@@ -95,7 +96,9 @@ Eigen::MatrixXd BestMatch::SOAPSimilarity::calculateEnvironmentSimilarityMatrix(
 std::vector<BestMatch::DescendingMetricResult> BestMatch::SOAPSimilarity::getBestMatchResults(
         const MolecularSpectrum &permutee,
         const MolecularSpectrum &reference,
-        double distanceMatrixCovarianceTolerance, double similarityThreshold, double comparisionEpsilon) {
+        double distanceMatrixCovarianceTolerance,
+        double similarityThreshold,
+        double comparisionEpsilon) {
 
     assert(ParticleKit::isSubsetQ(permutee.molecule_)
            && "The permutee must be a subset of the particle kit.");
@@ -107,10 +110,10 @@ std::vector<BestMatch::DescendingMetricResult> BestMatch::SOAPSimilarity::getBes
     const auto referenceFromKit = ParticleKit::fromKitPermutation(reference.molecule_.electrons());
     Eigen::PermutationMatrix<Eigen::Dynamic> identity(permutee.molecule_.electrons().numberOfEntities());
 
-    spdlog::debug("Electrons of permutee are{} in particle-kit system.",
-            permuteeToKit.indices() == identity.indices() ?  "": " NOT");
-    spdlog::debug("Electrons of reference are{} in particle-kit system.",
-                  referenceToKit.indices() == identity.indices() ?  "": " NOT");
+    spdlog::debug("Electrons of permutee {} in particle-kit system.",
+            permuteeToKit.indices() == identity.indices() ?  "are": "are NOT");
+    spdlog::debug("Electrons of reference {} in particle-kit system.",
+                  referenceToKit.indices() == identity.indices() ?  "are": "are NOT");
 
     const auto N = size_t(permutee.molecule_.electrons().numberOfEntities());
 
@@ -127,18 +130,11 @@ std::vector<BestMatch::DescendingMetricResult> BestMatch::SOAPSimilarity::getBes
                   "(in the particle kit system, permutee = rows, reference = cols)\n{}",
                   ToString::matrixXdToString(environmentSimilarities, 3));
 
-    // find the best-match (row) permutation of the environments (of the permutee) maximizing the diagonal)
+
     auto bestMatch = Hungarian<double>::findMatching(environmentSimilarities, Matchtype::MAX);
-
-    auto bestMatchPermutedEnvironmentSimilarities = bestMatch * environmentSimilarities;
-
-    spdlog::debug("Best-Match permutation: {}\n Best-match permuted environment similarity matrix "
-                  "(in the particle kit system, permutee = rows, reference = cols)\n{}",
-                  ToString::vectorXiToString(bestMatch.indices()),
-                  ToString::matrixXdToString(bestMatchPermutedEnvironmentSimilarities, 3));
-
     auto earlyExitResult = BestMatch::DescendingMetricResult({
-            earlyExitMetric(bestMatchPermutedEnvironmentSimilarities),
+        // find the best-match (row) permutation of the environments (of the permutee) maximizing the diagonal)
+            earlyExitMetric(bestMatch * environmentSimilarities),
             referenceFromKit * bestMatch * permuteeToKit //convert best-match perm from particle-kit into the lab system
     });
 
@@ -150,24 +146,16 @@ std::vector<BestMatch::DescendingMetricResult> BestMatch::SOAPSimilarity::getBes
     }
 
     // Step 1.
-    auto blockwiseDependentIndexPairs = BestMatch::SOAPSimilarity::findEquivalentEnvironments(
-            bestMatchPermutedEnvironmentSimilarities, bestMatch, similarityThreshold, comparisionEpsilon);
-
-    spdlog::debug("Dependent indice pairs");
-    for (const auto &dependentIndexPairs : blockwiseDependentIndexPairs) {
-        for (const auto &dependentIndexPair : dependentIndexPairs) {
-            spdlog::debug("({} {})", dependentIndexPair.first, dependentIndexPair.second);
-        }
-        spdlog::debug(" ");
-    }
-    spdlog::debug(" ");
-
+    auto matches = BestMatch::SOAPSimilarity::findEnvironmentMatches(environmentSimilarities, similarityThreshold, comparisionEpsilon);
+    auto dependentMatches = BestMatch::SOAPSimilarity::groupDependentMatches(matches);
 
     // Step 2.
     std::vector<EnvironmentBlock> blocks;
-    for (const auto &indexPairsOfBlock : blockwiseDependentIndexPairs) {
+    for (const auto &dependentMatch : dependentMatches) {
 
-        auto block = EnvironmentBlock(indexPairsOfBlock,
+        auto possiblePermutations = BestMatch::SOAPSimilarity::findPossiblePermutations(dependentMatch);
+
+        auto block = EnvironmentBlock(possiblePermutations,
                                       permutee.molecule_.electrons(),
                                       reference.molecule_.electrons());
 
@@ -235,62 +223,134 @@ std::vector<BestMatch::DescendingMetricResult> BestMatch::SOAPSimilarity::getBes
 }
 
 
-double
-BestMatch::SOAPSimilarity::earlyExitMetric(const Eigen::MatrixXd &bestMatchPermutedEnvironmentSimilarities) {
+double BestMatch::SOAPSimilarity::earlyExitMetric(const Eigen::MatrixXd &bestMatchPermutedEnvironmentSimilarities) {
     return bestMatchPermutedEnvironmentSimilarities.diagonal().minCoeff();
 }
 
 BestMatch::DescendingMetricResult BestMatch::SOAPSimilarity::compare(
         const MolecularSpectrum &permutee,
         const MolecularSpectrum &reference,
-        double distanceMatrixCovarianceTolerance, double soapThreshold, double numericalPrecisionEpsilon) {
+        double distanceMatrixCovarianceTolerance,
+        double soapThreshold,
+        double numericalPrecisionEpsilon) {
     return BestMatch::SOAPSimilarity::getBestMatchResults(permutee, reference, distanceMatrixCovarianceTolerance,
                                                           soapThreshold, numericalPrecisionEpsilon).front();
 }
 
+BestMatch::SOAPSimilarity::GrowingPerm::GrowingPerm(std::set<Eigen::Index> remainingPermuteeIndices,
+                                                    std::deque<std::pair<Eigen::Index, Eigen::Index>> chainOfSwaps)
+                                                    : remainingPermuteeIndices_(std::move(remainingPermuteeIndices)),
+                                                      chainOfSwaps_(std::move(chainOfSwaps)){}
+
+
+bool BestMatch::SOAPSimilarity::GrowingPerm::add(const std::pair<Eigen::Index, Eigen::Index>& envMatch){
+
+    auto permuteeIndexIterator = remainingPermuteeIndices_.find(envMatch.first);
+    if(permuteeIndexIterator!= std::end(remainingPermuteeIndices_)) {
+        remainingPermuteeIndices_.erase(permuteeIndexIterator);
+        chainOfSwaps_.emplace_back(envMatch);
+        return true;
+    } else {
+        return false;
+    }
+}
+
 /*
- * Finds pairs of indices (particle-kit system) of equivalent environments in the permutee and reference
- * in the best-match permuted environment similarity matrix in the particle-kit system
- *  first index: permutee environment index in the particle-kit system
- *  second index: reference environment index in the particle-kit system
+ * Returns list of environments in the permutee matching a reference.
+ * Multiple environments can be found for each reference index.
  */
-std::vector<std::deque<std::pair<Eigen::Index, Eigen::Index>>>
-BestMatch::SOAPSimilarity::findEquivalentEnvironments(
-        const Eigen::MatrixXd &bestMatchPermutedEnvironmentSimilarities,
-        const Eigen::PermutationMatrix<Eigen::Dynamic> &bestMatch,
+std::deque<BestMatch::SOAPSimilarity::PermuteeToReferenceMatch>
+BestMatch::SOAPSimilarity::findEnvironmentMatches(
+        const Eigen::MatrixXd &environmentSimilarities,
         double soapThreshold, double numericalPrecisionEpsilon) {
-    std::vector<std::deque<std::pair<Eigen::Index, Eigen::Index>>> listOfDependentIndicesLists;
 
-    auto numberOfEnvironments = bestMatchPermutedEnvironmentSimilarities.rows();
+    auto adjacencyMatrix = GraphAnalysis::filter(environmentSimilarities, soapThreshold-numericalPrecisionEpsilon);
 
-    std::set<Eigen::Index> indicesToSkip;
+    std::deque<PermuteeToReferenceMatch> matches;
+    for (Eigen::Index j = 0; j < environmentSimilarities.cols(); ++j) {
+        auto permuteeEnvs = GraphAnalysis::findVerticesOfIncomingEdges(adjacencyMatrix, j);
+        matches.emplace_back(PermuteeToReferenceMatch{permuteeEnvs, j});
+    }
 
+    return matches;
+}
 
-    for (Eigen::Index i = 0; i < numberOfEnvironments; ++i) {
+std::deque<std::deque<BestMatch::SOAPSimilarity::PermuteeToReferenceMatch>>
+BestMatch::SOAPSimilarity::groupDependentMatches(const std::deque<PermuteeToReferenceMatch> &matches) {
 
-        if (indicesToSkip.find(i) == indicesToSkip.end()) {
-            listOfDependentIndicesLists.emplace_back(std::deque({std::pair<Eigen::Index, Eigen::Index>(0, i)}));
+    std::deque<std::deque<BestMatch::SOAPSimilarity::PermuteeToReferenceMatch>> dependentMatchesGroups;
+    assert(!matches.empty());
 
-            for (Eigen::Index j = i + 1; j < numberOfEnvironments; ++j) {
-                if (bestMatchPermutedEnvironmentSimilarities(i, j) >= soapThreshold - numericalPrecisionEpsilon) {
-                    indicesToSkip.emplace(j);
-                    listOfDependentIndicesLists.back().emplace_back(std::make_pair(0, j));
+    for(const auto& match : matches){
+
+        bool foundQ = false;
+        for ( auto& dependentMatchesGroup : dependentMatchesGroups){
+
+            for ( auto dependentMatch : dependentMatchesGroup ) {
+                // check if subset
+                std::list<Eigen::Index> intersection;
+                std::set_intersection(
+                        std::begin(match.permuteeIndices), std::end(match.permuteeIndices),
+                        std::begin(dependentMatch.permuteeIndices), std::end(dependentMatch.permuteeIndices),
+                        std::inserter(intersection,std::begin(intersection)));
+
+                if(!intersection.empty()) {
+                    dependentMatchesGroup.emplace_back(match);
+                    foundQ = true;
+                    goto breakTwoLoops;
                 }
             }
         }
+        breakTwoLoops:
+        if(!foundQ)
+            dependentMatchesGroups.emplace_back(std::deque<PermuteeToReferenceMatch>({match}));
     }
 
-    // change permutee indices from best-match permuted kit system to kit system
-    Eigen::PermutationMatrix<Eigen::Dynamic> inverseBestMatch = bestMatch.inverse();
-    for (auto &list : listOfDependentIndicesLists) {
-        auto copy = list;
-        for (size_t i = 0; i < list.size(); ++i) {
-            list[i].first = inverseBestMatch.indices()[copy[i].second];
-        }
-    }
-
-    return listOfDependentIndicesLists;
+    return dependentMatchesGroups;
 }
+
+bool BestMatch::SOAPSimilarity::GrowingPerm::operator<(const BestMatch::SOAPSimilarity::GrowingPerm &rhs) const {
+    assert((*this).chainOfSwaps_.size() == rhs.chainOfSwaps_.size());
+    for (size_t i = 0; i < rhs.chainOfSwaps_.size(); ++i)
+        if((*this).chainOfSwaps_[i] != rhs.chainOfSwaps_[i])
+            return (*this).chainOfSwaps_[i] < rhs.chainOfSwaps_[i];
+
+    return (*this).chainOfSwaps_[0] < rhs.chainOfSwaps_[0];
+}
+
+std::deque<BestMatch::SOAPSimilarity::GrowingPerm> BestMatch::SOAPSimilarity::findPossiblePermutations(
+        const std::deque<BestMatch::SOAPSimilarity::PermuteeToReferenceMatch>& dependentMatches){
+
+    assert(!dependentMatches.empty());
+
+    std::set<Eigen::Index> allIndices;
+    for(auto i : dependentMatches)
+        allIndices.insert(std::begin(i.permuteeIndices), std::end(i.permuteeIndices));
+
+    std::deque<GrowingPerm> possiblePerms = {{allIndices,{}}};
+
+    // try new perms by adding all swaps for all dependent matches
+    for(auto& dependentMatch : dependentMatches){
+
+        std::deque<GrowingPerm> newPossiblePerms;
+        for(auto permuteeEnvIndex : dependentMatch.permuteeIndices){
+
+            for (auto perm : possiblePerms) {
+                auto possibleQ = perm.add({permuteeEnvIndex, dependentMatch.referenceIndex});
+                if (possibleQ)
+                    newPossiblePerms.emplace_back(perm);
+            }
+        }
+        if(newPossiblePerms.empty())
+            return {};
+        else
+            possiblePerms = newPossiblePerms;
+    }
+
+    std::sort(possiblePerms.begin(), possiblePerms.end());
+
+    return possiblePerms;
+};
 
 /*
  * Calculates the positional distances in the kit system of the electrons specified by the indices
@@ -303,7 +363,6 @@ BestMatch::SOAPSimilarity::calculateDistanceCovarianceMatrixOfSelectedIndices(co
     const auto &positions = electronsVector.positionsVector();
 
     // the fromKit permutation is needed to find the indices in the particle-kit system
-    // TODO refactor from-kit permutation into an const & argument
     auto fromKit = ParticleKit::fromKitPermutation(electronsVector).indices();
 
     assert(size_t(fromKit.size()) >= kitSystemIndices.size());

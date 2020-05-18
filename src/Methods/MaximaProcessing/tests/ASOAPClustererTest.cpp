@@ -131,6 +131,7 @@ TEST_F(ASOAPClustererTest, TwoClusters) {
     SOAPClusterer::settings.distanceMatrixCovarianceTolerance = 0.1;
     Angular::settings.lmax = 3;
     Radial::settings.nmax = 3;
+    SOAPClusterer::settings.maxValueDelta = 1.0;
 
     Group maxima({A, {B, C}, D, E, F});
     clusterer.cluster(maxima);
@@ -162,6 +163,7 @@ TEST_F(ASOAPClustererTest, TwoClusters_Alchemical) {
     SOAPClusterer::settings.distanceMatrixCovarianceTolerance = 0.1;
     Angular::settings.lmax = 3;
     Radial::settings.nmax = 3;
+    SOAPClusterer::settings.maxValueDelta = 1.0;
 
     Group maxima({A, {B, C}, D, E, F});
 
@@ -214,13 +216,14 @@ TEST_F(ASOAPClustererTest, BH3_Alchemical) {
     General::settings.pairSimilarities[{int(Spin::alpha), int(Spin::beta)}] = 1.0;
     SOAPClusterer::settings.similarityThreshold = 0.99;
     SOAPClusterer::settings.distanceMatrixCovarianceTolerance = 0.1;
+    SOAPClusterer::settings.maxValueDelta = 1.0;
     Angular::settings.lmax = 3;
     Radial::settings.nmax = 3;
     Cutoff::settings.radius = 4.0;
     Cutoff::settings.width = 3.0;
 
     Group gA({1.0, A.electrons(), 0});
-    Group gB({2.0, B.electrons(), 1});
+    Group gB({1.9, B.electrons(), 1});
     Group maxima({gA,gB});
     maxima.sortAll();
 

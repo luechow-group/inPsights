@@ -37,24 +37,25 @@ Motifs::Motifs(const Eigen::MatrixXb &adjacencyMatrix, const MolecularGeometry &
 };
 
 std::vector<Motif> Motifs::motifsFromAdjacencyMatrix(const Eigen::MatrixXb &adjacencyMatrix){
-    auto lists = GraphAnalysis::findGraphClusters(adjacencyMatrix);
+    auto sets = GraphAnalysis::findGraphClusters(adjacencyMatrix);
 
     std::vector<Motif> motifVector;
-    for (const auto &list : lists)
-        motifVector.emplace_back(list);
+    for (const auto &set : sets)
+        motifVector.emplace_back(set);
 
     return motifVector;
 }
 
 void Motifs::classifyMotifs(const MolecularGeometry& molecule) {
-        std::list<Eigen::Index> remainingNuclei(molecule.atoms().numberOfEntities());
-    std::iota(remainingNuclei.begin(), remainingNuclei.end(), 0);
+    std::set<Eigen::Index> remainingNuclei;
+    for (long i = 0; i < molecule.atoms().numberOfEntities(); ++i)
+        remainingNuclei.emplace(i);
 
     std::vector<Motif> newMotifsVector;
 
     // check all motifs
     for(auto& motif : motifVector_) {
-        std::list<Eigen::Index> involvedNuclei;
+        std::set<Eigen::Index> involvedNuclei;
 
         std::map<long, long> electronToNucleusMap;
 
@@ -68,10 +69,8 @@ void Motifs::classifyMotifs(const MolecularGeometry& molecule) {
             if (atNucleusQ &&
             !(molecule.atoms()[nucleusIndex].type() == Elements::ElementType::H
             || molecule.atoms()[nucleusIndex].type() == Elements::ElementType::He))
-                involvedNuclei.push_back(nucleusIndex);
+                involvedNuclei.emplace(nucleusIndex);
         }
-        involvedNuclei.sort();
-        involvedNuclei.unique(); // remove doubly counted nuclei
 
         if(involvedNuclei.empty()) {
             motif.setType(MotifType::Valence);
@@ -82,11 +81,15 @@ void Motifs::classifyMotifs(const MolecularGeometry& molecule) {
                 auto electronKeys = MapUtils::findByValue(electronToNucleusMap, nucleusIndex);
                 assert(!electronKeys.empty() && "Some electrons must be at involved nuclei at this point.");
 
-                newMotifsVector.emplace_back(Motif{electronKeys, {nucleusIndex}, MotifType::Core});
+                newMotifsVector.emplace_back(
+                        Motif{std::set<Eigen::Index>(
+                                std::begin(electronKeys),
+                                std::end(electronKeys)),
+                                {nucleusIndex}, MotifType::Core});
             }
         }
 
-        std::list<long> diff{};
+        std::set<long> diff{};
         std::set_difference(remainingNuclei.begin(), remainingNuclei.end(), involvedNuclei.begin(),
                             involvedNuclei.end(),
                             std::inserter(diff, diff.begin()));

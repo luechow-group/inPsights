@@ -1,4 +1,4 @@
-/* Copyright (C) 2019 Michael Heuer.
+/* Copyright (C) 2019-2020 Michael Heuer.
  *
  * This file is part of inPsights.
  * inPsights is free software: you can redistribute it and/or modify
@@ -20,7 +20,7 @@
 
 #include <Eigen/Core>
 #include <queue>
-#include <list>
+#include <set>
 #include <algorithm>
 #include <map>
 
@@ -30,17 +30,22 @@ namespace Eigen {
 }
 namespace GraphAnalysis {
     // filter to obtain an adjacency matrix
-    Eigen::MatrixXb filter(const Eigen::MatrixXd & matrix, double threshold = 1.0);
+    Eigen::MatrixXb filter(const Eigen::MatrixXd &matrix, double threshold = 1.0);
 
-    Eigen::MatrixXb lowerOrEqualFilter(const Eigen::MatrixXd & matrix, double threshold = 1.0);
+    Eigen::MatrixXb lowerOrEqualFilter(const Eigen::MatrixXd &matrix, double threshold = 1.0);
 
-    std::list<Eigen::Index> findConnectedVertices(const Eigen::MatrixXb &adjacencyMatrix, Eigen::Index startVertex);
+    std::set<Eigen::Index> findVerticesOfOutgoingEdges(const Eigen::MatrixXb &adjacencyMatrix, Eigen::Index vertes);
 
-    std::vector<std::list<Eigen::Index>> findGraphClusters(const Eigen::MatrixXb &adjacencyMatrix);
+    std::set<Eigen::Index> findVerticesOfIncomingEdges(const Eigen::MatrixXb &adjacencyMatrix, Eigen::Index vertex);
+
+    std::set<Eigen::Index> findConnectedVertices(const Eigen::MatrixXb &adjacencyMatrix, Eigen::Index startVertex);
+
+    std::vector<std::set<Eigen::Index>> findGraphClusters(const Eigen::MatrixXb &adjacencyMatrix);
+
 
     std::map<std::size_t, std::size_t> findMergeMap(
-            std::vector<std::list<Eigen::Index>> subsets,
-            std::vector<std::list<Eigen::Index>> referenceSets);
+            const std::vector<std::set<Eigen::Index>> &subsets,
+            const std::vector<std::set<Eigen::Index>> &referenceSets);
 }
 
 #endif //INPSIGHTS_GRAPHANALYSIS_H
