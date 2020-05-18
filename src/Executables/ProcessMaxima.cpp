@@ -357,7 +357,20 @@ int main(int argc, char *argv[]) {
     spdlog::info("Calculating statistics...");
 
     MaximaProcessor maximaProcessor(outputYaml, samples, atoms);
-    maximaProcessor.calculateStatistics(maxima);
+
+    // TODO REFACTOR
+    std::vector<std::vector<std::vector<size_t>>> nucleiMergeLists;
+    if(inputYaml["MotifMerge"]) {
+        auto motifMergeNode = inputYaml["MotifMerge"];
+        for (YAML::iterator it = motifMergeNode.begin(); it != motifMergeNode.end(); ++it) {
+            const YAML::Node &nucleiMergeListNode = *it;
+
+            auto nucleiMergeList = it->as<std::vector<std::vector<size_t>>>();
+            nucleiMergeLists.emplace_back(nucleiMergeList);
+        }
+    }
+
+    maximaProcessor.calculateStatistics(maxima, nucleiMergeLists);
 
     outputYaml << EndMap << EndDoc;
     outputYaml << BeginDoc << Comment("final settings") << usedSettings << EndDoc;

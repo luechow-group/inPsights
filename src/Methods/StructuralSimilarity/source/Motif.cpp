@@ -56,8 +56,12 @@ Motif::Motif(std::set<Eigen::Index> electronIndices,
              MotifType type)
         : type_(type), electronIndices_(std::move(electronIndices)), atomIndices_(std::move(atomIndices)) {};
 
-bool Motif::containsQ(Eigen::Index i) const {
+bool Motif::containsElectronQ(Eigen::Index i) const {
     return std::find(electronIndices_.begin(), electronIndices_.end(), i) != electronIndices_.end();
+}
+
+bool Motif::containsAtomQ(Eigen::Index i) const {
+    return std::find(atomIndices_.begin(), atomIndices_.end(), i) != atomIndices_.end();
 }
 
 bool Motif::operator<(const Motif &rhs) const {

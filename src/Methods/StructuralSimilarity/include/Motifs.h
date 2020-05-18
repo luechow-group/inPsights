@@ -36,6 +36,7 @@ public:
 
     void mergeMotifs(const std::set<size_t>& indices);
 
+
     void sort();
 
     std::vector<Motif> motifs_;

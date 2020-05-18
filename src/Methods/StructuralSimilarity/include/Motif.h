@@ -36,7 +36,8 @@ public:
           std::set<Eigen::Index>  atomIndices,
           MotifType type = MotifType::unassigned);
 
-    bool containsQ(Eigen::Index i) const;
+    bool containsElectronQ(Eigen::Index i) const;
+    bool containsAtomQ(Eigen::Index i) const;
 
     // needed for maps
     bool operator<(const Motif &rhs) const;
