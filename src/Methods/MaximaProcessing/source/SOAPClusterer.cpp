@@ -84,14 +84,14 @@ void SOAPClusterer::cluster(Group& group){
 
     Group supergroup;
     spdlog::debug("Supergroup before start: {}", ToString::groupToString(supergroup));
-    for(auto [i, subgroup] : enumerate(group)) {
+    for(const auto& [i, subgroup] : enumerate(group)) {
         spdlog::info("{} out of {}", i+1, group.size());
 
         bool foundMatchQ = false;
 
         spdlog::debug("  Outer loop groupIt {}: {}", i, ToString::groupToString(subgroup));
         // check if current group matches any of the supergroup subgroups
-        for(auto [j, subgroupOfSupergroup] : enumerate(supergroup)){
+        for(const auto & [j, subgroupOfSupergroup] : enumerate(supergroup)){
             spdlog::debug("    Inner loop subgroupOfSupergroupIt {}: {}", j, ToString::groupToString(subgroupOfSupergroup));
 
             assert(!subgroup.representative()->spectrum().molecularCenters_.empty() && "Spectrum cannot be empty.");
