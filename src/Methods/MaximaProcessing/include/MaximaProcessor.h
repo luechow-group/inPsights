@@ -38,7 +38,8 @@ public:
 
     void doMotifBasedEnergyPartitioning(const Group &group);
 
-    void calculateStatistics(const Group &maxima);
+    void calculateStatistics(const Group &maxima,
+            const std::vector<std::vector<std::vector<size_t>>> & nucleiMergeLists);
 
     YAML::Node getYamlNode();
 

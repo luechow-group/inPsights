@@ -31,6 +31,7 @@ enum class SamplesToAnalyze{
 namespace Settings {
     class MaximaProcessing : public ISettings {
     public:
+        Property<unsigned> seed = {12345, VARNAME(seed)}; // A random seed is picked for a value of 0
         Property<std::string> binaryFileBasename = {"(name of the .yml input file)", VARNAME(binaryFileBasename)};
         Property<unsigned> samplesToAnalyze = {unsigned(SamplesToAnalyze::small), VARNAME(samplesToAnalyze)};
         Property<double> minimalClusterWeight = {0.01, VARNAME(minimalClusterWeight)};

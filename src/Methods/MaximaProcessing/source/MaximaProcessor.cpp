@@ -26,6 +26,8 @@
 #include <VoxelCubeOverlapCalculation.h>
 #include <spdlog/spdlog.h>
 #include <SpinCorrelationValueHistogram.h>
+#include <NearestElectrons.h>
+#include <ErrorHandling.h>
 
 MaximaProcessor::MaximaProcessor(YAML::Emitter& yamlDocument, const std::vector<Sample>& samples, const AtomsVector& atoms)
         :
@@ -113,7 +115,8 @@ std::vector<ElectronsVector> MaximaProcessor::getAllRepresentativeMaxima(const G
     return representativeMaxima;
 }
 
-void MaximaProcessor::calculateStatistics(const Group &maxima){
+void MaximaProcessor::calculateStatistics(const Group &maxima,
+                                          const std::vector<std::vector<std::vector<size_t>>> & nucleiMergeLists){
     using namespace YAML;
 
     yamlDocument_ << Key << "Vnn" << Comment("[Eh]") << Value << VnnStats_
@@ -150,7 +153,54 @@ void MaximaProcessor::calculateStatistics(const Group &maxima){
 
         auto adjacencyMatrix = GraphAnalysis::filter(SeeStats_.mean().cwiseAbs(), MaximaProcessing::settings.motifThreshold());
         motifs_ = Motifs(adjacencyMatrix, MolecularGeometry(atoms_, group.representative()->maximum()));
-        
+
+
+        // TODO PUT INTO OWN METHOD
+        for(const auto& nucleiMergeList : nucleiMergeLists){
+            auto motifMergeIndices = std::set<size_t>();
+
+            // find motif indices to merge
+            for(const auto& nucleiList : nucleiMergeList){
+
+                if(nucleiList.size() == 2) { // => Valence motif
+
+                    double bondCenterToCoreDistance = (atoms_[nucleiList[0]].position() - atoms_[nucleiList[1]].position()).norm() / 2;
+                    Eigen::Vector3d bondCenter = (atoms_[nucleiList[0]].position() + atoms_[nucleiList[1]].position()) / 2;
+
+                    std::function<double(const Eigen::Vector3d &,const std::vector<Eigen::Vector3d> &)>
+                            distanceFunction = Metrics::minimalDistance<2>;
+                    // select all valence electrons in the interatomic region
+                    auto nearestElectronsIndices = NearestElectrons::getNearestElectronsIndices(
+                            structures.front(),
+                            atoms_,
+                            {bondCenter},
+                            std::numeric_limits<long>::max(),
+                            true, bondCenterToCoreDistance, distanceFunction);
+
+                    for(auto [i,m] : enumerate(motifs_.motifs_)){
+                        for(auto nearestElectronIndex : nearestElectronsIndices ){
+                            if(m.containsElectronQ(nearestElectronIndex)){
+                                motifMergeIndices.emplace(i);
+                            }
+                        }
+                    }
+                } else if (nucleiList.size() == 1) {
+                    for (auto nucleusIdx : nucleiList) {
+                        // find motif with nucleus idx
+                        for(auto [i,m] : enumerate(motifs_.motifs_)){
+                            if(m.containsAtomQ(nucleusIdx)){
+                                motifMergeIndices.emplace(i);
+                            };
+                        }
+                    }
+                } else {
+                    throw NotImplemented();
+                }
+            }
+            // merge
+            motifs_.mergeMotifs(motifMergeIndices);
+        }
+
         doMotifBasedEnergyPartitioning(group);
 
         // SEDs

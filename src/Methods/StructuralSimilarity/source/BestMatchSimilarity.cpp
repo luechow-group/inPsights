@@ -148,6 +148,10 @@ std::vector<BestMatch::DescendingMetricResult> BestMatch::SOAPSimilarity::getBes
     // Step 1.
     auto matches = BestMatch::SOAPSimilarity::findEnvironmentMatches(environmentSimilarities, similarityThreshold, comparisionEpsilon);
     auto dependentMatches = BestMatch::SOAPSimilarity::groupDependentMatches(matches);
+    for(const auto& dependentMatch : dependentMatches){
+        if(dependentMatch.size() > 12)
+            spdlog::warn("More than 12 equivalent electronic environments found. This might indicate too indistinct SOAP settings.");
+    }
 
     // Step 2.
     std::vector<EnvironmentBlock> blocks;
@@ -287,7 +291,7 @@ BestMatch::SOAPSimilarity::groupDependentMatches(const std::deque<PermuteeToRefe
         for ( auto& dependentMatchesGroup : dependentMatchesGroups){
 
             for ( auto dependentMatch : dependentMatchesGroup ) {
-                // check if subset
+                // check if index intersection between a match and any of the dependent matches exists
                 std::list<Eigen::Index> intersection;
                 std::set_intersection(
                         std::begin(match.permuteeIndices), std::end(match.permuteeIndices),
@@ -327,11 +331,13 @@ std::deque<BestMatch::SOAPSimilarity::GrowingPerm> BestMatch::SOAPSimilarity::fi
     for(auto i : dependentMatches)
         allIndices.insert(std::begin(i.permuteeIndices), std::end(i.permuteeIndices));
 
+    spdlog::debug("Number of dependent indices: {}", allIndices.size());
+
     std::deque<GrowingPerm> possiblePerms = {{allIndices,{}}};
 
     // try new perms by adding all swaps for all dependent matches
     for(auto& dependentMatch : dependentMatches){
-
+        spdlog::debug("Number of possible perms: {}", possiblePerms.size());
         std::deque<GrowingPerm> newPossiblePerms;
         for(auto permuteeEnvIndex : dependentMatch.permuteeIndices){
 

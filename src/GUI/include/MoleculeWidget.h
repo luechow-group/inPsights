@@ -42,7 +42,6 @@ public:
 
     //TODO make base MoleculeWidget and InPsightsMoleculeWidget child
 
-
     void drawAxes(bool drawQ = true);
     void drawAtoms(bool drawQ = true);
     void drawBonds(bool drawQ = true);
@@ -66,6 +65,7 @@ public:
     void removeMaximaHulls(int clusterId);
 
 public Q_SLOTS:
+    void activateCompatabilityMode();
     void onAtomsChecked(std::vector<int>);
     void onElectronsChecked(std::vector<int>);
     void onAtomsHighlighted(std::vector<int>);
@@ -76,6 +76,7 @@ public Q_SLOTS:
     void onX3dExport(bool);
 
 private:
+    bool compatabilityMode_;
     Qt3DExtras::Qt3DWindow *qt3DWindow_;
     Qt3DCore::QEntity *root_, *moleculeEntity_;
     Qt3DExtras::QOrbitCameraController *cameraController_;

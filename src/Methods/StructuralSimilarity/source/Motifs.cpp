@@ -21,15 +21,16 @@
 #include <MapUtils.h>
 #include <spdlog/spdlog.h>
 #include <utility>
+#include <Enumerate.h>
 
 Motifs::Motifs()
-: motifVector_({}) {}
+: motifs_({}) {}
 
 Motifs::Motifs(const Eigen::MatrixXb &adjacencyMatrix)
         : Motifs(motifsFromAdjacencyMatrix(adjacencyMatrix)) {};
 
 Motifs::Motifs(std::vector<Motif> motifs)
-        : motifVector_(std::move(motifs)) {};
+        : motifs_(std::move(motifs)) {};
 
 Motifs::Motifs(const Eigen::MatrixXb &adjacencyMatrix, const MolecularGeometry & molecule)
         : Motifs(adjacencyMatrix) {
@@ -51,10 +52,10 @@ void Motifs::classifyMotifs(const MolecularGeometry& molecule) {
     for (long i = 0; i < molecule.atoms().numberOfEntities(); ++i)
         remainingNuclei.emplace(i);
 
-    std::vector<Motif> newMotifsVector;
+    std::vector<Motif> newMotifs;
 
     // check all motifs
-    for(auto& motif : motifVector_) {
+    for(auto& motif : motifs_) {
         std::set<Eigen::Index> involvedNuclei;
 
         std::map<long, long> electronToNucleusMap;
@@ -74,14 +75,14 @@ void Motifs::classifyMotifs(const MolecularGeometry& molecule) {
 
         if(involvedNuclei.empty()) {
             motif.setType(MotifType::Valence);
-            newMotifsVector.emplace_back(motif);
+            newMotifs.emplace_back(motif);
         } else {
-            // create a core motifs fro every involved nuclei with all electrons in it.
+            // create a core motifs for every involved nuclei with all electrons in it.
             for(const auto & nucleusIndex : involvedNuclei) {
                 auto electronKeys = MapUtils::findByValue(electronToNucleusMap, nucleusIndex);
                 assert(!electronKeys.empty() && "Some electrons must be at involved nuclei at this point.");
 
-                newMotifsVector.emplace_back(
+                newMotifs.emplace_back(
                         Motif{std::set<Eigen::Index>(
                                 std::begin(electronKeys),
                                 std::end(electronKeys)),
@@ -98,15 +99,49 @@ void Motifs::classifyMotifs(const MolecularGeometry& molecule) {
 
     // remaing nuclei (only H, He) being not involved in any motifs are separate core motifs
     for(auto & nucleusIndex : remainingNuclei)
-        newMotifsVector.emplace_back(Motif({}, {nucleusIndex}, MotifType::Core));
+        newMotifs.emplace_back(Motif({}, {nucleusIndex}, MotifType::Core));
 
-    motifVector_ = newMotifsVector;
+    motifs_ = newMotifs;
+
+    sort();
+}
+
+void Motifs::mergeMotifs(const std::set<size_t>& indices) {
+    assert(indices.size() <= motifs_.size());
+
+    std::set<Eigen::Index> newAtomIndices, newElectronIndices;
+    auto newMotifType = MotifType::unassigned;
+
+    for(auto i : indices){
+        newAtomIndices.insert(
+                std::begin(motifs_[i].atomIndices()),
+                std::end(motifs_[i].atomIndices()));
+        newElectronIndices.insert(
+                std::begin(motifs_[i].electronIndices()),
+                std::end(motifs_[i].electronIndices()));
+
+        if(newMotifType != motifs_[i].type()){
+            if(newMotifType == MotifType::unassigned)
+                newMotifType = motifs_[i].type();
+            else
+                newMotifType = MotifType::CoreValence;
+        }
+    }
+    std::vector<Motif> newMotifs = {Motif(newElectronIndices, newAtomIndices, newMotifType)};
+
+    // emplace untouched motifs
+    for(const auto& [i, motif] : enumerate(motifs_)){
+        if(indices.find(i) == indices.end())
+            newMotifs.emplace_back(motif);
+    }
+
+    motifs_ = newMotifs;
 
     sort();
 }
 
 void Motifs::sort(){
-    std::sort(std::begin(motifVector_), std::end(motifVector_),
+    std::sort(std::begin(motifs_), std::end(motifs_),
               [] (const auto& lhs, const auto& rhs) {
         if(lhs.type() < rhs.type())
             return true;

@@ -51,17 +51,17 @@ namespace EnergyPartitioning {
                                                   const Eigen::VectorXd &Te, const Eigen::MatrixXd &Vee,
                                                   const Eigen::MatrixXd &Ven, const Eigen::MatrixXd &Vnn) {
 
-            Eigen::VectorXd intraEnergies = Eigen::VectorXd::Zero(motifs.motifVector_.size());
-            Eigen::MatrixXd interEnergies = Eigen::MatrixXd::Zero(motifs.motifVector_.size(), motifs.motifVector_.size());
+            Eigen::VectorXd intraEnergies = Eigen::VectorXd::Zero(motifs.motifs_.size());
+            Eigen::MatrixXd interEnergies = Eigen::MatrixXd::Zero(motifs.motifs_.size(), motifs.motifs_.size());
 
-            for(auto motif = motifs.motifVector_.begin(); motif != motifs.motifVector_.end(); ++motif) {
-                auto motifId = std::distance(motifs.motifVector_.begin(), motif);
+            for(auto motif = motifs.motifs_.begin(); motif != motifs.motifs_.end(); ++motif) {
+                auto motifId = std::distance(motifs.motifs_.begin(), motif);
 
                 // self-interaction
                 intraEnergies(motifId) = calculateSelfInteractionEnergy(*motif, Te, Vee, Ven, Vnn);
 
-                for (auto otherMotif = std::next(motif); otherMotif != motifs.motifVector_.end(); ++otherMotif) {
-                    auto otherMotifId = std::distance(motifs.motifVector_.begin(), otherMotif);
+                for (auto otherMotif = std::next(motif); otherMotif != motifs.motifs_.end(); ++otherMotif) {
+                    auto otherMotifId = std::distance(motifs.motifs_.begin(), otherMotif);
 
                     // interaction with other motifs
                     interEnergies(motifId, otherMotifId) = caclulateInteractionEnergy(*motif, *otherMotif, Te, Vee, Ven, Vnn);

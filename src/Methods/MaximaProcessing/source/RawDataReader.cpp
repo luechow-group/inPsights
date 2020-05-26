@@ -22,6 +22,7 @@
 #include "MaximaProcessingSettings.h"
 #include <iomanip>
 #include <fstream>
+#include <random>
 
 RawDataReader::RawDataReader(
         Group& references,
@@ -83,6 +84,15 @@ void RawDataReader::readSamplesAndMaxima(std::ifstream &input, int fileLength, s
         maxima_.emplace_back(Group(std::move(r)));
 
         id_++;
+    }
+
+    // Random shuffled vector to remove method artifacts
+    Eigen::PermutationMatrix<Eigen::Dynamic,Eigen::Dynamic> perm(ne);
+    perm.setIdentity();
+    for(auto& ref : maxima_){
+        std::shuffle(perm.indices().data(), perm.indices().data()+perm.indices().size(),
+                std::mt19937(MaximaProcessing::settings.seed()));
+        ref.permuteAll(perm,samples_);
     }
 }
 

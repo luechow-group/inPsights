@@ -63,7 +63,7 @@ namespace YAML {
         Node node;
         node["N"] = rhs.N_;
         node["ValueRange"] = rhs.valueStats_;
-        node["Motifs"] = rhs.motifs_.motifVector_;
+        node["Motifs"] = rhs.motifs_.motifs_;
         node["Etotal"] = rhs.EtotalStats_;
         node["SampleAverage"] = rhs.sampleAverage_;
         node["IntraMotifEnergies"] = rhs.intraMotifEnergyStats_;
@@ -131,7 +131,7 @@ namespace YAML {
             << Key << "N" << Value << rhs.N_
             << Key << "ValueRange" << Value << Comment("[]") << rhs.valueStats_
             << Key << "SampleAverage" << Comment("[a0]") << Value << rhs.sampleAverage_<< Newline
-            << Key << "Motifs" << Value << rhs.motifs_.motifVector_
+            << Key << "Motifs" << Value << rhs.motifs_.motifs_
             << Key << "Etotal" << Comment("[Eh]") << Value << rhs.EtotalStats_
             << Key << "IntraMotifEnergies" << Comment("[Eh]") << Value << rhs.intraMotifEnergyStats_
             << Key << "InterMotifEnergies" << Comment("[Eh]") << Value << rhs.interMotifEnergyStats_

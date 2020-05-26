@@ -23,7 +23,7 @@
 #include <Eigen/Core>
 #include <yaml-cpp/yaml.h>
 
-enum MotifType {unassigned=0, Core, Valence};
+enum MotifType {unassigned=0, Core, Valence, CoreValence};
 
 std::string toString(MotifType type);
 MotifType fromString(const std::string& string);
@@ -31,12 +31,13 @@ MotifType fromString(const std::string& string);
 class Motif{
 public:
     Motif() = default;
-    Motif(const std::set<Eigen::Index>& electronIndices, MotifType type = MotifType::unassigned);
-    Motif(const std::set<Eigen::Index>& electronIndices,
-          const std::set<Eigen::Index>& atomIndices,
+    Motif(std::set<Eigen::Index>  electronIndices, MotifType type = MotifType::unassigned);
+    Motif(std::set<Eigen::Index>  electronIndices,
+          std::set<Eigen::Index>  atomIndices,
           MotifType type = MotifType::unassigned);
 
-    bool containsQ(Eigen::Index i) const;
+    bool containsElectronQ(Eigen::Index i) const;
+    bool containsAtomQ(Eigen::Index i) const;
 
     // needed for maps
     bool operator<(const Motif &rhs) const;

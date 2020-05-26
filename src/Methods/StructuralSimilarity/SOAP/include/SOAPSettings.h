@@ -98,7 +98,7 @@ namespace Settings::SOAP {
     class Cutoff : public ISettings {
     public:
         Property<double> radius = {6.0 * ConversionFactors::angstrom2bohr, VARNAME(radius)};
-        Property<double> width = {4.0 * ConversionFactors::angstrom2bohr, VARNAME(width)};
+        Property<double> width = {0.0 * ConversionFactors::angstrom2bohr, VARNAME(width)};
         Property<double> centerWeight = {1.0, VARNAME(centerWeight)}; //TODO
 
         Cutoff();
