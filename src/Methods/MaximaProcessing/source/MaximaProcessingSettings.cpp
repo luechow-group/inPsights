@@ -16,11 +16,20 @@
  */
 
 #include "MaximaProcessingSettings.h"
+#include <random>
 #include <spdlog/spdlog.h>
 
 namespace Settings {
     MaximaProcessing::MaximaProcessing()
     : ISettings(VARNAME(MaximaProcessing)) {
+        seed.onChange_.connect(
+                [&](unsigned value) {
+                    if (value == 0) {
+                        seed = std::random_device()();
+                        spdlog::info("Generated seed from random device.");
+                    }
+                    spdlog::info("Seed: {}", seed());
+                });
         samplesToAnalyze.onChange_.connect(
                 [&](unsigned value) {
                     if (not (value >= 0 and value < std::numeric_limits<unsigned>::max()))
@@ -45,6 +54,7 @@ namespace Settings {
     MaximaProcessing::MaximaProcessing(const YAML::Node &node)
     : MaximaProcessing() {
         YAML::convert<Property<std::string>>::decode(node[className], binaryFileBasename);
+        unsignedProperty::decode(node[className], seed);
         unsignedProperty::decode(node[className], samplesToAnalyze);
         doubleProperty ::decode(node[className], minimalClusterWeight);
         doubleProperty ::decode(node[className], motifThreshold);
@@ -52,6 +62,7 @@ namespace Settings {
     }
 
     void MaximaProcessing::appendToNode(YAML::Node &node) const {
+        node[className][seed.name()] = seed.get();
         node[className][binaryFileBasename.name()] = binaryFileBasename.get();
         node[className][samplesToAnalyze.name()] = samplesToAnalyze.get();
         node[className][minimalClusterWeight.name()] = minimalClusterWeight.get();
