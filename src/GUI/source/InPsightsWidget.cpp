@@ -41,7 +41,6 @@ InPsightsWidget::InPsightsWidget(QWidget *parent, const std::string& filename)
         bondsCheckBox(new QCheckBox("Bonds", this)),
         axesCheckBox(new QCheckBox("Axes", this)),
         sampleAverageCheckBox(new QCheckBox("Sample Average", this)),
-        spinConnectionsCheckBox(new QCheckBox("Spin Connections", this)),
         spinCorrelationsCheckBox(new QCheckBox("Spin Correlations", this)),
         sedsCheckBox(new QCheckBox("SEDs", this)),
         maximaHullsCheckBox(new QCheckBox("Maxima Hulls", this)),
@@ -97,10 +96,9 @@ void InPsightsWidget::createWidget() {
     checkboxGrid->addWidget(atomsCheckBox,0,0);
     checkboxGrid->addWidget(bondsCheckBox,1,0);
     checkboxGrid->addWidget(axesCheckBox,2,0);
-    checkboxGrid->addWidget(sampleAverageCheckBox,3,0);
 
     // second column
-    checkboxGrid->addWidget(spinConnectionsCheckBox,0,1);
+    checkboxGrid->addWidget(sampleAverageCheckBox,0,1);
     checkboxGrid->addWidget(maximaHullsCheckBox,1,1);
     checkboxGrid->addWidget(spinCorrelationsCheckBox,2,1);
     checkboxGrid->addWidget(sedsCheckBox,3,1);
@@ -126,9 +124,6 @@ void InPsightsWidget::connectSignals() {
 
     connect(axesCheckBox, &QCheckBox::stateChanged,
            this, &InPsightsWidget::onAxesChecked);
-
-    connect(spinConnectionsCheckBox, &QCheckBox::stateChanged,
-            this, &InPsightsWidget::onSpinConnectionsChecked);
 
     connect(spinCorrelationsCheckBox, &QCheckBox::stateChanged,
             this, &InPsightsWidget::onSpinCorrelationsChecked);
@@ -179,8 +174,7 @@ void InPsightsWidget::selectedStructure(QTreeWidgetItem *item, int column) {
     if (createQ) {
         auto sampleAverage = clusterCollection_[clusterId].sampleAverage_;
 
-        if(sampleAverageCheckBox->checkState() == Qt::CheckState::Checked
-        && sampleAverage.numberOfEntities() > 0) {
+        if(sampleAverageCheckBox->checkState() == Qt::CheckState::Checked && sampleAverage.numberOfEntities() > 0) {
             moleculeWidget->addElectronsVector(sampleAverage, clusterId, structureId, coloredCheckBox->checkState() == Qt::Checked);
         } else if (sampleAverageCheckBox->checkState() == Qt::CheckState::Checked
         && sampleAverage.numberOfEntities() == 0) {
@@ -233,20 +227,19 @@ void InPsightsWidget::onPlotAllChecked(int stateId)  {
 
             // iterate over childs of topLevelItem i
             for (int j = 0; j < root->child(i)->childCount(); ++j)
-                if (root->child(i)->child(j)->checkState(0) != plotAllQ)
-                    root->child(i)->child(j)->setCheckState(0, plotAllQ);
+                root->child(i)->child(j)->setCheckState(0, plotAllQ);
         }
     }
 }
 
 void InPsightsWidget::redrawSpinDecorations() {
-    if(spinConnectionsCheckBox->checkState() == Qt::CheckState::Checked){
-        onSpinConnectionsChecked(Qt::Unchecked);
-        onSpinConnectionsChecked(Qt::Checked);
-    }
     if(spinCorrelationsCheckBox->checkState() == Qt::Checked){
         onSpinCorrelationsChecked(Qt::Unchecked);
         onSpinCorrelationsChecked(Qt::Checked);
+    }
+    else if(spinCorrelationsCheckBox->checkState() == Qt::PartiallyChecked){
+        onSpinCorrelationsChecked(Qt::Unchecked);
+        onSpinCorrelationsChecked(Qt::PartiallyChecked);
     }
 }
 
@@ -260,10 +253,6 @@ void InPsightsWidget::onBondsChecked(int stateId) {
 
 void InPsightsWidget::onAxesChecked(int stateId) {
     moleculeWidget->drawAxes(Qt::CheckState(stateId) == Qt::CheckState::Checked);
-}
-
-void InPsightsWidget::onSpinConnectionsChecked(int stateId) {
-    moleculeWidget->drawSpinConnections(Qt::CheckState(stateId) == Qt::CheckState::Checked);
 }
 
 void InPsightsWidget::onSpinCorrelationsChecked(int stateId) {

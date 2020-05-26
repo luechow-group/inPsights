@@ -44,7 +44,6 @@ set(HEADER_FILES
         include/IConnection.h
         include/Bonds3D.h
         include/SpinCorrelations3D.h
-        include/SameSpinConnections3D.h
         include/IntegerSortedTreeWidgetItem.h
         include/MaximaProcessingWidget.h
         include/SurfaceMesh.h
@@ -72,7 +71,6 @@ set(SOURCE_FILES
         source/Bonds3D.cpp
         source/SpinCorrelations3D.cpp
         source/InPsightsWidget.cpp
-        source/SameSpinConnections3D.cpp
         source/IntegerSortedTreeWidgetItem.cpp
         source/MaximaProcessingWidget.cpp
         source/SurfaceMesh.cpp

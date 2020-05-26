@@ -156,17 +156,6 @@ void MoleculeWidget::drawBonds(bool drawQ) {
     }
 }
 
-void MoleculeWidget::drawSpinConnections(bool drawQ) {
-    if (drawQ)
-        for (auto &cluster : activeElectronsVectorsMap_)
-            for (auto &structure : cluster.second)
-                structure.second->drawConnections();
-    else
-        for (auto &cluster : activeElectronsVectorsMap_)
-            for (auto &structure : cluster.second)
-                structure.second->deleteConnections();
-}
-
 void MoleculeWidget::addElectronsVector(const ElectronsVector &electronsVector, int clusterId, int structureId, bool coloredQ) {
     activeElectronsVectorsMap_[clusterId][structureId] = new ElectronsVector3D(moleculeEntity_, electronsVector, coloredQ);
 }

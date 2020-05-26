@@ -45,7 +45,6 @@ public:
     void drawAxes(bool drawQ = true);
     void drawAtoms(bool drawQ = true);
     void drawBonds(bool drawQ = true);
-    void drawSpinConnections(bool drawQ = true);
     void drawSpinCorrelations(bool drawQ,
                               const std::vector<ClusterData> &clusterData,
                               double spinCorrelationThreshold, bool drawSameSpinCorrelationsQ);

@@ -38,7 +38,6 @@ public slots:
     void onAtomsChecked(int stateId);
     void onBondsChecked(int stateId);
     void onAxesChecked(int stateId);
-    void onSpinConnectionsChecked(int stateId = 0);
     void onSpinCorrelationsChecked(int stateId= 0);
     void onPlotAllChecked(int stateId= 0);
     void onSpinCorrelationsBoxChanged(double value);
@@ -47,7 +46,7 @@ private:
     std::string filename_;
     MoleculeWidget *moleculeWidget;
     MaximaProcessingWidget *maximaProcessingWidget;
-    QCheckBox *atomsCheckBox, *bondsCheckBox, *axesCheckBox, *sampleAverageCheckBox, *spinConnectionsCheckBox, *spinCorrelationsCheckBox,
+    QCheckBox *atomsCheckBox, *bondsCheckBox, *axesCheckBox, *sampleAverageCheckBox, *spinCorrelationsCheckBox,
     *sedsCheckBox,*maximaHullsCheckBox, *plotAllCheckBox, *coloredCheckBox;
     QDoubleSpinBox *spinCorrelationBox, *sedPercentageBox;
     QTreeWidget *maximaList;
