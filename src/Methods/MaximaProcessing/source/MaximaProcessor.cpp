@@ -163,12 +163,9 @@ void MaximaProcessor::calculateStatistics(const Group &maxima,
             for(const auto& nucleiList : nucleiMergeList){
 
                 if(nucleiList.size() == 2) { // => Valence motif
-                    //TODO nearest electron: find electrons -> check with contains method if part of motif
 
-                    double coreDistance = (atoms_[nucleiList[0]].position()-atoms_[nucleiList[1]].position()).norm()/2;
-                    Eigen::Vector3d avgPosition = (atoms_[nucleiList[0]].position()+atoms_[nucleiList[1]].position())/2;
-                    std::vector<Eigen::Vector3d> positions = {avgPosition};
-
+                    double bondCenterToCoreDistance = (atoms_[nucleiList[0]].position() - atoms_[nucleiList[1]].position()).norm() / 2;
+                    Eigen::Vector3d bondCenter = (atoms_[nucleiList[0]].position() + atoms_[nucleiList[1]].position()) / 2;
 
                     std::function<double(const Eigen::Vector3d &,const std::vector<Eigen::Vector3d> &)>
                             distanceFunction = Metrics::minimalDistance<2>;
@@ -176,9 +173,9 @@ void MaximaProcessor::calculateStatistics(const Group &maxima,
                     auto nearestElectronsIndices = NearestElectrons::getNearestElectronsIndices(
                             structures.front(),
                             atoms_,
-                            positions,
+                            {bondCenter},
                             std::numeric_limits<long>::max(),
-                            true, coreDistance, distanceFunction);
+                            true, bondCenterToCoreDistance, distanceFunction);
 
                     for(auto [i,m] : enumerate(motifs_.motifs_)){
                         for(auto nearestElectronIndex : nearestElectronsIndices ){
