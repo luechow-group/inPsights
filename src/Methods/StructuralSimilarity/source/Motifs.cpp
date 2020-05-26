@@ -77,7 +77,7 @@ void Motifs::classifyMotifs(const MolecularGeometry& molecule) {
             motif.setType(MotifType::Valence);
             newMotifs.emplace_back(motif);
         } else {
-            // create a core motifs fro every involved nuclei with all electrons in it.
+            // create a core motifs for every involved nuclei with all electrons in it.
             for(const auto & nucleusIndex : involvedNuclei) {
                 auto electronKeys = MapUtils::findByValue(electronToNucleusMap, nucleusIndex);
                 assert(!electronKeys.empty() && "Some electrons must be at involved nuclei at this point.");
