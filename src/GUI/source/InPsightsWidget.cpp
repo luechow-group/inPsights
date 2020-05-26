@@ -315,6 +315,15 @@ void InPsightsWidget::loadData() {
     YAML::Node doc = YAML::LoadAllFromFile(filename_)[1]; // load results
     auto atoms = doc["Atoms"].as<AtomsVector>();
 
+    /* Note on the compatibility mode:
+     * Clusters from result files produced without initial electron indice shuffling contain
+     * artificial correlation between the core electrons, persumably originating from the hungarian selecting the first
+     * viable permutation. These artificial correlations are removed manually in the visualization.
+     */
+    if(doc["CompatabilityMode"] && doc["CompatabilityMode"].as<bool>())
+        moleculeWidget->activateCompatabilityMode();
+
+
     auto nElectrons = doc["Clusters"][0]["Structures"][0].as<ElectronsVector>().numberOfEntities();
 
     auto EnStats = doc["En"].as<VectorStatistics>();

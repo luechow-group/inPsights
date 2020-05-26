@@ -35,6 +35,7 @@
 MoleculeWidget::MoleculeWidget(QWidget *parent)
         :
         QWidget(parent),
+        compatabilityMode_(false),
         qt3DWindow_(new Qt3DExtras::Qt3DWindow()),
         root_(new Qt3DCore::QEntity()),
         moleculeEntity_(new Qt3DCore::QEntity(root_)),
@@ -215,7 +216,11 @@ void MoleculeWidget::drawSpinCorrelations(bool drawQ,
     for (auto &cluster : activeElectronsVectorsMap_)
         for (auto &structure : cluster.second) {
             if (drawQ) {
-                new SpinCorrelations3D(structure.second, clusterData[cluster.first].SeeStats_, spinCorrelationThreshold, drawSameSpinCorrelationsQ);
+                new SpinCorrelations3D(structure.second,
+                        clusterData[cluster.first].SeeStats_,
+                        spinCorrelationThreshold,
+                        drawSameSpinCorrelationsQ,
+                        compatabilityMode_);
             } else {
                 structure.second->deleteCorrelations();
             }
@@ -381,4 +386,8 @@ void MoleculeWidget::onX3dExport(bool) {
     }
 
     x3Dconverter.closeScene();
+}
+
+void MoleculeWidget::activateCompatabilityMode() {
+    compatabilityMode_ = true;
 }
