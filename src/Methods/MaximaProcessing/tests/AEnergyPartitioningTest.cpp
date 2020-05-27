@@ -92,7 +92,7 @@ TEST_F(AEnergyPartitioningTest, TwoPairs){
     ASSERT_THAT(motifs.motifs_[1].atomIndices(), ElementsAre(1));
     ASSERT_EQ(motifs.motifs_[1].type(), MotifType::Core);
 
-    auto motifEnergies = EnergyPartitioning::MotifBased::calculateInterationEnergies(motifs, Te, Vee, Ven, Vnn);
+    auto motifEnergies = EnergyPartitioning::MotifBased::calculateInteractionEnergies(motifs, Te, Vee, Ven, Vnn);
 
     Eigen::VectorXd intraExpected = Eigen::VectorXd::Zero(motifs.motifs_.size());
     intraExpected << 201.02, 201.02;
@@ -136,7 +136,7 @@ TEST_F(AEnergyPartitioningTest, HydrogenMotif){
     ASSERT_THAT(motifs.motifs_[2].atomIndices(), ElementsAre());
     ASSERT_EQ(motifs.motifs_[2].type(), MotifType::Valence);
 
-    auto motifEnergies = EnergyPartitioning::MotifBased::calculateInterationEnergies(motifs, Te, Vee, Ven, Vnn);
+    auto motifEnergies = EnergyPartitioning::MotifBased::calculateInteractionEnergies(motifs, Te, Vee, Ven, Vnn);
 
     Eigen::VectorXd intraExpected = Eigen::VectorXd::Zero(motifs.motifs_.size());
     intraExpected << 201.02, 0.00, 1.02;
