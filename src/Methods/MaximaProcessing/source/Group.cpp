@@ -16,7 +16,7 @@
  */
 
 #include <Group.h>
-#include <NearestElectrons.h>
+#include <ParticleSelection.h>
 #include <BestMatch.h>
 #include <Reference.h>
 #include <Eigen/Core>
@@ -232,7 +232,7 @@ void Group::permuteRelevantElectronsToFront(std::vector<Sample> & samples){
     auto electronsNumber = (*this).representative()->maximum().numberOfEntities();
 
     for (auto & subGroup : *this) {
-        auto subIndices = NearestElectrons::getRelevantIndices(subGroup.representative()->maximum());
+        auto subIndices = ParticleSelection::getRelevantIndices(subGroup.representative()->maximum());
 
         // permute all relevant electrons to the front
         subGroup.setSelectedElectronsCount(subIndices.size());

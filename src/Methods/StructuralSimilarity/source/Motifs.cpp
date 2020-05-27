@@ -22,7 +22,7 @@
 #include <spdlog/spdlog.h>
 #include <utility>
 #include <Enumerate.h>
-#include <NearestElectrons.h>
+#include <ParticleSelection.h>
 #include <ErrorHandling.h>
 
 Motifs::Motifs()
@@ -172,7 +172,7 @@ std::set<size_t> Motifs::findMotifMergeIndices(const MolecularGeometry &molecule
             std::function<double(const Eigen::Vector3d &, const std::vector<Eigen::Vector3d> &)>
                     distanceFunction = Metrics::minimalDistance<2>;
             // select all valence electrons in the interatomic region
-            auto nearestElectronsIndices = NearestElectrons::getNearestElectronsIndices(
+            auto nearestElectronsIndices = ParticleSelection::getNearestElectronsIndices(
                     electrons,
                     atoms,
                     {bondCenter},

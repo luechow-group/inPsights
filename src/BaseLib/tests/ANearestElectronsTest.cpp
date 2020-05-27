@@ -17,7 +17,7 @@
 
 #include <gmock/gmock.h>
 #include <TestMolecules.h>
-#include <NearestElectrons.h>
+#include <ParticleSelection.h>
 #include <Metrics.h>
 
 using namespace testing;
@@ -31,43 +31,43 @@ public:
 };
 
 TEST_F(ANearestElectronsTest, GetNonValenceIndices) {
-    std::list<long> indices = NearestElectrons::getNonValenceIndices(electrons, nuclei[0]);
+    std::list<long> indices = ParticleSelection::getNonValenceIndices(electrons, nuclei[0]);
     ASSERT_THAT(indices, ElementsAre(0,4));
 
-    indices = NearestElectrons::getNonValenceIndices(electrons, nuclei[1]);
+    indices = ParticleSelection::getNonValenceIndices(electrons, nuclei[1]);
     ASSERT_THAT(indices,ElementsAre());
 };
 
 TEST_F(ANearestElectronsTest, GetNonValenceIndicesAll) {
-    std::list<long> indices = NearestElectrons::getNonValenceIndices(electrons, nuclei);
+    std::list<long> indices = ParticleSelection::getNonValenceIndices(electrons, nuclei);
     ASSERT_THAT(indices, ElementsAre(0,4));
 };
 
 TEST_F(ANearestElectronsTest, GetElectronsByPositionInverted) {
     Eigen::Vector3d position = TestMolecules::inbetween(nuclei, {0, 2}, 0.7);
-    auto indices = NearestElectrons::getNearestElectronsIndices(electrons, position, 2);
+    auto indices = ParticleSelection::getNearestPositionIndices(electrons.positionsVector(), position, 2);
     ASSERT_THAT(indices, ElementsAre(2,6));
 };
 
 TEST_F(ANearestElectronsTest, GetValenceByPosition) {
     std::function<double(const Eigen::Vector3d &,const std::vector<Eigen::Vector3d> &)> distanceFunction = Metrics::minimalDistance<2>;
 
-    auto indices = NearestElectrons::getNearestElectronsIndices(electrons, nuclei, {nuclei[0].position()}, 2, true,
-                                                                20.0, distanceFunction);
+    auto indices = ParticleSelection::getNearestElectronsIndices(electrons, nuclei, {nuclei[0].position()}, 2, true,
+                                                                 20.0, distanceFunction);
     ASSERT_THAT(indices, ElementsAre(6,7));
 };
 
 TEST_F(ANearestElectronsTest, InvertedIndices) {
     std::list<long> indices = {0,2,4,6};
-    ASSERT_THAT(NearestElectrons::invertedIndices(indices, 7), ElementsAre(1,3,5));
-    ASSERT_THAT(NearestElectrons::invertedIndices(indices, 8), ElementsAre(1,3,5,7));
+    ASSERT_THAT(ParticleSelection::invertedIndices(indices, 7), ElementsAre(1, 3, 5));
+    ASSERT_THAT(ParticleSelection::invertedIndices(indices, 8), ElementsAre(1, 3, 5, 7));
 
-    ASSERT_THAT(NearestElectrons::invertedIndices(std::list<long>{0,1,2}, 3), ElementsAre());
+    ASSERT_THAT(ParticleSelection::invertedIndices(std::list<long>{0, 1, 2}, 3), ElementsAre());
 
-    EXPECT_DEATH(NearestElectrons::invertedIndices(std::list<long>{}, 1),"");
-    EXPECT_DEATH(NearestElectrons::invertedIndices(std::list<long>{0}, 0),"");
-    EXPECT_DEATH(NearestElectrons::invertedIndices(std::list<long>{0,1,2}, -1),"");
-    EXPECT_DEATH(NearestElectrons::invertedIndices(std::list<long>{0,-1,2}, 3),"");
+    EXPECT_DEATH(ParticleSelection::invertedIndices(std::list<long>{}, 1), "");
+    EXPECT_DEATH(ParticleSelection::invertedIndices(std::list<long>{0}, 0), "");
+    EXPECT_DEATH(ParticleSelection::invertedIndices(std::list<long>{0, 1, 2}, -1), "");
+    EXPECT_DEATH(ParticleSelection::invertedIndices(std::list<long>{0, -1, 2}, 3), "");
 };
 
 TEST_F(ANearestElectronsTest, PickElements) {
@@ -76,19 +76,19 @@ TEST_F(ANearestElectronsTest, PickElements) {
     reference.append(electrons[6]);
 
     Eigen::Vector3d position = TestMolecules::inbetween(nuclei, {0, 2}, 0.75);
-    auto indices = NearestElectrons::getNearestElectronsIndices(electrons, position, 2);
+    auto indices = ParticleSelection::getNearestPositionIndices(electrons.positionsVector(), position, 2);
 
     ASSERT_THAT(indices, ElementsAre(2,6));
     ASSERT_EQ(reference, electrons[indices]);
 };
 
 TEST_F(ANearestElectronsTest, GetRelevantIndices) {
-    NearestElectrons::settings.distanceMode = "minimum";
-    NearestElectrons::settings.maximalCount = 2;
-    NearestElectrons::settings.positions = {nuclei[3].position()};
-    NearestElectrons::settings.valenceOnly = true;
+    ParticleSelection::settings.distanceMode = "minimum";
+    ParticleSelection::settings.maximalCount = 2;
+    ParticleSelection::settings.positions = {nuclei[3].position()};
+    ParticleSelection::settings.valenceOnly = true;
 
-    auto indices = NearestElectrons::getRelevantIndices(electrons);
+    auto indices = ParticleSelection::getRelevantIndices(electrons);
 
     ASSERT_THAT(indices, ElementsAre(3,7));
 };

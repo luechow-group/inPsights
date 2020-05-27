@@ -23,7 +23,7 @@
 #include <DensityBasedClusterer.h>
 #include <SOAPClusterer.h>
 #include <ReferencePositionsClusterer.h>
-#include <NearestElectrons.h>
+#include <ParticleSelection.h>
 #include <ClusterNumberAnalyzer.h>
 #include <TotalWeightDifferenceAnalyzer.h>
 #include <MaximaProcessor.h>
@@ -226,14 +226,14 @@ int main(int argc, char *argv[]) {
                 if(settings.local()) {
                     auto nearestElectronSettings = node.second[VARNAME(NearestElectrons)];
                     if (nearestElectronSettings)
-                        NearestElectrons::settings = Settings::NearestElectrons(nearestElectronSettings, atoms);
+                        ParticleSelection::settings = Settings::ParticleSelection(nearestElectronSettings, atoms);
                 }
 
                 DensityBasedClusterer densityBasedClusterer(samples);
                 densityBasedClusterer.cluster(maxima);
 
                 if(settings.local()) {
-                    NearestElectrons::settings.appendToNode(usedClusteringSettings); // TODO FIX USED SETTINGS APPEND
+                    ParticleSelection::settings.appendToNode(usedClusteringSettings); // TODO FIX USED SETTINGS APPEND
                 }
 
                 settings.appendToNode(usedClusteringSettings);
@@ -247,7 +247,7 @@ int main(int argc, char *argv[]) {
                 if(settings.local()) {
                     auto nearestElectronSettings = node.second[VARNAME(NearestElectrons)];
                     if (nearestElectronSettings)
-                        NearestElectrons::settings = Settings::NearestElectrons(nearestElectronSettings, atoms);
+                        ParticleSelection::settings = Settings::ParticleSelection(nearestElectronSettings, atoms);
                 }
                 ReferencePositionsClusterer ReferencePositionsClusterer(samples);
                 ReferencePositionsClusterer.cluster(maxima);
@@ -255,7 +255,7 @@ int main(int argc, char *argv[]) {
                 settings.appendToNode(usedClusteringSettings);
 
                 if(settings.local()) {
-                    NearestElectrons::settings.appendToNode(usedClusteringSettings); // TODO FIX USED SETTINGS APPEND
+                    ParticleSelection::settings.appendToNode(usedClusteringSettings); // TODO FIX USED SETTINGS APPEND
                 }
 
                 break;

@@ -55,7 +55,7 @@ set(HEADER_FILES
         include/Combinatorics.h
         include/Logo.h
         include/IPosition.h
-        include/NearestElectrons.h
+        include/ParticleSelection.h
         include/SpinPairClassification.h
         include/CameraSettings.h
         include/ErrorHandling.h
@@ -86,7 +86,7 @@ set(SOURCE_FILES
         source/ISettings.cpp
         source/Combinatorics.cpp
         source/IPosition.cpp
-        source/NearestElectrons.cpp
+        source/ParticleSelection.cpp
         source/SpinPairClassification.cpp
         source/CameraSettings.cpp
         source/ErrorHandling.cpp

@@ -18,7 +18,7 @@
 #include <ReferencePositionsClusterer.h>
 #include <BestMatchDistance.h>
 #include <BestMatch.h>
-#include <NearestElectrons.h>
+#include <ParticleSelection.h>
 #include <Reference.h>
 #include <Group.h>
 #include <functional>

@@ -18,7 +18,7 @@
 #include <RawDataReader.h>
 #include "Reference.h"
 #include "ParticlesVector.h"
-#include "NearestElectrons.h"
+#include "ParticleSelection.h"
 #include "MaximaProcessingSettings.h"
 #include <iomanip>
 #include <fstream>
@@ -160,7 +160,7 @@ std::string RawDataReader::zeroPadNumber(int num) {
 
 void RawDataReader::removeNonValenceElectrons(Reference& reference, Sample& sample) {
 
-    auto nonValenceIndices = NearestElectrons::getNonValenceIndices(reference.maximum(),atoms_);
+    auto nonValenceIndices = ParticleSelection::getNonValenceIndices(reference.maximum(), atoms_);
 
     ElectronsVector newMaximum, newSample;
     Eigen::VectorXd newKineticEnergies(reference.maximum().numberOfEntities()-nonValenceIndices.size());
