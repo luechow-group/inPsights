@@ -8,9 +8,12 @@ To install inPsights, Git, CMake, the GNU Compiler Collection (gcc) and the Eige
 
 #### MacOS
 Make sure that the Xcode Command Line Tools are installed already with: 
+Make sure that the latest Xcode Command Line Tools are installed with: 
 ```bash
 xcode-select --install
 ```
+(**Note:** On macOS 10.15 (Catalina), `Command Line Tools 11.15` or greater seems to be required.)
+
 
 To install the required packages on MacOS, the [homebrew package manager](https://brew.sh) can be used. 
 It can be downloaded and installed from the command line as follows:
