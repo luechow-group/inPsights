@@ -36,6 +36,8 @@ public:
 
     void mergeMotifs(const std::set<size_t>& indices);
 
+    std::set<size_t> findMotifMergeIndices(const MolecularGeometry& molecule,
+                                           const std::vector<std::vector<size_t>> & nucleiMergeList);
 
     void sort();
 

@@ -22,6 +22,8 @@
 #include <spdlog/spdlog.h>
 #include <utility>
 #include <Enumerate.h>
+#include <NearestElectrons.h>
+#include <ErrorHandling.h>
 
 Motifs::Motifs()
 : motifs_({}) {}
@@ -150,4 +152,52 @@ void Motifs::sort(){
         else
             return lhs.electronIndices().size() > rhs.electronIndices().size();
     });
+}
+
+std::set<size_t> Motifs::findMotifMergeIndices(const MolecularGeometry &molecule,
+                                               const std::vector<std::vector<size_t>> &nucleiMergeList) {
+
+    std::set<size_t> motifMergeIndices;
+
+    // find motif indices to merge
+    auto atoms = molecule.atoms();
+    auto electrons = molecule.electrons();
+    for(const auto& nucleiList : nucleiMergeList) {
+        if (nucleiList.size() == 2) { // => Valence motif
+
+            double bondCenterToCoreDistance =
+                    (atoms[nucleiList[0]].position() - atoms[nucleiList[1]].position()).norm() / 2;
+            Eigen::Vector3d bondCenter = (atoms[nucleiList[0]].position() + atoms[nucleiList[1]].position()) / 2;
+
+            std::function<double(const Eigen::Vector3d &, const std::vector<Eigen::Vector3d> &)>
+                    distanceFunction = Metrics::minimalDistance<2>;
+            // select all valence electrons in the interatomic region
+            auto nearestElectronsIndices = NearestElectrons::getNearestElectronsIndices(
+                    electrons,
+                    atoms,
+                    {bondCenter},
+                    std::numeric_limits<long>::max(),
+                    true, bondCenterToCoreDistance, distanceFunction);
+
+            for (auto[i, m] : enumerate(motifs_)) {
+                for (auto nearestElectronIndex : nearestElectronsIndices) {
+                    if (m.containsElectronQ(nearestElectronIndex)) {
+                        motifMergeIndices.emplace(i);
+                    }
+                }
+            }
+        } else if (nucleiList.size() == 1) {
+            for (auto nucleusIdx : nucleiList) {
+                // find motif with nucleus idx
+                for (auto[i, m] : enumerate(motifs_)) {
+                    if (m.containsAtomQ(nucleusIdx)) {
+                        motifMergeIndices.emplace(i);
+                    };
+                }
+            }
+        } else {
+            throw NotImplemented();
+        }
+    }
+    return motifMergeIndices;
 }
