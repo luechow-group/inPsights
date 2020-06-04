@@ -358,25 +358,33 @@ std::deque<BestMatch::SOAPSimilarity::GrowingPerm> BestMatch::SOAPSimilarity::fi
     return possiblePerms;
 };
 
-/*
- * Calculates the positional distances in the kit system of the electrons specified by the indices
- */
-Eigen::MatrixXd
-BestMatch::SOAPSimilarity::calculateDistanceCovarianceMatrixOfSelectedIndices(const ElectronsVector &electronsVector,
-                                                                              const std::vector<Eigen::Index> &kitSystemIndices) {
-    Eigen::MatrixXd positionalDistances(kitSystemIndices.size(), kitSystemIndices.size());
+std::vector<Eigen::Index>
+BestMatch::SOAPSimilarity::permuteIndicesFromKitSystem(const std::vector<Eigen::Index> &kitSystemIndices,
+                                                       const Eigen::PermutationMatrix<Eigen::Dynamic>& fromKitPermutation) {
+    assert(fromKitPermutation.indices().size() >= kitSystemIndices.size());
 
-    const auto &positions = electronsVector.positionsVector();
-
-    // the fromKit permutation is needed to find the indices in the particle-kit system
-    auto fromKit = ParticleKit::fromKitPermutation(electronsVector).indices();
-
-    assert(size_t(fromKit.size()) >= kitSystemIndices.size());
+    std::vector<Eigen::Index> permutedIndices(kitSystemIndices.size());
 
     for (Eigen::size_t i = 0; i < kitSystemIndices.size(); ++i)
-        for (Eigen::size_t j = 0; j < kitSystemIndices.size(); ++j)
-            positionalDistances(i, j) = (positions[fromKit[kitSystemIndices[j]]] -
-                                         positions[fromKit[kitSystemIndices[i]]]).norm();
+        permutedIndices[i] = fromKitPermutation.indices()[kitSystemIndices[i]];
+
+    return permutedIndices;
+}
+
+/*
+ * Calculates the positional distances of selected indices
+ */
+Eigen::MatrixXd
+BestMatch::SOAPSimilarity::calculateDistanceCovarianceMatrixOfSelectedIndices(const PositionsVector &positions,
+                                                                              const std::vector<Eigen::Index> &indices) {
+    assert(size_t(positions.numberOfEntities()) >= indices.size());
+
+    Eigen::MatrixXd positionalDistances(indices.size(), indices.size());
+
+    for (Eigen::size_t i = 0; i < indices.size(); ++i)
+        for (Eigen::size_t j = 0; j < indices.size(); ++j)
+            positionalDistances(i, j) = (positions[indices[j]] -
+                                         positions[indices[i]]).norm();
 
     return positionalDistances;
 };

@@ -73,9 +73,12 @@ namespace BestMatch {
 
         double earlyExitMetric(const Eigen::MatrixXd &bestMatchPermutedEnvironmentSimilarities);
 
+        std::vector<Eigen::Index> permuteIndicesFromKitSystem(const std::vector<Eigen::Index> &kitSystemIndices,
+                                                              const Eigen::PermutationMatrix<Eigen::Dynamic>& fromKitPermutation);
+
         Eigen::MatrixXd calculateDistanceCovarianceMatrixOfSelectedIndices(
-                const ElectronsVector &electronsVector,
-                const std::vector<Eigen::Index> &kitSystemIndices);
+                const PositionsVector &positions,
+                const std::vector<Eigen::Index> &indices);
     }
 }
 

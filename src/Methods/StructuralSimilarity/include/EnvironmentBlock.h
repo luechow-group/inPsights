@@ -29,9 +29,9 @@
 
 namespace DistanceCovariance {
     bool conservingQ(
-            const std::vector<Eigen::Index> &permuteeIndices,
+            const std::vector<Eigen::Index> &permuteeIndicesInKitSystem,
             const ElectronsVector &permutee,
-            const std::vector<Eigen::Index> &referenceIndices,
+            const std::vector<Eigen::Index> &referenceIndicesInKitSystem,
             const ElectronsVector &reference,
             double distanceMatrixCovarianceTolerance);
 }

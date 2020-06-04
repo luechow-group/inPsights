@@ -16,26 +16,34 @@
  */
 
 #include <EnvironmentBlock.h>
+#include <ParticleKit.h>
 
 /*
  * Distance conservation is checked by calculating the difference of the distance covariance matrice of
  * the permutee and the reference, and assuring, that the maximal distance is below a certain threshold.
  */
 bool DistanceCovariance::conservingQ(
-        const std::vector<Eigen::Index> &permuteeIndices,
+        const std::vector<Eigen::Index> &permuteeIndicesInKitSystem,
         const ElectronsVector &permutee,
-        const std::vector<Eigen::Index> &referenceIndices,
+        const std::vector<Eigen::Index> &referenceIndicesInKitSystem,
         const ElectronsVector &reference,
         double distanceMatrixCovarianceTolerance) {
 
-    auto covA = BestMatch::SOAPSimilarity::calculateDistanceCovarianceMatrixOfSelectedIndices(permutee, permuteeIndices);
-    auto covB = BestMatch::SOAPSimilarity::calculateDistanceCovarianceMatrixOfSelectedIndices(reference, referenceIndices);
+    auto permuteeIndices = BestMatch::SOAPSimilarity::permuteIndicesFromKitSystem(
+            permuteeIndicesInKitSystem, SOAP::ParticleKit::fromKitPermutation(permutee));
+    auto referenceIndices = BestMatch::SOAPSimilarity::permuteIndicesFromKitSystem(
+            referenceIndicesInKitSystem, SOAP::ParticleKit::fromKitPermutation(reference));
+
+    auto covA = BestMatch::SOAPSimilarity::calculateDistanceCovarianceMatrixOfSelectedIndices(
+            permutee.positionsVector(), permuteeIndices);
+    auto covB = BestMatch::SOAPSimilarity::calculateDistanceCovarianceMatrixOfSelectedIndices(
+            reference.positionsVector(), referenceIndices);
 
     auto conservingQ = (covB - covA).array().abs().maxCoeff() <= distanceMatrixCovarianceTolerance;
 
     if (!conservingQ)
         spdlog::debug("Distance covariance matrix difference:\n{}",
-                ToString::matrixXdToString((covB - covA), 3));
+                      ToString::matrixXdToString((covB - covA), 3));
 
     return conservingQ;
 };
@@ -90,9 +98,9 @@ std::vector<std::vector<Eigen::Index>> EnvironmentBlock::filterPermutations(doub
     spdlog::debug("Filtering intra block permutations...");
     for (auto it = permutedPermuteeIndicesCollection_.begin(); it != permutedPermuteeIndicesCollection_.end(); it++) {
         spdlog::debug("{} remaining ...",
-                std::distance(
-                        std::begin(permutedPermuteeIndicesCollection_),
-                        std::end(permutedPermuteeIndicesCollection_)));
+                      std::distance(
+                              std::begin(permutedPermuteeIndicesCollection_),
+                              std::end(permutedPermuteeIndicesCollection_)));
         auto conservingQ = DistanceCovariance::conservingQ(
                 *it, permutee_,
                 referenceIndices_, reference_,
