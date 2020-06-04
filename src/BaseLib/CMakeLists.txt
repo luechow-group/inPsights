@@ -90,6 +90,7 @@ set(SOURCE_FILES
         source/SpinPairClassification.cpp
         source/CameraSettings.cpp
         source/ErrorHandling.cpp
+        source/Metrics.cpp
         )
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES})
