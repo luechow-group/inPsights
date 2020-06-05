@@ -120,6 +120,15 @@ std::list<long> MolecularGeometry::nonCoreElectronsIndices(double threshold) con
     return diff;
 }
 
+bool MolecularGeometry::operator==(const MolecularGeometry &other) const {
+    return (atoms() == other.atoms())
+           && (electrons() == other.electrons());
+}
+
+bool MolecularGeometry::operator!=(const MolecularGeometry &other) const {
+    return !(*this == other);
+}
+
 namespace YAML {
     Node convert<MolecularGeometry>::encode(const MolecularGeometry &rhs) {
         Node node;

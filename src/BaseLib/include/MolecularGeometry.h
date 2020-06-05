@@ -49,6 +49,9 @@ public:
 
     std::list<long> nonCoreElectronsIndices(double threshold = 0.01) const;
 
+    bool operator==(const MolecularGeometry &other) const;
+
+    bool operator!=(const MolecularGeometry &other) const;
 
     friend std::ostream& operator<<(std::ostream &os, const MolecularGeometry &mol) {
         os << mol.atoms() << std::endl;
