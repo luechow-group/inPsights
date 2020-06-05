@@ -48,6 +48,19 @@ const ElectronsVector& MolecularGeometry::electrons() const { return electrons_;
 
 ElectronsVector & MolecularGeometry::electrons() { return electrons_; }
 
+PositionsVector MolecularGeometry::positions() const {
+    assert(atoms().positionsVector().entityLength() == electrons().positionsVector().entityLength());
+
+    auto entityLength = atoms().positionsVector().entityLength();
+
+    Eigen::VectorXd positions(entityLength * numberOfEntities());
+
+    positions.head(atoms().numberOfEntities() * entityLength) = atoms().positionsVector().asEigenVector();
+    positions.tail(electrons().numberOfEntities() * entityLength) = electrons().positionsVector().asEigenVector();
+
+    return PositionsVector(positions);
+}
+
 long MolecularGeometry::numberOfEntities() const {
     return atoms_.numberOfEntities() + electrons_.numberOfEntities();
 }

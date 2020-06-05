@@ -32,6 +32,8 @@ public:
     const ElectronsVector& electrons() const;
     ElectronsVector & electrons();
 
+    PositionsVector positions() const;
+
     Particle<int> operator[](long i) const;
 
     std::pair<bool,long> findIndexByEnumeratedType(const EnumeratedType<int> &enumeratedType) const;
