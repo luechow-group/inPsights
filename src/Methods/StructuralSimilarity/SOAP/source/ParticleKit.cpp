@@ -184,6 +184,43 @@ namespace SOAP {
             return fromKitPermutation(atomsVector).inverse();
         }
 
+        Eigen::PermutationMatrix<Eigen::Dynamic> fromKitPermutation(const MolecularGeometry &molecule) {
+            assert(SOAP::ParticleKit::isSameSetQ(molecule));
+            Eigen::VectorXi indices(molecule.numberOfEntities());
+
+            auto nuclearIndices = fromKitPermutation(molecule.atoms()).indices();
+            auto M = nuclearIndices.size();
+
+            auto electronicIndices = fromKitPermutation(molecule.electrons()).indices();
+            auto N = electronicIndices.size();
+
+            indices.head(M) = nuclearIndices;
+            indices.tail(N) = electronicIndices.array() + M;
+
+            return Eigen::PermutationMatrix<Eigen::Dynamic>(indices);
+        }
+
+        Eigen::PermutationMatrix<Eigen::Dynamic> toKitPermutation(const MolecularGeometry &molecule) {
+            return fromKitPermutation(molecule).inverse();
+        }
+
+
+        MolecularPermutation splitPermutation(
+                const Eigen::PermutationMatrix<Eigen::Dynamic> &allParticlePermutation) {
+
+            const auto M = numberOfAtoms();
+            const auto N = numberOfElectrons();
+
+            assert(allParticlePermutation.indices().size() == numberOfParticles());
+
+            Eigen::VectorXi permutedNuclearIndices(M), permutedElectronicIndices(N);
+            permutedNuclearIndices = allParticlePermutation.indices().head(M);
+            permutedElectronicIndices = allParticlePermutation.indices().tail(N).array() - M;
+
+            return {Eigen::PermutationMatrix<Eigen::Dynamic>(permutedNuclearIndices),
+                    Eigen::PermutationMatrix<Eigen::Dynamic>(permutedElectronicIndices)};
+        }
+
         bool isSubsetQ(const AtomsVector &atomsVector) {
             auto countedTypes = atomsVector.typesVector().countTypes();
             for (auto typeCount: countedTypes) {
