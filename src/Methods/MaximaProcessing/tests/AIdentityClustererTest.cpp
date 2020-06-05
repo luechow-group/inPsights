@@ -35,24 +35,25 @@ public:
     std::pair<Group, std::vector<Sample>> prepareRandomTripletMaxima(std::default_random_engine &rng) {
         Group tripletMaxima;
         std::vector<Sample> tripletSamples;
+        AtomsVector atoms;
 
         // Multiplicity = 3: Spin flip is not possible.
         tripletMaxima = {
-                Group({1.00, ElectronsVector({{Spin::alpha, {0, 0, 1.00}},
+                Group({atoms, 1.00, ElectronsVector({{Spin::alpha, {0, 0, 1.00}},
                                               {Spin::alpha, {0, 0, 0}}}), 0}),
-                Group({1.01, ElectronsVector({{Spin::alpha, {0, 0, 0}},
+                Group({atoms, 1.01, ElectronsVector({{Spin::alpha, {0, 0, 0}},
                                               {Spin::alpha, {0, 0, 1.01}}}), 1}),
-                Group({1.02, ElectronsVector({{Spin::alpha, {0, 0, 1.02}},
+                Group({atoms, 1.02, ElectronsVector({{Spin::alpha, {0, 0, 1.02}},
                                               {Spin::alpha, {0, 0, 0}}}), 2}),
-                Group({1.03, ElectronsVector({{Spin::alpha, {0, 0, 0}},
+                Group({atoms, 1.03, ElectronsVector({{Spin::alpha, {0, 0, 0}},
                                               {Spin::alpha, {0, 0, 1.03}}}), 3}),
-                Group({1.10, ElectronsVector({{Spin::alpha, {0, 0, 1.10}},
+                Group({atoms, 1.10, ElectronsVector({{Spin::alpha, {0, 0, 1.10}},
                                               {Spin::alpha, {0, 0, 0}}}), 4}),
-                Group({1.11, ElectronsVector({{Spin::alpha, {0, 0, 1.11}},
+                Group({atoms, 1.11, ElectronsVector({{Spin::alpha, {0, 0, 1.11}},
                                               {Spin::alpha, {0, 0, 0}}}), 5}),
-                Group({1.12, ElectronsVector({{Spin::alpha, {0, 0, 1.12}},
+                Group({atoms, 1.12, ElectronsVector({{Spin::alpha, {0, 0, 1.12}},
                                               {Spin::alpha, {0, 0, 0}}}), 6}),
-                Group({1.13, ElectronsVector({{Spin::alpha, {0, 0, 1.13}},
+                Group({atoms, 1.13, ElectronsVector({{Spin::alpha, {0, 0, 1.13}},
                                               {Spin::alpha, {0, 0, 0}}}), 7}),
         };
         std::shuffle(std::begin(tripletMaxima), std::end(tripletMaxima), rng);
@@ -69,24 +70,25 @@ public:
     std::pair<Group, std::vector<Sample>> prepareRandomSingletMaxima(std::default_random_engine &rng) {
         Group singletMaxima;
         std::vector<Sample> singletSamples;
+        AtomsVector atoms;
 
         // Multiplicity = 1: Spin flip is possible.
         singletMaxima = {
-                Group({1.00, ElectronsVector({{Spin::alpha, {0, 0, 1.00}},
+                Group({atoms, 1.00, ElectronsVector({{Spin::alpha, {0, 0, 1.00}},
                                               {Spin::beta,  {0, 0, 0}}}), 0}),
-                Group({1.01, ElectronsVector({{Spin::alpha, {0, 0, 0}},
+                Group({atoms, 1.01, ElectronsVector({{Spin::alpha, {0, 0, 0}},
                                               {Spin::beta,  {0, 0, 1.01}}}), 1}),
-                Group({1.02, ElectronsVector({{Spin::alpha, {0, 0, 1.02}},
+                Group({atoms, 1.02, ElectronsVector({{Spin::alpha, {0, 0, 1.02}},
                                               {Spin::beta,  {0, 0, 0}}}), 2}),
-                Group({1.03, ElectronsVector({{Spin::alpha, {0, 0, 0}},
+                Group({atoms, 1.03, ElectronsVector({{Spin::alpha, {0, 0, 0}},
                                               {Spin::beta,  {0, 0, 1.03}}}), 3}),
-                Group({1.10, ElectronsVector({{Spin::alpha, {0, 0, 1.10}},
+                Group({atoms, 1.10, ElectronsVector({{Spin::alpha, {0, 0, 1.10}},
                                               {Spin::beta,  {0, 0, 0}}}), 4}),
-                Group({1.11, ElectronsVector({{Spin::alpha, {0, 0, 1.11}},
+                Group({atoms, 1.11, ElectronsVector({{Spin::alpha, {0, 0, 1.11}},
                                               {Spin::beta,  {0, 0, 0}}}), 5}),
-                Group({1.12, ElectronsVector({{Spin::alpha, {0, 0, 1.12}},
+                Group({atoms, 1.12, ElectronsVector({{Spin::alpha, {0, 0, 1.12}},
                                               {Spin::beta,  {0, 0, 0}}}), 6}),
-                Group({1.13, ElectronsVector({{Spin::alpha, {0, 0, 1.13}},
+                Group({atoms, 1.13, ElectronsVector({{Spin::alpha, {0, 0, 1.13}},
                                               {Spin::beta,  {0, 0, 0}}}), 7}),
         };
         std::shuffle(std::begin(singletMaxima), std::end(singletMaxima), rng);

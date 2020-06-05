@@ -56,7 +56,9 @@ void IdentityClusterer::cluster(Group& group) {
 
     while (beginIt != group.end()) {
         auto total = group.size();//std::distance(group.begin(), group.end());
-        auto endIt = std::upper_bound(beginIt, group.end(), Group(Reference(beginIt->representative()->value() + valueIncrement)));
+        auto endIt = std::upper_bound(beginIt, group.end(), Group(Reference({},
+                                                                            beginIt->representative()->value() +
+                                                                            valueIncrement, ElectronsVector(), 0)));
 
         spdlog::info("Global identiy search in interval {} to {}, total: {}",
                       total - std::distance(beginIt, group.end()),
@@ -103,13 +105,15 @@ void IdentityClusterer::subLoop(Group& group,
             else
                 addReference(group, beginIt, it, permFlipped);
             endIt = std::upper_bound(beginIt, group.end(),
-                    Group(Reference(beginIt->representative()->value() + valueIncrement)));
+                    Group(Reference({}, beginIt->representative()->value() + valueIncrement,
+                                    ElectronsVector(), 0)));
         } else it++;
     } else {  // don't consider spin flip
         if (norm <= distThresh) {
             addReference(group, beginIt, it, perm);
             endIt = std::upper_bound(beginIt, group.end(),
-                    Group(Reference(beginIt->representative()->value() + valueIncrement)));
+                    Group(Reference({}, beginIt->representative()->value() + valueIncrement,
+                                    ElectronsVector(), 0)));
         } else it++;
     }
 }

@@ -38,7 +38,7 @@ public:
         const auto &normal = TestMolecules::fourElectrons::normal.electrons();
 
         // emplace first element (the first elements determines the ordering of the cluster)
-        references.emplace_back(Reference(0,normal));
+        references.emplace_back(Reference({}, 0, normal, 0));
 
         // start with second element
         bool anyWrong = false;
@@ -51,7 +51,7 @@ public:
 
                 // random permutation
                 evCopy.permute(evCopy.randomPermutation(rng));
-                references.emplace_back(Reference(std::pow(std::sin(angle),2),evCopy));
+                references.emplace_back(Reference({}, std::pow(std::sin(angle), 2), evCopy, 0));
 
                 Sample s(evCopy, Eigen::VectorXd::Random(normal.numberOfEntities()));
                 samples.emplace_back(std::move(s));
@@ -128,14 +128,14 @@ TEST_F(ADensityBasedClustererTest, RotationallySymmetricAndPointLikeCluster){
         std::vector<Sample> samples;
         makeRingLikeCluster(references, samples, n, rng);
 
-        references.emplace_back(Reference(10, ionic));
+        references.emplace_back(Reference({}, 10, ionic, 0));
         for (unsigned i = 1; i < m; ++i) {
             auto evCopy = ionic;
             evCopy.positionsVector().shake(DensityBasedClusterer::settings.radius.get(), rng);
 
             // random permutation
             evCopy.permute(evCopy.randomPermutation(rng));
-            references.emplace_back(Reference(10, evCopy));
+            references.emplace_back(Reference({}, 10, evCopy, 0));
 
             Sample s(evCopy, Eigen::VectorXd::Random(ionic.numberOfEntities()));
             samples.emplace_back(std::move(s));

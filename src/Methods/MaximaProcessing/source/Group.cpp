@@ -101,6 +101,15 @@ void Group::permuteAll(const Eigen::PermutationMatrix<Eigen::Dynamic> &perm, std
     }
 }
 
+void Group::permuteAll(const MolecularGeometry::Permutation &molecularPerm, std::vector<Sample> &samples) {
+    if(isLeaf()) {
+        representative()->permute(molecularPerm, samples);
+    } else {
+        for (auto &i : *this)
+            i.permuteAll(molecularPerm, samples);
+    }
+}
+
 Group::AveragedPositionsVector Group::averagedMaximumPositionsVector() const {
     if (isLeaf())
         return {representative()->maximum().positionsVector(), 1};

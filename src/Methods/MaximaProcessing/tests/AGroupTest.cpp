@@ -26,11 +26,12 @@ using namespace testing;
 class AGroupTest : public ::testing::Test {
 public:
     Group g1,g2,g3, h1,h2,h3;
+    AtomsVector atoms;
 
     void SetUp() override {
-        g1 = Group({1.1,TestMolecules::H2::ElectronsInCores::normal.electrons(), 0});
-        g2 = Group({1.2,TestMolecules::H2::ElectronsInCores::translated.electrons(),1});
-        g3 = Group({1.0,TestMolecules::H2::ElectronsInCores::flippedSpins.electrons(), 2});
+        g1 = Group({atoms, 1.1,TestMolecules::H2::ElectronsInCores::normal.electrons(), 0});
+        g2 = Group({atoms, 1.2,TestMolecules::H2::ElectronsInCores::translated.electrons(),1});
+        g3 = Group({atoms, 1.0,TestMolecules::H2::ElectronsInCores::flippedSpins.electrons(), 2});
         h1 = Group({g1});
         h2 = Group({g2});
         h3 = Group({g3});

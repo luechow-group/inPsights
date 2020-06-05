@@ -25,10 +25,32 @@
 #include <VoxelCube.h>
 #include <SOAPClusterer.h>
 
+namespace MotifEnergyCalculator {
+    struct Result{
+        VectorStatistics intraEnergies;
+        TriangularMatrixStatistics interEnergies;
+    };
+
+    Result partition(const Group &group, const std::vector<Sample> &samples, const Motifs& motifs);
+
+    void partitionLowerLevels(const Group &group,
+                              const std::vector<Sample> &samples,
+                              const Motifs& motifs,
+                              VectorStatistics& intraMotifEnergyStats,
+                              TriangularMatrixStatistics& interMotifEnergyStats);
+
+    void partitionLowestLevel(const Group &group,
+                              const std::vector<Sample> &samples,
+                              const Motifs& motifs,
+                              VectorStatistics& intraMotifEnergyStats,
+                              TriangularMatrixStatistics& interMotifEnergyStats);
+
+};
+
 class MaximaProcessor {
 public:
 
-    MaximaProcessor(YAML::Emitter& yamlDocument, const std::vector<Sample> &samples, const AtomsVector& atoms);
+    MaximaProcessor(YAML::Emitter &yamlDocument, const std::vector<Sample> &samples, const AtomsVector &atoms);
 
     size_t addReference(const Reference &reference);
 
@@ -36,23 +58,20 @@ public:
 
     std::vector<ElectronsVector> getAllRepresentativeMaxima(const Group &group);
 
-    void doMotifBasedEnergyPartitioning(const Group &group);
-
     void calculateStatistics(const Group &maxima,
-            const std::vector<std::vector<std::vector<size_t>>> & nucleiMergeLists);
+                             const std::vector<std::vector<std::vector<size_t>>> &nucleiMergeLists);
 
     YAML::Node getYamlNode();
 
     std::string getYamlDocumentString();
 
 private:
-    YAML::Emitter& yamlDocument_;
+    YAML::Emitter &yamlDocument_;
     const std::vector<Sample> &samples_;
     AtomsVector atoms_;
-    Motifs motifs_;
     SingleValueStatistics valueStats_, EtotalStats_;
-    VectorStatistics TeStats_, EeStats_, EnStats_, intraMotifEnergyStats_;
-    TriangularMatrixStatistics SeeStats_, VeeStats_, VnnStats_, interMotifEnergyStats_, ReeStats_;
+    VectorStatistics TeStats_, EeStats_, EnStats_;
+    TriangularMatrixStatistics SeeStats_, VeeStats_, VnnStats_, ReeStats_;
     MatrixStatistics VenStats_, RenStats_;
 
     Eigen::MatrixXd Vnn_;

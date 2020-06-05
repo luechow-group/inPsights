@@ -57,8 +57,10 @@ void DistanceClusterer::cluster(Group& group) {
     //Presort
     for (auto subgroup = group.begin(); subgroup != group.end(); ++subgroup) {
 
-        Group lowerRef(Reference(subgroup->representative()->value() - valueIncrement));
-        Group upperRef(Reference(subgroup->representative()->value() + valueIncrement));
+        Group lowerRef(Reference({}, subgroup->representative()->value() - valueIncrement,
+                ElectronsVector(), 0));
+        Group upperRef(Reference({}, subgroup->representative()->value() + valueIncrement,
+                ElectronsVector(), 0));
 
         auto supergroupLowerBoundIt = std::lower_bound(
                 supergroup.begin(),
@@ -93,8 +95,10 @@ void DistanceClusterer::cluster(Group& group) {
     for (auto subgroup = group.begin(); subgroup != group.end(); ++subgroup) {
 
         // Define value range of the supergroup
-        Group lowerRef(Reference(subgroup->representative()->value() - valueIncrement));
-        Group upperRef(Reference(subgroup->representative()->value() + valueIncrement));
+        Group lowerRef(Reference({}, subgroup->representative()->value() - valueIncrement,
+                ElectronsVector(), 0));
+        Group upperRef(Reference({}, subgroup->representative()->value() + valueIncrement,
+                ElectronsVector(), 0));
 
         auto supergroupLowerBoundIt = std::lower_bound(
                 supergroup.begin(),

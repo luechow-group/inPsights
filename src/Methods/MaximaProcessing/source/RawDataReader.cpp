@@ -74,14 +74,17 @@ void RawDataReader::readSamplesAndMaxima(std::ifstream &input, int fileLength, s
         // create reference
         auto maximum =  serializedData.segment(4*ne, 3*ne);
         auto value = serializedData[7*ne];
-        auto r = Reference(value, ElectronsVector(PositionsVector(maximum), spins_), id_);
+        auto r = Reference(atoms_, value, ElectronsVector(PositionsVector(maximum), spins_), id_);
 
 
-        if(MaximaProcessing::settings.deleteCoreElectrons())
-            removeNonValenceElectrons(r, s);
-
-        samples_.emplace_back(std::move(s));
-        maxima_.emplace_back(Group(std::move(r)));
+        if(MaximaProcessing::settings.deleteCoreElectrons()) {
+            auto [sValenceOnly, rValenceOnly] = removeNonValenceElectrons(s, r);
+            samples_.emplace_back(std::move(sValenceOnly));
+            maxima_.emplace_back(Group(std::move(rValenceOnly)));
+        } else {
+            samples_.emplace_back(std::move(s));
+            maxima_.emplace_back(std::move(r));
+        }
 
         id_++;
     }
@@ -158,7 +161,8 @@ std::string RawDataReader::zeroPadNumber(int num) {
     return ss.str();
 }
 
-void RawDataReader::removeNonValenceElectrons(Reference& reference, Sample& sample) {
+std::pair<Sample, Reference>
+RawDataReader::removeNonValenceElectrons(const Sample &sample, const Reference &reference) {
 
     auto nonValenceIndices = ParticleSelection::getNonValenceIndices(reference.maximum(), atoms_);
 
@@ -175,6 +179,5 @@ void RawDataReader::removeNonValenceElectrons(Reference& reference, Sample& samp
         }
     }
 
-    reference = Reference(reference.value(), newMaximum, reference.ownId());
-    sample = Sample(newSample, newKineticEnergies);
+    return {Sample (newSample, newKineticEnergies), Reference(atoms_, reference.value(), newMaximum, reference.ownId())};
 }
