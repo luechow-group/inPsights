@@ -69,6 +69,12 @@ namespace SOAP {
 
         bool isSubsetQ(const MolecularGeometry &molecularGeometry);
 
+        bool isSameSetQ(const AtomsVector &atomsVector);
+
+        bool isSameSetQ(const ElectronsVector &electronsVector);
+
+        bool isSameSetQ(const MolecularGeometry &molecularGeometry);
+
         EnumeratedElement getEnumeratedElementByIndex(unsigned idx);
 
         EnumeratedSpin getEnumeratedSpinByIndex(unsigned idx);
