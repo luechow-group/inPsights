@@ -19,6 +19,7 @@
 #include <limits>
 #include <random>
 #include <BestMatchSimilarity.h>
+#include <StructuralSimilarity.h>
 #include <SOAPSettings.h>
 #include <TestMolecules.h>
 #include <Metrics.h>
@@ -29,9 +30,11 @@
 using namespace testing;
 using namespace SOAP;
 
+
 class ABestMatchSimilarityTest : public ::testing::Test {
 public:
     using Pair = std::pair<Eigen::Index,Eigen::Index>;
+    using MolPermList = std::vector<std::pair<std::vector<int>,std::vector<int>>>;
     double distanceTolerance, soapThreshold, shakeSoapThreshold;
 
     void SetUp() override {
@@ -46,12 +49,12 @@ public:
         Radial::settings.sigmaAtom = 2.0;
         Angular::settings.lmax = 2;
         Cutoff::settings.radius = 6.0;
-        Cutoff::settings.width = 4.0;
+        Cutoff::settings.width = 0.0;
         General::settings.pairSimilarities[{int(Spin::alpha),int(Spin::beta)}] = 1.0;
     };
 
     void routine(const MolecularGeometry &A, const MolecularGeometry &B,
-                 const std::vector<Eigen::VectorXi> &expectedPermutationIndices,
+                 const MolPermList &expectedPermutationIndices,
                  double distTolerance, double soapThresh, bool greaterThan = false
                  ) {
 
@@ -72,8 +75,10 @@ public:
 
         spdlog::debug("Expected:");
         for (auto[i, expected] : enumerate(expectedPermutationIndices))
-            spdlog::debug("{}: metric {} {}, permutation = {} (lab system)", i, greaterThan ? ">" : "=", soapThresh,
-                          ToString::vectorXiToString(expected));
+            spdlog::debug("{}: metric {} {}, nuclear = {}, electronic = {} (lab system)",
+                    i, greaterThan ? ">" : "=", soapThresh,
+                    ToString::stdvectorIntToString(expected.first),
+                    ToString::stdvectorIntToString(expected.second));
 
 
         unsigned removedCounter = 0;
@@ -87,8 +92,11 @@ public:
 
         spdlog::debug("Got:");
         for (auto[i, result] : enumerate(results)) {
-            spdlog::debug("{}: metric = {:01.16f}, permutation = {} (lab system)", i, result.metric,
-                          ToString::vectorXiToString(result.permutation.indices()));
+            auto molecularPermResult = A.splitAllParticlePermutation(result.permutation);
+
+            spdlog::debug("{}: metric = {:01.16f}, nuclear = {}, electronic = {} (lab system)", i, result.metric,
+                          ToString::vectorXiToString(molecularPermResult.nuclearPermutation.indices()),
+                          ToString::vectorXiToString(molecularPermResult.electronicPermutation.indices()));
         }
 
         size_t i = 0;
@@ -104,7 +112,14 @@ public:
                 if (!greaterThan) ASSERT_NEAR(results[i].metric, soapThresh, eps);
                 else ASSERT_GT(results[i].metric, soapThresh);
 
-                ASSERT_EQ(results[i].permutation.indices(), expectedPermutationIndices[i]);
+                auto molPerm = A.splitAllParticlePermutation(results[i].permutation);
+                auto nucIndices = molPerm.nuclearPermutation.indices();
+                std::vector<int> nucIndicesAsVector(nucIndices.data(), nucIndices.data()+ nucIndices.size());
+                ASSERT_EQ(nucIndicesAsVector, expectedPermutationIndices[i].first);
+
+                auto elecIndices = molPerm.electronicPermutation.indices();
+                std::vector<int> elecIndicesAsVector(elecIndices.data(), elecIndices.data()+ elecIndices.size());
+                ASSERT_EQ(elecIndicesAsVector,expectedPermutationIndices[i].second);
             } else {
                 spdlog::debug("Found unexpected result {}", i);
             };
@@ -125,23 +140,30 @@ TEST_F(ABestMatchSimilarityTest, PrermuteEnvironmentsToLabSystem) {
     auto specA = MolecularSpectrum(A);
     auto specB = MolecularSpectrum(B);
 
-    auto environmentalSimilarities = BestMatch::SOAPSimilarity::calculateEnvironmentSimilarityMatrix(specA, specB);
+    auto environmentalSimilarities = SOAP::StructuralSimilarity::correlationMatrix(specA, specB);
 
-    auto fromKitA = ParticleKit::fromKitPermutation(A.electrons());
-    auto fromKitB = ParticleKit::fromKitPermutation(B.electrons());
+    auto fromKitA = ParticleKit::fromKitPermutation(A);
+    auto fromKitB = ParticleKit::fromKitPermutation(B);
 
     auto environmentalSimilaritiesInLabSystem = fromKitA*environmentalSimilarities*fromKitB;
 
     auto eps = std::numeric_limits<double>::epsilon()*10;
 
-    ASSERT_NEAR(environmentalSimilaritiesInLabSystem(0,0), 1.0, eps);
-    ASSERT_NEAR(environmentalSimilaritiesInLabSystem(0,1), 1.0, eps);
-    ASSERT_NEAR(environmentalSimilaritiesInLabSystem(1,2), 1.0, eps);
-    ASSERT_NEAR(environmentalSimilaritiesInLabSystem(1,3), 1.0, eps);
+    ASSERT_NEAR(environmentalSimilaritiesInLabSystem(0,2), 1.0, eps);
+    ASSERT_NEAR(environmentalSimilaritiesInLabSystem(1,0), 1.0, eps);
+    ASSERT_NEAR(environmentalSimilaritiesInLabSystem(1,1), 1.0, eps);
     ASSERT_NEAR(environmentalSimilaritiesInLabSystem(2,0), 1.0, eps);
     ASSERT_NEAR(environmentalSimilaritiesInLabSystem(2,1), 1.0, eps);
-    ASSERT_NEAR(environmentalSimilaritiesInLabSystem(3,2), 1.0, eps);
     ASSERT_NEAR(environmentalSimilaritiesInLabSystem(3,3), 1.0, eps);
+
+    ASSERT_NEAR(environmentalSimilaritiesInLabSystem(4,4), 1.0, eps);
+    ASSERT_NEAR(environmentalSimilaritiesInLabSystem(4,5), 1.0, eps);
+    ASSERT_NEAR(environmentalSimilaritiesInLabSystem(5,6), 1.0, eps);
+    ASSERT_NEAR(environmentalSimilaritiesInLabSystem(5,7), 1.0, eps);
+    ASSERT_NEAR(environmentalSimilaritiesInLabSystem(6,4), 1.0, eps);
+    ASSERT_NEAR(environmentalSimilaritiesInLabSystem(6,5), 1.0, eps);
+    ASSERT_NEAR(environmentalSimilaritiesInLabSystem(7,6), 1.0, eps);
+    ASSERT_NEAR(environmentalSimilaritiesInLabSystem(7,7), 1.0, eps);
 }
 
 TEST_F(ABestMatchSimilarityTest, GrowingPerm) {
@@ -379,162 +401,170 @@ TEST_F(ABestMatchSimilarityTest, H4linear_alchemical) {
     General::settings.pairSimilarities[{int(Spin::alpha), int(Spin::beta)}] = 1.0;
     General::settings.mode = General::Mode::alchemical;
 
-    std::vector<Eigen::VectorXi> expectedPermIndices(2, Eigen::VectorXi(A.electrons().numberOfEntities()));
-    expectedPermIndices[0] << 1,2,3,0;
-    expectedPermIndices[1] << 3,2,1,0;
-    routine(A, B, expectedPermIndices, distanceTolerance, soapThreshold);
+    MolPermList expectedPerms{
+            {{3,2,1,0},{1,2,3,0}},
+            {{3,2,1,0},{3,2,1,0}}
+    };
+    routine(A, B, expectedPerms, distanceTolerance, soapThreshold);
 }
 
 TEST_F(ABestMatchSimilarityTest, H4linear_ionic_reflected) {
     auto A = TestMolecules::H4::linear::ionicA;
     auto B = TestMolecules::H4::linear::ionicAreflected;
 
-    std::vector<Eigen::VectorXi> expectedPermIndices(2, Eigen::VectorXi(A.electrons().numberOfEntities()));
-    expectedPermIndices[0] << 0,1,2,3;
-    expectedPermIndices[1] << 2,1,0,3;
+    MolPermList expectedPerms{
+            {{3,2,1,0},{0,1,2,3}},
+            {{3,2,1,0},{2,1,0,3}}
+    };
 
     General::settings.pairSimilarities[{int(Spin::alpha), int(Spin::beta)}] = 1.0;
     General::settings.mode = General::Mode::alchemical;
-    routine(A, B, expectedPermIndices, distanceTolerance, soapThreshold);
+    routine(A, B, expectedPerms, distanceTolerance, soapThreshold);
 
     // second perm is not conserving in chemical mode
-    expectedPermIndices = {expectedPermIndices[0]};
+    expectedPerms = {expectedPerms[0]};
     General::settings.mode = General::Mode::chemical;
-    routine(A, B, expectedPermIndices, distanceTolerance, soapThreshold);
+    routine(A, B, expectedPerms, distanceTolerance, soapThreshold);
 }
 
 TEST_F(ABestMatchSimilarityTest, H4linear_ionic_reflected_alpha_permuted) {
     auto A = TestMolecules::H4::linear::ionicA;
     auto B = TestMolecules::H4::linear::ionicAreflectedAlphaPermuted;
 
-    std::vector<Eigen::VectorXi> expectedPermIndices(2, Eigen::VectorXi(A.electrons().numberOfEntities()));
-    expectedPermIndices[0] << 1,0,2,3;
-    expectedPermIndices[1] << 2,0,1,3;
+    MolPermList expectedPerms{
+            {{3,2,1,0},{1,0,2,3}},
+            {{3,2,1,0},{2,0,1,3}}
+    };
 
     General::settings.pairSimilarities[{int(Spin::alpha), int(Spin::beta)}] = 1.0;
     General::settings.mode = General::Mode::alchemical;
-    routine(A, B, expectedPermIndices, distanceTolerance, soapThreshold);
+    routine(A, B, expectedPerms, distanceTolerance, soapThreshold);
 
     // second perm is not conserving in chemical mode
-    expectedPermIndices = {expectedPermIndices[0]};
+    expectedPerms = {expectedPerms[0]};
     General::settings.mode = General::Mode::chemical;
-    routine(A, B, expectedPermIndices, distanceTolerance, soapThreshold);
+    routine(A, B, expectedPerms, distanceTolerance, soapThreshold);
 }
 
 TEST_F(ABestMatchSimilarityTest, H4linear_ionic_reflected_beta_permuted) {
     auto A = TestMolecules::H4::linear::ionicA;
     auto B = TestMolecules::H4::linear::ionicAreflectedBetaPermuted;
 
-    std::vector<Eigen::VectorXi> expectedPermIndices(2, Eigen::VectorXi(A.electrons().numberOfEntities()));
-    expectedPermIndices[0] << 0,1,3,2;
-    expectedPermIndices[1] << 3,1,0,2;
+    MolPermList expectedPerms{
+            {{3,2,1,0},{0,1,3,2}},
+            {{3,2,1,0},{3,1,0,2}}
+    };
 
     General::settings.pairSimilarities[{int(Spin::alpha), int(Spin::beta)}] = 1.0;
     General::settings.mode = General::Mode::alchemical;
-    routine(A, B, expectedPermIndices, distanceTolerance, soapThreshold);
+    routine(A, B, expectedPerms, distanceTolerance, soapThreshold);
 
     // second perm is not conserving in chemical mode
-    expectedPermIndices = {expectedPermIndices[0]};
+    expectedPerms = {expectedPerms[0]};
     General::settings.mode = General::Mode::chemical;
-    routine(A, B, expectedPermIndices, distanceTolerance, soapThreshold);
+    routine(A, B, expectedPerms, distanceTolerance, soapThreshold);
 }
 
 TEST_F(ABestMatchSimilarityTest, H4linear_ionic_reflected_reordered_numbering) {
     auto A = TestMolecules::H4::linear::ionicA;
     auto B = TestMolecules::H4::linear::ionicAreflectedReorderedNumbering;
 
-    std::vector<Eigen::VectorXi> expectedPermIndices(2, Eigen::VectorXi(A.electrons().numberOfEntities()));
-    expectedPermIndices[0] << 1,2,3,0;
-    expectedPermIndices[1] << 3,2,1,0;
+    MolPermList expectedPerms{
+            {{3,2,1,0},{1,2,3,0}},
+            {{3,2,1,0},{3,2,1,0}}
+    };
 
     General::settings.pairSimilarities[{int(Spin::alpha), int(Spin::beta)}] = 1.0;
     General::settings.mode = General::Mode::alchemical;
-    routine(A, B, expectedPermIndices, distanceTolerance, soapThreshold);
+    routine(A, B, expectedPerms, distanceTolerance, soapThreshold);
 
     // both perms are not conserving in chemical mode
-    expectedPermIndices = {};
+    expectedPerms = {};
     General::settings.mode = General::Mode::chemical;
-    routine(A, B, expectedPermIndices, distanceTolerance, soapThreshold);
+    routine(A, B, expectedPerms, distanceTolerance, soapThreshold);
 }
 
 TEST_F(ABestMatchSimilarityTest, H4linear_not_in_particle_kit) {
     auto B = TestMolecules::H4::linear::ionicA;
     auto A = TestMolecules::H4::linear::ionicNotinParticleKitSystem;
 
-    std::vector<Eigen::VectorXi> expectedPermIndices(2, Eigen::VectorXi(A.electrons().numberOfEntities()));
-    expectedPermIndices[0] << 0,1,2,3;
-    expectedPermIndices[1] << 2,1,0,3;
+    MolPermList expectedPerms{
+            {{0,1,2,3},{0,1,2,3}},
+            {{0,1,2,3},{2,1,0,3}}
+    };
 
     General::settings.pairSimilarities[{int(Spin::alpha), int(Spin::beta)}] = 1.0;
     General::settings.mode = General::Mode::alchemical;
-    routine(A, B, expectedPermIndices, distanceTolerance, soapThreshold);
+    routine(A, B, expectedPerms, distanceTolerance, soapThreshold);
 
     // second perm is not conserving in chemical mode
-    expectedPermIndices = {expectedPermIndices[1]};
+    expectedPerms = {expectedPerms[1]};
     General::settings.mode = General::Mode::chemical;
-    routine(A, B, expectedPermIndices, distanceTolerance, soapThreshold);
+    routine(A, B, expectedPerms, distanceTolerance, soapThreshold);
 }
 
 TEST_F(ABestMatchSimilarityTest, H4linear_real_maxima1) {
     auto A = TestMolecules::H4::linear::ionicRealMax1Var1;
     auto B = TestMolecules::H4::linear::ionicRealMax1Var2;
 
-    std::vector<Eigen::VectorXi> expectedPermIndices(2, Eigen::VectorXi(A.electrons().numberOfEntities()));
-    expectedPermIndices[0] << 0,2,1,3;
-    expectedPermIndices[1] << 3,2,1,0;
+    MolPermList expectedPerms{
+            {{3,2,1,0},{0,2,1,3}},
+            {{3,2,1,0},{3,2,1,0}}
+    };
 
     General::settings.pairSimilarities[{int(Spin::alpha), int(Spin::beta)}] = 1.0;
     General::settings.mode = General::Mode::alchemical;
-    routine(A, B, expectedPermIndices, distanceTolerance, soapThreshold);
+    routine(A, B, expectedPerms, distanceTolerance, soapThreshold);
 
     General::settings.mode = General::Mode::chemical;
-    auto envSimMat = BestMatch::SOAPSimilarity::calculateEnvironmentSimilarityMatrix(MolecularSpectrum(A),
-                                                                                     MolecularSpectrum(B));
+    auto envSimMat = SOAP::StructuralSimilarity::correlationMatrix(MolecularSpectrum(A), MolecularSpectrum(B));
     ASSERT_GT(envSimMat.minCoeff(), 0.0);
     ASSERT_LT(envSimMat.maxCoeff(), 1.0); // no equivalent environments exist in chemical mode.
-    expectedPermIndices = {};
-    routine(A, B, expectedPermIndices, distanceTolerance, soapThreshold);
+    expectedPerms = {};
+    routine(A, B, expectedPerms, distanceTolerance, soapThreshold);
 }
 
 TEST_F(ABestMatchSimilarityTest, H4linear_real_maxima2) {
     auto A = TestMolecules::H4::linear::ionicRealMax2Var1;
     auto B = TestMolecules::H4::linear::ionicRealMax2Var2;
 
-    std::vector<Eigen::VectorXi> expectedPermIndices(4, Eigen::VectorXi(A.electrons().numberOfEntities()));
-    expectedPermIndices[0] << 1,0,3,2;
-    expectedPermIndices[1] << 1,3,0,2;
-    expectedPermIndices[2] << 2,0,3,1;
-    expectedPermIndices[3] << 2,3,0,1;
+    MolPermList expectedPerms{
+            {{3,2,1,0},{1,0,3,2}},
+            {{3,2,1,0},{1,3,0,2}},
+            {{3,2,1,0},{2,0,3,1}},
+            {{3,2,1,0},{2,3,0,1}}
+    };
 
     General::settings.pairSimilarities[{int(Spin::alpha), int(Spin::beta)}] = 1.0;
     General::settings.mode = General::Mode::alchemical;
-    routine(A, B, expectedPermIndices, distanceTolerance, soapThreshold);
+    routine(A, B, expectedPerms, distanceTolerance, soapThreshold);
 
-    expectedPermIndices = {expectedPermIndices[0]};
+    expectedPerms = {expectedPerms[0]};
     General::settings.mode = General::Mode::chemical;
-    routine(A, B, expectedPermIndices, distanceTolerance, soapThreshold);
+    routine(A, B, expectedPerms, distanceTolerance, soapThreshold);
 }
 
 TEST_F(ABestMatchSimilarityTest, H4ring) {
     auto B = TestMolecules::H4::ring::fourAlpha;
     auto A = B;
 
-    std::vector<Eigen::VectorXi> permsIndices(8,Eigen::VectorXi(B.electrons().numberOfEntities()));
-    permsIndices[0] << 0,1,2,3;
-    permsIndices[1] << 0,1,3,2;
-    permsIndices[2] << 1,0,2,3;
-    permsIndices[3] << 1,0,3,2;
-    permsIndices[4] << 2,3,0,1;
-    permsIndices[5] << 2,3,1,0;
-    permsIndices[6] << 3,2,0,1;
-    permsIndices[7] << 3,2,1,0;
+    MolPermList expectedPerms{
+            {{0,1,2,3},{0,1,2,3}},
+            {{0,1,3,2},{0,1,3,2}},
+            {{1,0,2,3},{1,0,2,3}},
+            {{1,0,3,2},{1,0,3,2}},
+            {{2,3,0,1},{2,3,0,1}},
+            {{2,3,1,0},{2,3,1,0}},
+            {{3,2,0,1},{3,2,0,1}},
+            {{3,2,1,0},{3,2,1,0}}
+    };
 
     General::settings.pairSimilarities[{int(Spin::alpha), int(Spin::beta)}] = 1.0;
     General::settings.mode = General::Mode::alchemical;
-    routine(A,B,permsIndices,distanceTolerance, soapThreshold);
+    routine(A,B,expectedPerms,distanceTolerance, soapThreshold);
 
     General::settings.mode = General::Mode::chemical;
-    routine(A,B,permsIndices,distanceTolerance, soapThreshold);
+    routine(A,B,expectedPerms,distanceTolerance, soapThreshold);
 }
 
 TEST_F(ABestMatchSimilarityTest, H4ring_Shaked) {
@@ -553,22 +583,23 @@ TEST_F(ABestMatchSimilarityTest, H4ring_Shaked) {
                 B.electrons().positionsVector()) == 0.0)
             A.electrons().positionsVector().shake(distanceTolerance / 2.0, rng);
 
-        std::vector<Eigen::VectorXi> permsIndices(8, Eigen::VectorXi(B.electrons().numberOfEntities()));
-        permsIndices[0] << 0,1,2,3;
-        permsIndices[1] << 0,1,3,2;
-        permsIndices[2] << 1,0,2,3;
-        permsIndices[3] << 1,0,3,2;
-        permsIndices[4] << 2,3,0,1;
-        permsIndices[5] << 2,3,1,0;
-        permsIndices[6] << 3,2,0,1;
-        permsIndices[7] << 3,2,1,0;
+        MolPermList expectedPerms{
+                {{0,1,2,3},{0,1,2,3}},
+                {{0,1,3,2},{0,1,3,2}},
+                {{1,0,2,3},{1,0,2,3}},
+                {{1,0,3,2},{1,0,3,2}},
+                {{2,3,0,1},{2,3,0,1}},
+                {{2,3,1,0},{2,3,1,0}},
+                {{3,2,0,1},{3,2,0,1}},
+                {{3,2,1,0},{3,2,1,0}}
+        };
 
         General::settings.pairSimilarities[{int(Spin::alpha), int(Spin::beta)}] = 1.0;
         General::settings.mode = General::Mode::alchemical;
-        routine(A, B, permsIndices, distanceTolerance, shakeSoapThreshold, true);
+        routine(A, B, expectedPerms, distanceTolerance, shakeSoapThreshold, true);
 
         General::settings.mode = General::Mode::chemical;
-        routine(A, B, permsIndices, distanceTolerance, shakeSoapThreshold, true);
+        routine(A, B, expectedPerms, distanceTolerance, shakeSoapThreshold, true);
     }
 }
 
@@ -584,15 +615,16 @@ TEST_F(ABestMatchSimilarityTest, FindDistanceConservingPermutations_Chemical_Bor
                 {Spin::alpha, nuclei.atoms().positionsVector()[3]}
             })};
 
-    std::vector<Eigen::VectorXi> permsIndices(6, Eigen::VectorXi(A.electrons().numberOfEntities()));
-    permsIndices[0] << 0,1,2;
-    permsIndices[1] << 0,2,1;
-    permsIndices[2] << 1,0,2;
-    permsIndices[3] << 1,2,0;
-    permsIndices[4] << 2,0,1;
-    permsIndices[5] << 2,1,0;
+    MolPermList expectedPerms{
+            {{0,1,2,3},{0,1,2}},
+            {{0,1,3,2},{0,2,1}},
+            {{0,2,1,3},{1,0,2}},
+            {{0,2,3,1},{1,2,0}},
+            {{0,3,1,2},{2,0,1}},
+            {{0,3,2,1},{2,1,0}}
+    };
 
-    routine(A,A,permsIndices,distanceTolerance, soapThreshold);
+    routine(A,A,expectedPerms,distanceTolerance, soapThreshold);
 }
 
 TEST_F(ABestMatchSimilarityTest, BH3Covalent_Chemical) {
@@ -612,18 +644,19 @@ TEST_F(ABestMatchSimilarityTest, BH3Covalent_Chemical) {
                 {Spin::beta,inbetween(nuclei.atoms(),{0,3},0.25)}
             })};
 
-    std::vector<Eigen::VectorXi> permsIndices(6, Eigen::VectorXi(A.electrons().numberOfEntities()));
-    permsIndices[0] << 0,1,2,3,4,5;
-    permsIndices[1] << 0,2,1,3,5,4;
-    permsIndices[2] << 1,0,2,4,3,5;
-    permsIndices[3] << 1,2,0,4,5,3;
-    permsIndices[4] << 2,0,1,5,3,4;
-    permsIndices[5] << 2,1,0,5,4,3;
+    MolPermList expectedPerms{
+            {{0,1,2,3},{0,1,2,3,4,5}},
+            {{0,1,3,2},{0,2,1,3,5,4}},
+            {{0,2,1,3},{1,0,2,4,3,5}},
+            {{0,2,3,1},{1,2,0,4,5,3}},
+            {{0,3,1,2},{2,0,1,5,3,4}},
+            {{0,3,2,1},{2,1,0,5,4,3}}
+    };
 
-    routine(A,A,permsIndices,distanceTolerance, soapThreshold);
+    routine(A,A,expectedPerms,distanceTolerance, soapThreshold);
 }
 
-TEST_F(ABestMatchSimilarityTest, BH3IonicSelf_Chemical) {
+TEST_F(ABestMatchSimilarityTest, BH3CovalentPermuted_Chemical) {
     General::settings.mode = General::Mode::chemical;
 
     using namespace TestMolecules;
@@ -640,15 +673,16 @@ TEST_F(ABestMatchSimilarityTest, BH3IonicSelf_Chemical) {
                 {Spin::beta,inbetween(nuclei.atoms(),{0,3},0.25)}
             })};
 
-    std::vector<Eigen::VectorXi> permsIndices(6, Eigen::VectorXi(A.electrons().numberOfEntities()));
-    permsIndices[0] << 0,1,2,3,4,5;
-    permsIndices[1] << 0,4,2,5,1,3;
-    permsIndices[2] << 1,0,3,2,4,5;
-    permsIndices[3] << 1,4,3,5,0,2;
-    permsIndices[4] << 4,0,5,2,1,3;
-    permsIndices[5] << 4,1,5,3,0,2;
+    MolPermList expectedPerms{
+            {{0,1,2,3},{0,1,2,3,4,5}},
+            {{0,1,3,2},{0,4,2,5,1,3}},
+            {{0,2,1,3},{1,0,3,2,4,5}},
+            {{0,2,3,1},{1,4,3,5,0,2}},
+            {{0,3,1,2},{4,0,5,2,1,3}},
+            {{0,3,2,1},{4,1,5,3,0,2}}
+    };
 
-    routine(A,A,permsIndices,distanceTolerance, soapThreshold);
+    routine(A,A,expectedPerms,distanceTolerance, soapThreshold);
 }
 
 TEST_F(ABestMatchSimilarityTest, BH3_ThreeIndependentUnsimilarEnvironments_Chemical) {
@@ -673,10 +707,11 @@ TEST_F(ABestMatchSimilarityTest, BH3_ThreeIndependentUnsimilarEnvironments_Chemi
                 {Spin::beta,inbetween(nuclei,{0,2},0.25)}
             })};
 
-    std::vector<Eigen::VectorXi> permsIndices(1, Eigen::VectorXi(A.electrons().numberOfEntities()));
-    permsIndices[0] << 1,0,2;
+    MolPermList expectedPerms{
+            {{0,2,1,3},{1,0,2}}
+    };
 
-    routine(A,B,permsIndices,distanceTolerance, soapThreshold);
+    routine(A,B,expectedPerms,distanceTolerance, soapThreshold);
 }
 
 
@@ -704,24 +739,17 @@ TEST_F(ABestMatchSimilarityTest, BH3Ionic_Chemical) {
                 {Spin::beta , inbetween(nuclei,{0,2},0.25)}
             })};
 
-    std::vector<Eigen::VectorXi> permsIndices(2, Eigen::VectorXi(B.electrons().numberOfEntities()));
-    permsIndices[0] << 0,1, 2,3;
-    permsIndices[1] << 1,0, 3,2;
+    MolPermList expectedPerms{
+            {{0, 2,3, 1},{0,1, 2,3}},
+            {{0, 3,2, 1},{1,0, 3,2}}
+    };
 
-    routine(A,B,permsIndices,distanceTolerance, soapThreshold);
+    routine(A,B,expectedPerms,distanceTolerance, soapThreshold);
 }
 
-TEST_F(ABestMatchSimilarityTest, EthaneIonic) {
+TEST_F(ABestMatchSimilarityTest, EthaneDoublyIonicMinimal) {
     General::settings.mode = General::Mode::chemical;
 
-    MolecularGeometry B = {
-            TestMolecules::Ethane::nuclei.atoms(),
-            ElectronsVector({
-                {Spin::alpha,TestMolecules::Ethane::nuclei.atoms().positionsVector()[2]},
-                {Spin::beta, TestMolecules::Ethane::nuclei.atoms().positionsVector()[2]},
-                {Spin::alpha,TestMolecules::Ethane::nuclei.atoms().positionsVector()[5]},
-                {Spin::beta, TestMolecules::Ethane::nuclei.atoms().positionsVector()[5]}}
-            )};
     MolecularGeometry A = {
             TestMolecules::Ethane::nuclei.atoms(),
             ElectronsVector({
@@ -731,11 +759,24 @@ TEST_F(ABestMatchSimilarityTest, EthaneIonic) {
                 {Spin::beta, TestMolecules::Ethane::nuclei.atoms().positionsVector()[3]}}
             )};
 
-    std::vector<Eigen::VectorXi> permsIndices(2, Eigen::VectorXi(B.electrons().numberOfEntities()));
-    permsIndices[0] << 0,1, 2,3;
-    permsIndices[1] << 2,3, 0,1;
+    MolecularGeometry B = {
+            TestMolecules::Ethane::nuclei.atoms(),
+            ElectronsVector({
+                {Spin::alpha,TestMolecules::Ethane::nuclei.atoms().positionsVector()[2]},
+                {Spin::beta, TestMolecules::Ethane::nuclei.atoms().positionsVector()[2]},
+                {Spin::alpha,TestMolecules::Ethane::nuclei.atoms().positionsVector()[5]},
+                {Spin::beta, TestMolecules::Ethane::nuclei.atoms().positionsVector()[5]}}
+            )};
 
-    routine(A,B,permsIndices,distanceTolerance, soapThreshold);
+
+    MolPermList expectedPerms{
+            {{0,1, 3,2,4, 6,5,7}, {2,3, 0,1}}, // reflection along H4-C0-C1-C7 Plane
+            {{0,1, 4,2,3, 7,5,6}, {2,3, 0,1}}, // 120° rotation around z
+            {{1,0, 6,5,7, 3,2,4}, {0,1, 2,3}}, // reflection in xy + 60° rotation around z
+            {{1,0, 7,5,6, 4,2,3}, {0,1, 2,3}}, // reflection in xy - 60° rotation around z
+    };
+
+    routine(A,B,expectedPerms,distanceTolerance, soapThreshold);
 }
 
 TEST_F(ABestMatchSimilarityTest, EthaneSinglyIonicMinimal) {
@@ -763,11 +804,12 @@ TEST_F(ABestMatchSimilarityTest, EthaneSinglyIonicMinimal) {
                  {Spin::beta/*17*/,inbetween(Ethane::nuclei.atoms(),{1,7},0.25)}
             })};
 
-    std::vector<Eigen::VectorXi> permIndices(2, Eigen::VectorXi(B.electrons().numberOfEntities()));
-    permIndices[0] << 0, 2, 1, 3, 5, 4; // reflection along H2-C0-C1-H5 plane
-    permIndices[1] << 1, 2, 0, 4, 5, 3; // 120° rotation around z
+    MolPermList expectedPerms{
+            {{0,1, 2,4,3, 5,7,6},{0, 2, 1, 3, 5, 4}},// reflection along H2-C0-C1-H5 plane
+            {{0,1, 3,4,2, 6,7,5},{1, 2, 0, 4, 5, 3}} // 120° rotation around z
+    };
 
-    routine(A,B,permIndices,distanceTolerance, soapThreshold);
+    routine(A,B,expectedPerms,distanceTolerance, soapThreshold);
 }
 
 TEST_F(ABestMatchSimilarityTest, EthaneSinglyIonicMinimal_shaked_alchemical) {
@@ -793,10 +835,10 @@ TEST_F(ABestMatchSimilarityTest, EthaneSinglyIonicMinimal_shaked_alchemical) {
                                     {Spin::beta/*17*/,inbetween(Ethane::nuclei.atoms(),{1,7},0.25)}
                             })};
 
-    std::vector<Eigen::VectorXi> permIndices(2, Eigen::VectorXi(B.electrons().numberOfEntities()));
-    permIndices[0] << 0, 2, 1, 3, 5, 4; // reflection along H2-C0-C1-H5 plane
-    permIndices[1] << 1, 2, 0, 4, 5, 3; // 120° rotation around z
-
+    MolPermList expectedPerms{
+            {{0,1, 2,4,3, 5,7,6},{0, 2, 1, 3, 5, 4}},// reflection along H2-C0-C1-H5 plane
+            {{0,1, 3,4,2, 6,7,5},{1, 2, 0, 4, 5, 3}} // 120° rotation around z
+    };
 
     std::random_device rd;
     std::uniform_int_distribution<unsigned long> dist(0, 9999);
@@ -810,7 +852,7 @@ TEST_F(ABestMatchSimilarityTest, EthaneSinglyIonicMinimal_shaked_alchemical) {
     General::settings.mode = General::Mode::alchemical;
     SOAP::General::settings.comparisonEpsilon = 1e-8;
 
-    routine(A, B, permIndices, distanceTolerance, shakeSoapThreshold, true);
+    routine(A, B, expectedPerms, distanceTolerance, shakeSoapThreshold, true);
 }
 
 TEST_F(ABestMatchSimilarityTest, EthaneSinglyIonic) {
@@ -870,12 +912,14 @@ TEST_F(ABestMatchSimilarityTest, EthaneSinglyIonic) {
             {Spin::alpha/*17*/,inbetween(Ethane::nuclei.atoms(),{1,7},0.25)}
             })};
 
-    std::vector<Eigen::VectorXi> permIndices(2, Eigen::VectorXi(B.electrons().numberOfEntities()));
-    permIndices[0] << 0,1,2,3,  4,6,5, 7,9,8,  10,11,  12,14,13, 15,17,16; // reflection along H2-C0-C1-H5 plane
-    permIndices[1] << 0,1,2,3,  5,6,4, 8,9,7,  10,11,  13,14,12, 16,17,15; // 120° rotation around z
+    MolPermList expectedPerms{
+            {{0,1, 2,4,3, 5,7,6},{0,1,2,3,  4,6,5, 7,9,8,  10,11,  12,14,13, 15,17,16}},
+            {{0,1, 3,4,2, 6,7,5},{0,1,2,3,  5,6,4, 8,9,7,  10,11,  13,14,12, 16,17,15}}
+    };
 
-    routine(A,B,permIndices,distanceTolerance, soapThreshold);
+    routine(A,B,expectedPerms,distanceTolerance, soapThreshold);
 }
+
 
 TEST_F(ABestMatchSimilarityTest, EthaneSinglyIonic10RandomIndexSwapPermutations) {
 
@@ -931,18 +975,30 @@ TEST_F(ABestMatchSimilarityTest, EthaneSinglyIonic10RandomIndexSwapPermutations)
         permIndices[0] = randomIndexSwapPerm * permIndices[0];
         permIndices[1] = randomIndexSwapPerm * permIndices[1];
 
-        // sort the permutations
-        std::sort(std::begin(permIndices), std::end(permIndices),
-                [](const Eigen::VectorXi& a,const Eigen::VectorXi& b) {
-            assert(a.size() == b.size());
-            for (Eigen::Index i = 0; i < a.size(); ++i)
-                if (a[i] != b[i])
-                    return a[i] < b[i];
+        MolPermList expectedPerms{
+                {{0,1, 2,4,3, 5,7,6}, std::vector<int>(permIndices[0].data(), permIndices[0].data()+permIndices[0].size())},
+                {{0,1, 3,4,2, 6,7,5}, std::vector<int>(permIndices[1].data(), permIndices[1].data()+permIndices[1].size())}
+        };
 
-            return a[0] < b[0];
+        // sort the permutations
+        std::sort(std::begin(expectedPerms), std::end(expectedPerms),
+                [](const std::pair<std::vector<int>, std::vector<int>>& a,
+                        const std::pair<std::vector<int>, std::vector<int>>& b) {
+            assert(a.first.size() == b.first.size());
+            assert(a.second.size() == b.second.size());
+
+            for (size_t i = 0; i < a.first.size(); ++i)
+                if (a.first[i] != b.first[i])
+                    return a.first[i] < b.first[i];
+
+            for (size_t i = 0; i < a.second.size(); ++i)
+                if (a.second[i] != b.second[i])
+                    return a.second[i] < b.second[i];
+
+            return a.first[0] < b.first[0];
         });
 
-        routine(Acopy, B, permIndices, distanceTolerance, soapThreshold);
+        routine(Acopy, B, expectedPerms, distanceTolerance, soapThreshold);
     }
 }
 
@@ -971,11 +1027,12 @@ TEST_F(ABestMatchSimilarityTest, EthaneDoublyIonicAntiMinimal) {
                 {Spin::beta/*17*/,inbetween(Ethane::nuclei.atoms(),{1,7},0.25)}
             })};
 
-    std::vector<Eigen::VectorXi> permIndices(2, Eigen::VectorXi(B.electrons().numberOfEntities()));
-    permIndices[0] << 0, 2, 1, 3, 5, 4; // reflection along H2-C0-C1-H5 plane
-    permIndices[1] << 1, 2, 0, 4, 5, 3; // 120° rotation around z
+    MolPermList expectedPerms{
+            {{0,1, 2,4,3, 5,7,6},{0, 2, 1, 3, 5, 4}},// reflection along H2-C0-C1-H5 plane
+            {{0,1, 3,4,2, 6,7,5},{1, 2, 0, 4, 5, 3}} // 120° rotation around z
+    };
 
-    routine(A,B,permIndices,distanceTolerance, soapThreshold);
+    routine(A,B,expectedPerms,distanceTolerance, soapThreshold);
 }
 
 TEST_F(ABestMatchSimilarityTest, EthaneDoublyIonicAnti) {
@@ -1035,11 +1092,12 @@ TEST_F(ABestMatchSimilarityTest, EthaneDoublyIonicAnti) {
                {Spin::alpha/*17*/,inbetween(Ethane::nuclei.atoms(),{1,7},0.25)}
             })};
 
-    std::vector<Eigen::VectorXi> permIndices(2, Eigen::VectorXi(B.electrons().numberOfEntities()));
-    permIndices[0] << 0,1,2,3,  4,6,5, 7,9,8,  10,11,  12,14,13, 15,17,16; // reflection along H2-C0-C1-H5 plane
-    permIndices[1] << 0,1,2,3,  5,6,4, 8,9,7,  10,11,  13,14,12, 16,17,15; // 120° rotation around z
+    MolPermList expectedPerms{
+            {{0,1, 2,4,3, 5,7,6},{0,1,2,3,  4,6,5, 7,9,8,  10,11,  12,14,13, 15,17,16}},// reflection along H2-C0-C1-H5 plane
+            {{0,1, 3,4,2, 6,7,5},{0,1,2,3,  5,6,4, 8,9,7,  10,11,  13,14,12, 16,17,15}} // 120° rotation around z
+    };
 
-    routine(A,B,permIndices,distanceTolerance, soapThreshold);
+    routine(A,B,expectedPerms,distanceTolerance, soapThreshold);
 }
 
 TEST_F(ABestMatchSimilarityTest, Trans13ButadieneRealMaxima) {
@@ -1050,76 +1108,78 @@ TEST_F(ABestMatchSimilarityTest, Trans13ButadieneRealMaxima) {
     Radial::settings.nmax = 3;
     Angular::settings.lmax = 3;
     Cutoff::settings.radius = 8.0;
-    Cutoff::settings.width = 8.0;
-    Radial::settings.sigmaAtom = 1.0;
+    Cutoff::settings.width = 0.0;
 
     // (permutations are not checked)
-    std::vector<Eigen::VectorXi> expectedPermIndices(64, Eigen::VectorXi(A.electrons().numberOfEntities()));
-    expectedPermIndices[0] << 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29; // checked via inPsights
-    expectedPermIndices[1] << 0,1,2,3,4,5,6,7,8,9,10,11,15,13,14,12,16,17,18,19,20,21,22,23,24,25,26,27,28,29;
-    expectedPermIndices[2] << 0,1,2,3,4,5,6,7,8,29,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,9;
-    expectedPermIndices[3] << 0,1,2,3,4,5,6,7,8,29,10,11,15,13,14,12,16,17,18,19,20,21,22,23,24,25,26,27,28,9;
-    expectedPermIndices[4] << 0,1,2,3,4,5,24,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,6,25,26,27,28,29;
-    expectedPermIndices[5] << 0,1,2,3,4,5,24,7,8,9,10,11,15,13,14,12,16,17,18,19,20,21,22,23,6,25,26,27,28,29;
-    expectedPermIndices[6] << 0,1,2,3,4,5,24,7,8,29,10,11,12,13,14,15,16,17,18,19,20,21,22,23,6,25,26,27,28,9;
-    expectedPermIndices[7] << 0,1,2,3,4,5,24,7,8,29,10,11,15,13,14,12,16,17,18,19,20,21,22,23,6,25,26,27,28,9;
-    expectedPermIndices[8] << 0,1,28,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,2,29;
-    expectedPermIndices[9] << 0,1,28,3,4,5,6,7,8,9,10,11,15,13,14,12,16,17,18,19,20,21,22,23,24,25,26,27,2,29;
-    expectedPermIndices[10] << 0,1,28,3,4,5,6,7,8,29,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,2,9;
-    expectedPermIndices[11] << 0,1,28,3,4,5,6,7,8,29,10,11,15,13,14,12,16,17,18,19,20,21,22,23,24,25,26,27,2,9;
-    expectedPermIndices[12] << 0,1,28,3,4,5,24,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,6,25,26,27,2,29;
-    expectedPermIndices[13] << 0,1,28,3,4,5,24,7,8,9,10,11,15,13,14,12,16,17,18,19,20,21,22,23,6,25,26,27,2,29;
-    expectedPermIndices[14] << 0,1,28,3,4,5,24,7,8,29,10,11,12,13,14,15,16,17,18,19,20,21,22,23,6,25,26,27,2,9;
-    expectedPermIndices[15] << 0,1,28,3,4,5,24,7,8,29,10,11,15,13,14,12,16,17,18,19,20,21,22,23,6,25,26,27,2,9;
-    expectedPermIndices[16] << 0,18,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,1,19,20,21,22,23,24,25,26,27,28,29;
-    expectedPermIndices[17] << 0,18,2,3,4,5,6,7,8,9,10,11,15,13,14,12,16,17,1,19,20,21,22,23,24,25,26,27,28,29;
-    expectedPermIndices[18] << 0,18,2,3,4,5,6,7,8,29,10,11,12,13,14,15,16,17,1,19,20,21,22,23,24,25,26,27,28,9;
-    expectedPermIndices[19] << 0,18,2,3,4,5,6,7,8,29,10,11,15,13,14,12,16,17,1,19,20,21,22,23,24,25,26,27,28,9;
-    expectedPermIndices[20] << 0,18,2,3,4,5,24,7,8,9,10,11,12,13,14,15,16,17,1,19,20,21,22,23,6,25,26,27,28,29;
-    expectedPermIndices[21] << 0,18,2,3,4,5,24,7,8,9,10,11,15,13,14,12,16,17,1,19,20,21,22,23,6,25,26,27,28,29;
-    expectedPermIndices[22] << 0,18,2,3,4,5,24,7,8,29,10,11,12,13,14,15,16,17,1,19,20,21,22,23,6,25,26,27,28,9;
-    expectedPermIndices[23] << 0,18,2,3,4,5,24,7,8,29,10,11,15,13,14,12,16,17,1,19,20,21,22,23,6,25,26,27,28,9;
-    expectedPermIndices[24] << 0,18,28,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,1,19,20,21,22,23,24,25,26,27,2,29;
-    expectedPermIndices[25] << 0,18,28,3,4,5,6,7,8,9,10,11,15,13,14,12,16,17,1,19,20,21,22,23,24,25,26,27,2,29;
-    expectedPermIndices[26] << 0,18,28,3,4,5,6,7,8,29,10,11,12,13,14,15,16,17,1,19,20,21,22,23,24,25,26,27,2,9;
-    expectedPermIndices[27] << 0,18,28,3,4,5,6,7,8,29,10,11,15,13,14,12,16,17,1,19,20,21,22,23,24,25,26,27,2,9;
-    expectedPermIndices[28] << 0,18,28,3,4,5,24,7,8,9,10,11,12,13,14,15,16,17,1,19,20,21,22,23,6,25,26,27,2,29;
-    expectedPermIndices[29] << 0,18,28,3,4,5,24,7,8,9,10,11,15,13,14,12,16,17,1,19,20,21,22,23,6,25,26,27,2,29;
-    expectedPermIndices[30] << 0,18,28,3,4,5,24,7,8,29,10,11,12,13,14,15,16,17,1,19,20,21,22,23,6,25,26,27,2,9;
-    expectedPermIndices[31] << 0,18,28,3,4,5,24,7,8,29,10,11,15,13,14,12,16,17,1,19,20,21,22,23,6,25,26,27,2,9;
-    expectedPermIndices[32] << 0,1,2,11,4,5,6,7,8,9,14,3,12,13,10,15,16,25,18,26,20,21,22,23,24,17,19,27,28,29;
-    expectedPermIndices[33] << 0,1,2,11,4,5,6,7,8,9,14,3,15,13,10,12,16,25,18,26,20,21,22,23,24,17,19,27,28,29;
-    expectedPermIndices[34] << 0,1,2,11,4,5,6,7,8,29,14,3,12,13,10,15,16,25,18,26,20,21,22,23,24,17,19,27,28,9;
-    expectedPermIndices[35] << 0,1,2,11,4,5,6,7,8,29,14,3,15,13,10,12,16,25,18,26,20,21,22,23,24,17,19,27,28,9;
-    expectedPermIndices[36] << 0,1,2,11,4,5,24,7,8,9,14,3,12,13,10,15,16,25,18,26,20,21,22,23,6,17,19,27,28,29;
-    expectedPermIndices[37] << 0,1,2,11,4,5,24,7,8,9,14,3,15,13,10,12,16,25,18,26,20,21,22,23,6,17,19,27,28,29;
-    expectedPermIndices[38] << 0,1,2,11,4,5,24,7,8,29,14,3,12,13,10,15,16,25,18,26,20,21,22,23,6,17,19,27,28,9;
-    expectedPermIndices[39] << 0,1,2,11,4,5,24,7,8,29,14,3,15,13,10,12,16,25,18,26,20,21,22,23,6,17,19,27,28,9;
-    expectedPermIndices[40] << 0,1,28,11,4,5,6,7,8,9,14,3,12,13,10,15,16,25,18,26,20,21,22,23,24,17,19,27,2,29;
-    expectedPermIndices[41] << 0,1,28,11,4,5,6,7,8,9,14,3,15,13,10,12,16,25,18,26,20,21,22,23,24,17,19,27,2,29;
-    expectedPermIndices[42] << 0,1,28,11,4,5,6,7,8,29,14,3,12,13,10,15,16,25,18,26,20,21,22,23,24,17,19,27,2,9;
-    expectedPermIndices[43] << 0,1,28,11,4,5,6,7,8,29,14,3,15,13,10,12,16,25,18,26,20,21,22,23,24,17,19,27,2,9;
-    expectedPermIndices[44] << 0,1,28,11,4,5,24,7,8,9,14,3,12,13,10,15,16,25,18,26,20,21,22,23,6,17,19,27,2,29;
-    expectedPermIndices[45] << 0,1,28,11,4,5,24,7,8,9,14,3,15,13,10,12,16,25,18,26,20,21,22,23,6,17,19,27,2,29;
-    expectedPermIndices[46] << 0,1,28,11,4,5,24,7,8,29,14,3,12,13,10,15,16,25,18,26,20,21,22,23,6,17,19,27,2,9;
-    expectedPermIndices[47] << 0,1,28,11,4,5,24,7,8,29,14,3,15,13,10,12,16,25,18,26,20,21,22,23,6,17,19,27,2,9;
-    expectedPermIndices[48] << 0,18,2,11,4,5,6,7,8,9,14,3,12,13,10,15,16,25,1,26,20,21,22,23,24,17,19,27,28,29;
-    expectedPermIndices[49] << 0,18,2,11,4,5,6,7,8,9,14,3,15,13,10,12,16,25,1,26,20,21,22,23,24,17,19,27,28,29;
-    expectedPermIndices[50] << 0,18,2,11,4,5,6,7,8,29,14,3,12,13,10,15,16,25,1,26,20,21,22,23,24,17,19,27,28,9;
-    expectedPermIndices[51] << 0,18,2,11,4,5,6,7,8,29,14,3,15,13,10,12,16,25,1,26,20,21,22,23,24,17,19,27,28,9;
-    expectedPermIndices[52] << 0,18,2,11,4,5,24,7,8,9,14,3,12,13,10,15,16,25,1,26,20,21,22,23,6,17,19,27,28,29;
-    expectedPermIndices[53] << 0,18,2,11,4,5,24,7,8,9,14,3,15,13,10,12,16,25,1,26,20,21,22,23,6,17,19,27,28,29;
-    expectedPermIndices[54] << 0,18,2,11,4,5,24,7,8,29,14,3,12,13,10,15,16,25,1,26,20,21,22,23,6,17,19,27,28,9;
-    expectedPermIndices[55] << 0,18,2,11,4,5,24,7,8,29,14,3,15,13,10,12,16,25,1,26,20,21,22,23,6,17,19,27,28,9;
-    expectedPermIndices[56] << 0,18,28,11,4,5,6,7,8,9,14,3,12,13,10,15,16,25,1,26,20,21,22,23,24,17,19,27,2,29;
-    expectedPermIndices[57] << 0,18,28,11,4,5,6,7,8,9,14,3,15,13,10,12,16,25,1,26,20,21,22,23,24,17,19,27,2,29;
-    expectedPermIndices[58] << 0,18,28,11,4,5,6,7,8,29,14,3,12,13,10,15,16,25,1,26,20,21,22,23,24,17,19,27,2,9;
-    expectedPermIndices[59] << 0,18,28,11,4,5,6,7,8,29,14,3,15,13,10,12,16,25,1,26,20,21,22,23,24,17,19,27,2,9;
-    expectedPermIndices[60] << 0,18,28,11,4,5,24,7,8,9,14,3,12,13,10,15,16,25,1,26,20,21,22,23,6,17,19,27,2,29;
-    expectedPermIndices[61] << 0,18,28,11,4,5,24,7,8,9,14,3,15,13,10,12,16,25,1,26,20,21,22,23,6,17,19,27,2,29;
-    expectedPermIndices[62] << 0,18,28,11,4,5,24,7,8,29,14,3,12,13,10,15,16,25,1,26,20,21,22,23,6,17,19,27,2,9;
-    expectedPermIndices[63] << 0,18,28,11,4,5,24,7,8,29,14,3,15,13,10,12,16,25,1,26,20,21,22,23,6,17,19,27,2,9;
 
-    General::settings.mode = General::Mode::typeAgnostic;
-    routine(A, B, expectedPermIndices, distanceTolerance, 0.99, true);
+    MolPermList expectedPerms{
+    {{3,2,1,0, 9,8,7,6,5,4},{0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29}}, // checked via inPsights
+    {{3,2,1,0, 9,8,7,6,5,4},{0,1,2,3,4,5,6,7,8,9,10,11,15,13,14,12,16,17,18,19,20,21,22,23,24,25,26,27,28,29}},
+    {{3,2,1,0, 9,8,7,6,5,4},{0,1,2,3,4,5,6,7,8,29,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,9}},
+    {{3,2,1,0, 9,8,7,6,5,4},{0,1,2,3,4,5,6,7,8,29,10,11,15,13,14,12,16,17,18,19,20,21,22,23,24,25,26,27,28,9}},
+    {{3,2,1,0, 9,8,7,6,5,4},{0,1,2,3,4,5,24,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,6,25,26,27,28,29}},
+    {{3,2,1,0, 9,8,7,6,5,4},{0,1,2,3,4,5,24,7,8,9,10,11,15,13,14,12,16,17,18,19,20,21,22,23,6,25,26,27,28,29}},
+    {{3,2,1,0, 9,8,7,6,5,4},{0,1,2,3,4,5,24,7,8,29,10,11,12,13,14,15,16,17,18,19,20,21,22,23,6,25,26,27,28,9}},
+    {{3,2,1,0, 9,8,7,6,5,4},{0,1,2,3,4,5,24,7,8,29,10,11,15,13,14,12,16,17,18,19,20,21,22,23,6,25,26,27,28,9}},
+    {{3,2,1,0, 9,8,7,6,5,4},{0,1,28,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,2,29}},
+    {{3,2,1,0, 9,8,7,6,5,4},{0,1,28,3,4,5,6,7,8,9,10,11,15,13,14,12,16,17,18,19,20,21,22,23,24,25,26,27,2,29}},
+    {{3,2,1,0, 9,8,7,6,5,4},{0,1,28,3,4,5,6,7,8,29,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,2,9}},
+    {{3,2,1,0, 9,8,7,6,5,4},{0,1,28,3,4,5,6,7,8,29,10,11,15,13,14,12,16,17,18,19,20,21,22,23,24,25,26,27,2,9}},
+    {{3,2,1,0, 9,8,7,6,5,4},{0,1,28,3,4,5,24,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,6,25,26,27,2,29}},
+    {{3,2,1,0, 9,8,7,6,5,4},{0,1,28,3,4,5,24,7,8,9,10,11,15,13,14,12,16,17,18,19,20,21,22,23,6,25,26,27,2,29}},
+    {{3,2,1,0, 9,8,7,6,5,4},{0,1,28,3,4,5,24,7,8,29,10,11,12,13,14,15,16,17,18,19,20,21,22,23,6,25,26,27,2,9}},
+    {{3,2,1,0, 9,8,7,6,5,4},{0,1,28,3,4,5,24,7,8,29,10,11,15,13,14,12,16,17,18,19,20,21,22,23,6,25,26,27,2,9}},
+    {{3,2,1,0, 9,8,7,6,5,4},{0,18,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,1,19,20,21,22,23,24,25,26,27,28,29}},
+    {{3,2,1,0, 9,8,7,6,5,4},{0,18,2,3,4,5,6,7,8,9,10,11,15,13,14,12,16,17,1,19,20,21,22,23,24,25,26,27,28,29}},
+    {{3,2,1,0, 9,8,7,6,5,4},{0,18,2,3,4,5,6,7,8,29,10,11,12,13,14,15,16,17,1,19,20,21,22,23,24,25,26,27,28,9}},
+    {{3,2,1,0, 9,8,7,6,5,4},{0,18,2,3,4,5,6,7,8,29,10,11,15,13,14,12,16,17,1,19,20,21,22,23,24,25,26,27,28,9}},
+    {{3,2,1,0, 9,8,7,6,5,4},{0,18,2,3,4,5,24,7,8,9,10,11,12,13,14,15,16,17,1,19,20,21,22,23,6,25,26,27,28,29}},
+    {{3,2,1,0, 9,8,7,6,5,4},{0,18,2,3,4,5,24,7,8,9,10,11,15,13,14,12,16,17,1,19,20,21,22,23,6,25,26,27,28,29}},
+    {{3,2,1,0, 9,8,7,6,5,4},{0,18,2,3,4,5,24,7,8,29,10,11,12,13,14,15,16,17,1,19,20,21,22,23,6,25,26,27,28,9}},
+    {{3,2,1,0, 9,8,7,6,5,4},{0,18,2,3,4,5,24,7,8,29,10,11,15,13,14,12,16,17,1,19,20,21,22,23,6,25,26,27,28,9}},
+    {{3,2,1,0, 9,8,7,6,5,4},{0,18,28,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,1,19,20,21,22,23,24,25,26,27,2,29}},
+    {{3,2,1,0, 9,8,7,6,5,4},{0,18,28,3,4,5,6,7,8,9,10,11,15,13,14,12,16,17,1,19,20,21,22,23,24,25,26,27,2,29}},
+    {{3,2,1,0, 9,8,7,6,5,4},{0,18,28,3,4,5,6,7,8,29,10,11,12,13,14,15,16,17,1,19,20,21,22,23,24,25,26,27,2,9}},
+    {{3,2,1,0, 9,8,7,6,5,4},{0,18,28,3,4,5,6,7,8,29,10,11,15,13,14,12,16,17,1,19,20,21,22,23,24,25,26,27,2,9}},
+    {{3,2,1,0, 9,8,7,6,5,4},{0,18,28,3,4,5,24,7,8,9,10,11,12,13,14,15,16,17,1,19,20,21,22,23,6,25,26,27,2,29}},
+    {{3,2,1,0, 9,8,7,6,5,4},{0,18,28,3,4,5,24,7,8,9,10,11,15,13,14,12,16,17,1,19,20,21,22,23,6,25,26,27,2,29}},
+    {{3,2,1,0, 9,8,7,6,5,4},{0,18,28,3,4,5,24,7,8,29,10,11,12,13,14,15,16,17,1,19,20,21,22,23,6,25,26,27,2,9}},
+    {{3,2,1,0, 9,8,7,6,5,4},{0,18,28,3,4,5,24,7,8,29,10,11,15,13,14,12,16,17,1,19,20,21,22,23,6,25,26,27,2,9}},
+    {{3,2,1,0, 9,8,7,6,5,4},{0,1,2,11,4,5,6,7,8,9,14,3,12,13,10,15,16,25,18,26,20,21,22,23,24,17,19,27,28,29}},
+    {{3,2,1,0, 9,8,7,6,5,4},{0,1,2,11,4,5,6,7,8,9,14,3,15,13,10,12,16,25,18,26,20,21,22,23,24,17,19,27,28,29}},
+    {{3,2,1,0, 9,8,7,6,5,4},{0,1,2,11,4,5,6,7,8,29,14,3,12,13,10,15,16,25,18,26,20,21,22,23,24,17,19,27,28,9}},
+    {{3,2,1,0, 9,8,7,6,5,4},{0,1,2,11,4,5,6,7,8,29,14,3,15,13,10,12,16,25,18,26,20,21,22,23,24,17,19,27,28,9}},
+    {{3,2,1,0, 9,8,7,6,5,4},{0,1,2,11,4,5,24,7,8,9,14,3,12,13,10,15,16,25,18,26,20,21,22,23,6,17,19,27,28,29}},
+    {{3,2,1,0, 9,8,7,6,5,4},{0,1,2,11,4,5,24,7,8,9,14,3,15,13,10,12,16,25,18,26,20,21,22,23,6,17,19,27,28,29}},
+    {{3,2,1,0, 9,8,7,6,5,4},{0,1,2,11,4,5,24,7,8,29,14,3,12,13,10,15,16,25,18,26,20,21,22,23,6,17,19,27,28,9}},
+    {{3,2,1,0, 9,8,7,6,5,4},{0,1,2,11,4,5,24,7,8,29,14,3,15,13,10,12,16,25,18,26,20,21,22,23,6,17,19,27,28,9}},
+    {{3,2,1,0, 9,8,7,6,5,4},{0,1,28,11,4,5,6,7,8,9,14,3,12,13,10,15,16,25,18,26,20,21,22,23,24,17,19,27,2,29}},
+    {{3,2,1,0, 9,8,7,6,5,4},{0,1,28,11,4,5,6,7,8,9,14,3,15,13,10,12,16,25,18,26,20,21,22,23,24,17,19,27,2,29}},
+    {{3,2,1,0, 9,8,7,6,5,4},{0,1,28,11,4,5,6,7,8,29,14,3,12,13,10,15,16,25,18,26,20,21,22,23,24,17,19,27,2,9}},
+    {{3,2,1,0, 9,8,7,6,5,4},{0,1,28,11,4,5,6,7,8,29,14,3,15,13,10,12,16,25,18,26,20,21,22,23,24,17,19,27,2,9}},
+    {{3,2,1,0, 9,8,7,6,5,4},{0,1,28,11,4,5,24,7,8,9,14,3,12,13,10,15,16,25,18,26,20,21,22,23,6,17,19,27,2,29}},
+    {{3,2,1,0, 9,8,7,6,5,4},{0,1,28,11,4,5,24,7,8,9,14,3,15,13,10,12,16,25,18,26,20,21,22,23,6,17,19,27,2,29}},
+    {{3,2,1,0, 9,8,7,6,5,4},{0,1,28,11,4,5,24,7,8,29,14,3,12,13,10,15,16,25,18,26,20,21,22,23,6,17,19,27,2,9}},
+    {{3,2,1,0, 9,8,7,6,5,4},{0,1,28,11,4,5,24,7,8,29,14,3,15,13,10,12,16,25,18,26,20,21,22,23,6,17,19,27,2,9}},
+    {{3,2,1,0, 9,8,7,6,5,4},{0,18,2,11,4,5,6,7,8,9,14,3,12,13,10,15,16,25,1,26,20,21,22,23,24,17,19,27,28,29}},
+    {{3,2,1,0, 9,8,7,6,5,4},{0,18,2,11,4,5,6,7,8,9,14,3,15,13,10,12,16,25,1,26,20,21,22,23,24,17,19,27,28,29}},
+    {{3,2,1,0, 9,8,7,6,5,4},{0,18,2,11,4,5,6,7,8,29,14,3,12,13,10,15,16,25,1,26,20,21,22,23,24,17,19,27,28,9}},
+    {{3,2,1,0, 9,8,7,6,5,4},{0,18,2,11,4,5,6,7,8,29,14,3,15,13,10,12,16,25,1,26,20,21,22,23,24,17,19,27,28,9}},
+    {{3,2,1,0, 9,8,7,6,5,4},{0,18,2,11,4,5,24,7,8,9,14,3,12,13,10,15,16,25,1,26,20,21,22,23,6,17,19,27,28,29}},
+    {{3,2,1,0, 9,8,7,6,5,4},{0,18,2,11,4,5,24,7,8,9,14,3,15,13,10,12,16,25,1,26,20,21,22,23,6,17,19,27,28,29}},
+    {{3,2,1,0, 9,8,7,6,5,4},{0,18,2,11,4,5,24,7,8,29,14,3,12,13,10,15,16,25,1,26,20,21,22,23,6,17,19,27,28,9}},
+    {{3,2,1,0, 9,8,7,6,5,4},{0,18,2,11,4,5,24,7,8,29,14,3,15,13,10,12,16,25,1,26,20,21,22,23,6,17,19,27,28,9}},
+    {{3,2,1,0, 9,8,7,6,5,4},{0,18,28,11,4,5,6,7,8,9,14,3,12,13,10,15,16,25,1,26,20,21,22,23,24,17,19,27,2,29}},
+    {{3,2,1,0, 9,8,7,6,5,4},{0,18,28,11,4,5,6,7,8,9,14,3,15,13,10,12,16,25,1,26,20,21,22,23,24,17,19,27,2,29}},
+    {{3,2,1,0, 9,8,7,6,5,4},{0,18,28,11,4,5,6,7,8,29,14,3,12,13,10,15,16,25,1,26,20,21,22,23,24,17,19,27,2,9}},
+    {{3,2,1,0, 9,8,7,6,5,4},{0,18,28,11,4,5,6,7,8,29,14,3,15,13,10,12,16,25,1,26,20,21,22,23,24,17,19,27,2,9}},
+    {{3,2,1,0, 9,8,7,6,5,4},{0,18,28,11,4,5,24,7,8,9,14,3,12,13,10,15,16,25,1,26,20,21,22,23,6,17,19,27,2,29}},
+    {{3,2,1,0, 9,8,7,6,5,4},{0,18,28,11,4,5,24,7,8,9,14,3,15,13,10,12,16,25,1,26,20,21,22,23,6,17,19,27,2,29}},
+    {{3,2,1,0, 9,8,7,6,5,4},{0,18,28,11,4,5,24,7,8,29,14,3,12,13,10,15,16,25,1,26,20,21,22,23,6,17,19,27,2,9}},
+    {{3,2,1,0, 9,8,7,6,5,4},{0,18,28,11,4,5,24,7,8,29,14,3,15,13,10,12,16,25,1,26,20,21,22,23,6,17,19,27,2,9}}
+    };
+
+    General::settings.pairSimilarities[{int(Spin::alpha), int(Spin::beta)}] = 1.0;
+    General::settings.mode = General::Mode::alchemical;
+    routine(A, B, expectedPerms, distanceTolerance, 0.99, true);
 }

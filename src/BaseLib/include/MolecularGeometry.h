@@ -61,6 +61,12 @@ public:
         return os;
     }
 
+    struct Permutation {
+        Eigen::PermutationMatrix<Eigen::Dynamic> nuclearPermutation, electronicPermutation;
+    };
+
+    Permutation splitAllParticlePermutation(const Eigen::PermutationMatrix<Eigen::Dynamic>& allParticlePermutation) const;
+
 private:
     AtomsVector atoms_;
     ElectronsVector electrons_;

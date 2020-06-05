@@ -204,23 +204,6 @@ namespace SOAP {
             return fromKitPermutation(molecule).inverse();
         }
 
-
-        MolecularPermutation splitPermutation(
-                const Eigen::PermutationMatrix<Eigen::Dynamic> &allParticlePermutation) {
-
-            const auto M = numberOfAtoms();
-            const auto N = numberOfElectrons();
-
-            assert(allParticlePermutation.indices().size() == numberOfParticles());
-
-            Eigen::VectorXi permutedNuclearIndices(M), permutedElectronicIndices(N);
-            permutedNuclearIndices = allParticlePermutation.indices().head(M);
-            permutedElectronicIndices = allParticlePermutation.indices().tail(N).array() - M;
-
-            return {Eigen::PermutationMatrix<Eigen::Dynamic>(permutedNuclearIndices),
-                    Eigen::PermutationMatrix<Eigen::Dynamic>(permutedElectronicIndices)};
-        }
-
         bool isSubsetQ(const AtomsVector &atomsVector) {
             auto countedTypes = atomsVector.typesVector().countTypes();
             for (auto typeCount: countedTypes) {

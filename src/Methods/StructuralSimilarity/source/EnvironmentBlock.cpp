@@ -24,9 +24,9 @@
  */
 bool DistanceCovariance::conservingQ(
         const std::vector<Eigen::Index> &permuteeIndicesInKitSystem,
-        const ElectronsVector &permutee,
+        const MolecularGeometry &permutee,
         const std::vector<Eigen::Index> &referenceIndicesInKitSystem,
-        const ElectronsVector &reference,
+        const MolecularGeometry &reference,
         double distanceMatrixCovarianceTolerance) {
 
     auto permuteeIndices = BestMatch::SOAPSimilarity::permuteIndicesFromKitSystem(
@@ -35,9 +35,9 @@ bool DistanceCovariance::conservingQ(
             referenceIndicesInKitSystem, SOAP::ParticleKit::fromKitPermutation(reference));
 
     auto covA = BestMatch::SOAPSimilarity::calculateDistanceCovarianceMatrixOfSelectedIndices(
-            permutee.positionsVector(), permuteeIndices);
+            permutee.positions(), permuteeIndices);
     auto covB = BestMatch::SOAPSimilarity::calculateDistanceCovarianceMatrixOfSelectedIndices(
-            reference.positionsVector(), referenceIndices);
+            reference.positions(), referenceIndices);
 
     auto conservingQ = (covB - covA).array().abs().maxCoeff() <= distanceMatrixCovarianceTolerance;
 
@@ -50,8 +50,8 @@ bool DistanceCovariance::conservingQ(
 
 EnvironmentBlock::EnvironmentBlock(
         const std::deque<BestMatch::SOAPSimilarity::GrowingPerm>& possiblePerms,
-        const ElectronsVector &permutee,
-        const ElectronsVector &reference)
+        const MolecularGeometry &permutee,
+        const MolecularGeometry &reference)
         : permuteeIndices_(),
           referenceIndices_(),
           permutee_(permutee),
@@ -112,7 +112,7 @@ std::vector<std::vector<Eigen::Index>> EnvironmentBlock::filterPermutations(doub
 };
 
 
-EnvironmentBlockJoiner::EnvironmentBlockJoiner(const ElectronsVector &permutee, const ElectronsVector &reference)
+EnvironmentBlockJoiner::EnvironmentBlockJoiner(const MolecularGeometry &permutee, const MolecularGeometry &reference)
         : jointPermutedPermuteeIndicesCollection_(0),
           jointReferenceIndices_(0),
           permutee_(permutee),

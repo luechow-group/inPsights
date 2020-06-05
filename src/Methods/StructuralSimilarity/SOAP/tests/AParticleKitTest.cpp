@@ -207,14 +207,4 @@ TEST_F(AParticleKitTest, moleculeToKitPermutation) {
     expectedAllParticlePermutation << 3,0,1,2, 4,6,5,7;
 
     ASSERT_EQ(molToKit.indices(), expectedAllParticlePermutation);
-
-    auto molPerms = ParticleKit::splitPermutation(molToKit);
-    Eigen::VectorXi expectedNuclearPermutation(mol.atoms().numberOfEntities());
-    Eigen::VectorXi expectedElectronicPermutation(mol.electrons().numberOfEntities());
-    expectedNuclearPermutation << 3,0,1,2;
-    expectedElectronicPermutation << 0,2,1,3;
-
-    ASSERT_EQ(molPerms.nuclearPermutation.indices(), expectedNuclearPermutation);
-    ASSERT_EQ(molPerms.electronicPermutation.indices(), expectedElectronicPermutation);
-
 }

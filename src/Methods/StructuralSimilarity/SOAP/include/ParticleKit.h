@@ -67,12 +67,6 @@ namespace SOAP {
 
         Eigen::PermutationMatrix<Eigen::Dynamic> toKitPermutation(const MolecularGeometry &molecule);
 
-        struct MolecularPermutation {
-            Eigen::PermutationMatrix<Eigen::Dynamic> nuclearPermutation, electronicPermutation;
-        };
-
-        MolecularPermutation splitPermutation(const Eigen::PermutationMatrix<Eigen::Dynamic>& entireKit);
-        
         bool isSubsetQ(const AtomsVector &atomsVector);
 
         bool isSubsetQ(const ElectronsVector &electronsVector);

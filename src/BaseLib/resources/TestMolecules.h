@@ -480,7 +480,8 @@ namespace TestMolecules {
 
         const MolecularGeometry ionic = {
                 nuclei.atoms(),
-                ElectronsVector({{Spin::alpha, nuclei.atoms().positionsVector()[0]},
+                ElectronsVector({
+                                 {Spin::alpha, nuclei.atoms().positionsVector()[0]},
                                  {Spin::alpha, nuclei.atoms().positionsVector()[1]},
                                  {Spin::alpha, nuclei.atoms().positionsVector()[2]},
                                  {Spin::alpha, nuclei.atoms().positionsVector()[3]},

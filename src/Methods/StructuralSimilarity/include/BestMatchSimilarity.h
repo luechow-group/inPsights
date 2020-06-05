@@ -26,9 +26,10 @@
 namespace BestMatch {
     namespace SOAPSimilarity {
 
+        /*
         Eigen::MatrixXd calculateEnvironmentSimilarityMatrix(
                 const SOAP::MolecularSpectrum &permutee,
-                const SOAP::MolecularSpectrum &reference);
+                const SOAP::MolecularSpectrum &reference);*/
 
         DescendingMetricResult compare(
                 const SOAP::MolecularSpectrum &permutee,

@@ -16,7 +16,7 @@
  */
 
 #include "BestMatchSimilarity.h"
-#include <LocalSimilarity.h>
+#include <StructuralSimilarity.h>
 #include <Hungarian.h>
 #include <limits>
 #include <deque>
@@ -29,6 +29,7 @@
 
 using namespace SOAP;
 
+/*
 Eigen::MatrixXd BestMatch::SOAPSimilarity::calculateEnvironmentSimilarityMatrix(
         const MolecularSpectrum &permutee,
         const MolecularSpectrum &reference) {
@@ -75,7 +76,7 @@ Eigen::MatrixXd BestMatch::SOAPSimilarity::calculateEnvironmentSimilarityMatrix(
         }
     }
     return environmentalSimilarities;
-}
+}*/
 
 /*
  * Returns a list of distance-preserving permutations matching equivalent environments within a given
@@ -85,7 +86,7 @@ Eigen::MatrixXd BestMatch::SOAPSimilarity::calculateEnvironmentSimilarityMatrix(
  *
  * The algorithm has five steps:
  *  1. Find matching dependent environments.
- *  2. Find possible permutations between dependent environments and check of there are distance preserving.
+ *  2. Find possible permutations between dependent environments and check if there are distance preserving.
  *  3. Check for all permutations within these blocks for distance conservation.
  *  4. Combine the blockwise distance-conserving permutations to find overall distance-conserving permutations.
  *  5. Lastly, the distance-conserving permutations are converted back into the lab system
@@ -105,17 +106,17 @@ std::vector<BestMatch::DescendingMetricResult> BestMatch::SOAPSimilarity::getBes
     assert(ParticleKit::isSubsetQ(reference.molecule_)
            && "The reference must be a subset of the particle kit.");
 
-    const auto permuteeToKit = ParticleKit::toKitPermutation(permutee.molecule_.electrons());
-    const auto referenceToKit = ParticleKit::fromKitPermutation(reference.molecule_.electrons());
-    const auto referenceFromKit = ParticleKit::fromKitPermutation(reference.molecule_.electrons());
-    Eigen::PermutationMatrix<Eigen::Dynamic> identity(permutee.molecule_.electrons().numberOfEntities());
+    const auto permuteeToKit = ParticleKit::toKitPermutation(permutee.molecule_);
+    const auto referenceToKit = ParticleKit::fromKitPermutation(reference.molecule_);
+    const auto referenceFromKit = ParticleKit::fromKitPermutation(reference.molecule_);
+    Eigen::PermutationMatrix<Eigen::Dynamic> identity(permutee.molecule_.numberOfEntities());
 
     spdlog::debug("Electrons of permutee {} in particle-kit system.",
             permuteeToKit.indices() == identity.indices() ?  "are": "are NOT");
     spdlog::debug("Electrons of reference {} in particle-kit system.",
                   referenceToKit.indices() == identity.indices() ?  "are": "are NOT");
 
-    const auto N = size_t(permutee.molecule_.electrons().numberOfEntities());
+    const auto particleNumber = size_t(permutee.molecule_.numberOfEntities());
 
     assert(permutee.molecule_.electrons().typesVector().countOccurence(Spin::alpha)
            == reference.molecule_.electrons().typesVector().countOccurence(Spin::alpha)
@@ -123,9 +124,12 @@ std::vector<BestMatch::DescendingMetricResult> BestMatch::SOAPSimilarity::getBes
     assert(permutee.molecule_.electrons().typesVector().countOccurence(Spin::beta)
            == reference.molecule_.electrons().typesVector().countOccurence(Spin::beta)
            && "The number of beta electrons must match.");
+    assert(permutee.molecule_.atoms() == reference.molecule_.atoms()
+           && "The atom vectors must match.");
 
     // environment similarity matrix of the permutee (rows) and the reference (cols)
-    Eigen::MatrixXd environmentSimilarities = calculateEnvironmentSimilarityMatrix(permutee, reference);
+    Eigen::MatrixXd environmentSimilarities = SOAP::StructuralSimilarity::correlationMatrix(permutee, reference);
+
     spdlog::debug("Environmental similarity matrix "
                   "(in the particle kit system, permutee = rows, reference = cols)\n{}",
                   ToString::matrixXdToString(environmentSimilarities, 3));
@@ -150,7 +154,7 @@ std::vector<BestMatch::DescendingMetricResult> BestMatch::SOAPSimilarity::getBes
     auto dependentMatches = BestMatch::SOAPSimilarity::groupDependentMatches(matches);
     for(const auto& dependentMatch : dependentMatches){
         if(dependentMatch.size() > 12)
-            spdlog::warn("More than 12 equivalent electronic environments found. This might indicate too indistinct SOAP settings.");
+            spdlog::warn("More than 12 equivalent environments found. This might indicate too indistinct SOAP settings.");
     }
 
     // Step 2.
@@ -159,9 +163,7 @@ std::vector<BestMatch::DescendingMetricResult> BestMatch::SOAPSimilarity::getBes
 
         auto possiblePermutations = BestMatch::SOAPSimilarity::findPossiblePermutations(dependentMatch);
 
-        auto block = EnvironmentBlock(possiblePermutations,
-                                      permutee.molecule_.electrons(),
-                                      reference.molecule_.electrons());
+        auto block = EnvironmentBlock(possiblePermutations, permutee.molecule_, reference.molecule_);
 
         auto filteredPerms = block.filterPermutations(distanceMatrixCovarianceTolerance);
 
@@ -174,7 +176,7 @@ std::vector<BestMatch::DescendingMetricResult> BestMatch::SOAPSimilarity::getBes
     }
 
     // Step 3.
-    EnvironmentBlockJoiner jointBlocks(permutee.molecule_.electrons(), reference.molecule_.electrons());
+    EnvironmentBlockJoiner jointBlocks(permutee.molecule_, reference.molecule_);
     for (const auto &block : blocks) {
         auto conservingQ = jointBlocks.addBlock(block, distanceMatrixCovarianceTolerance);
 
@@ -187,17 +189,17 @@ std::vector<BestMatch::DescendingMetricResult> BestMatch::SOAPSimilarity::getBes
     // Step 4.
     std::vector<BestMatch::DescendingMetricResult> results;
     for (const auto &jointPermutedPermuteeIndices : jointBlocks.jointPermutedPermuteeIndicesCollection_) {
-        assert(jointPermutedPermuteeIndices.size() == size_t(N) &&
-               "The found index ordering size must match the number of electrons.");
+        assert(jointPermutedPermuteeIndices.size() == size_t(particleNumber) &&
+               "The found index ordering size must match the number of particles.");
 
         auto jointReferenceIndices = jointBlocks.jointReferenceIndices_;
 
         // construct permutations in the kit system
-        Eigen::VectorXi finalPermIndicesInKitSystem(N);
+        Eigen::VectorXi finalPermIndicesInKitSystem(particleNumber);
 
         // determine final permutation indices and lowest environment similarity value for each electron
         double lowestEnvironmentSimilarityOfParticle = 1.0; // start with maximal value
-        for (size_t i = 0; i < N; ++i) {
+        for (size_t i = 0; i < particleNumber; ++i) {
 
             auto permIdx = jointPermutedPermuteeIndices[i];
             auto refIdx = jointReferenceIndices[i];
@@ -361,7 +363,7 @@ std::deque<BestMatch::SOAPSimilarity::GrowingPerm> BestMatch::SOAPSimilarity::fi
 std::vector<Eigen::Index>
 BestMatch::SOAPSimilarity::permuteIndicesFromKitSystem(const std::vector<Eigen::Index> &kitSystemIndices,
                                                        const Eigen::PermutationMatrix<Eigen::Dynamic>& fromKitPermutation) {
-    assert(fromKitPermutation.indices().size() >= kitSystemIndices.size());
+    assert(size_t(fromKitPermutation.indices().size()) >= kitSystemIndices.size());
 
     std::vector<Eigen::Index> permutedIndices(kitSystemIndices.size());
 

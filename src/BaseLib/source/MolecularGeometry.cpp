@@ -142,6 +142,21 @@ bool MolecularGeometry::operator!=(const MolecularGeometry &other) const {
     return !(*this == other);
 }
 
+MolecularGeometry::Permutation MolecularGeometry::splitAllParticlePermutation(const Eigen::PermutationMatrix<Eigen::Dynamic> &allParticlePermutation) const {
+
+    assert(allParticlePermutation.indices().size() == numberOfEntities());
+
+    auto M = atoms().numberOfEntities();
+    auto N = electrons().numberOfEntities();
+
+    Eigen::VectorXi permutedNuclearIndices(M), permutedElectronicIndices(N);
+    permutedNuclearIndices = allParticlePermutation.indices().head(M);
+    permutedElectronicIndices = allParticlePermutation.indices().tail(N).array() - M;
+
+    return {Eigen::PermutationMatrix<Eigen::Dynamic>(permutedNuclearIndices),
+            Eigen::PermutationMatrix<Eigen::Dynamic>(permutedElectronicIndices)};
+}
+
 namespace YAML {
     Node convert<MolecularGeometry>::encode(const MolecularGeometry &rhs) {
         Node node;
