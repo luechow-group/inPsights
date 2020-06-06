@@ -110,23 +110,6 @@ void Group::permuteAll(const MolecularGeometry::Permutation &molecularPerm, std:
     }
 }
 
-Group::AveragedPositionsVector Group::averagedMaximumPositionsVector() const {
-    if (isLeaf())
-        return {representative()->maximum().positionsVector(), 1};
-    else {
-        unsigned weight = 0;
-        Eigen::VectorXd average = Eigen::VectorXd::Zero(
-                representative()->maximum().numberOfEntities()
-                *representative()->maximum().positionsVector().entityLength());
-        for (const auto &subgroup : *this) {
-            auto subgroupAverage = subgroup.averagedMaximumPositionsVector();
-            average += double(subgroupAverage.weight)* subgroupAverage.positions.asEigenVector();
-            weight += subgroupAverage.weight;
-        }
-        average /= weight;
-        return {PositionsVector(average), weight};
-    }
-}
 
 ElectronsVector Group::electronsVectorFromAveragedPositionsVector(const AveragedPositionsVector & averagedPositionsVector) const {
     return {averagedPositionsVector.positions, representative()->maximum().typesVector()};

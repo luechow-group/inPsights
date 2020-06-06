@@ -64,8 +64,6 @@ public:
         unsigned weight;
     };
 
-    AveragedPositionsVector averagedMaximumPositionsVector() const;
-
     ElectronsVector electronsVectorFromAveragedPositionsVector(const AveragedPositionsVector& averagedPositionsVector)  const;
 
     AveragedPositionsVector averagedSamplePositionsVector(const std::vector<Sample>& samples) const;
