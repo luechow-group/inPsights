@@ -37,18 +37,19 @@ namespace Settings {
 }
 YAML_SETTINGS_DEFINITION(Settings::PreClusterer)
 
-Settings::PreClusterer DistanceClusterer::settings = Settings::PreClusterer();
+Settings::PreClusterer PreClusterer::settings = Settings::PreClusterer();
 
 
-DistanceClusterer::DistanceClusterer(std::vector<Sample> &samples)
+PreClusterer::PreClusterer(std::vector<Sample> &samples)
         : IClusterer(samples){}
         
 // assumes a sorted reference vector
-void DistanceClusterer::cluster(Group& group) {
+void PreClusterer::cluster(Group& group) {
     assert(!group.empty() && "The group cannot be empty.");
 
     auto similarityRadius = settings.radius();
     auto valueIncrement = settings.valueIncrement();
+    auto atoms = group.representative()->nuclei();
 
     // insert first element
     Group supergroup({Group({*group.begin()})});
@@ -57,9 +58,9 @@ void DistanceClusterer::cluster(Group& group) {
     //Presort
     for (auto subgroup = group.begin(); subgroup != group.end(); ++subgroup) {
 
-        Group lowerRef(Reference({}, subgroup->representative()->value() - valueIncrement,
+        Group lowerRef(Reference(atoms, subgroup->representative()->value() - valueIncrement,
                 ElectronsVector(), 0));
-        Group upperRef(Reference({}, subgroup->representative()->value() + valueIncrement,
+        Group upperRef(Reference(atoms, subgroup->representative()->value() + valueIncrement,
                 ElectronsVector(), 0));
 
         auto supergroupLowerBoundIt = std::lower_bound(
@@ -95,9 +96,9 @@ void DistanceClusterer::cluster(Group& group) {
     for (auto subgroup = group.begin(); subgroup != group.end(); ++subgroup) {
 
         // Define value range of the supergroup
-        Group lowerRef(Reference({}, subgroup->representative()->value() - valueIncrement,
+        Group lowerRef(Reference(atoms, subgroup->representative()->value() - valueIncrement,
                 ElectronsVector(), 0));
-        Group upperRef(Reference({}, subgroup->representative()->value() + valueIncrement,
+        Group upperRef(Reference(atoms, subgroup->representative()->value() + valueIncrement,
                 ElectronsVector(), 0));
 
         auto supergroupLowerBoundIt = std::lower_bound(

@@ -27,12 +27,12 @@ namespace Settings {
     : ISettings(VARNAME(DensityBasedClusterer)) {
         radius.onChange_.connect(
                 [&](double value) {
-                    if(value < ::DistanceClusterer::settings.radius())
+                    if(value < ::PreClusterer::settings.radius())
                         throw std::invalid_argument(
                                 "The " + radius.name() + "=" + std::to_string(radius())
-                                + " is smaller than the " + ::DistanceClusterer::settings.name()
-                                + "::"  + ::DistanceClusterer::settings.radius.name()
-                                + " of " + std::to_string(::DistanceClusterer::settings.radius()) + ".");
+                                + " is smaller than the " + ::PreClusterer::settings.name()
+                                + "::" + ::PreClusterer::settings.radius.name()
+                                + " of " + std::to_string(::PreClusterer::settings.radius()) + ".");
                 });
         minimalClusterSize.onChange_.connect(
                 [&](size_t value) {

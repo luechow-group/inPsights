@@ -55,7 +55,7 @@ void validateClusteringSettings(const YAML::Node &inputYaml) {
                 break;
             }
             case IBlock::BlockType::DistanceClusterer: {
-                DistanceClusterer::settings = Settings::PreClusterer(clusteringNode);
+                PreClusterer::settings = Settings::PreClusterer(clusteringNode);
                 break;
             }
             case IBlock::BlockType::DensityBasedClusterer: {
@@ -206,11 +206,11 @@ int main(int argc, char *argv[]) {
                 break;
             }
             case IBlock::BlockType::DistanceClusterer: {
-                auto &settings = DistanceClusterer::settings;
+                auto &settings = PreClusterer::settings;
 
                 settings = Settings::PreClusterer(node.second);
 
-                DistanceClusterer distanceClusterer(samples);
+                PreClusterer distanceClusterer(samples);
                 if (!node.second[settings.valueIncrement.name()])
                     settings.valueIncrement = valueStandardError * 1e-2;
                 distanceClusterer.cluster(maxima);

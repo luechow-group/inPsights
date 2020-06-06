@@ -31,7 +31,7 @@ class ADensityBasedClustererTest : public ::testing::Test {
 public:
     void SetUp() override {
         spdlog::set_level(spdlog::level::off);
-        DistanceClusterer::settings.radius = 0.1; // prevent assert
+        PreClusterer::settings.radius = 0.1; // prevent assert
     }
 
     Group makeRingLikeCluster(Group &references, std::vector<Sample> &samples, unsigned n, std::default_random_engine& rng){

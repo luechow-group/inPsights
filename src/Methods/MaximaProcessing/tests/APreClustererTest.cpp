@@ -68,9 +68,9 @@ public:
 };
 
 TEST_F(ADistanceClustererTest, OneList) {
-    DistanceClusterer globalSimilaritySorter(samples);
-    DistanceClusterer::settings.radius = 1;
-    DistanceClusterer::settings.valueIncrement = 1;
+    PreClusterer globalSimilaritySorter(samples);
+    PreClusterer::settings.radius = 1;
+    PreClusterer::settings.valueIncrement = 1;
     globalSimilaritySorter.cluster(maxima);
 
     ASSERT_EQ(maxima.size(), 1);
@@ -101,9 +101,9 @@ TEST_F(ADistanceClustererTest, OneList) {
 
 
 TEST_F(ADistanceClustererTest, TwoLists) {
-    DistanceClusterer globalSimilaritySorter(samples);
-    DistanceClusterer::settings.radius = 0.1;
-    DistanceClusterer::settings.valueIncrement = 1;
+    PreClusterer globalSimilaritySorter(samples);
+    PreClusterer::settings.radius = 0.1;
+    PreClusterer::settings.valueIncrement = 1;
     globalSimilaritySorter.cluster(maxima);
 
     ASSERT_EQ(maxima.size(), 2);
@@ -138,9 +138,9 @@ TEST_F(ADistanceClustererTest, TwoLists) {
 }
 
 TEST_F(ADistanceClustererTest, DISABLED_TwoListsIncrementBorderCase) {
-    DistanceClusterer globalSimilaritySorter(samples);
-    DistanceClusterer::settings.radius = 0.02;
-    DistanceClusterer::settings.valueIncrement = 1;
+    PreClusterer globalSimilaritySorter(samples);
+    PreClusterer::settings.radius = 0.02;
+    PreClusterer::settings.valueIncrement = 1;
     globalSimilaritySorter.cluster(maxima);
 
     ASSERT_EQ(maxima.size(), 4);

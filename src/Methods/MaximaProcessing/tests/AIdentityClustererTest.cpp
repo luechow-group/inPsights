@@ -30,7 +30,7 @@ class AIdentityClustererTest : public ::testing::Test {
 public:
     void SetUp() override {
         spdlog::set_level(spdlog::level::off);
-        DistanceClusterer::settings.radius = 10; // prevent assert
+        PreClusterer::settings.radius = 10; // prevent assert
     }
 
     std::pair<Group, std::vector<Sample>> prepareRandomTripletMaxima(std::default_random_engine &rng) {
@@ -71,7 +71,7 @@ public:
     std::pair<Group, std::vector<Sample>> prepareRandomSingletMaxima(std::default_random_engine &rng) {
         Group singletMaxima;
         std::vector<Sample> singletSamples;
-        AtomsVector  atoms = TestMolecules::H2::ElectronsInCores::normal.atoms();
+        AtomsVector atoms = TestMolecules::H2::ElectronsInCores::normal.atoms();
 
         // Multiplicity = 1: Spin flip is possible.
         singletMaxima = {
