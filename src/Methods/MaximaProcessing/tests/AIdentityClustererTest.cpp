@@ -18,6 +18,7 @@
 #include <gmock/gmock.h>
 #include <Reference.h>
 #include <Sample.h>
+#include <TestMolecules.h>
 #include <IdentityClusterer.h>
 #include <PreClusterer.h>
 #include <algorithm>
@@ -35,7 +36,7 @@ public:
     std::pair<Group, std::vector<Sample>> prepareRandomTripletMaxima(std::default_random_engine &rng) {
         Group tripletMaxima;
         std::vector<Sample> tripletSamples;
-        AtomsVector atoms;
+        AtomsVector atoms = TestMolecules::H2::ElectronsInCores::normal.atoms();
 
         // Multiplicity = 3: Spin flip is not possible.
         tripletMaxima = {
@@ -70,7 +71,7 @@ public:
     std::pair<Group, std::vector<Sample>> prepareRandomSingletMaxima(std::default_random_engine &rng) {
         Group singletMaxima;
         std::vector<Sample> singletSamples;
-        AtomsVector atoms;
+        AtomsVector  atoms = TestMolecules::H2::ElectronsInCores::normal.atoms();
 
         // Multiplicity = 1: Spin flip is possible.
         singletMaxima = {

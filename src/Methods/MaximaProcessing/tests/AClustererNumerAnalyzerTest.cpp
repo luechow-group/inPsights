@@ -30,6 +30,8 @@ public:
     AtomsVector atoms;
 
     void SetUp() override {
+        atoms = TestMolecules::H2::ElectronsInCores::normal.atoms();
+
         g1 = Group({atoms, 1,TestMolecules::H2::ElectronsInCores::normal.electrons(), 0});
         g2 = Group({atoms, 1,TestMolecules::H2::ElectronsInCores::ionicRight.electrons(), 1});
         g3a = Group({atoms, 2,TestMolecules::H2::ElectronsInCores::ionicLeft.electrons(), 2});

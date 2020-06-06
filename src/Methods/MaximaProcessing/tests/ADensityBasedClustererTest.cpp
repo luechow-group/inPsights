@@ -35,10 +35,10 @@ public:
     }
 
     Group makeRingLikeCluster(Group &references, std::vector<Sample> &samples, unsigned n, std::default_random_engine& rng){
-        const auto &normal = TestMolecules::fourElectrons::normal.electrons();
+        const auto &normal = TestMolecules::fourElectrons::normal;
 
         // emplace first element (the first elements determines the ordering of the cluster)
-        references.emplace_back(Reference({}, 0, normal, 0));
+        references.emplace_back(Reference(normal.atoms(), 0, normal.electrons(), 0));
 
         // start with second element
         bool anyWrong = false;
@@ -46,12 +46,12 @@ public:
             for (unsigned i = 1; i < n; ++i) {
                 double angle = Constant::pi/2.0*double(i)/double(n); // 90°
                 Eigen::Vector3d zAxis = {0,0,1};
-                auto evCopy = normal;
+                auto evCopy = normal.electrons();
                 evCopy.positionsVector().rotateAroundOrigin(angle, zAxis);
 
                 // random permutation
                 evCopy.permute(evCopy.randomPermutation(rng));
-                references.emplace_back(Reference({}, std::pow(std::sin(angle), 2), evCopy, 0));
+                references.emplace_back(Reference(normal.atoms(), std::pow(std::sin(angle), 2), evCopy, 0));
 
                 Sample s(evCopy, Eigen::VectorXd::Random(normal.numberOfEntities()));
                 samples.emplace_back(std::move(s));
@@ -115,7 +115,7 @@ TEST_F(ADensityBasedClustererTest, RotationallySymmetricAndPointLikeCluster){
     unsigned n = 20;
     unsigned m = 5;
 
-    const auto &ionic = TestMolecules::fourElectrons::ionic.electrons();
+    const auto &ionic = TestMolecules::fourElectrons::ionic;
 
     // check different seeds
     auto randomSeed = static_cast<unsigned long>(std::clock());
@@ -128,14 +128,14 @@ TEST_F(ADensityBasedClustererTest, RotationallySymmetricAndPointLikeCluster){
         std::vector<Sample> samples;
         makeRingLikeCluster(references, samples, n, rng);
 
-        references.emplace_back(Reference({}, 10, ionic, 0));
+        references.emplace_back(Reference(ionic.atoms(), 10, ionic.electrons(), 0));
         for (unsigned i = 1; i < m; ++i) {
-            auto evCopy = ionic;
+            auto evCopy = ionic.electrons();
             evCopy.positionsVector().shake(DensityBasedClusterer::settings.radius.get(), rng);
 
             // random permutation
             evCopy.permute(evCopy.randomPermutation(rng));
-            references.emplace_back(Reference({}, 10, evCopy, 0));
+            references.emplace_back(Reference(ionic.atoms(), 10, evCopy, 0));
 
             Sample s(evCopy, Eigen::VectorXd::Random(ionic.numberOfEntities()));
             samples.emplace_back(std::move(s));

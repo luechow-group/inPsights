@@ -18,6 +18,7 @@
 #include <gmock/gmock.h>
 #include <Reference.h>
 #include <Sample.h>
+#include <TestMolecules.h>
 #include <PreClusterer.h>
 #include <IdentityClusterer.h>
 #include <algorithm>
@@ -35,6 +36,9 @@ public:
     void SetUp() override {
         spdlog::set_level(spdlog::level::off);
         IdentityClusterer::settings.radius = 1e-4; // prevent assert
+
+        atoms = TestMolecules::H2::ElectronsInCores::normal.atoms();
+
 
         ekin.resize(2);
         ekin[0] = 0;
