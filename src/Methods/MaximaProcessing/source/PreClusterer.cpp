@@ -17,8 +17,8 @@
 
 #include <IdentityClusterer.h>
 #include <PreClusterer.h>
+#include <Reference.h>
 #include <BestMatchDistance.h>
-#include <ValueSorter.h>
 
 namespace Settings {
     PreClusterer::PreClusterer()

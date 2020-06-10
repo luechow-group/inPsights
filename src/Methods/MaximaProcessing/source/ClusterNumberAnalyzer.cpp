@@ -18,7 +18,6 @@
 #include <ClusterNumberAnalyzer.h>
 #include <GraphAnalysis.h>
 #include <GroupAnalysis.h>
-#include <ValueSorter.h>
 #include <spdlog/spdlog.h>
 #include <ErrorHandling.h>
 

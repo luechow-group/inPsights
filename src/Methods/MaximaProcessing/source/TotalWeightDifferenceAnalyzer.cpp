@@ -18,7 +18,6 @@
 #include "TotalWeightDifferenceAnalyzer.h"
 #include <GraphAnalysis.h>
 #include <GroupAnalysis.h>
-#include <ValueSorter.h>
 #include <spdlog/spdlog.h>
 #include <algorithm>
 #include <MapUtils.h>

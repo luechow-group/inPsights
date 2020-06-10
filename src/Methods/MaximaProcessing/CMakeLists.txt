@@ -18,7 +18,6 @@ set(HEADER_FILES
         include/SOAPClusterer.h
         include/MaximaProcessor.h
         include/GeneralStatistics.h
-        include/ValueSorter.h
         include/MaximaProcessingSettings.h
         include/VoxelCubeGeneration.h
         include/EnergyPartitioning.h
