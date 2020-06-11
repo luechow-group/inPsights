@@ -17,7 +17,6 @@
 
 #include <EnergyStatistics.h>
 
-
 namespace EnergyStatistics {
     ElectronicEnergy::ElectronicEnergy(
             const VectorStatistics &Te,

@@ -26,6 +26,7 @@
 #include <VoxelCubeOverlapCalculation.h>
 #include <spdlog/spdlog.h>
 #include <SpinCorrelationValueHistogram.h>
+#include <LocalParticleEnergiesCalculation.h>
 
 MotifEnergyCalculator::Result MotifEnergyCalculator::partition(
         const Group &group,
@@ -112,7 +113,7 @@ unsigned long MaximaProcessor::addReference(const Reference &reference) {
         Eigen::MatrixXd Vee = CoulombPotential::energies(electrons);
         Eigen::MatrixXd Ven = CoulombPotential::energies(electrons, permutedNuclei);
 
-        Eigen::VectorXd Ee = EnergyPartitioning::ParticleBased::oneElectronEnergies(Te, Vee, Ven, Vnn_);
+        Eigen::VectorXd Ee = EnergyPartitioning::ParticleBased::oneElectronEnergies(Te, Vee, Ven, Vnn_); // TODO wrong and deprecated -> remove
         Eigen::MatrixXd Ree = Metrics::positionalDistances(electrons.positionsVector());
         Eigen::MatrixXd Ren = Metrics::positionalDistances(electrons.positionsVector(), permutedNuclei.positionsVector());
 
@@ -132,6 +133,7 @@ unsigned long MaximaProcessor::addReference(const Reference &reference) {
 }
 
 
+// TODO every group should know its total count at merging already => add count as a member
 size_t  MaximaProcessor::addAllReferences(const Group &group) {
     unsigned long totalCount = 0;
     if(group.isLeaf())
@@ -155,7 +157,9 @@ std::vector<ElectronsVector> MaximaProcessor::getAllRepresentativeMaxima(const G
 }
 
 void MaximaProcessor::calculateStatistics(const Group &maxima,
-                                          const std::vector<std::vector<std::vector<size_t>>> & nucleiMergeLists){
+                                          const std::vector<std::vector<std::vector<size_t>>> & nucleiMergeLists,
+                                          const std::vector<size_t> &nucleiIndices
+                                          ){
     using namespace YAML;
 
     yamlDocument_ << Key << "Vnn" << Comment("[Eh]") << Value << VnnStats_
@@ -166,6 +170,10 @@ void MaximaProcessor::calculateStatistics(const Group &maxima,
     double totalWeight = 0.0;
 
     SpinCorrelationValueHistogram spinCorrelationDistribution(12); // => 25 bns in total
+
+    LocalParticleEnergiesCalculator localParticleEnergiesCalculator(
+            samples_, atoms_, nucleiIndices,
+            ParticleSelection::settings.maximalCount());
 
     for (auto& group : maxima) {
 
@@ -215,6 +223,9 @@ void MaximaProcessor::calculateStatistics(const Group &maxima,
 
         auto weight = double(TeStats_.getTotalWeight())/double(samples_.size());
         if(weight >= MaximaProcessing::settings.minimalClusterWeight.get()) {
+
+            localParticleEnergiesCalculator.add(group);
+
             totalWeight += weight;
 
             ElectronsVector sampleAverage = {group.electronsVectorFromAveragedPositionsVector(group.averagedSamplePositionsVector(samples_))};
@@ -236,6 +247,9 @@ void MaximaProcessor::calculateStatistics(const Group &maxima,
     auto hist = spinCorrelationDistribution.getHistogramVector();
     hist /= hist.sum();
     yamlDocument_ << Key << "SpinCorrelationDistribution" << Value << hist;
+
+    yamlDocument_ << Key << "LocalParticleEnergiesCalculation"  << Value << localParticleEnergiesCalculator;
+
 
 
     assert(yamlDocument_.good());

@@ -18,7 +18,7 @@
 #ifndef INPSIGHTS_ENERGYSTATISTICS_H
 #define INPSIGHTS_ENERGYSTATISTICS_H
 
-#include "GeneralStatistics.h"
+#include "Statistics.h"
 
 namespace EnergyStatistics {
 

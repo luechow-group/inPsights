@@ -59,7 +59,9 @@ public:
     std::vector<ElectronsVector> getAllRepresentativeMaxima(const Group &group);
 
     void calculateStatistics(const Group &maxima,
-                             const std::vector<std::vector<std::vector<size_t>>> &nucleiMergeLists);
+                             const std::vector<std::vector<std::vector<size_t>>> &nucleiMergeLists,
+                             const std::vector<size_t> &nucleiIndices
+                             );
 
     YAML::Node getYamlNode();
 

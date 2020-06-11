@@ -370,7 +370,14 @@ int main(int argc, char *argv[]) {
         }
     }
 
-    maximaProcessor.calculateStatistics(maxima, nucleiMergeLists);
+    // local particle energies
+    std::vector<size_t> nucleiIndices(0);
+    if(inputYaml["LocalParticleEnergies"]) {
+        auto collectiveEnergyNode = inputYaml["LocalParticleEnergies"];
+        nucleiIndices = collectiveEnergyNode["nuclei"].as<std::vector<size_t>>();
+    }
+
+    maximaProcessor.calculateStatistics(maxima, nucleiMergeLists, nucleiIndices);
 
     outputYaml << EndMap << EndDoc;
     outputYaml << BeginDoc << Comment("final settings") << usedSettings << EndDoc;

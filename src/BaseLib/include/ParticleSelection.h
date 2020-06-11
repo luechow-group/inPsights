@@ -29,7 +29,7 @@ namespace Settings {
     class ParticleSelection : public ISettings {
     public:
         Property<double> maximalDistance = {10.0, VARNAME(maximalDistance)};
-        Property<long> maximalCount = {2, VARNAME(maximalCount)};
+        Property<long> maximalCount = {0, VARNAME(maximalCount)};
         Property<std::string> distanceMode = {"minimum", VARNAME(distanceMode)}; //TODO
         Property<bool> invertSelection = {false, VARNAME(invertSelection)};
         Property<bool> valenceOnly = {true, VARNAME(valenceOnly)};
