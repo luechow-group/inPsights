@@ -31,9 +31,10 @@ LocalParticleEnergiesCalculator::LocalParticleEnergiesCalculator(
         {}
 
 void LocalParticleEnergiesCalculator::add(const Group &group) {
-    auto numberOfElectrons = group.representative()->maximum().numberOfEntities();
+    size_t numberOfElectrons = group.representative()->maximum().numberOfEntities();
 
-    if (group.isLeaf() && group.getSelectedElectronsCount() == size_t(selectedElectronsCount_)) {
+    // add only, if the wanted selectedElectronsCount was really found within the group
+    if (group.isLeaf() && size_t(group.getSelectedElectronsCount()) == selectedElectronsCount_) {
 
         const auto &ref = *group.representative();
         auto permutedNuclei = ref.nuclei();
@@ -140,10 +141,8 @@ void LocalParticleEnergiesCalculator::add(const Group &group) {
             Ven.rest.add(Eigen::Matrix<double,1,1>(sumVen_rest));
             Ven.inter.add(Eigen::Matrix<double,1,1>(sumVen_inter));
 
-            E.selected.add(Eigen::Matrix<double,1,1>(
-                    sumTe_selected + sumVee_selected + sumVen_selected + sumVnn_selected));
-            E.rest.add(Eigen::Matrix<double,1,1>(
-                    sumTe_rest + sumVee_rest + sumVen_rest + sumVnn_rest));
+            E.selected.add(Eigen::Matrix<double,1,1>(sumTe_selected + sumVee_selected + sumVen_selected + sumVnn_selected));
+            E.rest.add(Eigen::Matrix<double,1,1>(sumTe_rest + sumVee_rest + sumVen_rest + sumVnn_rest));
             E.inter.add(Eigen::Matrix<double,1,1>(sumVee_inter + sumVen_inter + sumVnn_inter));
         }
     } else {

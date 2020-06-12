@@ -23,6 +23,7 @@
 #include <VoxelCube.h>
 #include <Motifs.h>
 #include <EnergyStatistics.h>
+#include <LocalParticleEnergiesCalculation.h>
 
 class ClusterData {
 public:
@@ -45,6 +46,31 @@ public:
                 const MatrixStatistics RenStats,
                 const std::vector<VoxelCube>& seds,
                 const Eigen::MatrixXd& sedOverlaps
+    );
+
+    // TODO Refactor (hacky solution for local clustering)
+    ClusterData(unsigned totalNumberOfStructures,
+                const std::vector<ElectronsVector> & exemplaricStructures,
+                const ElectronsVector& sampleAverage,
+                const SingleValueStatistics & valueStats,
+                const VectorStatistics & TeStats,
+                const VectorStatistics & EeStats,
+                const TriangularMatrixStatistics & SeeStats,
+                const TriangularMatrixStatistics & VeeStats,
+                const MatrixStatistics & VenStats,
+                const Motifs& motifs,
+                const SingleValueStatistics & EtotalStats,
+                const VectorStatistics & intraMotifEnergyStats,
+                const TriangularMatrixStatistics & interMotifEnergyStats,
+                const TriangularMatrixStatistics & ReeStats,
+                const MatrixStatistics RenStats,
+                const std::vector<VoxelCube>& seds,
+                const Eigen::MatrixXd& sedOverlaps,
+                const LocalParticleEnergiesCalculator::LocalEnergyResults& ELoc,
+                const LocalParticleEnergiesCalculator::LocalEnergyResults& TeLoc,
+                const LocalParticleEnergiesCalculator::LocalEnergyResults& VeeLoc,
+                const LocalParticleEnergiesCalculator::LocalEnergyResults& VenLoc,
+                const LocalParticleEnergiesCalculator::LocalEnergyResults& VnnLoc
                 );
 
     ElectronsVector representativeStructure() const;
@@ -60,6 +86,7 @@ public:
     MatrixStatistics RenStats_;
     std::vector<VoxelCube> voxelCubes_;
     Eigen::MatrixXd overlaps_;
+    LocalParticleEnergiesCalculator::LocalEnergyResults ELoc_, TeLoc_, VeeLoc_, VenLoc_, VnnLoc_;
 };
 
 namespace YAML {

@@ -226,6 +226,12 @@ void MaximaProcessor::calculateStatistics(const Group &maxima,
 
             localParticleEnergiesCalculator.add(group);
 
+            LocalParticleEnergiesCalculator localParticleEnergiesCalculatorPerCluster(
+                    samples_, atoms_, nucleiIndices,
+                    ParticleSelection::settings.maximalCount());
+
+            localParticleEnergiesCalculatorPerCluster.add(group);
+
             totalWeight += weight;
 
             ElectronsVector sampleAverage = {group.electronsVectorFromAveragedPositionsVector(group.averagedSamplePositionsVector(samples_))};
@@ -234,7 +240,13 @@ void MaximaProcessor::calculateStatistics(const Group &maxima,
                     valueStats_, TeStats_, EeStats_,
                                          SeeStats_, VeeStats_, VenStats_,
                                          motifs, EtotalStats_, intraMotifEnergyStats, interMotifEnergyStats,
-                                         ReeStats_, RenStats_, voxelCubes, overlaps);
+                                         ReeStats_, RenStats_, voxelCubes, overlaps,
+                                         localParticleEnergiesCalculatorPerCluster.E,
+                                         localParticleEnergiesCalculatorPerCluster.Te,
+                                         localParticleEnergiesCalculatorPerCluster.Vee,
+                                         localParticleEnergiesCalculatorPerCluster.Ven,
+                                         localParticleEnergiesCalculatorPerCluster.Vnn
+                                         );
         }
     }
     spdlog::info("Overall count {}. Some structures might be lost "
