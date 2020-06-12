@@ -191,6 +191,11 @@ void MaximaProcessor::calculateStatistics(const Group &maxima,
         totalCount += addAllReferences(group); // this sets all statistic objects internally
         auto structures = getAllRepresentativeMaxima(group);
 
+        auto maximalNumberOfStructuresToPrint = MaximaProcessing::settings.maximalNumberOfStructuresToPrint();
+
+        if(structures.size() > maximalNumberOfStructuresToPrint)
+            structures.resize(maximalNumberOfStructuresToPrint);
+
         // SpinCorrelationDistribution
         spinCorrelationDistribution.addSpinStatistic(SeeStats_);
         
