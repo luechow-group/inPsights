@@ -66,11 +66,8 @@ public:
                 const MatrixStatistics RenStats,
                 const std::vector<VoxelCube>& seds,
                 const Eigen::MatrixXd& sedOverlaps,
-                const LocalParticleEnergiesCalculator::LocalEnergyResults& ELoc,
-                const LocalParticleEnergiesCalculator::LocalEnergyResults& TeLoc,
-                const LocalParticleEnergiesCalculator::LocalEnergyResults& VeeLoc,
-                const LocalParticleEnergiesCalculator::LocalEnergyResults& VenLoc,
-                const LocalParticleEnergiesCalculator::LocalEnergyResults& VnnLoc
+                const LocalParticleEnergiesCalculator::ResultsBundle<LocalParticleEnergiesCalculator::LocalEnergyResults>& localEnergies,
+                const LocalParticleEnergiesCalculator::ResultsBundle<LocalParticleEnergiesCalculator::LocalBondEnergyResults>& localBondEnergies
                 );
 
     ElectronsVector representativeStructure() const;
@@ -86,7 +83,8 @@ public:
     MatrixStatistics RenStats_;
     std::vector<VoxelCube> voxelCubes_;
     Eigen::MatrixXd overlaps_;
-    LocalParticleEnergiesCalculator::LocalEnergyResults ELoc_, TeLoc_, VeeLoc_, VenLoc_, VnnLoc_;
+    LocalParticleEnergiesCalculator::ResultsBundle<LocalParticleEnergiesCalculator::LocalEnergyResults> localEnergies_;
+    LocalParticleEnergiesCalculator::ResultsBundle<LocalParticleEnergiesCalculator::LocalBondEnergyResults> localBondEnergies_;
 };
 
 namespace YAML {

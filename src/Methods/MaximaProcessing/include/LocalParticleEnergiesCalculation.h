@@ -29,6 +29,17 @@ public:
         SingleValueStatistics selected, rest, inter;
     };
 
+    struct LocalBondEnergyResults {
+        SingleValueStatistics intraBond, intraRest, interBondRest;
+        VectorStatistics intraCores, interCoresBond, interCoresRest;
+        TriangularMatrixStatistics interCoresCore;
+    };
+
+    template<typename T>
+    struct ResultsBundle {
+        T E, Te, Vee, Ven, Vnn;
+    };
+
     LocalParticleEnergiesCalculator(
             const std::vector<Sample> &samples,
             const AtomsVector &atoms,
@@ -41,8 +52,19 @@ public:
     std::vector<size_t> selectedNucleiIndices_;
     size_t selectedElectronsCount_;
 
-    LocalEnergyResults E, Te, Vee, Ven, Vnn;
+    ResultsBundle<LocalEnergyResults> localEnergies;
+    ResultsBundle<LocalBondEnergyResults> localBondEnergies;
 
+
+    void selectedRestInter(const Group &group, size_t numberOfElectrons, const AtomsVector &permutedNuclei,
+            const Eigen::MatrixXd &VnnMat);
+
+    void bondEnergyCalculation(const Group &group, size_t numberOfElectrons, const AtomsVector &permutedNuclei,
+                               const Eigen::MatrixXd &VnnMat) ;
+
+    void createIndiceLists(size_t numberOfElectrons, const AtomsVector &permutedNuclei,
+                           std::vector<size_t> &selectedElectronIndices, std::vector<size_t> &remainingElectronIndices,
+                           std::vector<size_t> &remainingNucleiIndices) const;
 };
 namespace YAML {
     class Node;
@@ -57,13 +79,27 @@ namespace YAML {
     //    //static bool decode(const Node& node, MolecularGeometry& rhs);
     //};
     Emitter& operator<< (Emitter& out, const LocalParticleEnergiesCalculator::LocalEnergyResults& rhs);
+    Emitter& operator<< (Emitter& out, const LocalParticleEnergiesCalculator::LocalBondEnergyResults& rhs);
 
+
+    template<typename Type>
+    Emitter &operator<<(Emitter &out, const LocalParticleEnergiesCalculator::ResultsBundle<Type> &rhs) {
+        out << BeginMap
+            << Key << "E" << Comment("[Eh]") << Value << rhs.E
+            << Key << "Te" << Comment("[Eh]") << Value << rhs.Te
+            << Key << "Vee" << Comment("[Eh]") << Value << rhs.Vee
+            << Key << "Ven" << Comment("[Eh]") << Value << rhs.Ven
+            << Key << "Vnn" << Comment("[Eh]") << Value << rhs.Vnn
+            << EndMap;
+        return out;
+    }
 
     //template<>
     //struct convert<LocalParticleEnergiesCalculator> {
     //    static Node encode(const LocalParticleEnergiesCalculator &rhs);
     //};
     Emitter& operator<< (Emitter& out, const LocalParticleEnergiesCalculator& rhs);
+
 
 }
 

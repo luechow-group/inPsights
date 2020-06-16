@@ -246,11 +246,8 @@ void MaximaProcessor::calculateStatistics(const Group &maxima,
                                          SeeStats_, VeeStats_, VenStats_,
                                          motifs, EtotalStats_, intraMotifEnergyStats, interMotifEnergyStats,
                                          ReeStats_, RenStats_, voxelCubes, overlaps,
-                                         localParticleEnergiesCalculatorPerCluster.E,
-                                         localParticleEnergiesCalculatorPerCluster.Te,
-                                         localParticleEnergiesCalculatorPerCluster.Vee,
-                                         localParticleEnergiesCalculatorPerCluster.Ven,
-                                         localParticleEnergiesCalculatorPerCluster.Vnn
+                                         localParticleEnergiesCalculatorPerCluster.localEnergies,
+                                         localParticleEnergiesCalculatorPerCluster.localBondEnergies
                                          );
         }
     }

@@ -70,11 +70,8 @@ ClusterData::ClusterData(unsigned totalNumberOfStructures,
             const MatrixStatistics RenStats,
             const std::vector<VoxelCube> &seds,
             const Eigen::MatrixXd& sedOverlaps,
-            const LocalParticleEnergiesCalculator::LocalEnergyResults& ELoc,
-            const LocalParticleEnergiesCalculator::LocalEnergyResults& TeLoc,
-            const LocalParticleEnergiesCalculator::LocalEnergyResults& VeeLoc,
-            const LocalParticleEnergiesCalculator::LocalEnergyResults& VenLoc,
-            const LocalParticleEnergiesCalculator::LocalEnergyResults& VnnLoc
+            const LocalParticleEnergiesCalculator::ResultsBundle<LocalParticleEnergiesCalculator::LocalEnergyResults>& localEnergies,
+            const LocalParticleEnergiesCalculator::ResultsBundle<LocalParticleEnergiesCalculator::LocalBondEnergyResults>& localBondEnergies
             )
         :
         N_(totalNumberOfStructures),
@@ -92,11 +89,8 @@ ClusterData::ClusterData(unsigned totalNumberOfStructures,
         RenStats_(RenStats),
         voxelCubes_(seds),
         overlaps_(sedOverlaps),
-        ELoc_(ELoc),
-        TeLoc_(TeLoc),
-        VeeLoc_(VeeLoc),
-        VenLoc_(VenLoc),
-        VnnLoc_(VnnLoc)
+        localEnergies_(localEnergies),
+        localBondEnergies_(localBondEnergies)
         {};
 
 ElectronsVector ClusterData::representativeStructure() const {
@@ -180,13 +174,10 @@ namespace YAML {
             << Key << "Etotal" << Comment("[Eh]") << Value << rhs.EtotalStats_
             << Key << "IntraMotifEnergies" << Comment("[Eh]") << Value << rhs.intraMotifEnergyStats_
             << Key << "InterMotifEnergies" << Comment("[Eh]") << Value << rhs.interMotifEnergyStats_
-            << Key << "LocalParticleEnergiesCalculation"
+            << Key << "LocalParticleEnergiesCalculation" << Value
                 << BeginMap
-                << Key << "E" << Comment("[Eh]") << Value << rhs.ELoc_
-                << Key << "Te" << Comment("[Eh]") << Value << rhs.TeLoc_
-                << Key << "Vee" << Comment("[Eh]") << Value << rhs.VeeLoc_
-                << Key << "Ven" << Comment("[Eh]") << Value << rhs.VenLoc_
-                << Key << "Vnn" << Comment("[Eh]") << Value << rhs.VnnLoc_
+                << Key << "LocalEnergies" << Value << rhs.localEnergies_
+                << Key << "LocalBondEnergies" << Value << rhs.localBondEnergies_
                 << EndMap
             << Key << "Structures" << Comment("[a0]") << Value << rhs.exemplaricStructures_ << Newline
             << Key << "SpinCorrelations" << Comment("[]") << Value << rhs.SeeStats_
