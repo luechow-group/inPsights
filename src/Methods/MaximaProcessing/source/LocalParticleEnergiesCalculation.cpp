@@ -196,6 +196,20 @@ void LocalParticleEnergiesCalculator::bondEnergyCalculation(
             selectedNucleiWithoutCores.emplace_back(k);
     std::sort(std::begin(selectedNucleiWithoutCores), std::end(selectedNucleiWithoutCores));
 
+
+
+    spdlog::info("selected electrons: {}", ToString::stdvectorLongUIntToString(selectedElectronIndices));
+    spdlog::info("remaining electrons: {}", ToString::stdvectorLongUIntToString(remainingElectronIndices));
+
+    spdlog::info("selected nuclei: {}", ToString::stdvectorLongUIntToString(selectedNucleiIndices_));
+    //for(auto [nucleusIndex, electronIndices] : coreElectronsMap)
+    //    spdlog::info("core: {} core electrons: {}", nucleusIndex, electronIndices);
+    spdlog::info("selected nuclei without cores: {}", ToString::stdvectorLongUIntToString(selectedNucleiWithoutCores));
+    spdlog::info("remaining nuclei: {}\n", ToString::stdvectorLongUIntToString(remainingNucleiIndices));
+
+
+
+
     //std::vector<size_t> remainingNucleiWithoutCores;
     //for(auto k : remainingNucleiIndices)
     //    if(coreElectronsMap.find(k) == std::end(coreElectronsMap))
@@ -376,7 +390,6 @@ void LocalParticleEnergiesCalculator::bondEnergyCalculation(
             }
         }
 
-
         for (auto [k, electronIndices] : coreElectronsMap) {
             for (auto m : remainingNucleiIndices) {
 
@@ -434,7 +447,6 @@ void LocalParticleEnergiesCalculator::bondEnergyCalculation(
         std::map<Eigen::Index, double> sumVen_intraCores, sumVen_interCoresBond, sumVen_interCoresRest;
         std::map<Eigen::Index, std::map<Eigen::Index, double>> sumVen_interCoresCore;
 
-
         for (auto i : selectedElectronIndices)
             for (auto k : selectedNucleiWithoutCores)
                 sumVen_intraBond += VenMat(i, k);
@@ -444,8 +456,11 @@ void LocalParticleEnergiesCalculator::bondEnergyCalculation(
                 sumVen_intraRest += VenMat(remainingElectronIndex, remainingNucleiIndex);
 
         for (auto i : selectedElectronIndices)
-            for (auto j : remainingNucleiIndices)
-                sumVen_interBondRest += VenMat(i, j);
+            for (auto k : remainingNucleiIndices)
+                sumVen_interBondRest += VenMat(i, k);
+        for (auto i : remainingElectronIndices)
+            for (auto k : selectedNucleiWithoutCores)
+                sumVen_interBondRest += VenMat(i, k);
 
         for (auto [nucleusIndex, electronIndices] : coreElectronsMap){
             sumVen_intraCores[nucleusIndex] = 0.0;
@@ -492,7 +507,6 @@ void LocalParticleEnergiesCalculator::bondEnergyCalculation(
             }
         }
 
-        // Ven
         localBondEnergies.Ven.intraBond.add(Eigen::Matrix<double,1,1>(sumVen_intraBond));
         localBondEnergies.Ven.intraRest.add(Eigen::Matrix<double,1,1>(sumVen_intraRest));
         localBondEnergies.Ven.interBondRest.add(Eigen::Matrix<double,1,1>(sumVen_interBondRest));

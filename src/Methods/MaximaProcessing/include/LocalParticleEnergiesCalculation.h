@@ -35,9 +35,9 @@ public:
         TriangularMatrixStatistics interCoresCore;
     };
 
-    template<typename T>
+    template<typename Type>
     struct ResultsBundle {
-        T E, Te, Vee, Ven, Vnn;
+        Type E, Te, Vee, Ven, Vnn;
     };
 
     LocalParticleEnergiesCalculator(
