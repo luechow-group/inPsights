@@ -261,7 +261,7 @@ void LocalParticleEnergiesCalculator::bondEnergyCalculation(
         localBondEnergies.Te.interCoresBond.add(sumTe_interCoresBondVec);
         localBondEnergies.Te.interCoresRest.add(sumTe_interCoresRestVec);
         localBondEnergies.Te.interCoresCore.add(sumTe_interCoresCoreMat);
-
+        localBondEnergies.Te.intraBondAndInterCoresBond.add(Eigen::Matrix<double,1,1>(sumTe_intraBond));
 
         // Vee
         double sumVee_intraBond = 0.0, sumVee_intraRest = 0.0, sumVee_interBondRest = 0.0;
@@ -340,11 +340,14 @@ void LocalParticleEnergiesCalculator::bondEnergyCalculation(
         Eigen::VectorXd sumVee_interCoresRestVec = Eigen::VectorXd::Zero(coreElectronsMap.size());
         Eigen::MatrixXd sumVee_interCoresCoreMat = Eigen::MatrixXd::Zero(coreElectronsMap.size(),coreElectronsMap.size());
 
+
+        double sumVee_intraBondAndInterCoresBond = sumVee_intraBond;
         counter = 0;
         for (auto [nucleusIndex, electronIndices] : coreElectronsMap) {
 
             sumVee_intraCoresVec[counter] = sumVee_intraCores[nucleusIndex];
             sumVee_interCoresBondVec[counter] = sumVee_interCoresBond[nucleusIndex];
+            sumVee_intraBondAndInterCoresBond += sumVee_interCoresBond[nucleusIndex];
             sumVee_interCoresRestVec[counter] = sumVee_interCoresRest[nucleusIndex];
 
             size_t counter2 = 0;
@@ -358,6 +361,8 @@ void LocalParticleEnergiesCalculator::bondEnergyCalculation(
         localBondEnergies.Vee.interCoresBond.add(sumVee_interCoresBondVec);
         localBondEnergies.Vee.interCoresRest.add(sumVee_interCoresRestVec);
         localBondEnergies.Vee.interCoresCore.add(sumVee_interCoresCoreMat);
+        localBondEnergies.Vee.intraBondAndInterCoresBond.add(Eigen::Matrix<double,1,1>(sumVee_intraBondAndInterCoresBond));
+
 
         // Vnn
         double sumVnn_intraBond = 0.0, sumVnn_intraRest = 0.0, sumVnn_interBondRest = 0.0;
@@ -424,9 +429,11 @@ void LocalParticleEnergiesCalculator::bondEnergyCalculation(
         Eigen::MatrixXd sumVnn_interCoresCoreMat = Eigen::MatrixXd::Zero(coreElectronsMap.size(), coreElectronsMap.size());
 
         counter = 0;
+        double sumVnn_intraBondAndInterCoresBond = sumVnn_intraBond;
         for (auto [nucleusIndex, electronIndices] : coreElectronsMap) {
 
             sumVnn_interCoresBondVec[counter] = sumVnn_interCoresBond[nucleusIndex];
+            sumVnn_intraBondAndInterCoresBond += sumVnn_interCoresBond[nucleusIndex];
             sumVnn_interCoresRestVec[counter] = sumVnn_interCoresRest[nucleusIndex];
 
             size_t counter2 = 0;
@@ -436,10 +443,11 @@ void LocalParticleEnergiesCalculator::bondEnergyCalculation(
             }
             counter++;
         }
+
         localBondEnergies.Vnn.interCoresBond.add(sumVnn_interCoresBondVec);
         localBondEnergies.Vnn.interCoresRest.add(sumVnn_interCoresRestVec);
         localBondEnergies.Vnn.interCoresCore.add(sumVnn_interCoresCoreMat);
-
+        localBondEnergies.Vnn.intraBondAndInterCoresBond.add(Eigen::Matrix<double,1,1>(sumVnn_intraBondAndInterCoresBond));
 
         // Ven
         double sumVen_intraBond = 0.0, sumVen_intraRest = 0.0, sumVen_interBondRest = 0.0;
@@ -515,6 +523,7 @@ void LocalParticleEnergiesCalculator::bondEnergyCalculation(
             }
         }
 
+
         localBondEnergies.Ven.intraBond.add(Eigen::Matrix<double,1,1>(sumVen_intraBond));
         localBondEnergies.Ven.intraRest.add(Eigen::Matrix<double,1,1>(sumVen_intraRest));
         localBondEnergies.Ven.interBondRest.add(Eigen::Matrix<double,1,1>(sumVen_interBondRest));
@@ -525,10 +534,12 @@ void LocalParticleEnergiesCalculator::bondEnergyCalculation(
         Eigen::MatrixXd sumVen_interCoresCoreMat = Eigen::MatrixXd::Zero(coreElectronsMap.size(),coreElectronsMap.size());
 
         counter = 0;
+        double sumVen_intraBondAndInterCoresBond = sumVen_intraBond;
         for (auto [nucleusIndex, electronIndices] : coreElectronsMap) {
 
             sumVen_intraCoresVec[counter] = sumVen_intraCores[nucleusIndex];
             sumVen_interCoresBondVec[counter] = sumVen_interCoresBond[nucleusIndex];
+            sumVen_intraBondAndInterCoresBond += sumVen_interCoresBond[nucleusIndex];
             sumVen_interCoresRestVec[counter] = sumVen_interCoresRest[nucleusIndex];
 
             size_t counter2 = 0;
@@ -543,6 +554,7 @@ void LocalParticleEnergiesCalculator::bondEnergyCalculation(
         localBondEnergies.Ven.interCoresBond.add(sumVen_interCoresBondVec);
         localBondEnergies.Ven.interCoresRest.add(sumVen_interCoresRestVec);
         localBondEnergies.Ven.interCoresCore.add(sumVen_interCoresCoreMat);
+        localBondEnergies.Ven.intraBondAndInterCoresBond.add(Eigen::Matrix<double,1,1>(sumVen_intraBondAndInterCoresBond));
 
 
         // E
@@ -572,6 +584,11 @@ void LocalParticleEnergiesCalculator::bondEnergyCalculation(
             }
             counter++;
         }
+        localBondEnergies.E.intraBondAndInterCoresBond.add(Eigen::Matrix<double,1,1>(
+                sumTe_intraBond +
+                sumVee_intraBondAndInterCoresBond +
+                sumVen_intraBondAndInterCoresBond +
+                sumVnn_intraBondAndInterCoresBond));
         localBondEnergies.E.intraCores.add(sumE_intraCores);
         localBondEnergies.E.interCoresBond.add(sumE_interCoresBond);
         localBondEnergies.E.interCoresRest.add(sumE_interCoresRest);
@@ -608,6 +625,7 @@ namespace YAML {
 
     Emitter &operator<<(Emitter &out, const LocalParticleEnergiesCalculator::LocalBondEnergyResults &rhs) {
         out << BeginMap
+            << Key << "bondEnergy" << Value << rhs.intraBondAndInterCoresBond << Newline
             << Key << "intraBond" << Value << rhs.intraBond << Newline
             << Key << "intraRest" << Value << rhs.intraRest << Newline
             << Key << "interBondRest" << Value << rhs.interBondRest << Newline

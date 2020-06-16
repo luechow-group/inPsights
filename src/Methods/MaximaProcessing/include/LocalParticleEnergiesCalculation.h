@@ -30,7 +30,7 @@ public:
     };
 
     struct LocalBondEnergyResults {
-        SingleValueStatistics intraBond, intraRest, interBondRest;
+        SingleValueStatistics intraBondAndInterCoresBond,intraBond, intraRest, interBondRest;
         VectorStatistics intraCores, interCoresBond, interCoresRest;
         TriangularMatrixStatistics interCoresCore;
     };
@@ -67,17 +67,8 @@ public:
                            std::vector<size_t> &remainingNucleiIndices) const;
 };
 namespace YAML {
-    class Node;
     class Emitter;
 
-    template<typename Type>
-    struct convert;
-
-    //template<>
-    //struct convert<LocalParticleEnergiesCalculator::LocalEnergyResults> {
-    //    static Node encode(const LocalParticleEnergiesCalculator::LocalEnergyResults &rhs);
-    //    //static bool decode(const Node& node, MolecularGeometry& rhs);
-    //};
     Emitter& operator<< (Emitter& out, const LocalParticleEnergiesCalculator::LocalEnergyResults& rhs);
     Emitter& operator<< (Emitter& out, const LocalParticleEnergiesCalculator::LocalBondEnergyResults& rhs);
 
@@ -94,10 +85,6 @@ namespace YAML {
         return out;
     }
 
-    //template<>
-    //struct convert<LocalParticleEnergiesCalculator> {
-    //    static Node encode(const LocalParticleEnergiesCalculator &rhs);
-    //};
     Emitter& operator<< (Emitter& out, const LocalParticleEnergiesCalculator& rhs);
 
 
