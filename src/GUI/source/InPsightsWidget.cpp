@@ -382,6 +382,7 @@ void InPsightsWidget::loadData() {
 
 void InPsightsWidget::initialView() {
     spinCorrelationsCheckBox->setTristate();
+    spinCorrelationsCheckBox->setCheckState(Qt::CheckState::PartiallyChecked);
     maximaList->sortItems(0,Qt::SortOrder::AscendingOrder);
     atomsCheckBox->setCheckState(Qt::CheckState::Checked);
     bondsCheckBox->setCheckState(Qt::CheckState::Checked);
