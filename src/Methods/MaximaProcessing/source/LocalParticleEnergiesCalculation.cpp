@@ -185,9 +185,9 @@ void LocalParticleEnergiesCalculator::bondEnergyCalculation(
                     ToString::stdvectorLongUIntToString(selectedNucleiIndices_));
         }
 
-        if(atNucleusQ &&
-        (permutedNuclei[nucleusIndex].type() != Elements::ElementType::H
-        || permutedNuclei[nucleusIndex].type() != Elements::ElementType::He))
+        if(atNucleusQ
+        &&(permutedNuclei[nucleusIndex].type() != Elements::ElementType::H
+        && permutedNuclei[nucleusIndex].type() != Elements::ElementType::He))
              coreElectronsMap[nucleusIndex].emplace(electronIndex);
         else
             selectedNonCoreElectronsIndices.emplace_back(electronIndex);
