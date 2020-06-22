@@ -21,7 +21,6 @@
 #include <Sample.h>
 #include <Reference.h>
 #include <Group.h>
-#include <TestMolecules.h>
 #include <yaml-cpp/yaml.h>
 
 using namespace testing;
@@ -29,28 +28,8 @@ using namespace testing;
 class ALocalParticleEnergiesCalculationTest : public ::testing::Test {
 public:
 
-    ElectronsVector max, sample1, sample2;
     void SetUp() override {
         //spdlog::set_level(spdlog::level::debug);
-
-        max = ElectronsVector({
-            {Spin::alpha, {0, 0, 0.5}}, // => 0 and 1 are core electrons
-            {Spin::alpha, {0, 0, -0.5}},
-            {Spin::alpha, {0, 0, 1.0}},
-            {Spin::alpha, {0, 0, -1.0}}});
-
-        sample1 = ElectronsVector({
-            {Spin::alpha, {0, 0, 0.25}},
-            {Spin::alpha, {0, 0, -0.25}},
-            {Spin::alpha, {0, 0, 0.75}},
-            {Spin::alpha, {0, 0, -0.75}}});
-
-        sample2 = ElectronsVector({
-            {Spin::alpha, {0, 0, 0.5}},
-            {Spin::alpha, {0, 0, -0.5}},
-            {Spin::alpha, {0, 0, 0.75}},
-            {Spin::alpha, {0, 0, -0.75}}});
-
     }
 
 
@@ -125,8 +104,20 @@ public:
 TEST_F(ALocalParticleEnergiesCalculationTest, H2) {
 
     AtomsVector nuclei({
-                               {Element::H, {0, 0, 1}},
-                               {Element::H, {0, 0, -1}}});
+        {Element::H, {0, 0, 1}},
+        {Element::H, {0, 0, -1}}});
+
+    ElectronsVector max({
+        {Spin::alpha, nuclei[0].position()},
+        {Spin::beta, nuclei[1].position()}});
+
+    ElectronsVector sample1({
+        {Spin::alpha, {0, 0, 0.25}},
+        {Spin::beta, {0, 0, -0.25}}});
+
+    ElectronsVector sample2({
+        {Spin::alpha, {0, 0, 0.5}},
+        {Spin::beta, {0, 0, -0.5}}});
 
     Group maxima({
         Group({nuclei, 1.00, max, 0}),
@@ -138,19 +129,19 @@ TEST_F(ALocalParticleEnergiesCalculationTest, H2) {
     };
 
     std::vector<size_t> selectedNuclei = {0, 1};
-    checkTotalEnergy(maxima, samples, selectedNuclei, 0);
-    checkTotalEnergy(maxima, samples, selectedNuclei, 1);
     checkTotalEnergy(maxima, samples, selectedNuclei, 2);
+    checkTotalEnergy(maxima, samples, selectedNuclei, 1);
+    checkTotalEnergy(maxima, samples, selectedNuclei, 0);
 
     selectedNuclei = {0};
-    checkTotalEnergy(maxima, samples, selectedNuclei, 0);
-    checkTotalEnergy(maxima, samples, selectedNuclei, 1);
     checkTotalEnergy(maxima, samples, selectedNuclei, 2);
+    checkTotalEnergy(maxima, samples, selectedNuclei, 1);
+    checkTotalEnergy(maxima, samples, selectedNuclei, 0);
 
     selectedNuclei = {};
-    checkTotalEnergy(maxima, samples, selectedNuclei, 0);
-    checkTotalEnergy(maxima, samples, selectedNuclei, 1);
     checkTotalEnergy(maxima, samples, selectedNuclei, 2);
+    checkTotalEnergy(maxima, samples, selectedNuclei, 1);
+    checkTotalEnergy(maxima, samples, selectedNuclei, 0);
 
 }
 
@@ -158,6 +149,25 @@ TEST_F(ALocalParticleEnergiesCalculationTest, DISABLED_B2_not_passing) {
     AtomsVector nuclei({
                                {Element::B, {0, 0, 1}},
                                {Element::B, {0, 0, -1}}});
+
+    ElectronsVector max({
+                                  {Spin::alpha, {0, 0, 0.5}}, // => 0 and 1 are core electrons
+                                  {Spin::alpha, {0, 0, -0.5}},
+                                  {Spin::alpha, nuclei[0].position()},
+                                  {Spin::alpha,  nuclei[1].position()}});
+
+    ElectronsVector sample1({
+                                      {Spin::alpha, {0, 0, 0.25}},
+                                      {Spin::alpha, {0, 0, -0.25}},
+                                      {Spin::alpha, {0, 0, 0.75}},
+                                      {Spin::alpha, {0, 0, -0.75}}});
+
+    ElectronsVector sample2 ({
+                                      {Spin::alpha, {0, 0, 0.5}},
+                                      {Spin::alpha, {0, 0, -0.5}},
+                                      {Spin::alpha, {0, 0, 0.75}},
+                                      {Spin::alpha, {0, 0, -0.75}}});
+
 
     Group maxima({
         Group({nuclei, 1.00, max, 0}),
@@ -183,6 +193,24 @@ TEST_F(ALocalParticleEnergiesCalculationTest, B2_passing) {
                                {Element::B, {0, 0, 1}},
                                {Element::B, {0, 0, -1}}});
 
+    ElectronsVector max({
+                                {Spin::alpha, {0, 0, 0.5}}, // => 0 and 1 are core electrons
+                                {Spin::alpha, {0, 0, -0.5}},
+                                {Spin::alpha, nuclei[0].position()},
+                                {Spin::alpha,  nuclei[1].position()}});
+
+    ElectronsVector sample1({
+                                    {Spin::alpha, {0, 0, 0.25}},
+                                    {Spin::alpha, {0, 0, -0.25}},
+                                    {Spin::alpha, {0, 0, 0.75}},
+                                    {Spin::alpha, {0, 0, -0.75}}});
+
+    ElectronsVector sample2 ({
+                                     {Spin::alpha, {0, 0, 0.5}},
+                                     {Spin::alpha, {0, 0, -0.5}},
+                                     {Spin::alpha, {0, 0, 0.75}},
+                                     {Spin::alpha, {0, 0, -0.75}}});
+
     Group maxima({
                          Group({nuclei, 1.00, max, 0}),
                          Group({nuclei, 1.01, max, 1})});
@@ -194,21 +222,22 @@ TEST_F(ALocalParticleEnergiesCalculationTest, B2_passing) {
 
     std::vector<size_t> selectedNuclei = {0, 1};
     // selectedElectronsCount => the first n electrons that were permuted to the head of the vector by the local clusterer
-    checkTotalEnergy(maxima, samples, selectedNuclei, 0);
-    checkTotalEnergy(maxima, samples, selectedNuclei, 1);
-    checkTotalEnergy(maxima, samples, selectedNuclei, 2);
-    checkTotalEnergy(maxima, samples, selectedNuclei, 3);
+
     checkTotalEnergy(maxima, samples, selectedNuclei, 4);
+    checkTotalEnergy(maxima, samples, selectedNuclei, 3);
+    checkTotalEnergy(maxima, samples, selectedNuclei, 2);
+    checkTotalEnergy(maxima, samples, selectedNuclei, 1);
+    checkTotalEnergy(maxima, samples, selectedNuclei, 0);
 
     selectedNuclei = {0};
-    checkTotalEnergy(maxima, samples, selectedNuclei, 0);
-    checkTotalEnergy(maxima, samples, selectedNuclei, 1);
-    checkTotalEnergy(maxima, samples, selectedNuclei, 2);
     checkTotalEnergy(maxima, samples, selectedNuclei, 3);
+    checkTotalEnergy(maxima, samples, selectedNuclei, 2);
+    checkTotalEnergy(maxima, samples, selectedNuclei, 1);
+    checkTotalEnergy(maxima, samples, selectedNuclei, 0);
 
 
     selectedNuclei = {};
-    checkTotalEnergy(maxima, samples, selectedNuclei, 0);
-    checkTotalEnergy(maxima, samples, selectedNuclei, 1);
     checkTotalEnergy(maxima, samples, selectedNuclei, 2);
+    checkTotalEnergy(maxima, samples, selectedNuclei, 1);
+    checkTotalEnergy(maxima, samples, selectedNuclei, 0);
 }

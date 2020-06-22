@@ -171,6 +171,12 @@ void LocalParticleEnergiesCalculator::bondEnergyCalculation(
     std::map<Eigen::Index, std::set<Eigen::Index>> coreElectronsMap;
 
     // make a map of core electrons and refine the selected electrons list
+    // Note: H and He nuclei are treated as cores without core electrons.
+
+    for(auto nucleusIndex : selectedNucleiIndices_){
+        coreElectronsMap[nucleusIndex] = {};
+    }
+
     for(auto electronIndex : selectedElectronIndices) {
         MolecularGeometry molecule(permutedNuclei, group.representative()->maximum());
         auto [atNucleusQ, nucleusIndex] = molecule.electronAtNucleusQ(electronIndex);
@@ -187,20 +193,20 @@ void LocalParticleEnergiesCalculator::bondEnergyCalculation(
 
         if(atNucleusQ
         &&(permutedNuclei[nucleusIndex].type() != Elements::ElementType::H
-        && permutedNuclei[nucleusIndex].type() != Elements::ElementType::He))
-             coreElectronsMap[nucleusIndex].emplace(electronIndex);
-        else
+        && permutedNuclei[nucleusIndex].type() != Elements::ElementType::He)) {
+            coreElectronsMap[nucleusIndex].emplace(electronIndex);
+        } else {
             selectedNonCoreElectronsIndices.emplace_back(electronIndex);
+        }
     }
 
-    std::vector<size_t> selectedNonCoreNucleiIndices;
+    /*std::vector<size_t> selectedNonCoreNucleiIndices;
     for(auto k : selectedNucleiIndices_)
         if(coreElectronsMap.find(k) == std::end(coreElectronsMap))
             selectedNonCoreNucleiIndices.emplace_back(k);
-    std::sort(std::begin(selectedNonCoreNucleiIndices), std::end(selectedNonCoreNucleiIndices));
+    std::sort(std::begin(selectedNonCoreNucleiIndices), std::end(selectedNonCoreNucleiIndices));*/
 
     std::sort(std::begin(selectedNonCoreElectronsIndices), std::end(selectedNonCoreElectronsIndices));
-
 
 
     spdlog::debug("selected non-core electrons: {}", ToString::stdvectorLongUIntToString(selectedNonCoreElectronsIndices));
@@ -213,7 +219,7 @@ void LocalParticleEnergiesCalculator::bondEnergyCalculation(
         spdlog::debug("\tcore: {} core electrons: {}", nucleusIndex, ToString::stdvectorLongUIntToString(temp));
     }
 
-    spdlog::debug("selected non-core nuclei: {}", ToString::stdvectorLongUIntToString(selectedNonCoreNucleiIndices));
+    //spdlog::debug("selected non-core nuclei: {}", ToString::stdvectorLongUIntToString(selectedNonCoreNucleiIndices));
     spdlog::debug("remaining nuclei: {}\n", ToString::stdvectorLongUIntToString(restNucleiIndices));
 
 
@@ -369,31 +375,12 @@ void LocalParticleEnergiesCalculator::bondEnergyCalculation(
         std::map<Eigen::Index, double> sumVnn_interCoresBond, sumVnn_interCoresRest;
         std::map<Eigen::Index, std::map<Eigen::Index, double>> sumVnn_interCoresCore;
 
-        if(!selectedNonCoreNucleiIndices.empty()) {
-            for (size_t i = 0; i < selectedNonCoreNucleiIndices.size() - 1; ++i)
-                for (size_t j = i + 1; j < selectedNonCoreNucleiIndices.size(); ++j)
-                    sumVnn_intraBond += VnnMat(selectedNonCoreNucleiIndices[i], selectedNonCoreNucleiIndices[j]);
-        }
         if(!restNucleiIndices.empty()) {
             for (size_t i = 0; i < restNucleiIndices.size() - 1; ++i)
                 for (size_t j = i + 1; j < restNucleiIndices.size(); ++j)
                     sumVnn_intraRest += VnnMat(restNucleiIndices[i], restNucleiIndices[j]);
         }
 
-        for (auto k : selectedNonCoreNucleiIndices)
-            for (auto l : restNucleiIndices)
-                sumVnn_interBondRest += VnnMat(k, l);
-
-
-        for (auto k : selectedNonCoreNucleiIndices) {
-            for(auto [nucleusIndex, electronIndices] : coreElectronsMap) {
-                assert(long(k) != nucleusIndex);
-                if (sumVnn_interCoresBond.find(nucleusIndex) == std::end(sumVnn_interCoresBond))
-                    sumVnn_interCoresBond[nucleusIndex] = 0.0;
-
-                sumVnn_interCoresBond[nucleusIndex] += VnnMat(k, nucleusIndex);
-            }
-        }
 
         for (auto [coreNucleusIndex, electronIndices] : coreElectronsMap) {
             for (auto l : restNucleiIndices) {
@@ -454,19 +441,12 @@ void LocalParticleEnergiesCalculator::bondEnergyCalculation(
         std::map<Eigen::Index, double> sumVen_intraCores, sumVen_interCoresBond, sumVen_interCoresRest;
         std::map<Eigen::Index, std::map<Eigen::Index, double>> sumVen_interCoresCore;
 
-        for (auto i : selectedNonCoreElectronsIndices)
-            for (auto k : selectedNonCoreNucleiIndices)
-                sumVen_intraBond += VenMat(i, k);
-
         for (auto restElectronIndex : restElectronsIndices)
             for (auto restNucleusIndex : restNucleiIndices)
                 sumVen_intraRest += VenMat(restElectronIndex, restNucleusIndex);
 
         for (auto i : selectedNonCoreElectronsIndices)
             for (auto k : restNucleiIndices)
-                sumVen_interBondRest += VenMat(i, k);
-        for (auto i : restElectronsIndices)
-            for (auto k : selectedNonCoreNucleiIndices)
                 sumVen_interBondRest += VenMat(i, k);
 
         for (auto [nucleusIndex, electronIndices] : coreElectronsMap){
@@ -482,11 +462,6 @@ void LocalParticleEnergiesCalculator::bondEnergyCalculation(
             // core-nuclei of selection with selected non-core electrons
             for (auto i : selectedNonCoreElectronsIndices)
                 sumVen_interCoresBond[nucleusIndex] += VenMat(i, nucleusIndex);
-
-            // selected non-core nuclei with core-electrons
-            for (auto i : electronIndices)
-                for(auto k : selectedNonCoreNucleiIndices)
-                sumVen_interCoresBond[nucleusIndex] += VenMat(i, k);
         }
 
         for (auto[nucleusIndex, coreElectronIndices] : coreElectronsMap) {
@@ -495,7 +470,7 @@ void LocalParticleEnergiesCalculator::bondEnergyCalculation(
 
             for (auto i : coreElectronIndices)
                 for(auto k : restNucleiIndices)
-                sumVen_interCoresRest[nucleusIndex] += VenMat(i, k);
+                    sumVen_interCoresRest[nucleusIndex] += VenMat(i, k);
 
             for (auto i : restElectronsIndices)
                 sumVen_interCoresRest[nucleusIndex] += VenMat(i, nucleusIndex);
@@ -522,7 +497,6 @@ void LocalParticleEnergiesCalculator::bondEnergyCalculation(
                 }
             }
         }
-
 
         localBondEnergies.Ven.intraBond.add(Eigen::Matrix<double,1,1>(sumVen_intraBond));
         localBondEnergies.Ven.intraRest.add(Eigen::Matrix<double,1,1>(sumVen_intraRest));
@@ -601,7 +575,7 @@ void LocalParticleEnergiesCalculator::createIndiceLists(size_t numberOfElectrons
                                                         std::vector<size_t> &remainingElectronIndices,
                                                         std::vector<size_t> &remainingNucleiIndices) const {// create electron indice lists
     for (size_t i = 0; i < selectedElectronsCount_; ++i)
-        selectedElectronIndices.emplace_back(i);
+        selectedElectronIndices.emplace_back(i); // because they are the first selectedElectronsCount_ electrons in the list, we can determine their index can be determined from counting
     for (size_t i = selectedElectronsCount_; i < numberOfElectrons; ++i)
         remainingElectronIndices.emplace_back(i);
 
