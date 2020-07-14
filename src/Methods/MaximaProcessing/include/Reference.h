@@ -20,7 +20,7 @@
 
 #include <ParticlesVector.h>
 #include <Statistics.h>
-#include <Group.h>
+#include <Cluster.h>
 #include <MolecularSpectrum.h>
 
 class Sample;
@@ -33,7 +33,7 @@ public:
     size_t ownId() const;
 
     //TODO is this the task of a container?
-    void mergeReference(Group::iterator &it);
+    void mergeReference(Cluster::iterator &it);
 
     void permute(const Eigen::PermutationMatrix<Eigen::Dynamic>& perm, std::vector<Sample>& samples);
     void permute(const MolecularGeometry::Permutation& perm, std::vector<Sample>& samples);

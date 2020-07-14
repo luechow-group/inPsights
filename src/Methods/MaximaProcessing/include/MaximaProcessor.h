@@ -31,15 +31,15 @@ namespace MotifEnergyCalculator {
         TriangularMatrixStatistics interEnergies;
     };
 
-    Result partition(const Group &group, const std::vector<Sample> &samples, const Motifs& motifs);
+    Result partition(const Cluster &group, const std::vector<Sample> &samples, const Motifs& motifs);
 
-    void partitionLowerLevels(const Group &group,
+    void partitionLowerLevels(const Cluster &group,
                               const std::vector<Sample> &samples,
                               const Motifs& motifs,
                               VectorStatistics& intraMotifEnergyStats,
                               TriangularMatrixStatistics& interMotifEnergyStats);
 
-    void partitionLowestLevel(const Group &group,
+    void partitionLowestLevel(const Cluster &group,
                               const std::vector<Sample> &samples,
                               const Motifs& motifs,
                               VectorStatistics& intraMotifEnergyStats,
@@ -54,11 +54,11 @@ public:
 
     size_t addReference(const Reference &reference);
 
-    size_t addAllReferences(const Group &group);
+    size_t addAllReferences(const Cluster &group);
 
-    std::vector<ElectronsVector> getAllRepresentativeMaxima(const Group &group);
+    std::vector<ElectronsVector> getAllRepresentativeMaxima(const Cluster &group);
 
-    void calculateStatistics(const Group &maxima,
+    void calculateStatistics(const Cluster &maxima,
                              const std::vector<std::vector<std::vector<size_t>>> &nucleiMergeLists,
                              const std::vector<size_t> &nucleiIndices
                              );

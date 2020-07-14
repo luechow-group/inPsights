@@ -18,7 +18,7 @@
 #include <VoxelCubeGeneration.h>
 #include <Sample.h>
 #include <Reference.h>
-#include <Group.h>
+#include <Cluster.h>
 
 namespace Settings {
     VoxelCubeGeneration::VoxelCubeGeneration()
@@ -45,7 +45,7 @@ namespace Settings {
 }
 YAML_SETTINGS_DEFINITION(Settings::VoxelCubeGeneration)
 
-std::vector<VoxelCube> VoxelCubeGeneration::fromCluster(const Group &maxima, const std::vector<Sample> &samples) {
+std::vector<VoxelCube> VoxelCubeGeneration::fromCluster(const Cluster &maxima, const std::vector<Sample> &samples) {
     auto dimension = settings.dimension.get();
     auto length = settings.length.get();
     auto smoothingQ = settings.smoothingQ.get();
@@ -56,7 +56,7 @@ std::vector<VoxelCube> VoxelCubeGeneration::fromCluster(const Group &maxima, con
 }
 
 std::vector<VoxelCube>
-VoxelCubeGeneration::getVoxels(const Group &maxima, const std::vector<Sample> &samples, uint16_t dimension,
+VoxelCubeGeneration::getVoxels(const Cluster &maxima, const std::vector<Sample> &samples, uint16_t dimension,
                                VoxelCube::VertexComponentsType length, bool centerCubesAtElectronsQ,
                                bool smoothingQ, uint16_t smoothingNeighbors) {
 

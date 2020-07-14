@@ -151,7 +151,7 @@ std::vector<BestMatch::DescendingMetricResult> BestMatch::SOAPSimilarity::getBes
 
     // Step 1.
     auto matches = BestMatch::SOAPSimilarity::findEnvironmentMatches(environmentSimilarities, similarityThreshold, comparisionEpsilon);
-    auto dependentMatches = BestMatch::SOAPSimilarity::groupDependentMatches(matches);
+    auto dependentMatches = BestMatch::SOAPSimilarity::clusterDependentMatches(matches);
     for(const auto& dependentMatch : dependentMatches){
         if(dependentMatch.size() > 12)
             spdlog::warn("More than 12 equivalent environments found. This might indicate too indistinct SOAP settings.");
@@ -282,7 +282,7 @@ BestMatch::SOAPSimilarity::findEnvironmentMatches(
 }
 
 std::deque<std::deque<BestMatch::SOAPSimilarity::PermuteeToReferenceMatch>>
-BestMatch::SOAPSimilarity::groupDependentMatches(const std::deque<PermuteeToReferenceMatch> &matches) {
+BestMatch::SOAPSimilarity::clusterDependentMatches(const std::deque<PermuteeToReferenceMatch> &matches) {
 
     std::deque<std::deque<BestMatch::SOAPSimilarity::PermuteeToReferenceMatch>> dependentMatchesGroups;
     assert(!matches.empty());

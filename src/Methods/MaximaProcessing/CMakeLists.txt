@@ -22,13 +22,13 @@ set(HEADER_FILES
         include/VoxelCubeGeneration.h
         include/EnergyPartitioning.h
         include/EnergyStatistics.h
-        include/Group.h
+        include/Cluster.h
         include/IBlock.h
         include/ReferencePositionsClusterer.h
         include/VoxelCubeOverlapCalculation.h
         include/SpinCorrelationValueHistogram.h
         include/ClusterNumberAnalyzer.h
-        include/GroupAnalysis.h
+        include/ClusterAnalysis.h
         include/TotalWeightDifferenceAnalyzer.h
         include/LocalParticleEnergiesCalculation.h
         )
@@ -48,13 +48,13 @@ set(SOURCE_FILES
         source/VoxelCubeGeneration.cpp
         source/EnergyPartitioning.cpp
         source/EnergyStatistics.cpp
-        source/Group.cpp
+        source/Cluster.cpp
         source/IBlock.cpp
         source/ReferencePositionsClusterer.cpp
         source/VoxelCubeOverlapCalculation.cpp
         source/SpinCorrelationValueHistogram.cpp
         source/ClusterNumberAnalyzer.cpp
-        source/GroupAnalysis.cpp
+        source/ClusterAnalysis.cpp
         source/TotalWeightDifferenceAnalyzer.cpp
         source/LocalParticleEnergiesCalculation.cpp
         )

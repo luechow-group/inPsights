@@ -20,7 +20,7 @@
 #include <PreClusterer.h>
 #include <SOAPSettings.h>
 #include <TestMolecules.h>
-#include <Group.h>
+#include <Cluster.h>
 #include <Reference.h>
 #include <BestMatchSimilarity.h>
 
@@ -29,7 +29,7 @@ using namespace SOAP;
 
 class ASOAPClustererTest : public ::testing::Test {
 public:
-    Group A, B, C, D, E, F;
+    Cluster A, B, C, D, E, F;
     std::vector<Sample> samples;
     Eigen::VectorXd ekin;
     double eps = SOAP::General::settings.comparisonEpsilon()*10;
@@ -46,27 +46,27 @@ public:
             {Elements::ElementType::H, {0, 0, -a}},
             {Elements::ElementType::H, {0, 0, +a}}});
 
-        A = Group({atoms,1.0, ElectronsVector({
+        A = Cluster({atoms,1.0, ElectronsVector({
             {Spin::alpha, {0, 0,-a}},
             {Spin::alpha, {0, 0, a}},
             {Spin::beta,  {0, b, 0}}}), 0}); // covalent
-        B = Group({atoms,1.1, ElectronsVector({
+        B = Cluster({atoms,1.1, ElectronsVector({
             {Spin::beta,  {0, b, 0}},
             {Spin::alpha, {0, 0, a-0.01}},
             {Spin::alpha, {0, 0,-a+0.01}}}), 1}); // A permuted and shifted
-        C = Group({atoms,1.1, ElectronsVector({
+        C = Cluster({atoms,1.1, ElectronsVector({
             {Spin::beta,  {0, b, 0}},
             {Spin::alpha, {0, 0, a+0.01}},
             {Spin::alpha, {0, 0,-a-0.01}}}), 2}); // A permuted and shifted
-        D = Group({atoms,1.3, ElectronsVector({
+        D = Cluster({atoms,1.3, ElectronsVector({
             {Spin::alpha, {0, 0,-a}},
             {Spin::beta,  {0,-b, 0}},
             {Spin::alpha, {0, 0, a}}}), 3}); // A reflected and permuted
-        E = Group({atoms,1.4, ElectronsVector({
+        E = Cluster({atoms,1.4, ElectronsVector({
             {Spin::alpha, {0, 0,-a}},
             {Spin::beta,  {0, c, 0}},
             {Spin::alpha, {0, 0, a}}}), 4}); // ionic
-        F = Group({atoms,1.5, ElectronsVector({
+        F = Cluster({atoms,1.5, ElectronsVector({
             {Spin::alpha, {0, 0,-a}},
             {Spin::beta,  {0, c, 0}},
             {Spin::alpha, {0, 0, a}}}), 5}); // E reflected
@@ -133,7 +133,7 @@ TEST_F(ASOAPClustererTest, TwoClusters) {
     Radial::settings.nmax = 3;
     SOAPClusterer::settings.maxValueDelta = 1.0;
 
-    Group maxima({A, {B, C}, D, E, F});
+    Cluster maxima({A, {B, C}, D, E, F});
     clusterer.cluster(maxima);
 
     ASSERT_EQ(maxima.size(), 2);
@@ -150,7 +150,7 @@ TEST_F(ASOAPClustererTest, TwoClusters) {
     ASSERT_THAT(maxima[1][0].allSampleIds(), ElementsAre(4));
     ASSERT_THAT(maxima[1][1].allSampleIds(), ElementsAre(5));
 
-    // Group expected({{A,{B,C},D},{E,F}});
+    // Cluster expected({{A,{B,C},D},{E,F}});
 }
 
 TEST_F(ASOAPClustererTest, TwoClusters_Alchemical) {
@@ -165,7 +165,7 @@ TEST_F(ASOAPClustererTest, TwoClusters_Alchemical) {
     Radial::settings.nmax = 3;
     SOAPClusterer::settings.maxValueDelta = 1.0;
 
-    Group maxima({A, {B, C}, D, E, F});
+    Cluster maxima({A, {B, C}, D, E, F});
 
     clusterer.cluster(maxima);
 
@@ -183,7 +183,7 @@ TEST_F(ASOAPClustererTest, TwoClusters_Alchemical) {
     ASSERT_THAT(maxima[1][0].allSampleIds(), ElementsAre(4));
     ASSERT_THAT(maxima[1][1].allSampleIds(), ElementsAre(5));
 
-    // Group expected({{A,{B,C},D},{E,F}});
+    // Cluster expected({{A,{B,C},D},{E,F}});
 }
 
 TEST_F(ASOAPClustererTest, BH3_Alchemical) {
@@ -222,9 +222,9 @@ TEST_F(ASOAPClustererTest, BH3_Alchemical) {
     Cutoff::settings.radius = 4.0;
     Cutoff::settings.width = 3.0;
 
-    Group gA({A.atoms(), 1.0, A.electrons(), 0});
-    Group gB({B.atoms(), 1.9, B.electrons(), 1});
-    Group maxima({gA,gB});
+    Cluster gA({A.atoms(), 1.0, A.electrons(), 0});
+    Cluster gB({B.atoms(), 1.9, B.electrons(), 1});
+    Cluster maxima({gA,gB});
     maxima.sortAll();
 
     SOAPClusterer clusterer(nuclei, samples);
@@ -237,12 +237,12 @@ TEST_F(ASOAPClustererTest, BH3_Alchemical) {
     ASSERT_THAT(maxima[0][0].allSampleIds(), ElementsAre(0));
     ASSERT_THAT(maxima[0][1].allSampleIds(), ElementsAre(1));
 
-    // Group expected({{{A},{B}}});
+    // Cluster expected({{{A},{B}}});
 }
 
 class H4test : public ::testing::Test {
 public:
-    Group gA, gB, gC;
+    Cluster gA, gB, gC;
     std::vector<Sample> samples;
     Eigen::VectorXd ekin;
 
@@ -257,9 +257,9 @@ public:
         auto C = TestMolecules::H4::linear::ionicAreflectedReorderedNumbering;
 
         atoms = TestMolecules::H4::linear::nuclei.atoms();
-        gA = Group({A.atoms(), 1.0, A.electrons(), 0});
-        gB = Group({B.atoms(), 1.0, B.electrons(), 1});
-        gC = Group({C.atoms(), 1.0, C.electrons(), 2});
+        gA = Cluster({A.atoms(), 1.0, A.electrons(), 0});
+        gB = Cluster({B.atoms(), 1.0, B.electrons(), 1});
+        gC = Cluster({C.atoms(), 1.0, C.electrons(), 2});
 
         ekin = Eigen::VectorXd::Zero(4);
 
@@ -284,7 +284,7 @@ TEST_F(H4test, TwoClusters_chemical) {
     Cutoff::settings.radius = 4.0;
     Cutoff::settings.width = 3.0;
 
-    Group maxima({gA, gB});
+    Cluster maxima({gA, gB});
 
     clusterer.cluster(maxima);
 
@@ -294,7 +294,7 @@ TEST_F(H4test, TwoClusters_chemical) {
     ASSERT_THAT(maxima[0][0].allSampleIds(), ElementsAre(0));
     ASSERT_THAT(maxima[0][1].allSampleIds(), ElementsAre(1));
 
-    // Group expected({{A,B}});
+    // Cluster expected({{A,B}});
 }
 
 TEST_F(H4test, TwoClusters_alchemical) {
@@ -311,7 +311,7 @@ TEST_F(H4test, TwoClusters_alchemical) {
     Cutoff::settings.radius = 4.0;
     Cutoff::settings.width = 3.0;
 
-    Group maxima({gA, gB});
+    Cluster maxima({gA, gB});
 
     clusterer.cluster(maxima);
 
@@ -321,7 +321,7 @@ TEST_F(H4test, TwoClusters_alchemical) {
     ASSERT_THAT(maxima[0][0].allSampleIds(), ElementsAre(0));
     ASSERT_THAT(maxima[0][1].allSampleIds(), ElementsAre(1));
 
-    // Group expected({{A,B}});
+    // Cluster expected({{A,B}});
 }
 
 TEST_F(H4test, TwoClusters_alchemical_spinswap) {
@@ -338,7 +338,7 @@ TEST_F(H4test, TwoClusters_alchemical_spinswap) {
     Cutoff::settings.radius = 4.0;
     Cutoff::settings.width = 3.0;
 
-    Group maxima({gA,gC});
+    Cluster maxima({gA,gC});
 
     clusterer.cluster(maxima);
 
@@ -348,5 +348,5 @@ TEST_F(H4test, TwoClusters_alchemical_spinswap) {
     ASSERT_THAT(maxima[0][0].allSampleIds(), ElementsAre(0));
     ASSERT_THAT(maxima[0][1].allSampleIds(), ElementsAre(2));
 
-    // Group expected({{A,C}});
+    // Cluster expected({{A,C}});
 }

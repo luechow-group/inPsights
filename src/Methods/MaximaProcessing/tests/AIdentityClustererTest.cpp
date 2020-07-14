@@ -33,28 +33,28 @@ public:
         PreClusterer::settings.radius = 10; // prevent assert
     }
 
-    std::pair<Group, std::vector<Sample>> prepareRandomTripletMaxima(std::default_random_engine &rng) {
-        Group tripletMaxima;
+    std::pair<Cluster, std::vector<Sample>> prepareRandomTripletMaxima(std::default_random_engine &rng) {
+        Cluster tripletMaxima;
         std::vector<Sample> tripletSamples;
         AtomsVector atoms = TestMolecules::H2::ElectronsInCores::normal.atoms();
 
         // Multiplicity = 3: Spin flip is not possible.
         tripletMaxima = {
-                Group({atoms, 1.00, ElectronsVector({{Spin::alpha, {0, 0, 1.00}},
+                Cluster({atoms, 1.00, ElectronsVector({{Spin::alpha, {0, 0, 1.00}},
                                               {Spin::alpha, {0, 0, 0}}}), 0}),
-                Group({atoms, 1.01, ElectronsVector({{Spin::alpha, {0, 0, 0}},
+                Cluster({atoms, 1.01, ElectronsVector({{Spin::alpha, {0, 0, 0}},
                                               {Spin::alpha, {0, 0, 1.01}}}), 1}),
-                Group({atoms, 1.02, ElectronsVector({{Spin::alpha, {0, 0, 1.02}},
+                Cluster({atoms, 1.02, ElectronsVector({{Spin::alpha, {0, 0, 1.02}},
                                               {Spin::alpha, {0, 0, 0}}}), 2}),
-                Group({atoms, 1.03, ElectronsVector({{Spin::alpha, {0, 0, 0}},
+                Cluster({atoms, 1.03, ElectronsVector({{Spin::alpha, {0, 0, 0}},
                                               {Spin::alpha, {0, 0, 1.03}}}), 3}),
-                Group({atoms, 1.10, ElectronsVector({{Spin::alpha, {0, 0, 1.10}},
+                Cluster({atoms, 1.10, ElectronsVector({{Spin::alpha, {0, 0, 1.10}},
                                               {Spin::alpha, {0, 0, 0}}}), 4}),
-                Group({atoms, 1.11, ElectronsVector({{Spin::alpha, {0, 0, 1.11}},
+                Cluster({atoms, 1.11, ElectronsVector({{Spin::alpha, {0, 0, 1.11}},
                                               {Spin::alpha, {0, 0, 0}}}), 5}),
-                Group({atoms, 1.12, ElectronsVector({{Spin::alpha, {0, 0, 1.12}},
+                Cluster({atoms, 1.12, ElectronsVector({{Spin::alpha, {0, 0, 1.12}},
                                               {Spin::alpha, {0, 0, 0}}}), 6}),
-                Group({atoms, 1.13, ElectronsVector({{Spin::alpha, {0, 0, 1.13}},
+                Cluster({atoms, 1.13, ElectronsVector({{Spin::alpha, {0, 0, 1.13}},
                                               {Spin::alpha, {0, 0, 0}}}), 7}),
         };
         std::shuffle(std::begin(tripletMaxima), std::end(tripletMaxima), rng);
@@ -68,28 +68,28 @@ public:
         return {tripletMaxima, tripletSamples};
     }
 
-    std::pair<Group, std::vector<Sample>> prepareRandomSingletMaxima(std::default_random_engine &rng) {
-        Group singletMaxima;
+    std::pair<Cluster, std::vector<Sample>> prepareRandomSingletMaxima(std::default_random_engine &rng) {
+        Cluster singletMaxima;
         std::vector<Sample> singletSamples;
         AtomsVector atoms = TestMolecules::H2::ElectronsInCores::normal.atoms();
 
         // Multiplicity = 1: Spin flip is possible.
         singletMaxima = {
-                Group({atoms, 1.00, ElectronsVector({{Spin::alpha, {0, 0, 1.00}},
+                Cluster({atoms, 1.00, ElectronsVector({{Spin::alpha, {0, 0, 1.00}},
                                               {Spin::beta,  {0, 0, 0}}}), 0}),
-                Group({atoms, 1.01, ElectronsVector({{Spin::alpha, {0, 0, 0}},
+                Cluster({atoms, 1.01, ElectronsVector({{Spin::alpha, {0, 0, 0}},
                                               {Spin::beta,  {0, 0, 1.01}}}), 1}),
-                Group({atoms, 1.02, ElectronsVector({{Spin::alpha, {0, 0, 1.02}},
+                Cluster({atoms, 1.02, ElectronsVector({{Spin::alpha, {0, 0, 1.02}},
                                               {Spin::beta,  {0, 0, 0}}}), 2}),
-                Group({atoms, 1.03, ElectronsVector({{Spin::alpha, {0, 0, 0}},
+                Cluster({atoms, 1.03, ElectronsVector({{Spin::alpha, {0, 0, 0}},
                                               {Spin::beta,  {0, 0, 1.03}}}), 3}),
-                Group({atoms, 1.10, ElectronsVector({{Spin::alpha, {0, 0, 1.10}},
+                Cluster({atoms, 1.10, ElectronsVector({{Spin::alpha, {0, 0, 1.10}},
                                               {Spin::beta,  {0, 0, 0}}}), 4}),
-                Group({atoms, 1.11, ElectronsVector({{Spin::alpha, {0, 0, 1.11}},
+                Cluster({atoms, 1.11, ElectronsVector({{Spin::alpha, {0, 0, 1.11}},
                                               {Spin::beta,  {0, 0, 0}}}), 5}),
-                Group({atoms, 1.12, ElectronsVector({{Spin::alpha, {0, 0, 1.12}},
+                Cluster({atoms, 1.12, ElectronsVector({{Spin::alpha, {0, 0, 1.12}},
                                               {Spin::beta,  {0, 0, 0}}}), 6}),
-                Group({atoms, 1.13, ElectronsVector({{Spin::alpha, {0, 0, 1.13}},
+                Cluster({atoms, 1.13, ElectronsVector({{Spin::alpha, {0, 0, 1.13}},
                                               {Spin::beta,  {0, 0, 0}}}), 7}),
         };
         std::shuffle(std::begin(singletMaxima), std::end(singletMaxima), rng);

@@ -20,7 +20,7 @@
 #include <CoulombPotential.h>
 #include <Sample.h>
 #include <Reference.h>
-#include <Group.h>
+#include <Cluster.h>
 #include <yaml-cpp/yaml.h>
 
 using namespace testing;
@@ -55,7 +55,7 @@ public:
         return sum;
     }
 
-    void checkTotalEnergy(Group &maxima, const std::vector<Sample> &samples, std::vector<size_t> selectedNuclei, long selectedElectronsCount) const {
+    void checkTotalEnergy(Cluster &maxima, const std::vector<Sample> &samples, std::vector<size_t> selectedNuclei, long selectedElectronsCount) const {
 
         auto nuclei = maxima.representative()->nuclei();
         auto repMax =  maxima.representative()->maximum();
@@ -119,9 +119,9 @@ TEST_F(ALocalParticleEnergiesCalculationTest, H2) {
         {Spin::alpha, {0, 0, 0.5}},
         {Spin::beta, {0, 0, -0.5}}});
 
-    Group maxima({
-        Group({nuclei, 1.00, max, 0}),
-        Group({nuclei, 1.01, max, 1})});
+    Cluster maxima({
+        Cluster({nuclei, 1.00, max, 0}),
+        Cluster({nuclei, 1.01, max, 1})});
 
     std::vector<Sample> samples = {
             Sample(sample1, Eigen::VectorXd::Constant(sample1.numberOfEntities(), 0.4)),
@@ -169,9 +169,9 @@ TEST_F(ALocalParticleEnergiesCalculationTest, DISABLED_B2_not_passing) {
                                       {Spin::alpha, {0, 0, -0.75}}});
 
 
-    Group maxima({
-        Group({nuclei, 1.00, max, 0}),
-        Group({nuclei, 1.01, max, 1})});
+    Cluster maxima({
+        Cluster({nuclei, 1.00, max, 0}),
+        Cluster({nuclei, 1.01, max, 1})});
 
     std::vector<Sample> samples = {
             Sample(sample1, Eigen::VectorXd::Constant(sample1.numberOfEntities(), 0.4)),
@@ -211,9 +211,9 @@ TEST_F(ALocalParticleEnergiesCalculationTest, B2_passing) {
                                      {Spin::alpha, {0, 0, 0.75}},
                                      {Spin::alpha, {0, 0, -0.75}}});
 
-    Group maxima({
-                         Group({nuclei, 1.00, max, 0}),
-                         Group({nuclei, 1.01, max, 1})});
+    Cluster maxima({
+                         Cluster({nuclei, 1.00, max, 0}),
+                         Cluster({nuclei, 1.01, max, 1})});
 
     std::vector<Sample> samples = {
             Sample(sample1, Eigen::VectorXd::Constant(sample1.numberOfEntities(), 0.4)),

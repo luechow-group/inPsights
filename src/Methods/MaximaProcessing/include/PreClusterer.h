@@ -40,7 +40,7 @@ public:
     static Settings::PreClusterer settings;
 
     PreClusterer(std::vector<Sample> &samples);
-    void cluster(Group& group) override;
+    void cluster(Cluster& group) override;
 };
 
 

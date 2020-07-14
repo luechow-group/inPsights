@@ -194,7 +194,7 @@ TEST_F(ABestMatchSimilarityTest, FindPossiblePermutations1) {
     for (size_t i = 0; i < matches.size(); ++i)
         ASSERT_EQ(matches[i].referenceIndex, i);
 
-    auto dependentMatches = BestMatch::SOAPSimilarity::groupDependentMatches(matches);
+    auto dependentMatches = BestMatch::SOAPSimilarity::clusterDependentMatches(matches);
     ASSERT_THAT(dependentMatches[0][0].permuteeIndices, ElementsAre(0, 2));
     ASSERT_THAT(dependentMatches[0][1].permuteeIndices, ElementsAre(0, 2));
     ASSERT_THAT(dependentMatches[1][0].permuteeIndices, ElementsAre(1, 3));
@@ -231,7 +231,7 @@ TEST_F(ABestMatchSimilarityTest, FindPossiblePermutations2) {
     for (size_t i = 0; i < matches.size(); ++i)
         ASSERT_EQ(matches[i].referenceIndex, i);
 
-    auto dependentMatches = BestMatch::SOAPSimilarity::groupDependentMatches(matches);
+    auto dependentMatches = BestMatch::SOAPSimilarity::clusterDependentMatches(matches);
     ASSERT_THAT(dependentMatches[0][0].permuteeIndices, ElementsAre(0, 1, 3));
     ASSERT_THAT(dependentMatches[0][1].permuteeIndices, ElementsAre(0, 1));
     ASSERT_THAT(dependentMatches[0][2].permuteeIndices, ElementsAre(0, 3));
@@ -270,7 +270,7 @@ TEST_F(ABestMatchSimilarityTest, FindPossiblePermutations3) {
     for (size_t i = 0; i < matches.size(); ++i)
         ASSERT_EQ(matches[i].referenceIndex, i);
 
-    auto dependentMatches = BestMatch::SOAPSimilarity::groupDependentMatches(matches);
+    auto dependentMatches = BestMatch::SOAPSimilarity::clusterDependentMatches(matches);
     ASSERT_THAT(dependentMatches[0][0].permuteeIndices, ElementsAre(0, 1));
     ASSERT_THAT(dependentMatches[0][1].permuteeIndices, ElementsAre(0, 1));
     ASSERT_THAT(dependentMatches[1][0].permuteeIndices, ElementsAre(2, 3));
@@ -311,7 +311,7 @@ TEST_F(ABestMatchSimilarityTest, FindPossiblePermutations4) {
     for (size_t i = 0; i < matches.size(); ++i)
         ASSERT_EQ(matches[i].referenceIndex, i);
 
-    auto dependentMatches = BestMatch::SOAPSimilarity::groupDependentMatches(matches);
+    auto dependentMatches = BestMatch::SOAPSimilarity::clusterDependentMatches(matches);
     ASSERT_THAT(dependentMatches[0][0].permuteeIndices, ElementsAre(0, 2));
     ASSERT_THAT(dependentMatches[0][1].permuteeIndices, ElementsAre(0, 2));
 
@@ -360,7 +360,7 @@ TEST_F(ABestMatchSimilarityTest, FindPossiblePermutations5) {
     for (size_t i = 0; i < matches.size(); ++i)
         ASSERT_EQ(matches[i].referenceIndex, i);
 
-    auto dependentMatches = BestMatch::SOAPSimilarity::groupDependentMatches(matches);
+    auto dependentMatches = BestMatch::SOAPSimilarity::clusterDependentMatches(matches);
     ASSERT_THAT(dependentMatches[0][0].permuteeIndices, ElementsAre(2));
 
     ASSERT_THAT(dependentMatches[1][0].permuteeIndices, ElementsAre(0));

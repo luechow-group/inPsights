@@ -32,7 +32,7 @@ LocalParticleEnergiesCalculator::LocalParticleEnergiesCalculator(
         selectedElectronsCount_(selectedElectronsCount)
         {}
 
-void LocalParticleEnergiesCalculator::add(const Group &group) {
+void LocalParticleEnergiesCalculator::add(const Cluster &group) {
     size_t numberOfElectrons = group.representative()->maximum().numberOfEntities();
 
     // add only, if the wanted selectedElectronsCount was really found within the group
@@ -47,12 +47,12 @@ void LocalParticleEnergiesCalculator::add(const Group &group) {
         bondEnergyCalculation(group, numberOfElectrons, permutedNuclei, VnnMat);
 
     } else {
-        for (const auto& subgroup : group)
-            add(subgroup);
+        for (const auto& subcluster : group)
+            add(subcluster);
     }
 }
 
-void LocalParticleEnergiesCalculator::selectedRestInter(const Group &group, size_t numberOfElectrons,
+void LocalParticleEnergiesCalculator::selectedRestInter(const Cluster &group, size_t numberOfElectrons,
                                                         const AtomsVector &permutedNuclei,
                                                         const Eigen::MatrixXd &VnnMat) {
     // create electron indice lists
@@ -156,7 +156,7 @@ void LocalParticleEnergiesCalculator::selectedRestInter(const Group &group, size
 
 
 void LocalParticleEnergiesCalculator::bondEnergyCalculation(
-        const Group &group, size_t numberOfElectrons,
+        const Cluster &group, size_t numberOfElectrons,
         const AtomsVector &permutedNuclei,
         const Eigen::MatrixXd &VnnMat) {
 

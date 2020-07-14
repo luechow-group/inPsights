@@ -60,19 +60,19 @@ SOAPClusterer::SOAPClusterer(const AtomsVector& atoms, std::vector<Sample> &samp
     ParticleKit::create(atoms_, (*samples.begin()).sample_);
 };
 
-void SOAPClusterer::cluster(Group& group){
-    assert(!group.isLeaf() && "The group cannot be a leaf.");
+void SOAPClusterer::cluster(Cluster& cluster){
+    assert(!cluster.isLeaf() && "The cluster cannot be a leaf.");
 
     // TODO use function value to narrow down guesses => presort lists
 
     // Calculate spectra
     spdlog::info("Calculating {} spectra in {} mode...",
-            group.size(),SOAP::General::toString(SOAP::General::settings.mode.get()));
-#pragma omp parallel for default(none) shared(atoms_, group)
-    for (auto it = group.begin(); it < group.end(); ++it) {
+            cluster.size(),SOAP::General::toString(SOAP::General::settings.mode.get()));
+#pragma omp parallel for default(none) shared(atoms_, cluster)
+    for (auto it = cluster.begin(); it < cluster.end(); ++it) {
         it->representative()->setSpectrum(MolecularSpectrum(
                 {atoms_, it->representative()->maximum()}));
-        spdlog::info("calculated spectrum {}", std::distance(group.begin(), it));
+        spdlog::info("calculated spectrum {}", std::distance(cluster.begin(), it));
     }
 
     auto similarityThreshold = settings.similarityThreshold();
@@ -80,70 +80,70 @@ void SOAPClusterer::cluster(Group& group){
     auto numericalPrecisionEpsilon = SOAP::General::settings.comparisonEpsilon();
     auto maxValueDelta = SOAPClusterer::settings.maxValueDelta();
 
-    spdlog::debug("Group before start: {}", ToString::groupToString(group));
+    spdlog::debug("Cluster before start: {}", ToString::clusterToString(cluster));
 
-    Group supergroup;
-    spdlog::debug("Supergroup before start: {}", ToString::groupToString(supergroup));
-    for(const auto& [i, subgroup] : enumerate(group)) {
-        spdlog::info("{} out of {}", i+1, group.size());
+    Cluster supercluster;
+    spdlog::debug("Supercluster before start: {}", ToString::clusterToString(supercluster));
+    for(const auto& [i, subcluster] : enumerate(cluster)) {
+        spdlog::info("{} out of {}", i+1, cluster.size());
 
         bool foundMatchQ = false;
 
-        spdlog::debug("  Outer loop groupIt {}: {}", i, ToString::groupToString(subgroup));
-        // check if current group matches any of the supergroup subgroups
-        for(const auto & [j, subgroupOfSupergroup] : enumerate(supergroup)){
-            spdlog::debug("    Inner loop subgroupOfSupergroupIt {}: {}", j, ToString::groupToString(subgroupOfSupergroup));
+        spdlog::debug("  Outer loop clusterIt {}: {}", i, ToString::clusterToString(subcluster));
+        // check if current cluster matches any of the supercluster subclusters
+        for(const auto & [j, subclusterOfSupercluster] : enumerate(supercluster)){
+            spdlog::debug("    Inner loop subclusterOfSuperclusterIt {}: {}", j, ToString::clusterToString(subclusterOfSupercluster));
 
-            assert(!subgroup.representative()->spectrum().molecularCenters_.empty() && "Spectrum cannot be empty.");
-            assert(!subgroupOfSupergroup.representative()->spectrum().molecularCenters_.empty() && "Spectrum cannot be empty.");
+            assert(!subcluster.representative()->spectrum().molecularCenters_.empty() && "Spectrum cannot be empty.");
+            assert(!subclusterOfSupercluster.representative()->spectrum().molecularCenters_.empty() && "Spectrum cannot be empty.");
 
 
-            spdlog::debug("    Supergroup status before comparison: {}", ToString::groupToString(supergroup));
+            spdlog::debug("    Supercluster status before comparison: {}", ToString::clusterToString(supercluster));
 
-            if( std::abs(subgroupOfSupergroup.representative()->value() - subgroup.representative()->value()) < maxValueDelta) {
+            if( std::abs(subclusterOfSupercluster.representative()->value() - subcluster.representative()->value()) < maxValueDelta) {
                 auto comparisionResult = BestMatch::SOAPSimilarity::compare(
-                        subgroup.representative()->spectrum(),
-                        subgroupOfSupergroup.representative()->spectrum(),
+                        subcluster.representative()->spectrum(),
+                        subclusterOfSupercluster.representative()->spectrum(),
                         toleranceRadius, similarityThreshold, numericalPrecisionEpsilon);
 
-                spdlog::debug("    Supergroup status after comparison: {}", ToString::groupToString(supergroup));
+                spdlog::debug("    Supercluster status after comparison: {}", ToString::clusterToString(supercluster));
 
                 spdlog::info("  comparing it with {} out of {}: {}",
-                             j + 1, supergroup.size(),
+                             j + 1, supercluster.size(),
                              comparisionResult.metric);
 
-                // if so, put permute the current group and put it into the supergroup subgroup and stop searching
+                // if so, put permute the current cluster and put it into the supercluster subcluster and stop searching
                 if (comparisionResult.metric >= (similarityThreshold - numericalPrecisionEpsilon)) {
-                    auto permutations = subgroup.representative()->spectrum().molecule_.splitAllParticlePermutation(comparisionResult.permutation);
-                    subgroup.permuteAll(permutations, samples_);
+                    auto permutations = subcluster.representative()->spectrum().molecule_.splitAllParticlePermutation(comparisionResult.permutation);
+                    subcluster.permuteAll(permutations, samples_);
 
-                    supergroup[j].emplace_back(subgroup);
+                    supercluster[j].emplace_back(subcluster);
 
-                    spdlog::debug("    Match: Inner loop subgroupOfSupergroupIt {}: {}",
-                                  j + 1, ToString::groupToString(subgroupOfSupergroup));
-                    spdlog::debug("    Match. End of inner loop. Supergroup status: {}",
-                                  ToString::groupToString(supergroup));
+                    spdlog::debug("    Match: Inner loop subclusterOfSuperclusterIt {}: {}",
+                                  j + 1, ToString::clusterToString(subclusterOfSupercluster));
+                    spdlog::debug("    Match. End of inner loop. Supercluster status: {}",
+                                  ToString::clusterToString(supercluster));
                     foundMatchQ = true;
                     break;
                 }
             }
 
-            spdlog::debug("    No match. End of inner loop. Supergroup status: {}", ToString::groupToString(supergroup));
+            spdlog::debug("    No match. End of inner loop. Supercluster status: {}", ToString::clusterToString(supercluster));
         }
         if(!foundMatchQ) {
-            supergroup.emplace_back(Group({subgroup}));
+            supercluster.emplace_back(Cluster({subcluster}));
 
-            spdlog::debug(" No match found. Group {} {} was added to supergroup: {}",
-                          i, ToString::groupToString(subgroup), ToString::groupToString(supergroup));
+            spdlog::debug(" No match found. Cluster {} {} was added to supercluster: {}",
+                          i, ToString::clusterToString(subcluster), ToString::clusterToString(supercluster));
         }
 
     }
-    group = supergroup;
+    cluster = supercluster;
 
-    spdlog::debug("Result after loop: {}", ToString::groupToString(group));
+    spdlog::debug("Result after loop: {}", ToString::clusterToString(cluster));
 
     // sort by function value before leaving
-    group.sortAll();
+    cluster.sortAll();
 
-    spdlog::debug("Final result after sorting: {}", ToString::groupToString(group));
+    spdlog::debug("Final result after sorting: {}", ToString::clusterToString(cluster));
 }

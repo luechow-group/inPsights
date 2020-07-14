@@ -67,7 +67,7 @@ namespace BestMatch {
                 double soapThreshold,
                 double numericalPrecisionEpsilon = std::numeric_limits<double>::epsilon());
 
-        std::deque<std::deque<PermuteeToReferenceMatch>> groupDependentMatches(
+        std::deque<std::deque<PermuteeToReferenceMatch>> clusterDependentMatches(
                 const std::deque<PermuteeToReferenceMatch> &matches);
 
         std::deque<GrowingPerm> findPossiblePermutations(const std::deque<PermuteeToReferenceMatch> &dependentMatches);

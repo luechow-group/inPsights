@@ -34,7 +34,7 @@ public:
         PreClusterer::settings.radius = 0.1; // prevent assert
     }
 
-    Group makeRingLikeCluster(Group &references, std::vector<Sample> &samples, unsigned n, std::default_random_engine& rng){
+    Cluster makeRingLikeCluster(Cluster &references, std::vector<Sample> &samples, unsigned n, std::default_random_engine& rng){
         const auto &normal = TestMolecules::fourElectrons::normal;
 
         // emplace first element (the first elements determines the ordering of the cluster)
@@ -84,7 +84,7 @@ TEST_F(ADensityBasedClustererTest, RotationallySymmetricCluster){
     for(auto seed : std::vector<unsigned long>{0,randomSeed}) {
         auto rng = std::default_random_engine(seed);
 
-        Group references;
+        Cluster references;
         std::vector<Sample> samples;
 
         makeRingLikeCluster(references, samples, n, rng);
@@ -124,7 +124,7 @@ TEST_F(ADensityBasedClustererTest, RotationallySymmetricAndPointLikeCluster){
     for(auto seed : std::vector<unsigned long>{0,randomSeed}) {
         auto rng = std::default_random_engine(seed);
 
-        Group references;
+        Cluster references;
         std::vector<Sample> samples;
         makeRingLikeCluster(references, samples, n, rng);
 

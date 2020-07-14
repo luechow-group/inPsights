@@ -18,7 +18,7 @@
 
 #include <Reference.h>
 #include <Sample.h>
-#include <Group.h>
+#include <Cluster.h>
 
 Reference::Reference(const AtomsVector &nuclei, double negLogSqrdProbabilityDensity, ElectronsVector maximum, size_t id)
         :
@@ -35,7 +35,7 @@ size_t Reference::ownId() const {
     return sampleIds_[0];
 }
 
-void Reference::mergeReference(Group::iterator &it) {
+void Reference::mergeReference(Cluster::iterator &it) {
     assert(it->representative()->ownId() != ownId() && "Self-associations are not allowed.");
     assert(it->representative()->nuclei() == nuclei() && "The nuclear geometries must match.");
     sampleIds_.insert(

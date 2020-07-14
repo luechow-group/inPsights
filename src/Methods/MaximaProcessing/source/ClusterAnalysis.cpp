@@ -15,22 +15,22 @@
  * along with inPsights. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "GroupAnalysis.h"
+#include "ClusterAnalysis.h"
 #include <BestMatchDistance.h>
 #include <Reference.h>
 
-// constructs an adjacency matrix with indices being determined from the order in the group
-Eigen::MatrixXd  GroupAnalysis::calculateBestMatchDistanceMatrix(const Group& group) {
-    assert(!group.empty() && "The group cannot be empty.");
+// constructs an adjacency matrix with indices being determined from the order in the cluster
+Eigen::MatrixXd  ClusterAnalysis::calculateBestMatchDistanceMatrix(const Cluster& cluster) {
+    assert(!cluster.empty() && "The cluster cannot be empty.");
 
     // construct matrix
-    Eigen::MatrixXd mat = Eigen::MatrixXd::Zero(group.size(),group.size());
-    Eigen::Index nClusters = group.size();
+    Eigen::MatrixXd mat = Eigen::MatrixXd::Zero(cluster.size(),cluster.size());
+    Eigen::Index nClusters = cluster.size();
     for (Eigen::Index i = 0; i < nClusters-1; ++i) {
         for (Eigen::Index j = i+1; j < nClusters; ++j) {
             auto [norm, perm] = BestMatch::Distance::compare< Eigen::Infinity, 2>(
-                    group[i].representative()->maximum().positionsVector(),
-                    group[j].representative()->maximum().positionsVector());
+                    cluster[i].representative()->maximum().positionsVector(),
+                    cluster[j].representative()->maximum().positionsVector());
             mat(i,j) = norm;
         }
     }

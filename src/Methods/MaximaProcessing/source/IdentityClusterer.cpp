@@ -44,48 +44,48 @@ Settings::IdentityClusterer IdentityClusterer::settings = Settings::IdentityClus
 IdentityClusterer::IdentityClusterer(std::vector<Sample> &samples)
         : IClusterer(samples) {}
 
-void IdentityClusterer::cluster(Group& group) {
-    assert(!group.empty() && "The group cannot be empty.");
+void IdentityClusterer::cluster(Cluster& cluster) {
+    assert(!cluster.empty() && "The cluster cannot be empty.");
 
     auto identityRadius = settings.radius();
     auto valueIncrement = settings.valueIncrement();
-    auto atoms = group.representative()->nuclei();
+    auto atoms = cluster.representative()->nuclei();
 
-    auto beginIt = group.begin();
+    auto beginIt = cluster.begin();
 
-    while (beginIt != group.end()) {
-        auto total = group.size();//std::distance(group.begin(), group.end());
-        auto endIt = std::upper_bound(beginIt, group.end(), Group(Reference(atoms,
+    while (beginIt != cluster.end()) {
+        auto total = cluster.size();//std::distance(cluster.begin(), cluster.end());
+        auto endIt = std::upper_bound(beginIt, cluster.end(), Cluster(Reference(atoms,
                                                                             beginIt->representative()->value() +
                                                                             valueIncrement, ElectronsVector(), 0)));
 
         spdlog::info("Global identiy search in interval {} to {}, total: {}",
-                      total - std::distance(beginIt, group.end()),
-                      total - std::distance(endIt, group.end()),
-                      std::distance(group.begin(), group.end()));
+                      total - std::distance(beginIt, cluster.end()),
+                      total - std::distance(endIt, cluster.end()),
+                      std::distance(cluster.begin(), cluster.end()));
 
         auto it = beginIt;
 
         if (beginIt != endIt) {
             it++; // start with the element next to beginIt
             while (it != endIt)
-                subLoop(group, beginIt, it, endIt, identityRadius, valueIncrement);
+                subLoop(cluster, beginIt, it, endIt, identityRadius, valueIncrement);
 
             beginIt = endIt;
         } else ++beginIt; // range is zero
     }
     // sort by function value before leaving
-    group.sortAll();
+    cluster.sortAll();
 }
 
-void IdentityClusterer::subLoop(Group& group,
-        Group::iterator &beginIt,
-        Group::iterator &it,
-        Group::iterator &endIt,
+void IdentityClusterer::subLoop(Cluster& cluster,
+        Cluster::iterator &beginIt,
+        Cluster::iterator &it,
+        Cluster::iterator &endIt,
         double distThresh,
         double valueIncrement) {
 
-    auto atoms = group.representative()->nuclei();
+    auto atoms = cluster.representative()->nuclei();
 
     //TODO calculate only alpha electron distances and skip beta electron hungarian if dist is too large
     auto [norm, perm] = BestMatch::Distance::compare<Spin, Eigen::Infinity, 2>(
@@ -102,30 +102,30 @@ void IdentityClusterer::subLoop(Group& group,
 
         if ((norm <= distThresh) || (normFlipped <= distThresh)) {
             if (norm <= normFlipped)
-                addReference(group, beginIt, it, perm);
+                addReference(cluster, beginIt, it, perm);
             else
-                addReference(group, beginIt, it, permFlipped);
-            endIt = std::upper_bound(beginIt, group.end(),
-                    Group(Reference(atoms, beginIt->representative()->value() + valueIncrement,
+                addReference(cluster, beginIt, it, permFlipped);
+            endIt = std::upper_bound(beginIt, cluster.end(),
+                    Cluster(Reference(atoms, beginIt->representative()->value() + valueIncrement,
                                     ElectronsVector(), 0)));
         } else it++;
     } else {  // don't consider spin flip
         if (norm <= distThresh) {
-            addReference(group, beginIt, it, perm);
-            endIt = std::upper_bound(beginIt, group.end(),
-                    Group(Reference(atoms, beginIt->representative()->value() + valueIncrement,
+            addReference(cluster, beginIt, it, perm);
+            endIt = std::upper_bound(beginIt, cluster.end(),
+                    Cluster(Reference(atoms, beginIt->representative()->value() + valueIncrement,
                                     ElectronsVector(), 0)));
         } else it++;
     }
 }
 
 // TODO This method should be located inside of a reference container class
-void IdentityClusterer::addReference(Group& group,
-        const Group::iterator &beginIt,
-        Group::iterator &it,
+void IdentityClusterer::addReference(Cluster& cluster,
+        const Cluster::iterator &beginIt,
+        Cluster::iterator &it,
         const Eigen::PermutationMatrix<Eigen::Dynamic> &bestMatch) const {
 
     it->permuteAll(bestMatch, samples_);
     beginIt->representative()->mergeReference(it);
-    it = group.erase(it); // erase returns the iterator of the following element
+    it = cluster.erase(it); // erase returns the iterator of the following element
 }

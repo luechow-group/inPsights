@@ -45,14 +45,14 @@ public:
 
     ReferencePositionsClusterer(std::vector<Sample> &samples);
 
-    void cluster(Group& group) override;
+    void cluster(Cluster& group) override;
 
 private:
     std::function<double(const Eigen::Vector3d &, const std::vector<Eigen::Vector3d> &)> distanceFunction_;
-    bool compareLocal(std::vector<Group>::iterator &sortedGroup, std::vector<Group>::iterator &subGroup,
+    bool compareLocal(std::vector<Cluster>::iterator &sortedGroup, std::vector<Cluster>::iterator &subGroup,
             double similarityRadius) const;
 
-    bool compareGlobal(std::vector<Group>::iterator &sortedGroup, std::vector<Group>::iterator &subGroup,
+    bool compareGlobal(std::vector<Cluster>::iterator &sortedGroup, std::vector<Cluster>::iterator &subGroup,
             double similarityRadius) const;
 };
 

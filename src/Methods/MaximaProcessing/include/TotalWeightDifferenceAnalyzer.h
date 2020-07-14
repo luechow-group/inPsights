@@ -38,7 +38,7 @@ class TotalWeightDifferenceAnalyzer : public IAnalyzer {
 public:
     static Settings::TotalWeightDifferenceAnalyzer settings;
 
-    void analyze(const Group& group) override;
+    void analyze(const Cluster& group) override;
     std::vector<double> getResults();
 
 private:

@@ -44,101 +44,101 @@ PreClusterer::PreClusterer(std::vector<Sample> &samples)
         : IClusterer(samples){}
         
 // assumes a sorted reference vector
-void PreClusterer::cluster(Group& group) {
-    assert(!group.empty() && "The group cannot be empty.");
+void PreClusterer::cluster(Cluster& cluster) {
+    assert(!cluster.empty() && "The cluster cannot be empty.");
 
     auto similarityRadius = settings.radius();
     auto valueIncrement = settings.valueIncrement();
-    auto atoms = group.representative()->nuclei();
+    auto atoms = cluster.representative()->nuclei();
 
     // insert first element
-    Group supergroup({Group({*group.begin()})});
-    group.erase(group.begin());
+    Cluster supercluster({Cluster({*cluster.begin()})});
+    cluster.erase(cluster.begin());
 
     //Presort
-    for (auto subgroup = group.begin(); subgroup != group.end(); ++subgroup) {
+    for (auto subcluster = cluster.begin(); subcluster != cluster.end(); ++subcluster) {
 
-        Group lowerRef(Reference(atoms, subgroup->representative()->value() - valueIncrement,
+        Cluster lowerRef(Reference(atoms, subcluster->representative()->value() - valueIncrement,
                 ElectronsVector(), 0));
-        Group upperRef(Reference(atoms, subgroup->representative()->value() + valueIncrement,
+        Cluster upperRef(Reference(atoms, subcluster->representative()->value() + valueIncrement,
                 ElectronsVector(), 0));
 
-        auto supergroupLowerBoundIt = std::lower_bound(
-                supergroup.begin(),
-                supergroup.end(),
+        auto superclusterLowerBoundIt = std::lower_bound(
+                supercluster.begin(),
+                supercluster.end(),
                 lowerRef);
-        auto supergroupUpperBoundIt = std::upper_bound(
-                supergroup.begin(),
-                supergroup.end(),
+        auto superclusterUpperBoundIt = std::upper_bound(
+                supercluster.begin(),
+                supercluster.end(),
                 upperRef);
 
-        // iterate over all supergroup members within the value range
+        // iterate over all supercluster members within the value range
         std::list<bool> outsideQ;
-        for(auto subgroupFromSupergroupBoundaries = supergroupLowerBoundIt;
-            subgroupFromSupergroupBoundaries != supergroupUpperBoundIt; ++subgroupFromSupergroupBoundaries) {
+        for(auto subclusterFromSuperclusterBoundaries = superclusterLowerBoundIt;
+            subclusterFromSuperclusterBoundaries != superclusterUpperBoundIt; ++subclusterFromSuperclusterBoundaries) {
 
             auto[norm, perm] = BestMatch::Distance::compare<Eigen::Infinity, 2>(
-                    subgroup->representative()->maximum().positionsVector(),
-                    subgroupFromSupergroupBoundaries->representative()->maximum().positionsVector());
+                    subcluster->representative()->maximum().positionsVector(),
+                    subclusterFromSuperclusterBoundaries->representative()->maximum().positionsVector());
             if(norm > similarityRadius)
                 outsideQ.emplace_back(true);
             else
                 outsideQ.emplace_back(false);
         }
         if(std::all_of(outsideQ.begin(), outsideQ.end(), [](bool b){return b;})) {
-            supergroup.emplace_back(Group({*subgroup}));
-            subgroup = group.erase(subgroup);
-            --subgroup;
+            supercluster.emplace_back(Cluster({*subcluster}));
+            subcluster = cluster.erase(subcluster);
+            --subcluster;
         }
     }
 
-    // start with the second subgroup
-    for (auto subgroup = group.begin(); subgroup != group.end(); ++subgroup) {
+    // start with the second subcluster
+    for (auto subcluster = cluster.begin(); subcluster != cluster.end(); ++subcluster) {
 
-        // Define value range of the supergroup
-        Group lowerRef(Reference(atoms, subgroup->representative()->value() - valueIncrement,
+        // Define value range of the supercluster
+        Cluster lowerRef(Reference(atoms, subcluster->representative()->value() - valueIncrement,
                 ElectronsVector(), 0));
-        Group upperRef(Reference(atoms, subgroup->representative()->value() + valueIncrement,
+        Cluster upperRef(Reference(atoms, subcluster->representative()->value() + valueIncrement,
                 ElectronsVector(), 0));
 
-        auto supergroupLowerBoundIt = std::lower_bound(
-                supergroup.begin(),
-                supergroup.end(),
+        auto superclusterLowerBoundIt = std::lower_bound(
+                supercluster.begin(),
+                supercluster.end(),
                 lowerRef);
-        auto supergroupUpperBoundIt = std::upper_bound(
-                supergroup.begin(),
-                supergroup.end(),
+        auto superclusterUpperBoundIt = std::upper_bound(
+                supercluster.begin(),
+                supercluster.end(),
                 upperRef);
 
-        // iterate over all supergroup members within the value range
+        // iterate over all supercluster members within the value range
         auto overallBestMatchNorm = std::numeric_limits<double>::max();
         auto overallBestMatchPerm =
-                Eigen::PermutationMatrix<Eigen::Dynamic>(group.representative()->maximum().numberOfEntities());
-        auto bestMatchSubgroupFromSupergroupBoundaries = supergroupLowerBoundIt;
-        for (auto subgroupFromSupergroupBoundaries = supergroupLowerBoundIt;
-        subgroupFromSupergroupBoundaries != supergroupUpperBoundIt; ++subgroupFromSupergroupBoundaries) {
+                Eigen::PermutationMatrix<Eigen::Dynamic>(cluster.representative()->maximum().numberOfEntities());
+        auto bestMatchSubclusterFromSuperclusterBoundaries = superclusterLowerBoundIt;
+        for (auto subclusterFromSuperclusterBoundaries = superclusterLowerBoundIt;
+        subclusterFromSuperclusterBoundaries != superclusterUpperBoundIt; ++subclusterFromSuperclusterBoundaries) {
 
             auto [norm, perm] = BestMatch::Distance::compare<Eigen::Infinity, 2>(
-                    subgroup->representative()->maximum().positionsVector(),
-                    subgroupFromSupergroupBoundaries->representative()->maximum().positionsVector());
+                    subcluster->representative()->maximum().positionsVector(),
+                    subclusterFromSuperclusterBoundaries->representative()->maximum().positionsVector());
 
             if (norm <= overallBestMatchNorm) {
                 overallBestMatchNorm = norm;
                 overallBestMatchPerm = perm;
-                bestMatchSubgroupFromSupergroupBoundaries = subgroupFromSupergroupBoundaries;
+                bestMatchSubclusterFromSuperclusterBoundaries = subclusterFromSuperclusterBoundaries;
             }
 
         }
         if (overallBestMatchNorm <= similarityRadius) {
-            subgroup->permuteAll(overallBestMatchPerm, samples_);
-            bestMatchSubgroupFromSupergroupBoundaries->emplace_back(*subgroup);
+            subcluster->permuteAll(overallBestMatchPerm, samples_);
+            bestMatchSubclusterFromSuperclusterBoundaries->emplace_back(*subcluster);
         }
         else {
             throw std::exception();
         }
     }
-    group = supergroup;
+    cluster = supercluster;
 
     // sort by function value before leaving
-    group.sortAll();
+    cluster.sortAll();
 }

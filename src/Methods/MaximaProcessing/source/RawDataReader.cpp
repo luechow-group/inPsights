@@ -25,7 +25,7 @@
 #include <random>
 
 RawDataReader::RawDataReader(
-        Group& references,
+        Cluster& references,
         std::vector<Sample>& samples, int recordDelimiterLength)
         :
         BinaryFileReader(recordDelimiterLength),
@@ -80,7 +80,7 @@ void RawDataReader::readSamplesAndMaxima(std::ifstream &input, int fileLength, s
         if(MaximaProcessing::settings.deleteCoreElectrons()) {
             auto [sValenceOnly, rValenceOnly] = removeNonValenceElectrons(s, r);
             samples_.emplace_back(std::move(sValenceOnly));
-            maxima_.emplace_back(Group(std::move(rValenceOnly)));
+            maxima_.emplace_back(Cluster(std::move(rValenceOnly)));
         } else {
             samples_.emplace_back(std::move(s));
             maxima_.emplace_back(std::move(r));

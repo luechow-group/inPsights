@@ -18,7 +18,7 @@
 #ifndef INPSIGHTS_IBLOCK_H
 #define INPSIGHTS_IBLOCK_H
 
-#include <Group.h>
+#include <Cluster.h>
 
 class IBlock{
 public:
@@ -45,7 +45,7 @@ class IClusterer : public IBlock {
 public:
     explicit IClusterer(std::vector<Sample> & samples);
 
-    virtual void cluster(Group& group) = 0;
+    virtual void cluster(Cluster& cluster) = 0;
 
 protected:
     std::vector<Sample> &samples_;
@@ -53,7 +53,7 @@ protected:
 
 class IAnalyzer : public IBlock {
 public:
-    virtual void analyze(const Group& group) = 0;
+    virtual void analyze(const Cluster& cluster) = 0;
 };
 
 

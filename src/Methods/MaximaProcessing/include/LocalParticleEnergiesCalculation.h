@@ -20,7 +20,7 @@
 
 #include <Statistics.h>
 #include <Sample.h>
-#include <Group.h>
+#include <Cluster.h>
 #include <ParticleSelection.h>
 
 class LocalParticleEnergiesCalculator {
@@ -46,7 +46,7 @@ public:
             const std::vector<size_t> &nucleiIndices,
             size_t selectedElectronsCount);
 
-    void add(const Group &group);
+    void add(const Cluster &group);
 
     const std::vector<Sample> &samples_;
     std::vector<size_t> selectedNucleiIndices_;
@@ -56,10 +56,10 @@ public:
     ResultsBundle<LocalBondEnergyResults> localBondEnergies;
 
 
-    void selectedRestInter(const Group &group, size_t numberOfElectrons, const AtomsVector &permutedNuclei,
+    void selectedRestInter(const Cluster &group, size_t numberOfElectrons, const AtomsVector &permutedNuclei,
             const Eigen::MatrixXd &VnnMat);
 
-    void bondEnergyCalculation(const Group &group, size_t numberOfElectrons, const AtomsVector &permutedNuclei,
+    void bondEnergyCalculation(const Cluster &group, size_t numberOfElectrons, const AtomsVector &permutedNuclei,
                                const Eigen::MatrixXd &VnnMat) ;
 
     void createIndiceLists(size_t numberOfElectrons, const AtomsVector &permutedNuclei,

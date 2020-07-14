@@ -23,7 +23,7 @@
 #include <ISettings.h>
 #include <spdlog/spdlog.h>
 #include <IBlock.h>
-#include <Group.h>
+#include <Cluster.h>
 
 namespace Settings {
     class DensityBasedClusterer : public ISettings {
@@ -47,20 +47,20 @@ public:
 
     explicit DensityBasedClusterer(std::vector<Sample> &samples);
 
-    void cluster(Group& group) override;
+    void cluster(Cluster& group) override;
 
 private:
-    static double wrapper(const Group &g1, const Group &g2);
-    static double wrapperLocal(const Group &g1, const Group &g2);
-    void orderByBestMatchDistance(Group &supergroup, double threshold, bool local = false) const;
+    static double wrapper(const Cluster &g1, const Cluster &g2);
+    static double wrapperLocal(const Cluster &g1, const Cluster &g2);
+    void orderByBestMatchDistance(Cluster &supergroup, double threshold, bool local = false) const;
 
-    bool compare(double threshold, Group &subgroup, Group &newGroups,
-            const std::vector<Group>::iterator &i,
-            std::vector<Group>::iterator &j) const;
+    bool compare(double threshold, Cluster &subgroup, Cluster &newClusters,
+            const std::vector<Cluster>::iterator &i,
+            std::vector<Cluster>::iterator &j) const;
 
-    bool compareLocal(double threshold, Group &subgroup, Group &newGroups,
-            const std::vector<Group>::iterator &i,
-            std::vector<Group>::iterator &j) const;
+    bool compareLocal(double threshold, Cluster &subgroup, Cluster &newClusters,
+            const std::vector<Cluster>::iterator &i,
+            std::vector<Cluster>::iterator &j) const;
 };
 
 #endif //INPSIGHTS_DENSITYBASEDCLUSTERER_H

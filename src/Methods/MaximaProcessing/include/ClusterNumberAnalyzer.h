@@ -39,7 +39,7 @@ class ClusterNumberAnalyzer : public IAnalyzer {
 public:
     static Settings::ClusterNumberAnalyzer settings;
 
-    void analyze(const Group& group) override;
+    void analyze(const Cluster& cluster) override;
     std::vector<std::size_t> getResults();
 
 private:

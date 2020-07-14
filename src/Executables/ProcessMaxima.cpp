@@ -16,7 +16,7 @@
  */
 
 #include <RawDataReader.h>
-#include <Group.h>
+#include <Cluster.h>
 #include <ElementInfo.h>
 #include <IdentityClusterer.h>
 #include <PreClusterer.h>
@@ -160,7 +160,7 @@ int main(int argc, char *argv[]) {
             MaximaProcessing::settings.binaryFileBasename = inputFilename.substr(0, idx);
     }
         // Read maxima and samples
-    Group maxima;
+    Cluster maxima;
     std::vector<Sample> samples;
     RawDataReader reader(maxima, samples);
 

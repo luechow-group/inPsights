@@ -17,7 +17,7 @@
 
 #include <ClusterNumberAnalyzer.h>
 #include <GraphAnalysis.h>
-#include <GroupAnalysis.h>
+#include <ClusterAnalysis.h>
 #include <spdlog/spdlog.h>
 #include <ErrorHandling.h>
 
@@ -45,21 +45,21 @@ YAML_SETTINGS_DEFINITION(Settings::ClusterNumberAnalyzer)
 Settings::ClusterNumberAnalyzer ClusterNumberAnalyzer::settings = Settings::ClusterNumberAnalyzer();
 
 #include <iomanip>
-void  ClusterNumberAnalyzer::analyze(const Group& group) {
+void  ClusterNumberAnalyzer::analyze(const Cluster& cluster) {
     unsigned nIncrements = settings.increments();
     double h = settings.radiusIncrement();
     auto startRadius = settings.startRadius();
     auto minimalWeight = settings.minimalWeight();
 
-    auto mat = GroupAnalysis::calculateBestMatchDistanceMatrix(group);
+    auto mat = ClusterAnalysis::calculateBestMatchDistanceMatrix(cluster);
     clusterNumbers_.clear();
 
-    std::size_t totalNumberOfMaxima = group.numberOfLeaves();
+    std::size_t totalNumberOfMaxima = cluster.numberOfLeaves();
 
     std::size_t significantClusterCount = 0;
 
-    for(const auto& subgroup : group){
-        auto weight = static_cast<double>(subgroup.numberOfLeaves()) / static_cast<double>(totalNumberOfMaxima);
+    for(const auto& subcluster : cluster){
+        auto weight = static_cast<double>(subcluster.numberOfLeaves()) / static_cast<double>(totalNumberOfMaxima);
         if(weight > minimalWeight)
             significantClusterCount++;
     }
@@ -72,12 +72,12 @@ void  ClusterNumberAnalyzer::analyze(const Group& group) {
 
         // filter the number of significant clusters in the set of found clusters
         significantClusterCount = 0;
-        for(const auto& cluster : graphClusters){
+        for(const auto& graphCluster : graphClusters){
 
             // calculate weight for cluster
             std::size_t summedMaxima = 0;
-            for(auto index : cluster)
-                summedMaxima += group[index].numberOfLeaves();
+            for(auto index : graphCluster)
+                summedMaxima += cluster[index].numberOfLeaves();
             auto weight = static_cast<double>(summedMaxima) / static_cast<double>(totalNumberOfMaxima);
 
             // check if weight is significant enough
