@@ -22,19 +22,20 @@
 #include <string>
 #include <Eigen/Core>
 #include <yaml-cpp/yaml.h>
-#include <ParticleIndices.h>
+#include <MolecularSelection.h>
+
 
 enum MotifType {unassigned=0, Core, Valence, CoreValence};
 
 std::string toString(MotifType type);
 MotifType fromString(const std::string& string);
 
-class Motif{
+class Motif : public MolecularSelection{
 public:
     Motif() = default;
     Motif(ParticleIndices  electronIndices, MotifType type = MotifType::unassigned);
     Motif(ParticleIndices  electronIndices,
-          ParticleIndices  atomIndices,
+          ParticleIndices  nucleiIndices,
           MotifType type = MotifType::unassigned);
 
     // needed for maps
@@ -45,9 +46,6 @@ public:
 
     MotifType type() const;
     void setType(MotifType type_);
-
-    ParticleIndices electrons_;
-    ParticleIndices nuclei_;
 
 private:
     MotifType type_;

@@ -45,7 +45,7 @@ namespace EnergyPartitioning {
                                                   const Eigen::MatrixXd &Ven, const Eigen::MatrixXd &Vnn);
     }
 
-    namespace ParticleBased {
+    namespace ParticleBased { // TODO remove
         Eigen::VectorXd oneAtomEnergies(const Eigen::MatrixXd &Vnn);
 
         Eigen::VectorXd oneElectronEnergies(

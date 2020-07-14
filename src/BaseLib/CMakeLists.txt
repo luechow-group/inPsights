@@ -61,6 +61,7 @@ set(HEADER_FILES
         include/ErrorHandling.h
         include/MapUtils.h
         include/ParticleIndices.h
+        include/MolecularSelection.h
         )
 
 
@@ -93,6 +94,7 @@ set(SOURCE_FILES
         source/ErrorHandling.cpp
         source/Metrics.cpp
         source/ParticleIndices.cpp
+        source/MolecularSelection.cpp
         )
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES})

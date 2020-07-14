@@ -50,16 +50,14 @@ MotifType fromString(const std::string& string) {
 
 Motif::Motif(ParticleIndices electronIndices, MotifType type)
     :
-    electrons_(std::move(electronIndices)),
-    nuclei_(),
-    type_(type)
+        MolecularSelection(std::move(electronIndices)),
+        type_(type)
 {};
 
-Motif::Motif(ParticleIndices electronIndices, ParticleIndices atomIndices, MotifType type)
+Motif::Motif(ParticleIndices electronIndices, ParticleIndices nucleiIndices, MotifType type)
     :
-    electrons_(std::move(electronIndices)),
-    nuclei_(std::move(atomIndices)),
-    type_(type)
+        MolecularSelection(std::move(electronIndices), std::move(nucleiIndices)),
+        type_(type)
     {};
 
 bool Motif::operator<(const Motif &rhs) const {
