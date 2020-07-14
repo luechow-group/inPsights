@@ -40,4 +40,13 @@ private:
     std::set<Eigen::Index> particleIndices_;
 };
 
+namespace YAML {
+    class Node; class Emitter;
+    template<> struct convert<ParticleIndices> {
+        static Node encode(const ParticleIndices &rhs);
+        static bool decode(const Node &node, ParticleIndices &rhs);
+    };
+    Emitter &operator<<(Emitter &out, const ParticleIndices &rhs) ;
+}
+
 #endif //INPSIGHTS_PARTICLEGROUPINDICES_H
