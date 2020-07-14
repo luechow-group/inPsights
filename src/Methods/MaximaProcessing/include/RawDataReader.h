@@ -33,7 +33,7 @@ public:
     
     void read(const std::string& basename, size_t numberOfSamples);
 
-    void removeNonValenceElectrons(Reference& reference, Sample& sample);
+    std::pair<Sample, Reference> removeNonValenceElectrons(const Sample &sample, const Reference &reference);
 
     AtomsVector getAtoms() const;
     

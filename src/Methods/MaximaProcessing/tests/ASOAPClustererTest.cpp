@@ -46,27 +46,27 @@ public:
             {Elements::ElementType::H, {0, 0, -a}},
             {Elements::ElementType::H, {0, 0, +a}}});
 
-        A = Group({1.0, ElectronsVector({
+        A = Group({atoms,1.0, ElectronsVector({
             {Spin::alpha, {0, 0,-a}},
             {Spin::alpha, {0, 0, a}},
             {Spin::beta,  {0, b, 0}}}), 0}); // covalent
-        B = Group({1.1, ElectronsVector({
+        B = Group({atoms,1.1, ElectronsVector({
             {Spin::beta,  {0, b, 0}},
             {Spin::alpha, {0, 0, a-0.01}},
             {Spin::alpha, {0, 0,-a+0.01}}}), 1}); // A permuted and shifted
-        C = Group({1.1, ElectronsVector({
+        C = Group({atoms,1.1, ElectronsVector({
             {Spin::beta,  {0, b, 0}},
             {Spin::alpha, {0, 0, a+0.01}},
             {Spin::alpha, {0, 0,-a-0.01}}}), 2}); // A permuted and shifted
-        D = Group({1.3, ElectronsVector({
+        D = Group({atoms,1.3, ElectronsVector({
             {Spin::alpha, {0, 0,-a}},
             {Spin::beta,  {0,-b, 0}},
             {Spin::alpha, {0, 0, a}}}), 3}); // A reflected and permuted
-        E = Group({1.4, ElectronsVector({
+        E = Group({atoms,1.4, ElectronsVector({
             {Spin::alpha, {0, 0,-a}},
             {Spin::beta,  {0, c, 0}},
             {Spin::alpha, {0, 0, a}}}), 4}); // ionic
-        F = Group({1.5, ElectronsVector({
+        F = Group({atoms,1.5, ElectronsVector({
             {Spin::alpha, {0, 0,-a}},
             {Spin::beta,  {0, c, 0}},
             {Spin::alpha, {0, 0, a}}}), 5}); // E reflected
@@ -222,8 +222,8 @@ TEST_F(ASOAPClustererTest, BH3_Alchemical) {
     Cutoff::settings.radius = 4.0;
     Cutoff::settings.width = 3.0;
 
-    Group gA({1.0, A.electrons(), 0});
-    Group gB({1.9, B.electrons(), 1});
+    Group gA({A.atoms(), 1.0, A.electrons(), 0});
+    Group gB({B.atoms(), 1.9, B.electrons(), 1});
     Group maxima({gA,gB});
     maxima.sortAll();
 
@@ -242,7 +242,7 @@ TEST_F(ASOAPClustererTest, BH3_Alchemical) {
 
 class H4test : public ::testing::Test {
 public:
-    Group A, B, C;
+    Group gA, gB, gC;
     std::vector<Sample> samples;
     Eigen::VectorXd ekin;
 
@@ -252,23 +252,27 @@ public:
         spdlog::set_level(spdlog::level::off);
         //spdlog::set_level(spdlog::level::debug);
 
+        auto A = TestMolecules::H4::linear::ionicA;
+        auto B = TestMolecules::H4::linear::ionicAreflected;
+        auto C = TestMolecules::H4::linear::ionicAreflectedReorderedNumbering;
+
         atoms = TestMolecules::H4::linear::nuclei.atoms();
-        A = Group({1.0, TestMolecules::H4::linear::ionicA.electrons(), 0});
-        B = Group({1.0, TestMolecules::H4::linear::ionicAreflected.electrons(), 1});
-        C = Group({1.0, TestMolecules::H4::linear::ionicAreflectedReorderedNumbering.electrons(), 2});
+        gA = Group({A.atoms(), 1.0, A.electrons(), 0});
+        gB = Group({B.atoms(), 1.0, B.electrons(), 1});
+        gC = Group({C.atoms(), 1.0, C.electrons(), 2});
 
         ekin = Eigen::VectorXd::Zero(4);
 
         samples = {
-                {A.representative()->maximum(), ekin},
-                {B.representative()->maximum(), ekin},
-                {C.representative()->maximum(), ekin}
+                {A.electrons(), ekin},
+                {B.electrons(), ekin},
+                {C.electrons(), ekin}
         };
     }
 };
 
 TEST_F(H4test, TwoClusters_chemical) {
-    ParticleKit::create(atoms, A.representative()->maximum());
+    ParticleKit::create(atoms, gA.representative()->maximum());
     SOAPClusterer clusterer(atoms, samples);
 
     General::settings.mode = General::Mode::chemical;
@@ -280,7 +284,7 @@ TEST_F(H4test, TwoClusters_chemical) {
     Cutoff::settings.radius = 4.0;
     Cutoff::settings.width = 3.0;
 
-    Group maxima({A, B});
+    Group maxima({gA, gB});
 
     clusterer.cluster(maxima);
 
@@ -294,7 +298,7 @@ TEST_F(H4test, TwoClusters_chemical) {
 }
 
 TEST_F(H4test, TwoClusters_alchemical) {
-    ParticleKit::create(atoms, A.representative()->maximum());
+    ParticleKit::create(atoms, gA.representative()->maximum());
     SOAPClusterer clusterer(atoms, samples);
 
     General::settings.mode = General::Mode::alchemical;
@@ -307,7 +311,7 @@ TEST_F(H4test, TwoClusters_alchemical) {
     Cutoff::settings.radius = 4.0;
     Cutoff::settings.width = 3.0;
 
-    Group maxima({A, B});
+    Group maxima({gA, gB});
 
     clusterer.cluster(maxima);
 
@@ -321,7 +325,7 @@ TEST_F(H4test, TwoClusters_alchemical) {
 }
 
 TEST_F(H4test, TwoClusters_alchemical_spinswap) {
-    ParticleKit::create(atoms, A.representative()->maximum());
+    ParticleKit::create(atoms, gA.representative()->maximum());
     SOAPClusterer clusterer(atoms, samples);
 
     General::settings.mode = General::Mode::alchemical;
@@ -334,7 +338,7 @@ TEST_F(H4test, TwoClusters_alchemical_spinswap) {
     Cutoff::settings.radius = 4.0;
     Cutoff::settings.width = 3.0;
 
-    Group maxima({A,C});
+    Group maxima({gA,gC});
 
     clusterer.cluster(maxima);
 

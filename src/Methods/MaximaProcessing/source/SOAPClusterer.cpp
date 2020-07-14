@@ -114,7 +114,8 @@ void SOAPClusterer::cluster(Group& group){
 
                 // if so, put permute the current group and put it into the supergroup subgroup and stop searching
                 if (comparisionResult.metric >= (similarityThreshold - numericalPrecisionEpsilon)) {
-                    subgroup.permuteAll(comparisionResult.permutation, samples_);
+                    auto permutations = subgroup.representative()->spectrum().molecule_.splitAllParticlePermutation(comparisionResult.permutation);
+                    subgroup.permuteAll(permutations, samples_);
 
                     supergroup[j].emplace_back(subgroup);
 

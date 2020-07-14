@@ -17,8 +17,8 @@
 
 #include <IdentityClusterer.h>
 #include <PreClusterer.h>
+#include <Reference.h>
 #include <BestMatchDistance.h>
-#include <ValueSorter.h>
 #include <spdlog/spdlog.h>
 
 namespace Settings {
@@ -49,14 +49,15 @@ void IdentityClusterer::cluster(Group& group) {
 
     auto identityRadius = settings.radius();
     auto valueIncrement = settings.valueIncrement();
-
-
+    auto atoms = group.representative()->nuclei();
 
     auto beginIt = group.begin();
 
     while (beginIt != group.end()) {
         auto total = group.size();//std::distance(group.begin(), group.end());
-        auto endIt = std::upper_bound(beginIt, group.end(), Group(Reference(beginIt->representative()->value() + valueIncrement)));
+        auto endIt = std::upper_bound(beginIt, group.end(), Group(Reference(atoms,
+                                                                            beginIt->representative()->value() +
+                                                                            valueIncrement, ElectronsVector(), 0)));
 
         spdlog::info("Global identiy search in interval {} to {}, total: {}",
                       total - std::distance(beginIt, group.end()),
@@ -84,6 +85,8 @@ void IdentityClusterer::subLoop(Group& group,
         double distThresh,
         double valueIncrement) {
 
+    auto atoms = group.representative()->nuclei();
+
     //TODO calculate only alpha electron distances and skip beta electron hungarian if dist is too large
     auto [norm, perm] = BestMatch::Distance::compare<Spin, Eigen::Infinity, 2>(
             it->representative()->maximum(),
@@ -103,13 +106,15 @@ void IdentityClusterer::subLoop(Group& group,
             else
                 addReference(group, beginIt, it, permFlipped);
             endIt = std::upper_bound(beginIt, group.end(),
-                    Group(Reference(beginIt->representative()->value() + valueIncrement)));
+                    Group(Reference(atoms, beginIt->representative()->value() + valueIncrement,
+                                    ElectronsVector(), 0)));
         } else it++;
     } else {  // don't consider spin flip
         if (norm <= distThresh) {
             addReference(group, beginIt, it, perm);
             endIt = std::upper_bound(beginIt, group.end(),
-                    Group(Reference(beginIt->representative()->value() + valueIncrement)));
+                    Group(Reference(atoms, beginIt->representative()->value() + valueIncrement,
+                                    ElectronsVector(), 0)));
         } else it++;
     }
 }

@@ -23,6 +23,7 @@
 #include <memory>
 #include <Enumerate.h>
 #include <Sample.h>
+#include <MolecularGeometry.h>
 
 // In order to use Group class,
 // <Reference.h> has to be included as well, due to forward declaration
@@ -56,13 +57,12 @@ public:
     void makeSubgroup(std::vector<Group::iterator> its);
 
     void permuteAll(const Eigen::PermutationMatrix<Eigen::Dynamic>& perm, std::vector<Sample>& samples);
+    void permuteAll(const MolecularGeometry::Permutation& molecularPerm, std::vector<Sample>& samples);
 
     struct AveragedPositionsVector {
         PositionsVector positions;
         unsigned weight;
     };
-
-    AveragedPositionsVector averagedMaximumPositionsVector() const;
 
     ElectronsVector electronsVectorFromAveragedPositionsVector(const AveragedPositionsVector& averagedPositionsVector)  const;
 
@@ -90,6 +90,5 @@ inline Group operator+ (Group lhs, const Group& rhs) {
     lhs += rhs;
     return lhs;
 }
-
 
 #endif //INPSIGHTS_GROUP_H

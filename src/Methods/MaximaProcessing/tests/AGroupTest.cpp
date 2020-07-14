@@ -26,11 +26,13 @@ using namespace testing;
 class AGroupTest : public ::testing::Test {
 public:
     Group g1,g2,g3, h1,h2,h3;
+    AtomsVector atoms;
 
     void SetUp() override {
-        g1 = Group({1.1,TestMolecules::H2::ElectronsInCores::normal.electrons(), 0});
-        g2 = Group({1.2,TestMolecules::H2::ElectronsInCores::translated.electrons(),1});
-        g3 = Group({1.0,TestMolecules::H2::ElectronsInCores::flippedSpins.electrons(), 2});
+        atoms = TestMolecules::H2::ElectronsInCores::normal.atoms();
+        g1 = Group({atoms, 1.1,TestMolecules::H2::ElectronsInCores::normal.electrons(), 0});
+        g2 = Group({atoms, 1.2,TestMolecules::H2::ElectronsInCores::translated.electrons(),1});
+        g3 = Group({atoms, 1.0,TestMolecules::H2::ElectronsInCores::flippedSpins.electrons(), 2});
         h1 = Group({g1});
         h2 = Group({g2});
         h3 = Group({g3});
@@ -274,26 +276,4 @@ TEST_F(AGroupTest, EmptyPrint) {
     std::stringstream ss;
     ss << g;
     ASSERT_EQ(ss.str(), std::string("{}"));
-}
-
-TEST_F(AGroupTest, Average) {
-    Group g({g1,g3});
-
-    auto averagedStructure = g.averagedMaximumPositionsVector();
-    ASSERT_EQ(averagedStructure.weight, 2);
-    Eigen::VectorXd avg = Eigen::VectorXd::Zero(
-            TestMolecules::H2::ElectronsInCores::normal.electrons().positionsVector().numberOfEntities()
-            * TestMolecules::H2::ElectronsInCores::normal.electrons().positionsVector().entityLength());
-
-    ASSERT_TRUE(averagedStructure.positions.asEigenVector().isApprox(avg));
-}
-
-TEST_F(AGroupTest, Average_OneMember) {
-    Group g({g1});
-
-    auto averagedStructure = g.averagedMaximumPositionsVector();
-    ASSERT_EQ(averagedStructure.weight, 1);
-
-    ASSERT_TRUE(averagedStructure.positions.asEigenVector().isApprox(
-            g1.representative()->maximum().positionsVector().asEigenVector()));
 }

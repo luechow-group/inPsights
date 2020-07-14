@@ -16,7 +16,7 @@
  */
 
 #include <Group.h>
-#include <NearestElectrons.h>
+#include <ParticleSelection.h>
 #include <BestMatch.h>
 #include <Reference.h>
 #include <Eigen/Core>
@@ -101,23 +101,15 @@ void Group::permuteAll(const Eigen::PermutationMatrix<Eigen::Dynamic> &perm, std
     }
 }
 
-Group::AveragedPositionsVector Group::averagedMaximumPositionsVector() const {
-    if (isLeaf())
-        return {representative()->maximum().positionsVector(), 1};
-    else {
-        unsigned weight = 0;
-        Eigen::VectorXd average = Eigen::VectorXd::Zero(
-                representative()->maximum().numberOfEntities()
-                *representative()->maximum().positionsVector().entityLength());
-        for (const auto &subgroup : *this) {
-            auto subgroupAverage = subgroup.averagedMaximumPositionsVector();
-            average += double(subgroupAverage.weight)* subgroupAverage.positions.asEigenVector();
-            weight += subgroupAverage.weight;
-        }
-        average /= weight;
-        return {PositionsVector(average), weight};
+void Group::permuteAll(const MolecularGeometry::Permutation &molecularPerm, std::vector<Sample> &samples) {
+    if(isLeaf()) {
+        representative()->permute(molecularPerm, samples);
+    } else {
+        for (auto &i : *this)
+            i.permuteAll(molecularPerm, samples);
     }
 }
+
 
 ElectronsVector Group::electronsVectorFromAveragedPositionsVector(const AveragedPositionsVector & averagedPositionsVector) const {
     return {averagedPositionsVector.positions, representative()->maximum().typesVector()};
@@ -232,7 +224,7 @@ void Group::permuteRelevantElectronsToFront(std::vector<Sample> & samples){
     auto electronsNumber = (*this).representative()->maximum().numberOfEntities();
 
     for (auto & subGroup : *this) {
-        auto subIndices = NearestElectrons::getRelevantIndices(subGroup.representative()->maximum());
+        auto subIndices = ParticleSelection::getRelevantIndices(subGroup.representative()->maximum());
 
         // permute all relevant electrons to the front
         subGroup.setSelectedElectronsCount(subIndices.size());

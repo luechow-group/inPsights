@@ -16,7 +16,7 @@
  * along with inPsights. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <NearestElectrons.h>
+#include <ParticleSelection.h>
 #include <Metrics.h>
 #include <IPosition.h>
 #include <ElementInfo.h>
@@ -24,9 +24,9 @@
 #include <algorithm>
 
 namespace Settings {
-    NearestElectrons::NearestElectrons(const AtomsVector& atoms)
+    ParticleSelection::ParticleSelection(const AtomsVector& atoms)
             :
-            ISettings(VARNAME(NearestElectrons)),
+            ISettings(VARNAME(ParticleSelection)),
             atoms(atoms){
         distanceMode.onChange_.connect(
                 [&](const std::string& value) {
@@ -45,8 +45,8 @@ namespace Settings {
                 });
     };
 
-    NearestElectrons::NearestElectrons(const YAML::Node &node, const AtomsVector& atoms)
-            : NearestElectrons(atoms) {
+    ParticleSelection::ParticleSelection(const YAML::Node &node, const AtomsVector& atoms)
+            : ParticleSelection(atoms) {
         doubleProperty::decode(node, maximalDistance);
         longProperty::decode(node, maximalCount);
         stringProperty::decode(node, distanceMode);
@@ -63,7 +63,7 @@ namespace Settings {
         }
     };
 
-    void NearestElectrons::appendToNode(YAML::Node &node) const {
+    void ParticleSelection::appendToNode(YAML::Node &node) const {
         node[className][maximalDistance.name()] = maximalDistance();
         node[className][maximalCount.name()] = maximalCount();
         node[className][distanceMode.name()] = distanceMode();
@@ -75,14 +75,14 @@ namespace Settings {
     };
 }
 
-namespace NearestElectrons {
+namespace ParticleSelection {
     std::list<long>
     getNonValenceIndices(const ElectronsVector &electrons, const Atom &nucleus) {
         // returns the core electron indices of a given nucleus
         const Elements::ElementType &elementType = nucleus.type();
         const long coreElectronsNumber =
                 Elements::ElementInfo::Z(elementType) - Elements::ElementInfo::valenceElectrons(elementType);
-        return getNearestElectronsIndices(electrons, nucleus.position(), coreElectronsNumber);
+        return getNearestPositionIndices(electrons.positionsVector(), nucleus.position(), coreElectronsNumber);
     };
 
     std::list<long> getNonValenceIndices(const ElectronsVector &electrons, const AtomsVector &nuclei) {
@@ -134,17 +134,17 @@ namespace NearestElectrons {
         return indices;
     };
 
-    std::list<long> getNearestElectronsIndices(const ElectronsVector &electrons,
-                                               const Eigen::Vector3d &position,
-                                               long count) {
-        // returns indices of the 'count' electrons closest to 'position' (without restrictions)
+    std::list<long> getNearestPositionIndices(const PositionsVector &positions,
+                                              const Eigen::Vector3d &position,
+                                              long count) {
+        // returns indices of the 'count' positions closest to 'position' (without restrictions)
         std::priority_queue<
-        std::pair<double, int>,
-        std::vector<std::pair<double, int>>,
-        std::greater<std::pair<double, int>>> q;
+                std::pair<double, int>,
+                std::vector<std::pair<double, int>>,
+                std::greater<std::pair<double, int>>> q;
 
-        for (long i = 0; i < electrons.numberOfEntities(); i++) {
-            q.push({Metrics::distance(electrons[i].position(), position),i});
+        for (long i = 0; i < positions.numberOfEntities(); i++) {
+            q.push({Metrics::distance(positions[i], position),i});
         };
 
         std::list<long> indices;

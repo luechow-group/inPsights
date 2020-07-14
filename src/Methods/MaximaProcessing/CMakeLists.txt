@@ -18,7 +18,6 @@ set(HEADER_FILES
         include/SOAPClusterer.h
         include/MaximaProcessor.h
         include/GeneralStatistics.h
-        include/ValueSorter.h
         include/MaximaProcessingSettings.h
         include/VoxelCubeGeneration.h
         include/EnergyPartitioning.h
@@ -31,6 +30,7 @@ set(HEADER_FILES
         include/ClusterNumberAnalyzer.h
         include/GroupAnalysis.h
         include/TotalWeightDifferenceAnalyzer.h
+        include/LocalParticleEnergiesCalculation.h
         )
 
 set(SOURCE_FILES
@@ -56,6 +56,7 @@ set(SOURCE_FILES
         source/ClusterNumberAnalyzer.cpp
         source/GroupAnalysis.cpp
         source/TotalWeightDifferenceAnalyzer.cpp
+        source/LocalParticleEnergiesCalculation.cpp
         )
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES})

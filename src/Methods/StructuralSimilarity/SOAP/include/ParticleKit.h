@@ -63,11 +63,21 @@ namespace SOAP {
 
         Eigen::PermutationMatrix<Eigen::Dynamic> toKitPermutation(const ElectronsVector &electronsVector);
 
+        Eigen::PermutationMatrix<Eigen::Dynamic> fromKitPermutation(const MolecularGeometry &molecule);
+
+        Eigen::PermutationMatrix<Eigen::Dynamic> toKitPermutation(const MolecularGeometry &molecule);
+
         bool isSubsetQ(const AtomsVector &atomsVector);
 
         bool isSubsetQ(const ElectronsVector &electronsVector);
 
         bool isSubsetQ(const MolecularGeometry &molecularGeometry);
+
+        bool isSameSetQ(const AtomsVector &atomsVector);
+
+        bool isSameSetQ(const ElectronsVector &electronsVector);
+
+        bool isSameSetQ(const MolecularGeometry &molecularGeometry);
 
         EnumeratedElement getEnumeratedElementByIndex(unsigned idx);
 

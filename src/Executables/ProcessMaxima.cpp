@@ -23,7 +23,7 @@
 #include <DensityBasedClusterer.h>
 #include <SOAPClusterer.h>
 #include <ReferencePositionsClusterer.h>
-#include <NearestElectrons.h>
+#include <ParticleSelection.h>
 #include <ClusterNumberAnalyzer.h>
 #include <TotalWeightDifferenceAnalyzer.h>
 #include <MaximaProcessor.h>
@@ -55,7 +55,7 @@ void validateClusteringSettings(const YAML::Node &inputYaml) {
                 break;
             }
             case IBlock::BlockType::DistanceClusterer: {
-                DistanceClusterer::settings = Settings::PreClusterer(clusteringNode);
+                PreClusterer::settings = Settings::PreClusterer(clusteringNode);
                 break;
             }
             case IBlock::BlockType::DensityBasedClusterer: {
@@ -206,11 +206,11 @@ int main(int argc, char *argv[]) {
                 break;
             }
             case IBlock::BlockType::DistanceClusterer: {
-                auto &settings = DistanceClusterer::settings;
+                auto &settings = PreClusterer::settings;
 
                 settings = Settings::PreClusterer(node.second);
 
-                DistanceClusterer distanceClusterer(samples);
+                PreClusterer distanceClusterer(samples);
                 if (!node.second[settings.valueIncrement.name()])
                     settings.valueIncrement = valueStandardError * 1e-2;
                 distanceClusterer.cluster(maxima);
@@ -226,14 +226,14 @@ int main(int argc, char *argv[]) {
                 if(settings.local()) {
                     auto nearestElectronSettings = node.second[VARNAME(NearestElectrons)];
                     if (nearestElectronSettings)
-                        NearestElectrons::settings = Settings::NearestElectrons(nearestElectronSettings, atoms);
+                        ParticleSelection::settings = Settings::ParticleSelection(nearestElectronSettings, atoms);
                 }
 
                 DensityBasedClusterer densityBasedClusterer(samples);
                 densityBasedClusterer.cluster(maxima);
 
                 if(settings.local()) {
-                    NearestElectrons::settings.appendToNode(usedClusteringSettings); // TODO FIX USED SETTINGS APPEND
+                    ParticleSelection::settings.appendToNode(usedClusteringSettings); // TODO FIX USED SETTINGS APPEND
                 }
 
                 settings.appendToNode(usedClusteringSettings);
@@ -247,7 +247,7 @@ int main(int argc, char *argv[]) {
                 if(settings.local()) {
                     auto nearestElectronSettings = node.second[VARNAME(NearestElectrons)];
                     if (nearestElectronSettings)
-                        NearestElectrons::settings = Settings::NearestElectrons(nearestElectronSettings, atoms);
+                        ParticleSelection::settings = Settings::ParticleSelection(nearestElectronSettings, atoms);
                 }
                 ReferencePositionsClusterer ReferencePositionsClusterer(samples);
                 ReferencePositionsClusterer.cluster(maxima);
@@ -255,7 +255,7 @@ int main(int argc, char *argv[]) {
                 settings.appendToNode(usedClusteringSettings);
 
                 if(settings.local()) {
-                    NearestElectrons::settings.appendToNode(usedClusteringSettings); // TODO FIX USED SETTINGS APPEND
+                    ParticleSelection::settings.appendToNode(usedClusteringSettings); // TODO FIX USED SETTINGS APPEND
                 }
 
                 break;
@@ -370,7 +370,14 @@ int main(int argc, char *argv[]) {
         }
     }
 
-    maximaProcessor.calculateStatistics(maxima, nucleiMergeLists);
+    // local particle energies
+    std::vector<size_t> nucleiIndices(0);
+    if(inputYaml["LocalParticleEnergies"]) {
+        auto collectiveEnergyNode = inputYaml["LocalParticleEnergies"];
+        nucleiIndices = collectiveEnergyNode["nuclei"].as<std::vector<size_t>>();
+    }
+
+    maximaProcessor.calculateStatistics(maxima, nucleiMergeLists, nucleiIndices);
 
     outputYaml << EndMap << EndDoc;
     outputYaml << BeginDoc << Comment("final settings") << usedSettings << EndDoc;

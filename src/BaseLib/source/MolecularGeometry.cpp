@@ -48,6 +48,19 @@ const ElectronsVector& MolecularGeometry::electrons() const { return electrons_;
 
 ElectronsVector & MolecularGeometry::electrons() { return electrons_; }
 
+PositionsVector MolecularGeometry::positions() const {
+    assert(atoms().positionsVector().entityLength() == electrons().positionsVector().entityLength());
+
+    auto entityLength = atoms().positionsVector().entityLength();
+
+    Eigen::VectorXd positions(entityLength * numberOfEntities());
+
+    positions.head(atoms().numberOfEntities() * entityLength) = atoms().positionsVector().asEigenVector();
+    positions.tail(electrons().numberOfEntities() * entityLength) = electrons().positionsVector().asEigenVector();
+
+    return PositionsVector(positions);
+}
+
 long MolecularGeometry::numberOfEntities() const {
     return atoms_.numberOfEntities() + electrons_.numberOfEntities();
 }
@@ -118,6 +131,30 @@ std::list<long> MolecularGeometry::nonCoreElectronsIndices(double threshold) con
     std::set_difference(indices.begin(), indices.end(), coreIndices.begin(), coreIndices.end(),
                         std::inserter(diff, diff.begin()));
     return diff;
+}
+
+bool MolecularGeometry::operator==(const MolecularGeometry &other) const {
+    return (atoms() == other.atoms())
+           && (electrons() == other.electrons());
+}
+
+bool MolecularGeometry::operator!=(const MolecularGeometry &other) const {
+    return !(*this == other);
+}
+
+MolecularGeometry::Permutation MolecularGeometry::splitAllParticlePermutation(const Eigen::PermutationMatrix<Eigen::Dynamic> &allParticlePermutation) const {
+
+    assert(allParticlePermutation.indices().size() == numberOfEntities());
+
+    auto M = atoms().numberOfEntities();
+    auto N = electrons().numberOfEntities();
+
+    Eigen::VectorXi permutedNuclearIndices(M), permutedElectronicIndices(N);
+    permutedNuclearIndices = allParticlePermutation.indices().head(M);
+    permutedElectronicIndices = allParticlePermutation.indices().tail(N).array() - M;
+
+    return {Eigen::PermutationMatrix<Eigen::Dynamic>(permutedNuclearIndices),
+            Eigen::PermutationMatrix<Eigen::Dynamic>(permutedElectronicIndices)};
 }
 
 namespace YAML {

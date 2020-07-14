@@ -78,3 +78,42 @@ TEST_F(AMolecularGeometryTest, ValenceElectrons) {
     double thresh = 0.1;
     ASSERT_THAT(mol.nonCoreElectronsIndices(thresh), ElementsAre(2));
 }
+
+TEST_F(AMolecularGeometryTest, Positions) {
+    auto mol = TestMolecules::H2::ElectronsInCores::normal;
+
+    auto d = mol.atoms().positionsVector().entityLength();
+    auto M = mol.atoms().numberOfEntities();
+    auto N = mol.electrons().numberOfEntities();
+
+    ASSERT_TRUE(
+            mol.positions().asEigenVector().head(M*d).isApprox(mol.atoms().positionsVector().asEigenVector()));
+    ASSERT_TRUE(
+            mol.positions().asEigenVector().tail(N*d).isApprox(mol.electrons().positionsVector().asEigenVector()));
+}
+
+TEST_F(AMolecularGeometryTest, EqualOperator) {
+    auto mol = TestMolecules::H2::ElectronsInCores::normal;
+    auto sameMol = mol;
+    auto otherMol = TestMolecules::H2::ElectronsInCores::flippedSpins;
+
+    ASSERT_TRUE(mol == sameMol);
+    ASSERT_FALSE(mol == otherMol);
+    ASSERT_TRUE(mol != otherMol);
+}
+
+TEST_F(AMolecularGeometryTest, SplitAllParticlePermutation) {
+    auto mol = TestMolecules::BH3::ionicMinimalRotatedPermuted;
+    Eigen::VectorXi allParticlePerm(mol.numberOfEntities());
+    allParticlePerm << 3, 0, 1, 2, 4, 6, 5, 7;
+
+    auto molPerms = mol.splitAllParticlePermutation(Eigen::PermutationMatrix<Eigen::Dynamic>(allParticlePerm));
+    Eigen::VectorXi expectedNuclearPermutation(mol.atoms().numberOfEntities());
+    Eigen::VectorXi expectedElectronicPermutation(mol.electrons().numberOfEntities());
+    expectedNuclearPermutation << 3,0,1,2;
+    expectedElectronicPermutation << 0,2,1,3;
+
+    ASSERT_EQ(molPerms.nuclearPermutation.indices(), expectedNuclearPermutation);
+    ASSERT_EQ(molPerms.electronicPermutation.indices(), expectedElectronicPermutation);
+
+}

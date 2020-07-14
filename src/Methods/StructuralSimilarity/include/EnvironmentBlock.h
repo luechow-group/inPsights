@@ -29,10 +29,10 @@
 
 namespace DistanceCovariance {
     bool conservingQ(
-            const std::vector<Eigen::Index> &permuteeIndices,
-            const ElectronsVector &permutee,
-            const std::vector<Eigen::Index> &referenceIndices,
-            const ElectronsVector &reference,
+            const std::vector<Eigen::Index> &permuteeIndicesInKitSystem,
+            const MolecularGeometry &permutee,
+            const std::vector<Eigen::Index> &referenceIndicesInKitSystem,
+            const MolecularGeometry &reference,
             double distanceMatrixCovarianceTolerance);
 }
 
@@ -41,8 +41,8 @@ class EnvironmentBlock {
 public:
     EnvironmentBlock(
             const std::deque<BestMatch::SOAPSimilarity::GrowingPerm>& possiblePerms,
-            const ElectronsVector &permutee,
-            const ElectronsVector &reference);
+            const MolecularGeometry &permutee,
+            const MolecularGeometry &reference);
 
     void initialize(const std::deque<BestMatch::SOAPSimilarity::GrowingPerm>& possiblePerms);
 
@@ -50,12 +50,12 @@ public:
 
     std::vector<std::vector<Eigen::Index>> permutedPermuteeIndicesCollection_; // of the permutee indices
     std::vector<Eigen::Index> permuteeIndices_, referenceIndices_;
-    const ElectronsVector &permutee_, &reference_;
+    const MolecularGeometry &permutee_, &reference_;
 };
 
 class EnvironmentBlockJoiner {
 public:
-    EnvironmentBlockJoiner(const ElectronsVector &permutee, const ElectronsVector &reference);
+    EnvironmentBlockJoiner(const MolecularGeometry &permutee, const MolecularGeometry &reference);
 
     void initialize(const EnvironmentBlock &initialBlock);
 
@@ -63,7 +63,7 @@ public:
 
     std::vector<std::vector<Eigen::Index>> jointPermutedPermuteeIndicesCollection_;
     std::vector<Eigen::Index> jointReferenceIndices_;
-    const ElectronsVector &permutee_, &reference_;
+    const MolecularGeometry &permutee_, &reference_;
 };
 
 

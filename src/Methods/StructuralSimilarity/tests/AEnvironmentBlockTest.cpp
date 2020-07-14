@@ -38,9 +38,7 @@ TEST(AEnvironmentBlockTest, FilteringOfCorrectPermutationsAlchemical) {
             BestMatch::SOAPSimilarity::GrowingPerm({},{{2,1},{0,3}})
     };
 
-    auto block = EnvironmentBlock(possiblePermutations,
-            A.electrons(),
-            B.electrons());
+    auto block = EnvironmentBlock(possiblePermutations, A, B);
 
     // referenceIndices are ordered
     ASSERT_THAT(block.referenceIndices_, ElementsAre(1,3));
@@ -67,9 +65,7 @@ TEST(AEnvironmentBlockTest, FilteringOfWrongPermutationsAlchemical) {
             BestMatch::SOAPSimilarity::GrowingPerm({},{{2,1},{3,2},{0,3}})
     };
 
-    auto block = EnvironmentBlock(possiblePermutations,
-                                  A.electrons(),
-                                  B.electrons());
+    auto block = EnvironmentBlock(possiblePermutations, A, B);
 
     // referenceIndices are ordered
     ASSERT_THAT(block.referenceIndices_, ElementsAre(1,2,3));
