@@ -22,6 +22,7 @@
 #include <string>
 #include <Eigen/Core>
 #include <yaml-cpp/yaml.h>
+#include <ParticleIndices.h>
 
 enum MotifType {unassigned=0, Core, Valence, CoreValence};
 
@@ -31,13 +32,10 @@ MotifType fromString(const std::string& string);
 class Motif{
 public:
     Motif() = default;
-    Motif(std::set<Eigen::Index>  electronIndices, MotifType type = MotifType::unassigned);
-    Motif(std::set<Eigen::Index>  electronIndices,
-          std::set<Eigen::Index>  atomIndices,
+    Motif(ParticleIndices  electronIndices, MotifType type = MotifType::unassigned);
+    Motif(ParticleIndices  electronIndices,
+          ParticleIndices  atomIndices,
           MotifType type = MotifType::unassigned);
-
-    bool containsElectronQ(Eigen::Index i) const;
-    bool containsAtomQ(Eigen::Index i) const;
 
     // needed for maps
     bool operator<(const Motif &rhs) const;
@@ -48,16 +46,11 @@ public:
     MotifType type() const;
     void setType(MotifType type_);
 
-    const std::set<Eigen::Index> &electronIndices() const;
-    void setElectronIndices(const std::set<Eigen::Index> &electronIndices);
-
-    const std::set<Eigen::Index> &atomIndices() const;
-    void setAtomIndices(const std::set<Eigen::Index> &atomIndices);
+    ParticleIndices electrons_;
+    ParticleIndices nuclei_;
 
 private:
     MotifType type_;
-    std::set<Eigen::Index> electronIndices_;
-    std::set<Eigen::Index> atomIndices_;
 };
 
 namespace YAML {

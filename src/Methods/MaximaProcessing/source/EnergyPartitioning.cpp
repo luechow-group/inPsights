@@ -75,23 +75,23 @@ namespace EnergyPartitioning {
                                           const Eigen::MatrixXd &Ven, const Eigen::MatrixXd &Vnn) {
             double inter = 0;
 
-            for (auto i : motif.electronIndices())
-                for (auto j : otherMotif.electronIndices())
+            for (auto i : motif.electrons_.indices())
+                for (auto j : otherMotif.electrons_.indices())
                     inter += Vee(i, j); // Vee
 
 
-            for (auto i : motif.electronIndices())
-                for (auto l : otherMotif.atomIndices()) {
+            for (auto i : motif.electrons_.indices())
+                for (auto l : otherMotif.nuclei_.indices()) {
                     inter += Ven(i, l); // Ven ->
                 }
 
-            for (auto j : otherMotif.electronIndices())
-                for (auto k : motif.atomIndices())
+            for (auto j : otherMotif.electrons_.indices())
+                for (auto k : motif.nuclei_.indices())
                     inter += Ven(j, k); // Ven <-
 
 
-            for (auto k : motif.atomIndices())
-                for (auto l : otherMotif.atomIndices())
+            for (auto k : motif.nuclei_.indices())
+                for (auto l : otherMotif.nuclei_.indices())
                     inter +=  Vnn(k, l); // Vnn
 
             return inter;
@@ -104,22 +104,22 @@ namespace EnergyPartitioning {
 
             double intra = 0;
 
-            for (auto i = motif.electronIndices().begin(); i != motif.electronIndices().end(); ++i) {
+            for (auto i = motif.electrons_.indices().begin(); i != motif.electrons_.indices().end(); ++i) {
                 intra += Te(*i); // Te
 
-                for (auto k = motif.atomIndices().begin(); k != motif.atomIndices().end(); ++k)
+                for (auto k = motif.nuclei_.indices().begin(); k != motif.nuclei_.indices().end(); ++k)
                     intra += Ven(*i, *k); // Ven
 
             }
 
-            for (auto i = motif.electronIndices().begin(); i != motif.electronIndices().end(); ++i) {
-                for (auto j = std::next(i); j != motif.electronIndices().end(); ++j)
+            for (auto i = motif.electrons_.indices().begin(); i != motif.electrons_.indices().end(); ++i) {
+                for (auto j = std::next(i); j != motif.electrons_.indices().end(); ++j)
                     intra += Vee(*i, *j); // Vee
             }
 
             // atoms in motif ( zero contribution if zero or one atom is present)
-            for (auto k = motif.atomIndices().begin(); k != motif.atomIndices().end(); ++k)
-                for (auto l = std::next(k); l != motif.atomIndices().end(); ++l)
+            for (auto k = motif.nuclei_.indices().begin(); k != motif.nuclei_.indices().end(); ++k)
+                for (auto l = std::next(k); l != motif.nuclei_.indices().end(); ++l)
                     intra += Vnn(*k, *l); // Vnn
 
             return intra;

@@ -60,6 +60,7 @@ set(HEADER_FILES
         include/CameraSettings.h
         include/ErrorHandling.h
         include/MapUtils.h
+        include/ParticleIndices.h
         )
 
 
@@ -91,6 +92,7 @@ set(SOURCE_FILES
         source/CameraSettings.cpp
         source/ErrorHandling.cpp
         source/Metrics.cpp
+        source/ParticleIndices.cpp
         )
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES})

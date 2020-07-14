@@ -84,12 +84,12 @@ TEST_F(AEnergyPartitioningTest, TwoPairs){
 
     Motifs motifs(A, mol);
 
-    ASSERT_THAT(motifs.motifs_[0].electronIndices(), ElementsAre(0, 1));
-    ASSERT_THAT(motifs.motifs_[0].atomIndices(), ElementsAre(0));
+    ASSERT_THAT(motifs.motifs_[0].electrons_.indices(), ElementsAre(0, 1));
+    ASSERT_THAT(motifs.motifs_[0].nuclei_.indices(), ElementsAre(0));
     ASSERT_EQ(motifs.motifs_[0].type(), MotifType::Core);
 
-    ASSERT_THAT(motifs.motifs_[1].electronIndices(), ElementsAre(2, 3));
-    ASSERT_THAT(motifs.motifs_[1].atomIndices(), ElementsAre(1));
+    ASSERT_THAT(motifs.motifs_[1].electrons_.indices(), ElementsAre(2, 3));
+    ASSERT_THAT(motifs.motifs_[1].nuclei_.indices(), ElementsAre(1));
     ASSERT_EQ(motifs.motifs_[1].type(), MotifType::Core);
 
     auto motifEnergies = EnergyPartitioning::MotifBased::calculateInteractionEnergies(motifs, Te, Vee, Ven, Vnn);
@@ -124,16 +124,16 @@ TEST_F(AEnergyPartitioningTest, HydrogenMotif){
 
     Motifs motifs(A, mol);
 
-    ASSERT_THAT(motifs.motifs_[0].electronIndices(), ElementsAre(0, 1));
-    ASSERT_THAT(motifs.motifs_[0].atomIndices(), ElementsAre(0));
+    ASSERT_THAT(motifs.motifs_[0].electrons_.indices(), ElementsAre(0, 1));
+    ASSERT_THAT(motifs.motifs_[0].nuclei_.indices(), ElementsAre(0));
     ASSERT_EQ(motifs.motifs_[0].type(), MotifType::Core);
 
-    ASSERT_THAT(motifs.motifs_[1].electronIndices(), ElementsAre());
-    ASSERT_THAT(motifs.motifs_[1].atomIndices(), ElementsAre(1));
+    ASSERT_THAT(motifs.motifs_[1].electrons_.indices(), ElementsAre());
+    ASSERT_THAT(motifs.motifs_[1].nuclei_.indices(), ElementsAre(1));
     ASSERT_EQ(motifs.motifs_[1].type(), MotifType::Core);
 
-    ASSERT_THAT(motifs.motifs_[2].electronIndices(), ElementsAre(2, 3));
-    ASSERT_THAT(motifs.motifs_[2].atomIndices(), ElementsAre());
+    ASSERT_THAT(motifs.motifs_[2].electrons_.indices(), ElementsAre(2, 3));
+    ASSERT_THAT(motifs.motifs_[2].nuclei_.indices(), ElementsAre());
     ASSERT_EQ(motifs.motifs_[2].type(), MotifType::Valence);
 
     auto motifEnergies = EnergyPartitioning::MotifBased::calculateInteractionEnergies(motifs, Te, Vee, Ven, Vnn);

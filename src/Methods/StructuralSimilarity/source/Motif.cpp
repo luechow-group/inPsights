@@ -48,24 +48,22 @@ MotifType fromString(const std::string& string) {
 }
 
 
-Motif::Motif(std::set<Eigen::Index> electronIndices, MotifType type)
-        : type_(type), electronIndices_(std::move(electronIndices)) {};
+Motif::Motif(ParticleIndices electronIndices, MotifType type)
+    :
+    electrons_(std::move(electronIndices)),
+    nuclei_(),
+    type_(type)
+{};
 
-Motif::Motif(std::set<Eigen::Index> electronIndices,
-             std::set<Eigen::Index> atomIndices,
-             MotifType type)
-        : type_(type), electronIndices_(std::move(electronIndices)), atomIndices_(std::move(atomIndices)) {};
-
-bool Motif::containsElectronQ(Eigen::Index i) const {
-    return std::find(electronIndices_.begin(), electronIndices_.end(), i) != electronIndices_.end();
-}
-
-bool Motif::containsAtomQ(Eigen::Index i) const {
-    return std::find(atomIndices_.begin(), atomIndices_.end(), i) != atomIndices_.end();
-}
+Motif::Motif(ParticleIndices electronIndices, ParticleIndices atomIndices, MotifType type)
+    :
+    electrons_(std::move(electronIndices)),
+    nuclei_(std::move(atomIndices)),
+    type_(type)
+    {};
 
 bool Motif::operator<(const Motif &rhs) const {
-    return electronIndices_ < rhs.electronIndices_;
+    return electrons_.indices() < rhs.electrons_.indices();
 }
 
 bool Motif::operator>(const Motif &rhs) const {
@@ -88,30 +86,14 @@ void Motif::setType(MotifType type) {
     Motif::type_ = type;
 }
 
-const std::set<Eigen::Index> &Motif::electronIndices() const {
-    return electronIndices_;
-}
-
-void Motif::setElectronIndices(const std::set<Eigen::Index> &electronIndices) {
-    electronIndices_ = electronIndices;
-}
-
-const std::set<Eigen::Index> &Motif::atomIndices() const {
-    return atomIndices_;
-}
-
-void Motif::setAtomIndices(const std::set<Eigen::Index> &atomIndices) {
-    Motif::atomIndices_ = atomIndices;
-}
-
 namespace YAML {
     Node convert<Motif>::encode(const Motif &rhs) {
         Node node;
         node["Type"] = toString(rhs.type());
         node["ElectronIndices"] =
-                std::list<Eigen::Index>(std::begin(rhs.electronIndices()),std::end(rhs.electronIndices()));
+                std::list<Eigen::Index>(std::begin(rhs.electrons_.indices()),std::end(rhs.electrons_.indices()));
         node["AtomIndices"] =
-                std::list<Eigen::Index>(std::begin(rhs.atomIndices()),std::end(rhs.atomIndices()));
+                std::list<Eigen::Index>(std::begin(rhs.nuclei_.indices()),std::end(rhs.nuclei_.indices()));
         return node;
     }
 
@@ -122,9 +104,9 @@ namespace YAML {
         auto electronIndices = node["ElectronIndices"].as<std::list<Eigen::Index>>();
         auto atomIndices = node["AtomIndices"].as<std::list<Eigen::Index>>();
 
-        rhs.setElectronIndices(
+        rhs.electrons_.setIndices(
                 std::set<Eigen::Index>(std::begin(electronIndices),std::end(electronIndices)));
-        rhs.setAtomIndices(
+        rhs.nuclei_.setIndices(
                 std::set<Eigen::Index>(std::begin(atomIndices),std::end(atomIndices)));
         rhs.setType(fromString(node["Type"].as<std::string>()));
         return true;
@@ -133,10 +115,10 @@ namespace YAML {
     Emitter &operator<<(Emitter &out, const Motif &rhs) {
         out << YAML::Flow << BeginMap
             << Key << "ElectronIndices" << Value << BeginSeq;
-        for(auto i : rhs.electronIndices())
+        for(auto i : rhs.electrons_.indices())
             out <<  i;
         out << EndSeq << Key << "AtomIndices" << Value << BeginSeq;
-        for(auto i : rhs.atomIndices())
+        for(auto i : rhs.nuclei_.indices())
             out <<  i;
         out << EndSeq
         << Key << "Type" << Value << toString(rhs.type())
