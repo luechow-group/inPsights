@@ -21,7 +21,7 @@
 #include "Cluster.h"
 
 namespace ClusterAnalysis {
-    Eigen::MatrixXd calculateBestMatchDistanceMatrix(const Cluster &group);
+    Eigen::MatrixXd calculateBestMatchDistanceMatrix(const Cluster &cluster);
 }
 
 #endif //INPSIGHTS_CLUSTERANALYSIS_H

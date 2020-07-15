@@ -19,7 +19,6 @@
 #include <CoulombPotential.h>
 #include <Reference.h>
 #include <map>
-#include <iterator>
 
 LocalParticleEnergiesCalculator::LocalParticleEnergiesCalculator(
         const std::vector<Sample> &samples,
@@ -32,27 +31,27 @@ LocalParticleEnergiesCalculator::LocalParticleEnergiesCalculator(
         selectedElectronsCount_(selectedElectronsCount)
         {}
 
-void LocalParticleEnergiesCalculator::add(const Cluster &group) {
-    size_t numberOfElectrons = group.representative()->maximum().numberOfEntities();
+void LocalParticleEnergiesCalculator::add(const Cluster &cluster) {
+    size_t numberOfElectrons = cluster.representative()->maximum().numberOfEntities();
 
-    // add only, if the wanted selectedElectronsCount was really found within the group
-    if (group.isLeaf() && size_t(group.getSelectedElectronsCount()) == selectedElectronsCount_) {
+    // add only, if the wanted selectedElectronsCount was really found within the cluster
+    if (cluster.isLeaf() && size_t(cluster.getSelectedElectronsCount()) == selectedElectronsCount_) {
 
-        const auto &ref = *group.representative();
+        const auto &ref = *cluster.representative();
         auto permutedNuclei = ref.nuclei();
         permutedNuclei.permute(ref.nuclearPermutation());
         auto VnnMat = CoulombPotential::energies(permutedNuclei);
 
-        selectedRestInter(group, numberOfElectrons, permutedNuclei, VnnMat);
-        bondEnergyCalculation(group, numberOfElectrons, permutedNuclei, VnnMat);
+        selectedRestInter(cluster, numberOfElectrons, permutedNuclei, VnnMat);
+        bondEnergyCalculation(cluster, numberOfElectrons, permutedNuclei, VnnMat);
 
     } else {
-        for (const auto& subcluster : group)
+        for (const auto& subcluster : cluster)
             add(subcluster);
     }
 }
 
-void LocalParticleEnergiesCalculator::selectedRestInter(const Cluster &group, size_t numberOfElectrons,
+void LocalParticleEnergiesCalculator::selectedRestInter(const Cluster &cluster, size_t numberOfElectrons,
                                                         const AtomsVector &permutedNuclei,
                                                         const Eigen::MatrixXd &VnnMat) {
     // create electron indice lists
@@ -62,7 +61,7 @@ void LocalParticleEnergiesCalculator::selectedRestInter(const Cluster &group, si
             remainingElectronIndices,
             remainingNucleiIndices);
 
-    for (auto &id : group.representative()->sampleIds()) {
+    for (auto &id : cluster.representative()->sampleIds()) {
         // add all samples
         auto &electrons = samples_[id].sample_;
         Eigen::VectorXd TeVec = samples_[id].kineticEnergies_;
@@ -156,7 +155,7 @@ void LocalParticleEnergiesCalculator::selectedRestInter(const Cluster &group, si
 
 
 void LocalParticleEnergiesCalculator::bondEnergyCalculation(
-        const Cluster &group, size_t numberOfElectrons,
+        const Cluster &cluster, size_t numberOfElectrons,
         const AtomsVector &permutedNuclei,
         const Eigen::MatrixXd &VnnMat) {
 
@@ -178,7 +177,7 @@ void LocalParticleEnergiesCalculator::bondEnergyCalculation(
     }
 
     for(auto electronIndex : selectedElectronIndices) {
-        MolecularGeometry molecule(permutedNuclei, group.representative()->maximum());
+        MolecularGeometry molecule(permutedNuclei, cluster.representative()->maximum());
         auto [atNucleusQ, nucleusIndex] = molecule.electronAtNucleusQ(electronIndex);
 
         if( atNucleusQ && std::find(
@@ -225,7 +224,7 @@ void LocalParticleEnergiesCalculator::bondEnergyCalculation(
 
     size_t counter;
 
-    for (auto &id : group.representative()->sampleIds()) {
+    for (auto &id : cluster.representative()->sampleIds()) {
         // add all samples
         auto &electrons = samples_[id].sample_;
         Eigen::VectorXd TeVec = samples_[id].kineticEnergies_;

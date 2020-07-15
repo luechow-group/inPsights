@@ -42,7 +42,7 @@ public:
 
     SOAPClusterer(const AtomsVector& atoms, std::vector<Sample> &samples);
 
-    void cluster(Cluster &group) override;
+    void cluster(Cluster &cluster) override;
 
 private:
     AtomsVector atoms_;

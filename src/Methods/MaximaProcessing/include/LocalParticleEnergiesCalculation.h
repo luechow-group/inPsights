@@ -46,7 +46,7 @@ public:
             const std::vector<size_t> &nucleiIndices,
             size_t selectedElectronsCount);
 
-    void add(const Cluster &group);
+    void add(const Cluster &cluster);
 
     const std::vector<Sample> &samples_;
     std::vector<size_t> selectedNucleiIndices_;
@@ -56,10 +56,10 @@ public:
     ResultsBundle<LocalBondEnergyResults> localBondEnergies;
 
 
-    void selectedRestInter(const Cluster &group, size_t numberOfElectrons, const AtomsVector &permutedNuclei,
+    void selectedRestInter(const Cluster &cluster, size_t numberOfElectrons, const AtomsVector &permutedNuclei,
             const Eigen::MatrixXd &VnnMat);
 
-    void bondEnergyCalculation(const Cluster &group, size_t numberOfElectrons, const AtomsVector &permutedNuclei,
+    void bondEnergyCalculation(const Cluster &cluster, size_t numberOfElectrons, const AtomsVector &permutedNuclei,
                                const Eigen::MatrixXd &VnnMat) ;
 
     void createIndiceLists(size_t numberOfElectrons, const AtomsVector &permutedNuclei,
@@ -86,8 +86,6 @@ namespace YAML {
     }
 
     Emitter& operator<< (Emitter& out, const LocalParticleEnergiesCalculator& rhs);
-
-
 }
 
 
