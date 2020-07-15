@@ -77,9 +77,12 @@ namespace EnergyPartitioning {
 
                     // interaction with other selections
                     interEnergies(motifId, otherMotifId) = caclulateInteractionEnergy(*motif, *otherMotif, Te, Vee, Ven, Vnn);
-                    interEnergies(otherMotifId, motifId) =  interEnergies(motifId, otherMotifId);
                 }
             }
+
+            // symmetrize the matrix of inter energies
+            interEnergies = interEnergies.selfadjointView<Eigen::Upper>();
+
             return {intraEnergies, interEnergies};
         }
 
