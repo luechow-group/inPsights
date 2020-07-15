@@ -62,6 +62,26 @@ public:
     }
 };
 
+TEST_F(AEnergyPartitioningTest, MolecularSelections) {
+    auto selA = MolecularSelection({{0,1}},{{0}});
+    auto selB = MolecularSelection({{2,3}},{{1}});
+
+    auto res = EnergyPartitioning::MolecularSelectionBased::calculateInteractionEnergies(
+            {selA, selB},
+            Te, Vee, Ven, Vnn);
+
+    ASSERT_EQ(res.first.size(), 2);
+    ASSERT_EQ(res.second.size(), 4);
+    ASSERT_EQ(res.first[0], 2*0.01 + 1*1 + 2*100);
+    ASSERT_EQ(res.first[1], 2*0.01 + 1*1 + 2*100);
+
+    ASSERT_EQ(res.second(0,1),4*1 + 4*100 + 1*10000);
+    ASSERT_EQ(res.second(0,1), res.second(1,0));
+
+    ASSERT_EQ(res.second(0,0), 0);
+    ASSERT_EQ(res.second(0,0), res.second(1,1));
+}
+
 
 TEST_F(AEnergyPartitioningTest, TwoPairs){
 
@@ -92,7 +112,7 @@ TEST_F(AEnergyPartitioningTest, TwoPairs){
     ASSERT_THAT(motifs.motifs_[1].nuclei_.indices(), ElementsAre(1));
     ASSERT_EQ(motifs.motifs_[1].type(), MotifType::Core);
 
-    auto motifEnergies = EnergyPartitioning::MotifBased::calculateInteractionEnergies(motifs, Te, Vee, Ven, Vnn);
+    auto motifEnergies = EnergyPartitioning::MolecularSelectionBased::calculateInteractionEnergies(motifs, Te, Vee, Ven, Vnn);
 
     Eigen::VectorXd intraExpected = Eigen::VectorXd::Zero(motifs.motifs_.size());
     intraExpected << 201.02, 201.02;
@@ -136,7 +156,7 @@ TEST_F(AEnergyPartitioningTest, HydrogenMotif){
     ASSERT_THAT(motifs.motifs_[2].nuclei_.indices(), ElementsAre());
     ASSERT_EQ(motifs.motifs_[2].type(), MotifType::Valence);
 
-    auto motifEnergies = EnergyPartitioning::MotifBased::calculateInteractionEnergies(motifs, Te, Vee, Ven, Vnn);
+    auto motifEnergies = EnergyPartitioning::MolecularSelectionBased::calculateInteractionEnergies(motifs, Te, Vee, Ven, Vnn);
 
     Eigen::VectorXd intraExpected = Eigen::VectorXd::Zero(motifs.motifs_.size());
     intraExpected << 201.02, 0.00, 1.02;

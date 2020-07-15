@@ -30,19 +30,24 @@ namespace EnergyPartitioning {
     double calculateTotalEnergy(const Eigen::VectorXd &Te, const Eigen::MatrixXd &Vee,
                                 const Eigen::MatrixXd &Ven, const Eigen::MatrixXd &Vnn);
 
-    namespace MotifBased {
-        double calculateSelfInteractionEnergy(const Motif &motif,
+    namespace MolecularSelectionBased {
+        double calculateSelfInteractionEnergy(const MolecularSelection &sel,
                                               const Eigen::VectorXd &Te, const Eigen::MatrixXd &Vee,
                                               const Eigen::MatrixXd &Ven, const Eigen::MatrixXd &Vnn);
 
-        double caclulateInteractionEnergy(const Motif &motif, const Motif &otherMotif,
+        double caclulateInteractionEnergy(const MolecularSelection &selA, const MolecularSelection &selB,
                                           const Eigen::VectorXd &Te, const Eigen::MatrixXd &Vee,
                                           const Eigen::MatrixXd &Ven, const Eigen::MatrixXd &Vnn);
 
         std::pair<Eigen::VectorXd, Eigen::MatrixXd> calculateInteractionEnergies(
                 const Motifs& motifs,
-                                                  const Eigen::VectorXd &Te, const Eigen::MatrixXd &Vee,
-                                                  const Eigen::MatrixXd &Ven, const Eigen::MatrixXd &Vnn);
+                const Eigen::VectorXd &Te, const Eigen::MatrixXd &Vee,
+                const Eigen::MatrixXd &Ven, const Eigen::MatrixXd &Vnn);
+
+        std::pair<Eigen::VectorXd, Eigen::MatrixXd> calculateInteractionEnergies(
+                const std::vector<MolecularSelection>& selections,
+                const Eigen::VectorXd &Te, const Eigen::MatrixXd &Vee,
+                const Eigen::MatrixXd &Ven, const Eigen::MatrixXd &Vnn);
     }
 
     namespace ParticleBased { // TODO remove
