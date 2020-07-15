@@ -30,6 +30,8 @@ public:
     ParticleIndices(const std::set<Eigen::Index>& indices);
 
     const std::set<Eigen::Index> &indices() const;
+    std::set<Eigen::Index> &indices();
+
     void setIndices(const std::set<Eigen::Index>& indices);
 
     void merge(const ParticleIndices& other);

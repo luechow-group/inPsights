@@ -19,6 +19,7 @@
 
 #include <utility>
 
+
 MolecularSelection::MolecularSelection(ParticleIndices electronIndices)
     :
     electrons_(std::move(electronIndices)),
@@ -32,3 +33,37 @@ MolecularSelection::MolecularSelection(ParticleIndices electronIndices, Particle
     nuclei_(std::move(nucleiIndices))
     {}
 
+DynamicMolecularSelection::DynamicMolecularSelection(
+        Settings::ParticleSelection particleSelectionSettings, ParticleIndices nucleiIndices)
+        :
+        particleSelectionSettings_(particleSelectionSettings),
+        nuclei_(nucleiIndices) {}
+
+ParticleIndices
+DynamicMolecularSelection::selectNearestElectrons(const ElectronsVector &electrons, const AtomsVector &nuclei) {
+
+    std::function<double(const Eigen::Vector3d &,const std::vector<Eigen::Vector3d> &)> minimalDistanceFunction = Metrics::minimalDistance<2>;
+
+    auto selectedElectrons = ParticleSelection::getNearestElectronsIndices(electrons, nuclei,
+                                                                           particleSelectionSettings_.positions,
+                                                                           particleSelectionSettings_.maximalCount(),
+                                                                           particleSelectionSettings_.valenceOnly(),
+                                                                           particleSelectionSettings_.maximalDistance(),
+                                                                           minimalDistanceFunction
+    );
+
+    ParticleIndices indices;
+
+    for(auto i : selectedElectrons)
+        indices.indices().emplace(i);
+
+    return indices;
+}
+
+MolecularSelection
+DynamicMolecularSelection::toMolecularSelection(const ElectronsVector &electrons, const AtomsVector &nuclei) {
+
+    auto electronInidces = selectNearestElectrons(electrons, nuclei);
+
+    return {electronInidces, nuclei_};
+}

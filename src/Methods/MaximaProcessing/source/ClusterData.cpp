@@ -70,8 +70,9 @@ ClusterData::ClusterData(unsigned totalNumberOfStructures,
             const MatrixStatistics RenStats,
             const std::vector<VoxelCube> &seds,
             const Eigen::MatrixXd& sedOverlaps,
-            const LocalParticleEnergiesCalculator::ResultsBundle<LocalParticleEnergiesCalculator::LocalEnergyResults>& localEnergies,
-            const LocalParticleEnergiesCalculator::ResultsBundle<LocalParticleEnergiesCalculator::LocalBondEnergyResults>& localBondEnergies
+            const EnergyResultsBundle<LocalParticleEnergiesCalculator::LocalEnergyResults>& localEnergies,
+            const EnergyResultsBundle<LocalParticleEnergiesCalculator::LocalBondEnergyResults>& localBondEnergies,
+            const SelectionEnergyCalculator::SelectionInteractionEnergies & selectionInteractionEnergies
             )
         :
         N_(totalNumberOfStructures),
@@ -90,7 +91,8 @@ ClusterData::ClusterData(unsigned totalNumberOfStructures,
         voxelCubes_(seds),
         overlaps_(sedOverlaps),
         localEnergies_(localEnergies),
-        localBondEnergies_(localBondEnergies)
+        localBondEnergies_(localBondEnergies),
+        selectionInteractionEnergies_(selectionInteractionEnergies)
         {};
 
 ElectronsVector ClusterData::representativeStructure() const {
@@ -174,6 +176,7 @@ namespace YAML {
             << Key << "Etotal" << Comment("[Eh]") << Value << rhs.EtotalStats_
             << Key << "IntraMotifEnergies" << Comment("[Eh]") << Value << rhs.intraMotifEnergyStats_
             << Key << "InterMotifEnergies" << Comment("[Eh]") << Value << rhs.interMotifEnergyStats_
+            << Key << "SelectionEnergyCalculation" << Value << rhs.selectionInteractionEnergies_
             << Key << "LocalParticleEnergiesCalculation" << Value
                 << BeginMap
                 << Key << "LocalEnergies" << Value << rhs.localEnergies_

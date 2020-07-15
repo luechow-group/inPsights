@@ -47,7 +47,6 @@ MotifType fromString(const std::string& string) {
         return MotifType::unassigned;
 }
 
-
 Motif::Motif(ParticleIndices electronIndices, MotifType type)
     :
         MolecularSelection(std::move(electronIndices)),

@@ -141,7 +141,7 @@ std::shared_ptr<const Reference> Cluster::representative() const {
 }
 
 bool Cluster::operator<(const Cluster &other) const {
-    return *representative().get() < *other.representative();
+    return *representative() < *other.representative();
 }
 
 Cluster &Cluster::operator+=(const Cluster &other) {

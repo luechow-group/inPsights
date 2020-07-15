@@ -61,7 +61,7 @@ void LocalParticleEnergiesCalculator::selectedRestInter(const Cluster &cluster, 
             remainingElectronIndices,
             remainingNucleiIndices);
 
-    for (auto &id : cluster.representative()->sampleIds()) {
+    for (const auto &id : cluster.representative()->sampleIds()) {
         // add all samples
         auto &electrons = samples_[id].sample_;
         Eigen::VectorXd TeVec = samples_[id].kineticEnergies_;

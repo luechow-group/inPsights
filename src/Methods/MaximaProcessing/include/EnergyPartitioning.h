@@ -44,6 +44,7 @@ namespace EnergyPartitioning {
                 const Eigen::VectorXd &Te, const Eigen::MatrixXd &Vee,
                 const Eigen::MatrixXd &Ven, const Eigen::MatrixXd &Vnn);
 
+
         std::pair<Eigen::VectorXd, Eigen::MatrixXd> calculateInteractionEnergies(
                 const std::vector<MolecularSelection>& selections,
                 const Eigen::VectorXd &Te, const Eigen::MatrixXd &Vee,

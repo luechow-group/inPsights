@@ -20,14 +20,25 @@
 
 #include "MolecularSelection.h"
 #include <ParticleIndices.h>
+#include <ParticleSelection.h>
 
-class MolecularSelection {
-public:
+struct MolecularSelection {
     MolecularSelection() = default;
     MolecularSelection(ParticleIndices electronIndices);
     MolecularSelection(ParticleIndices electronIndices, ParticleIndices nucleiIndices);
 
     ParticleIndices electrons_;
+    ParticleIndices nuclei_;
+};
+
+struct DynamicMolecularSelection {
+    DynamicMolecularSelection(Settings::ParticleSelection particleSelectionSettings, ParticleIndices nucleiIndices);
+
+    ParticleIndices selectNearestElectrons(const ElectronsVector &electrons, const AtomsVector &nuclei);
+
+    MolecularSelection toMolecularSelection(const ElectronsVector &electrons, const AtomsVector &nuclei);
+
+    Settings::ParticleSelection particleSelectionSettings_;
     ParticleIndices nuclei_;
 };
 

@@ -60,7 +60,8 @@ public:
 
     void calculateStatistics(const Cluster &maxima,
                              const std::vector<std::vector<std::vector<size_t>>> &nucleiMergeLists,
-                             const std::vector<size_t> &nucleiIndices
+                             const std::vector<size_t> &nucleiIndices,
+                             const std::vector<DynamicMolecularSelection>& selections
                              );
 
     YAML::Node getYamlNode();

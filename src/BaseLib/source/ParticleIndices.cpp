@@ -24,6 +24,10 @@ const std::set<Eigen::Index> &ParticleIndices::indices() const {
     return particleIndices_;
 }
 
+std::set<Eigen::Index>& ParticleIndices::indices() {
+    return particleIndices_;
+}
+
 void ParticleIndices::setIndices(const std::set<Eigen::Index> &indices) {
     particleIndices_ = indices;
 }

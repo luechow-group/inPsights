@@ -22,6 +22,7 @@
 #include <Sample.h>
 #include <Cluster.h>
 #include <ParticleSelection.h>
+#include <EnergyResultsBundle.h>
 
 class LocalParticleEnergiesCalculator {
 public:
@@ -33,11 +34,6 @@ public:
         SingleValueStatistics intraBondAndInterCoresBond,intraBond, intraRest, interBondRest;
         VectorStatistics intraCores, interCoresBond, interCoresRest;
         TriangularMatrixStatistics interCoresCore;
-    };
-
-    template<typename Type>
-    struct ResultsBundle {
-        Type E, Te, Vee, Ven, Vnn;
     };
 
     LocalParticleEnergiesCalculator(
@@ -52,8 +48,8 @@ public:
     std::vector<size_t> selectedNucleiIndices_;
     size_t selectedElectronsCount_;
 
-    ResultsBundle<LocalEnergyResults> localEnergies;
-    ResultsBundle<LocalBondEnergyResults> localBondEnergies;
+    EnergyResultsBundle<LocalEnergyResults> localEnergies;
+    EnergyResultsBundle<LocalBondEnergyResults> localBondEnergies;
 
 
     void selectedRestInter(const Cluster &cluster, size_t numberOfElectrons, const AtomsVector &permutedNuclei,
@@ -66,6 +62,7 @@ public:
                            std::vector<size_t> &selectedElectronIndices, std::vector<size_t> &remainingElectronIndices,
                            std::vector<size_t> &remainingNucleiIndices) const;
 };
+
 namespace YAML {
     class Emitter;
 
@@ -74,7 +71,7 @@ namespace YAML {
 
 
     template<typename Type>
-    Emitter &operator<<(Emitter &out, const LocalParticleEnergiesCalculator::ResultsBundle<Type> &rhs) {
+    Emitter &operator<<(Emitter &out, const EnergyResultsBundle<Type> &rhs) {
         out << BeginMap
             << Key << "E" << Comment("[Eh]") << Value << rhs.E
             << Key << "Te" << Comment("[Eh]") << Value << rhs.Te

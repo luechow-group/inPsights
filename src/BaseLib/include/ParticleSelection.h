@@ -69,5 +69,4 @@ namespace ParticleSelection {
     std::list<long> getRelevantIndices(const ElectronsVector &electrons);
 }
 
-
 #endif //INPSIGHTS_PARTICLESELECTION_H

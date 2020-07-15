@@ -39,6 +39,7 @@
 #include <fstream>
 #include <IPosition.h>
 #include <Metrics.h>
+#include <MolecularSelection.h>
 
 using namespace YAML;
 
@@ -370,6 +371,20 @@ int main(int argc, char *argv[]) {
         }
     }
 
+    std::vector<DynamicMolecularSelection> selections;
+    if(inputYaml["EnergySelections"]) {
+        auto energySelectionNode = inputYaml["EnergySelections"];
+        for (YAML::iterator it = energySelectionNode.begin(); it != energySelectionNode.end(); ++it) {
+            const YAML::Node &node = *it;
+
+            auto nucleiIndices = node["Nuclei"].as<ParticleIndices>();
+            auto nearestElectronsSettings = Settings::ParticleSelection(node["NearestElectrons"], atoms);
+
+            selections.emplace_back(DynamicMolecularSelection(nearestElectronsSettings, nucleiIndices));
+        }
+    }
+
+
     // local particle energies
     std::vector<size_t> nucleiIndices(0);
     if(inputYaml["LocalParticleEnergies"]) {
@@ -377,7 +392,7 @@ int main(int argc, char *argv[]) {
         nucleiIndices = collectiveEnergyNode["nuclei"].as<std::vector<size_t>>();
     }
 
-    maximaProcessor.calculateStatistics(maxima, nucleiMergeLists, nucleiIndices);
+    maximaProcessor.calculateStatistics(maxima, nucleiMergeLists, nucleiIndices, selections);
 
     outputYaml << EndMap << EndDoc;
     outputYaml << BeginDoc << Comment("final settings") << usedSettings << EndDoc;

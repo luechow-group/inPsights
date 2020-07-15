@@ -24,6 +24,7 @@
 #include <Motifs.h>
 #include <EnergyStatistics.h>
 #include <LocalParticleEnergiesCalculation.h>
+#include <SelectionEnergyCalculator.h>
 
 class ClusterData {
 public:
@@ -66,8 +67,9 @@ public:
                 const MatrixStatistics RenStats,
                 const std::vector<VoxelCube>& seds,
                 const Eigen::MatrixXd& sedOverlaps,
-                const LocalParticleEnergiesCalculator::ResultsBundle<LocalParticleEnergiesCalculator::LocalEnergyResults>& localEnergies,
-                const LocalParticleEnergiesCalculator::ResultsBundle<LocalParticleEnergiesCalculator::LocalBondEnergyResults>& localBondEnergies
+                const EnergyResultsBundle<LocalParticleEnergiesCalculator::LocalEnergyResults>& localEnergies,
+                const EnergyResultsBundle<LocalParticleEnergiesCalculator::LocalBondEnergyResults>& localBondEnergies,
+                const SelectionEnergyCalculator::SelectionInteractionEnergies & selectionInteractionEnergies
                 );
 
     ElectronsVector representativeStructure() const;
@@ -83,8 +85,9 @@ public:
     MatrixStatistics RenStats_;
     std::vector<VoxelCube> voxelCubes_;
     Eigen::MatrixXd overlaps_;
-    LocalParticleEnergiesCalculator::ResultsBundle<LocalParticleEnergiesCalculator::LocalEnergyResults> localEnergies_;
-    LocalParticleEnergiesCalculator::ResultsBundle<LocalParticleEnergiesCalculator::LocalBondEnergyResults> localBondEnergies_;
+    EnergyResultsBundle<LocalParticleEnergiesCalculator::LocalEnergyResults> localEnergies_;
+    EnergyResultsBundle<LocalParticleEnergiesCalculator::LocalBondEnergyResults> localBondEnergies_;
+    SelectionEnergyCalculator::SelectionInteractionEnergies  selectionInteractionEnergies_;
 };
 
 namespace YAML {
