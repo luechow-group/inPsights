@@ -79,8 +79,8 @@ void MotifEnergyCalculator::partitionLowestLevel(
         auto motifEnergies = EnergyPartitioning::MolecularSelectionBased::calculateInteractionEnergies(
                 motifs, Te, Vee, Ven, Vnn);
 
-        intraMotifEnergyStats.add(motifEnergies.first, 1);
-        interMotifEnergyStats.add(motifEnergies.second, 1);
+        intraMotifEnergyStats.add(motifEnergies.first.E, 1);
+        interMotifEnergyStats.add(motifEnergies.second.E, 1);
     }
 }
 

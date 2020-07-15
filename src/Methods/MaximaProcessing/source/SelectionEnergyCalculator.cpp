@@ -48,8 +48,16 @@ void SelectionEnergyCalculator::add(const Cluster &cluster) {
             auto res = EnergyPartitioning::MolecularSelectionBased::calculateInteractionEnergies(
                     molecularSelections, Te, Vee, Ven, Vnn);
 
-            selectionInteractions_.intraEnergies.add(res.first);
-            selectionInteractions_.interEnergies.add(res.second);
+            selectionInteractions_.intraEnergies.E.add(res.first.E);
+            selectionInteractions_.intraEnergies.Te.add(res.first.Te);
+            selectionInteractions_.intraEnergies.Vee.add(res.first.Vee);
+            selectionInteractions_.intraEnergies.Ven.add(res.first.Ven);
+            selectionInteractions_.intraEnergies.Vnn.add(res.first.Vnn);
+
+            selectionInteractions_.interEnergies.E.add(res.second.E);
+            selectionInteractions_.interEnergies.Vee.add(res.second.Vee);
+            selectionInteractions_.interEnergies.Ven.add(res.second.Ven);
+            selectionInteractions_.interEnergies.Vnn.add(res.second.Vnn);
         }
     } else {
         for (const auto& subcluster : cluster)

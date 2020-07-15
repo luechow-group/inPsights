@@ -29,8 +29,8 @@
 class SelectionEnergyCalculator{
 public:
     struct SelectionInteractionEnergies {
-        VectorStatistics intraEnergies;
-        TriangularMatrixStatistics interEnergies;
+        EnergyResultsBundle<VectorStatistics> intraEnergies;
+        EnergyResultsBundle<TriangularMatrixStatistics> interEnergies;
     };
 
     SelectionEnergyCalculator(

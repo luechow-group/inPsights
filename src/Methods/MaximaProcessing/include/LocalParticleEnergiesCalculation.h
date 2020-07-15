@@ -69,19 +69,6 @@ namespace YAML {
     Emitter& operator<< (Emitter& out, const LocalParticleEnergiesCalculator::LocalEnergyResults& rhs);
     Emitter& operator<< (Emitter& out, const LocalParticleEnergiesCalculator::LocalBondEnergyResults& rhs);
 
-
-    template<typename Type>
-    Emitter &operator<<(Emitter &out, const EnergyResultsBundle<Type> &rhs) {
-        out << BeginMap
-            << Key << "E" << Comment("[Eh]") << Value << rhs.E
-            << Key << "Te" << Comment("[Eh]") << Value << rhs.Te
-            << Key << "Vee" << Comment("[Eh]") << Value << rhs.Vee
-            << Key << "Ven" << Comment("[Eh]") << Value << rhs.Ven
-            << Key << "Vnn" << Comment("[Eh]") << Value << rhs.Vnn
-            << EndMap;
-        return out;
-    }
-
     Emitter& operator<< (Emitter& out, const LocalParticleEnergiesCalculator& rhs);
 }
 
