@@ -70,27 +70,27 @@ namespace EnergyPartitioning {
             inter.init(Eigen::MatrixXd::Zero(selections.size(), selections.size()));
 
 
-            for(auto motif = selections.begin(); motif != selections.end(); ++motif) {
-                auto motifId = std::distance(selections.begin(), motif);
+            for(auto selection = selections.begin(); selection != selections.end(); ++selection) {
+                auto selId = std::distance(selections.begin(), selection);
 
                 // self-interaction
-                auto intraValues = calculateSelfInteractionEnergyBundle(*motif, Te, Vee, Ven, Vnn);
-                intra.E(motifId) = intraValues.E;
-                intra.Te(motifId) = intraValues.Te;
-                intra.Vee(motifId) = intraValues.Vee;
-                intra.Ven(motifId) = intraValues.Ven;
-                intra.Vnn(motifId) = intraValues.Vnn;
+                auto intraValues = calculateSelfInteractionEnergyBundle(*selection, Te, Vee, Ven, Vnn);
+                intra.E(selId) = intraValues.E;
+                intra.Te(selId) = intraValues.Te;
+                intra.Vee(selId) = intraValues.Vee;
+                intra.Ven(selId) = intraValues.Ven;
+                intra.Vnn(selId) = intraValues.Vnn;
 
 
-                for (auto otherMotif = std::next(motif); otherMotif != selections.end(); ++otherMotif) {
-                    auto otherMotifId = std::distance(selections.begin(), otherMotif);
+                for (auto otherSelection = std::next(selection); otherSelection != selections.end(); ++otherSelection) {
+                    auto otherSelId = std::distance(selections.begin(), otherSelection);
 
                     // interaction with other selections
-                    auto interValues = calculateInteractionEnergyBundle(*motif, *otherMotif, Vee, Ven, Vnn);
-                    inter.E(motifId, otherMotifId) = interValues.E;
-                    inter.Vee(motifId, otherMotifId) = interValues.Vee;
-                    inter.Ven(motifId, otherMotifId) = interValues.Ven;
-                    inter.Vnn(motifId, otherMotifId) = interValues.Vnn;
+                    auto interValues = calculateInteractionEnergyBundle(*selection, *otherSelection, Vee, Ven, Vnn);
+                    inter.E(selId, otherSelId) = interValues.E;
+                    inter.Vee(selId, otherSelId) = interValues.Vee;
+                    inter.Ven(selId, otherSelId) = interValues.Ven;
+                    inter.Vnn(selId, otherSelId) = interValues.Vnn;
 
                 }
             }
@@ -107,8 +107,8 @@ namespace EnergyPartitioning {
         double calculateIntraTe(const MolecularSelection &sel, const Eigen::VectorXd &Te) {
             double intra = 0;
 
-            for (auto i = sel.electrons_.indices().begin(); i != sel.electrons_.indices().end(); ++i)
-                intra += Te(*i);
+            for (auto i : sel.electrons_.indices())
+                intra += Te(i);
 
             return intra;
         }
@@ -137,9 +137,9 @@ namespace EnergyPartitioning {
         double calculateIntraVen(const MolecularSelection &sel, const Eigen::MatrixXd &Ven) {
             double intra = 0;
 
-            for (auto i = sel.electrons_.indices().begin(); i != sel.electrons_.indices().end(); ++i)
-                for (auto k = sel.nuclei_.indices().begin(); k != sel.nuclei_.indices().end(); ++k)
-                    intra += Ven(*i, *k);
+            for (auto i : sel.electrons_.indices())
+                for (auto k : sel.nuclei_.indices())
+                    intra += Ven(i, k);
 
             return intra;
         }

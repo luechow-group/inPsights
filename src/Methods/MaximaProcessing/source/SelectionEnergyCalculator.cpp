@@ -17,6 +17,7 @@
 
 #include "SelectionEnergyCalculator.h"
 #include <Reference.h>
+#include <algorithm>
 
 SelectionEnergyCalculator::SelectionEnergyCalculator(
         const std::vector<Sample> &samples,
@@ -36,8 +37,25 @@ void SelectionEnergyCalculator::add(const Cluster &cluster) {
         auto Vnn = CoulombPotential::energies(permutedNuclei);
 
         std::vector<MolecularSelection> molecularSelections;
-        for(auto dynamicSelection : dynamicSelections_)
-            molecularSelections.emplace_back(dynamicSelection.toMolecularSelection(ref.maximum(), permutedNuclei));
+        for(auto dynamicSelection : dynamicSelections_) {
+            auto sel = dynamicSelection.toMolecularSelection(ref.maximum(), permutedNuclei);
+
+            // if specified, invert selection
+            if(dynamicSelection.particleSelectionSettings_.invertSelection()){
+                std::set<long> all, diff;
+                generate_n(inserter(all, all.end()), ref.maximum().numberOfEntities(), [&]{ return all.size(); });
+
+                std::set_difference(
+                        all.begin(), all.end(),
+                        sel.electrons_.indices().begin(), sel.electrons_.indices().end(),
+                        std::inserter(diff, diff.end()));
+
+                sel.electrons_.setIndices(diff);
+            }
+
+            molecularSelections.emplace_back(sel);
+        }
+
 
         for (const auto &id : ref.sampleIds()) {
             auto &electrons = samples_[id].sample_;
