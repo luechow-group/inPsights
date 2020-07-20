@@ -72,7 +72,8 @@ ClusterData::ClusterData(unsigned totalNumberOfStructures,
             const Eigen::MatrixXd& sedOverlaps,
             const EnergyResultsBundle<LocalParticleEnergiesCalculator::LocalEnergyResults>& localEnergies,
             const EnergyResultsBundle<LocalParticleEnergiesCalculator::LocalBondEnergyResults>& localBondEnergies,
-            const SelectionEnergyCalculator::SelectionInteractionEnergies & selectionInteractionEnergies
+            const SelectionEnergyCalculator::SelectionInteractionEnergies & selectionInteractionEnergies,
+            const std::vector<MolecularSelection>& selections
             )
         :
         N_(totalNumberOfStructures),
@@ -92,7 +93,8 @@ ClusterData::ClusterData(unsigned totalNumberOfStructures,
         overlaps_(sedOverlaps),
         localEnergies_(localEnergies),
         localBondEnergies_(localBondEnergies),
-        selectionInteractionEnergies_(selectionInteractionEnergies)
+        selectionInteractionEnergies_(selectionInteractionEnergies),
+        selections_(selections)
         {};
 
 ElectronsVector ClusterData::representativeStructure() const {
@@ -176,6 +178,7 @@ namespace YAML {
             << Key << "Etotal" << Comment("[Eh]") << Value << rhs.EtotalStats_
             << Key << "IntraMotifEnergies" << Comment("[Eh]") << Value << rhs.intraMotifEnergyStats_
             << Key << "InterMotifEnergies" << Comment("[Eh]") << Value << rhs.interMotifEnergyStats_
+            << Key << "Selections" << Value << rhs.selections_
             << Key << "SelectionEnergyCalculation" << Value << rhs.selectionInteractionEnergies_
             << Key << "LocalParticleEnergiesCalculation" << Value
                 << BeginMap

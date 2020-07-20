@@ -19,7 +19,6 @@
 
 #include <utility>
 
-
 MolecularSelection::MolecularSelection(ParticleIndices electronIndices)
     :
     electrons_(std::move(electronIndices)),
@@ -33,6 +32,20 @@ MolecularSelection::MolecularSelection(ParticleIndices electronIndices, Particle
     nuclei_(std::move(nucleiIndices))
     {}
 
+bool MolecularSelection::operator==(const MolecularSelection &rhs){
+    return this->electrons_ == rhs.electrons_ && this->nuclei_ == rhs.nuclei_;
+}
+
+namespace YAML {
+    Emitter &operator<<(Emitter &out, const MolecularSelection &rhs) {
+        out << BeginMap;
+        out << Key << "Electrons" << Value << rhs.electrons_
+            << Key << "Nuclei" << Value << rhs.nuclei_
+            << EndMap;
+        return out;
+    }
+}
+
 DynamicMolecularSelection::DynamicMolecularSelection(
         Settings::ParticleSelection particleSelectionSettings, ParticleIndices nucleiIndices)
         :
@@ -40,9 +53,10 @@ DynamicMolecularSelection::DynamicMolecularSelection(
         nuclei_(nucleiIndices) {}
 
 ParticleIndices
-DynamicMolecularSelection::selectNearestElectrons(const ElectronsVector &electrons, const AtomsVector &nuclei) {
+DynamicMolecularSelection::selectNearestElectrons(const ElectronsVector &electrons, const AtomsVector &nuclei) const {
 
-    std::function<double(const Eigen::Vector3d &,const std::vector<Eigen::Vector3d> &)> minimalDistanceFunction = Metrics::minimalDistance<2>;
+    std::function<double(const Eigen::Vector3d &,const std::vector<Eigen::Vector3d> &)> minimalDistanceFunction =
+            Metrics::minimalDistance<2>;
 
     auto selectedElectrons = ParticleSelection::getNearestElectronsIndices(electrons, nuclei,
                                                                            particleSelectionSettings_.positions,
@@ -61,7 +75,7 @@ DynamicMolecularSelection::selectNearestElectrons(const ElectronsVector &electro
 }
 
 MolecularSelection
-DynamicMolecularSelection::toMolecularSelection(const ElectronsVector &electrons, const AtomsVector &nuclei) {
+DynamicMolecularSelection::toMolecularSelection(const ElectronsVector &electrons, const AtomsVector &nuclei) const {
 
     auto electronInidces = selectNearestElectrons(electrons, nuclei);
 

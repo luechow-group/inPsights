@@ -235,7 +235,7 @@ void MaximaProcessor::calculateStatistics(const Cluster &maxima,
         if(weight >= MaximaProcessing::settings.minimalClusterWeight.get()) {
 
             localParticleEnergiesCalculator.add(cluster);
-            selectionEnergyCalculator.add(cluster);
+            selectionEnergyCalculator.addTopLevel(cluster);
 
             LocalParticleEnergiesCalculator localParticleEnergiesCalculatorPerCluster(
                     samples_, atoms_, nucleiIndices,
@@ -243,7 +243,7 @@ void MaximaProcessor::calculateStatistics(const Cluster &maxima,
             localParticleEnergiesCalculatorPerCluster.add(cluster);
 
             SelectionEnergyCalculator selectionEnergyCalculatorPerCluster(samples_, selections);
-            selectionEnergyCalculatorPerCluster.add(cluster);
+            selectionEnergyCalculatorPerCluster.addTopLevel(cluster);
 
             totalWeight += weight;
 
@@ -256,7 +256,8 @@ void MaximaProcessor::calculateStatistics(const Cluster &maxima,
                                          ReeStats_, RenStats_, voxelCubes, overlaps,
                                          localParticleEnergiesCalculatorPerCluster.localEnergies,
                                          localParticleEnergiesCalculatorPerCluster.localBondEnergies,
-                                         selectionEnergyCalculatorPerCluster.selectionInteractions_
+                                         selectionEnergyCalculatorPerCluster.selectionInteractions_,
+                                         selectionEnergyCalculatorPerCluster.molecularSelections_
                                          );
         }
     }
