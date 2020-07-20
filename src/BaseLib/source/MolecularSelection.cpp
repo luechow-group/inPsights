@@ -38,9 +38,9 @@ bool MolecularSelection::operator==(const MolecularSelection &rhs){
 
 namespace YAML {
     Emitter &operator<<(Emitter &out, const MolecularSelection &rhs) {
-        out << BeginMap;
-        out << Key << "Electrons" << Value << rhs.electrons_
+        out << BeginMap
             << Key << "Nuclei" << Value << rhs.nuclei_
+            << Key << "Electrons" << Value << rhs.electrons_
             << EndMap;
         return out;
     }
