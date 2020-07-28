@@ -30,7 +30,6 @@ set(HEADER_FILES
         include/ClusterNumberAnalyzer.h
         include/ClusterAnalysis.h
         include/TotalWeightDifferenceAnalyzer.h
-        include/LocalParticleEnergiesCalculation.h
         include/SelectionEnergyCalculator.h
         include/EnergyResultsBundle.h
         )
@@ -58,7 +57,6 @@ set(SOURCE_FILES
         source/ClusterNumberAnalyzer.cpp
         source/ClusterAnalysis.cpp
         source/TotalWeightDifferenceAnalyzer.cpp
-        source/LocalParticleEnergiesCalculation.cpp
         source/SelectionEnergyCalculator.cpp
         )
 

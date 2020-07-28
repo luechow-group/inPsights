@@ -26,7 +26,6 @@
 #include <VoxelCubeOverlapCalculation.h>
 #include <spdlog/spdlog.h>
 #include <SpinCorrelationValueHistogram.h>
-#include <LocalParticleEnergiesCalculation.h>
 #include <SelectionEnergyCalculator.h>
 
 MotifEnergyCalculator::Result MotifEnergyCalculator::partition(
@@ -172,11 +171,7 @@ void MaximaProcessor::calculateStatistics(const Cluster &maxima,
     size_t totalCount = 0;
     double totalWeight = 0.0;
 
-    SpinCorrelationValueHistogram spinCorrelationDistribution(12); // => 25 bns in total
-
-    LocalParticleEnergiesCalculator localParticleEnergiesCalculator(
-            samples_, atoms_, nucleiIndices,
-            ParticleSelection::settings.maximalCount());
+    SpinCorrelationValueHistogram spinCorrelationDistribution(12); // => 25 bins in total
 
     SelectionEnergyCalculator selectionEnergyCalculator(samples_, selections);
 
@@ -234,13 +229,7 @@ void MaximaProcessor::calculateStatistics(const Cluster &maxima,
         auto weight = double(TeStats_.getTotalWeight())/double(samples_.size());
         if(weight >= MaximaProcessing::settings.minimalClusterWeight.get()) {
 
-            localParticleEnergiesCalculator.add(cluster);
             selectionEnergyCalculator.addTopLevel(cluster);
-
-            LocalParticleEnergiesCalculator localParticleEnergiesCalculatorPerCluster(
-                    samples_, atoms_, nucleiIndices,
-                    ParticleSelection::settings.maximalCount());
-            localParticleEnergiesCalculatorPerCluster.add(cluster);
 
             SelectionEnergyCalculator selectionEnergyCalculatorPerCluster(samples_, selections);
             selectionEnergyCalculatorPerCluster.addTopLevel(cluster);
@@ -254,8 +243,6 @@ void MaximaProcessor::calculateStatistics(const Cluster &maxima,
                                          SeeStats_, VeeStats_, VenStats_,
                                          motifs, EtotalStats_, intraMotifEnergyStats, interMotifEnergyStats,
                                          ReeStats_, RenStats_, voxelCubes, overlaps,
-                                         localParticleEnergiesCalculatorPerCluster.localEnergies,
-                                         localParticleEnergiesCalculatorPerCluster.localBondEnergies,
                                          selectionEnergyCalculatorPerCluster.selectionInteractions_,
                                          selectionEnergyCalculatorPerCluster.molecularSelections_
                                          );
@@ -271,8 +258,6 @@ void MaximaProcessor::calculateStatistics(const Cluster &maxima,
     auto hist = spinCorrelationDistribution.getHistogramVector();
     hist /= hist.sum();
     yamlDocument_ << Key << "SpinCorrelationDistribution" << Value << hist;
-
-    yamlDocument_ << Key << "LocalParticleEnergiesCalculation"  << Value << localParticleEnergiesCalculator;
     yamlDocument_ << Key << "SelectionEnergyCalculation"  << Value << selectionEnergyCalculator.selectionInteractions_;
 
 

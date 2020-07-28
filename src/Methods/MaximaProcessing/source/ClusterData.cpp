@@ -70,8 +70,6 @@ ClusterData::ClusterData(unsigned totalNumberOfStructures,
             const MatrixStatistics RenStats,
             const std::vector<VoxelCube> &seds,
             const Eigen::MatrixXd& sedOverlaps,
-            const EnergyResultsBundle<LocalParticleEnergiesCalculator::LocalEnergyResults>& localEnergies,
-            const EnergyResultsBundle<LocalParticleEnergiesCalculator::LocalBondEnergyResults>& localBondEnergies,
             const SelectionEnergyCalculator::SelectionInteractionEnergies & selectionInteractionEnergies,
             const std::vector<MolecularSelection>& selections
             )
@@ -91,8 +89,6 @@ ClusterData::ClusterData(unsigned totalNumberOfStructures,
         RenStats_(RenStats),
         voxelCubes_(seds),
         overlaps_(sedOverlaps),
-        localEnergies_(localEnergies),
-        localBondEnergies_(localBondEnergies),
         selectionInteractionEnergies_(selectionInteractionEnergies),
         selections_(selections)
         {};
@@ -180,11 +176,6 @@ namespace YAML {
             << Key << "InterMotifEnergies" << Comment("[Eh]") << Value << rhs.interMotifEnergyStats_
             << Key << "Selections" << Value << rhs.selections_
             << Key << "SelectionEnergyCalculation" << Value << rhs.selectionInteractionEnergies_
-            << Key << "LocalParticleEnergiesCalculation" << Value
-                << BeginMap
-                << Key << "LocalEnergies" << Value << rhs.localEnergies_
-                << Key << "LocalBondEnergies" << Value << rhs.localBondEnergies_
-                << EndMap
             << Key << "Structures" << Comment("[a0]") << Value << rhs.exemplaricStructures_ << Newline
             << Key << "SpinCorrelations" << Comment("[]") << Value << rhs.SeeStats_
             << Key << "Ree" << Comment("[a0]") << Value << rhs.ReeStats_
