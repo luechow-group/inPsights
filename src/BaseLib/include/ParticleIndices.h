@@ -38,6 +38,8 @@ public:
 
     bool containsIndexQ(Eigen::Index i) const;
 
+    bool operator==(const ParticleIndices& rhs);
+
 private:
     std::set<Eigen::Index> particleIndices_;
 };

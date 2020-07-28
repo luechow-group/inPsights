@@ -40,6 +40,11 @@ void ParticleIndices::merge(const ParticleIndices &other) {
     particleIndices_.insert(std::begin(other.indices()), std::end(other.indices()));
 }
 
+bool ParticleIndices::operator==(const ParticleIndices& rhs) {
+    return this->particleIndices_ == rhs.particleIndices_;
+}
+
+
 
 namespace YAML {
     Node convert<ParticleIndices>::encode(const ParticleIndices &rhs) {

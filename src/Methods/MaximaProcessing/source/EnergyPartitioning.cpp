@@ -20,6 +20,7 @@
 #include <Motif.h>
 #include <Enumerate.h>
 
+
 namespace EnergyPartitioning {
 
     double calculateTotalEnergy(const Eigen::VectorXd &Te, const Eigen::MatrixXd &Vee,
@@ -49,7 +50,7 @@ namespace EnergyPartitioning {
 
     namespace MolecularSelectionBased{
 
-        std::pair<Eigen::VectorXd, Eigen::MatrixXd> calculateInteractionEnergies(const Motifs &motifs,
+        std::pair<EnergyResultsBundle<Eigen::VectorXd>, EnergyResultsBundle<Eigen::MatrixXd>> calculateInteractionEnergies(const Motifs &motifs,
                                                                                  const Eigen::VectorXd &Te, const Eigen::MatrixXd &Vee,
                                                                                  const Eigen::MatrixXd &Ven, const Eigen::MatrixXd &Vnn) {
             std::vector<MolecularSelection> selections(motifs.motifs_.size());
@@ -59,83 +60,145 @@ namespace EnergyPartitioning {
             return calculateInteractionEnergies(selections, Te, Vee, Ven, Vnn);
         }
 
-        std::pair<Eigen::VectorXd, Eigen::MatrixXd> calculateInteractionEnergies(const std::vector<MolecularSelection> &selections,
+        std::pair<EnergyResultsBundle<Eigen::VectorXd>, EnergyResultsBundle<Eigen::MatrixXd>> calculateInteractionEnergies(const std::vector<MolecularSelection> &selections,
                                                                                  const Eigen::VectorXd &Te, const Eigen::MatrixXd &Vee,
                                                                                  const Eigen::MatrixXd &Ven, const Eigen::MatrixXd &Vnn) {
+            EnergyResultsBundle<Eigen::VectorXd> intra;
+            EnergyResultsBundle<Eigen::MatrixXd> inter;
 
-            Eigen::VectorXd intraEnergies = Eigen::VectorXd::Zero(selections.size());
-            Eigen::MatrixXd interEnergies = Eigen::MatrixXd::Zero(selections.size(), selections.size());
+            intra.init(Eigen::VectorXd::Zero(selections.size()));
+            inter.init(Eigen::MatrixXd::Zero(selections.size(), selections.size()));
 
-            for(auto motif = selections.begin(); motif != selections.end(); ++motif) {
-                auto motifId = std::distance(selections.begin(), motif);
+
+            for(auto selection = selections.begin(); selection != selections.end(); ++selection) {
+                auto selId = std::distance(selections.begin(), selection);
 
                 // self-interaction
-                intraEnergies(motifId) = calculateSelfInteractionEnergy(*motif, Te, Vee, Ven, Vnn);
+                auto intraValues = calculateSelfInteractionEnergyBundle(*selection, Te, Vee, Ven, Vnn);
+                intra.E(selId) = intraValues.E;
+                intra.Te(selId) = intraValues.Te;
+                intra.Vee(selId) = intraValues.Vee;
+                intra.Ven(selId) = intraValues.Ven;
+                intra.Vnn(selId) = intraValues.Vnn;
 
-                for (auto otherMotif = std::next(motif); otherMotif != selections.end(); ++otherMotif) {
-                    auto otherMotifId = std::distance(selections.begin(), otherMotif);
+
+                for (auto otherSelection = std::next(selection); otherSelection != selections.end(); ++otherSelection) {
+                    auto otherSelId = std::distance(selections.begin(), otherSelection);
 
                     // interaction with other selections
-                    interEnergies(motifId, otherMotifId) = caclulateInteractionEnergy(*motif, *otherMotif, Te, Vee, Ven, Vnn);
+                    auto interValues = calculateInteractionEnergyBundle(*selection, *otherSelection, Vee, Ven, Vnn);
+                    inter.E(selId, otherSelId) = interValues.E;
+                    inter.Vee(selId, otherSelId) = interValues.Vee;
+                    inter.Ven(selId, otherSelId) = interValues.Ven;
+                    inter.Vnn(selId, otherSelId) = interValues.Vnn;
+
                 }
             }
 
             // symmetrize the matrix of inter energies
-            interEnergies = interEnergies.selfadjointView<Eigen::Upper>();
+            inter.E = inter.E.selfadjointView<Eigen::Upper>();
+            inter.Vee = inter.Vee.selfadjointView<Eigen::Upper>();
+            inter.Ven = inter.Ven.selfadjointView<Eigen::Upper>();
+            inter.Vnn = inter.Vnn.selfadjointView<Eigen::Upper>();
 
-            return {intraEnergies, interEnergies};
+            return {intra, inter};
         }
 
-        double caclulateInteractionEnergy(const MolecularSelection &selA, const MolecularSelection &selB,
-                                          const Eigen::VectorXd &Te, const Eigen::MatrixXd &Vee,
-                                          const Eigen::MatrixXd &Ven, const Eigen::MatrixXd &Vnn) {
+        double calculateIntraTe(const MolecularSelection &sel, const Eigen::VectorXd &Te) {
+            double intra = 0;
+
+            for (auto i : sel.electrons_.indices())
+                intra += Te(i);
+
+            return intra;
+        }
+
+        double calculateIntraVee(const MolecularSelection &sel, const Eigen::MatrixXd &Vee) {
+            double intra = 0;
+
+            for (auto i = sel.electrons_.indices().begin(); i != sel.electrons_.indices().end(); ++i)
+                for (auto j = std::next(i); j != sel.electrons_.indices().end(); ++j)
+                    intra += Vee(*i, *j);
+
+            return intra;
+        }
+
+        double
+        calculateInterVee(const MolecularSelection &selA, const MolecularSelection &selB, const Eigen::MatrixXd &Vee) {
             double inter = 0;
 
             for (auto i : selA.electrons_.indices())
                 for (auto j : selB.electrons_.indices())
-                    inter += Vee(i, j); // Vee
-
-
-            for (auto i : selA.electrons_.indices())
-                for (auto l : selB.nuclei_.indices()) {
-                    inter += Ven(i, l); // Ven ->
-                }
-
-            for (auto j : selB.electrons_.indices())
-                for (auto k : selA.nuclei_.indices())
-                    inter += Ven(j, k); // Ven <-
-
-
-            for (auto k : selA.nuclei_.indices())
-                for (auto l : selB.nuclei_.indices())
-                    inter +=  Vnn(k, l); // Vnn
+                    inter += Vee(i, j);
 
             return inter;
         }
 
-        double calculateSelfInteractionEnergy(const MolecularSelection &sel,
+        double calculateIntraVen(const MolecularSelection &sel, const Eigen::MatrixXd &Ven) {
+            double intra = 0;
+
+            for (auto i : sel.electrons_.indices())
+                for (auto k : sel.nuclei_.indices())
+                    intra += Ven(i, k);
+
+            return intra;
+        }
+
+        double
+        calculateInterVen(const MolecularSelection &selA, const MolecularSelection &selB, const Eigen::MatrixXd &Ven) {
+            double inter = 0;
+
+            for (auto i : selA.electrons_.indices())
+                for (auto l : selB.nuclei_.indices())
+                    inter += Ven(i, l); // A -> B
+
+            for (auto j : selB.electrons_.indices())
+                for (auto k : selA.nuclei_.indices())
+                    inter += Ven(j, k); // A <- B
+
+            return inter;
+        }
+
+        double calculateIntraVnn(const MolecularSelection &sel, const Eigen::MatrixXd &Vnn) {
+            double intra = 0;
+            for (auto k = sel.nuclei_.indices().begin(); k != sel.nuclei_.indices().end(); ++k)
+                for (auto l = std::next(k); l != sel.nuclei_.indices().end(); ++l)
+                    intra += Vnn(*k, *l);
+
+            return intra;
+        }
+
+        double
+        calculateInterVnn(const MolecularSelection &selA, const MolecularSelection &selB, const Eigen::MatrixXd &Vnn) {
+            double inter = 0;
+            for (auto k : selA.nuclei_.indices())
+                for (auto l : selB.nuclei_.indices())
+                    inter +=  Vnn(k, l);
+
+            return inter;
+        }
+
+        EnergyResultsBundle<double> calculateInteractionEnergyBundle(const MolecularSelection &selA, const MolecularSelection &selB,
+                                          const Eigen::MatrixXd &Vee, const Eigen::MatrixXd &Ven, const Eigen::MatrixXd &Vnn) {
+            auto
+            vee = calculateInterVee(selA, selB, Vee),
+            ven = calculateInterVen(selA, selB, Ven),
+            vnn = calculateInterVnn(selA, selB, Vnn);
+
+            return {vee + ven + vnn, 0, vee, ven, vnn};
+        }
+
+        EnergyResultsBundle<double> calculateSelfInteractionEnergyBundle(const MolecularSelection &sel,
                 const Eigen::VectorXd &Te, const Eigen::MatrixXd &Vee,
                 const Eigen::MatrixXd &Ven, const Eigen::MatrixXd &Vnn
                 ) {
+            auto
+            te = calculateIntraTe(sel, Te),
+            vee = calculateIntraVee(sel, Vee),
+            ven = calculateIntraVen(sel, Ven),
+            vnn = calculateIntraVnn(sel, Vnn);
 
-            double intra = 0;
-
-            for (auto i = sel.electrons_.indices().begin(); i != sel.electrons_.indices().end(); ++i) {
-                intra += Te(*i); // Te
-
-                for (auto k = sel.nuclei_.indices().begin(); k != sel.nuclei_.indices().end(); ++k)
-                    intra += Ven(*i, *k); // Ven
-
-                for (auto j = std::next(i); j != sel.electrons_.indices().end(); ++j)
-                    intra += Vee(*i, *j); // Vee
-            }
-
-            // atoms in motif ( zero contribution if zero or one atom is present)
-            for (auto k = sel.nuclei_.indices().begin(); k != sel.nuclei_.indices().end(); ++k)
-                for (auto l = std::next(k); l != sel.nuclei_.indices().end(); ++l)
-                    intra += Vnn(*k, *l); // Vnn
-
-            return intra;
+            return {te + vee + ven + vnn, te, vee, ven, vnn};
         }
     }
 

@@ -23,7 +23,6 @@
 #include <VoxelCube.h>
 #include <Motifs.h>
 #include <EnergyStatistics.h>
-#include <LocalParticleEnergiesCalculation.h>
 #include <SelectionEnergyCalculator.h>
 
 class ClusterData {
@@ -67,9 +66,8 @@ public:
                 const MatrixStatistics RenStats,
                 const std::vector<VoxelCube>& seds,
                 const Eigen::MatrixXd& sedOverlaps,
-                const EnergyResultsBundle<LocalParticleEnergiesCalculator::LocalEnergyResults>& localEnergies,
-                const EnergyResultsBundle<LocalParticleEnergiesCalculator::LocalBondEnergyResults>& localBondEnergies,
-                const SelectionEnergyCalculator::SelectionInteractionEnergies & selectionInteractionEnergies
+                const SelectionEnergyCalculator::SelectionInteractionEnergies & selectionInteractionEnergies,
+                const std::vector<MolecularSelection>& selections
                 );
 
     ElectronsVector representativeStructure() const;
@@ -85,9 +83,8 @@ public:
     MatrixStatistics RenStats_;
     std::vector<VoxelCube> voxelCubes_;
     Eigen::MatrixXd overlaps_;
-    EnergyResultsBundle<LocalParticleEnergiesCalculator::LocalEnergyResults> localEnergies_;
-    EnergyResultsBundle<LocalParticleEnergiesCalculator::LocalBondEnergyResults> localBondEnergies_;
     SelectionEnergyCalculator::SelectionInteractionEnergies  selectionInteractionEnergies_;
+    std::vector<MolecularSelection> selections_;
 };
 
 namespace YAML {

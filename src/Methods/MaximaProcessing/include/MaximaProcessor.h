@@ -24,6 +24,7 @@
 #include <Statistics.h>
 #include <VoxelCube.h>
 #include <SOAPClusterer.h>
+#include <EnergyResultsBundle.h>
 
 namespace MotifEnergyCalculator {
     struct Result{

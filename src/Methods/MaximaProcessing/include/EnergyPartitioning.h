@@ -24,6 +24,7 @@
 #include <GraphAnalysis.h>
 #include <Motifs.h>
 #include <Eigen/Core>
+#include <EnergyResultsBundle.h>
 
 namespace EnergyPartitioning {
 
@@ -31,23 +32,37 @@ namespace EnergyPartitioning {
                                 const Eigen::MatrixXd &Ven, const Eigen::MatrixXd &Vnn);
 
     namespace MolecularSelectionBased {
-        double calculateSelfInteractionEnergy(const MolecularSelection &sel,
-                                              const Eigen::VectorXd &Te, const Eigen::MatrixXd &Vee,
-                                              const Eigen::MatrixXd &Ven, const Eigen::MatrixXd &Vnn);
 
-        double caclulateInteractionEnergy(const MolecularSelection &selA, const MolecularSelection &selB,
-                                          const Eigen::VectorXd &Te, const Eigen::MatrixXd &Vee,
-                                          const Eigen::MatrixXd &Ven, const Eigen::MatrixXd &Vnn);
-
-        std::pair<Eigen::VectorXd, Eigen::MatrixXd> calculateInteractionEnergies(
+        std::pair<EnergyResultsBundle<Eigen::VectorXd>, EnergyResultsBundle<Eigen::MatrixXd>> calculateInteractionEnergies(
                 const Motifs& motifs,
                 const Eigen::VectorXd &Te, const Eigen::MatrixXd &Vee,
                 const Eigen::MatrixXd &Ven, const Eigen::MatrixXd &Vnn);
 
 
-        std::pair<Eigen::VectorXd, Eigen::MatrixXd> calculateInteractionEnergies(
+        std::pair<EnergyResultsBundle<Eigen::VectorXd>, EnergyResultsBundle<Eigen::MatrixXd>> calculateInteractionEnergies(
                 const std::vector<MolecularSelection>& selections,
                 const Eigen::VectorXd &Te, const Eigen::MatrixXd &Vee,
+                const Eigen::MatrixXd &Ven, const Eigen::MatrixXd &Vnn);
+
+        double calculateIntraTe(const MolecularSelection &sel, const Eigen::VectorXd &Vee);
+
+        double calculateIntraVee(const MolecularSelection &sel, const Eigen::MatrixXd &Vee);
+        double calculateInterVee(const MolecularSelection &selA, const MolecularSelection &selB, const Eigen::MatrixXd &Vee);
+
+        double calculateIntraVen(const MolecularSelection &sel, const Eigen::MatrixXd &Ven);
+        double calculateInterVen(const MolecularSelection &selA, const MolecularSelection &selB, const Eigen::MatrixXd &Ven);
+
+        double calculateIntraVnn(const MolecularSelection &sel, const Eigen::MatrixXd &Vnn);
+        double calculateInterVnn(const MolecularSelection &selA, const MolecularSelection &selB, const Eigen::MatrixXd &Vnn);
+
+        EnergyResultsBundle<double> calculateSelfInteractionEnergyBundle(
+                const MolecularSelection &sel,
+                const Eigen::VectorXd &Te, const Eigen::MatrixXd &Vee,
+                const Eigen::MatrixXd &Ven, const Eigen::MatrixXd &Vnn);
+
+        EnergyResultsBundle<double> calculateInteractionEnergyBundle(
+                const MolecularSelection &selA, const MolecularSelection &selB,
+                const Eigen::MatrixXd &Vee,
                 const Eigen::MatrixXd &Ven, const Eigen::MatrixXd &Vnn);
     }
 

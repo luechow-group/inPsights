@@ -29,13 +29,19 @@
 class SelectionEnergyCalculator{
 public:
     struct SelectionInteractionEnergies {
-        VectorStatistics intraEnergies;
-        TriangularMatrixStatistics interEnergies;
+        SelectionInteractionEnergies() = default;
+
+        EnergyResultsBundle<VectorStatistics> intraEnergies;
+        EnergyResultsBundle<TriangularMatrixStatistics> interEnergies;
     };
 
     SelectionEnergyCalculator(
             const std::vector<Sample> &samples,
             const std::vector<DynamicMolecularSelection> &selections);
+
+    void addTopLevel(const Cluster &cluster);
+
+    std::vector<MolecularSelection> getMolecularSelection(const Cluster &cluster) const;
 
     void add(const Cluster &cluster);
 
@@ -43,12 +49,12 @@ private:
     const std::vector<Sample> &samples_;
     const std::vector<DynamicMolecularSelection>& dynamicSelections_;
 public:
+    std::vector<MolecularSelection> molecularSelections_;
     SelectionInteractionEnergies selectionInteractions_;
 };
 
 namespace YAML {
     class Emitter;
-
     Emitter& operator<< (Emitter& out, const SelectionEnergyCalculator::SelectionInteractionEnergies& rhs);
 }
 
