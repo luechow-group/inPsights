@@ -26,19 +26,22 @@ using namespace testing;
 
 class AClusterNumberAnalyzerTest : public ::testing::Test {
 public:
-    Group g1,g2,g3,g3a,g3b;
+    Cluster g1,g2,g3,g3a,g3b;
+    AtomsVector atoms;
 
     void SetUp() override {
-        g1 = Group({1,TestMolecules::H2::ElectronsInCores::normal.electrons(), 0});
-        g2 = Group({1,TestMolecules::H2::ElectronsInCores::ionicRight.electrons(), 1});
-        g3a = Group({2,TestMolecules::H2::ElectronsInCores::ionicLeft.electrons(), 2});
-        g3b = Group({2,TestMolecules::H2::ElectronsInCores::ionicLeft.electrons(), 3});
-        g3 = Group({g3a,g3b});
+        atoms = TestMolecules::H2::ElectronsInCores::normal.atoms();
+
+        g1 = Cluster({atoms, 1,TestMolecules::H2::ElectronsInCores::normal.electrons(), 0});
+        g2 = Cluster({atoms, 1,TestMolecules::H2::ElectronsInCores::ionicRight.electrons(), 1});
+        g3a = Cluster({atoms, 2,TestMolecules::H2::ElectronsInCores::ionicLeft.electrons(), 2});
+        g3b = Cluster({atoms, 2,TestMolecules::H2::ElectronsInCores::ionicLeft.electrons(), 3});
+        g3 = Cluster({g3a,g3b});
     }
 };
 
-TEST_F(AClusterNumberAnalyzerTest, DISABLED_emptyGroupDeathTest){
-    Group group;
+TEST_F(AClusterNumberAnalyzerTest, DISABLED_emptyClusterDeathTest){
+    Cluster group;
 
     ClusterNumberAnalyzer::settings.startRadius = 0.4;
     ClusterNumberAnalyzer::settings.increments = 2;
@@ -49,7 +52,7 @@ TEST_F(AClusterNumberAnalyzerTest, DISABLED_emptyGroupDeathTest){
 }
 
 TEST_F(AClusterNumberAnalyzerTest, normalUse){
-    Group group({g1,g2,g3});
+    Cluster group({g1,g2,g3});
 
     ClusterNumberAnalyzer::settings.startRadius = 0.4;
     ClusterNumberAnalyzer::settings.increments = 2;
@@ -62,7 +65,7 @@ TEST_F(AClusterNumberAnalyzerTest, normalUse){
 }
 
 TEST_F(AClusterNumberAnalyzerTest, minimalWeight){
-    Group group({g1,g2,g3});
+    Cluster group({g1,g2,g3});
 
     ClusterNumberAnalyzer::settings.startRadius = 0.4;
     ClusterNumberAnalyzer::settings.increments = 2;

@@ -15,54 +15,54 @@
  * along with inPsights. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef INPSIGHTS_GROUP_H
-#define INPSIGHTS_GROUP_H
+#ifndef INPSIGHTS_CLUSTER_H
+#define INPSIGHTS_CLUSTER_H
 
 #include <vector>
 #include <Eigen/Core>
 #include <memory>
 #include <Enumerate.h>
 #include <Sample.h>
+#include <MolecularGeometry.h>
 
-// In order to use Group class,
+// In order to use Cluster class,
 // <Reference.h> has to be included as well, due to forward declaration
 
-class Group;
+class Cluster;
 class Reference;
 
 namespace ToString {
-    std::string groupToString(const Group& group);
+    std::string clusterToString(const Cluster& cluster);
 }
 
-class Group : public std::vector<Group> {
+class Cluster : public std::vector<Cluster> {
 public:
-    Group();
-    Group(const Group& group) = default;
+    Cluster();
+    Cluster(const Cluster& group) = default;
 
-    explicit Group(std::vector<Group>::size_type size);
-    Group(std::initializer_list<Group> group);
-    explicit Group(Reference reference);
+    explicit Cluster(std::vector<Cluster>::size_type size);
+    Cluster(std::initializer_list<Cluster> group);
+    explicit Cluster(Reference reference);
 
     bool isLeaf() const;
 
-    Group::size_type numberOfLeaves() const;
+    Cluster::size_type numberOfLeaves() const;
 
     void sort();
     void sortAll();
     void permuteRelevantElectronsToFront(std::vector<Sample> & samples);
 
-    Group& operator+= (const Group& other);
+    Cluster& operator+= (const Cluster& other);
 
-    void makeSubgroup(std::vector<Group::iterator> its);
+    void makeSubcluster(std::vector<Cluster::iterator> its);
 
     void permuteAll(const Eigen::PermutationMatrix<Eigen::Dynamic>& perm, std::vector<Sample>& samples);
+    void permuteAll(const MolecularGeometry::Permutation& molecularPerm, std::vector<Sample>& samples);
 
     struct AveragedPositionsVector {
         PositionsVector positions;
         unsigned weight;
     };
-
-    AveragedPositionsVector averagedMaximumPositionsVector() const;
 
     ElectronsVector electronsVectorFromAveragedPositionsVector(const AveragedPositionsVector& averagedPositionsVector)  const;
 
@@ -71,11 +71,11 @@ public:
     std::shared_ptr<const Reference> representative() const;
     std::shared_ptr<Reference> representative();
 
-    bool operator<(const Group& other) const;
+    bool operator<(const Cluster& other) const;
 
     std::vector<size_t > allSampleIds() const;
 
-    friend std::ostream& operator<<(std::ostream& os, const Group & g);
+    friend std::ostream& operator<<(std::ostream& os, const Cluster & g);
 
     long getSelectedElectronsCount() const;
     void setSelectedElectronsCount(const long &count);
@@ -86,10 +86,9 @@ private:
     long selectedElectronsCount_;
 };
 
-inline Group operator+ (Group lhs, const Group& rhs) {
+inline Cluster operator+ (Cluster lhs, const Cluster& rhs) {
     lhs += rhs;
     return lhs;
 }
 
-
-#endif //INPSIGHTS_GROUP_H
+#endif //INPSIGHTS_CLUSTER_H

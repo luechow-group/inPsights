@@ -16,34 +16,42 @@
  */
 
 #include <EnvironmentBlock.h>
+#include <ParticleKit.h>
 
 /*
  * Distance conservation is checked by calculating the difference of the distance covariance matrice of
  * the permutee and the reference, and assuring, that the maximal distance is below a certain threshold.
  */
 bool DistanceCovariance::conservingQ(
-        const std::vector<Eigen::Index> &permuteeIndices,
-        const ElectronsVector &permutee,
-        const std::vector<Eigen::Index> &referenceIndices,
-        const ElectronsVector &reference,
+        const std::vector<Eigen::Index> &permuteeIndicesInKitSystem,
+        const MolecularGeometry &permutee,
+        const std::vector<Eigen::Index> &referenceIndicesInKitSystem,
+        const MolecularGeometry &reference,
         double distanceMatrixCovarianceTolerance) {
 
-    auto covA = BestMatch::SOAPSimilarity::calculateDistanceCovarianceMatrixOfSelectedIndices(permutee, permuteeIndices);
-    auto covB = BestMatch::SOAPSimilarity::calculateDistanceCovarianceMatrixOfSelectedIndices(reference, referenceIndices);
+    auto permuteeIndices = BestMatch::SOAPSimilarity::permuteIndicesFromKitSystem(
+            permuteeIndicesInKitSystem, SOAP::ParticleKit::fromKitPermutation(permutee));
+    auto referenceIndices = BestMatch::SOAPSimilarity::permuteIndicesFromKitSystem(
+            referenceIndicesInKitSystem, SOAP::ParticleKit::fromKitPermutation(reference));
+
+    auto covA = BestMatch::SOAPSimilarity::calculateDistanceCovarianceMatrixOfSelectedIndices(
+            permutee.positions(), permuteeIndices);
+    auto covB = BestMatch::SOAPSimilarity::calculateDistanceCovarianceMatrixOfSelectedIndices(
+            reference.positions(), referenceIndices);
 
     auto conservingQ = (covB - covA).array().abs().maxCoeff() <= distanceMatrixCovarianceTolerance;
 
     if (!conservingQ)
         spdlog::debug("Distance covariance matrix difference:\n{}",
-                ToString::matrixXdToString((covB - covA), 3));
+                      ToString::matrixXdToString((covB - covA), 3));
 
     return conservingQ;
 };
 
 EnvironmentBlock::EnvironmentBlock(
         const std::deque<BestMatch::SOAPSimilarity::GrowingPerm>& possiblePerms,
-        const ElectronsVector &permutee,
-        const ElectronsVector &reference)
+        const MolecularGeometry &permutee,
+        const MolecularGeometry &reference)
         : permuteeIndices_(),
           referenceIndices_(),
           permutee_(permutee),
@@ -90,9 +98,9 @@ std::vector<std::vector<Eigen::Index>> EnvironmentBlock::filterPermutations(doub
     spdlog::debug("Filtering intra block permutations...");
     for (auto it = permutedPermuteeIndicesCollection_.begin(); it != permutedPermuteeIndicesCollection_.end(); it++) {
         spdlog::debug("{} remaining ...",
-                std::distance(
-                        std::begin(permutedPermuteeIndicesCollection_),
-                        std::end(permutedPermuteeIndicesCollection_)));
+                      std::distance(
+                              std::begin(permutedPermuteeIndicesCollection_),
+                              std::end(permutedPermuteeIndicesCollection_)));
         auto conservingQ = DistanceCovariance::conservingQ(
                 *it, permutee_,
                 referenceIndices_, reference_,
@@ -104,7 +112,7 @@ std::vector<std::vector<Eigen::Index>> EnvironmentBlock::filterPermutations(doub
 };
 
 
-EnvironmentBlockJoiner::EnvironmentBlockJoiner(const ElectronsVector &permutee, const ElectronsVector &reference)
+EnvironmentBlockJoiner::EnvironmentBlockJoiner(const MolecularGeometry &permutee, const MolecularGeometry &reference)
         : jointPermutedPermuteeIndicesCollection_(0),
           jointReferenceIndices_(0),
           permutee_(permutee),

@@ -22,7 +22,7 @@
 #include <spdlog/spdlog.h>
 #include <utility>
 #include <Enumerate.h>
-#include <NearestElectrons.h>
+#include <ParticleSelection.h>
 #include <ErrorHandling.h>
 
 Motifs::Motifs()
@@ -63,7 +63,7 @@ void Motifs::classifyMotifs(const MolecularGeometry& molecule) {
         std::map<long, long> electronToNucleusMap;
 
         // check for each electron if it is at an nucleus
-        for (const auto &electronIndex : motif.electronIndices()) {
+        for (const auto &electronIndex : motif.electrons_.indices()) {
             auto[atNucleusQ, nucleusIndex] = molecule.electronAtNucleusQ(electronIndex);
 
             electronToNucleusMap.emplace(electronIndex, nucleusIndex);
@@ -85,10 +85,7 @@ void Motifs::classifyMotifs(const MolecularGeometry& molecule) {
                 assert(!electronKeys.empty() && "Some electrons must be at involved nuclei at this point.");
 
                 newMotifs.emplace_back(
-                        Motif{std::set<Eigen::Index>(
-                                std::begin(electronKeys),
-                                std::end(electronKeys)),
-                                {nucleusIndex}, MotifType::Core});
+                        Motif{{electronKeys}, {{nucleusIndex}}, MotifType::Core});
             }
         }
 
@@ -101,7 +98,7 @@ void Motifs::classifyMotifs(const MolecularGeometry& molecule) {
 
     // remaing nuclei (only H, He) being not involved in any motifs are separate core motifs
     for(auto & nucleusIndex : remainingNuclei)
-        newMotifs.emplace_back(Motif({}, {nucleusIndex}, MotifType::Core));
+        newMotifs.emplace_back(Motif({}, {{nucleusIndex}}, MotifType::Core));
 
     motifs_ = newMotifs;
 
@@ -111,16 +108,13 @@ void Motifs::classifyMotifs(const MolecularGeometry& molecule) {
 void Motifs::mergeMotifs(const std::set<size_t>& indices) {
     assert(indices.size() <= motifs_.size());
 
-    std::set<Eigen::Index> newAtomIndices, newElectronIndices;
+    ParticleIndices newElectrons, newNuclei;
     auto newMotifType = MotifType::unassigned;
 
     for(auto i : indices){
-        newAtomIndices.insert(
-                std::begin(motifs_[i].atomIndices()),
-                std::end(motifs_[i].atomIndices()));
-        newElectronIndices.insert(
-                std::begin(motifs_[i].electronIndices()),
-                std::end(motifs_[i].electronIndices()));
+        newElectrons.merge(motifs_[i].electrons_);
+        newNuclei.merge(motifs_[i].nuclei_);
+
 
         if(newMotifType != motifs_[i].type()){
             if(newMotifType == MotifType::unassigned)
@@ -129,7 +123,7 @@ void Motifs::mergeMotifs(const std::set<size_t>& indices) {
                 newMotifType = MotifType::CoreValence;
         }
     }
-    std::vector<Motif> newMotifs = {Motif(newElectronIndices, newAtomIndices, newMotifType)};
+    std::vector<Motif> newMotifs = {Motif(newElectrons, newNuclei, newMotifType)};
 
     // emplace untouched motifs
     for(const auto& [i, motif] : enumerate(motifs_)){
@@ -150,7 +144,7 @@ void Motifs::sort(){
         else if (lhs.type() > rhs.type())
             return false;
         else
-            return lhs.electronIndices().size() > rhs.electronIndices().size();
+            return lhs.electrons_.indices().size() > rhs.electrons_.indices().size();
     });
 }
 
@@ -172,7 +166,7 @@ std::set<size_t> Motifs::findMotifMergeIndices(const MolecularGeometry &molecule
             std::function<double(const Eigen::Vector3d &, const std::vector<Eigen::Vector3d> &)>
                     distanceFunction = Metrics::minimalDistance<2>;
             // select all valence electrons in the interatomic region
-            auto nearestElectronsIndices = NearestElectrons::getNearestElectronsIndices(
+            auto nearestElectronsIndices = ParticleSelection::getNearestElectronsIndices(
                     electrons,
                     atoms,
                     {bondCenter},
@@ -181,7 +175,7 @@ std::set<size_t> Motifs::findMotifMergeIndices(const MolecularGeometry &molecule
 
             for (auto[i, m] : enumerate(motifs_)) {
                 for (auto nearestElectronIndex : nearestElectronsIndices) {
-                    if (m.containsElectronQ(nearestElectronIndex)) {
+                    if (m.electrons_.containsIndexQ(nearestElectronIndex)) {
                         motifMergeIndices.emplace(i);
                     }
                 }
@@ -190,7 +184,7 @@ std::set<size_t> Motifs::findMotifMergeIndices(const MolecularGeometry &molecule
             for (auto nucleusIdx : nucleiList) {
                 // find motif with nucleus idx
                 for (auto[i, m] : enumerate(motifs_)) {
-                    if (m.containsAtomQ(nucleusIdx)) {
+                    if (m.nuclei_.containsIndexQ(nucleusIdx)) {
                         motifMergeIndices.emplace(i);
                     };
                 }

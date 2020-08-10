@@ -75,7 +75,7 @@ Intel test:
   - source /opt/intel/parallel_studio_xe_2019/psxevars.sh intel64
   script:
   - cd cmake-build-debug-intel
-  - ctest -LE "(AmolqcElocInterface|amolqc|GUI)" -E "(example|spdlog-utests)" --output-on-failure -j4
+  - ctest -LE "(AmolqcElocInterface|amolqc|GUI|MaximaProcessing)" -E "(example|spdlog-utests)" --output-on-failure -j4
   dependencies:
   - Intel build
 

@@ -17,6 +17,41 @@
 
 #include <ClusterData.h>
 
+ClusterData::ClusterData(unsigned totalNumberOfStructures,
+                         const std::vector<ElectronsVector>& exemplaricStructures,
+                         const ElectronsVector& sampleAverage,
+                         const SingleValueStatistics & valueStats,
+                         const VectorStatistics & TeStats,
+                         const VectorStatistics & EeStats,
+                         const TriangularMatrixStatistics & SeeStats,
+                         const TriangularMatrixStatistics & VeeStats,
+                         const MatrixStatistics & VenStats,
+                         const Motifs& motifs,
+                         const SingleValueStatistics & EtotalStats,
+                         const VectorStatistics & intraMotifEnergyStats,
+                         const TriangularMatrixStatistics & interMotifEnergyStats,
+                         const TriangularMatrixStatistics & ReeStats,
+                         const MatrixStatistics RenStats,
+                         const std::vector<VoxelCube> &seds,
+                         const Eigen::MatrixXd& sedOverlaps
+)
+        :
+        N_(totalNumberOfStructures),
+        exemplaricStructures_(exemplaricStructures),
+        sampleAverage_(sampleAverage),
+        motifs_(motifs),
+        valueStats_(valueStats),
+        EtotalStats_(EtotalStats),
+        EeStats_(EeStats),
+        intraMotifEnergyStats_(intraMotifEnergyStats),
+        electronicEnergyStats_(TeStats, VeeStats, VenStats),
+        SeeStats_(SeeStats),
+        interMotifEnergyStats_(interMotifEnergyStats),
+        ReeStats_(ReeStats),
+        RenStats_(RenStats),
+        voxelCubes_(seds),
+        overlaps_(sedOverlaps)
+{};
 
 ClusterData::ClusterData(unsigned totalNumberOfStructures,
             const std::vector<ElectronsVector>& exemplaricStructures,
@@ -34,7 +69,9 @@ ClusterData::ClusterData(unsigned totalNumberOfStructures,
             const TriangularMatrixStatistics & ReeStats,
             const MatrixStatistics RenStats,
             const std::vector<VoxelCube> &seds,
-            const Eigen::MatrixXd& sedOverlaps
+            const Eigen::MatrixXd& sedOverlaps,
+            const SelectionEnergyCalculator::SelectionInteractionEnergies & selectionInteractionEnergies,
+            const std::vector<MolecularSelection>& selections
             )
         :
         N_(totalNumberOfStructures),
@@ -51,7 +88,9 @@ ClusterData::ClusterData(unsigned totalNumberOfStructures,
         ReeStats_(ReeStats),
         RenStats_(RenStats),
         voxelCubes_(seds),
-        overlaps_(sedOverlaps)
+        overlaps_(sedOverlaps),
+        selectionInteractionEnergies_(selectionInteractionEnergies),
+        selections_(selections)
         {};
 
 ElectronsVector ClusterData::representativeStructure() const {
@@ -135,6 +174,8 @@ namespace YAML {
             << Key << "Etotal" << Comment("[Eh]") << Value << rhs.EtotalStats_
             << Key << "IntraMotifEnergies" << Comment("[Eh]") << Value << rhs.intraMotifEnergyStats_
             << Key << "InterMotifEnergies" << Comment("[Eh]") << Value << rhs.interMotifEnergyStats_
+            << Key << "Selections" << Value << rhs.selections_
+            << Key << "SelectionEnergyCalculation" << Value << rhs.selectionInteractionEnergies_
             << Key << "Structures" << Comment("[a0]") << Value << rhs.exemplaricStructures_ << Newline
             << Key << "SpinCorrelations" << Comment("[]") << Value << rhs.SeeStats_
             << Key << "Ree" << Comment("[a0]") << Value << rhs.ReeStats_

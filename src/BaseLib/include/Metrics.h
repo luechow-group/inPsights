@@ -37,6 +37,8 @@ namespace Metrics{
         return (positions1.asEigenVector()-positions2.asEigenVector()).lpNorm<Norm>();
     }
 
+    Eigen::Vector3d averagedPosition(const PositionsVector& positions);
+
     template <int Norm = 2>
     double minimalDistance(const Eigen::Vector3d &position,
                            const std::vector<Eigen::Vector3d> &positions){

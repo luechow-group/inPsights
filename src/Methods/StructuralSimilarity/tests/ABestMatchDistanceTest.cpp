@@ -19,7 +19,7 @@
 #include <BestMatch.h>
 #include <BestMatchDistance.h>
 #include <TestMolecules.h>
-#include <NearestElectrons.h>
+#include <ParticleSelection.h>
 
 TEST(ABestMatchDistanceTest, findTypeSeparatingPermutation) {
 
@@ -267,14 +267,14 @@ TEST(ABestMatchDistanceTest, NearestElectrons) {
 
     std::function<double(const Eigen::Vector3d &,
                          const std::vector<Eigen::Vector3d> &)> distanceFunction = Metrics::minimalDistance<2>;
-    auto indices1 = NearestElectrons::getNearestElectronsIndices(electrons, nuclei,
-                                                                 std::vector<Eigen::Vector3d>({position}), 2, true,
-                                                                 100.0,
-                                                                 distanceFunction);
-    auto indices2 = NearestElectrons::getNearestElectronsIndices(electrons3, nuclei,
-                                                                 std::vector<Eigen::Vector3d>({position}), 2, true,
-                                                                 100.0,
-                                                                 distanceFunction);
+    auto indices1 = ParticleSelection::getNearestElectronsIndices(electrons, nuclei,
+                                                                  std::vector<Eigen::Vector3d>({position}), 2, true,
+                                                                  100.0,
+                                                                  distanceFunction);
+    auto indices2 = ParticleSelection::getNearestElectronsIndices(electrons3, nuclei,
+                                                                  std::vector<Eigen::Vector3d>({position}), 2, true,
+                                                                  100.0,
+                                                                  distanceFunction);
 
     auto[norm, perm] = BestMatch::Distance::compare<Eigen::Infinity, 2>(
             electrons[indices1].positionsVector(),
@@ -293,14 +293,14 @@ TEST(ABestMatchDistanceTest, NearestElectrons2) {
 
     std::function<double(const Eigen::Vector3d &,
                          const std::vector<Eigen::Vector3d> &)> distanceFunction = Metrics::minimalDistance<2>;
-    auto indices1 = NearestElectrons::getNearestElectronsIndices(electrons, nuclei,
-                                                                 std::vector<Eigen::Vector3d>({position}), 2, true,
-                                                                 100.0,
-                                                                 distanceFunction);
-    auto indices2 = NearestElectrons::getNearestElectronsIndices(electrons2, nuclei,
-                                                                 std::vector<Eigen::Vector3d>({position}), 2, true,
-                                                                 100.0,
-                                                                 distanceFunction);
+    auto indices1 = ParticleSelection::getNearestElectronsIndices(electrons, nuclei,
+                                                                  std::vector<Eigen::Vector3d>({position}), 2, true,
+                                                                  100.0,
+                                                                  distanceFunction);
+    auto indices2 = ParticleSelection::getNearestElectronsIndices(electrons2, nuclei,
+                                                                  std::vector<Eigen::Vector3d>({position}), 2, true,
+                                                                  100.0,
+                                                                  distanceFunction);
 
     auto[norm, perm] = BestMatch::Distance::compare<Eigen::Infinity, 2>(
             electrons[indices1].positionsVector(),

@@ -35,12 +35,12 @@ namespace Settings {
 }
 YAML_SETTINGS_DECLARATION(Settings::PreClusterer)
 
-class DistanceClusterer : public IClusterer {
+class PreClusterer : public IClusterer {
 public:
     static Settings::PreClusterer settings;
 
-    DistanceClusterer(std::vector<Sample> &samples);
-    void cluster(Group& group) override;
+    PreClusterer(std::vector<Sample> &samples);
+    void cluster(Cluster& group) override;
 };
 
 

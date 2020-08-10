@@ -26,6 +26,62 @@
 #include <VoxelCubeOverlapCalculation.h>
 #include <spdlog/spdlog.h>
 #include <SpinCorrelationValueHistogram.h>
+#include <SelectionEnergyCalculator.h>
+
+MotifEnergyCalculator::Result MotifEnergyCalculator::partition(
+        const Cluster &cluster,
+        const std::vector<Sample> &samples,
+        const Motifs& motifs) {
+
+    VectorStatistics intraMotifEnergyStats;
+    TriangularMatrixStatistics interMotifEnergyStats;
+
+    partitionLowerLevels(cluster, samples, motifs, intraMotifEnergyStats, interMotifEnergyStats);
+
+    return {intraMotifEnergyStats, interMotifEnergyStats};
+}
+
+void MotifEnergyCalculator::partitionLowerLevels(
+        const Cluster &cluster,
+        const std::vector<Sample> &samples,
+        const Motifs& motifs,
+        VectorStatistics& intraMotifEnergyStats,
+        TriangularMatrixStatistics& interMotifEnergyStats) {
+
+    if (cluster.isLeaf())
+        partitionLowestLevel(cluster, samples, motifs, intraMotifEnergyStats, interMotifEnergyStats);
+    else
+        for (const auto &subcluster : cluster)
+            partitionLowerLevels(subcluster, samples, motifs, intraMotifEnergyStats, interMotifEnergyStats);
+
+}
+
+
+void MotifEnergyCalculator::partitionLowestLevel(
+        const Cluster &cluster,
+        const std::vector<Sample> &samples,
+        const Motifs& motifs,
+        VectorStatistics& intraMotifEnergyStats,
+        TriangularMatrixStatistics& interMotifEnergyStats) {
+
+    auto finalNuclearPerm = cluster.representative()->nuclearPermutation();
+    auto permutedNuclei =  cluster.representative()->nuclei();
+    permutedNuclei.permute(finalNuclearPerm);
+
+    for (auto id : cluster.representative()->sampleIds()) {
+        Eigen::VectorXd Te = samples[id].kineticEnergies_;
+        Eigen::MatrixXd Vee = CoulombPotential::energies(samples[id].sample_);
+        Eigen::MatrixXd Ven = CoulombPotential::energies(samples[id].sample_, permutedNuclei);
+
+        Eigen::MatrixXd Vnn = CoulombPotential::energies(permutedNuclei);
+
+        auto motifEnergies = EnergyPartitioning::MolecularSelectionBased::calculateInteractionEnergies(
+                motifs, Te, Vee, Ven, Vnn);
+
+        intraMotifEnergyStats.add(motifEnergies.first.E, 1);
+        interMotifEnergyStats.add(motifEnergies.second.E, 1);
+    }
+}
 
 MaximaProcessor::MaximaProcessor(YAML::Emitter& yamlDocument, const std::vector<Sample>& samples, const AtomsVector& atoms)
         :
@@ -48,15 +104,19 @@ unsigned long MaximaProcessor::addReference(const Reference &reference) {
     valueStats_.add(value, count);
     SeeStats_.add(spinCorrelations_, count);
 
+    auto permutedNuclei = reference.nuclei();
+    permutedNuclei.permute(reference.nuclearPermutation());
+
     // Sample related statistics
     for (auto & id : reference.sampleIds()) {
         auto & electrons = samples_[id].sample_;
         Eigen::VectorXd Te = samples_[id].kineticEnergies_;
         Eigen::MatrixXd Vee = CoulombPotential::energies(electrons);
-        Eigen::MatrixXd Ven = CoulombPotential::energies(electrons,atoms_);
-        Eigen::VectorXd Ee = EnergyPartitioning::ParticleBased::oneElectronEnergies(Te, Vee, Ven, Vnn_);
+        Eigen::MatrixXd Ven = CoulombPotential::energies(electrons, permutedNuclei);
+
+        Eigen::VectorXd Ee = EnergyPartitioning::ParticleBased::oneElectronEnergies(Te, Vee, Ven, Vnn_); // TODO wrong and deprecated -> remove
         Eigen::MatrixXd Ree = Metrics::positionalDistances(electrons.positionsVector());
-        Eigen::MatrixXd Ren = Metrics::positionalDistances(electrons.positionsVector(), atoms_.positionsVector());
+        Eigen::MatrixXd Ren = Metrics::positionalDistances(electrons.positionsVector(), permutedNuclei.positionsVector());
 
         TeStats_.add(Te,1);
         VeeStats_.add(Vee,1);
@@ -69,52 +129,39 @@ unsigned long MaximaProcessor::addReference(const Reference &reference) {
         Etot << EnergyPartitioning::calculateTotalEnergy(Te,Vee,Ven, Vnn_);
         EtotalStats_.add(Etot);
     }
-    
-    
+
     return count;
 }
 
-void MaximaProcessor::doMotifBasedEnergyPartitioning(const Group& group) {
 
-    auto allSampleIds = group.allSampleIds();
-    
-    // Sample related statistics
-    for (auto id : allSampleIds) {
-        Eigen::VectorXd Te = samples_[id].kineticEnergies_;
-        Eigen::MatrixXd Vee = CoulombPotential::energies(samples_[id].sample_);
-        Eigen::MatrixXd Ven = CoulombPotential::energies(samples_[id].sample_,atoms_);
-
-        auto motifEnergies = EnergyPartitioning::MotifBased::calculateInteractionEnergies(motifs_, Te, Vee, Ven, Vnn_);
-
-        intraMotifEnergyStats_.add(motifEnergies.first,1);
-        interMotifEnergyStats_.add(motifEnergies.second,1);
-    }
-}
-
-size_t  MaximaProcessor::addAllReferences(const Group &group) {
+// TODO every cluster should know its total count at merging already => add count as a member
+size_t  MaximaProcessor::addAllReferences(const Cluster &cluster) {
     unsigned long totalCount = 0;
-    if(group.isLeaf())
-        totalCount += addReference(*group.representative());
+    if(cluster.isLeaf())
+        totalCount += addReference(*cluster.representative());
     else
-        for(const auto &subgroup : group)
-            totalCount += addAllReferences(subgroup);
+        for(const auto &subcluster : cluster)
+            totalCount += addAllReferences(subcluster);
 
     return totalCount;
 }
 
-std::vector<ElectronsVector> MaximaProcessor::getAllRepresentativeMaxima(const Group &group) {
+std::vector<ElectronsVector> MaximaProcessor::getAllRepresentativeMaxima(const Cluster &cluster) {
     std::vector<ElectronsVector> representativeMaxima;
-    if(group.empty())
-        representativeMaxima.emplace_back(group.representative()->maximum());
+    if(cluster.empty())
+        representativeMaxima.emplace_back(cluster.representative()->maximum());
     else
-        for(auto & i : group)
+        for(auto & i : cluster)
             representativeMaxima.emplace_back(i.representative()->maximum());
 
     return representativeMaxima;
 }
 
-void MaximaProcessor::calculateStatistics(const Group &maxima,
-                                          const std::vector<std::vector<std::vector<size_t>>> & nucleiMergeLists){
+void MaximaProcessor::calculateStatistics(const Cluster &maxima,
+                                          const std::vector<std::vector<std::vector<size_t>>> & nucleiMergeLists,
+                                          const std::vector<size_t> &nucleiIndices,
+                                          const std::vector<DynamicMolecularSelection>& selections
+                                          ){
     using namespace YAML;
 
     yamlDocument_ << Key << "Vnn" << Comment("[Eh]") << Value << VnnStats_
@@ -124,9 +171,11 @@ void MaximaProcessor::calculateStatistics(const Group &maxima,
     size_t totalCount = 0;
     double totalWeight = 0.0;
 
-    SpinCorrelationValueHistogram spinCorrelationDistribution(12); // => 25 bns in total
+    SpinCorrelationValueHistogram spinCorrelationDistribution(12); // => 25 bins in total
 
-    for (auto& group : maxima) {
+    SelectionEnergyCalculator selectionEnergyCalculator(samples_, selections);
+
+    for (auto& cluster : maxima) {
 
         valueStats_.reset();
         SeeStats_.reset();
@@ -135,14 +184,17 @@ void MaximaProcessor::calculateStatistics(const Group &maxima,
         VeeStats_.reset();
         VenStats_.reset();
         EtotalStats_.reset();
-        intraMotifEnergyStats_.reset();
-        interMotifEnergyStats_.reset();
         ReeStats_.reset();
         RenStats_.reset();
 
 
-        totalCount += addAllReferences(group); // this sets all statistic objects internally
-        auto structures = getAllRepresentativeMaxima(group);
+        totalCount += addAllReferences(cluster); // this sets all statistic objects internally
+        auto structures = getAllRepresentativeMaxima(cluster);
+
+        auto maximalNumberOfStructuresToPrint = MaximaProcessing::settings.maximalNumberOfStructuresToPrint();
+
+        if(structures.size() > maximalNumberOfStructuresToPrint)
+            structures.resize(maximalNumberOfStructuresToPrint);
 
         // SpinCorrelationDistribution
         spinCorrelationDistribution.addSpinStatistic(SeeStats_);
@@ -151,40 +203,49 @@ void MaximaProcessor::calculateStatistics(const Group &maxima,
 
         auto adjacencyMatrix = GraphAnalysis::filter(SeeStats_.mean().cwiseAbs(), MaximaProcessing::settings.motifThreshold());
 
-        auto mol = MolecularGeometry(atoms_, group.representative()->maximum());
-        motifs_ = Motifs(adjacencyMatrix, mol);
-
-
+        auto mol = MolecularGeometry(atoms_, cluster.representative()->maximum());
+        Motifs motifs(adjacencyMatrix, mol);
+        
         // merge motifs
         for(const auto& nucleiMergeList : nucleiMergeLists){
-            auto motifMergeIndices = motifs_.findMotifMergeIndices(mol, nucleiMergeList);
+            auto motifMergeIndices = motifs.findMotifMergeIndices(mol, nucleiMergeList);
 
-            motifs_.mergeMotifs(motifMergeIndices);
+            motifs.mergeMotifs(motifMergeIndices);
         }
 
-        doMotifBasedEnergyPartitioning(group);
+        // Motif energies
+        auto [intraMotifEnergyStats, interMotifEnergyStats] = MotifEnergyCalculator::partition(cluster, samples_, motifs);
 
         // SEDs
         std::vector<VoxelCube> voxelCubes;
         if(VoxelCubeGeneration::settings.generateVoxelCubesQ())
-            voxelCubes = VoxelCubeGeneration::fromCluster(group, samples_);
+            voxelCubes = VoxelCubeGeneration::fromCluster(cluster, samples_);
 
         // SED overlaps
         Eigen::MatrixXd overlaps;
         if(VoxelCubeOverlapCalculation::settings.calculateOverlapQ())
-            overlaps = VoxelCubeOverlapCalculation::fromCluster(group, samples_);
+            overlaps = VoxelCubeOverlapCalculation::fromCluster(cluster, samples_);
 
         auto weight = double(TeStats_.getTotalWeight())/double(samples_.size());
         if(weight >= MaximaProcessing::settings.minimalClusterWeight.get()) {
+
+            selectionEnergyCalculator.addTopLevel(cluster);
+
+            SelectionEnergyCalculator selectionEnergyCalculatorPerCluster(samples_, selections);
+            selectionEnergyCalculatorPerCluster.addTopLevel(cluster);
+
             totalWeight += weight;
 
-            ElectronsVector sampleAverage = {group.electronsVectorFromAveragedPositionsVector(group.averagedSamplePositionsVector(samples_))};
+            ElectronsVector sampleAverage = {cluster.electronsVectorFromAveragedPositionsVector(cluster.averagedSamplePositionsVector(samples_))};
 
             yamlDocument_ << ClusterData(TeStats_.getTotalWeight(), structures, sampleAverage,
                     valueStats_, TeStats_, EeStats_,
                                          SeeStats_, VeeStats_, VenStats_,
-                                         motifs_, EtotalStats_, intraMotifEnergyStats_, interMotifEnergyStats_,
-                                         ReeStats_, RenStats_, voxelCubes, overlaps);
+                                         motifs, EtotalStats_, intraMotifEnergyStats, interMotifEnergyStats,
+                                         ReeStats_, RenStats_, voxelCubes, overlaps,
+                                         selectionEnergyCalculatorPerCluster.selectionInteractions_,
+                                         selectionEnergyCalculatorPerCluster.molecularSelections_
+                                         );
         }
     }
     spdlog::info("Overall count {}. Some structures might be lost "
@@ -197,6 +258,7 @@ void MaximaProcessor::calculateStatistics(const Group &maxima,
     auto hist = spinCorrelationDistribution.getHistogramVector();
     hist /= hist.sum();
     yamlDocument_ << Key << "SpinCorrelationDistribution" << Value << hist;
+    yamlDocument_ << Key << "SelectionEnergyCalculation"  << Value << selectionEnergyCalculator.selectionInteractions_;
 
 
     assert(yamlDocument_.good());

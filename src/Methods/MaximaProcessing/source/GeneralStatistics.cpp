@@ -19,7 +19,7 @@
 #include <CoulombPotential.h>
 
 GeneralStatistics::Result GeneralStatistics::calculate(
-        Group &maxima, std::vector<Sample> &samples, const AtomsVector& atoms) {
+        Cluster &maxima, std::vector<Sample> &samples, const AtomsVector& atoms) {
 
     Result result;
 

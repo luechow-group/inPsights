@@ -42,6 +42,12 @@ namespace Settings {
                     else if (value >= 1.0)
                         throw std::invalid_argument("The minimal cluster weight cannot be 1 or larger.");
                 });
+        maximalNumberOfStructuresToPrint.onChange_.connect(
+                [&](unsigned value) {
+                    if (value < 0)
+                        throw std::invalid_argument("The maximal number of structures to print cannot be negative.");
+                });
+
         motifThreshold.onChange_.connect(
                 [&](double value) {
                     if (value < 0.0)
@@ -57,6 +63,7 @@ namespace Settings {
         unsignedProperty::decode(node[className], seed);
         unsignedProperty::decode(node[className], samplesToAnalyze);
         doubleProperty ::decode(node[className], minimalClusterWeight);
+        unsignedProperty::decode(node[className], maximalNumberOfStructuresToPrint);
         doubleProperty ::decode(node[className], motifThreshold);
         boolProperty ::decode(node[className], deleteCoreElectrons);
     }
@@ -66,6 +73,7 @@ namespace Settings {
         node[className][binaryFileBasename.name()] = binaryFileBasename.get();
         node[className][samplesToAnalyze.name()] = samplesToAnalyze.get();
         node[className][minimalClusterWeight.name()] = minimalClusterWeight.get();
+        node[className][maximalNumberOfStructuresToPrint.name()] = maximalNumberOfStructuresToPrint.get();
         node[className][motifThreshold.name()] = motifThreshold.get();
         node[className][deleteCoreElectrons.name()] = deleteCoreElectrons.get();
     }

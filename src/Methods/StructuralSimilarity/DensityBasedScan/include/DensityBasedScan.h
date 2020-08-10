@@ -76,12 +76,13 @@ public:
             vpTree_(data, similarityDistance) {};
 
     // predict eps for a fixed number of clusters
-    const std::vector<Scalar> predictEps(size_t k) {
+    std::vector<Scalar> predictEps(size_t k) {
         std::vector<Scalar> predictedEps(data_.size(), 0.0);
 
         omp_set_dynamic(1);
 
-#pragma omp parallel for
+#pragma omp parallel shared(k, predictedEps, vpTree_)
+#pragma omp for
         for (size_t i = 0; i < data_.size(); ++i) {
             std::vector<std::pair<size_t, Scalar>> neighborList;
 
@@ -94,7 +95,7 @@ public:
 
         std::sort(predictedEps.begin(), predictedEps.end());
 
-        return std::move(predictedEps);
+        return predictedEps;
     }
 
     ClusterLabels findClusters(Scalar eps, size_t minPts) {

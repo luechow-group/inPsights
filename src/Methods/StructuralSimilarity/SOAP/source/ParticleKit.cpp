@@ -16,8 +16,6 @@
  */
 
 #include <ParticleKit.h>
-
-#include "ParticleKit.h"
 #include "ElementInfo.h"
 
 namespace SOAP {
@@ -186,6 +184,26 @@ namespace SOAP {
             return fromKitPermutation(atomsVector).inverse();
         }
 
+        Eigen::PermutationMatrix<Eigen::Dynamic> fromKitPermutation(const MolecularGeometry &molecule) {
+            assert(SOAP::ParticleKit::isSameSetQ(molecule));
+            Eigen::VectorXi indices(molecule.numberOfEntities());
+
+            auto nuclearIndices = fromKitPermutation(molecule.atoms()).indices();
+            auto M = nuclearIndices.size();
+
+            auto electronicIndices = fromKitPermutation(molecule.electrons()).indices();
+            auto N = electronicIndices.size();
+
+            indices.head(M) = nuclearIndices;
+            indices.tail(N) = electronicIndices.array() + M;
+
+            return Eigen::PermutationMatrix<Eigen::Dynamic>(indices);
+        }
+
+        Eigen::PermutationMatrix<Eigen::Dynamic> toKitPermutation(const MolecularGeometry &molecule) {
+            return fromKitPermutation(molecule).inverse();
+        }
+
         bool isSubsetQ(const AtomsVector &atomsVector) {
             auto countedTypes = atomsVector.typesVector().countTypes();
             for (auto typeCount: countedTypes) {
@@ -194,24 +212,42 @@ namespace SOAP {
                                        [typeCount](const std::pair<Element, unsigned> &element) {
                                            return element.first == typeCount.type_;
                                        });
-                if (it == SOAP::ParticleKit::atomKit.end()) return false;
-                else if ((*it).second < typeCount.number_) {
+                if ((it == SOAP::ParticleKit::atomKit.end()) || ((*it).second < typeCount.number_))
                     return false;
-                }
             }
             return true;
         }
 
         bool isSubsetQ(const ElectronsVector &electronsVector) {
-            if (electronsVector.typesVector().countOccurence(Spin::alpha) > SOAP::ParticleKit::electronKit.first)
-                return false;
-            else
-                return electronsVector.typesVector().countOccurence(Spin::beta) <=
-                       SOAP::ParticleKit::electronKit.second;
+            return (electronsVector.typesVector().countOccurence(Spin::alpha) <= SOAP::ParticleKit::electronKit.first)
+                   && (electronsVector.typesVector().countOccurence(Spin::beta) <= SOAP::ParticleKit::electronKit.second);
         }
 
         bool isSubsetQ(const MolecularGeometry &molecularGeometry) {
             return isSubsetQ(molecularGeometry.atoms()) && isSubsetQ(molecularGeometry.electrons());
+        }
+
+        bool isSameSetQ(const AtomsVector &atomsVector) {
+            auto countedTypes = atomsVector.typesVector().countTypes();
+            for (auto typeCount: countedTypes) {
+
+                auto it = std::find_if(SOAP::ParticleKit::atomKit.begin(), SOAP::ParticleKit::atomKit.end(),
+                                       [typeCount](const std::pair<Element, unsigned> &element) {
+                                           return element.first == typeCount.type_;
+                                       });
+                if ((it == SOAP::ParticleKit::atomKit.end()) || ((*it).second != typeCount.number_))
+                    return false;
+            }
+            return true;
+        }
+
+        bool isSameSetQ(const ElectronsVector &electronsVector) {
+            return (electronsVector.typesVector().countOccurence(Spin::alpha) == SOAP::ParticleKit::electronKit.first)
+            && (electronsVector.typesVector().countOccurence(Spin::beta) == SOAP::ParticleKit::electronKit.second);
+        }
+
+        bool isSameSetQ(const MolecularGeometry &molecularGeometry) {
+            return isSameSetQ(molecularGeometry.atoms()) && isSameSetQ(molecularGeometry.electrons());
         }
 
         unsigned numberOfTypes() {
@@ -234,7 +270,6 @@ namespace SOAP {
         unsigned numberOfParticles() {
             return numberOfAtoms() + numberOfElectrons();
         }
-
 
         unsigned numberOfElementTypes() {
             return unsigned(atomKit.size());

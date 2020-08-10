@@ -38,7 +38,7 @@ namespace Settings {
 YAML_SETTINGS_DEFINITION(Settings::VoxelCubeOverlapCalculation)
 
 
-Eigen::MatrixXd VoxelCubeOverlapCalculation::fromCluster(const Group &maxima, const std::vector<Sample> &samples){
+Eigen::MatrixXd VoxelCubeOverlapCalculation::fromCluster(const Cluster &maxima, const std::vector<Sample> &samples){
     auto dimension = settings.dimension.get();
     auto length = settings.length.get();
 

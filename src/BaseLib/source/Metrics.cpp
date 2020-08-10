@@ -1,4 +1,4 @@
-/* Copyright (C) 2018-2019 Michael Heuer.
+/* Copyright (C) 2020 Michael Heuer.
  *
  * This file is part of inPsights.
  * inPsights is free software: you can redistribute it and/or modify
@@ -15,14 +15,13 @@
  * along with inPsights. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef INPSIGHTS_VALUESORTER_H
-#define INPSIGHTS_VALUESORTER_H
+#include <Metrics.h>
 
-#include "Reference.h"
-#include <vector>
+Eigen::Vector3d Metrics::averagedPosition(const PositionsVector &positions){
+    Eigen::Vector3d sum = Eigen::Vector3d::Zero();
 
-namespace ValueSorter {
-    bool sortReferencesByValue(std::vector<Reference>& references);
+    for (long i = 0; i < positions.numberOfEntities(); ++i)
+        sum += positions[i];
+
+    return sum / positions.numberOfEntities();;
 }
-
-#endif //INPSIGHTS_VALUESORTER_H

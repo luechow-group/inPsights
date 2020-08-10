@@ -16,19 +16,20 @@
  * along with inPsights. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef INPSIGHTS_NEARESTELECTRONS_H
-#define INPSIGHTS_NEARESTELECTRONS_H
+#ifndef INPSIGHTS_PARTICLESELECTION_H
+#define INPSIGHTS_PARTICLESELECTION_H
 
 #include <ParticlesVector.h>
 #include <ISettings.h>
 #include <Metrics.h>
+
 #include <functional>
 
 namespace Settings {
-    class NearestElectrons : public ISettings {
+    class ParticleSelection : public ISettings {
     public:
         Property<double> maximalDistance = {10.0, VARNAME(maximalDistance)};
-        Property<long> maximalCount = {2, VARNAME(maximalCount)};
+        Property<long> maximalCount = {0, VARNAME(maximalCount)};
         Property<std::string> distanceMode = {"minimum", VARNAME(distanceMode)}; //TODO
         Property<bool> invertSelection = {false, VARNAME(invertSelection)};
         Property<bool> valenceOnly = {true, VARNAME(valenceOnly)};
@@ -36,15 +37,15 @@ namespace Settings {
         AtomsVector atoms;
         std::vector<Eigen::Vector3d> positions;
 
-        NearestElectrons(const AtomsVector& atoms = {}); //TODO const AtomsVector& atoms = {} Can it work without atoms and positions?
-        explicit NearestElectrons(const YAML::Node &node, const AtomsVector& atoms = {});
+        ParticleSelection(const AtomsVector& atoms = {});
+        explicit ParticleSelection(const YAML::Node &node, const AtomsVector& atoms = {});
         void appendToNode(YAML::Node &node) const override;
     };
 }
-YAML_SETTINGS_DECLARATION(Settings::NearestElectrons)
+YAML_SETTINGS_DECLARATION(Settings::ParticleSelection)
 
-namespace NearestElectrons {
-    inline Settings::NearestElectrons settings {};
+namespace ParticleSelection {
+    inline Settings::ParticleSelection settings {};
 
     std::list<long>
     getNonValenceIndices(const ElectronsVector &electrons, const Atom &nucleus);
@@ -59,14 +60,13 @@ namespace NearestElectrons {
                                                     const std::vector<Eigen::Vector3d> &)> &distanceFunction);
 
     std::list<long>
-    getNearestElectronsIndices(const ElectronsVector &electrons, const Eigen::Vector3d &position, long count);
+    getNearestPositionIndices(const PositionsVector &positions, const Eigen::Vector3d &position, long count);
+
 
     std::list<long> invertedIndices(const std::list<long>& indices, std::size_t size);
-
 
     // convenience wrapper function for clusterers
     std::list<long> getRelevantIndices(const ElectronsVector &electrons);
 }
 
-
-#endif //INPSIGHTS_NEARESTELECTRONS_H
+#endif //INPSIGHTS_PARTICLESELECTION_H

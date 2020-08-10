@@ -62,6 +62,26 @@ public:
     }
 };
 
+TEST_F(AEnergyPartitioningTest, MolecularSelections) {
+    auto selA = MolecularSelection({{0,1}},{{0}});
+    auto selB = MolecularSelection({{2,3}},{{1}});
+
+    auto res = EnergyPartitioning::MolecularSelectionBased::calculateInteractionEnergies(
+            {selA, selB}, Te, Vee, Ven, Vnn);
+
+    ASSERT_EQ(res.first.E.size(), 2);
+    ASSERT_EQ(res.second.E.size(), 4);
+    ASSERT_EQ(res.first.E[0], 2*0.01 + 1*1 + 2*100);
+    ASSERT_EQ(res.first.E[1], 2*0.01 + 1*1 + 2*100);
+
+    ASSERT_EQ(res.second.E(0,1),4*1 + 4*100 + 1*10000);
+    ASSERT_EQ(res.second.E(0,0), 0);
+
+    // matrix should be symmetric
+    ASSERT_EQ(res.second.E(0,1), res.second.E(1,0));
+    ASSERT_EQ(res.second.E(0,0), res.second.E(1,1));
+}
+
 
 TEST_F(AEnergyPartitioningTest, TwoPairs){
 
@@ -84,26 +104,26 @@ TEST_F(AEnergyPartitioningTest, TwoPairs){
 
     Motifs motifs(A, mol);
 
-    ASSERT_THAT(motifs.motifs_[0].electronIndices(), ElementsAre(0, 1));
-    ASSERT_THAT(motifs.motifs_[0].atomIndices(), ElementsAre(0));
+    ASSERT_THAT(motifs.motifs_[0].electrons_.indices(), ElementsAre(0, 1));
+    ASSERT_THAT(motifs.motifs_[0].nuclei_.indices(), ElementsAre(0));
     ASSERT_EQ(motifs.motifs_[0].type(), MotifType::Core);
 
-    ASSERT_THAT(motifs.motifs_[1].electronIndices(), ElementsAre(2, 3));
-    ASSERT_THAT(motifs.motifs_[1].atomIndices(), ElementsAre(1));
+    ASSERT_THAT(motifs.motifs_[1].electrons_.indices(), ElementsAre(2, 3));
+    ASSERT_THAT(motifs.motifs_[1].nuclei_.indices(), ElementsAre(1));
     ASSERT_EQ(motifs.motifs_[1].type(), MotifType::Core);
 
-    auto motifEnergies = EnergyPartitioning::MotifBased::calculateInteractionEnergies(motifs, Te, Vee, Ven, Vnn);
+    auto motifEnergies = EnergyPartitioning::MolecularSelectionBased::calculateInteractionEnergies(motifs, Te, Vee, Ven, Vnn);
 
     Eigen::VectorXd intraExpected = Eigen::VectorXd::Zero(motifs.motifs_.size());
     intraExpected << 201.02, 201.02;
 
     Eigen::MatrixXd interExpected = Eigen::MatrixXd::Zero(motifs.motifs_.size(), motifs.motifs_.size());
-    interExpected << 0, 10404, 0, 0;
+    interExpected << 0, 10404, 10404, 0;
 
-    ASSERT_TRUE(motifEnergies.first.isApprox(intraExpected));
-    ASSERT_TRUE(motifEnergies.second.isApprox(interExpected));
+    ASSERT_TRUE(motifEnergies.first.E.isApprox(intraExpected));
+    ASSERT_TRUE(motifEnergies.second.E.isApprox(interExpected));
 
-    ASSERT_EQ(motifEnergies.first.sum()+motifEnergies.second.sum(), totalEnergy);
+    ASSERT_EQ(motifEnergies.first.E.sum()+motifEnergies.second.E.sum()/2, totalEnergy);
 };
 
 TEST_F(AEnergyPartitioningTest, HydrogenMotif){
@@ -124,19 +144,19 @@ TEST_F(AEnergyPartitioningTest, HydrogenMotif){
 
     Motifs motifs(A, mol);
 
-    ASSERT_THAT(motifs.motifs_[0].electronIndices(), ElementsAre(0, 1));
-    ASSERT_THAT(motifs.motifs_[0].atomIndices(), ElementsAre(0));
+    ASSERT_THAT(motifs.motifs_[0].electrons_.indices(), ElementsAre(0, 1));
+    ASSERT_THAT(motifs.motifs_[0].nuclei_.indices(), ElementsAre(0));
     ASSERT_EQ(motifs.motifs_[0].type(), MotifType::Core);
 
-    ASSERT_THAT(motifs.motifs_[1].electronIndices(), ElementsAre());
-    ASSERT_THAT(motifs.motifs_[1].atomIndices(), ElementsAre(1));
+    ASSERT_THAT(motifs.motifs_[1].electrons_.indices(), ElementsAre());
+    ASSERT_THAT(motifs.motifs_[1].nuclei_.indices(), ElementsAre(1));
     ASSERT_EQ(motifs.motifs_[1].type(), MotifType::Core);
 
-    ASSERT_THAT(motifs.motifs_[2].electronIndices(), ElementsAre(2, 3));
-    ASSERT_THAT(motifs.motifs_[2].atomIndices(), ElementsAre());
+    ASSERT_THAT(motifs.motifs_[2].electrons_.indices(), ElementsAre(2, 3));
+    ASSERT_THAT(motifs.motifs_[2].nuclei_.indices(), ElementsAre());
     ASSERT_EQ(motifs.motifs_[2].type(), MotifType::Valence);
 
-    auto motifEnergies = EnergyPartitioning::MotifBased::calculateInteractionEnergies(motifs, Te, Vee, Ven, Vnn);
+    auto motifEnergies = EnergyPartitioning::MolecularSelectionBased::calculateInteractionEnergies(motifs, Te, Vee, Ven, Vnn);
 
     Eigen::VectorXd intraExpected = Eigen::VectorXd::Zero(motifs.motifs_.size());
     intraExpected << 201.02, 0.00, 1.02;
@@ -144,12 +164,12 @@ TEST_F(AEnergyPartitioningTest, HydrogenMotif){
     Eigen::MatrixXd interExpected = Eigen::MatrixXd::Zero(motifs.motifs_.size(), motifs.motifs_.size());
     interExpected <<
     0, 10200, 204,
-    0, 0, 200,
-    0,0,0;
+    10200, 0, 200,
+    204, 200,0;
 
-    ASSERT_TRUE(motifEnergies.first.isApprox(intraExpected));
-    ASSERT_TRUE(motifEnergies.second.isApprox(interExpected));
+    ASSERT_TRUE(motifEnergies.first.E.isApprox(intraExpected));
+    ASSERT_TRUE(motifEnergies.second.E.isApprox(interExpected));
 
-    ASSERT_EQ(motifEnergies.first.sum()+motifEnergies.second.sum(), totalEnergy);
+    ASSERT_EQ(motifEnergies.first.E.sum()+motifEnergies.second.E.sum()/2, totalEnergy);
 };
 

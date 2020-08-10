@@ -17,8 +17,7 @@
 
 #include "TotalWeightDifferenceAnalyzer.h"
 #include <GraphAnalysis.h>
-#include <GroupAnalysis.h>
-#include <ValueSorter.h>
+#include <ClusterAnalysis.h>
 #include <spdlog/spdlog.h>
 #include <algorithm>
 #include <MapUtils.h>
@@ -44,22 +43,22 @@ YAML_SETTINGS_DEFINITION(Settings::TotalWeightDifferenceAnalyzer)
 
 Settings::TotalWeightDifferenceAnalyzer TotalWeightDifferenceAnalyzer::settings = Settings::TotalWeightDifferenceAnalyzer();
 
-void TotalWeightDifferenceAnalyzer::analyze(const Group& group) {
+void TotalWeightDifferenceAnalyzer::analyze(const Cluster& cluster) {
     unsigned nIncrements = settings.increments();
     double h = settings.radiusIncrement();
     auto startRadius = settings.startRadius();
 
     // prepare data needed for the analysis
-    std::size_t totalNumberOfMaxima = group.numberOfLeaves();
-    auto mat = GroupAnalysis::calculateBestMatchDistanceMatrix(group);
+    std::size_t totalNumberOfMaxima = cluster.numberOfLeaves();
+    auto mat = ClusterAnalysis::calculateBestMatchDistanceMatrix(cluster);
     totalWeightDifferences_.clear();
 
 
-    // get weight of the clusters in group and put it in prev weights
-    std::vector<std::set<Eigen::Index>> groupIdsListsOfPreviousRadiusClustering;
+    // get weight of the clusters in cluster and put it in prev weights
+    std::vector<std::set<Eigen::Index>> clusterIdsListsOfPreviousRadiusClustering;
     std::vector<double> weightsOfPreviousRadiusClustering;
-    for (const auto & [clusterGroupId, cluster] : enumerate(group)) {
-        groupIdsListsOfPreviousRadiusClustering.emplace_back(std::set<Eigen::Index>({static_cast<Eigen::Index>(clusterGroupId)}));
+    for (const auto & [clusterClusterId, cluster] : enumerate(cluster)) {
+        clusterIdsListsOfPreviousRadiusClustering.emplace_back(std::set<Eigen::Index>({static_cast<Eigen::Index>(clusterClusterId)}));
         weightsOfPreviousRadiusClustering.emplace_back(static_cast<double>(cluster.numberOfLeaves()) / static_cast<double>(totalNumberOfMaxima));
     }
 
@@ -67,20 +66,20 @@ void TotalWeightDifferenceAnalyzer::analyze(const Group& group) {
         double radius = startRadius + i*h;
 
         auto adjacencyMatrix = GraphAnalysis::lowerOrEqualFilter(mat, radius);
-        auto groupIdsListsOfCurrentRadiusClustering = GraphAnalysis::findGraphClusters(adjacencyMatrix);
-        auto prevToCurrClusterIdMap = GraphAnalysis::findMergeMap(groupIdsListsOfPreviousRadiusClustering, groupIdsListsOfCurrentRadiusClustering);
-        assert(prevToCurrClusterIdMap.size() == groupIdsListsOfPreviousRadiusClustering.size());
+        auto clusterIdsListsOfCurrentRadiusClustering = GraphAnalysis::findGraphClusters(adjacencyMatrix);
+        auto prevToCurrClusterIdMap = GraphAnalysis::findMergeMap(clusterIdsListsOfPreviousRadiusClustering, clusterIdsListsOfCurrentRadiusClustering);
+        assert(prevToCurrClusterIdMap.size() == clusterIdsListsOfPreviousRadiusClustering.size());
 
         double totalWeightDifference = 0.0;
         std::vector<double> weightsOfCurrentRadiusClustering;
 
         // iterate over clusters found for the specified radius
-        for (const auto [currentClusterId, groupIdsListOfCurrentCluster] : enumerate(groupIdsListsOfCurrentRadiusClustering)) {
+        for (const auto [currentClusterId, clusterIdsListOfCurrentCluster] : enumerate(clusterIdsListsOfCurrentRadiusClustering)) {
 
-            // calculate weight of a cluster of connected group ids
+            // calculate weight of a cluster of connected cluster ids
             double currentClusterWeight = 0;
-            for(auto groupId : groupIdsListOfCurrentCluster)
-                currentClusterWeight += double(group[groupId].numberOfLeaves());
+            for(auto clusterId : clusterIdsListOfCurrentCluster)
+                currentClusterWeight += double(cluster[clusterId].numberOfLeaves());
 
             currentClusterWeight /= double(totalNumberOfMaxima);
             weightsOfCurrentRadiusClustering.emplace_back(currentClusterWeight);
@@ -91,7 +90,7 @@ void TotalWeightDifferenceAnalyzer::analyze(const Group& group) {
 
             assert(clusterIdsOfPreviousClustersMergedIntoCurrentCluster.size() > 0
             && "Every current cluster should have a merge from a previous one.");
-            assert(clusterIdsOfPreviousClustersMergedIntoCurrentCluster.size() <= groupIdsListOfCurrentCluster.size()
+            assert(clusterIdsOfPreviousClustersMergedIntoCurrentCluster.size() <= clusterIdsListOfCurrentCluster.size()
             && "Maximally, all previous clusters can be merged into the current one.");
 
             // find clusterId of previous cluster with the largest weight
@@ -116,7 +115,7 @@ void TotalWeightDifferenceAnalyzer::analyze(const Group& group) {
         }
         totalWeightDifferences_.emplace_back(totalWeightDifference);
         weightsOfPreviousRadiusClustering = weightsOfCurrentRadiusClustering;
-        groupIdsListsOfPreviousRadiusClustering = groupIdsListsOfCurrentRadiusClustering;
+        clusterIdsListsOfPreviousRadiusClustering = clusterIdsListsOfCurrentRadiusClustering;
     }
 }
 

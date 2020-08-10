@@ -18,6 +18,7 @@
 #include <gmock/gmock.h>
 #include <Reference.h>
 #include <Sample.h>
+#include <TestMolecules.h>
 #include <PreClusterer.h>
 #include <IdentityClusterer.h>
 #include <algorithm>
@@ -27,27 +28,31 @@ using namespace testing;
 
 class ADistanceClustererTest : public ::testing::Test {
 public:
-    Group maxima;
+    Cluster maxima;
     std::vector<Sample> samples;
     Eigen::VectorXd ekin;
+    AtomsVector atoms;
 
     void SetUp() override {
         spdlog::set_level(spdlog::level::off);
         IdentityClusterer::settings.radius = 1e-4; // prevent assert
+
+        atoms = TestMolecules::H2::ElectronsInCores::normal.atoms();
+
 
         ekin.resize(2);
         ekin[0] = 0;
         ekin[1] = 0;
 
         maxima = {
-               Group({1.00, ElectronsVector({{Spin::alpha,{0,0,1.00}},{Spin::beta,{0,0,0}}}), 0}),
-               Group({1.01, ElectronsVector({{Spin::alpha,{0,0,0}},{Spin::beta,{0,0,1.01}}}), 1}),
-               Group({1.02, ElectronsVector({{Spin::alpha,{0,0,1.02}},{Spin::beta,{0,0,0}}}), 2}),
-               Group({1.03, ElectronsVector({{Spin::alpha,{0,0,0}},{Spin::beta,{0,0,1.03}}}), 3}),
-               Group({1.10, ElectronsVector({{Spin::alpha,{0,0,1.10}},{Spin::beta,{0,0,0}}}), 4}),
-               Group({1.11, ElectronsVector({{Spin::alpha,{0,0,1.11}},{Spin::beta,{0,0,0}}}), 5}),
-               Group({1.12, ElectronsVector({{Spin::alpha,{0,0,1.12}},{Spin::beta,{0,0,0}}}), 6}),
-               Group({1.13, ElectronsVector({{Spin::alpha,{0,0,1.13}},{Spin::beta,{0,0,0}}}), 7})
+               Cluster({atoms, 1.00, ElectronsVector({{Spin::alpha,{0,0,1.00}},{Spin::beta,{0,0,0}}}), 0}),
+               Cluster({atoms, 1.01, ElectronsVector({{Spin::alpha,{0,0,0}},{Spin::beta,{0,0,1.01}}}), 1}),
+               Cluster({atoms, 1.02, ElectronsVector({{Spin::alpha,{0,0,1.02}},{Spin::beta,{0,0,0}}}), 2}),
+               Cluster({atoms, 1.03, ElectronsVector({{Spin::alpha,{0,0,0}},{Spin::beta,{0,0,1.03}}}), 3}),
+               Cluster({atoms, 1.10, ElectronsVector({{Spin::alpha,{0,0,1.10}},{Spin::beta,{0,0,0}}}), 4}),
+               Cluster({atoms, 1.11, ElectronsVector({{Spin::alpha,{0,0,1.11}},{Spin::beta,{0,0,0}}}), 5}),
+               Cluster({atoms, 1.12, ElectronsVector({{Spin::alpha,{0,0,1.12}},{Spin::beta,{0,0,0}}}), 6}),
+               Cluster({atoms, 1.13, ElectronsVector({{Spin::alpha,{0,0,1.13}},{Spin::beta,{0,0,0}}}), 7})
         };
         samples = {
                 {ElectronsVector({{Spin::alpha,{0,0,1.00}},{Spin::beta,{0,0,0}}}), ekin},
@@ -63,9 +68,9 @@ public:
 };
 
 TEST_F(ADistanceClustererTest, OneList) {
-    DistanceClusterer globalSimilaritySorter(samples);
-    DistanceClusterer::settings.radius = 1;
-    DistanceClusterer::settings.valueIncrement = 1;
+    PreClusterer globalSimilaritySorter(samples);
+    PreClusterer::settings.radius = 1;
+    PreClusterer::settings.valueIncrement = 1;
     globalSimilaritySorter.cluster(maxima);
 
     ASSERT_EQ(maxima.size(), 1);
@@ -96,9 +101,9 @@ TEST_F(ADistanceClustererTest, OneList) {
 
 
 TEST_F(ADistanceClustererTest, TwoLists) {
-    DistanceClusterer globalSimilaritySorter(samples);
-    DistanceClusterer::settings.radius = 0.1;
-    DistanceClusterer::settings.valueIncrement = 1;
+    PreClusterer globalSimilaritySorter(samples);
+    PreClusterer::settings.radius = 0.1;
+    PreClusterer::settings.valueIncrement = 1;
     globalSimilaritySorter.cluster(maxima);
 
     ASSERT_EQ(maxima.size(), 2);
@@ -133,9 +138,9 @@ TEST_F(ADistanceClustererTest, TwoLists) {
 }
 
 TEST_F(ADistanceClustererTest, DISABLED_TwoListsIncrementBorderCase) {
-    DistanceClusterer globalSimilaritySorter(samples);
-    DistanceClusterer::settings.radius = 0.02;
-    DistanceClusterer::settings.valueIncrement = 1;
+    PreClusterer globalSimilaritySorter(samples);
+    PreClusterer::settings.radius = 0.02;
+    PreClusterer::settings.valueIncrement = 1;
     globalSimilaritySorter.cluster(maxima);
 
     ASSERT_EQ(maxima.size(), 4);

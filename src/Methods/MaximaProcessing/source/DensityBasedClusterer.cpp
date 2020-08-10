@@ -27,12 +27,12 @@ namespace Settings {
     : ISettings(VARNAME(DensityBasedClusterer)) {
         radius.onChange_.connect(
                 [&](double value) {
-                    if(value < ::DistanceClusterer::settings.radius())
+                    if(value < ::PreClusterer::settings.radius())
                         throw std::invalid_argument(
                                 "The " + radius.name() + "=" + std::to_string(radius())
-                                + " is smaller than the " + ::DistanceClusterer::settings.name()
-                                + "::"  + ::DistanceClusterer::settings.radius.name()
-                                + " of " + std::to_string(::DistanceClusterer::settings.radius()) + ".");
+                                + " is smaller than the " + ::PreClusterer::settings.name()
+                                + "::" + ::PreClusterer::settings.radius.name()
+                                + " of " + std::to_string(::PreClusterer::settings.radius()) + ".");
                 });
         minimalClusterSize.onChange_.connect(
                 [&](size_t value) {
@@ -71,13 +71,13 @@ Settings::DensityBasedClusterer DensityBasedClusterer::settings = Settings::Dens
 DensityBasedClusterer::DensityBasedClusterer(std::vector<Sample> &samples)
         : IClusterer(samples) {};
 
-double DensityBasedClusterer::wrapper(const Group &g1, const Group &g2) {
+double DensityBasedClusterer::wrapper(const Cluster &g1, const Cluster &g2) {
     return BestMatch::Distance::compare<Eigen::Infinity, 2>(
             g1.representative()->maximum().positionsVector(),
             g2.representative()->maximum().positionsVector()).metric;
 };
 
-double DensityBasedClusterer::wrapperLocal(const Group &g1, const Group &g2) {
+double DensityBasedClusterer::wrapperLocal(const Cluster &g1, const Cluster &g2) {
 
     auto g1ElectronsCount = g1.getSelectedElectronsCount();
     auto g2ElectronsCount = g2.getSelectedElectronsCount();
@@ -91,8 +91,8 @@ double DensityBasedClusterer::wrapperLocal(const Group &g1, const Group &g2) {
     return std::numeric_limits<double>::max();
 };
 
-void DensityBasedClusterer::cluster(Group& group) {
-    assert(!group.empty() && "The group cannot be empty.");
+void DensityBasedClusterer::cluster(Cluster& cluster) {
+    assert(!cluster.empty() && "The cluster cannot be empty.");
 
     auto localQ = settings.local();
     auto similarityRadius = settings.radius();
@@ -100,80 +100,80 @@ void DensityBasedClusterer::cluster(Group& group) {
 
     ClusterLabels result;
     if(localQ) {
-        group.permuteRelevantElectronsToFront(samples_);
-        DensityBasedScan<double, Group, DensityBasedClusterer::wrapperLocal> dbscan(group);
+        cluster.permuteRelevantElectronsToFront(samples_);
+        DensityBasedScan<double, Cluster, DensityBasedClusterer::wrapperLocal> dbscan(cluster);
         result = dbscan.findClusters(similarityRadius, minPts);
     } else {
-        DensityBasedScan<double, Group, DensityBasedClusterer::wrapper> dbscan(group);
+        DensityBasedScan<double, Cluster, DensityBasedClusterer::wrapper> dbscan(cluster);
         result = dbscan.findClusters(similarityRadius, minPts);
     }
 
-    Group supergroup(static_cast<Group::size_type>(result.numberOfClusters));
+    Cluster supercluster(static_cast<Cluster::size_type>(result.numberOfClusters));
 
     for (int i = 0; i < result.numberOfClusters; ++i)
-        for (auto  [j, g] : enumerate(group))
+        for (auto  [j, g] : enumerate(cluster))
             if (result.labels[j] == i)
-                supergroup[i].emplace_back(std::move(g));
+                supercluster[i].emplace_back(std::move(g));
 
-    orderByBestMatchDistance(supergroup, similarityRadius, localQ);
+    orderByBestMatchDistance(supercluster, similarityRadius, localQ);
 
-    group = supergroup;
+    cluster = supercluster;
 
     // sort by function value before leaving
-    group.sortAll();
+    cluster.sortAll();
 }
 
-void DensityBasedClusterer::orderByBestMatchDistance(Group &supergroup, double threshold, bool localQ) const {
-    for (auto &subgroup : supergroup) {
-        sort(subgroup.begin(), subgroup.end());
+void DensityBasedClusterer::orderByBestMatchDistance(Cluster &supercluster, double threshold, bool localQ) const {
+    for (auto &subcluster : supercluster) {
+        sort(subcluster.begin(), subcluster.end());
 
-        // starting sortedGroup with one active group, which is erased from subgroup
-        Group sortedGroup({*subgroup.begin()});
-        subgroup.erase(subgroup.begin());
-        long activeGroups = 1;
+        // starting sortedCluster with one active cluster, which is erased from subcluster
+        Cluster sortedCluster({*subcluster.begin()});
+        subcluster.erase(subcluster.begin());
+        long activeClusters = 1;
 
-        while (!subgroup.empty()){
-            // setting newGroups empty again
-            Group newGroups;
+        while (!subcluster.empty()){
+            // setting newClusters empty again
+            Cluster newClusters;
 
-            // iterating over all active groups (at the end of sortedGroup)
-            for (auto i = sortedGroup.end() - activeGroups; i != sortedGroup.end(); ++i){
-                // iterating over all groups remaining in the unsorted subgroup
-                for (auto j = subgroup.begin(); j != subgroup.end(); ++j) {
+            // iterating over all active clusters (at the end of sortedCluster)
+            for (auto i = sortedCluster.end() - activeClusters; i != sortedCluster.end(); ++i){
+                // iterating over all clusters remaining in the unsorted subcluster
+                for (auto j = subcluster.begin(); j != subcluster.end(); ++j) {
                     bool isSimilarQ = false;
 
                     if(localQ) {
                         if (i->getSelectedElectronsCount() == j->getSelectedElectronsCount())
-                            isSimilarQ = compareLocal(threshold, subgroup, newGroups, i, j);
+                            isSimilarQ = compareLocal(threshold, subcluster, newClusters, i, j);
                     } else {
-                        isSimilarQ = compare(threshold, subgroup, newGroups, i, j);
+                        isSimilarQ = compare(threshold, subcluster, newClusters, i, j);
                     }
 
                     if(isSimilarQ) {
-                        // moving j from subgroup to newGroups
-                        newGroups.emplace_back(*j);
-                        j = subgroup.erase(j);
+                        // moving j from subcluster to newClusters
+                        newClusters.emplace_back(*j);
+                        j = subcluster.erase(j);
 
                         // the iterator has to be set back by one because the j element was erased and
-                        // ++j of the for loop would otherwise skip one group of subgroup
+                        // ++j of the for loop would otherwise skip one cluster of subcluster
                         --j;
                     }
                 }
             }
-            // moving all groups from newGroups to sortedGroup()
-            activeGroups = newGroups.size();
-            for (auto &newGroup : newGroups) {
-                sortedGroup.emplace_back(newGroup);
+            // moving all clusters from newClusters to sortedCluster()
+            activeClusters = newClusters.size();
+            for (auto &newCluster : newClusters) {
+                sortedCluster.emplace_back(newCluster);
             };
         };
 
-        subgroup = sortedGroup;
+        subcluster = sortedCluster;
     }
 }
 
-bool DensityBasedClusterer::compare(double threshold, Group &subgroup, Group &newGroups,
-        const std::vector<Group>::iterator &i,
-        std::vector<Group>::iterator &j) const {
+bool DensityBasedClusterer::compare(double threshold, Cluster &subcluster, Cluster &newClusters,
+        const std::vector<Cluster>::iterator &i,
+        std::vector<Cluster>::iterator &j) const {
     bool isSimilarQ = false;
 
     auto[norm, perm] = BestMatch::Distance::compare<Eigen::Infinity, 2>(
@@ -188,10 +188,10 @@ bool DensityBasedClusterer::compare(double threshold, Group &subgroup, Group &ne
     return isSimilarQ;
 }
 
-bool DensityBasedClusterer::compareLocal(double threshold, Group &subgroup, Group &newGroups,
-                                         const std::vector<Group>::iterator &i,
-                                         std::vector<Group>::iterator &j) const {
-    auto electronsCount = subgroup.representative()->maximum().numberOfEntities();
+bool DensityBasedClusterer::compareLocal(double threshold, Cluster &subcluster, Cluster &newClusters,
+                                         const std::vector<Cluster>::iterator &i,
+                                         std::vector<Cluster>::iterator &j) const {
+    auto electronsCount = subcluster.representative()->maximum().numberOfEntities();
     auto iElectronsCount = i->getSelectedElectronsCount();
     auto jElectronsCount = j->getSelectedElectronsCount();
 

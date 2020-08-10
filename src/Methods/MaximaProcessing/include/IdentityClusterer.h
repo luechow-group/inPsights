@@ -40,20 +40,20 @@ public:
     static Settings::IdentityClusterer settings;
 
     IdentityClusterer(std::vector<Sample> &samples);
-    void cluster(Group& group) override;
+    void cluster(Cluster& group) override;
 
 private:
-    void subLoop(Group& group,
-            Group::iterator &beginIt,
-            Group::iterator &it,
-            Group::iterator &endIt,
+    void subLoop(Cluster& group,
+            Cluster::iterator &beginIt,
+            Cluster::iterator &it,
+            Cluster::iterator &endIt,
             double distThresh,
             double valueIncrement);
 
     // TODO This method should be located inside of a reference container class
-    void addReference(Group& group,
-            const Group::iterator &beginIt,
-            Group::iterator &it,
+    void addReference(Cluster& group,
+            const Cluster::iterator &beginIt,
+            Cluster::iterator &it,
             const Eigen::PermutationMatrix<Eigen::Dynamic> &bestMatch) const;
 };
 

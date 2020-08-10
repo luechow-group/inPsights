@@ -55,11 +55,13 @@ set(HEADER_FILES
         include/Combinatorics.h
         include/Logo.h
         include/IPosition.h
-        include/NearestElectrons.h
+        include/ParticleSelection.h
         include/SpinPairClassification.h
         include/CameraSettings.h
         include/ErrorHandling.h
         include/MapUtils.h
+        include/ParticleIndices.h
+        include/MolecularSelection.h
         )
 
 
@@ -86,10 +88,13 @@ set(SOURCE_FILES
         source/ISettings.cpp
         source/Combinatorics.cpp
         source/IPosition.cpp
-        source/NearestElectrons.cpp
+        source/ParticleSelection.cpp
         source/SpinPairClassification.cpp
         source/CameraSettings.cpp
         source/ErrorHandling.cpp
+        source/Metrics.cpp
+        source/ParticleIndices.cpp
+        source/MolecularSelection.cpp
         )
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES})

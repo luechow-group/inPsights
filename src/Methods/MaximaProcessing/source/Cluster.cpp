@@ -15,84 +15,84 @@
  * along with inPsights. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <Group.h>
-#include <NearestElectrons.h>
+#include <Cluster.h>
+#include <ParticleSelection.h>
 #include <BestMatch.h>
 #include <Reference.h>
 #include <Eigen/Core>
 
-std::string ToString::groupToString(const Group &group) {
+std::string ToString::clusterToString(const Cluster &cluster) {
     std::stringstream ss;
-    ss << group;
+    ss << cluster;
     return ss.str();
 }
 
-Group::Group()
-        : std::vector<Group>(0),
+Cluster::Cluster()
+        : std::vector<Cluster>(0),
           representative_(nullptr),
           selectedElectronsCount_(0){
 }
 
-Group::Group(Reference reference)
-        : std::vector<Group>(0),
+Cluster::Cluster(Reference reference)
+        : std::vector<Cluster>(0),
         representative_(std::make_shared<Reference>(std::move(reference))),
         selectedElectronsCount_(representative_->maximum().numberOfEntities()){
 }
 
-Group::Group(std::vector<Group>::size_type size)
-        : std::vector<Group>(size),
+Cluster::Cluster(std::vector<Cluster>::size_type size)
+        : std::vector<Cluster>(size),
         representative_(nullptr),
         selectedElectronsCount_(0){
 }
 
-Group::Group(std::initializer_list<Group> group)
-        : std::vector<Group>(group),
+Cluster::Cluster(std::initializer_list<Cluster> cluster)
+        : std::vector<Cluster>(cluster),
         representative_( empty()? nullptr : front().representative()),
-        selectedElectronsCount_(group.begin()->getSelectedElectronsCount()){
+        selectedElectronsCount_(cluster.begin()->getSelectedElectronsCount()){
 }
 
-// Sort only this group and update the representative structure.
-void Group::sort() {
+// Sort only this cluster and update the representative structure.
+void Cluster::sort() {
     if(!isLeaf()) {
         std::sort(begin(), end());
         updateRepresentative();
     }
 }
 
-/* Sort all subgroups representative Reference objects by recursing down to the leaf level
+/* Sort all subclusters representative Reference objects by recursing down to the leaf level
  * and update all representative structures */
-void Group::sortAll() {
+void Cluster::sortAll() {
 
-    // sort all subgroups
+    // sort all subclusters
     if(!isLeaf()) {
-        for (auto &subgroup : *this)
-            subgroup.sortAll();
+        for (auto &subcluster : *this)
+            subcluster.sortAll();
     }
 
-    // sort this group
+    // sort this cluster
     sort();
 }
 
-void Group::updateRepresentative() {
+void Cluster::updateRepresentative() {
     representative_ = front().representative();
 }
 
-bool Group::isLeaf() const {
+bool Cluster::isLeaf() const {
     return empty();
 }
 
-Group::size_type Group::numberOfLeaves() const {
+Cluster::size_type Cluster::numberOfLeaves() const {
     if(isLeaf()) {
         return 1;
     } else {
-        Group::size_type numberOfLeaves = 0;
+        Cluster::size_type numberOfLeaves = 0;
         for (auto &i : *this)
             numberOfLeaves += i.numberOfLeaves();
         return numberOfLeaves;
     }
 }
 
-void Group::permuteAll(const Eigen::PermutationMatrix<Eigen::Dynamic> &perm, std::vector<Sample>& samples) {
+void Cluster::permuteAll(const Eigen::PermutationMatrix<Eigen::Dynamic> &perm, std::vector<Sample>& samples) {
     if(isLeaf()) {
         representative()->permute(perm, samples);
     } else {
@@ -101,29 +101,21 @@ void Group::permuteAll(const Eigen::PermutationMatrix<Eigen::Dynamic> &perm, std
     }
 }
 
-Group::AveragedPositionsVector Group::averagedMaximumPositionsVector() const {
-    if (isLeaf())
-        return {representative()->maximum().positionsVector(), 1};
-    else {
-        unsigned weight = 0;
-        Eigen::VectorXd average = Eigen::VectorXd::Zero(
-                representative()->maximum().numberOfEntities()
-                *representative()->maximum().positionsVector().entityLength());
-        for (const auto &subgroup : *this) {
-            auto subgroupAverage = subgroup.averagedMaximumPositionsVector();
-            average += double(subgroupAverage.weight)* subgroupAverage.positions.asEigenVector();
-            weight += subgroupAverage.weight;
-        }
-        average /= weight;
-        return {PositionsVector(average), weight};
+void Cluster::permuteAll(const MolecularGeometry::Permutation &molecularPerm, std::vector<Sample> &samples) {
+    if(isLeaf()) {
+        representative()->permute(molecularPerm, samples);
+    } else {
+        for (auto &i : *this)
+            i.permuteAll(molecularPerm, samples);
     }
 }
 
-ElectronsVector Group::electronsVectorFromAveragedPositionsVector(const AveragedPositionsVector & averagedPositionsVector) const {
+
+ElectronsVector Cluster::electronsVectorFromAveragedPositionsVector(const AveragedPositionsVector & averagedPositionsVector) const {
     return {averagedPositionsVector.positions, representative()->maximum().typesVector()};
 }
 
-Group::AveragedPositionsVector Group::averagedSamplePositionsVector(const std::vector<Sample>& samples) const {
+Cluster::AveragedPositionsVector Cluster::averagedSamplePositionsVector(const std::vector<Sample>& samples) const {
     auto sampleIds = allSampleIds();
     
     Eigen::VectorXd average = Eigen::VectorXd::Zero(
@@ -137,22 +129,22 @@ Group::AveragedPositionsVector Group::averagedSamplePositionsVector(const std::v
     return {PositionsVector(average), static_cast<unsigned>(sampleIds.size())};
 }
 
-std::shared_ptr<Reference> Group::representative() {
+std::shared_ptr<Reference> Cluster::representative() {
     if (!isLeaf())
         return front().representative();
     else
         return representative_;
 }
 
-std::shared_ptr<const Reference> Group::representative() const {
+std::shared_ptr<const Reference> Cluster::representative() const {
     return std::const_pointer_cast<const Reference>(representative_);
 }
 
-bool Group::operator<(const Group &other) const {
-    return *representative().get() < *other.representative();
+bool Cluster::operator<(const Cluster &other) const {
+    return *representative() < *other.representative();
 }
 
-Group &Group::operator+=(const Group &other) {
+Cluster &Cluster::operator+=(const Cluster &other) {
 
     if(isLeaf() && representative() != nullptr)
         emplace_back(*representative());
@@ -166,23 +158,23 @@ Group &Group::operator+=(const Group &other) {
     return *this;
 }
 
-void Group::makeSubgroup(std::vector<Group::iterator> its) {
+void Cluster::makeSubcluster(std::vector<Cluster::iterator> its) {
     // sort the iterator list
     std::sort(its.begin(), its.end());
 
-    Group subgroup;
+    Cluster subcluster;
     for (auto it : its)
-        subgroup.emplace_back(*it);
+        subcluster.emplace_back(*it);
 
     // reverse erase the iterators
     for(auto it = its.rbegin(); it != its.rend(); it++)
         erase(*it);
 
-    emplace_back(subgroup);
+    emplace_back(subcluster);
     updateRepresentative();
 }
 
-std::vector<size_t> Group::allSampleIds() const {
+std::vector<size_t> Cluster::allSampleIds() const {
     if(isLeaf()) {
         if(representative())
             return representative()->sampleIds();
@@ -190,15 +182,15 @@ std::vector<size_t> Group::allSampleIds() const {
             return {};
     } else {
         std::vector<size_t> ids;
-        for (const auto & subgroup : *this) {
-            auto subgroupSampleIds = subgroup.allSampleIds();
-            ids.insert(ids.end(), subgroupSampleIds.begin(), subgroupSampleIds.end());
+        for (const auto & subcluster : *this) {
+            auto subclusterSampleIds = subcluster.allSampleIds();
+            ids.insert(ids.end(), subclusterSampleIds.begin(), subclusterSampleIds.end());
         }
         return ids;
     }
 }
 
-std::ostream &operator<<(std::ostream &os, const Group &g) {
+std::ostream &operator<<(std::ostream &os, const Cluster &g) {
     os << "{";
     if(g.isLeaf()) {
         auto ids = g.allSampleIds();
@@ -217,26 +209,26 @@ std::ostream &operator<<(std::ostream &os, const Group &g) {
     return os;
 }
 
-long Group::getSelectedElectronsCount() const{
+long Cluster::getSelectedElectronsCount() const{
     return selectedElectronsCount_;
 };
 
-void Group::setSelectedElectronsCount(const long &count){
+void Cluster::setSelectedElectronsCount(const long &count){
     selectedElectronsCount_ = count;
-    for(auto & subgroup : (*this))
-        subgroup.setSelectedElectronsCount(count);
+    for(auto & subcluster : (*this))
+        subcluster.setSelectedElectronsCount(count);
 };
 
-void Group::permuteRelevantElectronsToFront(std::vector<Sample> & samples){
+void Cluster::permuteRelevantElectronsToFront(std::vector<Sample> & samples){
     Eigen::PermutationMatrix<Eigen::Dynamic> permutation;
     auto electronsNumber = (*this).representative()->maximum().numberOfEntities();
 
-    for (auto & subGroup : *this) {
-        auto subIndices = NearestElectrons::getRelevantIndices(subGroup.representative()->maximum());
+    for (auto & subCluster : *this) {
+        auto subIndices = ParticleSelection::getRelevantIndices(subCluster.representative()->maximum());
 
         // permute all relevant electrons to the front
-        subGroup.setSelectedElectronsCount(subIndices.size());
+        subCluster.setSelectedElectronsCount(subIndices.size());
         permutation = BestMatch::getPermutationToFront(subIndices, electronsNumber);
-        subGroup.permuteAll(permutation, samples);
+        subCluster.permuteAll(permutation, samples);
     }
 }

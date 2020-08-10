@@ -16,14 +16,14 @@
  */
 
 #include <RawDataReader.h>
-#include <Group.h>
+#include <Cluster.h>
 #include <ElementInfo.h>
 #include <IdentityClusterer.h>
 #include <PreClusterer.h>
 #include <DensityBasedClusterer.h>
 #include <SOAPClusterer.h>
 #include <ReferencePositionsClusterer.h>
-#include <NearestElectrons.h>
+#include <ParticleSelection.h>
 #include <ClusterNumberAnalyzer.h>
 #include <TotalWeightDifferenceAnalyzer.h>
 #include <MaximaProcessor.h>
@@ -39,6 +39,7 @@
 #include <fstream>
 #include <IPosition.h>
 #include <Metrics.h>
+#include <MolecularSelection.h>
 
 using namespace YAML;
 
@@ -55,7 +56,7 @@ void validateClusteringSettings(const YAML::Node &inputYaml) {
                 break;
             }
             case IBlock::BlockType::DistanceClusterer: {
-                DistanceClusterer::settings = Settings::PreClusterer(clusteringNode);
+                PreClusterer::settings = Settings::PreClusterer(clusteringNode);
                 break;
             }
             case IBlock::BlockType::DensityBasedClusterer: {
@@ -160,7 +161,7 @@ int main(int argc, char *argv[]) {
             MaximaProcessing::settings.binaryFileBasename = inputFilename.substr(0, idx);
     }
         // Read maxima and samples
-    Group maxima;
+    Cluster maxima;
     std::vector<Sample> samples;
     RawDataReader reader(maxima, samples);
 
@@ -206,11 +207,11 @@ int main(int argc, char *argv[]) {
                 break;
             }
             case IBlock::BlockType::DistanceClusterer: {
-                auto &settings = DistanceClusterer::settings;
+                auto &settings = PreClusterer::settings;
 
                 settings = Settings::PreClusterer(node.second);
 
-                DistanceClusterer distanceClusterer(samples);
+                PreClusterer distanceClusterer(samples);
                 if (!node.second[settings.valueIncrement.name()])
                     settings.valueIncrement = valueStandardError * 1e-2;
                 distanceClusterer.cluster(maxima);
@@ -226,14 +227,14 @@ int main(int argc, char *argv[]) {
                 if(settings.local()) {
                     auto nearestElectronSettings = node.second[VARNAME(NearestElectrons)];
                     if (nearestElectronSettings)
-                        NearestElectrons::settings = Settings::NearestElectrons(nearestElectronSettings, atoms);
+                        ParticleSelection::settings = Settings::ParticleSelection(nearestElectronSettings, atoms);
                 }
 
                 DensityBasedClusterer densityBasedClusterer(samples);
                 densityBasedClusterer.cluster(maxima);
 
                 if(settings.local()) {
-                    NearestElectrons::settings.appendToNode(usedClusteringSettings); // TODO FIX USED SETTINGS APPEND
+                    ParticleSelection::settings.appendToNode(usedClusteringSettings); // TODO FIX USED SETTINGS APPEND
                 }
 
                 settings.appendToNode(usedClusteringSettings);
@@ -247,7 +248,7 @@ int main(int argc, char *argv[]) {
                 if(settings.local()) {
                     auto nearestElectronSettings = node.second[VARNAME(NearestElectrons)];
                     if (nearestElectronSettings)
-                        NearestElectrons::settings = Settings::NearestElectrons(nearestElectronSettings, atoms);
+                        ParticleSelection::settings = Settings::ParticleSelection(nearestElectronSettings, atoms);
                 }
                 ReferencePositionsClusterer ReferencePositionsClusterer(samples);
                 ReferencePositionsClusterer.cluster(maxima);
@@ -255,7 +256,7 @@ int main(int argc, char *argv[]) {
                 settings.appendToNode(usedClusteringSettings);
 
                 if(settings.local()) {
-                    NearestElectrons::settings.appendToNode(usedClusteringSettings); // TODO FIX USED SETTINGS APPEND
+                    ParticleSelection::settings.appendToNode(usedClusteringSettings); // TODO FIX USED SETTINGS APPEND
                 }
 
                 break;
@@ -370,7 +371,28 @@ int main(int argc, char *argv[]) {
         }
     }
 
-    maximaProcessor.calculateStatistics(maxima, nucleiMergeLists);
+    std::vector<DynamicMolecularSelection> selections;
+    if(inputYaml["EnergySelections"]) {
+        auto energySelectionNode = inputYaml["EnergySelections"];
+        for (YAML::iterator it = energySelectionNode.begin(); it != energySelectionNode.end(); ++it) {
+            const YAML::Node &node = *it;
+
+            auto nucleiIndices = node["Nuclei"].as<ParticleIndices>();
+            auto nearestElectronsSettings = Settings::ParticleSelection(node["NearestElectrons"], atoms);
+
+            selections.emplace_back(DynamicMolecularSelection(nearestElectronsSettings, nucleiIndices));
+        }
+    }
+
+
+    // local particle energies
+    std::vector<size_t> nucleiIndices(0);
+    if(inputYaml["LocalParticleEnergies"]) {
+        auto collectiveEnergyNode = inputYaml["LocalParticleEnergies"];
+        nucleiIndices = collectiveEnergyNode["nuclei"].as<std::vector<size_t>>();
+    }
+
+    maximaProcessor.calculateStatistics(maxima, nucleiMergeLists, nucleiIndices, selections);
 
     outputYaml << EndMap << EndDoc;
     outputYaml << BeginDoc << Comment("final settings") << usedSettings << EndDoc;

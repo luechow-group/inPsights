@@ -15,13 +15,13 @@
  * along with inPsights. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef INPSIGHTS_GROUPANALYSIS_H
-#define INPSIGHTS_GROUPANALYSIS_H
+#ifndef INPSIGHTS_CLUSTERANALYSIS_H
+#define INPSIGHTS_CLUSTERANALYSIS_H
 
-#include "Group.h"
+#include "Cluster.h"
 
-namespace GroupAnalysis {
-    Eigen::MatrixXd calculateBestMatchDistanceMatrix(const Group &group);
+namespace ClusterAnalysis {
+    Eigen::MatrixXd calculateBestMatchDistanceMatrix(const Cluster &cluster);
 }
 
-#endif //INPSIGHTS_GROUPANALYSIS_H
+#endif //INPSIGHTS_CLUSTERANALYSIS_H

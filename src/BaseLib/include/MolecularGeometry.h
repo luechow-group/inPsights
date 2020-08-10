@@ -32,6 +32,8 @@ public:
     const ElectronsVector& electrons() const;
     ElectronsVector & electrons();
 
+    PositionsVector positions() const;
+
     Particle<int> operator[](long i) const;
 
     std::pair<bool,long> findIndexByEnumeratedType(const EnumeratedType<int> &enumeratedType) const;
@@ -49,12 +51,21 @@ public:
 
     std::list<long> nonCoreElectronsIndices(double threshold = 0.01) const;
 
+    bool operator==(const MolecularGeometry &other) const;
+
+    bool operator!=(const MolecularGeometry &other) const;
 
     friend std::ostream& operator<<(std::ostream &os, const MolecularGeometry &mol) {
         os << mol.atoms() << std::endl;
         os << mol.electrons() << std::endl;
         return os;
     }
+
+    struct Permutation {
+        Eigen::PermutationMatrix<Eigen::Dynamic> nuclearPermutation, electronicPermutation;
+    };
+
+    Permutation splitAllParticlePermutation(const Eigen::PermutationMatrix<Eigen::Dynamic>& allParticlePermutation) const;
 
 private:
     AtomsVector atoms_;

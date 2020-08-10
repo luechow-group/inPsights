@@ -192,3 +192,19 @@ TEST_F(AParticleKitTest, atomsToKitPermutation) {
     copy.permute(ParticleKit::fromKitPermutation(original));
     ASSERT_EQ(copy, original);
 }
+
+TEST_F(AParticleKitTest, isSameSetQ) {
+    ParticleKit::create(TestMolecules::BH3::ionicMinimalRotated);
+    ASSERT_TRUE(ParticleKit::isSameSetQ(TestMolecules::BH3::ionicMinimalRotatedPermuted));
+}
+
+TEST_F(AParticleKitTest, moleculeToKitPermutation) {
+    auto mol = TestMolecules::BH3::ionicMinimalRotatedPermuted;
+    ParticleKit::create(mol);
+
+    auto molToKit = ParticleKit::toKitPermutation(mol);
+    Eigen::VectorXi expectedAllParticlePermutation(mol.numberOfEntities());
+    expectedAllParticlePermutation << 3,0,1,2, 4,6,5,7;
+
+    ASSERT_EQ(molToKit.indices(), expectedAllParticlePermutation);
+}

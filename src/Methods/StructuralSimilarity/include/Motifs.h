@@ -22,7 +22,7 @@
 #include <Motif.h>
 #include <MolecularGeometry.h>
 
-class Motifs{
+class Motifs {
 public:
 
     Motifs();

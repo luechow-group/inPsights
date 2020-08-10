@@ -21,7 +21,7 @@
 #include <VoxelCube.h>
 #include <ISettings.h>
 #include <Property.h>
-#include <Group.h>
+#include <Cluster.h>
 #include <Sample.h>
 
 namespace Settings {
@@ -43,7 +43,7 @@ YAML_SETTINGS_DECLARATION(Settings::VoxelCubeOverlapCalculation)
 namespace VoxelCubeOverlapCalculation {
     inline Settings::VoxelCubeOverlapCalculation settings {};
 
-    Eigen::MatrixXd fromCluster(const Group &maxima, const std::vector<Sample> &samples);
+    Eigen::MatrixXd fromCluster(const Cluster &maxima, const std::vector<Sample> &samples);
     
     Eigen::MatrixXd calculateOverlaps(const std::vector<VoxelCube>& voxels);
 };

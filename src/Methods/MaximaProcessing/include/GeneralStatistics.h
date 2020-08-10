@@ -20,7 +20,7 @@
 
 #include "Reference.h"
 #include "Sample.h"
-#include "Group.h"
+#include "Cluster.h"
 #include <Statistics.h>
 
 namespace GeneralStatistics{
@@ -46,7 +46,7 @@ namespace GeneralStatistics{
         double Vnn_;
     };
 
-    Result calculate(Group &maxima,
+    Result calculate(Cluster &maxima,
                      std::vector<Sample> &samples,
                      const AtomsVector& atoms);
 }
