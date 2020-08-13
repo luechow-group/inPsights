@@ -18,7 +18,7 @@ GNU build:
   script:
   - mkdir -p cmake-build-debug-gnu
   - cd cmake-build-debug-gnu
-  - cmake .. -DCMAKE_BUILD_TYPE=DEBUG -DBUILD_GUI=OFF  -DPFUNIT=OFF
+  - cmake .. -DCMAKE_BUILD_TYPE=DEBUG -DBUILD_GUI=OFF -DBUILD_AMOLQC=ON -DPFUNIT=OFF
   - cmake --build . --target inPsightsTests -- -j2
   cache:
     key: "$CI_COMMIT_REF_SLUG-GNU"
@@ -39,7 +39,7 @@ Intel build:
   script:
   - mkdir -p cmake-build-debug-intel
   - cd cmake-build-debug-intel
-  - cmake .. -DCMAKE_BUILD_TYPE=DEBUG -DBUILD_GUI=OFF -DPFUNIT=OFF
+  - cmake .. -DCMAKE_BUILD_TYPE=DEBUG -DBUILD_GUI=OFF -DBUILD_AMOLQC=ON -DPFUNIT=OFF
   - cmake --build . --target inPsightsTests -- -j2
   cache:
     key: "$CI_COMMIT_REF_SLUG-Intel"
