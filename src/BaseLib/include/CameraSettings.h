@@ -1,4 +1,5 @@
 /* Copyright (C) 2019 Michael Heuer.
+ * Copyright (C) 2020 Leonard Reuter.
  *
  * This file is part of inPsights.
  * inPsights is free software: you can redistribute it and/or modify
@@ -23,10 +24,10 @@
 namespace Settings {
     class Camera : public ISettings {
     public:
-        Property<float> distance = {8.0f, VARNAME(distance)};
-        Property<float> pan = {0.0f, VARNAME(pan)};
-        Property<float> tilt = {45.0f, VARNAME(tilt)};
-        Property<float> roll = {0.0f, VARNAME(roll)};
+        Property<int> zoom = {100, VARNAME(zoom)};
+        Property<int> pan = {0, VARNAME(pan)};
+        Property<int> tilt = {0, VARNAME(tilt)};
+        Property<int> roll = {0, VARNAME(roll)};
 
         Camera();
         explicit Camera(const YAML::Node &node);

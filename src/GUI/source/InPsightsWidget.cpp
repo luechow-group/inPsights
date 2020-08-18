@@ -329,21 +329,6 @@ void InPsightsWidget::loadData() {
         Camera::settings = Settings::Camera(doc);
     }
 
-    if (!doc[Camera::settings.name()][Camera::settings.distance.name()]) {
-        float maxDistanceFromCenter = 0.0;
-        for (Eigen::Index i = 0; i < atoms.numberOfEntities(); ++i) {
-            auto distanceFromCenter = static_cast<float>(atoms[i].position().norm())
-                                      + GuiHelper::radiusFromType<Element>(atoms[i].type());
-            if (distanceFromCenter > maxDistanceFromCenter)
-                maxDistanceFromCenter = distanceFromCenter;
-        }
-
-        // add padding
-        maxDistanceFromCenter += GuiHelper::radiusFromType<Element>(Element::H) / 2.0f;
-        Camera::settings.distance = maxDistanceFromCenter;
-        spdlog::info("Determined camera distance from atoms with {} [a0]", Camera::settings.distance.get());
-    }
-
     for (int clusterId = 0; clusterId < static_cast<int>(doc["Clusters"].size()); ++clusterId) {
         spdlog::info("{} out of {} clusters loaded...", clusterId+1, static_cast<int>(doc["Clusters"].size()));
 
@@ -389,7 +374,7 @@ void InPsightsWidget::initialView() {
     axesCheckBox->setCheckState(Qt::CheckState::Unchecked);
     maximaList->topLevelItem(0)->setCheckState(0, Qt::CheckState::Checked);
     moleculeWidget->initialCameraSetup(
-            Camera::settings.distance.get(),
+            Camera::settings.zoom.get(),
             Camera::settings.pan.get(),
             Camera::settings.tilt.get(),
             Camera::settings.roll.get()
