@@ -50,7 +50,7 @@ public:
                               double spinCorrelationThreshold, bool drawSameSpinCorrelationsQ);
 
     void initialCameraSetup(float distance = 8.0f,float pan = 0.0f, float tilt = 45.0f, float roll = 0.0f);
-    void setupSpinBoxes(float pan, float tilt, float roll);
+    void setupCameraBoxes(float pan, float tilt, float roll, float zoom);
     void defaultCameraView();
 
     void setSharedAtomsVector(AtomsVector atomsVector);
@@ -70,7 +70,7 @@ public Q_SLOTS:
     void onAtomsHighlighted(std::vector<int>);
     void onElectronsHighlighted(std::vector<int>);
 
-    void onCameraSpinBoxesChanged(int);
+    void onCameraBoxesChanged(int);
     void onScreenshot(bool);
     void onX3dExport(bool);
 
@@ -80,11 +80,11 @@ private:
     Qt3DCore::QEntity *root_, *moleculeEntity_;
     Qt3DExtras::QOrbitCameraController *cameraController_;
     QPushButton *screenshotButton_, *x3dExportButton_;
-    QSpinBox *pan_, *tilt_, *roll_;
+    QSpinBox *pan_, *tilt_, *roll_, *zoom_;
     float defaultCameraDistance_;
 
 public:
-    QLabel* fileInfoText_, *panTiltRollText_;
+    QLabel* fileInfoText_, *panTiltRollText_, *zoomText_;
 private:
     std::shared_ptr<AtomsVector> sharedAtomsVector_;
     AtomsVector3D *atomsVector3D_;

@@ -47,7 +47,7 @@ namespace Elements {
             d_container.insert(std::pair<ElementType,ElementData>(ElementType::Al, ElementData("Al",  13, 26.982, {227,161,160}, 184.0,  3, 6, 7, 0, 0)));
             d_container.insert(std::pair<ElementType,ElementData>(ElementType::Si, ElementData("Si",  14, 28.086, {240,200,160}, 210.0,  4, 6, 8, 0, 0)));
             d_container.insert(std::pair<ElementType,ElementData>(ElementType::P,  ElementData("P" ,  15, 30.974, {255,128,  1}, 180.0,  5, 6, 9, 0, 0)));
-            d_container.insert(std::pair<ElementType,ElementData>(ElementType::S,  ElementData("S" ,  16, 32.065, {231,247, 34}, 180.0,  6, 6,10, 0, 0)));
+            d_container.insert(std::pair<ElementType,ElementData>(ElementType::S,  ElementData("S" ,  16, 32.065, {162,173, 25}, 180.0,  6, 6,10, 0, 0)));
             d_container.insert(std::pair<ElementType,ElementData>(ElementType::Cl, ElementData("Cl",  17, 35.453, {105,238, 42}, 175.0,  7, 6,11, 0, 0)));
             d_container.insert(std::pair<ElementType,ElementData>(ElementType::Ar, ElementData("Ar",  18, 39.948, {139,215,227}, 188.0,  8, 6,12, 0, 0)));
             \

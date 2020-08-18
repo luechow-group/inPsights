@@ -35,14 +35,21 @@ During the installation, make sure to install Qt for the `x86_64` architecture a
 On Ubuntu, the package manager `aptitude` can be used.
 To download the required packages with `aptitude` execute the following command in the terminal:
 ```bash
-sudo apt-get -y install \
+sudo apt -y install \
     build-essential git cmake \
     gcc g++ gfortran \
-    libgomp1 libblas-dev liblapack-dev libeigen3-dev libboost-all-dev \ 
+    libgomp1 libblas-dev liblapack-dev libeigen3-dev libboost-all-dev
 ```
 
-The preferred method to install Qt5 on Ubuntu is the Qt5 online installer, which is found on the [Qt webpage](https://www.qt.io/download).
-During the installation, make sure to install Qt for the `x86_64` architecture and select `sources`, `Qt3D`, and additionally `QtCharts` (which will be required in future versions as well).
+In order to use the GUI, libgl-dev and Qt have to be installed:
+```
+sudo apt install libgl-dev
+```
+The preferred method to install Qt5 on Ubuntu is the Qt5 online installer, which is found on the [Qt webpage](https://www.qt.io/download-qt-installer).
+Make sure to install the following components (Updated 13 August 2020. The component names tend to change.):
+   * Desktop gcc 64-bit
+   * Qt Charts
+   * Qt Data Visualization
 
 Alternatively, the package manager `aptitude` can be used:
 ```bash
@@ -101,9 +108,13 @@ export Qt5_DIR=/home/<username>/Qt/5.XX.X/gcc_64
 If Qt5 was installed via `apt-get`, CMake should automatically find the library (not tested).
 
 #### Amolqc
-If the `AmolqcInterface` module is required, the path to `Amolqc` must be exported as an environment variable e.g.
+If the `AmolqcInterface` module is required, the following cmake option has to be set:
 ```bash
-export AMOLQC=/Users/michaelheuer/Projects/inPsights/src/AmolqcInterface/Amolqc
+-DBUILD_AMOLQC=ON
+```
+Additionally, the path to `Amolqc` must be exported as an environment variable e.g.
+```bash
+export AMOLQC=/home/<username>/inPsights/src/AmolqcInterface/Amolqc
 ```
 This is **not** necessary for building the `inPsights` and `ProcessMaxima` executable.
 
