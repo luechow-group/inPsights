@@ -111,7 +111,9 @@ Clustering:
     ParticleSelection:
       maximalCount: 4
       distanceMode: minimum
-      positions: [{inBetween: [{atAtom: 3}, {atAtom: 4}]}]
+      positions: [
+        inBetween: [atAtom: 3, atAtom: 4]
+      ]
       valenceOnly: true
 ```
 
