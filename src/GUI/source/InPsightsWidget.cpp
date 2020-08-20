@@ -75,7 +75,7 @@ void InPsightsWidget::createWidget() {
     hbox->addLayout(vboxOuter, 1);
 
     // put into MaximaTreeWidget class
-    auto headerLabels = QList<QString>({"ID", "Probability", "min(-ln|Ψ|²)", "max(-ln|Ψ|²)"});
+    auto headerLabels = QList<QString>({"ID", "Prob.", "min(-ln|Ψ|²)", "max(-ln|Ψ|²)"});
     maximaList->setColumnCount(headerLabels.size());
     maximaList->setHeaderLabels(headerLabels);
     maximaList->header()->setStretchLastSection(false);
