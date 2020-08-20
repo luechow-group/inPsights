@@ -1,4 +1,5 @@
 /* Copyright (C) 2019 Michael Heuer.
+ * Copyright (C) 2020 Leonard Reuter.
  *
  * This file is part of inPsights.
  * inPsights is free software: you can redistribute it and/or modify
@@ -22,28 +23,29 @@
 namespace Settings {
     Camera::Camera()
             : ISettings(VARNAME(Camera)) {
-        distance.onChange_.connect(
-                [&](float value) {
-                    if (not (value >= 0.0f and value < std::numeric_limits<float>::max()))
-                        throw std::invalid_argument("The camera distance can not be negative.");
+        zoom.onChange_.connect(
+                [&](int value) {
+                    if (not (value >= 0 and value < 999))
+                        throw std::invalid_argument("The zoom must be in bewteen ["
+                        + std::to_string(0) + "," + std::to_string(999) + "]");
                 });
         pan.onChange_.connect(
-                [&](float value) {
-                    float limit = 180.0f;
+                [&](int value) {
+                    int limit = 180;
                     if (std::abs(value) > limit)
                         throw std::invalid_argument("The pan angle must be inbetween ["
                         + std::to_string(-limit) + "," + std::to_string(limit) + "]");
                 });
         tilt.onChange_.connect(
-                [&](float value) {
-                    float limit = 180.0f;
+                [&](int value) {
+                    int limit = 180;
                     if (std::abs(value) > limit)
                         throw std::invalid_argument("The tilt angle must be inbetween ["
                                                     + std::to_string(-limit) + "," + std::to_string(limit) + "]");
                 });
         roll.onChange_.connect(
-                [&](float value) {
-                    float limit = 180.0f;
+                [&](int value) {
+                    int limit = 180;
                     if (std::abs(value) > limit)
                         throw std::invalid_argument("The roll angle must be inbetween ["
                                                     + std::to_string(-limit) + "," + std::to_string(limit) + "]");
@@ -52,14 +54,14 @@ namespace Settings {
 
     Camera::Camera(const YAML::Node &node)
             : Camera() {
-        floatProperty::decode(node[className], distance);
-        floatProperty::decode(node[className], pan);
-        floatProperty ::decode(node[className], tilt);
-        floatProperty ::decode(node[className], roll);
+        intProperty::decode(node[className], zoom);
+        intProperty::decode(node[className], pan);
+        intProperty ::decode(node[className], tilt);
+        intProperty ::decode(node[className], roll);
     }
 
     void Camera::appendToNode(YAML::Node &node) const {
-        node[className][distance.name()] = distance.get();
+        node[className][zoom.name()] = zoom.get();
         node[className][pan.name()] = pan.get();
         node[className][tilt.name()] = tilt.get();
         node[className][roll.name()] = roll.get();

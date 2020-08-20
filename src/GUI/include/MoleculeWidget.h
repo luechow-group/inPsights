@@ -1,4 +1,5 @@
 /* Copyright (C) 2017-2019 Michael Heuer.
+ * Copyright (C) 2020 Leonard Reuter
  *
  * This file is part of inPsights.
  * inPsights is free software: you can redistribute it and/or modify
@@ -49,9 +50,12 @@ public:
                               const std::vector<ClusterData> &clusterData,
                               double spinCorrelationThreshold, bool drawSameSpinCorrelationsQ);
 
-    void initialCameraSetup(float distance = 8.0f,float pan = 0.0f, float tilt = 45.0f, float roll = 0.0f);
-    void setupCameraBoxes(float pan, float tilt, float roll, float zoom);
+    void initialCameraSetup(int zoom, int pan, int tilt, int roll);
+    void setupCameraBoxes(int pan, int tilt, int roll, int zoom);
     void defaultCameraView();
+    void resetCamera();
+
+    void calculateDefaultCameraRadius();
 
     void setSharedAtomsVector(AtomsVector atomsVector);
     void addElectronsVector(const ElectronsVector& electronsVector, int clusterId = 0, int structureId = 0, bool coloredQ = false);
@@ -73,15 +77,17 @@ public Q_SLOTS:
     void onCameraBoxesChanged(int);
     void onScreenshot(bool);
     void onX3dExport(bool);
+    void onResetCamera(bool);
 
 private:
     bool compatabilityMode_;
     Qt3DExtras::Qt3DWindow *qt3DWindow_;
     Qt3DCore::QEntity *root_, *moleculeEntity_;
     Qt3DExtras::QOrbitCameraController *cameraController_;
-    QPushButton *screenshotButton_, *x3dExportButton_;
+    QPushButton *screenshotButton_, *x3dExportButton_, *resetCameraButton_;
     QSpinBox *pan_, *tilt_, *roll_, *zoom_;
-    float defaultCameraDistance_;
+    float defaultCameraRadius_;
+    int initZoom_, initPan_, initTilt_, initRoll_;
 
 public:
     QLabel* fileInfoText_, *panTiltRollText_, *zoomText_;
@@ -94,6 +100,8 @@ public:
     std::map<int, std::map<int,ElectronsVector3D*>> activeElectronsVectorsMap_;
 
     std::string createFilenameFromActiveElectronvectors() const;
+
+
 };
 
 #endif //INPSIGHTS_MOLECULEWIDGET_H

@@ -1,4 +1,5 @@
 /* Copyright (C) 2017-2019 Michael Heuer.
+ * Copyright (C) 2020 Leonard Reuter
  *
  * This file is part of inPsights.
  * inPsights is free software: you can redistribute it and/or modify
@@ -42,11 +43,16 @@ MoleculeWidget::MoleculeWidget(QWidget *parent)
         cameraController_(new Qt3DExtras::QOrbitCameraController(root_)),
         screenshotButton_(new QPushButton("Save image", this)),
         x3dExportButton_(new QPushButton("Save x3d", this)),
+        resetCameraButton_(new QPushButton("Reset camera", this)),
         zoom_(new QSpinBox(this)),
         pan_(new QSpinBox(this)),
         tilt_(new QSpinBox(this)),
         roll_(new QSpinBox(this)),
-        defaultCameraDistance_(8.0f),
+        initZoom_(100),
+        initPan_(0),
+        initTilt_(0),
+        initRoll_(0),
+        defaultCameraRadius_(0.0f),
         fileInfoText_(new QLabel("Info text")),
         zoomText_(new QLabel("zoom")),
         panTiltRollText_(new QLabel("pan/tilt/roll")),
@@ -62,6 +68,7 @@ MoleculeWidget::MoleculeWidget(QWidget *parent)
     innerLayout->addWidget(screenshotButton_,2);
     innerLayout->addWidget(x3dExportButton_,2);
     innerLayout->addWidget(fileInfoText_, 5);
+    innerLayout->addWidget(resetCameraButton_,2);
     innerLayout->addWidget(zoomText_,1);
     innerLayout->addWidget(zoom_,1);
     innerLayout->addWidget(panTiltRollText_,1);
@@ -73,6 +80,7 @@ MoleculeWidget::MoleculeWidget(QWidget *parent)
 
     connect(screenshotButton_, &QPushButton::clicked, this, &MoleculeWidget::onScreenshot);
     connect(x3dExportButton_, &QPushButton::clicked, this, &MoleculeWidget::onX3dExport);
+    connect(resetCameraButton_, &QPushButton::clicked, this, &MoleculeWidget::onResetCamera);
 
     connect(pan_, qOverload<int>(&QSpinBox::valueChanged),
             this, &MoleculeWidget::onCameraBoxesChanged);
@@ -83,7 +91,6 @@ MoleculeWidget::MoleculeWidget(QWidget *parent)
     connect(zoom_, qOverload<int>(&QSpinBox::valueChanged),
             this, &MoleculeWidget::onCameraBoxesChanged);
 
-    initialCameraSetup();
     setMouseTracking(true);
 }
 
@@ -93,45 +100,65 @@ void MoleculeWidget::onCameraBoxesChanged(int) {
     qt3DWindow_->camera()->tiltAboutViewCenter(float(tilt_->value()));
     qt3DWindow_->camera()->rollAboutViewCenter(float(roll_->value()));
     qt3DWindow_->camera()->viewSphere({0, 0, 0},
-            float(100.0)/float(zoom_->value())*defaultCameraDistance_);
+                                      100.0f / float(zoom_->value()) * defaultCameraRadius_);
 }
 
 Qt3DCore::QEntity *MoleculeWidget::getMoleculeEntity() {
     return moleculeEntity_;
 }
 
-void MoleculeWidget::setupCameraBoxes(float pan, float tilt, float roll, float zoom) {
+void MoleculeWidget::setupCameraBoxes(int pan, int tilt, int roll, int zoom) {
     pan_->setRange(-180,180);
     pan_->setSingleStep(5);
-    pan_->setValue(static_cast<int>(pan));
+    pan_->setValue(pan);
     pan_->setSuffix(" °");
 
     tilt_->setRange(-180,180);
     tilt_->setSingleStep(5);
-    tilt_->setValue(static_cast<int>(tilt));
+    tilt_->setValue(tilt);
     tilt_->setSuffix(" °");
 
     roll_->setRange(-180,180);
     roll_->setSingleStep(5);
-    roll_->setValue(static_cast<int>(roll));
+    roll_->setValue(roll);
     roll_->setSuffix(" °");
 
     // max value for zoom is 999 instead of INT_MAX, since it determines the box width
     zoom_->setRange(0,999);
     zoom_->setSingleStep(5);
-    zoom_->setValue(static_cast<int>(zoom));
+    zoom_->setValue(zoom);
     zoom_->setSuffix(" %");
 }
 
-void MoleculeWidget::initialCameraSetup(float distance, float pan, float tilt, float roll) {
-    defaultCameraDistance_ = distance;
-    setupCameraBoxes(pan, tilt, roll, 100);
+void MoleculeWidget::initialCameraSetup(int zoom, int pan, int tilt, int roll) {
+    initZoom_ = zoom; initPan_ = pan; initTilt_ = tilt; initRoll_ = roll;
+
+    calculateDefaultCameraRadius();
 
     cameraController_->setLinearSpeed(50.f);
     cameraController_->setLookSpeed(180.f);
 
     cameraController_->setCamera(qt3DWindow_->camera());
-    defaultCameraView();
+
+    resetCamera();
+}
+
+void MoleculeWidget::calculateDefaultCameraRadius() {
+    float maxDistanceFromCenter = 0.0;
+    for (Eigen::Index i = 0; i < atomsVector3D_->positionsVector().numberOfEntities(); ++i) {
+        auto distanceFromCenter = static_cast<float>(sharedAtomsVector_->positionsVector()[i].norm())
+                                  + GuiHelper::radiusFromType<Element>(sharedAtomsVector_->typesVector()[i]);
+        if (distanceFromCenter > maxDistanceFromCenter)
+            maxDistanceFromCenter = distanceFromCenter;
+    }
+
+    // add padding
+    defaultCameraRadius_ += maxDistanceFromCenter + GuiHelper::radiusFromType<Element>(Element::H);
+    spdlog::info("Determined camera radius with {} [a0]", defaultCameraRadius_);
+}
+
+void MoleculeWidget::resetCamera() {
+    setupCameraBoxes(initPan_, initTilt_, initRoll_, initZoom_);
     onCameraBoxesChanged(0);
 }
 
@@ -139,7 +166,7 @@ void MoleculeWidget::defaultCameraView() {
     qt3DWindow_->camera()->setViewCenter({0,0,0});
     qt3DWindow_->camera()->setUpVector({1,0,0});
     qt3DWindow_->camera()->setPosition({0,1,0});
-    qt3DWindow_->camera()->viewSphere({0, 0, 0}, defaultCameraDistance_);
+    qt3DWindow_->camera()->viewSphere({0, 0, 0}, defaultCameraRadius_);
 }
 
 void MoleculeWidget::drawAxes(bool drawQ) {
@@ -314,6 +341,10 @@ void MoleculeWidget::onScreenshot(bool) {
     file.open(QIODevice::WriteOnly);
     screen->grabWindow(qt3DWindow_->winId()).save(&file, "PNG");
     file.close();
+}
+
+void MoleculeWidget::onResetCamera(bool) {
+    resetCamera();
 }
 
 std::string MoleculeWidget::createFilenameFromActiveElectronvectors() const {

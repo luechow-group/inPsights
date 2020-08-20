@@ -106,22 +106,6 @@ void validateInput(const YAML::Node &inputYaml) {
     spdlog::info("Input is valid.");
 }
 
-float calculateViewDistance(const AtomsVector& atoms){
-    float maxDistanceFromCenter = 0.0;
-    for (Eigen::Index i = 0; i < atoms.numberOfEntities(); ++i) {
-        auto distanceFromCenter = static_cast<float>(atoms[i].position().norm())
-                                + Elements::ElementInfo::vdwRadius(atoms[i].type())/10.0f;
-
-        if(distanceFromCenter > maxDistanceFromCenter)
-            maxDistanceFromCenter = distanceFromCenter;
-    }
-
-    // add padding
-    maxDistanceFromCenter += static_cast<float>(Elements::ElementInfo::vdwRadius(Element::H)/10.0f);
-
-    return maxDistanceFromCenter;
-}
-
 int main(int argc, char *argv[]) {
     if (argc < 2) {
         std::cerr << "Usage: " << argv[0] << " input.yml" << std::endl;
@@ -333,12 +317,10 @@ int main(int argc, char *argv[]) {
                << BeginMap
                << Comment(inPsights::logo);
 
-
     YAML::Node cameraNode;
-    Camera::settings.distance = calculateViewDistance(atoms);
     Camera::settings.appendToNode(cameraNode);
 
-    outputYaml << Key << "Camera" << Value << cameraNode["Camera"] << Comment("[a0,°,°,°]");
+    outputYaml << Key << "Camera" << Value << cameraNode["Camera"] << Comment("[%,°,°,°]");
 
     outputYaml << Key << "Atoms" << Value << atoms << Comment("[a0]")
                << Key << "Rnn" << Value << Metrics::positionalDistances(atoms.positionsVector()) << Comment("[a0]")
