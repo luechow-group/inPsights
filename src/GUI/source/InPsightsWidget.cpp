@@ -1,4 +1,4 @@
-/* Copyright (C) 2018-2019 Michael Heuer.
+/* Copyright (C) 2018-2020 Michael Heuer.
  *
  * This file is part of inPsights.
  * inPsights is free software: you can redistribute it and/or modify
@@ -48,7 +48,9 @@ InPsightsWidget::InPsightsWidget(QWidget *parent, const std::string& filename)
         coloredCheckBox(new QCheckBox("Multicolored", this)),
         spinCorrelationBox(new QDoubleSpinBox(this)),
         sedPercentageBox(new QDoubleSpinBox(this)),
-        maximaList(new QTreeWidget(this)) {
+        maximaList(new QTreeWidget(this)),
+        probabilitySum(new QLabel(this))
+        {
 
     loadData();
     showSplashScreen();
@@ -73,7 +75,7 @@ void InPsightsWidget::createWidget() {
     hbox->addLayout(vboxOuter, 1);
 
     // put into MaximaTreeWidget class
-    auto headerLabels = QList<QString>({"ID", "Weight", "min(-ln|Ψ|²)", "max(-ln|Ψ|²)"});
+    auto headerLabels = QList<QString>({"ID", "Probability", "min(-ln|Ψ|²)", "max(-ln|Ψ|²)"});
     maximaList->setColumnCount(headerLabels.size());
     maximaList->setHeaderLabels(headerLabels);
     maximaList->header()->setStretchLastSection(false);
@@ -83,6 +85,7 @@ void InPsightsWidget::createWidget() {
     maximaList->header()->setSectionResizeMode(3,QHeaderView::ResizeToContents);
 
     vboxOuter->addWidget(maximaList, 1);
+    vboxOuter->addWidget(probabilitySum);
     vboxOuter->addWidget(maximaProcessingWidget,1);
     vboxOuter->addWidget(gbox);
     gbox->setLayout(vboxInner);
@@ -214,6 +217,7 @@ void InPsightsWidget::selectedStructure(QTreeWidgetItem *item, int column) {
             moleculeWidget->removeMaximaHulls(clusterId);
     }
     redrawSpinDecorations();
+    probabilitySum->setText(QString("Σ=") + QString::number(sumProbabilities(), 'f', 4));
 };
 
 void InPsightsWidget::onPlotAllChecked(int stateId)  {
@@ -362,7 +366,20 @@ void InPsightsWidget::loadData() {
             maximaList->resizeColumnToContents(i);
         }
     }
+}
 
+double InPsightsWidget::sumProbabilities(){
+    auto* root = maximaList->invisibleRootItem();
+
+    double summedProbability = 0.0;
+
+    // iterate over topLevelItems
+    for (int i = 0; i < root->childCount(); ++i) {
+        if(root->child(i)->checkState(0) == Qt::Checked) {
+            summedProbability += root->child(i)->text(1).toDouble();
+        }
+    }
+    return summedProbability;
 }
 
 void InPsightsWidget::initialView() {

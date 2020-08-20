@@ -50,6 +50,7 @@ private:
     *sedsCheckBox,*maximaHullsCheckBox, *plotAllCheckBox, *coloredCheckBox;
     QDoubleSpinBox *spinCorrelationBox, *sedPercentageBox;
     QTreeWidget *maximaList;
+    QLabel *probabilitySum;
     std::vector<ClusterData> clusterCollection_;
 
     void showSplashScreen();
@@ -59,6 +60,7 @@ private:
     void connectSignals();
     void createWidget();
     void redrawSpinDecorations();
+    double sumProbabilities();
 };
 
 #endif //INPSIGHTS_INPSIGHTSWIDGET_H
