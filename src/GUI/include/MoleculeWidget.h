@@ -86,9 +86,8 @@ private:
     Qt3DExtras::QOrbitCameraController *cameraController_;
     QPushButton *screenshotButton_, *x3dExportButton_, *resetCameraButton_;
     QSpinBox *pan_, *tilt_, *roll_, *zoom_;
+    int initPan_, initTilt_, initRoll_,initZoom_;
     float defaultCameraRadius_;
-    int initZoom_, initPan_, initTilt_, initRoll_;
-
 public:
     QLabel* fileInfoText_, *panTiltRollText_, *zoomText_;
 private:
