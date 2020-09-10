@@ -14,13 +14,6 @@ else()
     message("Using default CXX Compiler         ${CMAKE_CXX_COMPILER}")
 endif()
 
-if(EXISTS $ENV{FC})
-    set(CMAKE_Fortran_COMPILER $ENV{FC})
-    message("Using specified Fortran Compiler   ${CMAKE_Fortran_COMPILER}")
-else()
-    message("Using default Fortran Compiler     ${CMAKE_Fortran_COMPILER}")
-endif()
-
 # Compiler specific optimization settings
 if (${CMAKE_CXX_COMPILER_ID} MATCHES "Clang")
 

@@ -13,12 +13,10 @@ GNU build:
   before_script:
   - export CC=/usr/bin/gcc
   - export CXX=/usr/bin/g++
-  - export FC=/usr/bin/gfortran
-  - export AMOLQC=/builds/luechow-group/inPsights/src/AmolqcInterface/amolqc
   script:
   - mkdir -p cmake-build-debug-gnu
   - cd cmake-build-debug-gnu
-  - cmake .. -DCMAKE_BUILD_TYPE=DEBUG -DBUILD_GUI=OFF -DBUILD_AMOLQC=ON -DPFUNIT=OFF
+  - cmake .. -DCMAKE_BUILD_TYPE=DEBUG -DBUILD_GUI=OFF
   - cmake --build . --target inPsightsTests -- -j2
   cache:
     key: "$CI_COMMIT_REF_SLUG-GNU"
@@ -33,13 +31,11 @@ Intel build:
   - source /opt/intel/parallel_studio_xe_2019/psxevars.sh intel64
   - export CC=/opt/intel/bin/icc
   - export CXX=/opt/intel/bin/icpc
-  - export FC=/opt/intel/bin/ifort
   - export MKLROOT=/opt/intel/mkl
-  - export AMOLQC=/builds/luechow-group/inPsights/src/AmolqcInterface/amolqc
   script:
   - mkdir -p cmake-build-debug-intel
   - cd cmake-build-debug-intel
-  - cmake .. -DCMAKE_BUILD_TYPE=DEBUG -DBUILD_GUI=OFF -DBUILD_AMOLQC=ON -DPFUNIT=OFF
+  - cmake .. -DCMAKE_BUILD_TYPE=DEBUG -DBUILD_GUI=OFF
   - cmake --build . --target inPsightsTests -- -j2
   cache:
     key: "$CI_COMMIT_REF_SLUG-Intel"
@@ -58,7 +54,7 @@ GNU test:
 
   script:
   - cd cmake-build-debug-gnu
-  - ctest -LE "(AmolqcElocInterface|amolqc|GUI)" -E "(example|spdlog-utests)" --output-on-failure -j4
+  - ctest -LE "(GUI)" -E "(example|spdlog-utests)" --output-on-failure -j4
   dependencies:
   - GNU build
 
@@ -75,7 +71,7 @@ Intel test:
   - source /opt/intel/parallel_studio_xe_2019/psxevars.sh intel64
   script:
   - cd cmake-build-debug-intel
-  - ctest -LE "(AmolqcElocInterface|amolqc|GUI|MaximaProcessing)" -E "(example|spdlog-utests)" --output-on-failure -j4
+  - ctest -LE "(GUI|MaximaProcessing)" -E "(example|spdlog-utests)" --output-on-failure -j4
   dependencies:
   - Intel build
 

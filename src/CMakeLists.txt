@@ -1,4 +1,3 @@
-add_subdirectory(AmolqcInterface)
 add_subdirectory(BaseLib)
 add_subdirectory(Externals)
 add_subdirectory(Methods)
