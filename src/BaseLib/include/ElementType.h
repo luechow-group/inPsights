@@ -3,6 +3,7 @@
 
 #include <utility>
 #include <map>
+#include <ostream>
 
 namespace Elements {
     enum class ElementType {

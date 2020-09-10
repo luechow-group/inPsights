@@ -17,7 +17,7 @@ namespace Settings {
 
         TestSettings()
         : ISettings(VARNAME(TestSettings)) {
-            threshold.onChange_.connect(boost::bind(&TestSettings::onThresholdChanged, this, _1));
+            threshold.onChange_.connect(std::bind(&TestSettings::onThresholdChanged, this, std::placeholders::_1));
         };
 
         explicit TestSettings(const YAML::Node &node)
