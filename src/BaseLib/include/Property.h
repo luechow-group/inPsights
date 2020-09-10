@@ -10,8 +10,7 @@
 #include <Eigen/Core>
 #include <yaml-cpp/yaml.h>
 #include <spdlog/spdlog.h>
-// A Property is a encapsulates a value and may inform
-// you on any changes applied to this value.
+// A Property encapsulates a value and may inform you on any changes applied to this value.
 
 template<typename T>
 class Property {
@@ -34,7 +33,6 @@ public:
 
     Property(Property<T> &&toCopy, std::string name = "")
             : value_(std::move(toCopy.value_)), connection_(nullptr), connectionId_(-1), name_(std::move(name)) {}
-
 
     // sets the Property to a new value. beforeChange() and
     // onChange() will be emitted.

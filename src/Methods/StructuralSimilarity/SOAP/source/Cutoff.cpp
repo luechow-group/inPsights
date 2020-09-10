@@ -11,7 +11,7 @@ bool Cutoff::withinCutoffRadiusQ(double distance) {
     return distance < Cutoff::settings.radius();
 }
 
-double Cutoff::getWeight(double distanceFromExpansionCenter) {
+double Cutoff::value(double distanceFromExpansionCenter) {
     const auto innerPlateauRadius = Cutoff::innerPlateauRadius();
     const auto cutoffWidth = Cutoff::settings.width();
     const auto cutoffRadius = Cutoff::settings.radius();
@@ -19,35 +19,34 @@ double Cutoff::getWeight(double distanceFromExpansionCenter) {
     if (distanceFromExpansionCenter <= innerPlateauRadius)
         return 1.;
     else if (innerPlateauRadius < distanceFromExpansionCenter && distanceFromExpansionCenter <= cutoffRadius)
-        return 0.5*( 1 + cos( M_PI*(distanceFromExpansionCenter-innerPlateauRadius)/cutoffWidth) );
+        return 0.5*( 1 + std::cos( M_PI*(distanceFromExpansionCenter-innerPlateauRadius)/cutoffWidth) );
     else
         return 0.;
 };
 
 
-double Cutoff::getWeight(const Eigen::Vector3d& position,
-                         const Eigen::Vector3d& expansionCenter) {
-    return getWeight(distance(position, expansionCenter));
+double Cutoff::value(const Eigen::Vector3d& position,
+                     const Eigen::Vector3d& expansionCenter) {
+    return value((position-expansionCenter).norm());
 }
 
-Eigen::Vector3d Cutoff::getWeightGradient(const Eigen::Vector3d&position ) {
+Eigen::Vector3d Cutoff::gradient(const Eigen::Vector3d&position ) {
     const auto innerPlateauRadius = Cutoff::innerPlateauRadius();
     const auto cutoffWidth = Cutoff::settings.width();
-    //const auto & centerWeight = ExpansionSettings::Cutoff::centerWeight;
     const auto cutoffRadius = Cutoff::settings.radius();
 
-    double distanceFromExpansionCenter =position .norm();
-    Eigen::Vector3d direction =position .normalized();
+    double distanceFromExpansionCenter = position.norm();
+    Eigen::Vector3d direction = position.normalized();
 
     if (distanceFromExpansionCenter <= innerPlateauRadius || distanceFromExpansionCenter > cutoffRadius)
         return Eigen::Vector3d::Zero();
     else if (innerPlateauRadius < distanceFromExpansionCenter && distanceFromExpansionCenter <= cutoffRadius)
-        return 0.5*( 1 + sin( M_PI*(distanceFromExpansionCenter-innerPlateauRadius)/cutoffWidth)*M_PI/cutoffWidth )*direction;
+        return 0.5*( 1 + std::sin( M_PI*(distanceFromExpansionCenter-innerPlateauRadius)/cutoffWidth)*M_PI/cutoffWidth )*direction;
     else
         return Eigen::Vector3d::Zero(); //TODO is this the correct behavior?
 };
 
-double Cutoff::distance(const Eigen::Vector3d &position,
-                                const Eigen::Vector3d &expansionCenter){
-    return (position-expansionCenter).eval().norm();
+Eigen::Vector3d Cutoff::gradient(const Eigen::Vector3d& position,
+                                 const Eigen::Vector3d& expansionCenter) {
+    return gradient(position-expansionCenter);
 }

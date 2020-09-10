@@ -26,7 +26,7 @@ NeighborhoodExpansion NeighborhoodExpander::expandEnvironment(const Environment&
         const auto& neighborCoords = neighborCoordsPair.second;
 
         double weight = 1; //TODO TypeSpecific Value?
-        double weightScale = Cutoff::getWeight(neighborCoords.r);
+        double weightScale = Cutoff::value(neighborCoords.r);
 
         if (neighborCoords.r <= radiusZero)
             weight *= centerWeight;
