@@ -1,6 +1,3 @@
-[submodule "src/AmolqcInterface/Amolqc"]
-	path = src/AmolqcInterface/Amolqc
-	url = ./../Amolqc.git
 [submodule "src/Externals/dualmc"]
 	path = src/Externals/dualmc
 	url = ./../dualmc.git

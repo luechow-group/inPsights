@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.11)
 
-project(Executables C CXX Fortran)
+project(Executables CXX)
 
 set ( PROJECT_FOLDER_NAME ${PROJECT_NAME} )
 
@@ -32,18 +32,6 @@ if (${BUILD_GUI})
     target_link_libraries(inPsights
             GUI
             MaximaProcessing
-            )
-
-    add_executable(ShowMaximum ShowMaximum.cpp)
-    target_link_libraries(ShowMaximum
-            GUI
-            AmolqcFileImport
-            )
-
-    add_executable(ShowPath ShowPath.cpp)
-    target_link_libraries(ShowPath
-            GUI
-            AmolqcFileImport
             )
 
 endif()

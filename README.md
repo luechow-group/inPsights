@@ -37,7 +37,7 @@ To download the required packages with `aptitude` execute the following command 
 ```bash
 sudo apt -y install \
     build-essential git cmake \
-    gcc g++ gfortran \
+    gcc g++ \
     libgomp1 libblas-dev liblapack-dev libeigen3-dev libboost-all-dev
 ```
 
@@ -79,11 +79,9 @@ for the `GNU Compiler Collection`
 ```bash
 export CC=/usr/local/bin/gcc-9
 export CXX=/usr/local/bin/g++-9
-export FC=/usr/local/bin/gfortran-9
 ```
 or `Intel Parallel Studio XE`
 ```bash
-export FC=/opt/intel/bin/ifort
 export CC=/opt/intel/bin/icc
 export CXX=/opt/intel/bin/icpc
 export INTELROOT=/opt/intel/
@@ -107,16 +105,6 @@ export Qt5_DIR=/home/<username>/Qt/5.XX.X/gcc_64
 
 If Qt5 was installed via `apt-get`, CMake should automatically find the library (not tested).
 
-#### Amolqc
-If the `AmolqcInterface` module is required, the following cmake option has to be set:
-```bash
--DBUILD_AMOLQC=ON
-```
-Additionally, the path to `Amolqc` must be exported as an environment variable e.g.
-```bash
-export AMOLQC=/home/<username>/inPsights/src/AmolqcInterface/Amolqc
-```
-This is **not** necessary for building the `inPsights` and `ProcessMaxima` executable.
 
 ## Building ProcessMaxima and inPsights
 

@@ -2,8 +2,6 @@ cmake_minimum_required(VERSION 3.11)
 
 option(BUILD_GUI    "ON/OFF - Do/Don't build the graphical user interface." OFF)
 option(BUILD_EIGEN  "ON/OFF - Build/Try to find the required Eigen3 library." OFF)
-option(BUILD_AMOLQC "ON/OFF - Build Amolqc and the eloc interface." OFF)
-
 option(YAML_CPP_BUILD_TESTS "ON/OFF - yaml test" OFF)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake/Modules")
