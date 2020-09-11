@@ -43,11 +43,13 @@ namespace SOAP {
             auto eps = std::numeric_limits<double>::epsilon();
             if (selfSimilarity1 <= eps || selfSimilarity2 <= eps) {
                 if (selfSimilarity1 <= eps && selfSimilarity2 <= eps) {
-                    spdlog::debug("LocalSelfSimilarity: Warning: The analyzed structure contains two isolated environments.");
-                    return 1;
+                    spdlog::debug("LocalSelfSimilarity: Warning: "
+                                  "The analyzed structure contains two isolated environments.");
+                    return 1.0;
                 } else {
-                    spdlog::debug("LocalSelfSimilarity: Warning: The analyzed structure contains one isolated environments.");
-                    return 0;
+                    spdlog::debug("LocalSelfSimilarity: Warning: "
+                                  "The analyzed structure contains one isolated environments.");
+                    return 0.0;
                 }
             }
             auto similarityValue = unnormalizedKernel(expansions1, expansions2);
@@ -83,8 +85,7 @@ namespace SOAP {
 
         double unnormalizedSelfKernel(const TypeSpecificNeighborhoodsAtOneCenter &expansions) {
             double similarityValue = 0;
-            auto mode = General::settings.mode();
-            switch (mode) {
+            switch (General::settings.mode()) {
                 case General::Mode::typeAgnostic: {
                     similarityValue = internal::typeAgnostic(expansions);
                     break;
