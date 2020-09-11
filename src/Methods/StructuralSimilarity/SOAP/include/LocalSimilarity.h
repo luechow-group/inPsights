@@ -44,7 +44,7 @@ namespace SOAP {
             double chemical(const TypeSpecificNeighborhoodsAtOneCenter &expansions1,
                             const TypeSpecificNeighborhoodsAtOneCenter &expansions2);
 
-            double kappa(int typeA, int typeB);
+            double alchemicalTypeSimilarity(int typeA, int typeB);
 
             double alchemical(const TypeSpecificNeighborhoodsAtOneCenter &expansions1,
                               const TypeSpecificNeighborhoodsAtOneCenter &expansions2);

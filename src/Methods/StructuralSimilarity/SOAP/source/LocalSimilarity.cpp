@@ -168,7 +168,7 @@ namespace SOAP {
             return std::norm(sum);
         }
 
-        double internal::kappa(int typeA, int typeB) {
+        double internal::alchemicalTypeSimilarity(int typeA, int typeB) {
             if (typeA == typeB) {
                 const auto itSame = General::settings.pairSimilarities.find({typeA, typeA});
                 return (itSame != General::settings.pairSimilarities.end())? itSame->second : 1.0;
@@ -186,16 +186,16 @@ namespace SOAP {
             for (auto &alpha : ParticleKit::kit) {
                 for (auto &alphaPrimed : ParticleKit::kit) {
 
-                    double k_aap = internal::kappa(alpha.first, alphaPrimed.first);
-                    if (k_aap > 0.0) {
+                    double kappa_aap = internal::alchemicalTypeSimilarity(alpha.first, alphaPrimed.first);
+                    if (kappa_aap > 0.0) {
                         const auto &alphaExpansion1 = expansions1.find(alpha.first)->second;
                         const auto &alphaPrimedExpansion2 = expansions2.find(alphaPrimed.first)->second;
 
                         for (auto &beta : ParticleKit::kit) {
                             for (auto &betaPrimed : ParticleKit::kit) {
 
-                                double k_bbp = internal::kappa(beta.first, betaPrimed.first);
-                                if (k_bbp > 0.0) {
+                                double kappa_bbp = internal::alchemicalTypeSimilarity(beta.first, betaPrimed.first);
+                                if (kappa_bbp > 0.0) {
                                     const auto &betaExpansion1 = expansions1.find(beta.first)->second;
                                     const auto &betaPrimedExpansion2 = expansions2.find(betaPrimed.first)->second;
 
@@ -203,7 +203,7 @@ namespace SOAP {
                                     auto ps2 = PowerSpectrum::partialPowerSpectrum(alphaPrimedExpansion2,
                                                                                    betaPrimedExpansion2);
 
-                                    sum += ps1.dot(ps2) * k_aap * k_bbp;
+                                    sum += ps1.dot(ps2) * kappa_aap * kappa_bbp;
                                 }
                             }
                         }
