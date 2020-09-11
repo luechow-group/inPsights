@@ -73,7 +73,7 @@ namespace SOAP {
                     similarityValue = internal::alchemical(expansions1, expansions2);
                     break;
                 }
-                case General::Mode::undefined:
+                default:
                     throw std::exception();
             }
             assert(similarityValue >= 0 && "The similarity cannot be negative. "
@@ -98,7 +98,7 @@ namespace SOAP {
                     // a dedicated self-similarity method for the alchemical expansion does not increase efficiency here
                     break;
                 }
-                case General::Mode::undefined:
+                default:
                     throw std::exception();
             }
             assert(similarityValue >= 0 && "The similarity cannot be negative. "

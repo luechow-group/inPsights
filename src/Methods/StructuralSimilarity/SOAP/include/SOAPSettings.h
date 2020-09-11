@@ -15,14 +15,12 @@
 namespace SOAP {
     namespace General {
         enum class Mode {
-            undefined = -1,
             typeAgnostic = 0, chemical = 1, alchemical = 2
         };
     }
 
     namespace Radial {
         enum class BasisType {
-            undefined = -1,
             equispaced = 0, adaptive = 1,
         };
     }
