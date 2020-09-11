@@ -168,21 +168,16 @@ namespace SOAP {
             return std::norm(sum);
         }
 
-        double internal::kroneckerDelta(int typeA, int typeB) {
-            std::map<std::pair<int, int>, double>::const_iterator it;
-
-            if (typeA == typeB)
-                return 1.0;
-            else if (typeA < typeB)
-                it = General::settings.pairSimilarities.find({typeA, typeB});
-            else
-                it = General::settings.pairSimilarities.find({typeB, typeA});
-
-
-            if (it != General::settings.pairSimilarities.end())
-                return (*it).second;
-            else
-                return 0.0;
+        double internal::kappa(int typeA, int typeB) {
+            if (typeA == typeB) {
+                const auto itSame = General::settings.pairSimilarities.find({typeA, typeA});
+                return (itSame != General::settings.pairSimilarities.end())? itSame->second : 1.0;
+            } else {
+                const auto itDiff = typeA < typeB ?
+                                    General::settings.pairSimilarities.find({typeA, typeB}) :// (typeA < typeB)
+                                    General::settings.pairSimilarities.find({typeB, typeA}); // (typeA > typeB)
+                return (itDiff != General::settings.pairSimilarities.end()) ? itDiff->second : 0.0;
+            }
         }
 
         double internal::alchemical(const TypeSpecificNeighborhoodsAtOneCenter &expansions1,
@@ -191,7 +186,7 @@ namespace SOAP {
             for (auto &alpha : ParticleKit::kit) {
                 for (auto &alphaPrimed : ParticleKit::kit) {
 
-                    double k_aap = internal::kroneckerDelta(alpha.first, alphaPrimed.first);
+                    double k_aap = internal::kappa(alpha.first, alphaPrimed.first);
                     if (k_aap > 0.0) {
                         const auto &alphaExpansion1 = expansions1.find(alpha.first)->second;
                         const auto &alphaPrimedExpansion2 = expansions2.find(alphaPrimed.first)->second;
@@ -199,7 +194,7 @@ namespace SOAP {
                         for (auto &beta : ParticleKit::kit) {
                             for (auto &betaPrimed : ParticleKit::kit) {
 
-                                double k_bbp = internal::kroneckerDelta(beta.first, betaPrimed.first);
+                                double k_bbp = internal::kappa(beta.first, betaPrimed.first);
                                 if (k_bbp > 0.0) {
                                     const auto &betaExpansion1 = expansions1.find(beta.first)->second;
                                     const auto &betaPrimedExpansion2 = expansions2.find(betaPrimed.first)->second;
