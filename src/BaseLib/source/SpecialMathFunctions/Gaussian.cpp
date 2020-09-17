@@ -67,7 +67,6 @@ double Gaussian::g2_r2_normalizedValue(double r) const {
     return value(r)*normalizationConstant_g2_r2_;
 };
 
-
 SphericalGaussian::SphericalGaussian(const Eigen::Vector3d& rCenter, double sigma)
         : IGaussian(sigma),
           rCenter_(rCenter)

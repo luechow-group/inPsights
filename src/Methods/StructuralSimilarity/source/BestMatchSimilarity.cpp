@@ -66,13 +66,13 @@ Eigen::MatrixXd BestMatch::SOAPSimilarity::calculateEnvironmentSimilarityMatrix(
 
 /*
  * Returns a list of distance-preserving permutations matching equivalent environments within a given
- * similarity threshold. If no match is found above the given threshold (within a comparision epsilion compensating
- * numerical imprecisions), the best-match permutation and the most deviating environmental similarity along the
+ * similarity threshold. If no match is found above the given threshold (within a comparison epsilon compensating
+ * numerical imprecision), the best-match permutation and the most deviating environmental similarity along the
  * diagonal of the best-match permuted environmental similarity matrix is returned.
  *
  * The algorithm has five steps:
  *  1. Find matching dependent environments.
- *  2. Find possible permutations between dependent environments and check if there are distance preserving.
+ *  2. Find possible permutations between dependent environments and check if they are distance preserving.
  *  3. Check for all permutations within these blocks for distance conservation.
  *  4. Combine the blockwise distance-conserving permutations to find overall distance-conserving permutations.
  *  5. Lastly, the distance-conserving permutations are converted back into the lab system
@@ -190,11 +190,11 @@ std::vector<BestMatch::DescendingMetricResult> BestMatch::SOAPSimilarity::getBes
             auto permIdx = jointPermutedPermuteeIndices[i];
             auto refIdx = jointReferenceIndices[i];
 
-            // create permuation vector
+            // create permutation vector
             finalPermIndicesInKitSystem[permIdx] = refIdx;
             spdlog::debug("({} {})", permIdx, refIdx);
 
-            // determine lowest similarity
+            // determine lowest similarity value
             auto environmentSimilarity = environmentSimilarities(permIdx, refIdx);
             if (environmentSimilarity < lowestEnvironmentSimilarityOfParticle)
                 lowestEnvironmentSimilarityOfParticle = environmentSimilarity;
@@ -203,8 +203,11 @@ std::vector<BestMatch::DescendingMetricResult> BestMatch::SOAPSimilarity::getBes
 
         Eigen::PermutationMatrix<Eigen::Dynamic> perm(finalPermIndicesInKitSystem);
 
-        results.emplace_back(BestMatch::DescendingMetricResult(
-                {lowestEnvironmentSimilarityOfParticle, referenceFromKit * perm * permuteeToKit}));
+        // Step 5.
+        results.emplace_back(BestMatch::DescendingMetricResult({
+            lowestEnvironmentSimilarityOfParticle,
+            referenceFromKit * perm * permuteeToKit
+        }));
     }
     std::sort(results.begin(), results.end()); // higher metric values come first
 
@@ -247,10 +250,7 @@ bool BestMatch::SOAPSimilarity::GrowingPerm::add(const std::pair<Eigen::Index, E
     }
 }
 
-/*
- * Returns list of environments in the permutee matching a reference.
- * Multiple environments can be found for each reference index.
- */
+// Returns an object for each environment in the reference listing all equivalent environments in the permutee.
 std::deque<BestMatch::SOAPSimilarity::PermuteeToReferenceMatch>
 BestMatch::SOAPSimilarity::findEnvironmentMatches(
         const Eigen::MatrixXd &environmentSimilarities,
@@ -260,13 +260,14 @@ BestMatch::SOAPSimilarity::findEnvironmentMatches(
 
     std::deque<PermuteeToReferenceMatch> matches;
     for (Eigen::Index j = 0; j < environmentSimilarities.cols(); ++j) {
-        auto permuteeEnvs = GraphAnalysis::findVerticesOfIncomingEdges(adjacencyMatrix, j);
-        matches.emplace_back(PermuteeToReferenceMatch{permuteeEnvs, j});
+        auto equivalentPermuteeEnvs = GraphAnalysis::findVerticesOfIncomingEdges(adjacencyMatrix, j);
+        matches.emplace_back(PermuteeToReferenceMatch{equivalentPermuteeEnvs, j});
     }
 
     return matches;
 }
 
+// finds PermuteeToReferenceMatch objects having overlapping permutee indices and groups them into lists.
 std::deque<std::deque<BestMatch::SOAPSimilarity::PermuteeToReferenceMatch>>
 BestMatch::SOAPSimilarity::clusterDependentMatches(const std::deque<PermuteeToReferenceMatch> &matches) {
 
@@ -275,7 +276,7 @@ BestMatch::SOAPSimilarity::clusterDependentMatches(const std::deque<PermuteeToRe
 
     for(const auto& match : matches){
 
-        bool foundQ = false;
+        bool overlapBetweenPermuteeIndicesFoundQ = false;
         for ( auto& dependentMatchesGroup : dependentMatchesGroups){
 
             for ( auto dependentMatch : dependentMatchesGroup ) {
@@ -288,13 +289,13 @@ BestMatch::SOAPSimilarity::clusterDependentMatches(const std::deque<PermuteeToRe
 
                 if(!intersection.empty()) {
                     dependentMatchesGroup.emplace_back(match);
-                    foundQ = true;
+                    overlapBetweenPermuteeIndicesFoundQ = true;
                     goto breakTwoLoops;
                 }
             }
         }
         breakTwoLoops:
-        if(!foundQ)
+        if(!overlapBetweenPermuteeIndicesFoundQ)
             dependentMatchesGroups.emplace_back(std::deque<PermuteeToReferenceMatch>({match}));
     }
 
