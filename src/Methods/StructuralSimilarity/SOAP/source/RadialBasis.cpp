@@ -1,10 +1,11 @@
-// Copyright (C) 2018-2019 Michael Heuer.
+// Copyright (C) 2018-2020 Michael Heuer.
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include <Eigen/Eigenvalues>
 #include <Eigen/Cholesky>
 #include <unsupported/Eigen/MatrixFunctions>
 #include <SpecialMathFunctions/ModifiedSphericalBesser1stKind.h>
+#include <ErrorHandling.h>
 #include <NaturalConstants.h>
 #include "RadialBasis.h"
 #include "SOAPSettings.h"
@@ -36,6 +37,8 @@ std::vector<Gaussian> RadialBasis::createBasis() {
             return basis;
         }
         case Radial::BasisType::adaptive :{
+            throw NotImplemented();
+
             basisFunctionCenter = 0;
             double sigmaStride = 1/2.;
 
@@ -46,14 +49,12 @@ std::vector<Gaussian> RadialBasis::createBasis() {
             }
 
             //TODO Attention: the cutoff radius is changed here,
-                    // this can interfere with the global variable we use in ExpansionSettings::Radial::cutoff
-                    // add lock function?
-                    //TODO CHANGE THIS or don't use this method!
+            // this can interfere with the global variable we use in ExpansionSettings::Radial::cutoff
             Cutoff::settings.radius = (*basis_.end()).center(); //TODO check this: is the last basis function centered at the cutoff radius?
             return basis;
         }
         default:
-            return {}; //TODO treat undefined behavior
+            throw NotImplemented();
     }
 
 }
@@ -67,7 +68,7 @@ double RadialBasis::operator()(double r, unsigned n) const{
     Eigen::VectorXd hvec(nmax);
 
     for (unsigned i = 0; i < nmax; ++i) {
-        hvec(i) = basis_[i].g2_r2_normalizedValue(r); //TODO store this?
+        hvec(i) = basis_[i].g2_r2_normalizedValue(r);
     }
     return radialTransform_.col(n-1).dot(hvec);
 };
@@ -151,9 +152,9 @@ std::vector<double> RadialBasis::calculateIntegrals(double ai, double ri, double
     for (unsigned s = 0; s < n_steps; ++s) {
         for (unsigned l = 0; l  != lmax+1; ++l ) {
             ints[l] += delta_r_step/6.*(
-                    integrand_l_at_r(l, 2*s)+
-                    4*integrand_l_at_r(l, 2*s+1)+
-                    integrand_l_at_r(l, 2*s+2)
+                    integrand_l_at_r(l, 2*s)
+                    + 4*integrand_l_at_r(l, 2*s+1)
+                    + integrand_l_at_r(l, 2*s+2)
             );
         }
     }
@@ -179,9 +180,7 @@ Eigen::MatrixXd RadialBasis::computeCoefficients(double centerToNeighborDistance
     } else {
         double ai = 1.0 / (2.0 * pow(neighborSigma, 2));
         double ri = centerToNeighborDistance;
-        SphericalGaussian gi_sph(Eigen::Vector3d::Zero(),
-                                 neighborSigma); // <- position should not matter, as only normalization used here
-        double norm_g_dV_sph_i = gi_sph.getNormalizationConstant();
+        double norm_g_dV_sph_i = SphericalGaussian::calculateNormalizationConstant(neighborSigma);
 
         //iterate over all basis functions
         for (unsigned n = 0; n < nmax; ++n) {
