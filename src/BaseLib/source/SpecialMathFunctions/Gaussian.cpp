@@ -11,7 +11,7 @@ IGaussian::IGaussian(double sigma)
           normalizationConstant_(0) {};
 
 double IGaussian::calculateAlpha(double sigma) {
-    return 1./(2*pow(sigma,2));
+    return 1./(2*std::pow(sigma,2));
 }
 
 Gaussian::Gaussian(double rCenter, double sigma)

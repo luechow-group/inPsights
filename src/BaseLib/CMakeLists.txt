@@ -38,7 +38,7 @@ set(HEADER_FILES
         include/EnumeratedType.h
         include/EigenYamlConversion.h
         include/SpecialMathFunctions/BoostSphericalHarmonics.h
-        include/SpecialMathFunctions/ModifiedSphericalBesser1stKind.h
+        include/SpecialMathFunctions/ModifiedSphericalBessel1stKind.h
         include/SpecialMathFunctions/Gaussian.h
         include/CoulombPotential.h
         include/BinaryFileReader.h
@@ -82,7 +82,7 @@ set(SOURCE_FILES
         source/Particle.cpp
         source/EigenYamlConversion.cpp
         source/SpecialMathFunctions/BoostSphericalHarmonics.cpp
-        source/SpecialMathFunctions/ModifiedSphericalBesser1stKind.cpp
+        source/SpecialMathFunctions/ModifiedSphericalBessel1stKind.cpp
         source/SpecialMathFunctions/Gaussian.cpp
         source/BinaryFileReader.cpp
         source/ISettings.cpp

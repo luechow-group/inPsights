@@ -4,9 +4,10 @@
 #include <Eigen/Eigenvalues>
 #include <Eigen/Cholesky>
 #include <unsupported/Eigen/MatrixFunctions>
-#include <SpecialMathFunctions/ModifiedSphericalBesser1stKind.h>
+#include <SpecialMathFunctions/ModifiedSphericalBessel1stKind.h>
 #include <ErrorHandling.h>
 #include <NaturalConstants.h>
+#include <ErrorHandling.h>
 #include "RadialBasis.h"
 #include "SOAPSettings.h"
 
@@ -43,7 +44,7 @@ std::vector<Gaussian> RadialBasis::createBasis() {
             double sigmaStride = 1/2.;
 
             for (unsigned i = 0; i < nmax; ++i) {
-                double sigmaAdaptive = std::sqrt( 4./(2.*lmax + 1) * pow(basisFunctionCenter,2)+ pow(sigmaAtom,2) );
+                double sigmaAdaptive = std::sqrt( 4./(2.*lmax + 1) * std::pow(basisFunctionCenter,2)+ std::pow(sigmaAtom,2) );
                 basis.emplace_back(basisFunctionCenter, sigmaAdaptive);
                 basisFunctionCenter += sigmaStride*sigmaAdaptive;
             }
@@ -93,11 +94,11 @@ Eigen::MatrixXd RadialBasis::Sab(unsigned nmax) const{
 
             double w = a+b;
             double W0 = a*rCenterA + b*rCenterB;
-            double s = 1./(4.*pow(w, 2.5));
-            s *= exp(-a*rCenterA*rCenterA-b*rCenterB*rCenterB);
-            s *= 2.0*sqrt(w)*W0
-                 + sqrt(Constant::pi)*exp(std::pow(W0,2)/w)*(w+2*std::pow(W0,2))
-                 * erfc(-W0/sqrt(w)); // TODO which one is faster (with MKL)
+            double s = 1./(4.*std::(w, 2.5));
+            s *= std::exp(-a*rCenterA*rCenterA-b*rCenterB*rCenterB);
+            s *= 2.0*std::sqrt(w)*W0
+                 + std::sqrt(Constant::pi)*std::exp(std::pow(W0,2)/w)*(w+2*std::pow(W0,2))
+                 * std::erfc(-W0/std::sqrt(w)); // TODO which one is faster (with MKL)
                  //*boost::math::erfc<double>(-W0/sqrt(w));
             s *= basis_[i].normalizationConstant_g2_r2()*basis_[j].normalizationConstant_g2_r2();
             S(i,j) = s;
@@ -127,24 +128,22 @@ std::vector<double> RadialBasis::calculateIntegrals(double ai, double ri, double
         r_min = 0.;
     }
     double delta_r_step = (r_max-r_min)/(n_steps-1);
-    int n_sample = 2*n_steps+1;
+    unsigned n_sample = 2*n_steps+1;
     double delta_r_sample = 0.5*delta_r_step;
 
-    ModifiedSphericalBessel1stKind mosbest(lmax);
+    std::vector<double> modifiedSphericalBessel1stKindResults(lmax);
 
     // Compute samples ...
     Eigen::MatrixXd integrand_l_at_r = Eigen::MatrixXd::Zero(lmax+1,n_sample);
-    for (int s = 0; s < n_sample; ++s) {
+    for (unsigned s = 0; s < n_sample; ++s) {
         double r_sample = r_min - delta_r_sample + s*delta_r_sample;
-        double exp_ik = exp(-beta_ik*(r_sample-rho_ik)*(r_sample-rho_ik));
-        mosbest.evaluate(2*ai*ri*r_sample, false);// EQ 32 zweiter tiel
-        //for (int l = 0; l != L_plus_1; ++l) {
-        for (unsigned l = 0; l != lmax+1; ++l) {
-            integrand_l_at_r(l,s) =
-                    r_sample*r_sample*
-                    mosbest._in[l]*
-                    exp_ik;
-        }
+        double exp_ik = std::exp(-beta_ik*(r_sample-rho_ik)*(r_sample-rho_ik));
+        // EQ 32 second part
+        modifiedSphericalBessel1stKindResults =
+                ModifiedSphericalBessel1stKind::evaluateToMaxDegree(lmax, 2*ai*ri*r_sample,1e-10, 1e-4);
+
+        for (unsigned l = 0; l <= lmax; ++l)
+            integrand_l_at_r(l,s) = std::pow(r_sample,2) * modifiedSphericalBessel1stKindResults[l] * exp_ik;
     }
 
     // ... integrate (à la Simpson)
@@ -178,7 +177,7 @@ Eigen::MatrixXd RadialBasis::computeCoefficients(double centerToNeighborDistance
             }
         }
     } else {
-        double ai = 1.0 / (2.0 * pow(neighborSigma, 2));
+        double ai = 1.0 / (2.0 * std::pow(neighborSigma, 2));
         double ri = centerToNeighborDistance;
         double norm_g_dV_sph_i = SphericalGaussian::calculateNormalizationConstant(neighborSigma);
 
@@ -193,10 +192,12 @@ Eigen::MatrixXd RadialBasis::computeCoefficients(double centerToNeighborDistance
 
             double prefac =
                     4.0 * Constant::pi *
-                    norm_r2_g2_dr_rad_k * norm_g_dV_sph_i *
-                    exp(-ai * ri * ri) *
-                    exp(-basisFunctionAlpha * pow(basisFunctionCenter, 2) *
-                        (1.0 - basisFunctionAlpha / beta_ik)); // eq 32 bzw. 33
+                    norm_r2_g2_dr_rad_k * norm_g_dV_sph_i
+                    * std::exp(-ai * ri * ri)
+                    * std::exp(-basisFunctionAlpha
+                               * std::pow(basisFunctionCenter, 2)
+                               * (1.0 - basisFunctionAlpha / beta_ik)
+                               ); // eq 32 bzw. 33
 
             double rho_ik = basisFunctionAlpha * basisFunctionCenter / beta_ik;
             auto integrals = calculateIntegrals(ai, ri, rho_ik, beta_ik);
