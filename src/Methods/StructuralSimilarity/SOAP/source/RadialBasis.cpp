@@ -20,9 +20,9 @@ RadialBasis::RadialBasis()
 {}
 
 std::vector<Gaussian> RadialBasis::createBasis() {
-    const auto& nmax = Radial::settings.nmax();
-    const auto& lmax = Angular::settings.lmax();
-    const auto& sigmaAtom = Radial::settings.sigmaAtom();
+    const auto nmax = Radial::settings.nmax();
+    const auto lmax = Angular::settings.lmax();
+    const auto sigmaAtom = Radial::settings.sigmaAtom();
 
     assert(nmax > 1 && "nmax must be greater than 1");
 
@@ -116,9 +116,13 @@ Eigen::MatrixXd RadialBasis::calculateRadialTransform(const Eigen::MatrixXd &Sab
 /* Copied code from soapxx */
 // Compute integrals S r^2 dr i_l(2*ai*ri*r) exp(-beta_ik*(r-rho_ik)^2) //TODO what is the difference between r and ri
 std::vector<double> RadialBasis::calculateIntegrals(double ai, double ri, double rho_ik,double beta_ik) const {
+    // Thresholds are defined to spare unnecessary computations.
+    // Here, we use the same thresholds as https://github.com/capoe/soapxx/blob/master/src/soap/functions.hpp
+    const auto comparisionEpsilon = General::settings.comparisonEpsilon();
+    const double sphZeroThreshold = 1e-4;
 
-    auto lmax = Angular::settings.lmax();
-    auto n_steps = Radial::settings.integrationSteps();
+    const auto lmax = Angular::settings.lmax();
+    const auto n_steps = Radial::settings.integrationSteps();
 
     double sigma_ik = sqrt(0.5/beta_ik);
     double r_min = rho_ik - 4*sigma_ik;
@@ -133,6 +137,7 @@ std::vector<double> RadialBasis::calculateIntegrals(double ai, double ri, double
 
     std::vector<double> modifiedSphericalBessel1stKindResults(lmax);
 
+
     // Compute samples ...
     Eigen::MatrixXd integrand_l_at_r = Eigen::MatrixXd::Zero(lmax+1,n_sample);
     for (unsigned s = 0; s < n_sample; ++s) {
@@ -140,7 +145,7 @@ std::vector<double> RadialBasis::calculateIntegrals(double ai, double ri, double
         double exp_ik = std::exp(-beta_ik*(r_sample-rho_ik)*(r_sample-rho_ik));
         // EQ 32 second part
         modifiedSphericalBessel1stKindResults =
-                ModifiedSphericalBessel1stKind::evaluateToMaxDegree(lmax, 2*ai*ri*r_sample,1e-10, 1e-4);
+                ModifiedSphericalBessel1stKind::evaluateToMaxDegree(lmax, 2*ai*ri*r_sample, comparisionEpsilon, 1e-4);
 
         for (unsigned l = 0; l <= lmax; ++l)
             integrand_l_at_r(l,s) = std::pow(r_sample,2) * modifiedSphericalBessel1stKindResults[l] * exp_ik;
