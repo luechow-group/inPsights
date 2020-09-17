@@ -38,7 +38,7 @@ std::vector<Gaussian> RadialBasis::createBasis() {
             return basis;
         }
         case Radial::BasisType::adaptive :{
-            throw NotImplemented();
+            //throw NotImplemented();
 
             basisFunctionCenter = 0;
             double sigmaStride = 1/2.;
@@ -94,7 +94,7 @@ Eigen::MatrixXd RadialBasis::Sab(unsigned nmax) const{
 
             double w = a+b;
             double W0 = a*rCenterA + b*rCenterB;
-            double s = 1./(4.*std::(w, 2.5));
+            double s = 1./(4.*std::pow(w, 2.5));
             s *= std::exp(-a*rCenterA*rCenterA-b*rCenterB*rCenterB);
             s *= 2.0*std::sqrt(w)*W0
                  + std::sqrt(Constant::pi)*std::exp(std::pow(W0,2)/w)*(w+2*std::pow(W0,2))
@@ -145,7 +145,8 @@ std::vector<double> RadialBasis::calculateIntegrals(double ai, double ri, double
         double exp_ik = std::exp(-beta_ik*(r_sample-rho_ik)*(r_sample-rho_ik));
         // EQ 32 second part
         modifiedSphericalBessel1stKindResults =
-                ModifiedSphericalBessel1stKind::evaluateToMaxDegree(lmax, 2*ai*ri*r_sample, comparisionEpsilon, 1e-4);
+                ModifiedSphericalBessel1stKind::evaluateToMaxDegree(lmax, 2*ai*ri*r_sample,
+                                                                    comparisionEpsilon, sphZeroThreshold);
 
         for (unsigned l = 0; l <= lmax; ++l)
             integrand_l_at_r(l,s) = std::pow(r_sample,2) * modifiedSphericalBessel1stKindResults[l] * exp_ik;
