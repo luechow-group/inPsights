@@ -32,6 +32,7 @@ set(HEADER_FILES
         include/TotalWeightDifferenceAnalyzer.h
         include/SelectionEnergyCalculator.h
         include/EnergyResultsBundle.h
+        include/ClusteringMetric.h
         )
 
 set(SOURCE_FILES
@@ -58,6 +59,7 @@ set(SOURCE_FILES
         source/ClusterAnalysis.cpp
         source/TotalWeightDifferenceAnalyzer.cpp
         source/SelectionEnergyCalculator.cpp
+        source/ClusteringMetric.cpp
         )
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES})

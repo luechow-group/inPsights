@@ -1,4 +1,4 @@
-// Copyright (C) 2018-2019 Michael Heuer.
+// Copyright (C) 2018-2020 Michael Heuer.
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #ifndef INPSIGHTS_DENSITYBASEDCLUSTERER_H
@@ -36,11 +36,9 @@ public:
     void cluster(Cluster& group) override;
 
 private:
-    static double wrapper(const Cluster &g1, const Cluster &g2); //TODO refactor by abstraction
-    static double wrapperLocal(const Cluster &g1, const Cluster &g2); //TODO refactor by abstraction
     void orderByBestMatchDistance(Cluster &supergroup, double threshold, bool local = false) const;
 
-    bool compare(double threshold, const Cluster &i, Cluster &j) const;
+    bool compareAndPermute(double threshold, const Cluster &i, Cluster &j) const;
 
     bool compareLocal(double threshold, const Cluster&i, Cluster &j) const;
 };

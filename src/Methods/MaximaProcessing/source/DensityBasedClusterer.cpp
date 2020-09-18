@@ -1,4 +1,4 @@
-// Copyright (C) 2018-2019 Michael Heuer.
+// Copyright (C) 2018-2020 Michael Heuer.
 // Copyright (C) 2018 Leonard Reuter.
 // SPDX-License-Identifier: GPL-3.0-or-later
 
@@ -7,6 +7,7 @@
 #include <DistanceBasedMetric.h>
 #include <Enumerate.h>
 #include <Reference.h>
+#include "ClusteringMetric.h"
 
 namespace Settings {
     DensityBasedClusterer::DensityBasedClusterer()
@@ -57,26 +58,6 @@ Settings::DensityBasedClusterer DensityBasedClusterer::settings = Settings::Dens
 DensityBasedClusterer::DensityBasedClusterer(std::vector<Sample> &samples)
         : IClusterer(samples) {};
 
-double DensityBasedClusterer::wrapper(const Cluster &g1, const Cluster &g2) {
-    return Metrics::Similarity::DistanceBased::compare<Eigen::Infinity, 2>(
-            g1.representative()->maximum().positionsVector(),
-            g2.representative()->maximum().positionsVector()).metric;
-};
-
-double DensityBasedClusterer::wrapperLocal(const Cluster &g1, const Cluster &g2) {
-
-    auto g1ElectronsCount = g1.getSelectedElectronsCount();
-    auto g2ElectronsCount = g2.getSelectedElectronsCount();
-
-    if (g1ElectronsCount == g2ElectronsCount) {
-        return Metrics::Similarity::DistanceBased::compare<Eigen::Infinity, 2>(
-                g1.representative()->maximum().head(g1ElectronsCount).positionsVector(),
-                g2.representative()->maximum().head(g2ElectronsCount).positionsVector()).metric;
-    }
-
-    return std::numeric_limits<double>::max();
-};
-
 void DensityBasedClusterer::cluster(Cluster& cluster) {
     assert(!cluster.empty() && "The cluster cannot be empty.");
 
@@ -87,10 +68,10 @@ void DensityBasedClusterer::cluster(Cluster& cluster) {
     ClusterLabels result;
     if(localQ) {
         cluster.permuteRelevantElectronsToFront(samples_);
-        DensityBasedScan<double, Cluster, DensityBasedClusterer::wrapperLocal> dbscan(cluster);
+        DensityBasedScan<double, Cluster, ClusteringMetric::distance<Spatial, Local>> dbscan(cluster);
         result = dbscan.findClusters(similarityRadius, minPts);
     } else {
-        DensityBasedScan<double, Cluster, DensityBasedClusterer::wrapper> dbscan(cluster);
+        DensityBasedScan<double, Cluster, ClusteringMetric::distance<Spatial, Global>> dbscan(cluster);
         result = dbscan.findClusters(similarityRadius, minPts);
     }
 
@@ -132,9 +113,9 @@ void DensityBasedClusterer::orderByBestMatchDistance(Cluster &supercluster, doub
                         if (i->getSelectedElectronsCount() == j->getSelectedElectronsCount())
                             isSimilarQ = compareLocal(threshold, *i, *j);
                     } else {
-                        isSimilarQ = compare(threshold, *i, *j);
+                        isSimilarQ = compareAndPermute(threshold, *i, *j);
                     }
-
+                    
                     if(isSimilarQ) {
                         // moving j from subcluster to newClusters
                         newClusters.emplace_back(*j);
@@ -157,7 +138,7 @@ void DensityBasedClusterer::orderByBestMatchDistance(Cluster &supercluster, doub
     }
 }
 
-bool DensityBasedClusterer::compare(double threshold, const Cluster &i, Cluster &j) const {
+bool DensityBasedClusterer::compareAndPermute(double threshold, const Cluster &i, Cluster &j) const {
     bool isSimilarQ = false;
 
     auto[norm, perm] = Metrics::Similarity::DistanceBased::compare<Eigen::Infinity, 2>(

@@ -1,7 +1,6 @@
 // Copyright (C) 2019 Michael Heuer.
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-
 #include <Reference.h>
 #include <Sample.h>
 #include <Cluster.h>
