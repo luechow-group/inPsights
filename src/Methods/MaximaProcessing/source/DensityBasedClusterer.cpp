@@ -4,7 +4,7 @@
 
 #include <DensityBasedClusterer.h>
 #include <PreClusterer.h>
-#include <BestMatchDistance.h>
+#include <DistanceBasedMetric.h>
 #include <Enumerate.h>
 #include <Reference.h>
 
@@ -58,7 +58,7 @@ DensityBasedClusterer::DensityBasedClusterer(std::vector<Sample> &samples)
         : IClusterer(samples) {};
 
 double DensityBasedClusterer::wrapper(const Cluster &g1, const Cluster &g2) {
-    return BestMatch::Distance::compare<Eigen::Infinity, 2>(
+    return Metrics::Similarity::DistanceBased::compare<Eigen::Infinity, 2>(
             g1.representative()->maximum().positionsVector(),
             g2.representative()->maximum().positionsVector()).metric;
 };
@@ -69,7 +69,7 @@ double DensityBasedClusterer::wrapperLocal(const Cluster &g1, const Cluster &g2)
     auto g2ElectronsCount = g2.getSelectedElectronsCount();
 
     if (g1ElectronsCount == g2ElectronsCount) {
-        return BestMatch::Distance::compare<Eigen::Infinity, 2>(
+        return Metrics::Similarity::DistanceBased::compare<Eigen::Infinity, 2>(
                 g1.representative()->maximum().head(g1ElectronsCount).positionsVector(),
                 g2.representative()->maximum().head(g2ElectronsCount).positionsVector()).metric;
     }
@@ -158,11 +158,11 @@ void DensityBasedClusterer::orderByBestMatchDistance(Cluster &supercluster, doub
 }
 
 bool DensityBasedClusterer::compare(double threshold, Cluster &subcluster, Cluster &newClusters,
-        const std::vector<Cluster>::iterator &i,
-        std::vector<Cluster>::iterator &j) const {
+                                    const std::vector<Cluster>::iterator &i,
+                                    std::vector<Cluster>::iterator &j) const {
     bool isSimilarQ = false;
 
-    auto[norm, perm] = BestMatch::Distance::compare<Eigen::Infinity, 2>(
+    auto[norm, perm] = Metrics::Similarity::DistanceBased::compare<Eigen::Infinity, 2>(
                     j->representative()->maximum().positionsVector(),
                     i->representative()->maximum().positionsVector());
 
@@ -183,20 +183,20 @@ bool DensityBasedClusterer::compareLocal(double threshold, Cluster &subcluster, 
 
     bool isSimilarQ = false;
 
-    auto[norm, perm] = BestMatch::Distance::compare<Eigen::Infinity, 2>(
+    auto[norm, perm] = Metrics::Similarity::DistanceBased::compare<Eigen::Infinity, 2>(
             j->representative()->maximum().head(jElectronsCount).positionsVector(),
             i->representative()->maximum().head(iElectronsCount).positionsVector());
 
     if (norm <= threshold) {
         isSimilarQ = true;
-        j->permuteAll(BestMatch::headToFullPermutation(perm, electronsCount), samples_);
+        j->permuteAll(Permutations::headToFullPermutation(perm, electronsCount), samples_);
         if (settings.sortRemainder()) {
-            auto[norm, perm] = BestMatch::Distance::compare<Eigen::Infinity, 2>(
+            auto[norm, perm] = Metrics::Similarity::DistanceBased::compare<Eigen::Infinity, 2>(
                     j->representative()->maximum().tail(
                             electronsCount - jElectronsCount).positionsVector(),
                     i->representative()->maximum().tail(
                             electronsCount - iElectronsCount).positionsVector());
-            j->permuteAll(BestMatch::tailToFullPermutation(perm, electronsCount),
+            j->permuteAll(Permutations::tailToFullPermutation(perm, electronsCount),
                           samples_);
         }
     };

@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include <ReferencePositionsClusterer.h>
-#include <BestMatchDistance.h>
+#include <DistanceBasedMetric.h>
 #include <BestMatch.h>
 #include <ParticleSelection.h>
 #include <Reference.h>
@@ -94,7 +94,7 @@ bool ReferencePositionsClusterer::compareLocal(std::vector<Cluster>::iterator &s
 
     // only check similarity of sortedCluster and subCluster, if the number of selected indices is equal
     // this requires sortedCluster having the correct electrons count
-    auto[norm, perm] = BestMatch::Distance::compare<Eigen::Infinity, 2>(
+    auto[norm, perm] = Metrics::Similarity::DistanceBased::compare<Eigen::Infinity, 2>(
             subCluster->representative()->maximum().head(
                     subCluster->getSelectedElectronsCount()).positionsVector(),
             sortedCluster->representative()->maximum().head(
@@ -104,14 +104,14 @@ bool ReferencePositionsClusterer::compareLocal(std::vector<Cluster>::iterator &s
         isSimilarQ = true;
 
         auto  electronsNumber = sortedCluster->representative()->maximum().numberOfEntities();
-        subCluster->permuteAll(BestMatch::headToFullPermutation(perm, electronsNumber), samples_);
+        subCluster->permuteAll(Permutations::headToFullPermutation(perm, electronsNumber), samples_);
         if (settings.sortRemainder()) { //TODO remove dependency
-            auto[norm, perm] = BestMatch::Distance::compare<Eigen::Infinity, 2>(
+            auto[norm, perm] = Metrics::Similarity::DistanceBased::compare<Eigen::Infinity, 2>(
                     subCluster->representative()->maximum().tail(
                             electronsNumber - subCluster->getSelectedElectronsCount()).positionsVector(),
                     sortedCluster->representative()->maximum().tail(
                             electronsNumber - sortedCluster->getSelectedElectronsCount()).positionsVector());
-            subCluster->permuteAll(BestMatch::tailToFullPermutation(perm, electronsNumber), samples_);
+            subCluster->permuteAll(Permutations::tailToFullPermutation(perm, electronsNumber), samples_);
         }
         sortedCluster->emplace_back(*subCluster);
     }
@@ -123,7 +123,7 @@ bool ReferencePositionsClusterer::compareGlobal(std::vector<Cluster>::iterator &
                                                double similarityRadius) const {
     bool isSimilarQ = false;
 
-    auto[norm, perm] = BestMatch::Distance::compare<Eigen::Infinity, 2>(
+    auto[norm, perm] = Metrics::Similarity::DistanceBased::compare<Eigen::Infinity, 2>(
             subCluster->representative()->maximum().positionsVector(),
             sortedCluster->representative()->maximum().positionsVector());
 

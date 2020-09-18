@@ -10,7 +10,7 @@
 #include <deque>
 #include <ParticlesVector.h>
 
-namespace BestMatch {
+namespace Permutations {
     Eigen::PermutationMatrix<Eigen::Dynamic> combinePermutations( // TODO rename to "concatenatePermutations" ?
             const Eigen::PermutationMatrix<Eigen::Dynamic> &p1,
             const Eigen::PermutationMatrix<Eigen::Dynamic> &p2, bool flipSpinsQ = false);
@@ -47,7 +47,8 @@ namespace BestMatch {
         }
         return Eigen::PermutationMatrix<Eigen::Dynamic>(typeSerparatingPermutationIndices);
     }
-
+}
+namespace BestMatch {
     template<bool ascending = true>
     struct Result {
         double metric;

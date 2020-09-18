@@ -15,8 +15,8 @@ set(HEADER_FILES
         include/GraphAnalysis.h
         include/Motif.h
         include/Motifs.h
-        include/BestMatchSimilarity.h
-        include/BestMatchDistance.h
+        include/EnvironmentBasedMetric.h
+        include/DistanceBasedMetric.h
         include/EnvironmentBlock.h
         )
 
@@ -26,7 +26,7 @@ set(SOURCE_FILES
         source/GraphAnalysis.cpp
         source/Motif.cpp
         source/Motifs.cpp
-        source/BestMatchSimilarity.cpp
+        source/EnvironmentBasedMetric.cpp
         source/EnvironmentBlock.cpp
         )
 

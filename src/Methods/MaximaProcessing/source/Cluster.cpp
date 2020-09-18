@@ -214,7 +214,7 @@ void Cluster::permuteRelevantElectronsToFront(std::vector<Sample> & samples){
 
         // permute all relevant electrons to the front
         subCluster.setSelectedElectronsCount(subIndices.size());
-        permutation = BestMatch::getPermutationToFront(subIndices, electronsNumber);
+        permutation = Permutations::getPermutationToFront(subIndices, electronsNumber);
         subCluster.permuteAll(permutation, samples);
     }
 }

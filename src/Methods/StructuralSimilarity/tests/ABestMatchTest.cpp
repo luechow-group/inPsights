@@ -18,7 +18,7 @@ TEST(ABestMatchTest, CombinePermutations){
     ASSERT_TRUE(p1.indices().base().isApprox(expected.segment(0,4)));
     ASSERT_TRUE(p2.indices().base().isApprox(expected.segment(0,4)));
 
-    auto p = BestMatch::combinePermutations(p1,p2);
+    auto p = Permutations::combinePermutations(p1,p2);
     ASSERT_TRUE(p.indices().base().isApprox(expected));
 }
 
@@ -33,7 +33,7 @@ TEST(ABestMatchTest, CombinePermutationsWithZeroLength){
     ASSERT_TRUE(p1.indices().base().isApprox(expected.segment(0,0)));
     ASSERT_TRUE(p2.indices().base().isApprox(expected.segment(0,4)));
 
-    auto p = BestMatch::combinePermutations(p1,p2);
+    auto p = Permutations::combinePermutations(p1,p2);
     ASSERT_TRUE(p.indices().base().isApprox(expected));
 }
 
@@ -43,7 +43,7 @@ TEST(ABestMatchTest, PermutationToFront) {
     indices.emplace_back(3);
     indices.emplace_back(7);
 
-    auto permutation = BestMatch::getPermutationToFront(indices,10);
+    auto permutation = Permutations::getPermutationToFront(indices,10);
 
     Eigen::VectorXi refIndices(10);
     refIndices << 2,3,4,0,5,6,7,1,8,9;
@@ -56,7 +56,7 @@ TEST(ABestMatchTest, HeadToFullPermutation) {
     indices << 2,0,1;
 
     Eigen::PermutationMatrix<Eigen::Dynamic> partialPermutation(indices);
-    auto permutation = BestMatch::headToFullPermutation(partialPermutation, 10);
+    auto permutation = Permutations::headToFullPermutation(partialPermutation, 10);
 
     Eigen::VectorXi refIndices(10);
     refIndices << 2,0,1,3,4,5,6,7,8,9;
@@ -69,7 +69,7 @@ TEST(ABestMatchTest, TailToFullPermutation) {
     indices << 2,0,1;
 
     Eigen::PermutationMatrix<Eigen::Dynamic> partialPermutation(indices);
-    auto permutation = BestMatch::tailToFullPermutation(partialPermutation, 10);
+    auto permutation = Permutations::tailToFullPermutation(partialPermutation, 10);
 
     Eigen::VectorXi refIndices(10);
     refIndices << 0,1,2,3,4,5,6,9,7,8;

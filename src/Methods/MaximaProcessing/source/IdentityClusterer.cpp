@@ -4,7 +4,7 @@
 #include <IdentityClusterer.h>
 #include <PreClusterer.h>
 #include <Reference.h>
-#include <BestMatchDistance.h>
+#include <DistanceBasedMetric.h>
 #include <spdlog/spdlog.h>
 
 namespace Settings {
@@ -74,7 +74,7 @@ void IdentityClusterer::subLoop(Cluster& cluster,
     auto atoms = cluster.representative()->nuclei();
 
     //TODO calculate only alpha electron distances and skip beta electron hungarian if dist is too large
-    auto [norm, perm] = BestMatch::Distance::compare<Spin, Eigen::Infinity, 2>(
+    auto [norm, perm] = Metrics::Similarity::DistanceBased::compare<Spin, Eigen::Infinity, 2>(
             it->representative()->maximum(),
             (*beginIt).representative()->maximum());
 
@@ -83,8 +83,8 @@ void IdentityClusterer::subLoop(Cluster& cluster,
         auto permuteeSpinFlipped = it->representative()->maximum();
         permuteeSpinFlipped.typesVector().flipSpins();
 
-        auto [normFlipped, permFlipped] =
-        BestMatch::Distance::compare<Spin, Eigen::Infinity, 2>(permuteeSpinFlipped, beginIt->representative()->maximum());
+        auto [normFlipped, permFlipped] =Metrics::Similarity::DistanceBased::compare<Spin, Eigen::Infinity, 2>(
+                permuteeSpinFlipped, beginIt->representative()->maximum());
 
         if ((norm <= distThresh) || (normFlipped <= distThresh)) {
             if (norm <= normFlipped)

@@ -8,7 +8,7 @@
 #include <TestMolecules.h>
 #include <Cluster.h>
 #include <Reference.h>
-#include <BestMatchSimilarity.h>
+#include <EnvironmentBasedMetric.h>
 
 using namespace testing;
 using namespace SOAP;
@@ -88,23 +88,23 @@ TEST_F(ASOAPClustererTest, VerifyTestCluster) {
     auto specE = MolecularSpectrum({atoms, E.representative()->maximum()});
     auto specF = MolecularSpectrum({atoms, F.representative()->maximum()});
     
-    ASSERT_LT(BestMatch::SOAPSimilarity::compare(
+    ASSERT_LT(Metrics::Similarity::SOAPBased::compare(
             specA, specB, distanceTolerance, soapThreshold, eps).metric, 1);
 
-    ASSERT_LT(BestMatch::SOAPSimilarity::compare(
+    ASSERT_LT(Metrics::Similarity::SOAPBased::compare(
             specA, specC,  distanceTolerance, soapThreshold, eps).metric, 1);
 
-    ASSERT_EQ(BestMatch::SOAPSimilarity::compare(
+    ASSERT_EQ(Metrics::Similarity::SOAPBased::compare(
             specA, specD,  distanceTolerance, soapThreshold, eps).metric, 1);
 
-    ASSERT_LT(BestMatch::SOAPSimilarity::compare(
+    ASSERT_LT(Metrics::Similarity::SOAPBased::compare(
             specA, specE,  distanceTolerance, soapThreshold, eps).metric, 1);
-    ASSERT_LT(BestMatch::SOAPSimilarity::compare(
+    ASSERT_LT(Metrics::Similarity::SOAPBased::compare(
             specA, specF,  distanceTolerance, soapThreshold, eps).metric, 1);
 
-    ASSERT_EQ(BestMatch::SOAPSimilarity::compare(
+    ASSERT_EQ(Metrics::Similarity::SOAPBased::compare(
             specE, specF,  distanceTolerance, soapThreshold, eps).metric, 1);
-    ASSERT_EQ(BestMatch::SOAPSimilarity::compare(
+    ASSERT_EQ(Metrics::Similarity::SOAPBased::compare(
             specF, specE,  distanceTolerance, soapThreshold, eps).metric, 1);
 }
 

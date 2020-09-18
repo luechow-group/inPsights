@@ -4,7 +4,7 @@
 #include "SOAPClusterer.h"
 #include "PreClusterer.h"
 #include <spdlog/spdlog.h>
-#include <BestMatchSimilarity.h>
+#include <EnvironmentBasedMetric.h>
 #include <SOAPSettings.h>
 #include <Reference.h>
 
@@ -87,7 +87,7 @@ void SOAPClusterer::cluster(Cluster& cluster){
             spdlog::debug("    Supercluster status before comparison: {}", ToString::clusterToString(supercluster));
 
             if( std::abs(subclusterOfSupercluster.representative()->value() - subcluster.representative()->value()) < maxValueDelta) {
-                auto comparisionResult = BestMatch::SOAPSimilarity::compare(
+                auto comparisionResult = Metrics::Similarity::SOAPBased::compare(
                         subcluster.representative()->spectrum(),
                         subclusterOfSupercluster.representative()->spectrum(),
                         toleranceRadius, similarityThreshold, numericalPrecisionEpsilon);

@@ -9,7 +9,7 @@
 #include <Enumerate.h>
 #include <MolecularGeometry.h>
 #include <deque>
-#include <BestMatchSimilarity.h>
+#include <EnvironmentBasedMetric.h>
 #include <spdlog/spdlog.h>
 
 
@@ -26,11 +26,11 @@ namespace DistanceCovariance {
 class EnvironmentBlock {
 public:
     EnvironmentBlock(
-            const std::deque<BestMatch::SOAPSimilarity::GrowingPerm>& possiblePerms,
+            const std::deque<Metrics::Similarity::SOAPBased::GrowingPerm>& possiblePerms,
             const MolecularGeometry &permutee,
             const MolecularGeometry &reference);
 
-    void initialize(const std::deque<BestMatch::SOAPSimilarity::GrowingPerm>& possiblePerms);
+    void initialize(const std::deque<::Metrics::Similarity::SOAPBased::GrowingPerm>& possiblePerms);
 
     std::vector<std::vector<Eigen::Index>> filterPermutations(double distanceMatrixCovarianceTolerance);
 

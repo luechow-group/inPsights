@@ -4,7 +4,7 @@
 #include <IdentityClusterer.h>
 #include <PreClusterer.h>
 #include <Reference.h>
-#include <BestMatchDistance.h>
+#include <DistanceBasedMetric.h>
 
 namespace Settings {
     PreClusterer::PreClusterer()
@@ -63,7 +63,7 @@ void PreClusterer::cluster(Cluster& cluster) {
         for(auto subclusterFromSuperclusterBoundaries = superclusterLowerBoundIt;
             subclusterFromSuperclusterBoundaries != superclusterUpperBoundIt; ++subclusterFromSuperclusterBoundaries) {
 
-            auto[norm, perm] = BestMatch::Distance::compare<Eigen::Infinity, 2>(
+            auto[norm, perm] = Metrics::Similarity::DistanceBased::compare<Eigen::Infinity, 2>(
                     subcluster->representative()->maximum().positionsVector(),
                     subclusterFromSuperclusterBoundaries->representative()->maximum().positionsVector());
             if(norm > similarityRadius)
@@ -104,7 +104,7 @@ void PreClusterer::cluster(Cluster& cluster) {
         for (auto subclusterFromSuperclusterBoundaries = superclusterLowerBoundIt;
         subclusterFromSuperclusterBoundaries != superclusterUpperBoundIt; ++subclusterFromSuperclusterBoundaries) {
 
-            auto [norm, perm] = BestMatch::Distance::compare<Eigen::Infinity, 2>(
+            auto [norm, perm] = Metrics::Similarity::DistanceBased::compare<Eigen::Infinity, 2>(
                     subcluster->representative()->maximum().positionsVector(),
                     subclusterFromSuperclusterBoundaries->representative()->maximum().positionsVector());
 

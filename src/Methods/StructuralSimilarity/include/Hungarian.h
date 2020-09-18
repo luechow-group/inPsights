@@ -1,6 +1,6 @@
 // Copyright (C) 2014, 2017 Emma Rose Streshinsky
 // SPDX-License-Identifier: BSD 3-Clause
-// Obtained from https://github.com/emstresh/HungarianAlgorithm
+// Obtained from https://github.com/emmarose88/HungarianAlgorithm
 
 // Copyright (C) 2018-2019 Michael Heuer.
 // SPDX-License-Identifier: GPL-3.0-or-later
