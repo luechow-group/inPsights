@@ -104,14 +104,14 @@ bool ReferencePositionsClusterer::compareLocal(std::vector<Cluster>::iterator &s
         isSimilarQ = true;
 
         auto  electronsNumber = sortedCluster->representative()->maximum().numberOfEntities();
-        subCluster->permuteAll(Permutations::headToFullPermutation(perm, electronsNumber), samples_);
+        subCluster->permuteAll(PermutationHandling::headToFullPermutation(perm, electronsNumber), samples_);
         if (settings.sortRemainder()) { //TODO remove dependency
             auto[norm, perm] = Metrics::Similarity::DistanceBased::compare<Eigen::Infinity, 2>(
                     subCluster->representative()->maximum().tail(
                             electronsNumber - subCluster->getSelectedElectronsCount()).positionsVector(),
                     sortedCluster->representative()->maximum().tail(
                             electronsNumber - sortedCluster->getSelectedElectronsCount()).positionsVector());
-            subCluster->permuteAll(Permutations::tailToFullPermutation(perm, electronsNumber), samples_);
+            subCluster->permuteAll(PermutationHandling::tailToFullPermutation(perm, electronsNumber), samples_);
         }
         sortedCluster->emplace_back(*subCluster);
     }

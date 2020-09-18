@@ -4,6 +4,7 @@
 #include <Cluster.h>
 #include <ParticleSelection.h>
 #include <BestMatch.h>
+#include <PermutationHandling.h>
 #include <Reference.h>
 #include <Eigen/Core>
 
@@ -214,7 +215,7 @@ void Cluster::permuteRelevantElectronsToFront(std::vector<Sample> & samples){
 
         // permute all relevant electrons to the front
         subCluster.setSelectedElectronsCount(subIndices.size());
-        permutation = Permutations::getPermutationToFront(subIndices, electronsNumber);
+        permutation = PermutationHandling::getPermutationToFront(subIndices, electronsNumber);
         subCluster.permuteAll(permutation, samples);
     }
 }

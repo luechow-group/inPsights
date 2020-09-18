@@ -1,13 +1,15 @@
-// Copyright (C) 2019 Michael Heuer.
+// Copyright (C) 2019-2020 Michael Heuer.
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #ifndef INPSIGHTS_DISTANCEBASEDMETRIC_H
 #define INPSIGHTS_DISTANCEBASEDMETRIC_H
 
 #include "Hungarian.h"
-#include <BestMatch.h>
 #include "DistanceBasedMetric.h"
+#include <BestMatch.h>
 #include <Metrics.h>
+#include <PermutationHandling.h>
+#include <ParticlesVector.h>
 
 namespace Metrics {
     namespace Similarity {
@@ -22,7 +24,6 @@ namespace Metrics {
                 return Hungarian<double>::findMatching(costMatrix);
             }
 
-
             template<typename Type, int positionalNorm = 2>
             Eigen::PermutationMatrix<Eigen::Dynamic>
             findTypeSpecificPermutation(const ParticlesVector<Type> &permutee, const ParticlesVector<Type> &reference) {
@@ -34,8 +35,8 @@ namespace Metrics {
                 assert(countedTypes == reference.typesVector().countTypes()
                        && "The type vectors must have the same type counts.");
 
-                auto permuteeSeparatingPermutation = Permutations::findTypeSeparatingPermutation<Type>(permutee);
-                auto referenceSeparatingPermutation = Permutations::findTypeSeparatingPermutation<Type>(reference);
+                auto permuteeSeparatingPermutation = PermutationHandling::findTypeSeparatingPermutation<Type>(permutee);
+                auto referenceSeparatingPermutation = PermutationHandling::findTypeSeparatingPermutation<Type>(reference);
 
 
                 Eigen::PermutationMatrix<Eigen::Dynamic> combinedPerm(0);
@@ -58,8 +59,8 @@ namespace Metrics {
                             reference[selectedReferenceIndices].positionsVector());
 
                     // find best match and combine it
-                    combinedPerm = ::Permutations::combinePermutations(combinedPerm,
-                                                                       Hungarian<double>::findMatching(costMatrix));
+                    combinedPerm = ::PermutationHandling::combinePermutations(combinedPerm,
+                                                                              Hungarian<double>::findMatching(costMatrix));
 
                     accumulatedCounts += typeCount.number_;
                 }

@@ -189,14 +189,14 @@ bool DensityBasedClusterer::compareLocal(double threshold, Cluster &subcluster, 
 
     if (norm <= threshold) {
         isSimilarQ = true;
-        j->permuteAll(Permutations::headToFullPermutation(perm, electronsCount), samples_);
+        j->permuteAll(PermutationHandling::headToFullPermutation(perm, electronsCount), samples_);
         if (settings.sortRemainder()) {
             auto[norm, perm] = Metrics::Similarity::DistanceBased::compare<Eigen::Infinity, 2>(
                     j->representative()->maximum().tail(
                             electronsCount - jElectronsCount).positionsVector(),
                     i->representative()->maximum().tail(
                             electronsCount - iElectronsCount).positionsVector());
-            j->permuteAll(Permutations::tailToFullPermutation(perm, electronsCount),
+            j->permuteAll(PermutationHandling::tailToFullPermutation(perm, electronsCount),
                           samples_);
         }
     };

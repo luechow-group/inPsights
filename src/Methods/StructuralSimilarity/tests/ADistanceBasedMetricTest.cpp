@@ -7,7 +7,7 @@
 #include <TestMolecules.h>
 #include <ParticleSelection.h>
 
-TEST(ABestMatchDistanceTest, findTypeSeparatingPermutation) {
+TEST(ADistanceBasedMetricTest, findTypeSeparatingPermutation) {
 
     AtomsVector nuclei({{Element::H, {0, 0,-2}},
                         {Element::He,{0, 0,-1}},
@@ -16,7 +16,7 @@ TEST(ABestMatchDistanceTest, findTypeSeparatingPermutation) {
                         {Element::H, {0, 0, 2}}});
 
 
-    auto result = Permutations::findTypeSeparatingPermutation<Element>(nuclei);
+    auto result = PermutationHandling::findTypeSeparatingPermutation<Element>(nuclei);
 
     Eigen::VectorXi expected(5);
     expected << 0,4,1,3,2;
@@ -24,7 +24,7 @@ TEST(ABestMatchDistanceTest, findTypeSeparatingPermutation) {
     ASSERT_TRUE(result.indices().isApprox(expected));
 }
 
-TEST(ABestMatchDistanceTest, TypeSpecificHungarian_Case1) {
+TEST(ADistanceBasedMetricTest, TypeSpecificHungarian_Case1) {
     AtomsVector B({
         {Element::H, {0, 0,-3}},
         {Element::He,{0, 0,-2}},
@@ -52,7 +52,7 @@ TEST(ABestMatchDistanceTest, TypeSpecificHungarian_Case1) {
     ASSERT_TRUE(result.indices().isApprox(expected));
 }
 
-TEST(ABestMatchDistanceTest, TypeSpecificHungarian_Case2) {
+TEST(ADistanceBasedMetricTest, TypeSpecificHungarian_Case2) {
     AtomsVector B({
         {Element::Li,{0, 0,-3}},
         {Element::Li,{0, 0,-2}},
@@ -80,7 +80,7 @@ TEST(ABestMatchDistanceTest, TypeSpecificHungarian_Case2) {
     ASSERT_TRUE(result.indices().isApprox(expected));
 }
 
-TEST(ABestMatchDistanceTest, TypeSpecificHungarian_Odrered) {
+TEST(ADistanceBasedMetricTest, TypeSpecificHungarian_Odrered) {
     auto eNormal = TestMolecules::eightElectrons::square.electrons();
 
     Eigen::VectorXi alphaBetaPositionFlip(8);
@@ -97,7 +97,7 @@ TEST(ABestMatchDistanceTest, TypeSpecificHungarian_Odrered) {
     ASSERT_TRUE(bestMatchFlippedInverse.indices().base().isApprox(p.indices().base()));
 }
 
-TEST(ABestMatchDistanceTest, BestMatchNorm) {
+TEST(ADistanceBasedMetricTest, BestMatchNorm) {
     ElectronsVector v1({
         {Spin::alpha, {0, 1, 2}},
         {Spin::alpha, {0, 0, 0}}});
@@ -126,7 +126,7 @@ TEST(ABestMatchDistanceTest, BestMatchNorm) {
     ASSERT_TRUE(permInfInf.indices().isApprox(expectedPerm));
 }
 
-TEST(ABestMatchDistanceTest, TypeSpecificBestMatchNorm_SameSpin) {
+TEST(ADistanceBasedMetricTest, TypeSpecificBestMatchNorm_SameSpin) {
     ElectronsVector v1({
         {Spin::alpha, {0, 1, 2}},
         {Spin::alpha, {0, 0, 0}}});
@@ -151,7 +151,7 @@ TEST(ABestMatchDistanceTest, TypeSpecificBestMatchNorm_SameSpin) {
     ASSERT_TRUE(permInfInf.indices().isApprox(expectedPerm));
 }
 
-TEST(ABestMatchDistanceTest, TypeSpecificBestMatchNorm_DifferentSpin) {
+TEST(ADistanceBasedMetricTest, TypeSpecificBestMatchNorm_DifferentSpin) {
     ElectronsVector v1({
         {Spin::alpha, {0, 1, 2}},
         {Spin::beta,  {0, 0, 0}}});
@@ -178,7 +178,7 @@ TEST(ABestMatchDistanceTest, TypeSpecificBestMatchNorm_DifferentSpin) {
     ASSERT_TRUE(permInfInf.indices().isApprox(expectedPerm));
 }
 
-TEST(ABestMatchDistanceTest, TypeUnspecific_RealMaxima) {
+TEST(ADistanceBasedMetricTest, TypeUnspecific_RealMaxima) {
     ElectronsVector v1({
         {Spin::alpha, {-1.924799, -0.000888, -2.199093}},
         {Spin::alpha, {-0.425365, -0.687079, 1.739155}},
@@ -232,7 +232,7 @@ TEST(ABestMatchDistanceTest, TypeUnspecific_RealMaxima) {
 
 #include "Metrics.h"
 
-TEST(ABestMatchDistanceTest, NearestElectrons) {
+TEST(ADistanceBasedMetricTest, NearestElectrons) {
     const MolecularGeometry &BH3 = TestMolecules::BH3::ionic;
     const AtomsVector &nuclei = BH3.atoms();
     const ElectronsVector &electrons = BH3.electrons();
@@ -269,7 +269,7 @@ TEST(ABestMatchDistanceTest, NearestElectrons) {
     ASSERT_EQ(norm, 0);
 };
 
-TEST(ABestMatchDistanceTest, NearestElectrons2) {
+TEST(ADistanceBasedMetricTest, NearestElectrons2) {
     const MolecularGeometry &BH3 = TestMolecules::BH3::ionic;
     const AtomsVector &nuclei = BH3.atoms();
     const ElectronsVector &electrons = BH3.electrons();

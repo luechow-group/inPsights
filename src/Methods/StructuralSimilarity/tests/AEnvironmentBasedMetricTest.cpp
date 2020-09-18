@@ -15,8 +15,7 @@
 using namespace testing;
 using namespace SOAP;
 
-
-class ABestMatchSimilarityTest : public ::testing::Test {
+class AEnvironmentBasedMetricTest : public ::testing::Test {
 public:
     using Pair = std::pair<Eigen::Index,Eigen::Index>;
     using MolPermList = std::vector<std::pair<std::vector<int>,std::vector<int>>>;
@@ -115,7 +114,7 @@ public:
     }
 };
 
-TEST_F(ABestMatchSimilarityTest, PrermuteEnvironmentsToLabSystem) {
+TEST_F(AEnvironmentBasedMetricTest, PrermuteEnvironmentsToLabSystem) {
     General::settings.mode = General::Mode::chemical;
 
     auto B = TestMolecules::BH3::ionicMinimal;
@@ -151,7 +150,7 @@ TEST_F(ABestMatchSimilarityTest, PrermuteEnvironmentsToLabSystem) {
     ASSERT_NEAR(environmentalSimilaritiesInLabSystem(7,7), 1.0, eps);
 }
 
-TEST_F(ABestMatchSimilarityTest, GrowingPerm) {
+TEST_F(AEnvironmentBasedMetricTest, GrowingPerm) {
 
     auto growingPerm = Metrics::Similarity::SOAPBased::GrowingPerm({0, 1, 2}, {});
 
@@ -164,7 +163,7 @@ TEST_F(ABestMatchSimilarityTest, GrowingPerm) {
     ASSERT_FALSE(growingPerm.add({0,2}));
 }
 
-TEST_F(ABestMatchSimilarityTest, FindPossiblePermutations1) {
+TEST_F(AEnvironmentBasedMetricTest, FindPossiblePermutations1) {
     Eigen::MatrixXd mat(4,4);
     mat <<
     1,0,1,0,\
@@ -201,7 +200,7 @@ TEST_F(ABestMatchSimilarityTest, FindPossiblePermutations1) {
         ASSERT_TRUE(i.remainingPermuteeIndices_.empty());
 }
 
-TEST_F(ABestMatchSimilarityTest, FindPossiblePermutations2) {
+TEST_F(AEnvironmentBasedMetricTest, FindPossiblePermutations2) {
     Eigen::MatrixXd mat(4,4);
     mat <<
     1,1,0,1,\
@@ -240,7 +239,7 @@ TEST_F(ABestMatchSimilarityTest, FindPossiblePermutations2) {
         ASSERT_TRUE(i.remainingPermuteeIndices_.empty());
 }
 
-TEST_F(ABestMatchSimilarityTest, FindPossiblePermutations3) {
+TEST_F(AEnvironmentBasedMetricTest, FindPossiblePermutations3) {
     Eigen::MatrixXd mat(4,4);
     mat <<
     1,1,0,0,\
@@ -277,7 +276,7 @@ TEST_F(ABestMatchSimilarityTest, FindPossiblePermutations3) {
         ASSERT_TRUE(i.remainingPermuteeIndices_.empty());
 }
 
-TEST_F(ABestMatchSimilarityTest, FindPossiblePermutations4) {
+TEST_F(AEnvironmentBasedMetricTest, FindPossiblePermutations4) {
     Eigen::MatrixXd mat(6,6);
     mat <<
     1,1,0,0,0,0,\
@@ -326,7 +325,7 @@ TEST_F(ABestMatchSimilarityTest, FindPossiblePermutations4) {
     ASSERT_THAT(possiblePermutations2[5].chainOfSwaps_, ElementsAre(Pair(5,3),Pair(4,4),Pair(3,5)));
 }
 
-TEST_F(ABestMatchSimilarityTest, FindPossiblePermutations5) {
+TEST_F(AEnvironmentBasedMetricTest, FindPossiblePermutations5) {
     Eigen::MatrixXd mat(6,6);
     mat <<
     0,1,0,0,0,0,\
@@ -379,7 +378,7 @@ TEST_F(ABestMatchSimilarityTest, FindPossiblePermutations5) {
     ASSERT_THAT(possiblePermutations3[5].chainOfSwaps_, ElementsAre(Pair(5,3),Pair(4,4),Pair(3,5)));
 }
 
-TEST_F(ABestMatchSimilarityTest, H4linear_alchemical) {
+TEST_F(AEnvironmentBasedMetricTest, H4linear_alchemical) {
     auto A = TestMolecules::H4::linear::ionicA;
     auto B = TestMolecules::H4::linear::ionicAreflectedReorderedNumbering;
 
@@ -393,7 +392,7 @@ TEST_F(ABestMatchSimilarityTest, H4linear_alchemical) {
     routine(A, B, expectedPerms, distanceTolerance, soapThreshold);
 }
 
-TEST_F(ABestMatchSimilarityTest, H4linear_ionic_reflected) {
+TEST_F(AEnvironmentBasedMetricTest, H4linear_ionic_reflected) {
     auto A = TestMolecules::H4::linear::ionicA;
     auto B = TestMolecules::H4::linear::ionicAreflected;
 
@@ -412,7 +411,7 @@ TEST_F(ABestMatchSimilarityTest, H4linear_ionic_reflected) {
     routine(A, B, expectedPerms, distanceTolerance, soapThreshold);
 }
 
-TEST_F(ABestMatchSimilarityTest, H4linear_ionic_reflected_alpha_permuted) {
+TEST_F(AEnvironmentBasedMetricTest, H4linear_ionic_reflected_alpha_permuted) {
     auto A = TestMolecules::H4::linear::ionicA;
     auto B = TestMolecules::H4::linear::ionicAreflectedAlphaPermuted;
 
@@ -431,7 +430,7 @@ TEST_F(ABestMatchSimilarityTest, H4linear_ionic_reflected_alpha_permuted) {
     routine(A, B, expectedPerms, distanceTolerance, soapThreshold);
 }
 
-TEST_F(ABestMatchSimilarityTest, H4linear_ionic_reflected_beta_permuted) {
+TEST_F(AEnvironmentBasedMetricTest, H4linear_ionic_reflected_beta_permuted) {
     auto A = TestMolecules::H4::linear::ionicA;
     auto B = TestMolecules::H4::linear::ionicAreflectedBetaPermuted;
 
@@ -450,7 +449,7 @@ TEST_F(ABestMatchSimilarityTest, H4linear_ionic_reflected_beta_permuted) {
     routine(A, B, expectedPerms, distanceTolerance, soapThreshold);
 }
 
-TEST_F(ABestMatchSimilarityTest, H4linear_ionic_reflected_reordered_numbering) {
+TEST_F(AEnvironmentBasedMetricTest, H4linear_ionic_reflected_reordered_numbering) {
     auto A = TestMolecules::H4::linear::ionicA;
     auto B = TestMolecules::H4::linear::ionicAreflectedReorderedNumbering;
 
@@ -469,7 +468,7 @@ TEST_F(ABestMatchSimilarityTest, H4linear_ionic_reflected_reordered_numbering) {
     routine(A, B, expectedPerms, distanceTolerance, soapThreshold);
 }
 
-TEST_F(ABestMatchSimilarityTest, H4linear_not_in_particle_kit) {
+TEST_F(AEnvironmentBasedMetricTest, H4linear_not_in_particle_kit) {
     auto B = TestMolecules::H4::linear::ionicA;
     auto A = TestMolecules::H4::linear::ionicNotinParticleKitSystem;
 
@@ -488,7 +487,7 @@ TEST_F(ABestMatchSimilarityTest, H4linear_not_in_particle_kit) {
     routine(A, B, expectedPerms, distanceTolerance, soapThreshold);
 }
 
-TEST_F(ABestMatchSimilarityTest, H4linear_real_maxima1) {
+TEST_F(AEnvironmentBasedMetricTest, H4linear_real_maxima1) {
     auto A = TestMolecules::H4::linear::ionicRealMax1Var1;
     auto B = TestMolecules::H4::linear::ionicRealMax1Var2;
 
@@ -509,7 +508,7 @@ TEST_F(ABestMatchSimilarityTest, H4linear_real_maxima1) {
     routine(A, B, expectedPerms, distanceTolerance, soapThreshold);
 }
 
-TEST_F(ABestMatchSimilarityTest, H4linear_real_maxima2) {
+TEST_F(AEnvironmentBasedMetricTest, H4linear_real_maxima2) {
     auto A = TestMolecules::H4::linear::ionicRealMax2Var1;
     auto B = TestMolecules::H4::linear::ionicRealMax2Var2;
 
@@ -529,7 +528,7 @@ TEST_F(ABestMatchSimilarityTest, H4linear_real_maxima2) {
     routine(A, B, expectedPerms, distanceTolerance, soapThreshold);
 }
 
-TEST_F(ABestMatchSimilarityTest, H4ring) {
+TEST_F(AEnvironmentBasedMetricTest, H4ring) {
     auto B = TestMolecules::H4::ring::fourAlpha;
     auto A = B;
 
@@ -552,7 +551,7 @@ TEST_F(ABestMatchSimilarityTest, H4ring) {
     routine(A,B,expectedPerms,distanceTolerance, soapThreshold);
 }
 
-TEST_F(ABestMatchSimilarityTest, H4ring_Shaked) {
+TEST_F(AEnvironmentBasedMetricTest, H4ring_Shaked) {
     auto B = TestMolecules::H4::ring::fourAlpha;
     auto A = B;
     ParticleKit::create(A);
@@ -588,7 +587,7 @@ TEST_F(ABestMatchSimilarityTest, H4ring_Shaked) {
     }
 }
 
-TEST_F(ABestMatchSimilarityTest, FindDistanceConservingPermutations_Chemical_BoraneLEO1) {
+TEST_F(AEnvironmentBasedMetricTest, FindDistanceConservingPermutations_Chemical_BoraneLEO1) {
     General::settings.mode = General::Mode::chemical;
 
     auto nuclei = TestMolecules::BH3::nuclei;
@@ -612,7 +611,7 @@ TEST_F(ABestMatchSimilarityTest, FindDistanceConservingPermutations_Chemical_Bor
     routine(A,A,expectedPerms,distanceTolerance, soapThreshold);
 }
 
-TEST_F(ABestMatchSimilarityTest, BH3Covalent_Chemical) {
+TEST_F(AEnvironmentBasedMetricTest, BH3Covalent_Chemical) {
     General::settings.mode = General::Mode::chemical;
 
     using namespace TestMolecules;
@@ -641,7 +640,7 @@ TEST_F(ABestMatchSimilarityTest, BH3Covalent_Chemical) {
     routine(A,A,expectedPerms,distanceTolerance, soapThreshold);
 }
 
-TEST_F(ABestMatchSimilarityTest, BH3CovalentPermuted_Chemical) {
+TEST_F(AEnvironmentBasedMetricTest, BH3CovalentPermuted_Chemical) {
     General::settings.mode = General::Mode::chemical;
 
     using namespace TestMolecules;
@@ -670,7 +669,7 @@ TEST_F(ABestMatchSimilarityTest, BH3CovalentPermuted_Chemical) {
     routine(A,A,expectedPerms,distanceTolerance, soapThreshold);
 }
 
-TEST_F(ABestMatchSimilarityTest, BH3_ThreeIndependentUnsimilarEnvironments_Chemical) {
+TEST_F(AEnvironmentBasedMetricTest, BH3_ThreeIndependentUnsimilarEnvironments_Chemical) {
     General::settings.mode = General::Mode::chemical;
 
     using namespace TestMolecules;
@@ -700,7 +699,7 @@ TEST_F(ABestMatchSimilarityTest, BH3_ThreeIndependentUnsimilarEnvironments_Chemi
 }
 
 
-TEST_F(ABestMatchSimilarityTest, BH3Ionic_Chemical) {
+TEST_F(AEnvironmentBasedMetricTest, BH3Ionic_Chemical) {
     General::settings.mode = General::Mode::chemical;
 
     using namespace TestMolecules;
@@ -732,7 +731,7 @@ TEST_F(ABestMatchSimilarityTest, BH3Ionic_Chemical) {
     routine(A,B,expectedPerms,distanceTolerance, soapThreshold);
 }
 
-TEST_F(ABestMatchSimilarityTest, EthaneDoublyIonicMinimal) {
+TEST_F(AEnvironmentBasedMetricTest, EthaneDoublyIonicMinimal) {
     General::settings.mode = General::Mode::chemical;
 
     MolecularGeometry A = {
@@ -764,7 +763,7 @@ TEST_F(ABestMatchSimilarityTest, EthaneDoublyIonicMinimal) {
     routine(A,B,expectedPerms,distanceTolerance, soapThreshold);
 }
 
-TEST_F(ABestMatchSimilarityTest, EthaneSinglyIonicMinimal) {
+TEST_F(AEnvironmentBasedMetricTest, EthaneSinglyIonicMinimal) {
     General::settings.mode = General::Mode::chemical;
 
     using namespace TestMolecules;
@@ -797,7 +796,7 @@ TEST_F(ABestMatchSimilarityTest, EthaneSinglyIonicMinimal) {
     routine(A,B,expectedPerms,distanceTolerance, soapThreshold);
 }
 
-TEST_F(ABestMatchSimilarityTest, EthaneSinglyIonicMinimal_shaked_alchemical) {
+TEST_F(AEnvironmentBasedMetricTest, EthaneSinglyIonicMinimal_shaked_alchemical) {
     using namespace TestMolecules;
     MolecularGeometry B = {
             Ethane::nuclei.atoms(),
@@ -840,7 +839,7 @@ TEST_F(ABestMatchSimilarityTest, EthaneSinglyIonicMinimal_shaked_alchemical) {
     routine(A, B, expectedPerms, distanceTolerance, shakeSoapThreshold, true);
 }
 
-TEST_F(ABestMatchSimilarityTest, EthaneSinglyIonic) {
+TEST_F(AEnvironmentBasedMetricTest, EthaneSinglyIonic) {
     General::settings.mode = General::Mode::chemical;
 
     using namespace TestMolecules;
@@ -906,7 +905,7 @@ TEST_F(ABestMatchSimilarityTest, EthaneSinglyIonic) {
 }
 
 
-TEST_F(ABestMatchSimilarityTest, EthaneSinglyIonic10RandomIndexSwapPermutations) {
+TEST_F(AEnvironmentBasedMetricTest, EthaneSinglyIonic10RandomIndexSwapPermutations) {
 
     using namespace TestMolecules;
     MolecularGeometry B = {
@@ -987,7 +986,7 @@ TEST_F(ABestMatchSimilarityTest, EthaneSinglyIonic10RandomIndexSwapPermutations)
     }
 }
 
-TEST_F(ABestMatchSimilarityTest, EthaneDoublyIonicAntiMinimal) {
+TEST_F(AEnvironmentBasedMetricTest, EthaneDoublyIonicAntiMinimal) {
     General::settings.mode = General::Mode::chemical;
 
     using namespace TestMolecules;
@@ -1020,7 +1019,7 @@ TEST_F(ABestMatchSimilarityTest, EthaneDoublyIonicAntiMinimal) {
     routine(A,B,expectedPerms,distanceTolerance, soapThreshold);
 }
 
-TEST_F(ABestMatchSimilarityTest, EthaneDoublyIonicAnti) {
+TEST_F(AEnvironmentBasedMetricTest, EthaneDoublyIonicAnti) {
     General::settings.mode = General::Mode::chemical;
 
     using namespace TestMolecules;
@@ -1085,7 +1084,7 @@ TEST_F(ABestMatchSimilarityTest, EthaneDoublyIonicAnti) {
     routine(A,B,expectedPerms,distanceTolerance, soapThreshold);
 }
 
-TEST_F(ABestMatchSimilarityTest, DISABLED_Trans13ButadieneRealMaxima) { // takes too long and fails on GNU/Intel
+TEST_F(AEnvironmentBasedMetricTest, DISABLED_Trans13ButadieneRealMaxima) { // takes too long and fails on GNU/Intel
     auto A = TestMolecules::trans13Butadiene::realA;
     auto B = TestMolecules::trans13Butadiene::realB;
 

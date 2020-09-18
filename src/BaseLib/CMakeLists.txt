@@ -95,7 +95,7 @@ set(SOURCE_FILES
         source/Metrics.cpp
         source/ParticleIndices.cpp
         source/MolecularSelection.cpp
-        )
+        source/PermutationHandling.cpp include/PermutationHandling.h)
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES})
 
