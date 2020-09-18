@@ -11,7 +11,6 @@ message ( "-- ++ CREATING PROJECT OR MAKEFILE ---> ${OUTPUT_NAME}" )
 set(HEADER_FILES
         include/QuaternionFit.h
         include/Hungarian.h
-        include/SimpleSorter.h
         include/BestMatch.h
         include/GraphAnalysis.h
         include/Motif.h
