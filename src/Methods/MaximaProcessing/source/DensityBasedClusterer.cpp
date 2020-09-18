@@ -130,9 +130,9 @@ void DensityBasedClusterer::orderByBestMatchDistance(Cluster &supercluster, doub
 
                     if(localQ) {
                         if (i->getSelectedElectronsCount() == j->getSelectedElectronsCount())
-                            isSimilarQ = compareLocal(threshold, subcluster, newClusters, i, j);
+                            isSimilarQ = compareLocal(threshold, *i, *j);
                     } else {
-                        isSimilarQ = compare(threshold, subcluster, newClusters, i, j);
+                        isSimilarQ = compare(threshold, *i, *j);
                     }
 
                     if(isSimilarQ) {
@@ -157,46 +157,43 @@ void DensityBasedClusterer::orderByBestMatchDistance(Cluster &supercluster, doub
     }
 }
 
-bool DensityBasedClusterer::compare(double threshold, Cluster &subcluster, Cluster &newClusters,
-                                    const std::vector<Cluster>::iterator &i,
-                                    std::vector<Cluster>::iterator &j) const {
+bool DensityBasedClusterer::compare(double threshold, const Cluster &i, Cluster &j) const {
     bool isSimilarQ = false;
 
     auto[norm, perm] = Metrics::Similarity::DistanceBased::compare<Eigen::Infinity, 2>(
-                    j->representative()->maximum().positionsVector(),
-                    i->representative()->maximum().positionsVector());
+                    j.representative()->maximum().positionsVector(),
+                    i.representative()->maximum().positionsVector());
 
     if (norm <= threshold) {
         isSimilarQ = true;
-        j->permuteAll(perm, samples_);
+        j.permuteAll(perm, samples_);
     };
 
     return isSimilarQ;
 }
 
-bool DensityBasedClusterer::compareLocal(double threshold, Cluster &subcluster, Cluster &newClusters,
-                                         const std::vector<Cluster>::iterator &i,
-                                         std::vector<Cluster>::iterator &j) const {
-    auto electronsCount = subcluster.representative()->maximum().numberOfEntities();
-    auto iElectronsCount = i->getSelectedElectronsCount();
-    auto jElectronsCount = j->getSelectedElectronsCount();
+bool DensityBasedClusterer::compareLocal(double threshold, const Cluster &i, Cluster &j) const {
+
+    auto electronsCount = i.representative()->maximum().numberOfEntities();
+    auto iElectronsCount = i.getSelectedElectronsCount();
+    auto jElectronsCount = j.getSelectedElectronsCount();
+
+    auto[norm, perm] = Metrics::Similarity::DistanceBased::compare<Eigen::Infinity, 2>(
+            j.representative()->maximum().head(jElectronsCount).positionsVector(),
+            i.representative()->maximum().head(iElectronsCount).positionsVector());
 
     bool isSimilarQ = false;
 
-    auto[norm, perm] = Metrics::Similarity::DistanceBased::compare<Eigen::Infinity, 2>(
-            j->representative()->maximum().head(jElectronsCount).positionsVector(),
-            i->representative()->maximum().head(iElectronsCount).positionsVector());
-
     if (norm <= threshold) {
         isSimilarQ = true;
-        j->permuteAll(PermutationHandling::headToFullPermutation(perm, electronsCount), samples_);
+        j.permuteAll(PermutationHandling::headToFullPermutation(perm, electronsCount), samples_);
         if (settings.sortRemainder()) {
             auto[norm, perm] = Metrics::Similarity::DistanceBased::compare<Eigen::Infinity, 2>(
-                    j->representative()->maximum().tail(
+                    j.representative()->maximum().tail(
                             electronsCount - jElectronsCount).positionsVector(),
-                    i->representative()->maximum().tail(
+                    i.representative()->maximum().tail(
                             electronsCount - iElectronsCount).positionsVector());
-            j->permuteAll(PermutationHandling::tailToFullPermutation(perm, electronsCount),
+            j.permuteAll(PermutationHandling::tailToFullPermutation(perm, electronsCount),
                           samples_);
         }
     };

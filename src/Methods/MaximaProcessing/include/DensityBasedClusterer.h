@@ -36,17 +36,13 @@ public:
     void cluster(Cluster& group) override;
 
 private:
-    static double wrapper(const Cluster &g1, const Cluster &g2);
-    static double wrapperLocal(const Cluster &g1, const Cluster &g2);
+    static double wrapper(const Cluster &g1, const Cluster &g2); //TODO refactor by abstraction
+    static double wrapperLocal(const Cluster &g1, const Cluster &g2); //TODO refactor by abstraction
     void orderByBestMatchDistance(Cluster &supergroup, double threshold, bool local = false) const;
 
-    bool compare(double threshold, Cluster &subgroup, Cluster &newClusters,
-            const std::vector<Cluster>::iterator &i,
-            std::vector<Cluster>::iterator &j) const;
+    bool compare(double threshold, const Cluster &i, Cluster &j) const;
 
-    bool compareLocal(double threshold, Cluster &subgroup, Cluster &newClusters,
-            const std::vector<Cluster>::iterator &i,
-            std::vector<Cluster>::iterator &j) const;
+    bool compareLocal(double threshold, const Cluster&i, Cluster &j) const;
 };
 
 #endif //INPSIGHTS_DENSITYBASEDCLUSTERER_H
