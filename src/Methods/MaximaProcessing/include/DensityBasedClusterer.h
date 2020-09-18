@@ -5,11 +5,11 @@
 #define INPSIGHTS_DENSITYBASEDCLUSTERER_H
 
 #include <DensityBasedScan.h>
-#include <PreClusterer.h>
 #include <ISettings.h>
 #include <spdlog/spdlog.h>
 #include <IBlock.h>
 #include <Cluster.h>
+#include "ClusteringMetric.h"
 
 namespace Settings {
     class DensityBasedClusterer : public ISettings {
@@ -33,14 +33,102 @@ public:
 
     explicit DensityBasedClusterer(std::vector<Sample> &samples);
 
-    void cluster(Cluster& group) override;
+    void cluster(Cluster &group) override;
 
 private:
-    void orderByBestMatchDistance(Cluster &supergroup, double threshold, bool local = false) const;
+    template<MetricType metric>
+    void orderByBestMatchDistance(Cluster &supercluster, double threshold, bool localQ) const {
+        for (auto &subcluster : supercluster) {
+            sort(subcluster.begin(), subcluster.end());
 
-    bool compareAndPermute(double threshold, const Cluster &i, Cluster &j) const;
+            // starting sortedCluster with one active cluster, which is erased from subcluster
+            Cluster sortedCluster({*subcluster.begin()});
+            subcluster.erase(subcluster.begin());
+            long activeClusters = 1;
 
-    bool compareLocal(double threshold, const Cluster&i, Cluster &j) const;
+            while (!subcluster.empty()) {
+                // setting newClusters empty again
+                Cluster newClusters;
+
+                // iterating over all active clusters (at the end of sortedCluster)
+                for (auto i = sortedCluster.end() - activeClusters; i != sortedCluster.end(); ++i) {
+                    // iterating over all clusters remaining in the unsorted subcluster
+                    for (auto j = subcluster.begin(); j != subcluster.end(); ++j) {
+                        bool isSimilarQ = false;
+
+                        if (localQ) {
+                            if (i->getSelectedElectronsCount() == j->getSelectedElectronsCount())
+                                isSimilarQ = compareAndPermuteLocal<metric>(threshold, *i, *j);
+                        } else {
+                            isSimilarQ = compareAndPermute<metric>(threshold, *i, *j);
+                        }
+
+                        if (isSimilarQ) {
+                            // moving j from subcluster to newClusters
+                            newClusters.emplace_back(*j);
+                            j = subcluster.erase(j);
+
+                            // the iterator has to be set back by one because the j element was erased and
+                            // ++j of the for loop would otherwise skip one cluster of subcluster
+                            --j;
+                        }
+                    }
+                }
+                // moving all clusters from newClusters to sortedCluster()
+                activeClusters = newClusters.size();
+                for (auto &newCluster : newClusters) {
+                    sortedCluster.emplace_back(newCluster);
+                };
+            };
+
+            subcluster = sortedCluster;
+        }
+    }
+
+    // TODO can these the permutation execution be shifted into the cluster via the bestMatchResult method?
+
+    template<MetricType metric>
+    bool compareAndPermute(double threshold, const Cluster &i, Cluster &j) const {
+        bool isSimilarQ = false;
+
+        auto[norm, perm] = ClusteringMetric::bestMatchResult<metric, Global>(j, i);
+
+        if (norm <= threshold) {
+            isSimilarQ = true;
+            j.permuteAll(perm, samples_);
+        };
+
+        return isSimilarQ;
+    }
+
+    template<MetricType metric>
+    bool compareAndPermuteLocal(double threshold, const Cluster &i, Cluster &j) const {
+
+        auto electronsCount = i.representative()->maximum().numberOfEntities();
+        auto iElectronsCount = i.getSelectedElectronsCount();
+        auto jElectronsCount = j.getSelectedElectronsCount();
+
+        auto[norm, perm] = ClusteringMetric::bestMatchResult<metric, Local>(j, i);
+
+        bool isSimilarQ = false;
+
+        if (norm <= threshold) {
+            isSimilarQ = true;
+            j.permuteAll(PermutationHandling::headToFullPermutation(perm, electronsCount), samples_);
+
+            if (settings.sortRemainder()) { // TODO get rid of this
+                auto[norm, perm] = Metrics::Similarity::DistanceBased::compare<Eigen::Infinity, 2>(
+                        j.representative()->maximum().tail(
+                                electronsCount - jElectronsCount).positionsVector(),
+                        i.representative()->maximum().tail(
+                                electronsCount - iElectronsCount).positionsVector());
+                j.permuteAll(PermutationHandling::tailToFullPermutation(perm, electronsCount),
+                             samples_);
+            }
+        };
+
+        return isSimilarQ;
+    }
 };
 
 #endif //INPSIGHTS_DENSITYBASEDCLUSTERER_H

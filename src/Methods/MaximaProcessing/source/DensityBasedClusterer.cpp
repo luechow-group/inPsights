@@ -82,7 +82,7 @@ void DensityBasedClusterer::cluster(Cluster& cluster) {
             if (result.labels[j] == i)
                 supercluster[i].emplace_back(std::move(g));
 
-    orderByBestMatchDistance(supercluster, similarityRadius, localQ);
+    orderByBestMatchDistance<Spatial>(supercluster, similarityRadius, localQ);
 
     cluster = supercluster;
 
@@ -90,94 +90,3 @@ void DensityBasedClusterer::cluster(Cluster& cluster) {
     cluster.sortAll();
 }
 
-void DensityBasedClusterer::orderByBestMatchDistance(Cluster &supercluster, double threshold, bool localQ) const {
-    for (auto &subcluster : supercluster) {
-        sort(subcluster.begin(), subcluster.end());
-
-        // starting sortedCluster with one active cluster, which is erased from subcluster
-        Cluster sortedCluster({*subcluster.begin()});
-        subcluster.erase(subcluster.begin());
-        long activeClusters = 1;
-
-        while (!subcluster.empty()){
-            // setting newClusters empty again
-            Cluster newClusters;
-
-            // iterating over all active clusters (at the end of sortedCluster)
-            for (auto i = sortedCluster.end() - activeClusters; i != sortedCluster.end(); ++i){
-                // iterating over all clusters remaining in the unsorted subcluster
-                for (auto j = subcluster.begin(); j != subcluster.end(); ++j) {
-                    bool isSimilarQ = false;
-
-                    if(localQ) {
-                        if (i->getSelectedElectronsCount() == j->getSelectedElectronsCount())
-                            isSimilarQ = compareLocal(threshold, *i, *j);
-                    } else {
-                        isSimilarQ = compareAndPermute(threshold, *i, *j);
-                    }
-                    
-                    if(isSimilarQ) {
-                        // moving j from subcluster to newClusters
-                        newClusters.emplace_back(*j);
-                        j = subcluster.erase(j);
-
-                        // the iterator has to be set back by one because the j element was erased and
-                        // ++j of the for loop would otherwise skip one cluster of subcluster
-                        --j;
-                    }
-                }
-            }
-            // moving all clusters from newClusters to sortedCluster()
-            activeClusters = newClusters.size();
-            for (auto &newCluster : newClusters) {
-                sortedCluster.emplace_back(newCluster);
-            };
-        };
-
-        subcluster = sortedCluster;
-    }
-}
-
-bool DensityBasedClusterer::compareAndPermute(double threshold, const Cluster &i, Cluster &j) const {
-    bool isSimilarQ = false;
-
-    auto[norm, perm] = Metrics::Similarity::DistanceBased::compare<Eigen::Infinity, 2>(
-                    j.representative()->maximum().positionsVector(),
-                    i.representative()->maximum().positionsVector());
-
-    if (norm <= threshold) {
-        isSimilarQ = true;
-        j.permuteAll(perm, samples_);
-    };
-
-    return isSimilarQ;
-}
-
-bool DensityBasedClusterer::compareLocal(double threshold, const Cluster &i, Cluster &j) const {
-
-    auto electronsCount = i.representative()->maximum().numberOfEntities();
-    auto iElectronsCount = i.getSelectedElectronsCount();
-    auto jElectronsCount = j.getSelectedElectronsCount();
-
-    auto[norm, perm] = Metrics::Similarity::DistanceBased::compare<Eigen::Infinity, 2>(
-            j.representative()->maximum().head(jElectronsCount).positionsVector(),
-            i.representative()->maximum().head(iElectronsCount).positionsVector());
-
-    bool isSimilarQ = false;
-
-    if (norm <= threshold) {
-        isSimilarQ = true;
-        j.permuteAll(PermutationHandling::headToFullPermutation(perm, electronsCount), samples_);
-        if (settings.sortRemainder()) {
-            auto[norm, perm] = Metrics::Similarity::DistanceBased::compare<Eigen::Infinity, 2>(
-                    j.representative()->maximum().tail(
-                            electronsCount - jElectronsCount).positionsVector(),
-                    i.representative()->maximum().tail(
-                            electronsCount - iElectronsCount).positionsVector());
-            j.permuteAll(PermutationHandling::tailToFullPermutation(perm, electronsCount),
-                          samples_);
-        }
-    };
-
-    return isSimilarQ;
-}
