@@ -11,10 +11,10 @@
 #include <Eigen/Core>
 #include <ToString.h>
 #include <EnvironmentBlock.h>
-#include <GraphAnalysis.h>
+#include "GraphAnalysis.h"
 
 /*
-Eigen::MatrixXd Metrics::Similarity::SOAPBased::calculateEnvironmentSimilarityMatrix(
+Eigen::MatrixXd Metrics::Similarity::EnvironmentBased::calculateEnvironmentSimilarityMatrix(
         const MolecularSpectrum &permutee,
         const MolecularSpectrum &reference) {
 
@@ -78,7 +78,7 @@ Eigen::MatrixXd Metrics::Similarity::SOAPBased::calculateEnvironmentSimilarityMa
  * Distance conservation is checked via the distance-covariance matrix difference between the permuted and unpermuted
  * permutee and the permuted and unpermuted reference.
  */
-std::vector<BestMatch::DescendingMetricResult> Metrics::Similarity::SOAPBased::getBestMatchResults(
+std::vector<BestMatch::DescendingMetricResult> Metrics::Similarity::EnvironmentBased::getBestMatchResults(
         const ::SOAP::MolecularSpectrum &permutee,
         const ::SOAP::MolecularSpectrum &reference,
         double distanceMatrixCovarianceTolerance,
@@ -134,8 +134,8 @@ std::vector<BestMatch::DescendingMetricResult> Metrics::Similarity::SOAPBased::g
     }
 
     // Step 1.
-    auto matches = Metrics::Similarity::SOAPBased::findEnvironmentMatches(environmentSimilarities, similarityThreshold, comparisionEpsilon);
-    auto dependentMatches = Metrics::Similarity::SOAPBased::clusterDependentMatches(matches);
+    auto matches = Metrics::Similarity::EnvironmentBased::findEnvironmentMatches(environmentSimilarities, similarityThreshold, comparisionEpsilon);
+    auto dependentMatches = Metrics::Similarity::EnvironmentBased::clusterDependentMatches(matches);
     for(const auto& dependentMatch : dependentMatches){
         if(dependentMatch.size() > 12)
             spdlog::warn("More than 12 equivalent environments found. This might indicate too indistinct SOAP settings.");
@@ -145,7 +145,7 @@ std::vector<BestMatch::DescendingMetricResult> Metrics::Similarity::SOAPBased::g
     std::vector<EnvironmentBlock> blocks;
     for (const auto &dependentMatch : dependentMatches) {
 
-        auto possiblePermutations = Metrics::Similarity::SOAPBased::findPossiblePermutations(dependentMatch);
+        auto possiblePermutations = Metrics::Similarity::EnvironmentBased::findPossiblePermutations(dependentMatch);
 
         auto block = EnvironmentBlock(possiblePermutations, permutee.molecule_, reference.molecule_);
 
@@ -216,27 +216,27 @@ std::vector<BestMatch::DescendingMetricResult> Metrics::Similarity::SOAPBased::g
 }
 
 
-double Metrics::Similarity::SOAPBased::earlyExitMetric(const Eigen::MatrixXd &bestMatchPermutedEnvironmentSimilarities) {
+double Metrics::Similarity::EnvironmentBased::earlyExitMetric(const Eigen::MatrixXd &bestMatchPermutedEnvironmentSimilarities) {
     return bestMatchPermutedEnvironmentSimilarities.diagonal().minCoeff();
 }
 
-BestMatch::DescendingMetricResult Metrics::Similarity::SOAPBased::compare(
+BestMatch::DescendingMetricResult Metrics::Similarity::EnvironmentBased::compare(
         const SOAP::MolecularSpectrum &permutee,
         const SOAP::MolecularSpectrum &reference,
         double distanceMatrixCovarianceTolerance,
         double soapThreshold,
         double numericalPrecisionEpsilon) {
-    return Metrics::Similarity::SOAPBased::getBestMatchResults(permutee, reference, distanceMatrixCovarianceTolerance,
-                                                          soapThreshold, numericalPrecisionEpsilon).front();
+    return Metrics::Similarity::EnvironmentBased::getBestMatchResults(permutee, reference, distanceMatrixCovarianceTolerance,
+                                                                      soapThreshold, numericalPrecisionEpsilon).front();
 }
 
-Metrics::Similarity::SOAPBased::GrowingPerm::GrowingPerm(std::set<Eigen::Index> remainingPermuteeIndices,
-                                                    std::deque<std::pair<Eigen::Index, Eigen::Index>> chainOfSwaps)
+Metrics::Similarity::EnvironmentBased::GrowingPerm::GrowingPerm(std::set<Eigen::Index> remainingPermuteeIndices,
+                                                                std::deque<std::pair<Eigen::Index, Eigen::Index>> chainOfSwaps)
                                                     : remainingPermuteeIndices_(std::move(remainingPermuteeIndices)),
                                                       chainOfSwaps_(std::move(chainOfSwaps)){}
 
 
-bool Metrics::Similarity::SOAPBased::GrowingPerm::add(const std::pair<Eigen::Index, Eigen::Index>& envMatch){
+bool Metrics::Similarity::EnvironmentBased::GrowingPerm::add(const std::pair<Eigen::Index, Eigen::Index>& envMatch){
 
     auto permuteeIndexIterator = remainingPermuteeIndices_.find(envMatch.first);
     if(permuteeIndexIterator!= std::end(remainingPermuteeIndices_)) {
@@ -249,8 +249,8 @@ bool Metrics::Similarity::SOAPBased::GrowingPerm::add(const std::pair<Eigen::Ind
 }
 
 // Returns an object for each environment in the reference listing all equivalent environments in the permutee.
-std::deque<Metrics::Similarity::SOAPBased::PermuteeToReferenceMatch>
-Metrics::Similarity::SOAPBased::findEnvironmentMatches(
+std::deque<Metrics::Similarity::EnvironmentBased::PermuteeToReferenceMatch>
+Metrics::Similarity::EnvironmentBased::findEnvironmentMatches(
         const Eigen::MatrixXd &environmentSimilarities,
         double soapThreshold, double numericalPrecisionEpsilon) {
 
@@ -266,10 +266,10 @@ Metrics::Similarity::SOAPBased::findEnvironmentMatches(
 }
 
 // finds PermuteeToReferenceMatch objects having overlapping permutee indices and groups them into lists.
-std::deque<std::deque<Metrics::Similarity::SOAPBased::PermuteeToReferenceMatch>>
-Metrics::Similarity::SOAPBased::clusterDependentMatches(const std::deque<PermuteeToReferenceMatch> &matches) {
+std::deque<std::deque<Metrics::Similarity::EnvironmentBased::PermuteeToReferenceMatch>>
+Metrics::Similarity::EnvironmentBased::clusterDependentMatches(const std::deque<PermuteeToReferenceMatch> &matches) {
 
-    std::deque<std::deque<Metrics::Similarity::SOAPBased::PermuteeToReferenceMatch>> dependentMatchesGroups;
+    std::deque<std::deque<Metrics::Similarity::EnvironmentBased::PermuteeToReferenceMatch>> dependentMatchesGroups;
     assert(!matches.empty());
 
     for(const auto& match : matches){
@@ -300,17 +300,17 @@ Metrics::Similarity::SOAPBased::clusterDependentMatches(const std::deque<Permute
     return dependentMatchesGroups;
 }
 
-bool Metrics::Similarity::SOAPBased::GrowingPerm::operator<(const Metrics::Similarity::SOAPBased::GrowingPerm &rhs) const {
-    assert((*this).chainOfSwaps_.size() == rhs.chainOfSwaps_.size());
+bool Metrics::Similarity::EnvironmentBased::GrowingPerm::operator<(const Metrics::Similarity::EnvironmentBased::GrowingPerm &rhs) const {
+    assert(this->chainOfSwaps_.size() == rhs.chainOfSwaps_.size());
     for (size_t i = 0; i < rhs.chainOfSwaps_.size(); ++i)
-        if((*this).chainOfSwaps_[i] != rhs.chainOfSwaps_[i])
-            return (*this).chainOfSwaps_[i] < rhs.chainOfSwaps_[i];
+        if(this->chainOfSwaps_[i] != rhs.chainOfSwaps_[i])
+            return this->chainOfSwaps_[i] < rhs.chainOfSwaps_[i];
 
-    return (*this).chainOfSwaps_[0] < rhs.chainOfSwaps_[0];
+    return this->chainOfSwaps_[0] < rhs.chainOfSwaps_[0];
 }
 
-std::deque<Metrics::Similarity::SOAPBased::GrowingPerm> Metrics::Similarity::SOAPBased::findPossiblePermutations(
-        const std::deque<Metrics::Similarity::SOAPBased::PermuteeToReferenceMatch>& dependentMatches){
+std::deque<Metrics::Similarity::EnvironmentBased::GrowingPerm> Metrics::Similarity::EnvironmentBased::findPossiblePermutations(
+        const std::deque<Metrics::Similarity::EnvironmentBased::PermuteeToReferenceMatch>& dependentMatches){
 
     assert(!dependentMatches.empty());
 
@@ -346,8 +346,8 @@ std::deque<Metrics::Similarity::SOAPBased::GrowingPerm> Metrics::Similarity::SOA
 };
 
 std::vector<Eigen::Index>
-Metrics::Similarity::SOAPBased::permuteIndicesFromKitSystem(const std::vector<Eigen::Index> &kitSystemIndices,
-                                                       const Eigen::PermutationMatrix<Eigen::Dynamic>& fromKitPermutation) {
+Metrics::Similarity::EnvironmentBased::permuteIndicesFromKitSystem(const std::vector<Eigen::Index> &kitSystemIndices,
+                                                                   const Eigen::PermutationMatrix<Eigen::Dynamic>& fromKitPermutation) {
     assert(size_t(fromKitPermutation.indices().size()) >= kitSystemIndices.size());
 
     std::vector<Eigen::Index> permutedIndices(kitSystemIndices.size());
@@ -362,8 +362,8 @@ Metrics::Similarity::SOAPBased::permuteIndicesFromKitSystem(const std::vector<Ei
  * Calculates the positional distances of selected indices
  */
 Eigen::MatrixXd
-Metrics::Similarity::SOAPBased::calculateDistanceCovarianceMatrixOfSelectedIndices(const PositionsVector &positions,
-                                                                              const std::vector<Eigen::Index> &indices) {
+Metrics::Similarity::EnvironmentBased::calculateDistanceCovarianceMatrixOfSelectedIndices(const PositionsVector &positions,
+                                                                                          const std::vector<Eigen::Index> &indices) {
     assert(size_t(positions.numberOfEntities()) >= indices.size());
 
     Eigen::MatrixXd positionalDistances(indices.size(), indices.size());

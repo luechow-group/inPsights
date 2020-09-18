@@ -16,14 +16,14 @@ bool DistanceCovariance::conservingQ(
         const MolecularGeometry &reference,
         double distanceMatrixCovarianceTolerance) {
 
-    auto permuteeIndices = Metrics::Similarity::SOAPBased::permuteIndicesFromKitSystem(
+    auto permuteeIndices = Metrics::Similarity::EnvironmentBased::permuteIndicesFromKitSystem(
             permuteeIndicesInKitSystem, SOAP::ParticleKit::fromKitPermutation(permutee));
-    auto referenceIndices = Metrics::Similarity::SOAPBased::permuteIndicesFromKitSystem(
+    auto referenceIndices = Metrics::Similarity::EnvironmentBased::permuteIndicesFromKitSystem(
             referenceIndicesInKitSystem, SOAP::ParticleKit::fromKitPermutation(reference));
 
-    auto covA = Metrics::Similarity::SOAPBased::calculateDistanceCovarianceMatrixOfSelectedIndices(
+    auto covA = Metrics::Similarity::EnvironmentBased::calculateDistanceCovarianceMatrixOfSelectedIndices(
             permutee.positions(), permuteeIndices);
-    auto covB = Metrics::Similarity::SOAPBased::calculateDistanceCovarianceMatrixOfSelectedIndices(
+    auto covB = Metrics::Similarity::EnvironmentBased::calculateDistanceCovarianceMatrixOfSelectedIndices(
             reference.positions(), referenceIndices);
 
     auto conservingQ = (covB - covA).array().abs().maxCoeff() <= distanceMatrixCovarianceTolerance;
@@ -36,7 +36,7 @@ bool DistanceCovariance::conservingQ(
 };
 
 EnvironmentBlock::EnvironmentBlock(
-        const std::deque<Metrics::Similarity::SOAPBased::GrowingPerm>& possiblePerms,
+        const std::deque<Metrics::Similarity::EnvironmentBased::GrowingPerm>& possiblePerms,
         const MolecularGeometry &permutee,
         const MolecularGeometry &reference)
         : permuteeIndices_(),
@@ -45,7 +45,7 @@ EnvironmentBlock::EnvironmentBlock(
           reference_(reference) {
     initialize(possiblePerms);
 }
-void EnvironmentBlock::initialize(const std::deque<Metrics::Similarity::SOAPBased::GrowingPerm>& possiblePerms) {
+void EnvironmentBlock::initialize(const std::deque<Metrics::Similarity::EnvironmentBased::GrowingPerm>& possiblePerms) {
 
     // initialize index lists
     for(const auto& indexPair : possiblePerms.front().chainOfSwaps_) {

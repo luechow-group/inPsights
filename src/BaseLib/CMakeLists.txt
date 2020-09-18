@@ -62,6 +62,8 @@ set(HEADER_FILES
         include/MapUtils.h
         include/ParticleIndices.h
         include/MolecularSelection.h
+        include/PermutationHandling.h
+        include/GraphAnalysis.h
         )
 
 
@@ -95,7 +97,9 @@ set(SOURCE_FILES
         source/Metrics.cpp
         source/ParticleIndices.cpp
         source/MolecularSelection.cpp
-        source/PermutationHandling.cpp include/PermutationHandling.h)
+        source/PermutationHandling.cpp
+        source/GraphAnalysis.cpp
+        )
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES})
 

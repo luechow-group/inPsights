@@ -26,11 +26,11 @@ namespace DistanceCovariance {
 class EnvironmentBlock {
 public:
     EnvironmentBlock(
-            const std::deque<Metrics::Similarity::SOAPBased::GrowingPerm>& possiblePerms,
+            const std::deque<Metrics::Similarity::EnvironmentBased::GrowingPerm>& possiblePerms,
             const MolecularGeometry &permutee,
             const MolecularGeometry &reference);
 
-    void initialize(const std::deque<::Metrics::Similarity::SOAPBased::GrowingPerm>& possiblePerms);
+    void initialize(const std::deque<::Metrics::Similarity::EnvironmentBased::GrowingPerm>& possiblePerms);
 
     std::vector<std::vector<Eigen::Index>> filterPermutations(double distanceMatrixCovarianceTolerance);
 

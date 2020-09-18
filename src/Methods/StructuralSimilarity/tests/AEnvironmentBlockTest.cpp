@@ -19,9 +19,9 @@ TEST(AEnvironmentBlockTest, FilteringOfCorrectPermutationsAlchemical) {
     General::settings.mode = General::Mode::alchemical;
     ParticleKit::create(A);
 
-    std::deque<Metrics::Similarity::SOAPBased::GrowingPerm> possiblePermutations = {
-            Metrics::Similarity::SOAPBased::GrowingPerm({}, {{0, 1}, {2, 3}}),
-            Metrics::Similarity::SOAPBased::GrowingPerm({}, {{2, 1}, {0, 3}})
+    std::deque<Metrics::Similarity::EnvironmentBased::GrowingPerm> possiblePermutations = {
+            Metrics::Similarity::EnvironmentBased::GrowingPerm({}, {{0, 1}, {2, 3}}),
+            Metrics::Similarity::EnvironmentBased::GrowingPerm({}, {{2, 1}, {0, 3}})
     };
 
     auto block = EnvironmentBlock(possiblePermutations, A, B);
@@ -44,11 +44,11 @@ TEST(AEnvironmentBlockTest, FilteringOfWrongPermutationsAlchemical) {
     General::settings.mode = General::Mode::alchemical;
     ParticleKit::create(A);
 
-    std::deque<Metrics::Similarity::SOAPBased::GrowingPerm> possiblePermutations = {
+    std::deque<Metrics::Similarity::EnvironmentBased::GrowingPerm> possiblePermutations = {
             // second swap is wrong
-            Metrics::Similarity::SOAPBased::GrowingPerm({}, {{0, 1}, {3, 2}, {2, 3}}),
+            Metrics::Similarity::EnvironmentBased::GrowingPerm({}, {{0, 1}, {3, 2}, {2, 3}}),
             // second swap is wrong
-            Metrics::Similarity::SOAPBased::GrowingPerm({}, {{2, 1}, {3, 2}, {0, 3}})
+            Metrics::Similarity::EnvironmentBased::GrowingPerm({}, {{2, 1}, {3, 2}, {0, 3}})
     };
 
     auto block = EnvironmentBlock(possiblePermutations, A, B);

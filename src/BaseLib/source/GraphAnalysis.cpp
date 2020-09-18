@@ -1,7 +1,7 @@
 // Copyright (C) 2019-2020 Michael Heuer.
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#include <GraphAnalysis.h>
+#include "GraphAnalysis.h"
 #include <numeric>
 #include <Enumerate.h>
 #include <algorithm>

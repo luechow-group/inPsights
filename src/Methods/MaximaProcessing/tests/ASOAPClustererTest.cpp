@@ -88,23 +88,23 @@ TEST_F(ASOAPClustererTest, VerifyTestCluster) {
     auto specE = MolecularSpectrum({atoms, E.representative()->maximum()});
     auto specF = MolecularSpectrum({atoms, F.representative()->maximum()});
     
-    ASSERT_LT(Metrics::Similarity::SOAPBased::compare(
+    ASSERT_LT(Metrics::Similarity::EnvironmentBased::compare(
             specA, specB, distanceTolerance, soapThreshold, eps).metric, 1);
 
-    ASSERT_LT(Metrics::Similarity::SOAPBased::compare(
+    ASSERT_LT(Metrics::Similarity::EnvironmentBased::compare(
             specA, specC,  distanceTolerance, soapThreshold, eps).metric, 1);
 
-    ASSERT_EQ(Metrics::Similarity::SOAPBased::compare(
+    ASSERT_EQ(Metrics::Similarity::EnvironmentBased::compare(
             specA, specD,  distanceTolerance, soapThreshold, eps).metric, 1);
 
-    ASSERT_LT(Metrics::Similarity::SOAPBased::compare(
+    ASSERT_LT(Metrics::Similarity::EnvironmentBased::compare(
             specA, specE,  distanceTolerance, soapThreshold, eps).metric, 1);
-    ASSERT_LT(Metrics::Similarity::SOAPBased::compare(
+    ASSERT_LT(Metrics::Similarity::EnvironmentBased::compare(
             specA, specF,  distanceTolerance, soapThreshold, eps).metric, 1);
 
-    ASSERT_EQ(Metrics::Similarity::SOAPBased::compare(
+    ASSERT_EQ(Metrics::Similarity::EnvironmentBased::compare(
             specE, specF,  distanceTolerance, soapThreshold, eps).metric, 1);
-    ASSERT_EQ(Metrics::Similarity::SOAPBased::compare(
+    ASSERT_EQ(Metrics::Similarity::EnvironmentBased::compare(
             specF, specE,  distanceTolerance, soapThreshold, eps).metric, 1);
 }
 

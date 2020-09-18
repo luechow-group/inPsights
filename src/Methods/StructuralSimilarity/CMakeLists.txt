@@ -12,7 +12,6 @@ set(HEADER_FILES
         include/QuaternionFit.h
         include/Hungarian.h
         include/BestMatch.h
-        include/GraphAnalysis.h
         include/Motif.h
         include/Motifs.h
         include/EnvironmentBasedMetric.h
@@ -23,7 +22,6 @@ set(HEADER_FILES
 set(SOURCE_FILES
         source/QuaternionFit.cpp
         source/BestMatch.cpp
-        source/GraphAnalysis.cpp
         source/Motif.cpp
         source/Motifs.cpp
         source/EnvironmentBasedMetric.cpp

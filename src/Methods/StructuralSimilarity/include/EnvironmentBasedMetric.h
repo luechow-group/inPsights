@@ -11,7 +11,7 @@
 
 namespace Metrics {
     namespace Similarity {
-        namespace SOAPBased {
+        namespace EnvironmentBased {
 
             /* Eigen::MatrixXd calculateEnvironmentSimilarityMatrix(
                     const SOAP::MolecularSpectrum &permutee,

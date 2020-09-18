@@ -51,7 +51,7 @@ public:
         auto specA = MolecularSpectrum(A);
         auto specB = MolecularSpectrum(B);
 
-        auto results = Metrics::Similarity::SOAPBased::getBestMatchResults(
+        auto results = Metrics::Similarity::EnvironmentBased::getBestMatchResults(
                 specA, specB,
                 distTolerance, soapThresh, eps);
 
@@ -152,7 +152,7 @@ TEST_F(AEnvironmentBasedMetricTest, PrermuteEnvironmentsToLabSystem) {
 
 TEST_F(AEnvironmentBasedMetricTest, GrowingPerm) {
 
-    auto growingPerm = Metrics::Similarity::SOAPBased::GrowingPerm({0, 1, 2}, {});
+    auto growingPerm = Metrics::Similarity::EnvironmentBased::GrowingPerm({0, 1, 2}, {});
 
     ASSERT_TRUE(growingPerm.add({0,1}));
     ASSERT_THAT(growingPerm.remainingPermuteeIndices_,ElementsAre(1,2));
@@ -171,7 +171,7 @@ TEST_F(AEnvironmentBasedMetricTest, FindPossiblePermutations1) {
     1,0,1,0,\
     0,1,0,1;
 
-    auto matches = Metrics::Similarity::SOAPBased::findEnvironmentMatches(mat, 1.0 );
+    auto matches = Metrics::Similarity::EnvironmentBased::findEnvironmentMatches(mat, 1.0 );
     ASSERT_THAT(matches[0].permuteeIndices, ElementsAre(0, 2));
     ASSERT_THAT(matches[1].permuteeIndices, ElementsAre(1, 3));
     ASSERT_THAT(matches[2].permuteeIndices, ElementsAre(0, 2));
@@ -179,20 +179,20 @@ TEST_F(AEnvironmentBasedMetricTest, FindPossiblePermutations1) {
     for (size_t i = 0; i < matches.size(); ++i)
         ASSERT_EQ(matches[i].referenceIndex, i);
 
-    auto dependentMatches = Metrics::Similarity::SOAPBased::clusterDependentMatches(matches);
+    auto dependentMatches = Metrics::Similarity::EnvironmentBased::clusterDependentMatches(matches);
     ASSERT_THAT(dependentMatches[0][0].permuteeIndices, ElementsAre(0, 2));
     ASSERT_THAT(dependentMatches[0][1].permuteeIndices, ElementsAre(0, 2));
     ASSERT_THAT(dependentMatches[1][0].permuteeIndices, ElementsAre(1, 3));
     ASSERT_THAT(dependentMatches[1][1].permuteeIndices, ElementsAre(1, 3));
 
-    auto possiblePermutations0 = Metrics::Similarity::SOAPBased::findPossiblePermutations(dependentMatches[0]);
+    auto possiblePermutations0 = Metrics::Similarity::EnvironmentBased::findPossiblePermutations(dependentMatches[0]);
     ASSERT_EQ(possiblePermutations0.size(), 2);
     ASSERT_THAT(possiblePermutations0[0].chainOfSwaps_, ElementsAre(Pair(0,0),Pair(2,2)));
     ASSERT_THAT(possiblePermutations0[1].chainOfSwaps_, ElementsAre(Pair(2,0),Pair(0,2)));
     for (auto & i : possiblePermutations0)
         ASSERT_TRUE(i.remainingPermuteeIndices_.empty());
 
-    auto possiblePermutations1 = Metrics::Similarity::SOAPBased::findPossiblePermutations(dependentMatches[1]);
+    auto possiblePermutations1 = Metrics::Similarity::EnvironmentBased::findPossiblePermutations(dependentMatches[1]);
     ASSERT_EQ(possiblePermutations1.size(), 2);
     ASSERT_THAT(possiblePermutations1[0].chainOfSwaps_, ElementsAre(Pair(1,1),Pair(3,3)));
     ASSERT_THAT(possiblePermutations1[1].chainOfSwaps_, ElementsAre(Pair(3,1),Pair(1,3)));
@@ -208,7 +208,7 @@ TEST_F(AEnvironmentBasedMetricTest, FindPossiblePermutations2) {
     0,0,1,0,\
     1,0,0,1;
 
-    auto matches = Metrics::Similarity::SOAPBased::findEnvironmentMatches(mat, 1.0);
+    auto matches = Metrics::Similarity::EnvironmentBased::findEnvironmentMatches(mat, 1.0);
     ASSERT_THAT(matches[0].permuteeIndices, ElementsAre(0, 1, 3));
     ASSERT_THAT(matches[1].permuteeIndices, ElementsAre(0, 1));
     ASSERT_THAT(matches[2].permuteeIndices, ElementsAre(2));
@@ -216,7 +216,7 @@ TEST_F(AEnvironmentBasedMetricTest, FindPossiblePermutations2) {
     for (size_t i = 0; i < matches.size(); ++i)
         ASSERT_EQ(matches[i].referenceIndex, i);
 
-    auto dependentMatches = Metrics::Similarity::SOAPBased::clusterDependentMatches(matches);
+    auto dependentMatches = Metrics::Similarity::EnvironmentBased::clusterDependentMatches(matches);
     ASSERT_THAT(dependentMatches[0][0].permuteeIndices, ElementsAre(0, 1, 3));
     ASSERT_THAT(dependentMatches[0][1].permuteeIndices, ElementsAre(0, 1));
     ASSERT_THAT(dependentMatches[0][2].permuteeIndices, ElementsAre(0, 3));
@@ -224,7 +224,7 @@ TEST_F(AEnvironmentBasedMetricTest, FindPossiblePermutations2) {
     ASSERT_THAT(dependentMatches[1][0].permuteeIndices, ElementsAre(2));
     ASSERT_EQ(dependentMatches[1][0].referenceIndex, 2);
 
-    auto possiblePermutations0 = Metrics::Similarity::SOAPBased::findPossiblePermutations(dependentMatches[0]);
+    auto possiblePermutations0 = Metrics::Similarity::EnvironmentBased::findPossiblePermutations(dependentMatches[0]);
     ASSERT_EQ(possiblePermutations0.size(), 3);
     ASSERT_THAT(possiblePermutations0[0].chainOfSwaps_, ElementsAre(Pair(0,0),Pair(1,1),Pair(3,3)));
     ASSERT_THAT(possiblePermutations0[1].chainOfSwaps_, ElementsAre(Pair(1,0),Pair(0,1),Pair(3,3)));
@@ -232,7 +232,7 @@ TEST_F(AEnvironmentBasedMetricTest, FindPossiblePermutations2) {
     for (auto & i : possiblePermutations0)
         ASSERT_TRUE(i.remainingPermuteeIndices_.empty());
 
-    auto possiblePermutations1 = Metrics::Similarity::SOAPBased::findPossiblePermutations(dependentMatches[1]);
+    auto possiblePermutations1 = Metrics::Similarity::EnvironmentBased::findPossiblePermutations(dependentMatches[1]);
     ASSERT_EQ(possiblePermutations1.size(), 1);
     ASSERT_THAT(possiblePermutations1[0].chainOfSwaps_, ElementsAre(Pair(2,2)));
     for (auto & i : possiblePermutations1)
@@ -247,7 +247,7 @@ TEST_F(AEnvironmentBasedMetricTest, FindPossiblePermutations3) {
     0,0,1,1,\
     0,0,1,1;
 
-    auto matches = Metrics::Similarity::SOAPBased::findEnvironmentMatches(mat, 1.0);
+    auto matches = Metrics::Similarity::EnvironmentBased::findEnvironmentMatches(mat, 1.0);
     ASSERT_THAT(matches[0].permuteeIndices, ElementsAre(0, 1));
     ASSERT_THAT(matches[1].permuteeIndices, ElementsAre(0, 1));
     ASSERT_THAT(matches[2].permuteeIndices, ElementsAre(2, 3));
@@ -255,20 +255,20 @@ TEST_F(AEnvironmentBasedMetricTest, FindPossiblePermutations3) {
     for (size_t i = 0; i < matches.size(); ++i)
         ASSERT_EQ(matches[i].referenceIndex, i);
 
-    auto dependentMatches = Metrics::Similarity::SOAPBased::clusterDependentMatches(matches);
+    auto dependentMatches = Metrics::Similarity::EnvironmentBased::clusterDependentMatches(matches);
     ASSERT_THAT(dependentMatches[0][0].permuteeIndices, ElementsAre(0, 1));
     ASSERT_THAT(dependentMatches[0][1].permuteeIndices, ElementsAre(0, 1));
     ASSERT_THAT(dependentMatches[1][0].permuteeIndices, ElementsAre(2, 3));
     ASSERT_THAT(dependentMatches[1][1].permuteeIndices, ElementsAre(2, 3));
 
-    auto possiblePermutations0 = Metrics::Similarity::SOAPBased::findPossiblePermutations(dependentMatches[0]);
+    auto possiblePermutations0 = Metrics::Similarity::EnvironmentBased::findPossiblePermutations(dependentMatches[0]);
     ASSERT_EQ(possiblePermutations0.size(), 2);
     ASSERT_THAT(possiblePermutations0[0].chainOfSwaps_, ElementsAre(Pair(0,0),Pair(1,1)));
     ASSERT_THAT(possiblePermutations0[1].chainOfSwaps_, ElementsAre(Pair(1,0),Pair(0,1)));
     for (const auto & i : possiblePermutations0)
         ASSERT_TRUE(i.remainingPermuteeIndices_.empty());
 
-    auto possiblePermutations1 = Metrics::Similarity::SOAPBased::findPossiblePermutations(dependentMatches[1]);
+    auto possiblePermutations1 = Metrics::Similarity::EnvironmentBased::findPossiblePermutations(dependentMatches[1]);
     ASSERT_EQ(possiblePermutations1.size(), 2);
     ASSERT_THAT(possiblePermutations1[0].chainOfSwaps_, ElementsAre(Pair(2,2),Pair(3,3)));
     ASSERT_THAT(possiblePermutations1[1].chainOfSwaps_, ElementsAre(Pair(3,2),Pair(2,3)));
@@ -286,7 +286,7 @@ TEST_F(AEnvironmentBasedMetricTest, FindPossiblePermutations4) {
     0,0,0,1,1,1,\
     0,0,0,1,1,1;
 
-    auto matches = Metrics::Similarity::SOAPBased::findEnvironmentMatches(mat, 1.0);
+    auto matches = Metrics::Similarity::EnvironmentBased::findEnvironmentMatches(mat, 1.0);
     ASSERT_THAT(matches[0].permuteeIndices, ElementsAre(0, 2));
     ASSERT_THAT(matches[1].permuteeIndices, ElementsAre(0, 2));
     ASSERT_THAT(matches[2].permuteeIndices, ElementsAre(1));
@@ -296,7 +296,7 @@ TEST_F(AEnvironmentBasedMetricTest, FindPossiblePermutations4) {
     for (size_t i = 0; i < matches.size(); ++i)
         ASSERT_EQ(matches[i].referenceIndex, i);
 
-    auto dependentMatches = Metrics::Similarity::SOAPBased::clusterDependentMatches(matches);
+    auto dependentMatches = Metrics::Similarity::EnvironmentBased::clusterDependentMatches(matches);
     ASSERT_THAT(dependentMatches[0][0].permuteeIndices, ElementsAre(0, 2));
     ASSERT_THAT(dependentMatches[0][1].permuteeIndices, ElementsAre(0, 2));
 
@@ -306,16 +306,16 @@ TEST_F(AEnvironmentBasedMetricTest, FindPossiblePermutations4) {
     ASSERT_THAT(dependentMatches[2][1].permuteeIndices, ElementsAre(3, 4, 5));
     ASSERT_THAT(dependentMatches[2][2].permuteeIndices, ElementsAre(3, 4, 5));
 
-    auto possiblePermutations0 = Metrics::Similarity::SOAPBased::findPossiblePermutations(dependentMatches[0]);
+    auto possiblePermutations0 = Metrics::Similarity::EnvironmentBased::findPossiblePermutations(dependentMatches[0]);
     ASSERT_EQ(possiblePermutations0.size(), 2);
     ASSERT_THAT(possiblePermutations0[0].chainOfSwaps_, ElementsAre(Pair(0,0),Pair(2,1)));
     ASSERT_THAT(possiblePermutations0[1].chainOfSwaps_, ElementsAre(Pair(2,0),Pair(0,1)));
 
-    auto possiblePermutations1 = Metrics::Similarity::SOAPBased::findPossiblePermutations(dependentMatches[1]);
+    auto possiblePermutations1 = Metrics::Similarity::EnvironmentBased::findPossiblePermutations(dependentMatches[1]);
     ASSERT_EQ(possiblePermutations1.size(), 1);
     ASSERT_THAT(possiblePermutations1[0].chainOfSwaps_, ElementsAre(Pair(1,2)));
 
-    auto possiblePermutations2 = Metrics::Similarity::SOAPBased::findPossiblePermutations(dependentMatches[2]);
+    auto possiblePermutations2 = Metrics::Similarity::EnvironmentBased::findPossiblePermutations(dependentMatches[2]);
     ASSERT_EQ(possiblePermutations2.size(), 6);
     ASSERT_THAT(possiblePermutations2[0].chainOfSwaps_, ElementsAre(Pair(3,3),Pair(4,4),Pair(5,5)));
     ASSERT_THAT(possiblePermutations2[1].chainOfSwaps_, ElementsAre(Pair(3,3),Pair(5,4),Pair(4,5)));
@@ -335,7 +335,7 @@ TEST_F(AEnvironmentBasedMetricTest, FindPossiblePermutations5) {
     0,0,0,1,1,1,\
     0,0,0,1,1,1;
 
-    auto matches = Metrics::Similarity::SOAPBased::findEnvironmentMatches(mat, 1.0);
+    auto matches = Metrics::Similarity::EnvironmentBased::findEnvironmentMatches(mat, 1.0);
     ASSERT_THAT(matches[0].permuteeIndices, ElementsAre(2));
     ASSERT_THAT(matches[1].permuteeIndices, ElementsAre(0));
     ASSERT_THAT(matches[2].permuteeIndices, ElementsAre(1));
@@ -345,7 +345,7 @@ TEST_F(AEnvironmentBasedMetricTest, FindPossiblePermutations5) {
     for (size_t i = 0; i < matches.size(); ++i)
         ASSERT_EQ(matches[i].referenceIndex, i);
 
-    auto dependentMatches = Metrics::Similarity::SOAPBased::clusterDependentMatches(matches);
+    auto dependentMatches = Metrics::Similarity::EnvironmentBased::clusterDependentMatches(matches);
     ASSERT_THAT(dependentMatches[0][0].permuteeIndices, ElementsAre(2));
 
     ASSERT_THAT(dependentMatches[1][0].permuteeIndices, ElementsAre(0));
@@ -356,19 +356,19 @@ TEST_F(AEnvironmentBasedMetricTest, FindPossiblePermutations5) {
     ASSERT_THAT(dependentMatches[3][1].permuteeIndices, ElementsAre(3, 4, 5));
     ASSERT_THAT(dependentMatches[3][2].permuteeIndices, ElementsAre(3, 4, 5));
 
-    auto possiblePermutations0 = Metrics::Similarity::SOAPBased::findPossiblePermutations(dependentMatches[0]);
+    auto possiblePermutations0 = Metrics::Similarity::EnvironmentBased::findPossiblePermutations(dependentMatches[0]);
     ASSERT_EQ(possiblePermutations0.size(), 1);
     ASSERT_THAT(possiblePermutations0[0].chainOfSwaps_, ElementsAre(Pair(2,0)));
 
-    auto possiblePermutations1 = Metrics::Similarity::SOAPBased::findPossiblePermutations(dependentMatches[1]);
+    auto possiblePermutations1 = Metrics::Similarity::EnvironmentBased::findPossiblePermutations(dependentMatches[1]);
     ASSERT_EQ(possiblePermutations1.size(), 1);
     ASSERT_THAT(possiblePermutations1[0].chainOfSwaps_, ElementsAre(Pair(0,1)));
 
-    auto possiblePermutations2 = Metrics::Similarity::SOAPBased::findPossiblePermutations(dependentMatches[2]);
+    auto possiblePermutations2 = Metrics::Similarity::EnvironmentBased::findPossiblePermutations(dependentMatches[2]);
     ASSERT_EQ(possiblePermutations2.size(), 1);
     ASSERT_THAT(possiblePermutations2[0].chainOfSwaps_, ElementsAre(Pair(1,2)));
 
-    auto possiblePermutations3 = Metrics::Similarity::SOAPBased::findPossiblePermutations(dependentMatches[3]);
+    auto possiblePermutations3 = Metrics::Similarity::EnvironmentBased::findPossiblePermutations(dependentMatches[3]);
     ASSERT_EQ(possiblePermutations3.size(), 6);
     ASSERT_THAT(possiblePermutations3[0].chainOfSwaps_, ElementsAre(Pair(3,3),Pair(4,4),Pair(5,5)));
     ASSERT_THAT(possiblePermutations3[1].chainOfSwaps_, ElementsAre(Pair(3,3),Pair(5,4),Pair(4,5)));

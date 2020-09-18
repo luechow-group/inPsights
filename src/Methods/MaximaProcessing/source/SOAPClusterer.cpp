@@ -87,7 +87,7 @@ void SOAPClusterer::cluster(Cluster& cluster){
             spdlog::debug("    Supercluster status before comparison: {}", ToString::clusterToString(supercluster));
 
             if( std::abs(subclusterOfSupercluster.representative()->value() - subcluster.representative()->value()) < maxValueDelta) {
-                auto comparisionResult = Metrics::Similarity::SOAPBased::compare(
+                auto comparisionResult = Metrics::Similarity::EnvironmentBased::compare(
                         subcluster.representative()->spectrum(),
                         subclusterOfSupercluster.representative()->spectrum(),
                         toleranceRadius, similarityThreshold, numericalPrecisionEpsilon);
