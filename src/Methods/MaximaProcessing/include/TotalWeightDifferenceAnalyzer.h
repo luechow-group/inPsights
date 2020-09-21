@@ -4,7 +4,7 @@
 #ifndef INPSIGHTS_TOTALWEIGHTDIFFERENCEANALYZER_H
 #define INPSIGHTS_TOTALWEIGHTDIFFERENCEANALYZER_H
 
-#include "IBlock.h"
+#include "IProcess.h"
 #include <ISettings.h>
 
 namespace Settings {

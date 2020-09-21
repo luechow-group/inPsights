@@ -7,7 +7,7 @@
 #include <DensityBasedScan.h>
 #include <ISettings.h>
 #include <spdlog/spdlog.h>
-#include <IBlock.h>
+#include <IProcess.h>
 #include <Cluster.h>
 #include "ClusteringMetric.h"
 

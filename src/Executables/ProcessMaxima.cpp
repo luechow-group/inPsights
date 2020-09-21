@@ -36,24 +36,24 @@ void validateClusteringSettings(const YAML::Node &inputYaml) {
     for (const auto& node : clusteringNode) {
         auto methodName = node.first.as<std::string>();
 
-        switch (IBlock::typeFromString(methodName)) {
-            case IBlock::BlockType::IdentityClusterer: {
+        switch (IProcess::typeFromString(methodName)) {
+            case IProcess::ProcessType::IdentityClusterer: {
                 IdentityClusterer::settings = Settings::IdentityClusterer(clusteringNode);
                 break;
             }
-            case IBlock::BlockType::DistanceClusterer: {
+            case IProcess::ProcessType::DistanceClusterer: {
                 PreClusterer::settings = Settings::PreClusterer(clusteringNode);
                 break;
             }
-            case IBlock::BlockType::DensityBasedClusterer: {
+            case IProcess::ProcessType::DensityBasedClusterer: {
                 DensityBasedClusterer::settings = Settings::DensityBasedClusterer(clusteringNode);
                 break;
             }
-            case IBlock::BlockType::ReferencePositionsClusterer: {
+            case IProcess::ProcessType::ReferencePositionsClusterer: {
                 ReferencePositionsClusterer::settings = Settings::ReferencePositionsClusterer(clusteringNode);
                 break;
             }
-            case IBlock::BlockType::SOAPClusterer: {
+            case IProcess::ProcessType::SOAPClusterer: {
                 SOAPClusterer::settings = Settings::SOAPClusterer(clusteringNode);
 
                 auto soapSettings = node.second["SOAP"];
@@ -67,11 +67,11 @@ void validateClusteringSettings(const YAML::Node &inputYaml) {
                     SOAP::Cutoff::settings = Settings::SOAP::Cutoff(soapSettings);
                 break;
             }
-            case IBlock::BlockType::ClusterNumberAnalyzer: {
+            case IProcess::ProcessType::ClusterNumberAnalyzer: {
                 ClusterNumberAnalyzer::settings = Settings::ClusterNumberAnalyzer(clusteringNode);
                 break;
             }
-            case IBlock::BlockType::TotalWeightDifferenceAnalyzer: {
+            case IProcess::ProcessType::TotalWeightDifferenceAnalyzer: {
                 TotalWeightDifferenceAnalyzer::settings = Settings::TotalWeightDifferenceAnalyzer(clusteringNode);
                 break;
             }
@@ -161,8 +161,8 @@ int main(int argc, char *argv[]) {
         if (usedClusteringSettings[methodName])
             spdlog::warn("Method \"{}\" is being applied multiple times! Overwriting old settings...", methodName);
 
-        switch (IBlock::typeFromString(methodName)) {
-            case IBlock::BlockType::IdentityClusterer: {
+        switch (IProcess::typeFromString(methodName)) {
+            case IProcess::ProcessType::IdentityClusterer: {
                 auto &settings = IdentityClusterer::settings;
 
                 settings = Settings::IdentityClusterer(node.second);
@@ -176,7 +176,7 @@ int main(int argc, char *argv[]) {
                 settings.appendToNode(usedClusteringSettings);
                 break;
             }
-            case IBlock::BlockType::DistanceClusterer: {
+            case IProcess::ProcessType::DistanceClusterer: {
                 auto &settings = PreClusterer::settings;
 
                 settings = Settings::PreClusterer(node.second);
@@ -189,7 +189,7 @@ int main(int argc, char *argv[]) {
                 settings.appendToNode(usedClusteringSettings);
                 break;
             }
-            case IBlock::BlockType::DensityBasedClusterer: {
+            case IProcess::ProcessType::DensityBasedClusterer: {
                 auto &settings = DensityBasedClusterer::settings;
 
                 settings = Settings::DensityBasedClusterer(node.second);
@@ -210,7 +210,7 @@ int main(int argc, char *argv[]) {
                 settings.appendToNode(usedClusteringSettings);
                 break;
             }
-            case IBlock::BlockType::ReferencePositionsClusterer: {
+            case IProcess::ProcessType::ReferencePositionsClusterer: {
                 auto &settings = ReferencePositionsClusterer::settings;
 
                 settings = Settings::ReferencePositionsClusterer(node.second);
@@ -231,7 +231,7 @@ int main(int argc, char *argv[]) {
 
                 break;
             }
-            case IBlock::BlockType::SOAPClusterer: {
+            case IProcess::ProcessType::SOAPClusterer: {
                 auto &settings = SOAPClusterer::settings;
 
                 settings = Settings::SOAPClusterer(node.second);
@@ -258,7 +258,7 @@ int main(int argc, char *argv[]) {
 
                 break;
             }
-            case IBlock::BlockType::ClusterNumberAnalyzer: {
+            case IProcess::ProcessType::ClusterNumberAnalyzer: {
                 auto &settings = ClusterNumberAnalyzer::settings;
                 settings = Settings::ClusterNumberAnalyzer(node.second);
 
@@ -270,7 +270,7 @@ int main(int argc, char *argv[]) {
                 settings.appendToNode(usedClusteringSettings);
                 break;
             }
-            case IBlock::BlockType::TotalWeightDifferenceAnalyzer: {
+            case IProcess::ProcessType::TotalWeightDifferenceAnalyzer: {
                 auto &settings = TotalWeightDifferenceAnalyzer::settings;
                 settings = Settings::TotalWeightDifferenceAnalyzer(node.second);
 

@@ -23,7 +23,7 @@ set(HEADER_FILES
         include/EnergyPartitioning.h
         include/EnergyStatistics.h
         include/Cluster.h
-        include/IBlock.h
+        include/IProcess.h
         include/ReferencePositionsClusterer.h
         include/VoxelCubeOverlapCalculation.h
         include/SpinCorrelationValueHistogram.h
@@ -51,7 +51,7 @@ set(SOURCE_FILES
         source/EnergyPartitioning.cpp
         source/EnergyStatistics.cpp
         source/Cluster.cpp
-        source/IBlock.cpp
+        source/IProcess.cpp
         source/ReferencePositionsClusterer.cpp
         source/VoxelCubeOverlapCalculation.cpp
         source/SpinCorrelationValueHistogram.cpp

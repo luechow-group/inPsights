@@ -1,33 +1,33 @@
 // Copyright (C) 2019 Michael Heuer.
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#ifndef INPSIGHTS_IBLOCK_H
-#define INPSIGHTS_IBLOCK_H
+#ifndef INPSIGHTS_IPROCESS_H
+#define INPSIGHTS_IPROCESS_H
 
 #include <Cluster.h>
 
-class IBlock{
+class IProcess{
 public:
-    enum class BlockType {
-        // Clusterer Blocks
+    enum class ProcessType {
+        // Clusterer Processes
         IdentityClusterer,
         DistanceClusterer,
         DensityBasedClusterer,
         SOAPClusterer,
         ReferencePositionsClusterer,
 
-        // Analyzer Blocks
+        // Analyzer Processes
         ClusterNumberAnalyzer,
         TotalWeightDifferenceAnalyzer,
 
-        // Unknown Block name
+        // Unknown Process
         invalid
     };
 
-    static BlockType typeFromString(const std::string& blockName);
+    static ProcessType typeFromString(const std::string& processName);
 };
 
-class IClusterer : public IBlock {
+class IClusterer : public IProcess {
 public:
     explicit IClusterer(std::vector<Sample> & samples);
 
@@ -37,10 +37,10 @@ protected:
     std::vector<Sample> &samples_;
 };
 
-class IAnalyzer : public IBlock {
+class IAnalyzer : public IProcess {
 public:
     virtual void analyze(const Cluster& cluster) = 0;
 };
 
 
-#endif //INPSIGHTS_IBLOCK_H
+#endif //INPSIGHTS_IPROCESS_H

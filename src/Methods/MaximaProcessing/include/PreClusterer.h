@@ -5,7 +5,7 @@
 #define INPSIGHTS_PRECLUSTERER_H
 
 #include <BestMatch.h>
-#include <IBlock.h>
+#include <IProcess.h>
 #include <ISettings.h>
 
 namespace Settings {

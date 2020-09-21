@@ -5,7 +5,7 @@
 #define INPSIGHTS_IDENTITYCLUSTERER_H
 
 #include "Sample.h"
-#include "IBlock.h"
+#include "IProcess.h"
 #include <ISettings.h>
 
 namespace Settings {
