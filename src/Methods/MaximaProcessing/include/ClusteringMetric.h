@@ -26,9 +26,9 @@ namespace ClusteringMetric{
     }
     // Forward declaration of the template
     template<> BestMatch::AscendingMetricResult
-    ClusteringMetric::bestMatchResult<Spatial, Global> (const Cluster &g1, const Cluster &g2);
+    bestMatchResult<Spatial, Global> (const Cluster &g1, const Cluster &g2);
     template<> BestMatch::AscendingMetricResult
-    ClusteringMetric::bestMatchResult<Spatial, Local> (const Cluster &g1, const Cluster &g2);
+    bestMatchResult<Spatial, Local> (const Cluster &g1, const Cluster &g2);
 
     template <MetricType metric, SelectionType selection>
     double distance(const Cluster &g1, const Cluster &g2){
