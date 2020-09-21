@@ -21,3 +21,17 @@ template<> BestMatch::AscendingMetricResult ClusteringMetric::bestMatchResult<Sp
     //TODO Should we throw an exception instead of return max here?
     return {std::numeric_limits<double>::max(), Eigen::PermutationMatrix<Eigen::Dynamic>(0)};
 }
+
+template<> BestMatch::AscendingMetricResult ClusteringMetric::bestMatchResult<Environmental, Global> (const Cluster &g1, const Cluster &g2) {
+    throw NotImplemented();
+    auto descedingMetricResult = Metrics::Similarity::EnvironmentBased::compare(
+            g1.representative()->spectrum(),
+            g2.representative()->spectrum(),
+            0, 0, 0);
+    return {1.0-descedingMetricResult.metric, descedingMetricResult.permutation};
+}
+
+template<> BestMatch::AscendingMetricResult ClusteringMetric::bestMatchResult<Environmental, Local> (const Cluster &g1, const Cluster &g2) {
+    throw NotImplemented();
+    return {0, Eigen::PermutationMatrix<Eigen::Dynamic>(0)};
+}

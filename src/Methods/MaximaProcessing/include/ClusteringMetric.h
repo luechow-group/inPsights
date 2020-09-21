@@ -20,15 +20,19 @@ namespace ClusteringMetric{
     //BestMatch::AscendingMetricResult allResults(const Cluster &g1, const Cluster &g2); //optional
 
     template <MetricType metric, SelectionType selection>
-    BestMatch::AscendingMetricResult bestMatchResult(const Cluster &g1, const Cluster &g2){
-        throw NotImplemented();
-        return {0, Eigen::PermutationMatrix<Eigen::Dynamic>(0)};
-    }
+    BestMatch::AscendingMetricResult bestMatchResult(const Cluster &g1, const Cluster &g2);
+
     // Forward declaration of the template
     template<> BestMatch::AscendingMetricResult
     bestMatchResult<Spatial, Global> (const Cluster &g1, const Cluster &g2);
     template<> BestMatch::AscendingMetricResult
     bestMatchResult<Spatial, Local> (const Cluster &g1, const Cluster &g2);
+
+    template<> BestMatch::AscendingMetricResult
+    bestMatchResult<Environmental, Global> (const Cluster &g1, const Cluster &g2);
+    template<> BestMatch::AscendingMetricResult
+    bestMatchResult<Environmental, Local> (const Cluster &g1, const Cluster &g2);
+
 
     template <MetricType metric, SelectionType selection>
     double distance(const Cluster &g1, const Cluster &g2){
