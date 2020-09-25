@@ -8,7 +8,7 @@ The input for these executables has to be specified in YAML-format.
 
 ## `ProcessMaxima`  Executable
 The executable `ProcessMaxima` processes binary files created with `Amolqc` in `rawdata` mode.
-Exemplary `.bin` files can be found in the Amolqc repositotry in the `Amolqc/examples/MAX/RAW` folder for acetone and ethane.
+Exemplary `.bin` files can be found in the Amolqc repository in the `Amolqc/examples/MAX/RAW` folder for acetone and ethane.
 
 Additionally, an input file in YAML-format is required, where different options can be specified. 
 For unspecified options, suitable defaults will be used automatically resulting in notifications in the console output.
