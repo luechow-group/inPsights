@@ -3,7 +3,7 @@
 
 #include <IdentityClusterer.h>
 #include <PreClusterer.h>
-#include <Reference.h>
+#include <Maximum.h>
 #include <DistanceBasedMetric.h>
 #include <spdlog/spdlog.h>
 
@@ -41,7 +41,7 @@ void IdentityClusterer::cluster(Cluster& cluster) {
 
     while (beginIt != cluster.end()) {
         auto total = cluster.size();//std::distance(cluster.begin(), cluster.end());
-        auto endIt = std::upper_bound(beginIt, cluster.end(), Cluster(Reference(atoms,
+        auto endIt = std::upper_bound(beginIt, cluster.end(), Cluster(Maximum(atoms,
                                                                             beginIt->representative()->value() +
                                                                             valueIncrement, ElectronsVector(), 0)));
 
@@ -92,14 +92,14 @@ void IdentityClusterer::subLoop(Cluster& cluster,
             else
                 addReference(cluster, beginIt, it, permFlipped);
             endIt = std::upper_bound(beginIt, cluster.end(),
-                    Cluster(Reference(atoms, beginIt->representative()->value() + valueIncrement,
+                    Cluster(Maximum(atoms, beginIt->representative()->value() + valueIncrement,
                                     ElectronsVector(), 0)));
         } else it++;
     } else {  // don't consider spin flip
         if (norm <= distThresh) {
             addReference(cluster, beginIt, it, perm);
             endIt = std::upper_bound(beginIt, cluster.end(),
-                    Cluster(Reference(atoms, beginIt->representative()->value() + valueIncrement,
+                    Cluster(Maximum(atoms, beginIt->representative()->value() + valueIncrement,
                                     ElectronsVector(), 0)));
         } else it++;
     }

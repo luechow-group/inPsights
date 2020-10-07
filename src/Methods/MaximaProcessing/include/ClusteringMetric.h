@@ -9,7 +9,7 @@
 #include <DistanceBasedMetric.h>
 #include "Cluster.h"
 #include "ErrorHandling.h"
-#include "Reference.h"
+#include "Maximum.h"
 
 enum MetricType {Environmental, Spatial};
 enum SelectionType {Global, Local};

@@ -6,7 +6,7 @@
 #include <spdlog/spdlog.h>
 #include <EnvironmentBasedMetric.h>
 #include <SOAPSettings.h>
-#include <Reference.h>
+#include <Maximum.h>
 
 using namespace SOAP;
 

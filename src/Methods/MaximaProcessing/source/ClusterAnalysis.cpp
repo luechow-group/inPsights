@@ -3,7 +3,7 @@
 
 #include "ClusterAnalysis.h"
 #include <DistanceBasedMetric.h>
-#include <Reference.h>
+#include <Maximum.h>
 
 // constructs an adjacency matrix with indices being determined from the order in the cluster
 Eigen::MatrixXd  ClusterAnalysis::calculateBestMatchDistanceMatrix(const Cluster& cluster) {

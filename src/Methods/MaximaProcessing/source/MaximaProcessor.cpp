@@ -80,21 +80,21 @@ MaximaProcessor::MaximaProcessor(YAML::Emitter& yamlDocument, const std::vector<
     EnStats_.add(EnergyPartitioning::ParticleBased::oneAtomEnergies(Vnn_));
 }
 
-unsigned long MaximaProcessor::addReference(const Reference &reference) {
-    auto count = unsigned(reference.count());
+unsigned long MaximaProcessor::addMaximum(const Maximum &maximum) {
+    auto count = unsigned(maximum.count());
 
-    Eigen::VectorXd value = Eigen::VectorXd::Constant(1, reference.value());
-    Eigen::MatrixXd spinCorrelations_ = SpinCorrelation::spinCorrelations(reference.maximum().typesVector()).cast<double>();
+    Eigen::VectorXd value = Eigen::VectorXd::Constant(1, maximum.value());
+    Eigen::MatrixXd spinCorrelations_ = SpinCorrelation::spinCorrelations(maximum.maximum().typesVector()).cast<double>();
 
     // Maximum related statistics
     valueStats_.add(value, count);
     SeeStats_.add(spinCorrelations_, count);
 
-    auto permutedNuclei = reference.nuclei();
-    permutedNuclei.permute(reference.nuclearPermutation());
+    auto permutedNuclei = maximum.nuclei();
+    permutedNuclei.permute(maximum.nuclearPermutation());
 
     // Sample related statistics
-    for (auto & id : reference.sampleIds()) {
+    for (auto & id : maximum.sampleIds()) {
         auto & electrons = samples_[id].sample_;
         Eigen::VectorXd Te = samples_[id].kineticEnergies_;
         Eigen::MatrixXd Vee = CoulombPotential::energies(electrons);
@@ -121,13 +121,13 @@ unsigned long MaximaProcessor::addReference(const Reference &reference) {
 
 
 // TODO every cluster should know its total count at merging already => add count as a member
-size_t  MaximaProcessor::addAllReferences(const Cluster &cluster) {
+size_t  MaximaProcessor::addAllMaxima(const Cluster &cluster) {
     unsigned long totalCount = 0;
     if(cluster.isLeaf())
-        totalCount += addReference(*cluster.representative());
+        totalCount += addMaximum(*cluster.representative());
     else
         for(const auto &subcluster : cluster)
-            totalCount += addAllReferences(subcluster);
+            totalCount += addAllMaxima(subcluster);
 
     return totalCount;
 }
@@ -175,7 +175,7 @@ void MaximaProcessor::calculateStatistics(const Cluster &maxima,
         RenStats_.reset();
 
 
-        totalCount += addAllReferences(cluster); // this sets all statistic objects internally
+        totalCount += addAllMaxima(cluster); // this sets all statistic objects internally
 
 
         auto maximalNumberOfStructuresToPrint = MaximaProcessing::settings.maximalNumberOfStructuresToPrint();

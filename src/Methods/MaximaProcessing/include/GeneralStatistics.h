@@ -4,7 +4,7 @@
 #ifndef INPSIGHTS_GENERALSTATISTICS_H
 #define INPSIGHTS_GENERALSTATISTICS_H
 
-#include "Reference.h"
+#include "Maximum.h"
 #include "Sample.h"
 #include "Cluster.h"
 #include <Statistics.h>

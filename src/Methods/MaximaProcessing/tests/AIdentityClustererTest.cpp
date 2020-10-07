@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include <gmock/gmock.h>
-#include <Reference.h>
+#include <Maximum.h>
 #include <Sample.h>
 #include <TestMolecules.h>
 #include <IdentityClusterer.h>

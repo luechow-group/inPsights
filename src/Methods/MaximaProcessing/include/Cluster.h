@@ -12,10 +12,10 @@
 #include <MolecularGeometry.h>
 
 // In order to use Cluster class,
-// <Reference.h> has to be included as well, due to forward declaration
+// <Maximum.h> has to be included as well, due to forward declaration
 
 class Cluster;
-class Reference;
+class Maximum;
 
 namespace ToString {
     std::string clusterToString(const Cluster& cluster);
@@ -28,7 +28,7 @@ public:
 
     explicit Cluster(std::vector<Cluster>::size_type size);
     Cluster(std::initializer_list<Cluster> group);
-    explicit Cluster(Reference reference);
+    explicit Cluster(Maximum maximum);
 
     bool isLeaf() const;
 
@@ -56,8 +56,8 @@ public:
 
     AveragedPositionsVector averagedSamplePositionsVector(const std::vector<Sample>& samples) const;
     
-    std::shared_ptr<const Reference> representative() const;
-    std::shared_ptr<Reference> representative();
+    std::shared_ptr<const Maximum> representative() const;
+    std::shared_ptr<Maximum> representative();
 
     bool operator<(const Cluster& other) const;
 
@@ -70,7 +70,7 @@ public:
 
 private:
     virtual void updateRepresentative();
-    std::shared_ptr<Reference> representative_;
+    std::shared_ptr<Maximum> representative_;
     long selectedElectronsCount_;
 };
 

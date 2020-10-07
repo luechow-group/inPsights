@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include <RawDataReader.h>
-#include "Reference.h"
+#include "Maximum.h"
 #include "ParticlesVector.h"
 #include "ParticleSelection.h"
 #include "MaximaProcessingSettings.h"
@@ -60,7 +60,7 @@ void RawDataReader::readSamplesAndMaxima(std::ifstream &input, int fileLength, s
         // create reference
         auto maximum =  serializedData.segment(4*ne, 3*ne);
         auto value = serializedData[7*ne];
-        auto r = Reference(atoms_, value, ElectronsVector(PositionsVector(maximum), spins_), id_);
+        auto r = Maximum(atoms_, value, ElectronsVector(PositionsVector(maximum), spins_), id_);
 
 
         if(MaximaProcessing::settings.deleteCoreElectrons()) {
@@ -147,8 +147,8 @@ std::string RawDataReader::zeroPadNumber(int num) {
     return ss.str();
 }
 
-std::pair<Sample, Reference>
-RawDataReader::removeNonValenceElectrons(const Sample &sample, const Reference &reference) {
+std::pair<Sample, Maximum>
+RawDataReader::removeNonValenceElectrons(const Sample &sample, const Maximum &reference) {
 
     auto nonValenceIndices = ParticleSelection::getNonValenceIndices(reference.maximum(), atoms_);
 
@@ -165,5 +165,5 @@ RawDataReader::removeNonValenceElectrons(const Sample &sample, const Reference &
         }
     }
 
-    return {Sample (newSample, newKineticEnergies), Reference(atoms_, reference.value(), newMaximum, reference.ownId())};
+    return {Sample (newSample, newKineticEnergies), Maximum(atoms_, reference.value(), newMaximum, reference.ownId())};
 }

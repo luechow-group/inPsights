@@ -3,7 +3,7 @@
 
 #include <VoxelCubeGeneration.h>
 #include <Sample.h>
-#include <Reference.h>
+#include <Maximum.h>
 #include <Cluster.h>
 
 namespace Settings {

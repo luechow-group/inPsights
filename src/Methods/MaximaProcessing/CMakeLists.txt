@@ -10,7 +10,7 @@ message ( "-- ++ CREATING PROJECT OR MAKEFILE ---> ${OUTPUT_NAME}" )
 set(HEADER_FILES
         include/RawDataReader.h
         include/Sample.h
-        include/Reference.h
+        include/Maximum.h
         include/ClusterData.h
         include/IdentityClusterer.h
         include/PreClusterer.h
@@ -38,7 +38,7 @@ set(HEADER_FILES
 set(SOURCE_FILES
         source/RawDataReader.cpp
         source/Sample.cpp
-        source/Reference.cpp
+        source/Maximum.cpp
         source/ClusterData.cpp
         source/IdentityClusterer.cpp
         source/PreClusterer.cpp

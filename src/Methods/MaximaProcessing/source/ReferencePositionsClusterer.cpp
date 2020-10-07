@@ -5,7 +5,7 @@
 #include <DistanceBasedMetric.h>
 #include <BestMatch.h>
 #include <ParticleSelection.h>
-#include <Reference.h>
+#include <Maximum.h>
 #include <Cluster.h>
 #include <functional>
 #include <ErrorHandling.h>

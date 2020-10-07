@@ -6,7 +6,7 @@
 #include <PreClusterer.h>
 #include <DistanceBasedMetric.h>
 #include <Enumerate.h>
-#include <Reference.h>
+#include <Maximum.h>
 #include "ClusteringMetric.h"
 
 namespace Settings {

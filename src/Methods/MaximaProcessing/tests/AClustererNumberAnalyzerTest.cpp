@@ -5,7 +5,7 @@
 #include <gmock/gmock.h>
 #include <spdlog/spdlog.h>
 #include <ClusterNumberAnalyzer.h>
-#include <Reference.h>
+#include <Maximum.h>
 #include <TestMolecules.h>
 
 using namespace testing;

@@ -7,7 +7,7 @@
 #include <SOAPSettings.h>
 #include <TestMolecules.h>
 #include <Cluster.h>
-#include <Reference.h>
+#include <Maximum.h>
 #include <EnvironmentBasedMetric.h>
 
 using namespace testing;

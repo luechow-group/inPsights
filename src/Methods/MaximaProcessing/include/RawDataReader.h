@@ -5,7 +5,7 @@
 #define INPSIGHTS_RAWDATAREADER_H
 
 #include <BinaryFileReader.h>
-#include "Reference.h"
+#include "Maximum.h"
 #include "Sample.h"
 
 class RawDataReader : public BinaryFileReader{
@@ -19,7 +19,7 @@ public:
     
     void read(const std::string& basename, size_t numberOfSamples);
 
-    std::pair<Sample, Reference> removeNonValenceElectrons(const Sample &sample, const Reference &reference);
+    std::pair<Sample, Maximum> removeNonValenceElectrons(const Sample &sample, const Maximum &reference);
 
     AtomsVector getAtoms() const;
     

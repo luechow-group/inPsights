@@ -1,8 +1,8 @@
 // Copyright (C) 2018-2019 Michael Heuer.
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#ifndef INPSIGHTS_REFERENCE_H
-#define INPSIGHTS_REFERENCE_H
+#ifndef INPSIGHTS_MAXIMUM_H
+#define INPSIGHTS_MAXIMUM_H
 
 #include <ParticlesVector.h>
 #include <Statistics.h>
@@ -11,9 +11,9 @@
 
 class Sample;
 
-class Reference{
+class Maximum{
 public:
-    Reference(const AtomsVector &nuclei, double negLogSqrdProbabilityDensity = std::numeric_limits<double>::max(),
+    Maximum(const AtomsVector &nuclei, double negLogSqrdProbabilityDensity = std::numeric_limits<double>::max(),
               ElectronsVector maximum = {}, size_t id = 0);
 
     size_t ownId() const;
@@ -24,7 +24,7 @@ public:
     void permute(const Eigen::PermutationMatrix<Eigen::Dynamic>& perm, std::vector<Sample>& samples);
     void permute(const MolecularGeometry::Permutation& perm, std::vector<Sample>& samples);
 
-    bool operator<(const Reference& rhs) const;
+    bool operator<(const Maximum& rhs) const;
 
     unsigned long count() const;
 
@@ -52,5 +52,5 @@ private:
 
 
 
-#endif //INPSIGHTS_REFERENCE_H
+#endif //INPSIGHTS_MAXIMUM_H
 
