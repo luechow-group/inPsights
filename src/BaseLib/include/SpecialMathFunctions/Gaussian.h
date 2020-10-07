@@ -6,6 +6,7 @@
 
 #include <Eigen/Core>
 #include <utility>
+#include <NaturalConstants.h>
 
 class IGaussian{
 
@@ -15,6 +16,8 @@ public:
     double sigma() const { return sigma_; };
 
     double getNormalizationConstant(){ return normalizationConstant_; };
+
+    static double calculateAlpha(double sigma);
 
 private:
     virtual double calculateNormalizationConstant() const = 0;
@@ -33,7 +36,6 @@ public:
 
     // computes the normalization constant for the 1D volume integral
     double calculateNormalizationConstant() const override;
-
 
     // computes the normalization constant for the integral S g^2 r^2 dr
     double normalizationConstant_g2_r2() const;
@@ -58,6 +60,11 @@ public:
     SphericalGaussian(const Eigen::Vector3d& rCenter = Eigen::Vector3d::Zero(), double sigma = 1/2.);
 
     double calculateNormalizationConstant() const override;
+
+    // computes the normalization constant for the 3D volume integral without the need of creating an object
+    static double calculateNormalizationConstant(double sigma) {
+        return std::pow(calculateAlpha(sigma)/Constant::pi, 3./2.);
+    }
 
     double value(const Eigen::Vector3d& r) const;
 

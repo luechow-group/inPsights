@@ -182,7 +182,7 @@ namespace SOAP {
             else if (string == "typeAgnostic")
                 return Mode::typeAgnostic;
             else
-                return Mode::undefined;
+                throw std::exception();
         }
 
         void checkBounds(unsigned n, unsigned l, int m) {
@@ -215,7 +215,7 @@ namespace SOAP {
                 case BasisType::adaptive :
                     return "adaptive";
                 default:
-                    return "undefined";
+                    throw std::exception();
             }
         }
 
@@ -225,7 +225,7 @@ namespace SOAP {
             else if (string == "adaptive")
                 return Radial::BasisType::adaptive;
             else
-                return Radial::BasisType::undefined;
+                throw std::exception();
         }
     }
 

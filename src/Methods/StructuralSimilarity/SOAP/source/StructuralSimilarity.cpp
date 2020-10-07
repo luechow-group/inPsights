@@ -66,9 +66,7 @@ namespace SOAP {
                 }
             }
             // symmetrize the matrix
-            for (unsigned i = 0; i < N; ++i)
-                for (unsigned j = i + 1; j < N; ++j)
-                    C(j, i) = C(i, j);
+            C = C.selfadjointView<Eigen::Upper>();
 
             return C;
         }

@@ -4,7 +4,7 @@
 #ifndef INPSIGHTS_CLUSTERNUMBERANALYZER_H
 #define INPSIGHTS_CLUSTERNUMBERANALYZER_H
 
-#include "IBlock.h"
+#include "IProcess.h"
 #include <ISettings.h>
 
 namespace Settings {

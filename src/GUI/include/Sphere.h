@@ -9,7 +9,10 @@
 
 class Sphere : public Abstract3dObject{
 public:
-    Sphere(Qt3DCore::QEntity *root, QColor color, QVector3D location, float radius, float alpha = 1.0f);
+    Sphere(Qt3DCore::QEntity *root, QColor color, QVector3D location, float radius, float alpha = 1.0f,
+           int rings = 16,
+           int slices = 32
+           );
 
     float getRadius() const;
 
@@ -24,6 +27,7 @@ public slots:
 private:
     bool highlightedQ_, selectedQ_;
     float radius_;
+public:
     Qt3DExtras::QSphereMesh* mesh_;
 
     void update();

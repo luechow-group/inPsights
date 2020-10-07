@@ -52,6 +52,7 @@ namespace Settings {
         unsignedProperty::decode(node[className], maximalNumberOfStructuresToPrint);
         doubleProperty ::decode(node[className], motifThreshold);
         boolProperty ::decode(node[className], deleteCoreElectrons);
+        boolProperty ::decode(node[className], printAllMaxima);
     }
 
     void MaximaProcessing::appendToNode(YAML::Node &node) const {
@@ -62,6 +63,7 @@ namespace Settings {
         node[className][maximalNumberOfStructuresToPrint.name()] = maximalNumberOfStructuresToPrint.get();
         node[className][motifThreshold.name()] = motifThreshold.get();
         node[className][deleteCoreElectrons.name()] = deleteCoreElectrons.get();
+        node[className][printAllMaxima.name()] = printAllMaxima.get();
     }
 }
 

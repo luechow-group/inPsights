@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "TotalWeightDifferenceAnalyzer.h"
-#include <GraphAnalysis.h>
+#include "GraphAnalysis.h"
 #include <ClusterAnalysis.h>
 #include <spdlog/spdlog.h>
 #include <algorithm>

@@ -14,10 +14,14 @@ Eigen::MatrixXd Sinkhorn::Pgamma(const Eigen::MatrixXd &C, double gamma, double 
     Eigen::VectorXd uOld(N), vOld(M);
     Eigen::MatrixXd K(N, M);
 
-    double aN = 1.0 / double(N), aM = 1.0 / double(M);
-    double uDeviation, vDeviation, err = std::pow(eps, 2);
+    double
+    aN = 1.0 / double(N),
+    aM = 1.0 / double(M),
+    uDeviation,
+    vDeviation,
+    err = std::pow(eps, 2),
+    lambda = 1. / gamma;
 
-    double lambda = 1. / gamma;
     K = (lambda * (C - Eigen::MatrixXd::Ones(N, M))).array().exp();
 
     do {

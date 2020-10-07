@@ -4,7 +4,7 @@
 #ifndef INPSIGHTS_REFERENCEPOSITIONSCLUSTERER_H
 #define INPSIGHTS_REFERENCEPOSITIONSCLUSTERER_H
 
-#include <IBlock.h>
+#include <IProcess.h>
 #include <ISettings.h>
 #include <ParticlesVector.h>
 #include <Sample.h>

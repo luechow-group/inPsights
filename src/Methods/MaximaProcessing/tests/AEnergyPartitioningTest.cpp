@@ -3,7 +3,7 @@
 
 #include <gmock/gmock.h>
 #include <EnergyPartitioning.h>
-#include <GraphAnalysis.h>
+#include "GraphAnalysis.h"
 #include <Motifs.h>
 #include <CoulombPotential.h>
 #include <yaml-cpp/yaml.h>

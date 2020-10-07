@@ -295,8 +295,8 @@ void InPsightsWidget::loadData() {
     auto atoms = doc["Atoms"].as<AtomsVector>();
 
     /* Note on the compatibility mode:
-     * Clusters from result files produced without initial electron indice shuffling contain
-     * artificial correlation between the core electrons, persumably originating from the hungarian selecting the first
+     * Clusters from result files produced without initial electron indices shuffling contain
+     * artificial correlation between the core electrons, presumably originating from the Hungarian selecting the first
      * viable permutation. These artificial correlations are removed manually in the visualization.
      */
     if(doc["CompatabilityMode"] && doc["CompatabilityMode"].as<bool>())

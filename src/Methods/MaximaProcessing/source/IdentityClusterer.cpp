@@ -3,8 +3,8 @@
 
 #include <IdentityClusterer.h>
 #include <PreClusterer.h>
-#include <Reference.h>
-#include <BestMatchDistance.h>
+#include <Maximum.h>
+#include <DistanceBasedMetric.h>
 #include <spdlog/spdlog.h>
 
 namespace Settings {
@@ -41,7 +41,7 @@ void IdentityClusterer::cluster(Cluster& cluster) {
 
     while (beginIt != cluster.end()) {
         auto total = cluster.size();//std::distance(cluster.begin(), cluster.end());
-        auto endIt = std::upper_bound(beginIt, cluster.end(), Cluster(Reference(atoms,
+        auto endIt = std::upper_bound(beginIt, cluster.end(), Cluster(Maximum(atoms,
                                                                             beginIt->representative()->value() +
                                                                             valueIncrement, ElectronsVector(), 0)));
 
@@ -74,7 +74,7 @@ void IdentityClusterer::subLoop(Cluster& cluster,
     auto atoms = cluster.representative()->nuclei();
 
     //TODO calculate only alpha electron distances and skip beta electron hungarian if dist is too large
-    auto [norm, perm] = BestMatch::Distance::compare<Spin, Eigen::Infinity, 2>(
+    auto [norm, perm] = Metrics::Similarity::DistanceBased::compare<Spin, Eigen::Infinity, 2>(
             it->representative()->maximum(),
             (*beginIt).representative()->maximum());
 
@@ -83,8 +83,8 @@ void IdentityClusterer::subLoop(Cluster& cluster,
         auto permuteeSpinFlipped = it->representative()->maximum();
         permuteeSpinFlipped.typesVector().flipSpins();
 
-        auto [normFlipped, permFlipped] =
-        BestMatch::Distance::compare<Spin, Eigen::Infinity, 2>(permuteeSpinFlipped, beginIt->representative()->maximum());
+        auto [normFlipped, permFlipped] =Metrics::Similarity::DistanceBased::compare<Spin, Eigen::Infinity, 2>(
+                permuteeSpinFlipped, beginIt->representative()->maximum());
 
         if ((norm <= distThresh) || (normFlipped <= distThresh)) {
             if (norm <= normFlipped)
@@ -92,14 +92,14 @@ void IdentityClusterer::subLoop(Cluster& cluster,
             else
                 addReference(cluster, beginIt, it, permFlipped);
             endIt = std::upper_bound(beginIt, cluster.end(),
-                    Cluster(Reference(atoms, beginIt->representative()->value() + valueIncrement,
+                    Cluster(Maximum(atoms, beginIt->representative()->value() + valueIncrement,
                                     ElectronsVector(), 0)));
         } else it++;
     } else {  // don't consider spin flip
         if (norm <= distThresh) {
             addReference(cluster, beginIt, it, perm);
             endIt = std::upper_bound(beginIt, cluster.end(),
-                    Cluster(Reference(atoms, beginIt->representative()->value() + valueIncrement,
+                    Cluster(Maximum(atoms, beginIt->representative()->value() + valueIncrement,
                                     ElectronsVector(), 0)));
         } else it++;
     }

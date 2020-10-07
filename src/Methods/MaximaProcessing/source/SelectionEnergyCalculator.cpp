@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "SelectionEnergyCalculator.h"
-#include <Reference.h>
+#include <Maximum.h>
 #include <algorithm>
 
 SelectionEnergyCalculator::SelectionEnergyCalculator(

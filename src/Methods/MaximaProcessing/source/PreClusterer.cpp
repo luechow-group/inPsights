@@ -3,8 +3,8 @@
 
 #include <IdentityClusterer.h>
 #include <PreClusterer.h>
-#include <Reference.h>
-#include <BestMatchDistance.h>
+#include <Maximum.h>
+#include <DistanceBasedMetric.h>
 
 namespace Settings {
     PreClusterer::PreClusterer()
@@ -29,7 +29,7 @@ Settings::PreClusterer PreClusterer::settings = Settings::PreClusterer();
 PreClusterer::PreClusterer(std::vector<Sample> &samples)
         : IClusterer(samples){}
         
-// assumes a sorted reference vector
+// assumes a sorted maxima vector
 void PreClusterer::cluster(Cluster& cluster) {
     assert(!cluster.empty() && "The cluster cannot be empty.");
 
@@ -44,9 +44,9 @@ void PreClusterer::cluster(Cluster& cluster) {
     //Presort
     for (auto subcluster = cluster.begin(); subcluster != cluster.end(); ++subcluster) {
 
-        Cluster lowerRef(Reference(atoms, subcluster->representative()->value() - valueIncrement,
+        Cluster lowerRef(Maximum(atoms, subcluster->representative()->value() - valueIncrement,
                 ElectronsVector(), 0));
-        Cluster upperRef(Reference(atoms, subcluster->representative()->value() + valueIncrement,
+        Cluster upperRef(Maximum(atoms, subcluster->representative()->value() + valueIncrement,
                 ElectronsVector(), 0));
 
         auto superclusterLowerBoundIt = std::lower_bound(
@@ -63,7 +63,7 @@ void PreClusterer::cluster(Cluster& cluster) {
         for(auto subclusterFromSuperclusterBoundaries = superclusterLowerBoundIt;
             subclusterFromSuperclusterBoundaries != superclusterUpperBoundIt; ++subclusterFromSuperclusterBoundaries) {
 
-            auto[norm, perm] = BestMatch::Distance::compare<Eigen::Infinity, 2>(
+            auto[norm, perm] = Metrics::Similarity::DistanceBased::compare<Eigen::Infinity, 2>(
                     subcluster->representative()->maximum().positionsVector(),
                     subclusterFromSuperclusterBoundaries->representative()->maximum().positionsVector());
             if(norm > similarityRadius)
@@ -82,9 +82,9 @@ void PreClusterer::cluster(Cluster& cluster) {
     for (auto subcluster = cluster.begin(); subcluster != cluster.end(); ++subcluster) {
 
         // Define value range of the supercluster
-        Cluster lowerRef(Reference(atoms, subcluster->representative()->value() - valueIncrement,
+        Cluster lowerRef(Maximum(atoms, subcluster->representative()->value() - valueIncrement,
                 ElectronsVector(), 0));
-        Cluster upperRef(Reference(atoms, subcluster->representative()->value() + valueIncrement,
+        Cluster upperRef(Maximum(atoms, subcluster->representative()->value() + valueIncrement,
                 ElectronsVector(), 0));
 
         auto superclusterLowerBoundIt = std::lower_bound(
@@ -104,7 +104,7 @@ void PreClusterer::cluster(Cluster& cluster) {
         for (auto subclusterFromSuperclusterBoundaries = superclusterLowerBoundIt;
         subclusterFromSuperclusterBoundaries != superclusterUpperBoundIt; ++subclusterFromSuperclusterBoundaries) {
 
-            auto [norm, perm] = BestMatch::Distance::compare<Eigen::Infinity, 2>(
+            auto [norm, perm] = Metrics::Similarity::DistanceBased::compare<Eigen::Infinity, 2>(
                     subcluster->representative()->maximum().positionsVector(),
                     subclusterFromSuperclusterBoundaries->representative()->maximum().positionsVector());
 

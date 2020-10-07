@@ -3,8 +3,8 @@
 
 #include <Cluster.h>
 #include <ParticleSelection.h>
-#include <BestMatch.h>
-#include <Reference.h>
+#include <PermutationHandling.h>
+#include <Maximum.h>
 #include <Eigen/Core>
 
 std::string ToString::clusterToString(const Cluster &cluster) {
@@ -19,9 +19,9 @@ Cluster::Cluster()
           selectedElectronsCount_(0){
 }
 
-Cluster::Cluster(Reference reference)
+Cluster::Cluster(Maximum maximum)
         : std::vector<Cluster>(0),
-        representative_(std::make_shared<Reference>(std::move(reference))),
+        representative_(std::make_shared<Maximum>(std::move(maximum))),
         selectedElectronsCount_(representative_->maximum().numberOfEntities()){
 }
 
@@ -45,7 +45,7 @@ void Cluster::sort() {
     }
 }
 
-/* Sort all subclusters representative Reference objects by recursing down to the leaf level
+/* Sort all subclusters representative Maximum objects by recursing down to the leaf level
  * and update all representative structures */
 void Cluster::sortAll() {
 
@@ -96,6 +96,19 @@ void Cluster::permuteAll(const MolecularGeometry::Permutation &molecularPerm, st
     }
 }
 
+void Cluster::getAllMaxima(std::vector<ElectronsVector> & maxima, std::size_t maximalNumber) const {
+    if(isLeaf()) {
+        if(maxima.size()+1 <= maximalNumber)
+            maxima.emplace_back(representative()->maximum());
+    } else {
+        for (auto &i : *this)
+            if(maxima.size() + i.size() <= maximalNumber)
+                i.getAllMaxima(maxima);
+            else
+                break;
+    }
+}
+
 
 ElectronsVector Cluster::electronsVectorFromAveragedPositionsVector(const AveragedPositionsVector & averagedPositionsVector) const {
     return {averagedPositionsVector.positions, representative()->maximum().typesVector()};
@@ -115,15 +128,15 @@ Cluster::AveragedPositionsVector Cluster::averagedSamplePositionsVector(const st
     return {PositionsVector(average), static_cast<unsigned>(sampleIds.size())};
 }
 
-std::shared_ptr<Reference> Cluster::representative() {
+std::shared_ptr<Maximum> Cluster::representative() {
     if (!isLeaf())
         return front().representative();
     else
         return representative_;
 }
 
-std::shared_ptr<const Reference> Cluster::representative() const {
-    return std::const_pointer_cast<const Reference>(representative_);
+std::shared_ptr<const Maximum> Cluster::representative() const {
+    return std::const_pointer_cast<const Maximum>(representative_);
 }
 
 bool Cluster::operator<(const Cluster &other) const {
@@ -214,7 +227,7 @@ void Cluster::permuteRelevantElectronsToFront(std::vector<Sample> & samples){
 
         // permute all relevant electrons to the front
         subCluster.setSelectedElectronsCount(subIndices.size());
-        permutation = BestMatch::getPermutationToFront(subIndices, electronsNumber);
+        permutation = PermutationHandling::getPermutationToFront(subIndices, electronsNumber);
         subCluster.permuteAll(permutation, samples);
     }
 }

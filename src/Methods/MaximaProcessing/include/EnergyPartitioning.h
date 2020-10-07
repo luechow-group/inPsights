@@ -7,7 +7,7 @@
 #include <ParticlesVector.h>
 #include <MolecularGeometry.h>
 #include <EnergyStatistics.h>
-#include <GraphAnalysis.h>
+#include "GraphAnalysis.h"
 #include <Motifs.h>
 #include <Eigen/Core>
 #include <EnergyResultsBundle.h>

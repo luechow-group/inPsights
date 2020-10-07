@@ -2,8 +2,8 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "ClusterAnalysis.h"
-#include <BestMatchDistance.h>
-#include <Reference.h>
+#include <DistanceBasedMetric.h>
+#include <Maximum.h>
 
 // constructs an adjacency matrix with indices being determined from the order in the cluster
 Eigen::MatrixXd  ClusterAnalysis::calculateBestMatchDistanceMatrix(const Cluster& cluster) {
@@ -14,7 +14,7 @@ Eigen::MatrixXd  ClusterAnalysis::calculateBestMatchDistanceMatrix(const Cluster
     Eigen::Index nClusters = cluster.size();
     for (Eigen::Index i = 0; i < nClusters-1; ++i) {
         for (Eigen::Index j = i+1; j < nClusters; ++j) {
-            auto [norm, perm] = BestMatch::Distance::compare< Eigen::Infinity, 2>(
+            auto [norm, perm] = Metrics::Similarity::DistanceBased::compare< Eigen::Infinity, 2>(
                     cluster[i].representative()->maximum().positionsVector(),
                     cluster[j].representative()->maximum().positionsVector());
             mat(i,j) = norm;

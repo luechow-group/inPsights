@@ -26,7 +26,7 @@ NeighborhoodExpansion NeighborhoodExpander::expandEnvironment(const Environment&
         const auto& neighborCoords = neighborCoordsPair.second;
 
         double weight = 1; //TODO TypeSpecific Value?
-        double weightScale = Cutoff::getWeight(neighborCoords.r);
+        double weightScale = Cutoff::value(neighborCoords.r);
 
         if (neighborCoords.r <= radiusZero)
             weight *= centerWeight;
@@ -54,26 +54,15 @@ NeighborhoodExpander::computeParticularExpansions(const Environment &e) {
     TypeSpecificNeighborhoodsAtOneCenter expansions;
 
     auto mode = General::settings.mode();
-    switch (mode) {
-        case General::Mode::typeAgnostic: {
-            auto noneTypeId = 0;
-            expansions.emplace(noneTypeId, expandEnvironment(e, noneTypeId));
-            break;
-        }
-        case General::Mode::chemical: {
-            for(auto & [type, count] : ParticleKit::kit){
-                expansions.emplace(type, expandEnvironment(e, type));
-            }
-            break;
-        }
-        case General::Mode::alchemical: {
-            for(auto & [type, count] : ParticleKit::kit){
-                expansions.emplace(type, expandEnvironment(e, type));
-            }
-            break;
-        }
-        case General::Mode::undefined:
-            throw std::exception();
+    if (mode == General::Mode::typeAgnostic) {
+        auto noneTypeId = 0;
+        expansions.emplace(noneTypeId, expandEnvironment(e, noneTypeId));
+    }
+    else if (mode == General::Mode::chemical || mode == General::Mode::alchemical){
+        for (auto &[type, count] : ParticleKit::kit)
+            expansions.emplace(type, expandEnvironment(e, type));
+    } else {
+        throw std::exception();
     }
     return expansions;
 }

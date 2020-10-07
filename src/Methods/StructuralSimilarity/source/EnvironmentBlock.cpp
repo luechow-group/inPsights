@@ -3,6 +3,7 @@
 
 #include <EnvironmentBlock.h>
 #include <ParticleKit.h>
+#include "EnvironmentBasedMetric.h"
 
 /*
  * Distance conservation is checked by calculating the difference of the distance covariance matrice of
@@ -15,14 +16,14 @@ bool DistanceCovariance::conservingQ(
         const MolecularGeometry &reference,
         double distanceMatrixCovarianceTolerance) {
 
-    auto permuteeIndices = BestMatch::SOAPSimilarity::permuteIndicesFromKitSystem(
+    auto permuteeIndices = Metrics::Similarity::EnvironmentBased::permuteIndicesFromKitSystem(
             permuteeIndicesInKitSystem, SOAP::ParticleKit::fromKitPermutation(permutee));
-    auto referenceIndices = BestMatch::SOAPSimilarity::permuteIndicesFromKitSystem(
+    auto referenceIndices = Metrics::Similarity::EnvironmentBased::permuteIndicesFromKitSystem(
             referenceIndicesInKitSystem, SOAP::ParticleKit::fromKitPermutation(reference));
 
-    auto covA = BestMatch::SOAPSimilarity::calculateDistanceCovarianceMatrixOfSelectedIndices(
+    auto covA = Metrics::Similarity::EnvironmentBased::calculateDistanceCovarianceMatrixOfSelectedIndices(
             permutee.positions(), permuteeIndices);
-    auto covB = BestMatch::SOAPSimilarity::calculateDistanceCovarianceMatrixOfSelectedIndices(
+    auto covB = Metrics::Similarity::EnvironmentBased::calculateDistanceCovarianceMatrixOfSelectedIndices(
             reference.positions(), referenceIndices);
 
     auto conservingQ = (covB - covA).array().abs().maxCoeff() <= distanceMatrixCovarianceTolerance;
@@ -35,7 +36,7 @@ bool DistanceCovariance::conservingQ(
 };
 
 EnvironmentBlock::EnvironmentBlock(
-        const std::deque<BestMatch::SOAPSimilarity::GrowingPerm>& possiblePerms,
+        const std::deque<Metrics::Similarity::EnvironmentBased::GrowingPerm>& possiblePerms,
         const MolecularGeometry &permutee,
         const MolecularGeometry &reference)
         : permuteeIndices_(),
@@ -44,7 +45,7 @@ EnvironmentBlock::EnvironmentBlock(
           reference_(reference) {
     initialize(possiblePerms);
 }
-void EnvironmentBlock::initialize(const std::deque<BestMatch::SOAPSimilarity::GrowingPerm>& possiblePerms) {
+void EnvironmentBlock::initialize(const std::deque<Metrics::Similarity::EnvironmentBased::GrowingPerm>& possiblePerms) {
 
     // initialize index lists
     for(const auto& indexPair : possiblePerms.front().chainOfSwaps_) {

@@ -4,7 +4,7 @@
 #ifndef INPSIGHTS_MOTIFS_H
 #define INPSIGHTS_MOTIFS_H
 
-#include <GraphAnalysis.h>
+#include "GraphAnalysis.h"
 #include <Motif.h>
 #include <MolecularGeometry.h>
 

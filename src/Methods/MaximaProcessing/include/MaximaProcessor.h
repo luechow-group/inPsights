@@ -4,7 +4,7 @@
 #ifndef INPSIGHTS_MAXIMAPROCESSOR_H
 #define INPSIGHTS_MAXIMAPROCESSOR_H
 
-#include "Reference.h"
+#include "Maximum.h"
 #include "Sample.h"
 #include <Motifs.h>
 #include <Statistics.h>
@@ -39,9 +39,9 @@ public:
 
     MaximaProcessor(YAML::Emitter &yamlDocument, const std::vector<Sample> &samples, const AtomsVector &atoms);
 
-    size_t addReference(const Reference &reference);
+    size_t addMaximum(const Maximum &maximum);
 
-    size_t addAllReferences(const Cluster &cluster);
+    size_t addAllMaxima(const Cluster &cluster);
 
     std::vector<ElectronsVector> getAllRepresentativeMaxima(const Cluster &cluster);
 

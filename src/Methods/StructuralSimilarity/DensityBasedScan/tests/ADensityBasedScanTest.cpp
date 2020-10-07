@@ -3,7 +3,7 @@
 
 #include <gmock/gmock.h>
 #include <DensityBasedScan.h>
-#include <BestMatchDistance.h>
+#include <DistanceBasedMetric.h>
 #include <sstream>
 
 using namespace testing;
@@ -39,7 +39,7 @@ public:
     }
 
     static double bestMatchDistance(const ElectronsVector &e1, const ElectronsVector &e2) {
-        return BestMatch::Distance::compare<Eigen::Infinity, 2>(e1.positionsVector(), e2.positionsVector()).metric;
+        return Metrics::Similarity::DistanceBased::compare<Eigen::Infinity, 2>(e1.positionsVector(), e2.positionsVector()).metric;
     };
 };
 

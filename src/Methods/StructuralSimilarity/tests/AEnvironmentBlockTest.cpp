@@ -5,7 +5,7 @@
 #include <EnvironmentBlock.h>
 #include <TestMolecules.h>
 #include <ParticleKit.h>
-#include <BestMatchSimilarity.h>
+#include <EnvironmentBasedMetric.h>
 #include <SOAPSettings.h>
 
 using namespace testing;
@@ -19,9 +19,9 @@ TEST(AEnvironmentBlockTest, FilteringOfCorrectPermutationsAlchemical) {
     General::settings.mode = General::Mode::alchemical;
     ParticleKit::create(A);
 
-    std::deque<BestMatch::SOAPSimilarity::GrowingPerm> possiblePermutations = {
-            BestMatch::SOAPSimilarity::GrowingPerm({},{{0,1},{2,3}}),
-            BestMatch::SOAPSimilarity::GrowingPerm({},{{2,1},{0,3}})
+    std::deque<Metrics::Similarity::EnvironmentBased::GrowingPerm> possiblePermutations = {
+            Metrics::Similarity::EnvironmentBased::GrowingPerm({}, {{0, 1}, {2, 3}}),
+            Metrics::Similarity::EnvironmentBased::GrowingPerm({}, {{2, 1}, {0, 3}})
     };
 
     auto block = EnvironmentBlock(possiblePermutations, A, B);
@@ -44,11 +44,11 @@ TEST(AEnvironmentBlockTest, FilteringOfWrongPermutationsAlchemical) {
     General::settings.mode = General::Mode::alchemical;
     ParticleKit::create(A);
 
-    std::deque<BestMatch::SOAPSimilarity::GrowingPerm> possiblePermutations = {
+    std::deque<Metrics::Similarity::EnvironmentBased::GrowingPerm> possiblePermutations = {
             // second swap is wrong
-            BestMatch::SOAPSimilarity::GrowingPerm({},{{0,1},{3,2},{2,3}}),
+            Metrics::Similarity::EnvironmentBased::GrowingPerm({}, {{0, 1}, {3, 2}, {2, 3}}),
             // second swap is wrong
-            BestMatch::SOAPSimilarity::GrowingPerm({},{{2,1},{3,2},{0,3}})
+            Metrics::Similarity::EnvironmentBased::GrowingPerm({}, {{2, 1}, {3, 2}, {0, 3}})
     };
 
     auto block = EnvironmentBlock(possiblePermutations, A, B);

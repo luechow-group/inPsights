@@ -3,6 +3,7 @@
 
 #include "SpecialMathFunctions/BoostSphericalHarmonics.h"
 #include <boost/math/special_functions/spherical_harmonic.hpp>
+#include <NaturalConstants.h>
 
 using namespace std;
 using namespace boost::math;
@@ -10,8 +11,8 @@ using namespace boost::math;
 namespace BoostSphericalHarmonics {
 
     Eigen::Vector3d ToDirection(double phi, double theta) {
-        double r = sin(theta);
-        return {r * cos(phi), r * sin(phi), cos(theta)};
+        double r = std::sin(theta);
+        return {r * std::cos(phi), r * std::sin(phi), std::cos(theta)};
     }
 
     Eigen::Vector3d ToVector(double r,double phi, double theta) {
@@ -46,7 +47,7 @@ namespace BoostSphericalHarmonics {
         assert(NearByMargin(dir.squaredNorm(), 1.0) && "dir is not unit");
         // Explicitly clamp the z coordinate so that numeric errors don't cause it
         // to fall just outside of acos' domain.
-        theta = acos(Clamp(dir.z(), -1.0, 1.0));
+        theta = std::acos(Clamp(dir.z(), -1.0, 1.0));
         // We don't need to divide dir.y() or dir.x() by sin(theta) since they are
         // both scaled by it and atan2 will handle it appropriately.
         phi = atan2(dir.y(), dir.x());
@@ -72,7 +73,7 @@ namespace BoostSphericalHarmonics {
             if( theta == 0. ){
                 phi = 0;
             } else if (phi < 0.) {
-                phi += 2 * M_PI;  //phi now in [0,2*pi]
+                phi += 2 * Constant::pi;  //phi now in [0,2*pi]
             }
         }
     }
@@ -84,9 +85,9 @@ namespace BoostSphericalHarmonics {
         if (m == 0)  {
             return spherical_harmonic_r<double>(l, 0, theta, phi);
         } else if (m < 0) {
-            return sqrt(2) * pow(-1, m) * spherical_harmonic_i<double>(l, abs(m), theta, phi);
+            return std::sqrt(2) * std::pow(-1, m) * spherical_harmonic_i<double>(l, std::abs(m), theta, phi);
         } else { // (m > 0)
-            return sqrt(2) * pow(-1, m) * spherical_harmonic_r<double>(l, m, theta, phi);
+            return std::sqrt(2) * std::pow(-1, m) * spherical_harmonic_r<double>(l, m, theta, phi);
         } 
     }
 

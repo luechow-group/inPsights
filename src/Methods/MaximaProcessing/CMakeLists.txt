@@ -10,7 +10,7 @@ message ( "-- ++ CREATING PROJECT OR MAKEFILE ---> ${OUTPUT_NAME}" )
 set(HEADER_FILES
         include/RawDataReader.h
         include/Sample.h
-        include/Reference.h
+        include/Maximum.h
         include/ClusterData.h
         include/IdentityClusterer.h
         include/PreClusterer.h
@@ -23,7 +23,7 @@ set(HEADER_FILES
         include/EnergyPartitioning.h
         include/EnergyStatistics.h
         include/Cluster.h
-        include/IBlock.h
+        include/IProcess.h
         include/ReferencePositionsClusterer.h
         include/VoxelCubeOverlapCalculation.h
         include/SpinCorrelationValueHistogram.h
@@ -32,12 +32,13 @@ set(HEADER_FILES
         include/TotalWeightDifferenceAnalyzer.h
         include/SelectionEnergyCalculator.h
         include/EnergyResultsBundle.h
+        include/ClusteringMetric.h
         )
 
 set(SOURCE_FILES
         source/RawDataReader.cpp
         source/Sample.cpp
-        source/Reference.cpp
+        source/Maximum.cpp
         source/ClusterData.cpp
         source/IdentityClusterer.cpp
         source/PreClusterer.cpp
@@ -50,7 +51,7 @@ set(SOURCE_FILES
         source/EnergyPartitioning.cpp
         source/EnergyStatistics.cpp
         source/Cluster.cpp
-        source/IBlock.cpp
+        source/IProcess.cpp
         source/ReferencePositionsClusterer.cpp
         source/VoxelCubeOverlapCalculation.cpp
         source/SpinCorrelationValueHistogram.cpp
@@ -58,6 +59,7 @@ set(SOURCE_FILES
         source/ClusterAnalysis.cpp
         source/TotalWeightDifferenceAnalyzer.cpp
         source/SelectionEnergyCalculator.cpp
+        source/ClusteringMetric.cpp
         )
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES})

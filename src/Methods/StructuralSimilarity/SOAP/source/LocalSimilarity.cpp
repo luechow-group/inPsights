@@ -43,11 +43,13 @@ namespace SOAP {
             auto eps = std::numeric_limits<double>::epsilon();
             if (selfSimilarity1 <= eps || selfSimilarity2 <= eps) {
                 if (selfSimilarity1 <= eps && selfSimilarity2 <= eps) {
-                    spdlog::debug("LocalSelfSimilarity: Warning: The analyzed structure contains two isolated environments.");
-                    return 1;
+                    spdlog::debug("LocalSelfSimilarity: Warning: "
+                                  "The analyzed structure contains two isolated environments.");
+                    return 1.0;
                 } else {
-                    spdlog::debug("LocalSelfSimilarity: Warning: The analyzed structure contains one isolated environments.");
-                    return 0;
+                    spdlog::debug("LocalSelfSimilarity: Warning: "
+                                  "The analyzed structure contains one isolated environments.");
+                    return 0.0;
                 }
             }
             auto similarityValue = unnormalizedKernel(expansions1, expansions2);
@@ -73,7 +75,7 @@ namespace SOAP {
                     similarityValue = internal::alchemical(expansions1, expansions2);
                     break;
                 }
-                case General::Mode::undefined:
+                default:
                     throw std::exception();
             }
             assert(similarityValue >= 0 && "The similarity cannot be negative. "
@@ -83,8 +85,7 @@ namespace SOAP {
 
         double unnormalizedSelfKernel(const TypeSpecificNeighborhoodsAtOneCenter &expansions) {
             double similarityValue = 0;
-            auto mode = General::settings.mode();
-            switch (mode) {
+            switch (General::settings.mode()) {
                 case General::Mode::typeAgnostic: {
                     similarityValue = internal::typeAgnostic(expansions);
                     break;
@@ -98,7 +99,7 @@ namespace SOAP {
                     // a dedicated self-similarity method for the alchemical expansion does not increase efficiency here
                     break;
                 }
-                case General::Mode::undefined:
+                default:
                     throw std::exception();
             }
             assert(similarityValue >= 0 && "The similarity cannot be negative. "
@@ -168,21 +169,16 @@ namespace SOAP {
             return std::norm(sum);
         }
 
-        double internal::kroneckerDelta(int typeA, int typeB) {
-            std::map<std::pair<int, int>, double>::const_iterator it;
-
-            if (typeA == typeB)
-                return 1.0;
-            else if (typeA < typeB)
-                it = General::settings.pairSimilarities.find({typeA, typeB});
-            else
-                it = General::settings.pairSimilarities.find({typeB, typeA});
-
-
-            if (it != General::settings.pairSimilarities.end())
-                return (*it).second;
-            else
-                return 0.0;
+        double internal::alchemicalTypeSimilarity(int typeA, int typeB) {
+            if (typeA == typeB) {
+                const auto itSame = General::settings.pairSimilarities.find({typeA, typeA});
+                return (itSame != General::settings.pairSimilarities.end())? itSame->second : 1.0;
+            } else {
+                const auto itDiff = typeA < typeB ?
+                                    General::settings.pairSimilarities.find({typeA, typeB}) :// (typeA < typeB)
+                                    General::settings.pairSimilarities.find({typeB, typeA}); // (typeA > typeB)
+                return (itDiff != General::settings.pairSimilarities.end()) ? itDiff->second : 0.0;
+            }
         }
 
         double internal::alchemical(const TypeSpecificNeighborhoodsAtOneCenter &expansions1,
@@ -191,16 +187,16 @@ namespace SOAP {
             for (auto &alpha : ParticleKit::kit) {
                 for (auto &alphaPrimed : ParticleKit::kit) {
 
-                    double k_aap = internal::kroneckerDelta(alpha.first, alphaPrimed.first);
-                    if (k_aap > 0.0) {
+                    double kappa_aap = internal::alchemicalTypeSimilarity(alpha.first, alphaPrimed.first);
+                    if (kappa_aap > 0.0) {
                         const auto &alphaExpansion1 = expansions1.find(alpha.first)->second;
                         const auto &alphaPrimedExpansion2 = expansions2.find(alphaPrimed.first)->second;
 
                         for (auto &beta : ParticleKit::kit) {
                             for (auto &betaPrimed : ParticleKit::kit) {
 
-                                double k_bbp = internal::kroneckerDelta(beta.first, betaPrimed.first);
-                                if (k_bbp > 0.0) {
+                                double kappa_bbp = internal::alchemicalTypeSimilarity(beta.first, betaPrimed.first);
+                                if (kappa_bbp > 0.0) {
                                     const auto &betaExpansion1 = expansions1.find(beta.first)->second;
                                     const auto &betaPrimedExpansion2 = expansions2.find(betaPrimed.first)->second;
 
@@ -208,7 +204,7 @@ namespace SOAP {
                                     auto ps2 = PowerSpectrum::partialPowerSpectrum(alphaPrimedExpansion2,
                                                                                    betaPrimedExpansion2);
 
-                                    sum += ps1.dot(ps2) * k_aap * k_bbp;
+                                    sum += ps1.dot(ps2) * kappa_aap * kappa_bbp;
                                 }
                             }
                         }

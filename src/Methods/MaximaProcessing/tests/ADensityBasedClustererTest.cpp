@@ -7,7 +7,7 @@
 #include <random>
 #include <TestMolecules.h>
 #include <Sample.h>
-#include <Reference.h>
+#include <Maximum.h>
 #include <NaturalConstants.h>
 #include <Metrics.h>
 
@@ -24,7 +24,7 @@ public:
         const auto &normal = TestMolecules::fourElectrons::normal;
 
         // emplace first element (the first elements determines the ordering of the cluster)
-        references.emplace_back(Reference(normal.atoms(), 0, normal.electrons(), 0));
+        references.emplace_back(Maximum(normal.atoms(), 0, normal.electrons(), 0));
 
         // start with second element
         bool anyWrong = false;
@@ -37,7 +37,7 @@ public:
 
                 // random permutation
                 evCopy.permute(evCopy.randomPermutation(rng));
-                references.emplace_back(Reference(normal.atoms(), std::pow(std::sin(angle), 2), evCopy, 0));
+                references.emplace_back(Maximum(normal.atoms(), std::pow(std::sin(angle), 2), evCopy, 0));
 
                 Sample s(evCopy, Eigen::VectorXd::Random(normal.numberOfEntities()));
                 samples.emplace_back(std::move(s));
@@ -114,14 +114,14 @@ TEST_F(ADensityBasedClustererTest, RotationallySymmetricAndPointLikeCluster){
         std::vector<Sample> samples;
         makeRingLikeCluster(references, samples, n, rng);
 
-        references.emplace_back(Reference(ionic.atoms(), 10, ionic.electrons(), 0));
+        references.emplace_back(Maximum(ionic.atoms(), 10, ionic.electrons(), 0));
         for (unsigned i = 1; i < m; ++i) {
             auto evCopy = ionic.electrons();
             evCopy.positionsVector().shake(DensityBasedClusterer::settings.radius.get(), rng);
 
             // random permutation
             evCopy.permute(evCopy.randomPermutation(rng));
-            references.emplace_back(Reference(ionic.atoms(), 10, evCopy, 0));
+            references.emplace_back(Maximum(ionic.atoms(), 10, evCopy, 0));
 
             Sample s(evCopy, Eigen::VectorXd::Random(ionic.numberOfEntities()));
             samples.emplace_back(std::move(s));

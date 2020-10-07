@@ -11,23 +11,20 @@ message ( "-- ++ CREATING PROJECT OR MAKEFILE ---> ${OUTPUT_NAME}" )
 set(HEADER_FILES
         include/QuaternionFit.h
         include/Hungarian.h
-        include/SimpleSorter.h
         include/BestMatch.h
-        include/GraphAnalysis.h
         include/Motif.h
         include/Motifs.h
-        include/BestMatchSimilarity.h
-        include/BestMatchDistance.h
+        include/EnvironmentBasedMetric.h
+        include/DistanceBasedMetric.h
         include/EnvironmentBlock.h
         )
 
 set(SOURCE_FILES
         source/QuaternionFit.cpp
         source/BestMatch.cpp
-        source/GraphAnalysis.cpp
         source/Motif.cpp
         source/Motifs.cpp
-        source/BestMatchSimilarity.cpp
+        source/EnvironmentBasedMetric.cpp
         source/EnvironmentBlock.cpp
         )
 
