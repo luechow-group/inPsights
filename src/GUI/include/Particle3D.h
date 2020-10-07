@@ -18,7 +18,8 @@ public:
             Sphere(root,
                    GuiHelper::QColorFromType<Type>(particle->type()),
                    GuiHelper::toQVector3D(particle->position()),
-                   GuiHelper::radiusFromType<Type>(particle->type())
+                   GuiHelper::radiusFromType<Type>(particle->type()),
+                   1.0, 12, 24
                            ) {
         if(std::is_same<Type,Element>())
             material->setAlpha(0.33f);
@@ -31,7 +32,8 @@ public:
             : LinkedParticle<Type>::LinkedParticle(*particle),
               Sphere(root, color,
                      GuiHelper::toQVector3D(particle->position()),
-                     GuiHelper::radiusFromType<Type>(particle->type())/2.0
+                     GuiHelper::radiusFromType<Type>(particle->type())/3.0,
+                     1.0, 2, 4
               ) {
         if(std::is_same<Type,Element>())
             material->setAlpha(0.33);
