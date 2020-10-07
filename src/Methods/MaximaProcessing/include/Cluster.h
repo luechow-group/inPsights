@@ -38,7 +38,7 @@ public:
     void sortAll();
     void permuteRelevantElectronsToFront(std::vector<Sample> & samples);
 
-    void getAllMaxima(std::vector<ElectronsVector> & maxima, std::size_t maximalNumber = std::numeric_limits<std::size_t>::max()) const;
+    void getMaxima(std::vector<ElectronsVector> & maxima, std::size_t maximalNumber = std::numeric_limits<std::size_t>::max()) const;
 
     Cluster& operator+= (const Cluster& other);
 

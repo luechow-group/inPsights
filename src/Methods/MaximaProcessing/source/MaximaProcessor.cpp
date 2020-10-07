@@ -182,7 +182,7 @@ void MaximaProcessor::calculateStatistics(const Cluster &maxima,
 
         std::vector<ElectronsVector> structures;
         if(MaximaProcessing::settings.printAllMaxima())
-            cluster.getAllMaxima(structures, maximalNumberOfStructuresToPrint);
+            cluster.getMaxima(structures, maximalNumberOfStructuresToPrint);
         else
             structures = getAllRepresentativeMaxima(cluster);
 
