@@ -143,6 +143,7 @@ std::vector<ElectronsVector> MaximaProcessor::getAllRepresentativeMaxima(const C
     return representativeMaxima;
 }
 
+
 void MaximaProcessor::calculateStatistics(const Cluster &maxima,
                                           const std::vector<std::vector<std::vector<size_t>>> & nucleiMergeLists,
                                           const std::vector<size_t> &nucleiIndices,
@@ -175,9 +176,16 @@ void MaximaProcessor::calculateStatistics(const Cluster &maxima,
 
 
         totalCount += addAllReferences(cluster); // this sets all statistic objects internally
-        auto structures = getAllRepresentativeMaxima(cluster);
+
 
         auto maximalNumberOfStructuresToPrint = MaximaProcessing::settings.maximalNumberOfStructuresToPrint();
+
+        std::vector<ElectronsVector> structures;
+        if(MaximaProcessing::settings.printAllMaxima())
+            cluster.getAllMaxima(structures, maximalNumberOfStructuresToPrint);
+        else
+            structures = getAllRepresentativeMaxima(cluster);
+
 
         if(structures.size() > maximalNumberOfStructuresToPrint)
             structures.resize(maximalNumberOfStructuresToPrint);
