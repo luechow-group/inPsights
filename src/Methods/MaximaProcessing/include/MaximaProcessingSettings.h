@@ -24,6 +24,7 @@ namespace Settings {
         Property<unsigned> maximalNumberOfStructuresToPrint = {std::numeric_limits<unsigned>::max(), VARNAME(maximalNumberOfStructuresToPrint)};
         Property<double> motifThreshold = {1.00, VARNAME(motifThreshold)};
         Property<bool> deleteCoreElectrons = {false, VARNAME(deleteCoreElectrons)};
+        Property<bool> printAllMaxima = {false, VARNAME(printAllMaxima)};
 
         MaximaProcessing();
         explicit MaximaProcessing(const YAML::Node &node);

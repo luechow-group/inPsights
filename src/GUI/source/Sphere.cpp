@@ -5,7 +5,10 @@
 #include <Sphere.h>
 #include <ostream>
 
-Sphere::Sphere(Qt3DCore::QEntity *root, QColor color, const QVector3D location, const float radius, const float alpha)
+Sphere::Sphere(Qt3DCore::QEntity *root, QColor color, const QVector3D location,
+               const float radius, const float alpha,
+               int rings, int slices
+               )
         :
         Abstract3dObject(root, std::move(color), location, alpha),
         highlightedQ_(false),
@@ -14,8 +17,8 @@ Sphere::Sphere(Qt3DCore::QEntity *root, QColor color, const QVector3D location, 
         mesh_(new Qt3DExtras::QSphereMesh(this)) {
 
     mesh_->setRadius(radius);
-    mesh_->setRings(16);
-    mesh_->setSlices(32);
+    mesh_->setRings(rings);
+    mesh_->setSlices(slices);
 
     addComponent(mesh_);
 
