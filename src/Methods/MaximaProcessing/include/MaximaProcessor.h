@@ -43,8 +43,6 @@ public:
 
     size_t addAllMaxima(const Cluster &cluster);
 
-    std::vector<ElectronsVector> getAllRepresentativeMaxima(const Cluster &cluster);
-
     void calculateStatistics(const Cluster &maxima,
                              const std::vector<std::vector<std::vector<size_t>>> &nucleiMergeLists,
                              const std::vector<size_t> &nucleiIndices,

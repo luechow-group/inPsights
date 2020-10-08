@@ -96,6 +96,17 @@ void Cluster::permuteAll(const MolecularGeometry::Permutation &molecularPerm, st
     }
 }
 
+std::vector<ElectronsVector> Cluster::getAllRepresentativeMaxima() const {
+    std::vector<ElectronsVector> representativeMaxima;
+    if(isLeaf())
+        representativeMaxima.emplace_back(representative()->maximum());
+    else
+        for(auto & i : *this)
+            representativeMaxima.emplace_back(i.representative()->maximum());
+
+    return representativeMaxima;
+}
+
 void Cluster::getMaxima(std::vector<ElectronsVector> & maxima, std::size_t maximalNumber) const {
     if(isLeaf()) {
         if(maxima.size()+1 <= maximalNumber)
