@@ -15,7 +15,9 @@ namespace Settings {
         Property<double> valueIncrement = {1e-5, VARNAME(valueIncrement)};
 
         PreClusterer();
+
         explicit PreClusterer(const YAML::Node &node);
+
         void appendToNode(YAML::Node &node) const override;
     };
 }
@@ -26,7 +28,8 @@ public:
     static Settings::PreClusterer settings;
 
     PreClusterer(std::vector<Sample> &samples);
-    void cluster(Cluster& group) override;
+
+    void cluster(Cluster &group) override;
 };
 
 
