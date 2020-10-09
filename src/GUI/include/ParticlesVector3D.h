@@ -27,9 +27,9 @@ public slots:
         if(drawQ && particles3D_.empty())
             for(long i = 0; i < ParticlesVector<Type>::numberOfEntities(); ++i)
                 if(coloredQ_) {
-                    particles3D_.emplace_back(new Particle3D<Type>(this, this->linkedParticle(i), ColorPalette::colorFunction(i)));
+                    particles3D_.emplace_back(new Particle3D<Type>(this, this->operator[](i), ColorPalette::colorFunction(i)));
                 } else {
-                    particles3D_.emplace_back(new Particle3D<Type>(this, this->linkedParticle(i)));
+                    particles3D_.emplace_back(new Particle3D<Type>(this, this->operator[](i)));
                 }
         else
             for(auto it = particles3D_.begin(); it != particles3D_.end(); it++)

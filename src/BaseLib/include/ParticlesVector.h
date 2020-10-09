@@ -19,51 +19,33 @@ public:
     ParticlesVector()
             : AbstractVector(0),
               positionsVector_(),
-              typesVector_(0),
-              linkedParticles_(0) {
-        initializeLinkedParticles();
+              typesVector_(0) {
     }
 
     ParticlesVector(const PositionsVector &positionsVector)
             : AbstractVector(positionsVector.numberOfEntities()),
               positionsVector_(positionsVector),
-              typesVector_(numberOfEntities()),
-              linkedParticles_(0) {
-        initializeLinkedParticles();
+              typesVector_(numberOfEntities()) {
     }
 
     ParticlesVector(const PositionsVector &positionsVector,
                     const TypesVector<Type> &typesVector)
             : AbstractVector(positionsVector.numberOfEntities()),
               positionsVector_(positionsVector),
-              typesVector_(typesVector),
-              linkedParticles_(0) {
+              typesVector_(typesVector) {
         assert(numberOfEntities() == positionsVector_.numberOfEntities()
                && numberOfEntities() == typesVector_.numberOfEntities()
                && "The number of entities in ParticlesVector, PositionsVector, and TypesVector must match.");
-        initializeLinkedParticles();
     }
 
     ParticlesVector(const ParticlesVector& pv)
             : ParticlesVector(pv.positionsVector(),pv.typesVector()) {}
-
-    void initializeLinkedParticles(){
-        for (long i = 0; i < numberOfEntities(); ++i) {
-            linkedParticles_.emplace_back(std::make_shared<LinkedParticle<Type>>(
-                    positionsVector_.dataRef(i), &typesVector_.dataRef(i)[0]));//TODO or give LinkedParticle a VectorXi(1) ref?
-        }
-    }
 
     ParticlesVector(std::vector<Particle<Type>> particles)
             : ParticlesVector() {
         for (const auto& particle : particles){
             append(particle);
         }
-        initializeLinkedParticles();
-    }
-
-    std::shared_ptr<LinkedParticle<Type>> linkedParticle(long i) const {
-        return linkedParticles_[i];
     }
 
     Particle<Type> operator[](long i) const {
@@ -124,10 +106,6 @@ public:
         incrementNumberOfEntities();
         assert(positionsVector_.numberOfEntities() == numberOfEntities());
         assert(typesVector_.numberOfEntities() == numberOfEntities());
-
-        linkedParticles_.resize(0); //TODO find alternative to recreate the entire vector (what happens to existing linked particles)
-        initializeLinkedParticles();
-        assert(long(linkedParticles_.size()) == numberOfEntities());
     }
 
     void prepend(const Particle<Type> & particle) {
@@ -163,17 +141,11 @@ public:
 protected:
     PositionsVector positionsVector_;
     TypesVector<Type> typesVector_;
-public:
-    std::vector<std::shared_ptr<LinkedParticle<Type>>> linkedParticles_;
 };
 
 using TypedParticlesVector = ParticlesVector<int>;
 using ElectronsVector = ParticlesVector<Spin>;
 using AtomsVector = ParticlesVector<Element>;
-
-using LinkedTypedParticle = LinkedParticle<int>;
-using LinkedElectron = LinkedParticle<Spin>;
-using LinkedAtoms = LinkedParticle<Element>;
 
 namespace YAML {
     template<typename Type> struct convert<ParticlesVector<Type>> {

@@ -9,7 +9,6 @@
 #include "ToString.h"
 #include "ElementType.h"
 #include "SpinType.h"
-#include "LinkedParticle.h"
 #include "EigenYamlConversion.h"
 
 template<typename Type>
