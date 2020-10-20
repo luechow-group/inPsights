@@ -55,4 +55,8 @@ namespace ParticleSelection {
     std::list<long> getRelevantIndices(const ElectronsVector &electrons);
 }
 
+namespace YAML{
+    Eigen::Vector3d decodePosition(const YAML::Node &node, const AtomsVector &nuclei);
+}
+
 #endif //INPSIGHTS_PARTICLESELECTION_H
