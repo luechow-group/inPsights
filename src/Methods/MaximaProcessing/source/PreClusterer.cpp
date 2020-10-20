@@ -37,93 +37,62 @@ void PreClusterer::cluster(Cluster& cluster) {
     auto valueIncrement = settings.valueIncrement();
     auto atoms = cluster.representative()->nuclei();
 
-    // insert first element
-    Cluster supercluster({Cluster({*cluster.begin()})});
+    // The first cluster becomes the initial supercluster
+    Cluster superclusters({Cluster({*cluster.begin()})});
     cluster.erase(cluster.begin());
 
-    //Presort
+    // Iterate over all remaining subclusters (this update on erase)
     for (auto subcluster = cluster.begin(); subcluster != cluster.end(); ++subcluster) {
 
+        // Define function value window
         Cluster lowerRef(Maximum(atoms, subcluster->representative()->value() - valueIncrement,
                 ElectronsVector(), 0));
         Cluster upperRef(Maximum(atoms, subcluster->representative()->value() + valueIncrement,
                 ElectronsVector(), 0));
 
-        auto superclusterLowerBoundIt = std::lower_bound(
-                supercluster.begin(),
-                supercluster.end(),
+        auto superclustersLowerBoundIt = std::lower_bound(
+                superclusters.begin(),
+                superclusters.end(),
                 lowerRef);
-        auto superclusterUpperBoundIt = std::upper_bound(
-                supercluster.begin(),
-                supercluster.end(),
+        auto superclustersUpperBoundIt = std::upper_bound(
+                superclusters.begin(),
+                superclusters.end(),
                 upperRef);
 
-        // iterate over all supercluster members within the value range
-        std::list<bool> outsideQ;
-        for(auto subclusterFromSuperclusterBoundaries = superclusterLowerBoundIt;
-            subclusterFromSuperclusterBoundaries != superclusterUpperBoundIt; ++subclusterFromSuperclusterBoundaries) {
+        // iterate over all supercluster members within the value range and check,
+        // if the current subcluster falls inside the similarity radius of any supercluster
+        bool insideAnySuperclustersQ = false;
+        for(auto superclusterFromBoundaries = superclustersLowerBoundIt;
+            superclusterFromBoundaries != superclustersUpperBoundIt; ++superclusterFromBoundaries) {
 
+            // comparison
             auto[norm, perm] = Metrics::Similarity::DistanceBased::compare<Eigen::Infinity, 2>(
                     subcluster->representative()->maximum().positionsVector(),
-                    subclusterFromSuperclusterBoundaries->representative()->maximum().positionsVector());
-            if(norm > similarityRadius)
-                outsideQ.emplace_back(true);
-            else
-                outsideQ.emplace_back(false);
+                    superclusterFromBoundaries->representative()->maximum().positionsVector());
+
+            // if inside the similarity radius of the current supercluster, put it in there
+            // else, make notice in outsideQ
+            if(norm <= similarityRadius) {
+                subcluster->permuteAll(perm, samples_);
+                superclusterFromBoundaries->emplace_back(*subcluster);
+                insideAnySuperclustersQ = true;
+                break;
+            }
         }
-        if(std::all_of(outsideQ.begin(), outsideQ.end(), [](bool b){return b;})) {
-            supercluster.emplace_back(Cluster({*subcluster}));
+
+        // if the subcluster does not fall inside any supercluster, make it a supercluster itself
+        if(!insideAnySuperclustersQ) {
+
+            // emplace a copy in the supercluster
+            superclusters.emplace_back(Cluster({*subcluster}));
+
+            // erase the subcluster from the list of subclusters
             subcluster = cluster.erase(subcluster);
             --subcluster;
         }
     }
 
-    // start with the second subcluster
-    for (auto subcluster = cluster.begin(); subcluster != cluster.end(); ++subcluster) {
-
-        // Define value range of the supercluster
-        Cluster lowerRef(Maximum(atoms, subcluster->representative()->value() - valueIncrement,
-                ElectronsVector(), 0));
-        Cluster upperRef(Maximum(atoms, subcluster->representative()->value() + valueIncrement,
-                ElectronsVector(), 0));
-
-        auto superclusterLowerBoundIt = std::lower_bound(
-                supercluster.begin(),
-                supercluster.end(),
-                lowerRef);
-        auto superclusterUpperBoundIt = std::upper_bound(
-                supercluster.begin(),
-                supercluster.end(),
-                upperRef);
-
-        // iterate over all supercluster members within the value range
-        auto overallBestMatchNorm = std::numeric_limits<double>::max();
-        auto overallBestMatchPerm =
-                Eigen::PermutationMatrix<Eigen::Dynamic>(cluster.representative()->maximum().numberOfEntities());
-        auto bestMatchSubclusterFromSuperclusterBoundaries = superclusterLowerBoundIt;
-        for (auto subclusterFromSuperclusterBoundaries = superclusterLowerBoundIt;
-        subclusterFromSuperclusterBoundaries != superclusterUpperBoundIt; ++subclusterFromSuperclusterBoundaries) {
-
-            auto [norm, perm] = Metrics::Similarity::DistanceBased::compare<Eigen::Infinity, 2>(
-                    subcluster->representative()->maximum().positionsVector(),
-                    subclusterFromSuperclusterBoundaries->representative()->maximum().positionsVector());
-
-            if (norm <= overallBestMatchNorm) {
-                overallBestMatchNorm = norm;
-                overallBestMatchPerm = perm;
-                bestMatchSubclusterFromSuperclusterBoundaries = subclusterFromSuperclusterBoundaries;
-            }
-
-        }
-        if (overallBestMatchNorm <= similarityRadius) {
-            subcluster->permuteAll(overallBestMatchPerm, samples_);
-            bestMatchSubclusterFromSuperclusterBoundaries->emplace_back(*subcluster);
-        }
-        else {
-            throw std::exception();
-        }
-    }
-    cluster = supercluster;
+    cluster = superclusters;
 
     // sort by function value before leaving
     cluster.sortAll();

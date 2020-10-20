@@ -43,7 +43,7 @@ public:
 
     size_t addAllMaxima(const Cluster &cluster);
 
-    void calculateStatistics(const Cluster &maxima,
+    void calculateStatistics(const Cluster &cluster,
                              const std::vector<std::vector<std::vector<size_t>>> &nucleiMergeLists,
                              const std::vector<size_t> &nucleiIndices,
                              const std::vector<DynamicMolecularSelection>& selections

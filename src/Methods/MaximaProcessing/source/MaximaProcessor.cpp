@@ -132,7 +132,7 @@ size_t  MaximaProcessor::addAllMaxima(const Cluster &cluster) {
     return totalCount;
 }
 
-void MaximaProcessor::calculateStatistics(const Cluster &maxima,
+void MaximaProcessor::calculateStatistics(const Cluster &cluster,
                                           const std::vector<std::vector<std::vector<size_t>>> & nucleiMergeLists,
                                           const std::vector<size_t> &nucleiIndices,
                                           const std::vector<DynamicMolecularSelection>& selections
@@ -150,7 +150,7 @@ void MaximaProcessor::calculateStatistics(const Cluster &maxima,
 
     SelectionEnergyCalculator selectionEnergyCalculator(samples_, selections);
 
-    for (auto& cluster : maxima) {
+    for (auto& subCluster : cluster) {
 
         valueStats_.reset();
         SeeStats_.reset();
@@ -163,28 +163,27 @@ void MaximaProcessor::calculateStatistics(const Cluster &maxima,
         RenStats_.reset();
 
 
-        totalCount += addAllMaxima(cluster); // this sets all statistic objects internally
+        totalCount += addAllMaxima(subCluster); // this sets all statistic objects internally
 
 
         auto maximalNumberOfStructuresToPrint = MaximaProcessing::settings.maximalNumberOfStructuresToPrint();
 
-        std::vector<ElectronsVector> structures;
+        std::vector<ElectronsVector> maxima;
         if(MaximaProcessing::settings.printAllMaxima())
-            cluster.getMaxima(structures, maximalNumberOfStructuresToPrint);
+            subCluster.getMaxima(maxima, maximalNumberOfStructuresToPrint);
         else
-            structures = cluster.getAllRepresentativeMaxima();
+            maxima = subCluster.getAllRepresentativeMaxima();
 
-        if(structures.size() > maximalNumberOfStructuresToPrint)
-            structures.resize(maximalNumberOfStructuresToPrint);
+        if(maxima.size() > maximalNumberOfStructuresToPrint)
+            maxima.resize(maximalNumberOfStructuresToPrint);
 
         // SpinCorrelationDistribution
         spinCorrelationDistribution.addSpinStatistic(SeeStats_);
         
         // Motif analysis (requires spin correlation data)
-
         auto adjacencyMatrix = GraphAnalysis::filter(SeeStats_.mean().cwiseAbs(), MaximaProcessing::settings.motifThreshold());
 
-        auto mol = MolecularGeometry(atoms_, cluster.representative()->maximum());
+        auto mol = MolecularGeometry(atoms_, subCluster.representative()->maximum());
         Motifs motifs(adjacencyMatrix, mol);
         
         // merge motifs
@@ -195,32 +194,32 @@ void MaximaProcessor::calculateStatistics(const Cluster &maxima,
         }
 
         // Motif energies
-        auto [intraMotifEnergyStats, interMotifEnergyStats] = MotifEnergyCalculator::partition(cluster, samples_, motifs);
+        auto [intraMotifEnergyStats, interMotifEnergyStats] = MotifEnergyCalculator::partition(subCluster, samples_, motifs);
 
         // SEDs
         std::vector<VoxelCube> voxelCubes;
         if(VoxelCubeGeneration::settings.generateVoxelCubesQ())
-            voxelCubes = VoxelCubeGeneration::fromCluster(cluster, samples_);
+            voxelCubes = VoxelCubeGeneration::fromCluster(subCluster, samples_);
 
         // SED overlaps
         Eigen::MatrixXd overlaps;
         if(VoxelCubeOverlapCalculation::settings.calculateOverlapQ())
-            overlaps = VoxelCubeOverlapCalculation::fromCluster(cluster, samples_);
+            overlaps = VoxelCubeOverlapCalculation::fromCluster(subCluster, samples_);
 
         auto weight = double(TeStats_.getTotalWeight())/double(samples_.size());
         if(weight >= MaximaProcessing::settings.minimalClusterWeight.get()) {
 
-            selectionEnergyCalculator.addTopLevel(cluster);
+            selectionEnergyCalculator.addTopLevel(subCluster);
 
             SelectionEnergyCalculator selectionEnergyCalculatorPerCluster(samples_, selections);
-            selectionEnergyCalculatorPerCluster.addTopLevel(cluster);
+            selectionEnergyCalculatorPerCluster.addTopLevel(subCluster);
 
             totalWeight += weight;
 
-            ElectronsVector sampleAverage = {cluster.electronsVectorFromAveragedPositionsVector(cluster.averagedSamplePositionsVector(samples_))};
+            ElectronsVector sampleAverage = {subCluster.electronsVectorFromAveragedPositionsVector(subCluster.averagedSamplePositionsVector(samples_))};
 
-            yamlDocument_ << ClusterData(TeStats_.getTotalWeight(), structures, sampleAverage,
-                    valueStats_, TeStats_, EeStats_,
+            yamlDocument_ << ClusterData(TeStats_.getTotalWeight(), maxima, sampleAverage,
+                                         valueStats_, TeStats_, EeStats_,
                                          SeeStats_, VeeStats_, VenStats_,
                                          motifs, EtotalStats_, intraMotifEnergyStats, interMotifEnergyStats,
                                          ReeStats_, RenStats_, voxelCubes, overlaps,

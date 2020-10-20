@@ -11,14 +11,14 @@
 #include <memory>
 
 template <typename Type>
-class Particle3D : public LinkedParticle<Type>, public Sphere {
+class Particle3D : public Particle<Type>, public Sphere {
 public:
-    Particle3D(Qt3DCore::QEntity *root, std::shared_ptr<LinkedParticle<Type>> particle)
-    : LinkedParticle<Type>::LinkedParticle(*particle),
+    Particle3D(Qt3DCore::QEntity *root, const Particle<Type>& particle)
+    : Particle<Type>::Particle(particle),
             Sphere(root,
-                   GuiHelper::QColorFromType<Type>(particle->type()),
-                   GuiHelper::toQVector3D(particle->position()),
-                   GuiHelper::radiusFromType<Type>(particle->type()),
+                   GuiHelper::QColorFromType<Type>(this->type()),
+                   GuiHelper::toQVector3D(this->position()),
+                   GuiHelper::radiusFromType<Type>(this->type()),
                    1.0, 12, 24
                            ) {
         if(std::is_same<Type,Element>())
@@ -28,11 +28,11 @@ public:
     }
 
     // colored constructor
-    Particle3D(Qt3DCore::QEntity *root, std::shared_ptr<LinkedParticle<Type>> particle, QColor color)
-            : LinkedParticle<Type>::LinkedParticle(*particle),
+    Particle3D(Qt3DCore::QEntity *root, const Particle<Type>& particle, const QColor& color)
+            : Particle<Type>::Particle(particle),
               Sphere(root, color,
-                     GuiHelper::toQVector3D(particle->position()),
-                     GuiHelper::radiusFromType<Type>(particle->type())/3.0,
+                     GuiHelper::toQVector3D(this->position()),
+                     GuiHelper::radiusFromType<Type>(this->type())/3.0,
                      1.0, 2, 4
               ) {
         if(std::is_same<Type,Element>())
@@ -43,10 +43,11 @@ public:
 
 
     void setPosition(const Eigen::Vector3d &position) override {
-        LinkedParticle<Type>::setPosition(position);
+        Particle<Type>::setPosition(position);
         transform->setTranslation(GuiHelper::toQVector3D(position));
     }
 };
+
 
 using TypedParticle3D = Particle3D<int>;
 using Electron3D = Particle3D<Spin>;
