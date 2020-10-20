@@ -94,7 +94,7 @@ void SOAPClusterer::cluster(Cluster& cluster){
 
                 spdlog::debug("    Supercluster status after comparison: {}", ToString::clusterToString(supercluster));
 
-                spdlog::info("  comparing it with {} out of {}: {}",
+                spdlog::info("  comparing it with cluster {} out of {} total clusters: {}",
                              j + 1, supercluster.size(),
                              comparisionResult.metric);
 
