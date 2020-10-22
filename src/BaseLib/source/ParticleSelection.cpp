@@ -198,6 +198,18 @@ namespace YAML{
         else if (node["atCoordinates"].IsDefined()) {
             return node["atCoordinates"].as<Eigen::Vector3d>();
         }
+        else if (node["add"].IsDefined()) {
+            Eigen::Vector3d position({0.0,0.0,0.0});
+            for (const auto &positionNode : node["add"])
+                position += decodePosition(positionNode, nuclei);
+            return position;
+        }
+        else if (node["multiply"].IsDefined()) {
+            Eigen::Vector3d position({0.0,0.0,0.0});
+            for (const auto &positionNode : node["multiply"])
+                position = position.cwiseProduct(decodePosition(positionNode, nuclei));
+            return position;
+        }
         else if (node["inBetween"].IsDefined()) {
             Eigen::Vector3d position({0.0,0.0,0.0});
             int positionsNumber = 0;
