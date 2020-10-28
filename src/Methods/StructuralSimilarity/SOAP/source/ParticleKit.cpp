@@ -11,21 +11,21 @@ namespace SOAP {
         ElectronKit electronKit = {0, 0};
         TypeKit kit = {};
 
-        void create(const AtomKit &atomKit, const ElectronKit &electronKit) {
-            SOAP::ParticleKit::atomKit = atomKit;
-            SOAP::ParticleKit::electronKit.first = electronKit.first;
-            SOAP::ParticleKit::electronKit.second = electronKit.second;
+        void create(const AtomKit &newAtomKit, const ElectronKit &newElectronKit) {
+            SOAP::ParticleKit::atomKit = newAtomKit;
+            SOAP::ParticleKit::electronKit.first = newElectronKit.first;
+            SOAP::ParticleKit::electronKit.second = newElectronKit.second;
 
-            SOAP::ParticleKit::createKit(atomKit, electronKit);
+            SOAP::ParticleKit::createKit(newAtomKit, electronKit);
         }
 
-        void createKit(const AtomKit &atomKit, const ElectronKit &electronKit) {
+        void createKit(const AtomKit &newAtomKit, const ElectronKit &newElectronKit) {
             SOAP::ParticleKit::kit = {};
 
-            for (const auto &[type, numberOfAtoms] : atomKit)
+            for (const auto &[type, numberOfAtoms] : newAtomKit)
                 SOAP::ParticleKit::kit.push_back({Elements::elementToInt(type), numberOfAtoms});
 
-            auto[numberOfAlphaSpins, numberOfBetaSpins] = electronKit;
+            auto[numberOfAlphaSpins, numberOfBetaSpins] = newElectronKit;
 
             if (numberOfAlphaSpins > 0)
                 SOAP::ParticleKit::kit.push_back({Spins::spinToInt(Spin::alpha), numberOfAlphaSpins});
@@ -34,33 +34,63 @@ namespace SOAP {
                 SOAP::ParticleKit::kit.push_back({Spins::spinToInt(Spin::beta), numberOfBetaSpins});
         }
 
-        void create(const AtomKit &atomKit, int charge, unsigned multiplicity) {
-            SOAP::ParticleKit::atomKit = atomKit;
-
-            SOAP::ParticleKit::internal::createElectronKitFromAtomKit(atomKit, charge, multiplicity);
-
-            createKit(SOAP::ParticleKit::atomKit, SOAP::ParticleKit::electronKit);
+        void create(const AtomKit &newAtomKit, int charge, unsigned multiplicity) {
+            auto newElectronKit =
+                    SOAP::ParticleKit::internal::createElectronKitFromAtomKit(newAtomKit, charge, multiplicity);
+            create(newAtomKit, newElectronKit);
         }
 
         void create(const AtomsVector &atoms, int charge, unsigned multiplicity) {
-            SOAP::ParticleKit::internal::createAtomKitFromAtomsVector(atoms);
-            create(SOAP::ParticleKit::atomKit, charge, multiplicity);
-
-            createKit(SOAP::ParticleKit::atomKit, SOAP::ParticleKit::electronKit);
+            auto newAtomKit = SOAP::ParticleKit::internal::createAtomKitFromAtomsVector(atoms);
+            create(newAtomKit, charge, multiplicity);
         }
 
         void create(const AtomsVector &atoms, const ElectronsVector &electrons) {
-            SOAP::ParticleKit::internal::createAtomKitFromAtomsVector(atoms);
-            SOAP::ParticleKit::internal::createElectronKitFromElectronsVector(electrons);
-            createKit(SOAP::ParticleKit::atomKit, SOAP::ParticleKit::electronKit);
+            auto newAtomKit = SOAP::ParticleKit::internal::createAtomKitFromAtomsVector(atoms);
+            auto newElectronKit = SOAP::ParticleKit::internal::createElectronKitFromElectronsVector(electrons);
+            create(newAtomKit, newElectronKit);
         }
 
         void create(const MolecularGeometry &molecularGeometry) {
             create(molecularGeometry.atoms(), molecularGeometry.electrons());
         }
 
+        ElectronKit merge(const ElectronKit& a, const ElectronKit& b) {
+            auto mergedKit = a;
+
+            if(b.first > mergedKit.first)
+                mergedKit.first = b.first;
+            if(b.second > mergedKit.second)
+                mergedKit.second = b.second;
+
+            return mergedKit;
+        }
+
+        AtomKit merge(const AtomKit& a, const AtomKit& b){
+            auto mergedKit = a;
+
+            // Check for all members of the second kit, if they are already of the first kit
+            // and check if occurence number must be increased
+            for(auto bKitMember : b) {
+                auto it = std::find_if(mergedKit.begin(), mergedKit.end(),
+                                        [&bKitMember](const std::pair<Element, unsigned>& aKitMember) {
+                                            return aKitMember.first == bKitMember.first;
+                                        });
+                // if already present
+                if(it != mergedKit.end()) {
+                    // and number in kit B is larger
+                    if (it->second < bKitMember.second)
+                        it->second = bKitMember.second;
+                }
+                // if not present
+                else
+                    mergedKit.push_back(bKitMember);
+            }
+            return mergedKit;
+        }
+
         namespace internal {
-            void createAtomKitFromAtomsVector(const AtomsVector &atoms) {
+            AtomKit createAtomKitFromAtomsVector(const AtomsVector &atoms) {
 
                 AtomKit newAtomKit;
                 std::vector<Element> elementsPresent;
@@ -78,17 +108,15 @@ namespace SOAP {
                             {element, atoms.typesVector().countOccurence(element)});
                 }
 
-                SOAP::ParticleKit::atomKit = newAtomKit;
-            };
-
-
-            void createElectronKitFromElectronsVector(const ElectronsVector &electronsVector) {
-
-                electronKit.first = electronsVector.typesVector().countOccurence(Spin::alpha);
-                electronKit.second = electronsVector.typesVector().countOccurence(Spin::beta);
+                return newAtomKit;
             }
 
-            void createElectronKitFromAtomKit(const AtomKit &atomKit,
+            ElectronKit createElectronKitFromElectronsVector(const ElectronsVector &electronsVector) {
+                return {electronsVector.typesVector().countOccurence(Spin::alpha),
+                        electronsVector.typesVector().countOccurence(Spin::beta)};
+            }
+
+            ElectronKit createElectronKitFromAtomKit(const AtomKit &atomKit,
                                               int charge, unsigned multiplicity) {
                 unsigned numberOfElectrons = 0;
 
@@ -99,6 +127,7 @@ namespace SOAP {
 
                 unsigned numberOfUnpairedElectrons = multiplicity - 1;
 
+                // check if the number of electrons and multiplicity is correct.
                 assert((numberOfElectrons - numberOfUnpairedElectrons) % 2 == 0
                        && "The number of electron pairs must be a multiple of 2.");
                 unsigned numberOfElectronPairs = (numberOfElectrons - numberOfUnpairedElectrons) / 2;
@@ -107,8 +136,8 @@ namespace SOAP {
                 unsigned numberOfAlphaElectrons = numberOfUnpairedElectrons + numberOfElectronPairs;
                 unsigned numberOfBetaElectrons = numberOfElectronPairs;
 
-                SOAP::ParticleKit::electronKit = {numberOfAlphaElectrons, numberOfBetaElectrons};
-            };
+                return {numberOfAlphaElectrons, numberOfBetaElectrons};
+            }
         }
 
         SpinTypesVector toSpinTypesVector() {
