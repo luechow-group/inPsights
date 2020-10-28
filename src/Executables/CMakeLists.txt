@@ -8,6 +8,11 @@ set ( PROJECT_PATH ${PROJECT_NAME})
 set ( OUTPUT_NAME "${PROJECT_FOLDER_NAME}" )
 message ( "-- ++ CREATING PROJECT OR MAKEFILE ---> ${OUTPUT_NAME}" )
 
+add_executable(CompareMolecules CompareMolecules.cpp)
+target_link_libraries(CompareMolecules
+        BaseLib
+        MaximaProcessing
+        )
 
 add_executable(ProcessMaxima ProcessMaxima.cpp)
 target_link_libraries(ProcessMaxima
