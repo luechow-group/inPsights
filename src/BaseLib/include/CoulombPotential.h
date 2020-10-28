@@ -13,8 +13,9 @@
 namespace CoulombPotential {
 
     template<typename Type>
-    Eigen::MatrixXd energies(const ParticlesVector<Type> &pv, bool atomicUnits = true){
-        Eigen::MatrixXd V = Eigen::MatrixXd::Zero(pv.numberOfEntities(),pv.numberOfEntities());
+    Eigen::MatrixXd energies(const ParticlesVector<Type> &pv, bool atomicUnits = true) {
+        assert(pv.numberOfEntities() > 0 && "The number of particles must be greater than zero.");
+        Eigen::MatrixXd V = Eigen::MatrixXd::Zero(pv.numberOfEntities(), pv.numberOfEntities());
 
         for (Eigen::Index i = 0; i < V.rows()-1; i++)
             for (Eigen::Index j = i + 1; j < V.cols(); j++)
@@ -32,7 +33,9 @@ namespace CoulombPotential {
     template<typename Type1,typename Type2>
     Eigen::MatrixXd energies(const ParticlesVector<Type1> &pv1,
                              const ParticlesVector<Type2> &pv2, bool atomicUnits = true){
-        Eigen::MatrixXd V(pv1.numberOfEntities(),pv2.numberOfEntities());
+        assert(pv1.numberOfEntities() > 0 && "The number of particles in the 1st vector must be greater than zero.");
+        assert(pv2.numberOfEntities() > 0 && "The number of particles in the 2nd vector must be greater than zero.");
+        Eigen::MatrixXd V(pv1.numberOfEntities(), pv2.numberOfEntities());
 
         for (Eigen::Index i = 0; i < V.rows(); i++)
             for (Eigen::Index j = 0; j < V.cols(); j++)

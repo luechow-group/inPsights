@@ -4,7 +4,6 @@
 
 #include <ParticleSelection.h>
 #include <Metrics.h>
-#include <IPosition.h>
 #include <ElementInfo.h>
 #include <queue>
 #include <algorithm>
@@ -187,4 +186,41 @@ namespace ParticleSelection {
 
         return inverted;
     };
+}
+
+namespace YAML{
+    Eigen::Vector3d decodePosition(const YAML::Node &node, const AtomsVector &nuclei){
+        if (node.size() != 1) throw std::invalid_argument("Nodes in positions must have size 1.");
+
+        if (node["atAtom"].IsDefined()){
+            return nuclei[node["atAtom"].as<int>()].position();
+        }
+        else if (node["atCoordinates"].IsDefined()) {
+            return node["atCoordinates"].as<Eigen::Vector3d>();
+        }
+        else if (node["add"].IsDefined()) {
+            Eigen::Vector3d position({0.0,0.0,0.0});
+            for (const auto &positionNode : node["add"])
+                position += decodePosition(positionNode, nuclei);
+            return position;
+        }
+        else if (node["multiply"].IsDefined()) {
+            Eigen::Vector3d position({0.0,0.0,0.0});
+            for (const auto &positionNode : node["multiply"])
+                position = position.cwiseProduct(decodePosition(positionNode, nuclei));
+            return position;
+        }
+        else if (node["inBetween"].IsDefined()) {
+            Eigen::Vector3d position({0.0,0.0,0.0});
+            int positionsNumber = 0;
+            for (const auto &positionNode : node["inBetween"]){
+                position += decodePosition(positionNode, nuclei);
+                positionsNumber++;
+            }
+            return position / positionsNumber;
+        }
+        else{
+            throw std::invalid_argument("Invalid key in positions.");
+        }
+    }
 }

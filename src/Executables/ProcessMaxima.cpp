@@ -23,7 +23,6 @@
 #include <SOAPSettings.h>
 #include <Logo.h>
 #include <fstream>
-#include <IPosition.h>
 #include <Metrics.h>
 #include <MolecularSelection.h>
 

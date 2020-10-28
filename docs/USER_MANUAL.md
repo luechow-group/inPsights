@@ -98,6 +98,8 @@ The following options can be specified:
     * `atAtom`: Give the index of an atom to add its position to the list.
     * `atCoordinates`: Give the cartesian coordinates as a three-membered list of floats.
     * `inBetween`: Give a list of positions (as above) to get the position in between all the given positions. 
+    * `add`: Give a list of positions (as above) to add them. 
+    * `multiply`: Give a list of positions (as above) to multiply them element-wise. 
 
 Example: Density-based clustering of the four valence electrons closest to the point in between the 4. and 5. atom and sort the remaining electrons.
 ```yaml
