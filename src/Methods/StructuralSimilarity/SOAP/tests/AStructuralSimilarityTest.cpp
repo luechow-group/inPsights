@@ -116,6 +116,26 @@ TEST_F(AStructuralSimilarityTest, RotationalSymmetry) {
     }
 }
 
+TEST_F(AStructuralSimilarityTest, DistortedWater_RotatedAndShiftet) {
+    auto A = TestMolecules::Water::distorted::orientation1;
+    auto B = TestMolecules::Water::distorted::orientation2;
+
+    General::settings.mode = General::Mode::chemical;
+    Radial::settings.nmax = 5;
+    Radial::settings.sigmaAtom = 0.25; // sharper basis functions
+    Angular::settings.lmax = 5;
+    Cutoff::settings.radius = 3.0;
+    Cutoff::settings.width = 0.0;
+
+    ParticleKit::create(A);
+
+    double additionalTolerance = 1e-7;  // Reason: geometries themselves only have 4 significant digits
+    ASSERT_TRUE(ParticleKit::isSubsetQ(A));
+    ASSERT_TRUE(ParticleKit::isSubsetQ(B));
+    ASSERT_NEAR(StructuralSimilarity::kernel(A, B, regularizationParameter), 1.0,
+                comparisionEps + additionalTolerance);
+}
+
 TEST_F(AStructuralSimilarityTest, AlchemicalSimilarity) {
     auto A = TestMolecules::twoElectrons::sameSpinAlpha;
     auto B = TestMolecules::twoElectrons::sameSpinBeta;

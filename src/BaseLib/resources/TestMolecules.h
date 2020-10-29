@@ -537,6 +537,24 @@ namespace TestMolecules {
                              {Element::O,{0,0,-10}}}),{}};
     }
 
+
+    namespace Water {
+        namespace distorted {
+            const MolecularGeometry orientation1 = {
+                    AtomsVector({
+                        {Element::O,{ 0.0285,-0.0711, 0.0000}},
+                        {Element::H,{ 0.5260, 0.7551, 0.0000}},
+                        {Element::H,{-0.9777, 0.3734, 0.0000}}}),
+                        {}};
+            const MolecularGeometry orientation2 = {
+                    AtomsVector({
+                        {Element::H,{0.4988,-0.6579, 0.7986}},
+                        {Element::O,{0.1067,-0.2036, 0.0435}},
+                        {Element::H,{0.1067,-1.0592,-0.6479}}}),
+                    {}};
+        }
+   }
+
     namespace Ethane {
         /* 2      7  6   y x
          *  \      \/    |/
