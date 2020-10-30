@@ -64,6 +64,8 @@ TEST_F(AStructuralSimilarityTest, TShapedGeometry_FlippedSpins) {
     auto A = TestMolecules::fourElectrons::tShaped;
     auto B = TestMolecules::fourElectrons::tShapedSpinFlipped;
     General::settings.mode = General::Mode::chemical;
+    General::settings.spinFlipCheckQ = true;
+
     ParticleKit::create(A);
 
     ASSERT_TRUE(ParticleKit::isSubsetQ(A));

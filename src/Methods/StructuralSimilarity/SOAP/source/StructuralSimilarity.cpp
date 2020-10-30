@@ -76,7 +76,24 @@ namespace SOAP {
             MolecularSpectrum spectrumA(A);
             MolecularSpectrum spectrumB(B);
 
-            return kernel(spectrumA, spectrumB, gamma);
+            MolecularSpectrum spectrumBspinFlipped;
+
+            double similarityValue = kernel(spectrumA, spectrumB, gamma);
+
+            if(General::settings.spinFlipCheckQ()){
+                auto spinFlippedElectronsB = B.electrons();
+                spinFlippedElectronsB.typesVector().flipSpins();
+
+                spectrumBspinFlipped = MolecularSpectrum({B.atoms(), spinFlippedElectronsB});
+
+                auto similarityValueSpinFlipped = kernel(spectrumA, spectrumBspinFlipped, gamma);
+
+                // check if the spin-flipped version is more similar
+                if (similarityValue < similarityValueSpinFlipped)
+                    similarityValue = similarityValueSpinFlipped;
+            }
+
+            return similarityValue;
         }
 
         double kernel(const MolecularSpectrum &spectrumA,
