@@ -27,8 +27,6 @@ public:
     };
 };
 
-
-
 TEST_F(AParticleKitTest, Constructor1) {
     ParticleKit::create(molecularGeometry.atoms(),0,2);
 
@@ -55,6 +53,31 @@ TEST_F(AParticleKitTest, Constructor2) {
 
     ASSERT_EQ(ParticleKit::electronKit.first, 2);
     ASSERT_EQ(ParticleKit::electronKit.second, 1);
+}
+
+TEST_F(AParticleKitTest, Merge) {
+    ParticleKit::create(molecularGeometry);
+    std::cout << ParticleKit::toString();
+
+    auto akit = SOAP::ParticleKit::internal::createAtomKitFromAtomsVector(TestMolecules::BH3::normal.atoms());
+    auto ekit = SOAP::ParticleKit::internal::createElectronKitFromElectronsVector(TestMolecules::BH3::normal.electrons());
+
+    akit = ParticleKit::merge(ParticleKit::atomKit, akit);
+    ekit = ParticleKit::merge(ParticleKit::electronKit, ekit);
+
+    ParticleKit::create(akit, ekit);
+
+    std::cout << ParticleKit::toString();
+
+    ASSERT_EQ(ParticleKit::atomKit[0].first, Element::H);
+    ASSERT_EQ(ParticleKit::atomKit[1].first, Element::He);
+    ASSERT_EQ(ParticleKit::atomKit[2].first, Element::B);
+
+    ASSERT_EQ(ParticleKit::atomKit[0].second, 3);
+    ASSERT_EQ(ParticleKit::atomKit[1].second, 1);
+
+    ASSERT_EQ(ParticleKit::electronKit.first, 4);
+    ASSERT_EQ(ParticleKit::electronKit.second, 4);
 }
 
 TEST_F(AParticleKitTest, WrongMultiplicityOrCharge) {

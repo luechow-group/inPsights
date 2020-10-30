@@ -19,21 +19,20 @@ namespace SOAP {
             Eigen::MatrixXd C = Eigen::MatrixXd::Zero(N, N);
 
             EnumeratedType<int> enumType_i = {}, enumType_j = {};
-            TypeSpecificNeighborhoodsAtOneCenter expA, expB;
 
-#pragma omp parallel for default(none) shared(N, A, B, C, General::settings) private(enumType_i, enumType_j, expA, expB)
+#pragma omp parallel for default(none) shared(N, A, B, C, General::settings) private(enumType_i, enumType_j)
             for (unsigned i = 0; i < N; ++i) {
                 //printf("Thread %d calculates correlation matrix elements\n", omp_get_thread_num());
                 enumType_i = ParticleKit::getEnumeratedTypeByIndex(i);
                 if (!A.molecule_.findIndexByEnumeratedType(enumType_i).first)
                     continue;
-                expA = A.molecularCenters_.find(enumType_i)->second;
+                const auto & expA = A.molecularCenters_.find(enumType_i)->second;
 
                 for (unsigned j = 0; j < N; ++j) {
                     enumType_j = ParticleKit::getEnumeratedTypeByIndex(j);
                     if (!B.molecule_.findIndexByEnumeratedType(enumType_j).first)
                         continue;
-                    expB = B.molecularCenters_.find(enumType_j)->second;
+                    const auto & expB = B.molecularCenters_.find(enumType_j)->second;
                     C(i, j) = LocalSimilarity::kernel(expA, expB, General::settings.zeta());
                 }
             }
@@ -48,19 +47,22 @@ namespace SOAP {
             Eigen::MatrixXd C = Eigen::MatrixXd::Zero(N, N);
 
             EnumeratedType<int> enumType_i = {}, enumType_j = {};
-            TypeSpecificNeighborhoodsAtOneCenter expA, expB;
 
-#pragma omp parallel for default(none) shared(N, A, C, General::settings) private(enumType_i, enumType_j, expA, expB)
+#pragma omp parallel for default(none) shared(N, A, C, General::settings) private(enumType_i, enumType_j)
             for (unsigned i = 0; i < N; ++i) {
                 //printf("Thread %d calculates selfcorrelation matrix elements\n", omp_get_thread_num());
                 enumType_i = ParticleKit::getEnumeratedTypeByIndex(i);
-                if (!A.molecule_.findIndexByEnumeratedType(enumType_i).first) continue;
-                expA = A.molecularCenters_.find(enumType_i)->second;
+                if (!A.molecule_.findIndexByEnumeratedType(enumType_i).first)
+                    continue;
+
+                const auto& expA = A.molecularCenters_.find(enumType_i)->second;
 
                 for (unsigned j = i; j < N; ++j) {
                     enumType_j = ParticleKit::getEnumeratedTypeByIndex(j);
-                    if (!A.molecule_.findIndexByEnumeratedType(enumType_j).first) continue;
-                    expB = A.molecularCenters_.find(enumType_j)->second;
+                    if (!A.molecule_.findIndexByEnumeratedType(enumType_j).first)
+                        continue;
+
+                    const auto& expB = A.molecularCenters_.find(enumType_j)->second;
 
                     C(i, j) = LocalSimilarity::kernel(expA, expB, General::settings.zeta());
                 }
@@ -90,7 +92,27 @@ namespace SOAP {
             auto kAA = Sinkhorn::distance(CAA, gamma);
             auto kBB = Sinkhorn::distance(CBB, gamma);
 
-            return kAB / sqrt(kAA * kBB);
+            auto value = kAB / sqrt(kAA * kBB);
+
+            if(General::settings.checkSpinFlip()) {
+                auto spectrumBspinflipped = spectrumB;
+
+                // for all centers: swap alpha with beta expansion
+                for (auto& center : spectrumBspinflipped.molecularCenters_) {
+                    auto &alphaSpinExpansion = center.second[Spins::spinToInt(Spin::alpha)];
+                    auto &betaSpinExpansion = center.second[Spins::spinToInt(Spin::beta)];
+                    std::swap(alphaSpinExpansion, betaSpinExpansion);
+                }
+
+                // caluclate spin-flipped value
+                auto CABsf = correlationMatrix(spectrumA, spectrumBspinflipped);
+                auto kABsf  = Sinkhorn::distance(CABsf, gamma);
+                auto valueSf = kABsf  / sqrt(kAA * kBB);
+                if(value < valueSf)
+                    value = valueSf;
+            }
+
+            return value;
         }
 
         double kernelDistance(const MolecularGeometry &A, const MolecularGeometry &B, double gamma) {

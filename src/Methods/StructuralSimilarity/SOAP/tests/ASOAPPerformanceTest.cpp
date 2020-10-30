@@ -136,28 +136,26 @@ TEST_F(ASOAPPerformanceTest, DISABLED_LocalSimPerformance){
             }
             ParticleKit::create(mol);
 
-
             double start;
-            Environment e1{{},{}};
 
             MolecularSpectrum ms(mol);
 
             General::settings.mode = General::Mode::typeAgnostic;
-            e1 = Environment(mol,mol.findEnumeratedTypeByIndex(0));
+            Environment e1(mol,mol.findEnumeratedTypeByIndex(0));
             start = omp_get_wtime();
             [[maybe_unused]]double generic = LocalSimilarity::kernel(e1,e1);
             double t1 = omp_get_wtime() - start;
 
             General::settings.mode = General::Mode::chemical;
-            e1 = Environment(mol,mol.findEnumeratedTypeByIndex(0));
+            Environment e2(mol,mol.findEnumeratedTypeByIndex(0));
             start = omp_get_wtime();
-            [[maybe_unused]]double chemical = LocalSimilarity::kernel(e1,e1);
+            [[maybe_unused]]double chemical = LocalSimilarity::kernel(e2,e2);
             double t2 = omp_get_wtime() - start;
 
             General::settings.mode = General::Mode::alchemical;
-            e1 = Environment(mol,mol.findEnumeratedTypeByIndex(0));
+            Environment e3(mol,mol.findEnumeratedTypeByIndex(0));
             start = omp_get_wtime();
-            [[maybe_unused]]double alchemical = LocalSimilarity::kernel(e1,e1);
+            [[maybe_unused]]double alchemical = LocalSimilarity::kernel(e3,e3);
             double t3 = omp_get_wtime() - start;
 
             //printf(" SS=%f, elapsed time: %fs\n",K,omp_get_wtime()-start);

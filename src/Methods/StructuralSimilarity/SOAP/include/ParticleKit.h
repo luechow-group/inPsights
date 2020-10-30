@@ -29,12 +29,16 @@ namespace SOAP {
 
         void create(const MolecularGeometry &molecularGeometry);
 
+        AtomKit merge(const AtomKit& a, const AtomKit& b);
+
+        ElectronKit merge(const ElectronKit& a, const ElectronKit& b);
+
         namespace internal {
-            void createAtomKitFromAtomsVector(const AtomsVector &atoms);
+            AtomKit createAtomKitFromAtomsVector(const AtomsVector &atoms);
 
-            void createElectronKitFromAtomKit(const AtomKit &atomKit, int charge, unsigned multiplicity);
+            ElectronKit createElectronKitFromAtomKit(const AtomKit &atomKit, int charge, unsigned multiplicity);
 
-            void createElectronKitFromElectronsVector(const ElectronsVector &electronsVector);
+            ElectronKit createElectronKitFromElectronsVector(const ElectronsVector &electronsVector);
         }
 
         ElementTypesVector toElementTypesVector();

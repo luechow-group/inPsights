@@ -7,6 +7,7 @@
 #include <Eigen/Core>
 #include <utility>
 #include <MolecularGeometry.h>
+#include "SOAPSettings.h"
 
 namespace SOAP {
     class SphericalCoordinates {
@@ -18,12 +19,19 @@ namespace SOAP {
 
     class Environment {
     public:
-        Environment(MolecularGeometry molecularGeometry, EnumeratedType<int> enumeratedType);
+        Environment(const MolecularGeometry& molecularGeometry, Eigen::Vector3d  center);
+        Environment(const MolecularGeometry& molecularGeometry, EnumeratedType<int> enumeratedType);
 
-        std::vector<std::pair<Particle<int>, SphericalCoordinates>> selectParticles(int expansionTypeId = 0) const;
+        std::vector<std::pair<Particle<int>, SphericalCoordinates>> selectParticles(int expansionTypeId) const;
+        bool selectParticleQ(unsigned index, const TypedParticle& neighbor, int expansionTypeId) const;
 
-        MolecularGeometry molecularGeometry_;
-        EnumeratedType<int> enumeratedType_;
+    private:
+        static long getOwnIndex(const MolecularGeometry& molecularGeometry, EnumeratedType<int> enumeratedType) ;
+
+        const MolecularGeometry& molecularGeometry_;
+        long ownIdx_;
+        bool agnosticQ_;
+        Eigen::Vector3d  center_;
     };
 }
 
