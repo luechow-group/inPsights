@@ -60,6 +60,17 @@ TEST_F(AStructuralSimilarityTest, PermutationalSymmetry_ReversedOrder) {
     ASSERT_NEAR(StructuralSimilarity::kernel(A, B, regularizationParameter), 1.0, comparisionEps);
 }
 
+TEST_F(AStructuralSimilarityTest, TShapedGeometry_FlippedSpins) {
+    auto A = TestMolecules::fourElectrons::tShaped;
+    auto B = TestMolecules::fourElectrons::tShapedSpinFlipped;
+    General::settings.mode = General::Mode::chemical;
+    ParticleKit::create(A);
+
+    ASSERT_TRUE(ParticleKit::isSubsetQ(A));
+    ASSERT_TRUE(ParticleKit::isSubsetQ(B));
+    ASSERT_NEAR(StructuralSimilarity::kernel(A, B, regularizationParameter), 1.0, comparisionEps);
+}
+
 TEST_F(AStructuralSimilarityTest, PermutationalSymmetry_FlippedSpins) {
     auto A = TestMolecules::H2::ElectronsInCores::normal;
     auto B = TestMolecules::H2::ElectronsInCores::flippedSpins;

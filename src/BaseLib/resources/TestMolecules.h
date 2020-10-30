@@ -75,6 +75,21 @@ namespace TestMolecules {
                                  {Spin::alpha, { 0, 0, 0}},
                                  {Spin::beta,  { 0, 0, 0}},
                                  {Spin::beta,  {-1, 0, 0}}})};
+
+        const MolecularGeometry tShaped = {
+                AtomsVector(),
+                ElectronsVector({
+                    {Spin::alpha, { 0, 0, -1}},
+                    {Spin::alpha, { 0, 0, 0}},
+                    {Spin::beta,  { 0, 0.5, 1}},
+                    {Spin::beta,  {0, -0.5, 1}}})};
+        const MolecularGeometry tShapedSpinFlipped = {
+                AtomsVector(),
+                ElectronsVector({
+                    {Spin::beta,  { 0, 0, -1}},
+                    {Spin::beta,  { 0, 0, 0}},
+                    {Spin::alpha, { 0, 0.5, 1}},
+                    {Spin::alpha, {0, -0.5, 1}}})};
     }
 
 
