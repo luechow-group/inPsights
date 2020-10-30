@@ -156,6 +156,12 @@ TEST_F(AStructuralSimilarityTest, AlchemicalSimilarity) {
     ASSERT_TRUE(ParticleKit::isSubsetQ(A));
     ASSERT_TRUE(ParticleKit::isSubsetQ(B));
 
+    General::settings.spinFlipCheckQ = true;
+    General::settings.mode = General::Mode::chemical;
+    auto chemicalSpinFlipped = StructuralSimilarity::kernel(A, B, regularizationParameter);
+    ASSERT_EQ(chemicalSpinFlipped, 1.0);
+
+    General::settings.spinFlipCheckQ = false;
     General::settings.mode = General::Mode::chemical;
     auto chemical = StructuralSimilarity::kernel(A, B, regularizationParameter);
     ASSERT_EQ(chemical, 0.0);

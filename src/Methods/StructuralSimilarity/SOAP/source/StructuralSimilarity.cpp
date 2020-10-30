@@ -52,12 +52,16 @@ namespace SOAP {
             for (unsigned i = 0; i < N; ++i) {
                 //printf("Thread %d calculates selfcorrelation matrix elements\n", omp_get_thread_num());
                 enumType_i = ParticleKit::getEnumeratedTypeByIndex(i);
-                if (!A.molecule_.findIndexByEnumeratedType(enumType_i).first) continue;
+                if (!A.molecule_.findIndexByEnumeratedType(enumType_i).first)
+                    continue;
+
                 const auto& expA = A.molecularCenters_.find(enumType_i)->second;
 
                 for (unsigned j = i; j < N; ++j) {
                     enumType_j = ParticleKit::getEnumeratedTypeByIndex(j);
-                    if (!A.molecule_.findIndexByEnumeratedType(enumType_j).first) continue;
+                    if (!A.molecule_.findIndexByEnumeratedType(enumType_j).first)
+                        continue;
+
                     const auto& expB = A.molecularCenters_.find(enumType_j)->second;
 
                     C(i, j) = LocalSimilarity::kernel(expA, expB, General::settings.zeta());
@@ -74,42 +78,10 @@ namespace SOAP {
             MolecularSpectrum spectrumA(A);
             MolecularSpectrum spectrumB(B);
 
-            MolecularSpectrum spectrumBspinFlipped;
-
-            double similarityValue = kernel(spectrumA, spectrumB, gamma);
-
-            if(General::settings.spinFlipCheckQ()){
-                auto spinFlippedElectronsB = B.electrons();
-                spinFlippedElectronsB.typesVector().flipSpins();
-
-                spectrumBspinFlipped = MolecularSpectrum({B.atoms(), spinFlippedElectronsB});
-
-                auto similarityValueSpinFlipped = kernel(spectrumA, spectrumBspinFlipped, gamma);
-
-                // check if the spin-flipped version is more similar
-                if (similarityValue < similarityValueSpinFlipped)
-                    similarityValue = similarityValueSpinFlipped;
-            }
-
-            return similarityValue;
+            return kernel(spectrumA, spectrumB, gamma);
         }
 
         double kernel(const MolecularSpectrum &spectrumA,
-                      const MolecularSpectrum &spectrumB, double gamma) {
-
-            auto CAB = correlationMatrix(spectrumA, spectrumB);
-            auto CAA = selfCorrelationMatrix(spectrumA);
-            auto CBB = selfCorrelationMatrix(spectrumB);
-
-            auto kAB = Sinkhorn::distance(CAB, gamma);
-            auto kAA = Sinkhorn::distance(CAA, gamma);
-            auto kBB = Sinkhorn::distance(CBB, gamma);
-
-            return kAB / sqrt(kAA * kBB);
-        }
-
-
-        /*double kernel(const MolecularSpectrum &spectrumA,
                       const MolecularSpectrum &spectrumB, double gamma) {
 
             auto CAB = correlationMatrix(spectrumA, spectrumB);
@@ -125,29 +97,23 @@ namespace SOAP {
             if(General::settings.spinFlipCheckQ()) {
                 auto spectrumBspinflipped = spectrumB;
 
-                for (auto & expansionCenter : spectrumB.molecularCenters_) {
-                    auto alphaExpansionAtCenter = expansionCenter.second[Spins::spinToInt(Spin::alpha)];
-                    expansionCenter.second[Spins::spinToInt(Spin::alpha)] =
-                            expansionCenter.second[Spins::spinToInt(Spin::beta)];
-                    expansionCenter.second[Spins::spinToInt(Spin::beta)] = alphaExpansionAtCenter;
+                // for all centers: swap alpha with beta expansion
+                for (auto& center : spectrumBspinflipped.molecularCenters_) {
+                    auto &alphaSpinExpansion = center.second[Spins::spinToInt(Spin::alpha)];
+                    auto &betaSpinExpansion = center.second[Spins::spinToInt(Spin::beta)];
+                    std::swap(alphaSpinExpansion, betaSpinExpansion);
                 }
 
-                // for all centers: swap alpha with beta expansion
-                spectrumB.molecularCenters_.
-
-                auto CABsf = correlationMatrix(spectrumA, spectrumB);
-
-                auto kABsf  = Sinkhorn::distance(CAB, gamma);
-
+                // caluclate spin-flipped value
+                auto CABsf = correlationMatrix(spectrumA, spectrumBspinflipped);
+                auto kABsf  = Sinkhorn::distance(CABsf, gamma);
                 auto valueSf = kABsf  / sqrt(kAA * kBB);
-
                 if(value < valueSf)
                     value = valueSf;
             }
 
             return value;
-        }*/
-
+        }
 
         double kernelDistance(const MolecularGeometry &A, const MolecularGeometry &B, double gamma) {
             return sqrt(2.0 - 2.0 * kernel(A, B, gamma));
