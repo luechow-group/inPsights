@@ -60,6 +60,19 @@ TEST_F(AStructuralSimilarityTest, PermutationalSymmetry_ReversedOrder) {
     ASSERT_NEAR(StructuralSimilarity::kernel(A, B, regularizationParameter), 1.0, comparisionEps);
 }
 
+TEST_F(AStructuralSimilarityTest, TShapedGeometry_FlippedSpins) {
+    auto A = TestMolecules::fourElectrons::tShaped;
+    auto B = TestMolecules::fourElectrons::tShapedSpinFlipped;
+    General::settings.mode = General::Mode::chemical;
+    General::settings.checkSpinFlip = true;
+
+    ParticleKit::create(A);
+
+    ASSERT_TRUE(ParticleKit::isSubsetQ(A));
+    ASSERT_TRUE(ParticleKit::isSubsetQ(B));
+    ASSERT_NEAR(StructuralSimilarity::kernel(A, B, regularizationParameter), 1.0, comparisionEps);
+}
+
 TEST_F(AStructuralSimilarityTest, PermutationalSymmetry_FlippedSpins) {
     auto A = TestMolecules::H2::ElectronsInCores::normal;
     auto B = TestMolecules::H2::ElectronsInCores::flippedSpins;
@@ -143,6 +156,12 @@ TEST_F(AStructuralSimilarityTest, AlchemicalSimilarity) {
     ASSERT_TRUE(ParticleKit::isSubsetQ(A));
     ASSERT_TRUE(ParticleKit::isSubsetQ(B));
 
+    General::settings.checkSpinFlip = true;
+    General::settings.mode = General::Mode::chemical;
+    auto chemicalSpinFlipped = StructuralSimilarity::kernel(A, B, regularizationParameter);
+    ASSERT_EQ(chemicalSpinFlipped, 1.0);
+
+    General::settings.checkSpinFlip = false;
     General::settings.mode = General::Mode::chemical;
     auto chemical = StructuralSimilarity::kernel(A, B, regularizationParameter);
     ASSERT_EQ(chemical, 0.0);
