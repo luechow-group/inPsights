@@ -94,7 +94,7 @@ namespace SOAP {
 
             auto value = kAB / sqrt(kAA * kBB);
 
-            if(General::settings.checkSpinFlip()) {
+            if(General::settings.spinFlipCheck()) {
                 auto spectrumBspinflipped = spectrumB;
 
                 // for all centers: swap alpha with beta expansion

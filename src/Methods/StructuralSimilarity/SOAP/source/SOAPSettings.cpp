@@ -62,6 +62,7 @@ namespace Settings::SOAP {
             }
         }
 
+        boolProperty::decode(node[className], spinFlipCheck);
         doubleProperty::decode(node[className], zeta);
         doubleProperty::decode(node[className], sinkhornGamma);
         doubleProperty::decode(node[className], comparisonEpsilon);
@@ -88,6 +89,7 @@ namespace Settings::SOAP {
 
         node[className][VARNAME(pairSimilarities)] = mapNode;
         node[className][mode.name()] = ::SOAP::General::toString(::SOAP::General::Mode(mode()));
+        node[className][spinFlipCheck.name()] = spinFlipCheck();
         node[className][zeta.name()] = zeta();
         node[className][sinkhornGamma.name()] = sinkhornGamma();
         node[className][comparisonEpsilon.name()] = comparisonEpsilon();
