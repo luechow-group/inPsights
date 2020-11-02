@@ -11,3 +11,5 @@ if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Intel")
 else()
     set(INPSIGHTS_VERSION_FLAG "-DINPSIGHTS_VERSION=${INPSIGHTS_VERSION}")
 endif()
+
+message("Building inPsights version ${INPSIGHTS_VERSION}")
