@@ -20,11 +20,10 @@ namespace Settings {
         Property<bool> invertSelection = {false, VARNAME(invertSelection)};
         Property<bool> valenceOnly = {true, VARNAME(valenceOnly)};
 
-        AtomsVector atoms;
         std::vector<Eigen::Vector3d> positions;
 
-        ParticleSelection(const AtomsVector& atoms = {});
-        explicit ParticleSelection(const YAML::Node &node, const AtomsVector& atoms = {});
+        ParticleSelection();
+        explicit ParticleSelection(const YAML::Node &node, const AtomsVector& atoms);
         void appendToNode(YAML::Node &node) const override;
     };
 }
@@ -52,7 +51,7 @@ namespace ParticleSelection {
     std::list<long> invertedIndices(const std::list<long>& indices, std::size_t size);
 
     // convenience wrapper function for clusterers
-    std::list<long> getRelevantIndices(const ElectronsVector &electrons);
+    std::list<long> getRelevantIndices(const ElectronsVector &electrons, const AtomsVector& nuclei);
 }
 
 namespace YAML{

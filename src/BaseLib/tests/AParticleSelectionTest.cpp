@@ -86,7 +86,38 @@ TEST_F(AParticleSelectionTest, GetRelevantIndices) {
     ParticleSelection::settings.positions = {nuclei[3].position()};
     ParticleSelection::settings.valenceOnly = true;
 
-    auto indices = ParticleSelection::getRelevantIndices(electrons);
+    auto indices = ParticleSelection::getRelevantIndices(electrons, nuclei);
 
     ASSERT_THAT(indices, ElementsAre(3,7));
+};
+
+TEST_F(AParticleSelectionTest, BH3_InvertSelectionValenceOnly) {
+    // Expectation:
+    // All electrons except the two at the ionic position at nucleus 1
+
+    ParticleSelection::settings.distanceMode = "minimum";
+    ParticleSelection::settings.maximalCount = 2;
+    ParticleSelection::settings.positions = {nuclei[1].position()};
+    ParticleSelection::settings.valenceOnly = false;
+    ParticleSelection::settings.invertSelection = true;
+
+    auto indices = ParticleSelection::getRelevantIndices(electrons, nuclei);
+
+    ASSERT_THAT(indices, ElementsAre(0,2,3,4,6,7));
+};
+
+TEST_F(AParticleSelectionTest, BH3_InvertSelection) {
+
+    // Expectation:
+    // All electrons except the two core electrons in boron and the two at the ionic position at nucleus 1
+
+    ParticleSelection::settings.distanceMode = "minimum";
+    ParticleSelection::settings.maximalCount = 2;
+    ParticleSelection::settings.positions = {nuclei[1].position()};
+    ParticleSelection::settings.valenceOnly = true;
+    ParticleSelection::settings.invertSelection = true;
+
+    auto indices = ParticleSelection::getRelevantIndices(electrons, nuclei);
+
+    ASSERT_THAT(indices, ElementsAre(2,3,6,7));
 };

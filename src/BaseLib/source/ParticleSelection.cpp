@@ -9,10 +9,8 @@
 #include <algorithm>
 
 namespace Settings {
-    ParticleSelection::ParticleSelection(const AtomsVector& atoms)
-            :
-            ISettings(VARNAME(ParticleSelection)),
-            atoms(atoms){
+    ParticleSelection::ParticleSelection()
+    : ISettings(VARNAME(ParticleSelection)){
         distanceMode.onChange_.connect(
                 [&](const std::string& value) {
                     if (value != "minimum" || value != "average")
@@ -31,7 +29,7 @@ namespace Settings {
     };
 
     ParticleSelection::ParticleSelection(const YAML::Node &node, const AtomsVector& atoms)
-            : ParticleSelection(atoms) {
+    : ParticleSelection() {
         doubleProperty::decode(node, maximalDistance);
         longProperty::decode(node, maximalCount);
         stringProperty::decode(node, distanceMode);
@@ -71,7 +69,7 @@ namespace ParticleSelection {
     };
 
     std::list<long> getNonValenceIndices(const ElectronsVector &electrons, const AtomsVector &nuclei) {
-        // returns all core electron indices of a given vector of nuclei
+        // returns all core electron indices of a given vector of nuclei.
         std::list<long> indices;
 
         for (long k = 0; k < nuclei.numberOfEntities(); ++k)
@@ -143,9 +141,7 @@ namespace ParticleSelection {
         return indices;
     };
 
-    std::list<long> getRelevantIndices(const ElectronsVector &electrons) {
-
-        auto nuclei = settings.atoms;
+    std::list<long> getRelevantIndices(const ElectronsVector &electrons, const AtomsVector& nuclei) {
         auto positions = settings.positions;
 
         std::function<double(const Eigen::Vector3d &, const std::vector<Eigen::Vector3d> &)> distanceFunction;
@@ -160,17 +156,14 @@ namespace ParticleSelection {
                                                   settings.maximalCount(), settings.valenceOnly(),
                                                   settings.maximalDistance(),
                                                   distanceFunction);
-
         if (settings.invertSelection()) {
             if (settings.valenceOnly()) {
-                // since selection should be inverted, core indices have to be added to 'subIndices' before inverting
+                // since selection should be inverted, core indices have to be added to 'indices' before inversion
                 indices.splice(indices.end(), getNonValenceIndices(electrons, nuclei));
             }
 
-            auto res = invertedIndices(indices, electrons.numberOfEntities());
+            return invertedIndices(indices, electrons.numberOfEntities());
 
-            return res;
-            // sorting will take the front indices. Since the invertSelection is true,
         } else
             return indices;
     }
