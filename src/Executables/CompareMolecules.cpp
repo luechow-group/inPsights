@@ -78,26 +78,12 @@ int main(int argc, char *argv[]) {
 
     SOAP::ParticleKit::create(akit, ekit);
 
-    std::cout << std::setprecision(2) << std::endl;
-   for (std::vector<MolecularGeometry>::size_type i = 0; i < mols.size()-1; ++i) {
-        for (std::vector<MolecularGeometry>::size_type j = i+1; j < mols.size(); ++j) {
-            std::cout << i << " " << j << " "
-                      << SOAP::LocalSimilarity::kernel(
-                              SOAP::Environment(mols[i],(
-                                      atomsCollection[i][1].position()+atomsCollection[i][0].position()) / 2.0),
-                              SOAP::Environment(mols[j],(
-                                      atomsCollection[j][0].position()+atomsCollection[j][1].position()) / 2.0)
-                              ) << std::endl;
-        }
-        std::cout << std::endl;
-    }
-
-    std::cout << "Glob" << std::endl;
 
     std::vector<SOAP::MolecularSpectrum> specs;
     for(const auto& mol : mols)
         specs.emplace_back(mol);
 
+    std::cout << std::setprecision(2) << std::endl;
     for (std::vector<MolecularGeometry>::size_type i = 0; i < specs.size()-1; ++i) {
         for (std::vector<MolecularGeometry>::size_type j = i+1; j < specs.size(); ++j) {
             std::cout << i << " " << j << " "
