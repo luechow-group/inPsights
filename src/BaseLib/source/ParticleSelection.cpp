@@ -165,24 +165,30 @@ namespace ParticleSelection {
             if (settings.valenceOnly()) {
                 // since selection should be inverted, core indices have to be added to 'subIndices' before inverting
                 indices.splice(indices.end(), getNonValenceIndices(electrons, nuclei));
-
             }
-            return invertedIndices(indices, electrons.numberOfEntities());
+
+            auto res = invertedIndices(indices, electrons.numberOfEntities());
+
+            return res;
             // sorting will take the front indices. Since the invertSelection is true,
-        }
-        return indices;
+        } else
+            return indices;
     }
 
     std::list<long> invertedIndices(const std::list<long>& indices, std::size_t size){
-        assert( indices.size() > 0 && size > 0);
+        assert(!indices.empty() && size > 0);
         assert(*std::min_element(indices.begin(),indices.end()) >= 0);
         assert(*std::max_element(indices.begin(),indices.end()) < long(size));
+
+        // make sure the indices are sorted (set_difference assumes a set which is ordered by definition)
+        auto sortedIndices = indices;
+        sortedIndices.sort();
 
         std::list<long> inverted{}, all(size);
         std::iota(all.begin(), all.end(), 0);
 
-        std::set_difference(all.begin(), all.end(), indices.begin(), indices.end(),
-                std::inserter(inverted, inverted.begin()));
+        std::set_difference(all.begin(), all.end(), sortedIndices.begin(), sortedIndices.end(),
+                            std::inserter(inverted, inverted.begin()));
 
         return inverted;
     };

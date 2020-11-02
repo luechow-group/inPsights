@@ -61,6 +61,13 @@ TEST_F(AParticleSelectionTest, InvertedIndices) {
     EXPECT_DEATH(ParticleSelection::invertedIndices(std::list<long>{0, -1, 2}, 3), "");
 };
 
+TEST_F(AParticleSelectionTest, InvertedIndicesUnordered) {
+    std::list<long> indices = {0,4,2,6};
+    ASSERT_THAT(ParticleSelection::invertedIndices(indices, 7),
+                ElementsAre(1, 3, 5));
+    ASSERT_THAT(ParticleSelection::invertedIndices(indices, 8), ElementsAre(1, 3, 5, 7));
+};
+
 TEST_F(AParticleSelectionTest, PickElements) {
     ElectronsVector reference;
     reference.append(electrons[2]); // core electrons are included
