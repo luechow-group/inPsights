@@ -31,6 +31,10 @@ int main(int argc, char *argv[]) {
     if (soapSettingsNode[SOAP::Cutoff::settings.name()])
         SOAP::Cutoff::settings = Settings::SOAP::Cutoff(soapSettingsNode);
 
+    YAML::Node node;
+    SOAP::General::settings.appendToNode(node);
+    std::cout << node << std::endl;
+
     AtomKit akit;
     ElectronKit ekit;
     std::vector<MolecularGeometry> mols;
@@ -44,10 +48,12 @@ int main(int argc, char *argv[]) {
         if(geomNode["File"].IsDefined()) {
             auto molDoc = YAML::LoadAllFromFile(geomNode["File"]["name"].as<std::string>())[1];
             atoms = molDoc["Atoms"].as<AtomsVector>();
-            auto clusterIds = geomNode["File"]["clusterIds"].as<std::vector<unsigned>>();
+            auto ids = geomNode["File"]["ids"];
             
-            for (auto clusterId : clusterIds) {
-                electrons = molDoc["Clusters"][clusterId]["Structures"][0].as<ElectronsVector>();
+            for (auto id : ids) {
+                auto clusterId = id["clusterId"].as<unsigned>();
+                auto structureId = id["structureId"].as<unsigned>();
+                electrons = molDoc["Clusters"][clusterId]["Structures"][structureId].as<ElectronsVector>();
                 //electrons = molDoc["Clusters"][clusterId]["SampleAverage"].as<ElectronsVector>();
                 mols.emplace_back(MolecularGeometry({}, electrons));
                 //mols.emplace_back(MolecularGeometry(atoms, electrons));
