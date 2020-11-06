@@ -60,15 +60,12 @@ int main(int argc, char *argv[]) {
     using namespace YAML;
     Emitter emitter;
     emitter << BeginDoc << BeginMap;
-
-    Eigen::MatrixXd mat = Eigen::MatrixXd::Zero(9,9);
-
+    
     std::cout << std::endl;
     for (std::vector<MolecularGeometry>::size_type i = 0; i < specs.size()-1; ++i) {
         emitter << Key << mols[i].label << Value <<  BeginMap;
         for (std::vector<MolecularGeometry>::size_type j = i+1; j < specs.size(); ++j) {
             auto value = SOAP::StructuralSimilarity::kernel(specs[i],specs[j]);
-            mat(i,j) = value;
             std::cout << i << " " << j << " " << value << std::endl;
             emitter << Key << mols[j].label  << Value << value;
         }
@@ -77,7 +74,6 @@ int main(int argc, char *argv[]) {
     emitter << EndMap << EndDoc;
     emitter << BeginDoc << Comment("Used input from " + inputFilename + ".") << inputYaml << EndDoc;
 
-    std::cout << mat << std::endl;
 
     writeResults(inputFilename, emitter);
 }
@@ -156,4 +152,6 @@ void writeResults(const std::string &inputFilename, const YAML::Emitter &emitter
     std::ofstream yamlFile(resultsFilename);
     yamlFile << outstring;
     yamlFile.close();
+
+    std::cout << "Wrote results to " << resultsFilename << std::endl;
 }
