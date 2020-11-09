@@ -45,7 +45,7 @@ int main(int argc, char *argv[]) {
 
     YAML::Node node;
     SOAP::General::settings.appendToNode(node);
-    std::cout << node << std::endl;
+    std::cout << inputYaml << std::endl;
 
 
     auto mols = readMoleculesFromYaml(inputYaml);
@@ -59,8 +59,9 @@ int main(int argc, char *argv[]) {
 
     using namespace YAML;
     Emitter emitter;
+    emitter << BeginDoc << Comment("Used input from " + inputFilename + ".") << inputYaml << EndDoc;
     emitter << BeginDoc << BeginMap;
-    
+
     std::cout << std::endl;
     for (std::vector<MolecularGeometry>::size_type i = 0; i < specs.size()-1; ++i) {
         emitter << Key << mols[i].label << Value <<  BeginMap;
@@ -72,7 +73,6 @@ int main(int argc, char *argv[]) {
         emitter << EndMap;
     }
     emitter << EndMap << EndDoc;
-    emitter << BeginDoc << Comment("Used input from " + inputFilename + ".") << inputYaml << EndDoc;
 
 
     writeResults(inputFilename, emitter);
