@@ -64,6 +64,7 @@ void SOAPClusterer::cluster(Cluster& cluster){
     auto similarityThreshold = settings.similarityThreshold();
     auto toleranceRadius = settings.distanceMatrixCovarianceTolerance();
     auto numericalPrecisionEpsilon = SOAP::General::settings.comparisonEpsilon();
+    auto spinFlipCheck = SOAP::General::settings.spinFlipCheck();
     auto maxValueDelta = SOAPClusterer::settings.maxValueDelta();
 
     spdlog::debug("Cluster before start: {}", ToString::clusterToString(cluster));
@@ -87,10 +88,11 @@ void SOAPClusterer::cluster(Cluster& cluster){
             spdlog::debug("    Supercluster status before comparison: {}", ToString::clusterToString(supercluster));
 
             if( std::abs(subclusterOfSupercluster.representative()->value() - subcluster.representative()->value()) < maxValueDelta) {
+
                 auto comparisionResult = Metrics::Similarity::EnvironmentBased::compare(
                         subcluster.representative()->spectrum(),
                         subclusterOfSupercluster.representative()->spectrum(),
-                        toleranceRadius, similarityThreshold, numericalPrecisionEpsilon);
+                        toleranceRadius, similarityThreshold, spinFlipCheck, numericalPrecisionEpsilon);
 
                 spdlog::debug("    Supercluster status after comparison: {}", ToString::clusterToString(supercluster));
 

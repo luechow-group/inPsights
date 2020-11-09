@@ -225,9 +225,26 @@ BestMatch::DescendingMetricResult Metrics::Similarity::EnvironmentBased::compare
         const SOAP::MolecularSpectrum &reference,
         double distanceMatrixCovarianceTolerance,
         double soapThreshold,
+        bool spinFlipCheck,
         double numericalPrecisionEpsilon) {
-    return Metrics::Similarity::EnvironmentBased::getBestMatchResults(permutee, reference, distanceMatrixCovarianceTolerance,
-                                                                      soapThreshold, numericalPrecisionEpsilon).front();
+
+    auto bestResult = Metrics::Similarity::EnvironmentBased::getBestMatchResults(
+            permutee, reference, distanceMatrixCovarianceTolerance,
+            soapThreshold, numericalPrecisionEpsilon).front();
+
+    if(spinFlipCheck){
+        auto permuteeSpinFlipped = permutee;
+        permuteeSpinFlipped.flipSpins();
+
+        auto bestSpinFlippedResult = Metrics::Similarity::EnvironmentBased::getBestMatchResults(
+                permuteeSpinFlipped, reference, distanceMatrixCovarianceTolerance,
+                soapThreshold, numericalPrecisionEpsilon).front();
+
+        if(bestSpinFlippedResult.metric > bestResult.metric)
+            bestResult = bestSpinFlippedResult;
+    }
+
+    return bestResult;
 }
 
 Metrics::Similarity::EnvironmentBased::GrowingPerm::GrowingPerm(std::set<Eigen::Index> remainingPermuteeIndices,
