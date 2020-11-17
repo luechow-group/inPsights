@@ -30,7 +30,7 @@ std::vector<MolecularSelection> SelectionEnergyCalculator::getMolecularSelection
         auto sel = dynamicSelection.toMolecularSelection(ref.maximum(), permutedNuclei);
 
         // if specified, invert selection
-        if(dynamicSelection.particleSelectionSettings_.invertSelection()){
+        if(dynamicSelection.electronSelectionSettings_.invertSelection()){
             std::set<long> all, diff;
             generate_n(inserter(all, all.end()), ref.maximum().numberOfEntities(), [&]{ return all.size(); });
 

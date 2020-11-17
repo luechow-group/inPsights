@@ -4,7 +4,7 @@
 #include <ReferencePositionsClusterer.h>
 #include <DistanceBasedMetric.h>
 #include <BestMatch.h>
-#include <ParticleSelection.h>
+#include <ElectronSelection.h>
 #include <Maximum.h>
 #include <Cluster.h>
 #include <functional>

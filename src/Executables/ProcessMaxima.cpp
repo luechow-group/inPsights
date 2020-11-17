@@ -9,7 +9,7 @@
 #include <DensityBasedClusterer.h>
 #include <SOAPClusterer.h>
 #include <ReferencePositionsClusterer.h>
-#include <ParticleSelection.h>
+#include <ElectronSelection.h>
 #include <ClusterNumberAnalyzer.h>
 #include <TotalWeightDifferenceAnalyzer.h>
 #include <MaximaProcessor.h>
@@ -194,16 +194,16 @@ int main(int argc, char *argv[]) {
                 settings = Settings::DensityBasedClusterer(node.second);
 
                 if(settings.local()) {
-                    auto nearestElectronSettings = node.second[VARNAME(NearestElectrons)];
-                    if (nearestElectronSettings)
-                        ParticleSelection::settings = Settings::ParticleSelection(nearestElectronSettings, atoms);
+                    auto electronSelectionSettings = node.second[VARNAME(ElectronSelection)];
+                    if (electronSelectionSettings)
+                        ElectronSelection::settings = Settings::ElectronSelection(electronSelectionSettings, atoms);
                 }
 
                 DensityBasedClusterer densityBasedClusterer(samples);
                 densityBasedClusterer.cluster(maxima);
 
                 if(settings.local()) {
-                    ParticleSelection::settings.appendToNode(usedClusteringSettings); // TODO FIX USED SETTINGS APPEND
+                    ElectronSelection::settings.appendToNode(usedClusteringSettings); // TODO FIX USED SETTINGS APPEND
                 }
 
                 settings.appendToNode(usedClusteringSettings);
@@ -215,9 +215,9 @@ int main(int argc, char *argv[]) {
                 settings = Settings::ReferencePositionsClusterer(node.second);
 
                 if(settings.local()) {
-                    auto nearestElectronSettings = node.second[VARNAME(NearestElectrons)];
-                    if (nearestElectronSettings)
-                        ParticleSelection::settings = Settings::ParticleSelection(nearestElectronSettings, atoms);
+                    auto electronSelectionSettings = node.second[VARNAME(ElectronSelection)];
+                    if (electronSelectionSettings)
+                        ElectronSelection::settings = Settings::ElectronSelection(electronSelectionSettings, atoms);
                 }
                 ReferencePositionsClusterer ReferencePositionsClusterer(samples);
                 ReferencePositionsClusterer.cluster(maxima);
@@ -225,7 +225,7 @@ int main(int argc, char *argv[]) {
                 settings.appendToNode(usedClusteringSettings);
 
                 if(settings.local()) {
-                    ParticleSelection::settings.appendToNode(usedClusteringSettings); // TODO FIX USED SETTINGS APPEND
+                    ElectronSelection::settings.appendToNode(usedClusteringSettings); // TODO FIX USED SETTINGS APPEND
                 }
 
                 break;
@@ -345,7 +345,7 @@ int main(int argc, char *argv[]) {
             const YAML::Node &node = *it;
 
             auto nucleiIndices = node["Nuclei"].as<ParticleIndices>();
-            auto nearestElectronsSettings = Settings::ParticleSelection(node["NearestElectrons"], atoms);
+            auto nearestElectronsSettings = Settings::ElectronSelection(node["NearestElectrons"], atoms);
 
             selections.emplace_back(DynamicMolecularSelection(nearestElectronsSettings, nucleiIndices));
         }

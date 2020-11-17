@@ -2,15 +2,15 @@
 // Copyright (C) 2020 Michael Heuer.
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#include <ParticleSelection.h>
+#include <ElectronSelection.h>
 #include <Metrics.h>
 #include <ElementInfo.h>
 #include <queue>
 #include <algorithm>
 
 namespace Settings {
-    ParticleSelection::ParticleSelection()
-    : ISettings(VARNAME(ParticleSelection)){
+    ElectronSelection::ElectronSelection()
+    : ISettings(VARNAME(ElectronSelection)){
         distanceMode.onChange_.connect(
                 [&](const std::string& value) {
                     if (value != "minimum" || value != "average")
@@ -28,8 +28,8 @@ namespace Settings {
                 });
     };
 
-    ParticleSelection::ParticleSelection(const YAML::Node &node, const AtomsVector& atoms)
-    : ParticleSelection() {
+    ElectronSelection::ElectronSelection(const YAML::Node &node, const AtomsVector& atoms)
+    : ElectronSelection() {
         doubleProperty::decode(node, maximalDistance);
         longProperty::decode(node, maximalCount);
         stringProperty::decode(node, distanceMode);
@@ -46,7 +46,7 @@ namespace Settings {
         }
     };
 
-    void ParticleSelection::appendToNode(YAML::Node &node) const {
+    void ElectronSelection::appendToNode(YAML::Node &node) const {
         node[className][maximalDistance.name()] = maximalDistance();
         node[className][maximalCount.name()] = maximalCount();
         node[className][distanceMode.name()] = distanceMode();
@@ -58,7 +58,7 @@ namespace Settings {
     };
 }
 
-namespace ParticleSelection {
+namespace ElectronSelection {
     std::list<long>
     getNonValenceIndices(const ElectronsVector &electrons, const Atom &nucleus) {
         // returns the core electron indices of a given nucleus
