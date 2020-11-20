@@ -345,7 +345,7 @@ int main(int argc, char *argv[]) {
             const YAML::Node &node = *it;
 
             auto nucleiIndices = node["Nuclei"].as<ParticleIndices>();
-            auto nearestElectronsSettings = Settings::ElectronSelection(node["NearestElectrons"], atoms);
+            auto nearestElectronsSettings = Settings::ElectronSelection(node["ElectronSelection"], atoms);
 
             selections.emplace_back(DynamicMolecularSelection(nearestElectronsSettings, nucleiIndices));
         }
