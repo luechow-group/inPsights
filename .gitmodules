@@ -1,12 +1,3 @@
 [submodule "src/Externals/dualmc"]
 	path = src/Externals/dualmc
 	url = ./../dualmc.git
-[submodule "src/Externals/yaml-cpp"]
-	path = src/Externals/yaml-cpp
-	url = https://github.com/jbeder/yaml-cpp.git
-[submodule "src/Externals/googletest"]
-	path = src/Externals/googletest
-	url = https://github.com/google/googletest.git
-[submodule "src/Externals/spdlog"]
-	path = src/Externals/spdlog
-	url = https://github.com/gabime/spdlog.git
