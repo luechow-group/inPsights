@@ -1,5 +1,8 @@
-#ifndef QuickHull_Types_hpp
-#define QuickHull_Types_hpp
+// SPDX-License-Identifier: CC0-1.0
+// from https://github.com/akuukka/quickhull
+
+#ifndef TYPES_H
+#define TYPES_H
 
 #include <Eigen/Core>
 
@@ -8,4 +11,4 @@ namespace quickhull {
 	typedef size_t IndexType;
 }
 
-#endif
+#endif //TYPES_H

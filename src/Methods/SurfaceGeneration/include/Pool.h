@@ -1,5 +1,8 @@
-#ifndef Pool_h
-#define Pool_h
+// SPDX-License-Identifier: CC0-1.0
+// from https://github.com/akuukka/quickhull
+
+#ifndef POOL_H
+#define POOL_H
 
 #include <vector>
 #include <memory>
@@ -31,4 +34,4 @@ namespace quickhull {
 	};
 }
 
-#endif /* Pool_h */
+#endif //POOL_H

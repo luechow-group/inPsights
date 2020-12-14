@@ -1,5 +1,8 @@
-#ifndef QuickHull_Ray_hpp
-#define QuickHull_Ray_hpp
+// SPDX-License-Identifier: CC0-1.0
+// from https://github.com/akuukka/quickhull
+
+#ifndef RAY_H
+#define RAY_H
 
 #include <Eigen/Core>
 
@@ -18,4 +21,4 @@ namespace quickhull {
 	
 }
 
-#endif
+#endif //RAY_H

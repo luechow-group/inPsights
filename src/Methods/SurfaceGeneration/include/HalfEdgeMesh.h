@@ -1,7 +1,10 @@
+// SPDX-License-Identifier: CC0-1.0
+// from https://github.com/akuukka/quickhull
+
 #include "Mesh.h"
 
-#ifndef HalfEdgeMesh_h
-#define HalfEdgeMesh_h
+#ifndef HALFEDGEMESH_H
+#define HALFEDGEMESH_H
 
 namespace quickhull {
 
@@ -76,5 +79,4 @@ namespace quickhull {
     };
 }
 
-
-#endif /* HalfEdgeMesh_h */
+#endif //HALFEDGEMESH_H

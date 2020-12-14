@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: CC0-1.0
+// from https://github.com/akuukka/quickhull
+
 #ifndef QUICKHULL_HPP_
 #define QUICKHULL_HPP_
 
@@ -11,7 +14,8 @@
 #include "HalfEdgeMesh.h"
 #include "MathUtils.h"
 
-/*
+/* https://github.com/akuukka/quickhull
+ *
  * Implementation of the 3D QuickHull algorithm by Antti Kuukka
  *
  * No copyrights. What follows is 100% Public Domain.

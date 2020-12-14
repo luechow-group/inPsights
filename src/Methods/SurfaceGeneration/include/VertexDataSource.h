@@ -1,5 +1,8 @@
-#ifndef VertexDataSource_h
-#define VertexDataSource_h
+// SPDX-License-Identifier: CC0-1.0
+// from https://github.com/akuukka/quickhull
+
+#ifndef VERTEXDATASOURCE_H
+#define VERTEXDATASOURCE_H
 
 #include <Eigen/Core>
 
@@ -46,5 +49,4 @@ namespace quickhull {
 	
 }
 
-
-#endif /* VertexDataSource_h */
+#endif //VERTEXDATASOURCE_H

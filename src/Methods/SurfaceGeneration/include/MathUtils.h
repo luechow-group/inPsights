@@ -1,6 +1,8 @@
+// SPDX-License-Identifier: CC0-1.0
+// from https://github.com/akuukka/quickhull
 
-#ifndef QuickHull_MathUtils_hpp
-#define QuickHull_MathUtils_hpp
+#ifndef MATHUTILS_H
+#define MATHUTILS_H
 
 #include <Eigen/Core>
 #include <Eigen/Geometry>
@@ -34,5 +36,4 @@ namespace quickhull {
 	
 }
 
-
-#endif
+#endif //MATHUTILS_H

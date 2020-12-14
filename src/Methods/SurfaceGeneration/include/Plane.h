@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: CC0-1.0
+// from https://github.com/akuukka/quickhull
+
 #ifndef QHPLANE_HPP_
 #define QHPLANE_HPP_
 

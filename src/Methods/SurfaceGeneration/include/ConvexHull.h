@@ -1,5 +1,8 @@
-#ifndef CONVEXHULL_HPP_
-#define CONVEXHULL_HPP_
+// SPDX-License-Identifier: CC0-1.0
+// from https://github.com/akuukka/quickhull
+
+#ifndef CONVEXHULL_H
+#define CONVEXHULL_H
 
 #include <Eigen/Core>
 #include "Mesh.h"
@@ -207,4 +210,4 @@ namespace quickhull {
 
 }
 
-#endif /* CONVEXHULL_HPP_ */
+#endif //CONVEXHULL_H
