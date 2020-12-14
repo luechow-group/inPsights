@@ -88,7 +88,7 @@ If Qt5 was download from the webpage and installed via the installer, the follow
 export Qt5_DIR=/home/<username>/Qt/5.XX.X/gcc_64
 ```
 
-If Qt5 was installed via `apt-get`, CMake should automatically find the library (not tested).
+If Qt5 was installed via `apt-get`, CMake should find the library automatically.
 
 
 ## Building ProcessMaxima and inPsights
@@ -102,7 +102,7 @@ and configure CMake for an out-of-source release build:
 ```bash
 cmake ..
 ```
-CMake options can be specified to build the GUI or to use a precompiled version of the Eigen library
+CMake options can be specified to build the GUI or to use a pre-compiled version of the Eigen library
 ```bash
 cmake .. -DBUILD_GUI=ON -DBUILD_EIGEN=OFF
 ```
