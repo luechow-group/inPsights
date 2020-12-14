@@ -1,3 +1,0 @@
-[submodule "src/Externals/dualmc"]
-	path = src/Externals/dualmc
-	url = ./../dualmc.git
