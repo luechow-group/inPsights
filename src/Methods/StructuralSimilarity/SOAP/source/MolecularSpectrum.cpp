@@ -12,3 +12,12 @@ MolecularSpectrum::MolecularSpectrum(MolecularGeometry molecule)
     NeighborhoodExpander expander;
     molecularCenters_ = expander.computeMolecularExpansions(molecule);
 }
+
+// swap alpha with beta expansion for all centers
+void MolecularSpectrum::flipSpins() {
+    for (auto& center : molecularCenters_) {
+        auto &alphaSpinExpansion = center.second[Spins::spinToInt(Spin::alpha)];
+        auto &betaSpinExpansion = center.second[Spins::spinToInt(Spin::beta)];
+        std::swap(alphaSpinExpansion, betaSpinExpansion);
+    }
+}

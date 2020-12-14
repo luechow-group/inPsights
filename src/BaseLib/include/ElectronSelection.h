@@ -2,8 +2,8 @@
 // Copyright (C) 2020 Michael Heuer.
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#ifndef INPSIGHTS_PARTICLESELECTION_H
-#define INPSIGHTS_PARTICLESELECTION_H
+#ifndef INPSIGHTS_ELECTRONSELECTION_H
+#define INPSIGHTS_ELECTRONSELECTION_H
 
 #include <ParticlesVector.h>
 #include <ISettings.h>
@@ -12,7 +12,7 @@
 #include <functional>
 
 namespace Settings {
-    class ParticleSelection : public ISettings {
+    class ElectronSelection : public ISettings {
     public:
         Property<double> maximalDistance = {10.0, VARNAME(maximalDistance)};
         Property<long> maximalCount = {0, VARNAME(maximalCount)};
@@ -20,18 +20,17 @@ namespace Settings {
         Property<bool> invertSelection = {false, VARNAME(invertSelection)};
         Property<bool> valenceOnly = {true, VARNAME(valenceOnly)};
 
-        AtomsVector atoms;
         std::vector<Eigen::Vector3d> positions;
 
-        ParticleSelection(const AtomsVector& atoms = {});
-        explicit ParticleSelection(const YAML::Node &node, const AtomsVector& atoms = {});
+        ElectronSelection();
+        explicit ElectronSelection(const YAML::Node &node, const AtomsVector& atoms);
         void appendToNode(YAML::Node &node) const override;
     };
 }
-YAML_SETTINGS_DECLARATION(Settings::ParticleSelection)
+YAML_SETTINGS_DECLARATION(Settings::ElectronSelection)
 
-namespace ParticleSelection {
-    inline Settings::ParticleSelection settings {};
+namespace ElectronSelection {
+    inline Settings::ElectronSelection settings {};
 
     std::list<long>
     getNonValenceIndices(const ElectronsVector &electrons, const Atom &nucleus);
@@ -52,11 +51,11 @@ namespace ParticleSelection {
     std::list<long> invertedIndices(const std::list<long>& indices, std::size_t size);
 
     // convenience wrapper function for clusterers
-    std::list<long> getRelevantIndices(const ElectronsVector &electrons);
+    std::list<long> getRelevantIndices(const ElectronsVector &electrons, const AtomsVector& nuclei);
 }
 
 namespace YAML{
     Eigen::Vector3d decodePosition(const YAML::Node &node, const AtomsVector &nuclei);
 }
 
-#endif //INPSIGHTS_PARTICLESELECTION_H
+#endif //INPSIGHTS_ELECTRONSELECTION_H

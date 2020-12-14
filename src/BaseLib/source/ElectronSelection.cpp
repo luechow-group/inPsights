@@ -2,17 +2,15 @@
 // Copyright (C) 2020 Michael Heuer.
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#include <ParticleSelection.h>
+#include <ElectronSelection.h>
 #include <Metrics.h>
 #include <ElementInfo.h>
 #include <queue>
 #include <algorithm>
 
 namespace Settings {
-    ParticleSelection::ParticleSelection(const AtomsVector& atoms)
-            :
-            ISettings(VARNAME(ParticleSelection)),
-            atoms(atoms){
+    ElectronSelection::ElectronSelection()
+    : ISettings(VARNAME(ElectronSelection)){
         distanceMode.onChange_.connect(
                 [&](const std::string& value) {
                     if (value != "minimum" || value != "average")
@@ -30,8 +28,8 @@ namespace Settings {
                 });
     };
 
-    ParticleSelection::ParticleSelection(const YAML::Node &node, const AtomsVector& atoms)
-            : ParticleSelection(atoms) {
+    ElectronSelection::ElectronSelection(const YAML::Node &node, const AtomsVector& atoms)
+    : ElectronSelection() {
         doubleProperty::decode(node, maximalDistance);
         longProperty::decode(node, maximalCount);
         stringProperty::decode(node, distanceMode);
@@ -48,7 +46,7 @@ namespace Settings {
         }
     };
 
-    void ParticleSelection::appendToNode(YAML::Node &node) const {
+    void ElectronSelection::appendToNode(YAML::Node &node) const {
         node[className][maximalDistance.name()] = maximalDistance();
         node[className][maximalCount.name()] = maximalCount();
         node[className][distanceMode.name()] = distanceMode();
@@ -60,7 +58,7 @@ namespace Settings {
     };
 }
 
-namespace ParticleSelection {
+namespace ElectronSelection {
     std::list<long>
     getNonValenceIndices(const ElectronsVector &electrons, const Atom &nucleus) {
         // returns the core electron indices of a given nucleus
@@ -71,7 +69,7 @@ namespace ParticleSelection {
     };
 
     std::list<long> getNonValenceIndices(const ElectronsVector &electrons, const AtomsVector &nuclei) {
-        // returns all core electron indices of a given vector of nuclei
+        // returns all core electron indices of a given vector of nuclei.
         std::list<long> indices;
 
         for (long k = 0; k < nuclei.numberOfEntities(); ++k)
@@ -143,9 +141,7 @@ namespace ParticleSelection {
         return indices;
     };
 
-    std::list<long> getRelevantIndices(const ElectronsVector &electrons) {
-
-        auto nuclei = settings.atoms;
+    std::list<long> getRelevantIndices(const ElectronsVector &electrons, const AtomsVector& nuclei) {
         auto positions = settings.positions;
 
         std::function<double(const Eigen::Vector3d &, const std::vector<Eigen::Vector3d> &)> distanceFunction;
@@ -160,29 +156,32 @@ namespace ParticleSelection {
                                                   settings.maximalCount(), settings.valenceOnly(),
                                                   settings.maximalDistance(),
                                                   distanceFunction);
-
         if (settings.invertSelection()) {
             if (settings.valenceOnly()) {
-                // since selection should be inverted, core indices have to be added to 'subIndices' before inverting
+                // since selection should be inverted, core indices have to be added to 'indices' before inversion
                 indices.splice(indices.end(), getNonValenceIndices(electrons, nuclei));
-
             }
+
             return invertedIndices(indices, electrons.numberOfEntities());
-            // sorting will take the front indices. Since the invertSelection is true,
-        }
-        return indices;
+
+        } else
+            return indices;
     }
 
     std::list<long> invertedIndices(const std::list<long>& indices, std::size_t size){
-        assert( indices.size() > 0 && size > 0);
+        assert(!indices.empty() && size > 0);
         assert(*std::min_element(indices.begin(),indices.end()) >= 0);
         assert(*std::max_element(indices.begin(),indices.end()) < long(size));
+
+        // make sure the indices are sorted (set_difference assumes a set which is ordered by definition)
+        auto sortedIndices = indices;
+        sortedIndices.sort();
 
         std::list<long> inverted{}, all(size);
         std::iota(all.begin(), all.end(), 0);
 
-        std::set_difference(all.begin(), all.end(), indices.begin(), indices.end(),
-                std::inserter(inverted, inverted.begin()));
+        std::set_difference(all.begin(), all.end(), sortedIndices.begin(), sortedIndices.end(),
+                            std::inserter(inverted, inverted.begin()));
 
         return inverted;
     };

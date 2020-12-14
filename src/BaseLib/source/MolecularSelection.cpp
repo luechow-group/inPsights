@@ -33,9 +33,9 @@ namespace YAML {
 }
 
 DynamicMolecularSelection::DynamicMolecularSelection(
-        Settings::ParticleSelection particleSelectionSettings, ParticleIndices nucleiIndices)
+        Settings::ElectronSelection electronSelectionSettings, ParticleIndices nucleiIndices)
         :
-        particleSelectionSettings_(particleSelectionSettings),
+        electronSelectionSettings_(electronSelectionSettings),
         nuclei_(nucleiIndices) {}
 
 ParticleIndices
@@ -44,11 +44,11 @@ DynamicMolecularSelection::selectNearestElectrons(const ElectronsVector &electro
     std::function<double(const Eigen::Vector3d &,const std::vector<Eigen::Vector3d> &)> minimalDistanceFunction =
             Metrics::minimalDistance<2>;
 
-    auto selectedElectrons = ParticleSelection::getNearestElectronsIndices(electrons, nuclei,
-                                                                           particleSelectionSettings_.positions,
-                                                                           particleSelectionSettings_.maximalCount(),
-                                                                           particleSelectionSettings_.valenceOnly(),
-                                                                           particleSelectionSettings_.maximalDistance(),
+    auto selectedElectrons = ElectronSelection::getNearestElectronsIndices(electrons, nuclei,
+                                                                           electronSelectionSettings_.positions,
+                                                                           electronSelectionSettings_.maximalCount(),
+                                                                           electronSelectionSettings_.valenceOnly(),
+                                                                           electronSelectionSettings_.maximalDistance(),
                                                                            minimalDistanceFunction
     );
 

@@ -81,6 +81,8 @@ namespace SOAP {
             return kernel(spectrumA, spectrumB, gamma);
         }
 
+        void spinFlippedSpectrum(const MolecularSpectrum &spectrumBspinflipped);
+
         double kernel(const MolecularSpectrum &spectrumA,
                       const MolecularSpectrum &spectrumB, double gamma) {
 
@@ -94,15 +96,9 @@ namespace SOAP {
 
             auto value = kAB / sqrt(kAA * kBB);
 
-            if(General::settings.checkSpinFlip()) {
+            if(General::settings.spinFlipCheck()) {
                 auto spectrumBspinflipped = spectrumB;
-
-                // for all centers: swap alpha with beta expansion
-                for (auto& center : spectrumBspinflipped.molecularCenters_) {
-                    auto &alphaSpinExpansion = center.second[Spins::spinToInt(Spin::alpha)];
-                    auto &betaSpinExpansion = center.second[Spins::spinToInt(Spin::beta)];
-                    std::swap(alphaSpinExpansion, betaSpinExpansion);
-                }
+                spectrumBspinflipped.flipSpins();
 
                 // caluclate spin-flipped value
                 auto CABsf = correlationMatrix(spectrumA, spectrumBspinflipped);
@@ -114,6 +110,8 @@ namespace SOAP {
 
             return value;
         }
+
+
 
         double kernelDistance(const MolecularGeometry &A, const MolecularGeometry &B, double gamma) {
             return sqrt(2.0 - 2.0 * kernel(A, B, gamma));

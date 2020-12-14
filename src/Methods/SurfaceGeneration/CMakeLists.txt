@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.11)
 
 project(SurfaceGeneration CXX)
 
+add_subdirectory(dualmc)
+
 set ( PROJECT_FOLDER_NAME ${PROJECT_NAME} )
 set ( PROJECT_PATH ${PROJECT_NAME})
 set ( OUTPUT_NAME "${PROJECT_FOLDER_NAME}" )

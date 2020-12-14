@@ -53,7 +53,7 @@ set(HEADER_FILES
         include/Enumerate.h
         include/Combinatorics.h
         include/Logo.h
-        include/ParticleSelection.h
+        include/ElectronSelection.h
         include/SpinPairClassification.h
         include/CameraSettings.h
         include/ErrorHandling.h
@@ -87,7 +87,7 @@ set(SOURCE_FILES
         source/BinaryFileReader.cpp
         source/ISettings.cpp
         source/Combinatorics.cpp
-        source/ParticleSelection.cpp
+        source/ElectronSelection.cpp
         source/SpinPairClassification.cpp
         source/CameraSettings.cpp
         source/ErrorHandling.cpp

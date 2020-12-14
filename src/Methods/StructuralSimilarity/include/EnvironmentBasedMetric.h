@@ -22,6 +22,7 @@ namespace Metrics {
                     const SOAP::MolecularSpectrum &reference,
                     double distanceMatrixCovarianceTolerance,
                     double soapThreshold,
+                    bool spinFLipCheck,
                     double numericalPrecisionEpsilon = std::numeric_limits<double>::epsilon());
 
             std::vector<BestMatch::DescendingMetricResult> getBestMatchResults(

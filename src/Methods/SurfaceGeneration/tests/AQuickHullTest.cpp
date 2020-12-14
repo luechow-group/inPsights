@@ -6,7 +6,6 @@
 #include <Eigen/Core>
 
 #include <gmock/gmock.h>
-#include "MolecularGeometry.h"
 #include "TestMolecules.h"
 
 using namespace testing;

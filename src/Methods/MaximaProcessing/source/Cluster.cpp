@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include <Cluster.h>
-#include <ParticleSelection.h>
+#include <ElectronSelection.h>
 #include <PermutationHandling.h>
 #include <Maximum.h>
 #include <Eigen/Core>
@@ -231,7 +231,12 @@ void Cluster::permuteRelevantElectronsToFront(std::vector<Sample> & samples){
     auto electronsNumber = (*this).representative()->maximum().numberOfEntities();
 
     for (auto & subCluster : *this) {
-        auto subIndices = ParticleSelection::getRelevantIndices(subCluster.representative()->maximum());
+
+        //TODO For local SOAP clustering, it must be confirmed if the permuted nuclei vector should be used here.
+        auto permutedAtoms = representative()->nuclei();
+        permutedAtoms.permute(representative()->nuclearPermutation());
+
+        auto subIndices = ElectronSelection::getRelevantIndices(subCluster.representative()->maximum(), permutedAtoms);
 
         // permute all relevant electrons to the front
         subCluster.setSelectedElectronsCount(subIndices.size());

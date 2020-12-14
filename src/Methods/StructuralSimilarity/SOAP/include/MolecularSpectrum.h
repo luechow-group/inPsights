@@ -17,6 +17,8 @@ namespace SOAP {
 
         explicit MolecularSpectrum(MolecularGeometry molecule);
 
+        void flipSpins();
+
         MolecularGeometry molecule_;
         MolecularCenters molecularCenters_;
     };

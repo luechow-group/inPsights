@@ -6,7 +6,7 @@
 
 #include "MolecularSelection.h"
 #include <ParticleIndices.h>
-#include <ParticleSelection.h>
+#include <ElectronSelection.h>
 
 struct MolecularSelection {
     MolecularSelection() = default;
@@ -27,13 +27,13 @@ namespace YAML {
 }
 
 struct DynamicMolecularSelection {
-    DynamicMolecularSelection(Settings::ParticleSelection particleSelectionSettings, ParticleIndices nucleiIndices);
+    DynamicMolecularSelection(Settings::ElectronSelection electronSelectionSettings, ParticleIndices nucleiIndices);
 
     ParticleIndices selectNearestElectrons(const ElectronsVector &electrons, const AtomsVector &nuclei) const;
 
     MolecularSelection toMolecularSelection(const ElectronsVector &electrons, const AtomsVector &nuclei) const;
 
-    Settings::ParticleSelection particleSelectionSettings_;
+    Settings::ElectronSelection electronSelectionSettings_;
     ParticleIndices nuclei_;
 };
 

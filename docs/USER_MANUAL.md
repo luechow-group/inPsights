@@ -74,17 +74,17 @@ Greedy spherical clusterer employing a spin-agnostic best-match distance metric.
 ##### SphericalClusterer
 Spherical clusterer employing a spin-agnostic best-match distance metric.
 * `radius` (`positive float`,`[a0]`): Radius in which similar maxima (irrespective of spin) are clustered together.
-* `local` (`bool`): true unlocks the `ParticleSelection` Options in which the subset of considered electrons can be specified.
+* `local` (`bool`): true unlocks the `ElectronSelection` Options in which the subset of considered electrons can be specified.
 
 
 ##### DensityBasedClusterer
 Density-based clusterer employing a spin-agnostic best-match distance metric.
 * `radius` (`positive float`,`[a0]`): radius in which similar, density connected maxima (irrespective of spin) are clustered together
-* `local` (`bool`): true unlocks the `ParticleSelection` options in which the subset of considered electrons can be specified.
+* `local` (`bool`): true unlocks the `ElectronSelection` options in which the subset of considered electrons can be specified.
 
 
-##### Local Clustering with the `ParticleSelection` Option
-`ParticleSelection` is A sub-node that can be added to a `SphericalClusterer` or `DensityBasedClusterer` node.
+##### Local Clustering with the `ElectronSelection` Option
+`ElectronSelection` is A sub-node that can be added to a `SphericalClusterer` or `DensityBasedClusterer` node.
 The following options can be specified:
 * `maximalCount` (`unsigned int`): Maximal number of electrons that are compared for clustering (the subset).
 * `maximalDistance` (`positive float`,`[a0]`): Maximal distance of electrons from the reference positions to be included in the subset for comparison.
@@ -110,7 +110,7 @@ Clustering:
     radius: 0.2
     local: true
     sortRemainder: true
-    ParticleSelection:
+    ElectronSelection:
       maximalCount: 4
       distanceMode: minimum
       positions: [
