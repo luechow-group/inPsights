@@ -29,5 +29,4 @@ namespace YAML {
     Emitter &operator<<(Emitter &out, const SurfaceData &rhs) ;
 }
 
-
 #endif //INPSIGHTS_SURFACEDATA_H

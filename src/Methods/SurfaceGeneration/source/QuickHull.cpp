@@ -1,7 +1,9 @@
+// SPDX-License-Identifier: CC0-1.0
+// from https://github.com/akuukka/quickhull
+
 #include "QuickHull.h"
 #include "MathUtils.h"
 #include "Types.h"
-#include <cmath>
 #include <cassert>
 #include <iostream>
 #include <algorithm>

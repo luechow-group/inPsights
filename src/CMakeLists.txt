@@ -1,5 +1,4 @@
 add_subdirectory(BaseLib)
-add_subdirectory(Externals)
 add_subdirectory(Methods)
 
 if (${BUILD_GUI})

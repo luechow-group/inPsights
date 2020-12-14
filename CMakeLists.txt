@@ -36,6 +36,11 @@ else()
     include_directories(${EIGEN3_INCLUDE_DIR})
 endif()
 
+include(cmake/downloadGoogletest.cmake)
+include(cmake/downloadSpdlog.cmake)
+include(cmake/downloadYamlCpp.cmake)
+
+
 # putting all executables in cmake-build-*/bin
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR}/bin)
 
