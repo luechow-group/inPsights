@@ -273,7 +273,7 @@ void InPsightsWidget::showSplashScreen() {
     splashScreen->setPixmap(pixmap);
     splashScreen->show();
 
-    std::string message = "Version " + inPsights::version() + " (alpha)\n "\
+    std::string message = inPsights::version() + " (alpha)\n "\
                           "Copyright © 2016-2020  Michael A. Heuer.";
     splashScreen->showMessage(message.c_str(), Qt::AlignBottom, Qt::gray);
 

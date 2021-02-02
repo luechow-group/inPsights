@@ -16,7 +16,7 @@ int main(int argc, char *argv[]) {
     app.setWindowIcon(QIcon(":inPsightsIcon.png"));
     app.setApplicationName("inPsights");
 
-    spdlog::info("Welcome to inPsights (Version: {})!", inPsights::version());
+    spdlog::info("Welcome to inPsights {}!", inPsights::version());
 
     std::unique_ptr<InPsightsWidget> widget;
 
