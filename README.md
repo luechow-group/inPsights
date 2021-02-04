@@ -1,7 +1,7 @@
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4321715.svg)](https://doi.org/10.5281/zenodo.4321715)
 
-# <img src="src/GUI/inPsightsIcon.png" alt="inPsights Logo" width="64"/> inPsights
+# <img src="img/inPsightsLogo.png" alt="inPsights Logo" height="128"/>
 **Chemical Insights from |Ψ|² Analysis**
 
 inPsights is a open-source software package for the probability density analysis (PDA) of the total electronic wave function Ψ.
