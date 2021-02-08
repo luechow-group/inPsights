@@ -13,7 +13,8 @@ namespace ToString {
 
     std::string doubleToString(double a,
                                unsigned decimalPlaces = 5,
-                               unsigned leadingSpaces = 1);
+                               unsigned leadingSpaces = 1,
+                               bool spaceForPositiveNumber = true);
 
     std::string vector3dToString(const Eigen::Vector3d &vector,
                                  unsigned decimalPlaces = 5,
