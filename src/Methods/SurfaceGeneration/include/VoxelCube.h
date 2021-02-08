@@ -58,7 +58,7 @@ public:
     bool smoothQ_;
     IndexType dimension_;
     VolumeDataType insideWeight_, totalWeight_;
-    VertexComponentsType length_, halfLength_, inverseDimension_;
+    VertexComponentsType length_, inverseDimension_;
     Eigen::Matrix<VertexComponentsType,3,1> origin_;  // the real origin is origin - halfLength
     std::vector<VolumeDataType> data_;
 };

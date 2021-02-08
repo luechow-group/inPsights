@@ -22,7 +22,6 @@ VoxelCube::VoxelCube(
         insideWeight_(0),
         totalWeight_(0),
         length_(length),
-        halfLength_(length / 2.0f),
         inverseDimension_(1.0f / float(dimension - 1)),
         origin_(origin),
         data_(static_cast<size_t>(dimension * dimension * dimension)) {
@@ -36,9 +35,9 @@ std::size_t VoxelCube::index(IndexType i, IndexType j, IndexType k) const {
 
 Eigen::Vector3i VoxelCube::getVoxelIndices(const Eigen::Vector3d& pos){
     Eigen::Vector3i indices;
-    indices[0] = IndexType(lround((pos[0] + halfLength_ - origin_[0]) / length_ * dimension_));
-    indices[1] = IndexType(lround((pos[1] + halfLength_ - origin_[1]) / length_ * dimension_));
-    indices[2] = IndexType(lround((pos[2] + halfLength_ - origin_[2]) / length_ * dimension_));
+    indices[0] = IndexType(lround((0.5 + (pos[0] - origin_[0]) / length_) * dimension_));
+    indices[1] = IndexType(lround((0.5 + (pos[1] - origin_[1]) / length_) * dimension_));
+    indices[2] = IndexType(lround((0.5 + (pos[2] - origin_[2]) / length_) * dimension_));
     return indices;
 }
 
@@ -151,11 +150,15 @@ void VoxelCube::exportMacmolplt(const std::string& filename, const std::string& 
     std::ofstream file;
     file.open(filename);
     double increment = length_/dimension_;
+    auto realOrigin = origin_;
+    for (auto i = 0; i < 3; ++i){
+        realOrigin[i] -= length_/2;
+    }
     file << comment << '\n'
     << dimension_ << ' ' << dimension_ << ' ' << dimension_ << "   //nx ny nz\n"
-    << ToString::doubleToString(origin_[0] - halfLength_, 5, 0, false) << ' '
-    << ToString::doubleToString(origin_[1] - halfLength_, 5, 0, false) << ' '
-    << ToString::doubleToString(origin_[2] - halfLength_, 5, 0, false) << "   //Origin of the 3D grid\n"
+    << ToString::doubleToString(realOrigin[0], 5, 0, false) << ' '
+    << ToString::doubleToString(realOrigin[1], 5, 0, false) << ' '
+    << ToString::doubleToString(realOrigin[2], 5, 0, false) << "   //Origin of the 3D grid\n"
     << ToString::doubleToString(increment, 5, 0, false) << ' '
     << ToString::doubleToString(increment, 5, 0, false) << ' '
     << ToString::doubleToString(increment, 5, 0, false)
