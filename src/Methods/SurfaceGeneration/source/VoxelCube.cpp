@@ -6,6 +6,10 @@
 #include <spdlog/spdlog.h>
 #include <EigenYamlConversion.h>
 #include <Varname.h>
+#include <Enumerate.h>
+#include <ToString.h>
+#include <fstream>
+#include <cmath>
 
 VoxelCube::VoxelCube(
         IndexType dimension,
@@ -32,9 +36,9 @@ std::size_t VoxelCube::index(IndexType i, IndexType j, IndexType k) const {
 
 Eigen::Vector3i VoxelCube::getVoxelIndices(const Eigen::Vector3d& pos){
     Eigen::Vector3i indices;
-    indices[0] = IndexType((pos[0] + halfLength_ - origin_[0]) / length_ * dimension_);
-    indices[1] = IndexType((pos[1] + halfLength_ - origin_[1]) / length_ * dimension_);
-    indices[2] = IndexType((pos[2] + halfLength_ - origin_[2]) / length_ * dimension_);
+    indices[0] = IndexType(lround((pos[0] + halfLength_ - origin_[0]) / length_ * dimension_));
+    indices[1] = IndexType(lround((pos[1] + halfLength_ - origin_[1]) / length_ * dimension_));
+    indices[2] = IndexType(lround((pos[2] + halfLength_ - origin_[2]) / length_ * dimension_));
     return indices;
 }
 
@@ -97,6 +101,10 @@ void VoxelCube::setData(const std::vector<VoxelCube::VolumeDataType> &data) {
     VoxelCube::data_ = data;
 }
 
+void VoxelCube::setTotalWeight(const double &totalWeight) {
+    VoxelCube::totalWeight_ = totalWeight;
+}
+
 
 VoxelCube::VolumeDataType
 VoxelCube::cubeAverage(IndexType i, IndexType j, IndexType k, IndexType neighbors) {
@@ -138,6 +146,31 @@ void VoxelCube::smooth(VoxelCube::IndexType neighbors) {
 
     data_ = dataSmoothed;
 }
+
+void VoxelCube::exportMacmolplt(const std::string& filename, const std::string& comment) {
+    std::ofstream file;
+    file.open(filename);
+    double increment = length_/dimension_;
+    file << comment << '\n'
+    << dimension_ << ' ' << dimension_ << ' ' << dimension_ << "   //nx ny nz\n"
+    << ToString::doubleToString(origin_[0] - halfLength_, 5, 0, false) << ' '
+    << ToString::doubleToString(origin_[1] - halfLength_, 5, 0, false) << ' '
+    << ToString::doubleToString(origin_[2] - halfLength_, 5, 0, false) << "   //Origin of the 3D grid\n"
+    << ToString::doubleToString(increment, 5, 0, false) << ' '
+    << ToString::doubleToString(increment, 5, 0, false) << ' '
+    << ToString::doubleToString(increment, 5, 0, false)
+    << "   //x increment, y inc, z inc/ grid(x(y(z)))\n";
+    for (const auto &[i, data] : enumerate(data_)) {
+        file << ToString::doubleToString(double(data)/pow(increment, 3)/totalWeight_, 5, 0, false);
+        if ((i+1) % 5 == 0){
+            file << '\n';
+        }
+        else{
+            file << ' ';
+        }
+    }
+}
+
 
 namespace YAML {
     Node convert<VoxelCube>::encode(const VoxelCube &rhs) {

@@ -9,6 +9,7 @@
 #include <Eigen/Core>
 #include <DualMC.h>
 #include <cstdint>
+#include <string>
 
 class VoxelCube {
 public:
@@ -47,6 +48,10 @@ public:
     VolumeDataType cubeAverage(IndexType i, IndexType j, IndexType k, IndexType neighbors);
 
     void setData(const std::vector<VolumeDataType> &data);
+
+    void exportMacmolplt(const std::string& filename, const std::string& comment);
+
+    void setTotalWeight(const double &totalWeight);
    
     static constexpr VertexComponentsType offset_ = 0.5;
 
@@ -54,7 +59,7 @@ public:
     IndexType dimension_;
     VolumeDataType insideWeight_, totalWeight_;
     VertexComponentsType length_, halfLength_, inverseDimension_;
-    Eigen::Matrix<VertexComponentsType,3,1> origin_;
+    Eigen::Matrix<VertexComponentsType,3,1> origin_;  // the real origin is origin - halfLength
     std::vector<VolumeDataType> data_;
 };
 
