@@ -18,7 +18,8 @@ public:
         double x,y,z,f;
 
         auto data = a.getData();
-        uint64_t weight, totalWeight;
+        uint64_t weight;
+        uint64_t totalWeight = 0;
         for (VoxelCube::IndexType i = 0; i < dimension; ++i) {
             for (VoxelCube::IndexType j = 0; j < dimension; ++j) {
                 for (VoxelCube::IndexType k = 0; k < dimension; ++k) {
