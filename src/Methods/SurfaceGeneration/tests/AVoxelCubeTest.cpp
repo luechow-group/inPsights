@@ -12,10 +12,10 @@ public:
     VoxelCube a;
     void SetUp() override {
         int dimension = 30;
-        double length = 3.221078;
-        double origin = -1.58753;
+        float length = 3.221078;
+        float origin = -1.58753;
         a = VoxelCube(dimension,length,{origin + length/2, origin + length/2, origin + length/2});
-        double x,y,z,f;
+        float x,y,z,f;
 
         auto data = a.getData();
         uint64_t weight;

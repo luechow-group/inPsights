@@ -23,6 +23,11 @@ public:
             const Eigen::Matrix<VertexComponentsType,3,1>& origin = {0,0,0},
             bool boxSmoothQ = false);
 
+    VoxelCube(bool smoothQ, const Eigen::Matrix<IndexType, 3, 1> &dimensions, VolumeDataType insideWeight,
+              VolumeDataType totalWeight, const Eigen::Matrix<VertexComponentsType, 3, 1> &lengths,
+              const Eigen::Matrix<VertexComponentsType, 3, 1> &inverseDimensions,
+              const Eigen::Matrix<VertexComponentsType, 3, 1> &origin, const std::vector<VolumeDataType> &data);
+
     std::size_t index(IndexType i, IndexType j, IndexType k) const;
 
     Eigen::Vector3i getVoxelIndices(const Eigen::Vector3d& pos);
@@ -33,9 +38,9 @@ public:
 
     void shiftDualMCResults(std::vector<dualmc::Vertex>& vertices);
 
-    IndexType getDimension() const;
+    Eigen::Matrix<IndexType,3,1> getDimensions() const;
 
-    VertexComponentsType getLength() const;
+    Eigen::Matrix<VertexComponentsType,3,1> getLengths() const;
 
     const Eigen::Matrix<VertexComponentsType, 3, 1> &getOrigin() const;
 
@@ -56,10 +61,10 @@ public:
     static constexpr VertexComponentsType offset_ = 0.5;
 
     bool smoothQ_;
-    IndexType dimension_;
+    Eigen::Matrix<IndexType,3,1> dimensions_;
     VolumeDataType insideWeight_, totalWeight_;
-    VertexComponentsType length_, inverseDimension_;
-    Eigen::Matrix<VertexComponentsType,3,1> origin_;  // the real origin is origin - halfLength
+    Eigen::Matrix<VertexComponentsType,3,1> lengths_, inverseDimensions_;
+    Eigen::Matrix<VertexComponentsType,3,1> origin_;  // the real origin is origin - lengths/2
     std::vector<VolumeDataType> data_;
 };
 
