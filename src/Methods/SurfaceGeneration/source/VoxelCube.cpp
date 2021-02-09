@@ -158,6 +158,7 @@ void VoxelCube::exportMacmolplt(const std::string& filename, const std::string& 
     std::ofstream file;
     file.open(filename);
     auto increment = lengths_;
+    double a0 =  0.529177210903;  // in Angstrom
     for (auto i = 0; i < 3; ++i) {
         increment[i] /= dimensions_[i];
     }
@@ -168,20 +169,33 @@ void VoxelCube::exportMacmolplt(const std::string& filename, const std::string& 
     }
     file << comment << '\n'
          << dimensions_[0] << ' ' << dimensions_[1] << ' ' << dimensions_[2] << "   //nx ny nz\n"
-    << ToString::doubleToString(realOrigin[0], 5, 0, false) << ' '
-    << ToString::doubleToString(realOrigin[1], 5, 0, false) << ' '
-    << ToString::doubleToString(realOrigin[2], 5, 0, false) << "   //Origin of the 3D grid\n"
-    << ToString::doubleToString(increment[0], 5, 0, false) << ' '
-    << ToString::doubleToString(increment[1], 5, 0, false) << ' '
-    << ToString::doubleToString(increment[2], 5, 0, false)
+    << ToString::doubleToString(realOrigin[0]*a0, 5, 0, false) << ' '
+    << ToString::doubleToString(realOrigin[1]*a0, 5, 0, false) << ' '
+    << ToString::doubleToString(realOrigin[2]*a0, 5, 0, false) << "   //Origin of the 3D grid\n"
+    << ToString::doubleToString(increment[0]*a0, 5, 0, false) << ' '
+    << ToString::doubleToString(increment[1]*a0, 5, 0, false) << ' '
+    << ToString::doubleToString(increment[2]*a0, 5, 0, false)
     << "   //x increment, y inc, z inc/ grid(x(y(z)))\n";
-    for (const auto &[i, data] : enumerate(data_)) {
-        file << ToString::doubleToString(double(data)/(increment[0]*increment[1]*increment[2])/totalWeight_, 5, 0, false);
-        if ((i+1) % 5 == 0){
-            file << '\n';
-        }
-        else{
-            file << ' ';
+
+    double totalWeightd = 0.0;
+    for (auto &weight : data_){
+        totalWeightd += double(weight);
+    }
+
+    int l = 0;
+    for (IndexType i = 0; i < dimensions_[0]; ++i) {
+        for (IndexType j = 0; j < dimensions_[1]; ++j) {
+            for (IndexType k = 0; k < dimensions_[2]; ++k) {
+                file << ToString::doubleToString(
+                        double(data_[VoxelCube::index(i, j, k)])
+                        / (increment[0] * increment[1] * increment[2]) / totalWeightd, 5, 0, false);
+                if ((l + 1) % 5 == 0) {
+                    file << '\n';
+                } else {
+                    file << ' ';
+                }
+                ++l;
+            }
         }
     }
 }

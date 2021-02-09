@@ -23,20 +23,18 @@ public:
         for (VoxelCube::IndexType i = 0; i < dimension; ++i) {
             for (VoxelCube::IndexType j = 0; j < dimension; ++j) {
                 for (VoxelCube::IndexType k = 0; k < dimension; ++k) {
-                        x = origin + k * length / dimension;
+                        z = origin + k * length / dimension;
                         y = origin + j * length / dimension;
-                        z = origin + i * length / dimension;
+                        x = origin + i * length / dimension;
                         // 1s orbital stretched in z-direction
                         f = 1.0/sqrt(2.0*3.14)*exp(-sqrt(pow(x,2) + pow(y,2)  + pow(z/2,2)));
                         weight = unsigned(10000 * f);
                         // std::cout << x << " " << y << " " << z << " " << f << std::endl;
                         data[a.index(i,j,k)] = weight;
-                        totalWeight += weight;
                 }
             }
         }
         a.setData(data);
-        a.setTotalWeight(totalWeight);
     }
 };
 
