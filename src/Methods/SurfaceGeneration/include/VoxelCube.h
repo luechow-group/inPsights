@@ -23,10 +23,10 @@ public:
             const Eigen::Matrix<VertexComponentsType,3,1>& origin = {0,0,0},
             bool boxSmoothQ = false);
 
-    VoxelCube(bool smoothQ, const Eigen::Matrix<IndexType, 3, 1> &dimensions, VolumeDataType insideWeight,
-              VolumeDataType totalWeight, const Eigen::Matrix<VertexComponentsType, 3, 1> &lengths,
-              const Eigen::Matrix<VertexComponentsType, 3, 1> &inverseDimensions,
-              const Eigen::Matrix<VertexComponentsType, 3, 1> &origin, const std::vector<VolumeDataType> &data);
+    VoxelCube(const Eigen::Matrix<IndexType, 3, 1> &dimensions,
+              const Eigen::Matrix<VertexComponentsType, 3, 1> &lengths,
+              const Eigen::Matrix<VertexComponentsType, 3, 1> &origin,
+              bool smoothQ);
 
     std::size_t index(IndexType i, IndexType j, IndexType k) const;
 

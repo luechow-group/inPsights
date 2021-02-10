@@ -12,12 +12,17 @@
 #include <cmath>
 #include <iostream>
 
-VoxelCube::VoxelCube(bool smoothQ, const Eigen::Matrix<IndexType, 3, 1> &dimensions, unsigned long insideWeight,
-                     unsigned long totalWeight, const Eigen::Matrix<VertexComponentsType, 3, 1> &lengths,
-                     const Eigen::Matrix<VertexComponentsType, 3, 1> &inverseDimensions,
-                     const Eigen::Matrix<VertexComponentsType, 3, 1> &origin, const std::vector<VolumeDataType> &data)
-        : smoothQ_(smoothQ), dimensions_(dimensions), insideWeight_(insideWeight), totalWeight_(totalWeight),
-          lengths_(lengths), inverseDimensions_(inverseDimensions), origin_(origin), data_(data) {}
+VoxelCube::VoxelCube(const Eigen::Matrix<IndexType, 3, 1> &dimensions,
+                     const Eigen::Matrix<VertexComponentsType, 3, 1> &lengths,
+                     const Eigen::Matrix<VertexComponentsType, 3, 1> &origin,
+                     bool smoothQ)
+        : smoothQ_(smoothQ), dimensions_(dimensions), insideWeight_(0), totalWeight_(0),
+          lengths_(lengths),
+          inverseDimensions_({1.0f / float(dimensions[0] - 1),
+                              1.0f / float(dimensions[1] - 1),
+                              1.0f / float(dimensions[2] - 1)}),
+          origin_(origin),
+          data_(static_cast<size_t>(dimensions.prod())) {}
 
 VoxelCube::VoxelCube(
         IndexType dimension,
