@@ -48,9 +48,10 @@ std::size_t VoxelCube::index(IndexType i, IndexType j, IndexType k) const {
 
 Eigen::Vector3i VoxelCube::getVoxelIndices(const Eigen::Vector3d& pos){
     Eigen::Vector3i indices;
-    indices[0] = IndexType(lround((0.5 + (pos[0] - center_[0]) / lengths_[0]) * dimensions_[0]));
-    indices[1] = IndexType(lround((0.5 + (pos[1] - center_[1]) / lengths_[1]) * dimensions_[1]));
-    indices[2] = IndexType(lround((0.5 + (pos[2] - center_[2]) / lengths_[2]) * dimensions_[2]));
+    auto origin = center_ - lengths_/2;
+    for (int i=0; i<3; ++i){
+        indices[i] = IndexType(lround((pos[i] - origin[i]) / lengths_[i] * dimensions_[i]));
+    }
     return indices;
 }
 
@@ -66,7 +67,7 @@ void VoxelCube::add(const Eigen::Vector3d &pos, VolumeDataType weight) {
 
 void VoxelCube::add(IndexType i, IndexType j, IndexType k, VolumeDataType weight) {
     if(totalWeight_ == std::numeric_limits<VolumeDataType>::max())
-        spdlog::critical("Overflow in voxel cell. The maxium value for the {} of {} has been exceeded.",
+        spdlog::critical("Overflow in voxel cell. The maximum value for the {} of {} has been exceeded.",
                 VARNAME(VolumeDataType),
                 std::numeric_limits<VolumeDataType>::max());
 
@@ -157,24 +158,21 @@ void VoxelCube::smooth(VoxelCube::IndexType neighbors) {
 void VoxelCube::exportMacmolplt(const std::string& filename, const std::string& comment) {
     std::ofstream file;
     file.open(filename);
-    auto increment = lengths_;
+    auto increments = lengths_;
     double a0 =  0.529177210903;  // in Angstrom
     for (auto i = 0; i < 3; ++i) {
-        increment[i] /= dimensions_[i];
+        increments[i] /= dimensions_[i];
     }
 
-    auto origin = center_;
-    for (auto i = 0; i < 3; ++i){
-        origin[i] -= lengths_[i] / 2;
-    }
+    auto origin = center_ - lengths_/2;
     file << comment << '\n'
          << dimensions_[0] << ' ' << dimensions_[1] << ' ' << dimensions_[2] << "   //nx ny nz\n"
          << ToString::doubleToString(origin[0] * a0, 5, 0, false) << ' '
          << ToString::doubleToString(origin[1] * a0, 5, 0, false) << ' '
          << ToString::doubleToString(origin[2] * a0, 5, 0, false) << "   //Origin of the 3D grid\n"
-         << ToString::doubleToString(increment[0]*a0, 5, 0, false) << ' '
-         << ToString::doubleToString(increment[1]*a0, 5, 0, false) << ' '
-         << ToString::doubleToString(increment[2]*a0, 5, 0, false)
+         << ToString::doubleToString(increments[0]*a0, 5, 0, false) << ' '
+         << ToString::doubleToString(increments[1]*a0, 5, 0, false) << ' '
+         << ToString::doubleToString(increments[2]*a0, 5, 0, false)
          << "   //x increment, y inc, z inc/ grid(x(y(z)))\n";
 
     double totalWeightd = 0.0;
@@ -188,7 +186,7 @@ void VoxelCube::exportMacmolplt(const std::string& filename, const std::string& 
             for (IndexType k = 0; k < dimensions_[2]; ++k) {
                 file << ToString::doubleToString(
                         double(data_[VoxelCube::index(i, j, k)])
-                        / (increment[0] * increment[1] * increment[2]) / totalWeightd, 5, 0, false);
+                        / (increments.prod()) / totalWeightd, 5, 0, false);
                 if ((l + 1) % 5 == 0) {
                     file << '\n';
                 } else {
