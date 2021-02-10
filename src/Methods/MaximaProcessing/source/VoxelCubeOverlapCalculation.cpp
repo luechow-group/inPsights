@@ -43,7 +43,7 @@ Eigen::MatrixXd VoxelCubeOverlapCalculation::calculateOverlaps(const std::vector
     for (Eigen::Index a = 0; a < overlap.rows() - 1; ++a) {
         for (Eigen::Index b = a + 1; b < overlap.cols(); ++b) {
 
-            assert(voxels[a].origin_.isApprox(voxels[b].origin_) && "Voxels must have the same center.");
+            assert(voxels[a].center_.isApprox(voxels[b].center_) && "Voxels must have the same center.");
 
             for (VoxelCube::IndexType i = 0; i < dimension[0]; ++i) {
                 for (VoxelCube::IndexType j = 0; j < dimension[1]; ++j) {

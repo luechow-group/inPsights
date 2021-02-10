@@ -25,7 +25,7 @@ public:
 
     VoxelCube(const Eigen::Matrix<IndexType, 3, 1> &dimensions,
               const Eigen::Matrix<VertexComponentsType, 3, 1> &lengths,
-              const Eigen::Matrix<VertexComponentsType, 3, 1> &origin,
+              const Eigen::Matrix<VertexComponentsType, 3, 1> &center,
               bool smoothQ);
 
     std::size_t index(IndexType i, IndexType j, IndexType k) const;
@@ -42,7 +42,7 @@ public:
 
     Eigen::Matrix<VertexComponentsType,3,1> getLengths() const;
 
-    const Eigen::Matrix<VertexComponentsType, 3, 1> &getOrigin() const;
+    const Eigen::Matrix<VertexComponentsType, 3, 1> &getCenter() const;
 
     const std::vector<VolumeDataType> &getData() const;
 
@@ -64,7 +64,7 @@ public:
     Eigen::Matrix<IndexType,3,1> dimensions_;
     VolumeDataType insideWeight_, totalWeight_;
     Eigen::Matrix<VertexComponentsType,3,1> lengths_, inverseDimensions_;
-    Eigen::Matrix<VertexComponentsType,3,1> origin_;  // the real origin is origin - lengths/2
+    Eigen::Matrix<VertexComponentsType,3,1> center_;
     std::vector<VolumeDataType> data_;
 };
 
