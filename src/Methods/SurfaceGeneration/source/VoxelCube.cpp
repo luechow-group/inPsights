@@ -113,11 +113,6 @@ void VoxelCube::setData(const std::vector<VoxelCube::VolumeDataType> &data) {
     VoxelCube::data_ = data;
 }
 
-void VoxelCube::setTotalWeight(const double &totalWeight) {
-    VoxelCube::totalWeight_ = totalWeight;
-}
-
-
 VoxelCube::VolumeDataType
 VoxelCube::cubeAverage(IndexType i, IndexType j, IndexType k, IndexType neighbors) {
 

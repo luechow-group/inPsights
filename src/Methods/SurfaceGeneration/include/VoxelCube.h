@@ -56,8 +56,6 @@ public:
 
     void exportMacmolplt(const std::string& filename, const std::string& comment);
 
-    void setTotalWeight(const double &totalWeight);
-   
     static constexpr VertexComponentsType offset_ = 0.5;
 
     bool smoothQ_;
