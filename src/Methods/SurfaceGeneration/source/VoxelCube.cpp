@@ -43,7 +43,7 @@ VoxelCube::VoxelCube(
 }
 
 std::size_t VoxelCube::index(IndexType i, IndexType j, IndexType k) const {
-    return i + dimensions_[1] * (j + dimensions_[2] * k);
+    return i + dimensions_[0] * (j + dimensions_[1] * k);
 }
 
 Eigen::Vector3i VoxelCube::getVoxelIndices(const Eigen::Vector3d& pos){
@@ -222,7 +222,7 @@ namespace YAML {
         auto dimensions = node["dimensions"].as<Eigen::Matrix<VoxelCube::IndexType, 3, 1>>();
         auto lengths = node["lengths"].as<Eigen::Matrix<VoxelCube::VertexComponentsType, 3, 1>>();
         auto center = node["center"].as<Eigen::Matrix<VoxelCube::VertexComponentsType, 3, 1>>();
-        rhs = VoxelCube(dimensions[0], lengths[0], center, smoothed);
+        rhs = VoxelCube(dimensions, lengths, center, smoothed);
         rhs.setData(node["data"].as<std::vector<VoxelCube::VolumeDataType>>());
         return true;
     }
