@@ -25,8 +25,8 @@ public:
 
     VoxelCube(const Eigen::Matrix<IndexType, 3, 1> &dimensions,
               const Eigen::Matrix<VertexComponentsType, 3, 1> &lengths,
-              const Eigen::Matrix<VertexComponentsType, 3, 1> &center,
-              bool smoothQ);
+              const Eigen::Matrix<VertexComponentsType, 3, 1> &center = {0, 0, 0},
+              bool smoothQ = false);
 
     std::size_t index(IndexType i, IndexType j, IndexType k) const;
 
