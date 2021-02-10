@@ -28,8 +28,10 @@ Eigen::MatrixXd VoxelCubeOverlapCalculation::fromCluster(const Cluster &maxima, 
     auto dimension = settings.dimension.get();
     auto length = settings.length.get();
 
-     auto voxels = VoxelCubeGeneration::getVoxels(maxima, samples, dimension, length,
-             false, false,0);
+     auto voxels = VoxelCubeGeneration::getVoxels(maxima, samples, {dimension,dimension,dimension},
+                                                  {length, length, length},
+                                                  false, false,0,
+                                                  {-length/2,-length/2,-length/2});
 
     return calculateOverlaps(voxels);
 }
