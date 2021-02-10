@@ -170,9 +170,9 @@ void VoxelCube::exportMacmolplt(const std::string& filename, const std::string& 
          << ToString::doubleToString(origin[0] * a0, 5, 0, false) << ' '
          << ToString::doubleToString(origin[1] * a0, 5, 0, false) << ' '
          << ToString::doubleToString(origin[2] * a0, 5, 0, false) << "   //Origin of the 3D grid\n"
-         << ToString::doubleToString(increments[0]*a0, 5, 0, false) << ' '
-         << ToString::doubleToString(increments[1]*a0, 5, 0, false) << ' '
-         << ToString::doubleToString(increments[2]*a0, 5, 0, false)
+         << ToString::doubleToString(increments[0]*a0, 6, 0, false) << ' '
+         << ToString::doubleToString(increments[1]*a0, 6, 0, false) << ' '
+         << ToString::doubleToString(increments[2]*a0, 6, 0, false)
          << "   //x increment, y inc, z inc/ grid(x(y(z)))\n";
 
     double totalWeightd = 0.0;
@@ -186,7 +186,7 @@ void VoxelCube::exportMacmolplt(const std::string& filename, const std::string& 
             for (IndexType k = 0; k < dimensions_[2]; ++k) {
                 file << ToString::doubleToString(
                         double(data_[VoxelCube::index(i, j, k)])
-                        / (increments.prod()) / totalWeightd, 5, 0, false);
+                        / (increments.prod()) / totalWeightd, 11, 0, false);
                 if ((l + 1) % 5 == 0) {
                     file << '\n';
                 } else {
