@@ -20,7 +20,7 @@ public:
     explicit VoxelCube(
             IndexType dimension = 16,
             VertexComponentsType length = VertexComponentsType(8 * ConversionFactors::angstrom2bohr),
-            const Eigen::Matrix<VertexComponentsType,3,1>& origin = {0,0,0},
+            const Eigen::Matrix<VertexComponentsType,3,1>& center = {0, 0, 0},
             bool boxSmoothQ = false);
 
     VoxelCube(const Eigen::Matrix<IndexType, 3, 1> &dimensions,

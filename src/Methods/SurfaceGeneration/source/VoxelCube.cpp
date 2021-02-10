@@ -27,7 +27,7 @@ VoxelCube::VoxelCube(const Eigen::Matrix<IndexType, 3, 1> &dimensions,
 VoxelCube::VoxelCube(
         IndexType dimension,
         VertexComponentsType length,
-        const Eigen::Matrix<VertexComponentsType, 3, 1> &origin,
+        const Eigen::Matrix<VertexComponentsType, 3, 1> &center,
         bool boxSmoothQ)
         :
         smoothQ_(boxSmoothQ),
@@ -36,7 +36,7 @@ VoxelCube::VoxelCube(
         totalWeight_(0),
         lengths_({length, length, length}),
         inverseDimensions_({1.0f / float(dimension - 1), 1.0f / float(dimension - 1), 1.0f / float(dimension - 1)}),
-        center_(origin),
+        center_(center),
         data_(static_cast<size_t>(dimension * dimension * dimension)) {
     assert(dimension > 3 && "The cube dimensions must be greater than 3.");
     assert(length > 0 && "Length must be positive.");
