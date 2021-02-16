@@ -61,7 +61,7 @@ void InPsightsWidget::createWidget() {
     hbox->addLayout(vboxOuter, 1);
 
     // put into MaximaTreeWidget class
-    auto headerLabels = QList<QString>({"ID", "Prob.", "min(-ln|Ψ|²)", "max(-ln|Ψ|²)"});
+    auto headerLabels = QList<QString>({"ID", "Prob.", "min(\u03A6)", "max(\u03A6)"});
     maximaList->setColumnCount(headerLabels.size());
     maximaList->setHeaderLabels(headerLabels);
     maximaList->header()->setStretchLastSection(false);
@@ -328,8 +328,8 @@ void InPsightsWidget::loadData() {
         auto item = new IntegerSortedTreeWidgetItem(
                 maximaList, {QString::number(clusterId),
                  QString::number(1.0 * cluster.N_ / doc["NSamples"].as<unsigned>(), 'f', 4),
-                 QString::number(cluster.valueStats_.cwiseMin()[0], 'f', 3),
-                 QString::number(cluster.valueStats_.cwiseMax()[0], 'f', 3)});
+                 QString::number(cluster.valueStats_.cwiseMin()[0]/2.0, 'f', 3),
+                 QString::number(cluster.valueStats_.cwiseMax()[0]/2.0, 'f', 3)});
 
         item->setCheckState(0, Qt::CheckState::Unchecked);
 
