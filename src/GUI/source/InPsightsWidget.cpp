@@ -340,7 +340,12 @@ void InPsightsWidget::loadData() {
 
         if (structures.size() > 1) {
             for (int structureId = 0; structureId < static_cast<int>(structures.size()); ++structureId) {
-                auto subItem = new IntegerSortedTreeWidgetItem(item, QStringList({QString::number(structureId)}));
+                auto subItem = new IntegerSortedTreeWidgetItem(item, QStringList({
+                                                                                         QString::number(structureId),
+                                                                                         QString::number(1.0 *
+                                                                                                         cluster.subN_[structureId] /
+                                                                                                         cluster.N_,
+                                                                                                         'f', 4)}));
                 subItem->setCheckState(0, Qt::CheckState::Unchecked);
 
                 id = {clusterId, structureId};
@@ -365,6 +370,14 @@ double InPsightsWidget::sumProbabilities(){
     for (int i = 0; i < root->childCount(); ++i) {
         if(root->child(i)->checkState(0) == Qt::Checked) {
             summedProbability += root->child(i)->text(1).toDouble();
+        }
+        else{
+            for (int j = 0; j<root->child(i)->childCount(); ++j){
+                if(root->child(i)->child(j)->checkState(0) == Qt::Checked){
+                    summedProbability += root->child(i)->child(j)->text(1).toDouble()*
+                            root->child(i)->text(1).toDouble();
+                }
+            }
         }
     }
     return summedProbability;

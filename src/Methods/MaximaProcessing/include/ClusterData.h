@@ -31,7 +31,8 @@ public:
                 const TriangularMatrixStatistics & ReeStats,
                 const MatrixStatistics RenStats,
                 const std::vector<VoxelCube>& seds,
-                const Eigen::MatrixXd& sedOverlaps
+                const Eigen::MatrixXd& sedOverlaps,
+                const std::vector<unsigned>& subCounts
     );
 
     // TODO Refactor (hacky solution for local clustering)
@@ -53,12 +54,14 @@ public:
                 const std::vector<VoxelCube>& seds,
                 const Eigen::MatrixXd& sedOverlaps,
                 const SelectionEnergyCalculator::SelectionInteractionEnergies & selectionInteractionEnergies,
-                const std::vector<MolecularSelection>& selections
+                const std::vector<MolecularSelection>& selections,
+                const std::vector<unsigned>& subCounts
                 );
 
     ElectronsVector representativeStructure() const;
 
     unsigned N_;
+    std::vector<unsigned> subN_;
     std::vector<ElectronsVector> exemplaricStructures_;
     ElectronsVector sampleAverage_;
     Motifs motifs_;
