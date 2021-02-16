@@ -143,7 +143,7 @@ void MaximaProcessor::calculateStatistics(const Cluster &cluster,
                   << Key << "En" << Comment("[Eh]") << Value << EnStats_
                   << Key << "Clusters" << BeginSeq;
 
-    size_t totalCount = 0;
+    unsigned totalCount = 0;
     double totalWeight = 0.0;
 
     SpinCorrelationValueHistogram spinCorrelationDistribution(12); // => 25 bins in total
