@@ -338,7 +338,7 @@ void InPsightsWidget::loadData() {
 
         auto structures = doc["Clusters"][clusterId]["Structures"];
 
-        for (int structureId = 1; structureId < static_cast<int>(structures.size()); ++structureId) {
+        for (int structureId = 0; structureId < static_cast<int>(structures.size()); ++structureId) {
             auto subItem = new IntegerSortedTreeWidgetItem(item, QStringList({QString::number(structureId)}));
             subItem->setCheckState(0, Qt::CheckState::Unchecked);
 
