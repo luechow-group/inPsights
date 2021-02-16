@@ -338,18 +338,20 @@ void InPsightsWidget::loadData() {
 
         auto structures = doc["Clusters"][clusterId]["Structures"];
 
-        for (int structureId = 0; structureId < static_cast<int>(structures.size()); ++structureId) {
-            auto subItem = new IntegerSortedTreeWidgetItem(item, QStringList({QString::number(structureId)}));
-            subItem->setCheckState(0, Qt::CheckState::Unchecked);
+        if (structures.size() > 1) {
+            for (int structureId = 0; structureId < static_cast<int>(structures.size()); ++structureId) {
+                auto subItem = new IntegerSortedTreeWidgetItem(item, QStringList({QString::number(structureId)}));
+                subItem->setCheckState(0, Qt::CheckState::Unchecked);
 
-            id = {clusterId, structureId};
-            subItem->setData(0, Qt::ItemDataRole::UserRole, id);
-            item->addChild(subItem);
-        }
+                id = {clusterId, structureId};
+                subItem->setData(0, Qt::ItemDataRole::UserRole, id);
+                item->addChild(subItem);
+            }
 
-        maximaList->addTopLevelItem(item);
-        for (int i = 0; i < maximaList->columnCount(); ++i) {
-            maximaList->resizeColumnToContents(i);
+            maximaList->addTopLevelItem(item);
+            for (int i = 0; i < maximaList->columnCount(); ++i) {
+                maximaList->resizeColumnToContents(i);
+            }
         }
     }
 }
