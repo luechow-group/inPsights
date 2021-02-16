@@ -14,10 +14,26 @@ namespace Settings {
     : VoxelCubeGeneration() {
         boolProperty::decode(node[className], generateVoxelCubesQ);
         boolProperty::decode(node[className], centerCubesAtElectronsQ);
-        YAML::convert<Property<Eigen::Matrix<VoxelCube::IndexType, 3, 1>>>::decode(node[className], dimensions);
         boolProperty::decode(node[className], smoothingQ);
         unsignedShortProperty::decode(node[className], smoothingNeighbors);
-        YAML::convert<Property<Eigen::Matrix<VoxelCube::VertexComponentsType, 3, 1>>>::decode(node[className], lengths);
+
+        // if statements for backwards compatibility with old keywords dimension and length
+        if (node[className]["dimension"]) {
+            auto dimension = node[className]["dimension"].as<VoxelCube::IndexType>();
+            dimensions = {{dimension, dimension, dimension}, VARNAME(dimensions)};
+        }
+        else{
+            YAML::convert<Property<Eigen::Matrix<VoxelCube::IndexType, 3, 1>>>::decode(node[className], dimensions);
+        }
+
+        if (node[className]["length"]) {
+            auto length = node[className]["dimension"].as<VoxelCube::VertexComponentsType>();
+            lengths = {{length, length, length}, VARNAME(lengths)};
+        }
+        else{
+            YAML::convert<Property<Eigen::Matrix<VoxelCube::VertexComponentsType, 3, 1>>>::decode(node[className], lengths);
+        }
+
         YAML::convert<Property<Eigen::Matrix<VoxelCube::VertexComponentsType, 3, 1>>>::decode(node[className], center);
     };
 

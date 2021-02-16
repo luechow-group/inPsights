@@ -217,9 +217,34 @@ namespace YAML {
         bool smoothed = false;
         if(node["smoothed"])
             smoothed = node["smoothed"].as<bool>();
-        auto dimensions = node["dimensions"].as<Eigen::Matrix<VoxelCube::IndexType, 3, 1>>();
-        auto lengths = node["lengths"].as<Eigen::Matrix<VoxelCube::VertexComponentsType, 3, 1>>();
-        auto center = node["center"].as<Eigen::Matrix<VoxelCube::VertexComponentsType, 3, 1>>();
+
+        // if statements for backwards compatibility with old keywords dimension, length, and origin
+        Eigen::Matrix<VoxelCube::IndexType, 3, 1> dimensions;
+        if(node["dimensions"]) {
+            dimensions = node["dimensions"].as<Eigen::Matrix<VoxelCube::IndexType, 3, 1>>();
+        }
+        else {
+            auto dimension = node["dimension"].as<VoxelCube::IndexType>();
+            dimensions = Eigen::Matrix<VoxelCube::IndexType, 3, 1>({dimension, dimension, dimension});
+        }
+
+        Eigen::Matrix<VoxelCube::VertexComponentsType, 3, 1> lengths;
+        if(node["lengths"]) {
+            lengths = node["lengths"].as<Eigen::Matrix<VoxelCube::VertexComponentsType, 3, 1>>();
+        }
+        else {
+            auto length = node["length"].as<VoxelCube::VertexComponentsType>();
+            lengths = Eigen::Matrix<VoxelCube::VertexComponentsType, 3, 1>({length, length, length});
+        }
+
+        Eigen::Matrix<VoxelCube::VertexComponentsType, 3, 1> center;
+        if(node["center"]) {
+            center = node["center"].as<Eigen::Matrix<VoxelCube::VertexComponentsType, 3, 1>>();
+        }
+        else{
+            center = node["origin"].as<Eigen::Matrix<VoxelCube::VertexComponentsType, 3, 1>>();
+        }
+
         rhs = VoxelCube(dimensions, lengths, center, smoothed);
         rhs.setData(node["data"].as<std::vector<VoxelCube::VolumeDataType>>());
         return true;
