@@ -20,7 +20,7 @@ public:
     bool plotAllActiveQ();
     std::string filenameWithoutExtension();
 
-public Q_SLOTS:
+public slots:
     void selectedStructure(QTreeWidgetItem *item, int column);
     void onAtomsChecked(int stateId);
     void onBondsChecked(int stateId);

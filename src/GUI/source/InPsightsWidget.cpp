@@ -1,4 +1,4 @@
-// Copyright (C) 2018-2020 Michael Heuer.
+// Copyright (C) 2018-2021 Michael Heuer.
 // Copyright (C) 2021 Leonard Reuter.
 // SPDX-License-Identifier: GPL-3.0-or-later
 

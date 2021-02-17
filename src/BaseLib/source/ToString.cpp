@@ -22,7 +22,7 @@ std::string ToString::vector3dToString(const Eigen::Vector3d &vector,
 std::string ToString::doubleToString(double a, unsigned decimalPlaces, unsigned leadingSpaces,
                                      bool spaceForPositiveNumber) {
     std::stringstream sstream;
-    if (a >= 0 and spaceForPositiveNumber){
+    if (a >= 0 && spaceForPositiveNumber){
         sstream << " ";
     }
     for (unsigned i = 1; i <= leadingSpaces; i++){

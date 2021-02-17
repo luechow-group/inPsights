@@ -62,7 +62,8 @@ set(HEADER_FILES
         include/MolecularSelection.h
         include/PermutationHandling.h
         include/GraphAnalysis.h
-        include/Formatting.h)
+        include/Formatting.h
+        )
 
 
 set(SOURCE_FILES

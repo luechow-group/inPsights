@@ -53,7 +53,7 @@ public:
     void addMaximaHulls(int clusterId, const std::vector<ClusterData> &clusterData);
     void removeMaximaHulls(int clusterId);
 
-public Q_SLOTS:
+public slots:
     void activateCompatabilityMode();
     void onAtomsChecked(std::vector<int>);
     void onElectronsChecked(std::vector<int>);

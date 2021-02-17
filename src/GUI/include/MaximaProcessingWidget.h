@@ -26,13 +26,13 @@ public:
     QTreeWidget& atomsTreeWidget();
     QTreeWidget& electronsTreeWidget();
 
-Q_SIGNALS:
+signals:
     void atomsChecked(std::vector<int> selectedIds);
     void electronsChecked(std::vector<int> selectedIds);
     void atomsHighlighted(std::vector<int> selectedIds);
     void electronsHighlighted(std::vector<int> selectedIds);
 
-public Q_SLOTS:
+public slots:
     void onAtomItemChanged();
     void onElectronItemChanged();
     void onAtomSelectionChanged();
