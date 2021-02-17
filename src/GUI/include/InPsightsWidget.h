@@ -28,6 +28,7 @@ public Q_SLOTS:
     void onPlotAllChecked(int stateId= 0);
     void onSpinCorrelationsBoxChanged(double value);
     void onSedsExport(bool);
+    void onDeselectAll(bool);
 
 private:
     std::string filename_;
@@ -36,7 +37,7 @@ private:
     QCheckBox *atomsCheckBox, *bondsCheckBox, *axesCheckBox, *sampleAverageCheckBox, *spinCorrelationsCheckBox,
     *sedsCheckBox,*maximaHullsCheckBox, *plotAllCheckBox, *coloredCheckBox;
     QDoubleSpinBox *spinCorrelationBox, *sedPercentageBox;
-    QPushButton *sedsExportButton;
+    QPushButton *sedsExportButton, *deselectAllButton;
     QTreeWidget *maximaList;
     QLabel *probabilitySum;
     std::vector<ClusterData> clusterCollection_;

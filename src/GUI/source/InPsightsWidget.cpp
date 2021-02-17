@@ -36,7 +36,8 @@ InPsightsWidget::InPsightsWidget(QWidget *parent, const std::string& filename)
         spinCorrelationBox(new QDoubleSpinBox(this)),
         sedPercentageBox(new QDoubleSpinBox(this)),
         maximaList(new QTreeWidget(this)),
-        probabilitySum(new QLabel(this))
+        probabilitySum(new QLabel(this)),
+        deselectAllButton(new QPushButton("deselect all", this))
         {
 
     loadData();
@@ -78,7 +79,12 @@ void InPsightsWidget::createWidget() {
     maximaList->header()->setSectionResizeMode(3,QHeaderView::ResizeToContents);
 
     vboxOuter->addWidget(maximaList, 1);
-    vboxOuter->addWidget(probabilitySum);
+
+    auto lineGrid = new QGridLayout();
+    vboxOuter->addLayout(lineGrid,1);
+    lineGrid->addWidget(probabilitySum,0,0);
+    lineGrid->addWidget(deselectAllButton,0,1);
+
     vboxOuter->addWidget(maximaProcessingWidget,1);
     vboxOuter->addWidget(gbox);
     gbox->setLayout(vboxInner);
@@ -146,6 +152,7 @@ void InPsightsWidget::connectSignals() {
             moleculeWidget, &MoleculeWidget::onElectronsHighlighted);
 
     connect(sedsExportButton, &QPushButton::clicked, this, &InPsightsWidget::onSedsExport);
+    connect(deselectAllButton, &QPushButton::clicked, this, &InPsightsWidget::onDeselectAll);
 }
 
 void InPsightsWidget::setupSpinBoxes() {
@@ -430,4 +437,15 @@ void InPsightsWidget::onSedsExport(bool) {
         }
     }
     spdlog::info("Exported SEDs");
+}
+
+void InPsightsWidget::onDeselectAll(bool) {
+    auto* root = maximaList->invisibleRootItem();
+    // iterate over topLevelItems
+    for (int i = 0; i < root->childCount(); ++i) {
+        root->child(i)->setCheckState(0, Qt::Unchecked);
+        for (int j = 0; j<root->child(i)->childCount(); ++j){
+            root->child(i)->child(j)->setCheckState(0, Qt::Unchecked);
+        }
+    }
 }
