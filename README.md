@@ -18,8 +18,6 @@ Make sure that the latest Xcode Command Line Tools are installed with:
 ```bash
 xcode-select --install
 ```
-(**Note:** On macOS 10.15 (Catalina), `Command Line Tools 11.15` or greater seems to be required.)
-
 
 To install the required packages on MacOS, the [homebrew package manager](https://brew.sh) can be used. 
 To download the packages with `homebrew` execute the following command in the terminal:
@@ -67,12 +65,10 @@ Environment variables for different compilers and associated libraries can be sp
 
 for the `GNU Compiler Collection`
 ```bash
-export CC=/usr/local/bin/gcc-9
-export CXX=/usr/local/bin/g++-9
+export CXX=/usr/local/bin/g++-10
 ```
 or `Intel Parallel Studio XE`
 ```bash
-export CC=/opt/intel/bin/icc
 export CXX=/opt/intel/bin/icpc
 export INTELROOT=/opt/intel/
 export MKLROOT=/opt/intel/mkl

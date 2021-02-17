@@ -1,12 +1,4 @@
-
 # Determine compiler from environment variables
-if(EXISTS $ENV{CC})
-    set(CMAKE_C_COMPILER $ENV{CC})
-    message("Using specified C Compiler         ${CMAKE_C_COMPILER}")
-else()
-    message("Using default C Compiler           ${CMAKE_C_COMPILER}")
-endif()
-
 if(EXISTS $ENV{CXX})
     set(CMAKE_CXX_COMPILER $ENV{CXX})
     message("Using specified C++ Compiler       ${CMAKE_CXX_COMPILER}")
