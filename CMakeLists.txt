@@ -10,7 +10,6 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 project(inPsights)
-include(cmake/setCompilers.cmake)
 
 include(cmake/findSharedMemoryParallelismLibraries.cmake)
 include(cmake/inPsightsVersion.cmake)
