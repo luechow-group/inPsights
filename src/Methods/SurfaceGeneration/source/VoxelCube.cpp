@@ -1,4 +1,5 @@
 // Copyright (C) 2019 Michael Heuer.
+// Copyright (C) 2021 Leonard Reuter.
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include <VoxelCube.h>
