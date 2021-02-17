@@ -143,7 +143,7 @@ void MaximaProcessor::calculateStatistics(const Cluster &cluster,
                   << Key << "En" << Comment("[Eh]") << Value << EnStats_
                   << Key << "Clusters" << BeginSeq;
 
-    size_t totalCount = 0;
+    unsigned totalCount = 0;
     double totalWeight = 0.0;
 
     SpinCorrelationValueHistogram spinCorrelationDistribution(12); // => 25 bins in total
@@ -151,6 +151,7 @@ void MaximaProcessor::calculateStatistics(const Cluster &cluster,
     SelectionEnergyCalculator selectionEnergyCalculator(samples_, selections);
 
     for (auto& subCluster : cluster) {
+        std::vector<unsigned> subSubClusterCounts;
 
         valueStats_.reset();
         SeeStats_.reset();
@@ -162,9 +163,15 @@ void MaximaProcessor::calculateStatistics(const Cluster &cluster,
         ReeStats_.reset();
         RenStats_.reset();
 
-
-        totalCount += addAllMaxima(subCluster); // this sets all statistic objects internally
-
+        if(subCluster.isLeaf()){
+            totalCount += addAllMaxima(subCluster); // this sets all statistic objects internally
+        }
+        else {
+            for (auto& subSubCluster : subCluster){
+                subSubClusterCounts.emplace_back(addAllMaxima(subSubCluster)); // this sets all statistic objects internally
+                totalCount += subSubClusterCounts.back();
+            }
+        }
 
         auto maximalNumberOfStructuresToPrint = MaximaProcessing::settings.maximalNumberOfStructuresToPrint();
 
@@ -224,7 +231,8 @@ void MaximaProcessor::calculateStatistics(const Cluster &cluster,
                                          motifs, EtotalStats_, intraMotifEnergyStats, interMotifEnergyStats,
                                          ReeStats_, RenStats_, voxelCubes, overlaps,
                                          selectionEnergyCalculatorPerCluster.selectionInteractions_,
-                                         selectionEnergyCalculatorPerCluster.molecularSelections_
+                                         selectionEnergyCalculatorPerCluster.molecularSelections_,
+                                         subSubClusterCounts
                                          );
         }
     }
