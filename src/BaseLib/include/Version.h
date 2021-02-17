@@ -8,6 +8,7 @@
 
 namespace inPsights {
     std::string version();
+    std::string compiler();
 }
 
 #endif //INPSIGHTS_VERSION_H

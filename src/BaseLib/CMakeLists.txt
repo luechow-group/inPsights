@@ -6,7 +6,10 @@ set ( PROJECT_PATH ${PROJECT_NAME})
 set ( OUTPUT_NAME "${PROJECT_FOLDER_NAME}" )
 message ( "-- ++ CREATING PROJECT OR MAKEFILE ---> ${OUTPUT_NAME}" )
 
-set_source_files_properties(source/Version.cpp PROPERTIES COMPILE_FLAGS ${INPSIGHTS_VERSION_FLAG})
+set_source_files_properties(source/Version.cpp PROPERTIES COMPILE_FLAGS
+        "${INPSIGHTS_VERSION_FLAG} ${INPSIGHTS_CXX_COMPILER_FLAG}"
+        )
+
 add_library(inPsightsVersion STATIC include/Version.h source/Version.cpp)
 target_include_directories(inPsightsVersion
         PUBLIC include

@@ -15,3 +15,17 @@ std::string inPsights::version() {
 #endif
     return version;
 }
+
+std::string inPsights::compiler() {
+    std::string compiler;
+#ifdef INPSIGHTS_CXX_COMPILER
+#define STRINGIFY(x) #x
+#define TOSTRING(x) STRINGIFY(x)
+    compiler = TOSTRING(INPSIGHTS_CXX_COMPILER);
+    // remove quotation marks
+    compiler.substr(1, compiler.size() - 2);
+#else
+    compiler = "unkown!";
+#endif
+    return compiler;
+}
