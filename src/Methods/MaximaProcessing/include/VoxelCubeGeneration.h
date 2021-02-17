@@ -11,6 +11,7 @@ class Cluster;
 
 #include <ISettings.h>
 #include <Property.h>
+#include <Formatting.h>
 
 namespace Settings {
     class VoxelCubeGeneration : public ISettings {
@@ -18,10 +19,11 @@ namespace Settings {
     public:
         Property<bool> generateVoxelCubesQ = {false, VARNAME(generateVoxelCubesQ)};
         Property<bool> centerCubesAtElectronsQ = {true, VARNAME(centerCubesAtElectronsQ)};
-        Property<uint16_t> dimension = {16, VARNAME(dimension)};
+        Property<Eigen::Matrix<VoxelCube::IndexType , 3, 1>> dimensions = {{16, 16, 16}, VARNAME(dimensions)};
         Property<bool> smoothingQ = {false, VARNAME(smoothingQ)};
         Property<uint16_t> smoothingNeighbors = {0, VARNAME(smoothingNeighbors)};
-        Property<VoxelCube::VertexComponentsType > length = {4, VARNAME(length)};
+        Property<Eigen::Matrix<VoxelCube::VertexComponentsType , 3, 1>> lengths = {{4, 4, 4}, VARNAME(lengths)};
+        Property<Eigen::Matrix<VoxelCube::VertexComponentsType , 3, 1>> center = {{0, 0, 0}, VARNAME(center)};
 
 
         VoxelCubeGeneration();
@@ -37,9 +39,12 @@ namespace VoxelCubeGeneration{
 
     std::vector<VoxelCube> fromCluster(const Cluster &maxima, const std::vector<Sample> &samples);
 
-    std::vector<VoxelCube> getVoxels(const Cluster &maxima, const std::vector<Sample> &samples, uint16_t dimension,
-                                     VoxelCube::VertexComponentsType length, bool centerCubesAtElectronsQ, bool smoothingQ,
-                                     uint16_t smoothingNeighbors);
+    std::vector<VoxelCube> getVoxels(const Cluster &maxima, const std::vector<Sample> &samples,
+                                     Eigen::Matrix<VoxelCube::IndexType, 3, 1> dimensions,
+                                     Eigen::Matrix<VoxelCube::VertexComponentsType , 3, 1> lengths,
+                                     bool centerCubesAtElectronsQ, bool smoothingQ,
+                                     VoxelCube::IndexType smoothingNeighbors,
+                                     Eigen::Matrix<VoxelCube::VertexComponentsType , 3, 1> center);
 };
 
 #endif //INPSIGHTS_VOXELCUBEGENERATION_H

@@ -19,7 +19,7 @@ public:
     bool plotAllActiveQ();
     std::string filenameWithoutExtension();
 
-public slots:
+public Q_SLOTS:
     void selectedStructure(QTreeWidgetItem *item, int column);
     void onAtomsChecked(int stateId);
     void onBondsChecked(int stateId);
@@ -27,6 +27,7 @@ public slots:
     void onSpinCorrelationsChecked(int stateId= 0);
     void onPlotAllChecked(int stateId= 0);
     void onSpinCorrelationsBoxChanged(double value);
+    void onSedsExport(bool);
 
 private:
     std::string filename_;
@@ -35,6 +36,7 @@ private:
     QCheckBox *atomsCheckBox, *bondsCheckBox, *axesCheckBox, *sampleAverageCheckBox, *spinCorrelationsCheckBox,
     *sedsCheckBox,*maximaHullsCheckBox, *plotAllCheckBox, *coloredCheckBox;
     QDoubleSpinBox *spinCorrelationBox, *sedPercentageBox;
+    QPushButton *sedsExportButton;
     QTreeWidget *maximaList;
     QLabel *probabilitySum;
     std::vector<ClusterData> clusterCollection_;

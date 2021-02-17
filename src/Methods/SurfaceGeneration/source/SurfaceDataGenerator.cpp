@@ -16,7 +16,7 @@ SurfaceData SurfaceDataGenerator::computeSurfaceData(double volumeThreshold) {
     auto quadSoupQ = false;
     auto manifoldQ = true;
     builder.build(&cube_.getData().front(),
-                  cube_.getDimension(), cube_.getDimension(), cube_.getDimension(),
+                  cube_.getDimensions()[0], cube_.getDimensions()[1], cube_.getDimensions()[2],
                   isovalue,
                   manifoldQ, quadSoupQ, dualMcVertices_, dualMcQuads_);
 

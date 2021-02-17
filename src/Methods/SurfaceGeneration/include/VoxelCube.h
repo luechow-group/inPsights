@@ -9,6 +9,7 @@
 #include <Eigen/Core>
 #include <DualMC.h>
 #include <cstdint>
+#include <string>
 
 class VoxelCube {
 public:
@@ -19,8 +20,13 @@ public:
     explicit VoxelCube(
             IndexType dimension = 16,
             VertexComponentsType length = VertexComponentsType(8 * ConversionFactors::angstrom2bohr),
-            const Eigen::Matrix<VertexComponentsType,3,1>& origin = {0,0,0},
+            const Eigen::Matrix<VertexComponentsType,3,1>& center = {0, 0, 0},
             bool boxSmoothQ = false);
+
+    VoxelCube(const Eigen::Matrix<IndexType, 3, 1> &dimensions,
+              const Eigen::Matrix<VertexComponentsType, 3, 1> &lengths,
+              const Eigen::Matrix<VertexComponentsType, 3, 1> &center = {0, 0, 0},
+              bool smoothQ = false);
 
     std::size_t index(IndexType i, IndexType j, IndexType k) const;
 
@@ -32,11 +38,11 @@ public:
 
     void shiftDualMCResults(std::vector<dualmc::Vertex>& vertices);
 
-    IndexType getDimension() const;
+    Eigen::Matrix<IndexType,3,1> getDimensions() const;
 
-    VertexComponentsType getLength() const;
+    Eigen::Matrix<VertexComponentsType,3,1> getLengths() const;
 
-    const Eigen::Matrix<VertexComponentsType, 3, 1> &getOrigin() const;
+    const Eigen::Matrix<VertexComponentsType, 3, 1> &getCenter() const;
 
     const std::vector<VolumeDataType> &getData() const;
 
@@ -47,14 +53,16 @@ public:
     VolumeDataType cubeAverage(IndexType i, IndexType j, IndexType k, IndexType neighbors);
 
     void setData(const std::vector<VolumeDataType> &data);
-   
+
+    void exportMacmolplt(const std::string& filename, const std::string& comment);
+
     static constexpr VertexComponentsType offset_ = 0.5;
 
     bool smoothQ_;
-    IndexType dimension_;
+    Eigen::Matrix<IndexType,3,1> dimensions_;
     VolumeDataType insideWeight_, totalWeight_;
-    VertexComponentsType length_, halfLength_, inverseDimension_;
-    Eigen::Matrix<VertexComponentsType,3,1> origin_;
+    Eigen::Matrix<VertexComponentsType,3,1> lengths_, inverseDimensions_;
+    Eigen::Matrix<VertexComponentsType,3,1> center_;
     std::vector<VolumeDataType> data_;
 };
 
