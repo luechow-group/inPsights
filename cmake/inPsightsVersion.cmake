@@ -12,7 +12,7 @@ else()
     set(INPSIGHTS_VERSION_FLAG "-DINPSIGHTS_VERSION=${INPSIGHTS_VERSION}")
 endif()
 
-message("Building inPsights: ${INPSIGHTS_VERSION_FLAG}")
+message("Building inPsights: ${INPSIGHTS_VERSION}")
 
 
 # creates the CXX compiler flag
