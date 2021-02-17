@@ -19,9 +19,10 @@ std::string ToString::vector3dToString(const Eigen::Vector3d &vector,
     return vectorXdToString(vectorXd,decimalPlaces,leadingSpaces);
 }
 
-std::string ToString::doubleToString(double a, unsigned decimalPlaces, unsigned leadingSpaces) {
+std::string ToString::doubleToString(double a, unsigned decimalPlaces, unsigned leadingSpaces,
+                                     bool spaceForPositiveNumber) {
     std::stringstream sstream;
-    if (a >= 0){
+    if (a >= 0 && spaceForPositiveNumber){
         sstream << " ";
     }
     for (unsigned i = 1; i <= leadingSpaces; i++){

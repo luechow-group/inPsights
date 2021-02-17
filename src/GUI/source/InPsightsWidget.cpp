@@ -1,4 +1,5 @@
-// Copyright (C) 2018-2020 Michael Heuer.
+// Copyright (C) 2018-2021 Michael Heuer.
+// Copyright (C) 2021 Leonard Reuter.
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include <InPsightsWidget.h>
@@ -28,6 +29,7 @@ InPsightsWidget::InPsightsWidget(QWidget *parent, const std::string& filename)
         axesCheckBox(new QCheckBox("Axes", this)),
         sampleAverageCheckBox(new QCheckBox("Sample Average", this)),
         spinCorrelationsCheckBox(new QCheckBox("Spin Correlations", this)),
+        sedsExportButton(new QPushButton("export SEDs", this)),
         sedsCheckBox(new QCheckBox("SEDs", this)),
         maximaHullsCheckBox(new QCheckBox("Maxima Hulls", this)),
         plotAllCheckBox(new QCheckBox("All of Cluster", this)),
@@ -35,7 +37,8 @@ InPsightsWidget::InPsightsWidget(QWidget *parent, const std::string& filename)
         spinCorrelationBox(new QDoubleSpinBox(this)),
         sedPercentageBox(new QDoubleSpinBox(this)),
         maximaList(new QTreeWidget(this)),
-        probabilitySum(new QLabel(this))
+        probabilitySum(new QLabel(this)),
+        deselectAllButton(new QPushButton("deselect all", this))
         {
 
     loadData();
@@ -61,17 +64,28 @@ void InPsightsWidget::createWidget() {
     hbox->addLayout(vboxOuter, 1);
 
     // put into MaximaTreeWidget class
-    auto headerLabels = QList<QString>({"ID", "Prob.", "min(-ln|Ψ|²)", "max(-ln|Ψ|²)"});
+    auto headerLabels = QList<QString>({"ID", "P", "min(Φ)", "max(Φ)"});
     maximaList->setColumnCount(headerLabels.size());
     maximaList->setHeaderLabels(headerLabels);
     maximaList->header()->setStretchLastSection(false);
+
+    maximaList->headerItem()->setToolTip(0,QString("IDs sorted by Φ value"));
+    maximaList->headerItem()->setToolTip(1,QString("Probability"));
+    maximaList->headerItem()->setToolTip(2,QString("Φ = -ħ/2m ln|Ψ|²"));
+    maximaList->headerItem()->setToolTip(3,QString("Φ = -ħ/2m ln|Ψ|²"));
+
     maximaList->header()->setSectionResizeMode(0,QHeaderView::Stretch);
     maximaList->header()->setSectionResizeMode(1,QHeaderView::ResizeToContents);
     maximaList->header()->setSectionResizeMode(2,QHeaderView::ResizeToContents);
     maximaList->header()->setSectionResizeMode(3,QHeaderView::ResizeToContents);
 
     vboxOuter->addWidget(maximaList, 1);
-    vboxOuter->addWidget(probabilitySum);
+
+    auto lineGrid = new QGridLayout();
+    vboxOuter->addLayout(lineGrid,1);
+    lineGrid->addWidget(probabilitySum,0,0);
+    lineGrid->addWidget(deselectAllButton,0,1);
+
     vboxOuter->addWidget(maximaProcessingWidget,1);
     vboxOuter->addWidget(gbox);
     gbox->setLayout(vboxInner);
@@ -85,6 +99,7 @@ void InPsightsWidget::createWidget() {
     checkboxGrid->addWidget(atomsCheckBox,0,0);
     checkboxGrid->addWidget(bondsCheckBox,1,0);
     checkboxGrid->addWidget(axesCheckBox,2,0);
+    checkboxGrid->addWidget(sedsExportButton,3,0);
 
     // second column
     checkboxGrid->addWidget(sampleAverageCheckBox,0,1);
@@ -136,6 +151,9 @@ void InPsightsWidget::connectSignals() {
             moleculeWidget, &MoleculeWidget::onAtomsHighlighted);
     connect(maximaProcessingWidget, &MaximaProcessingWidget::electronsHighlighted,
             moleculeWidget, &MoleculeWidget::onElectronsHighlighted);
+
+    connect(sedsExportButton, &QPushButton::clicked, this, &InPsightsWidget::onSedsExport);
+    connect(deselectAllButton, &QPushButton::clicked, this, &InPsightsWidget::onDeselectAll);
 }
 
 void InPsightsWidget::setupSpinBoxes() {
@@ -328,8 +346,8 @@ void InPsightsWidget::loadData() {
         auto item = new IntegerSortedTreeWidgetItem(
                 maximaList, {QString::number(clusterId),
                  QString::number(1.0 * cluster.N_ / doc["NSamples"].as<unsigned>(), 'f', 4),
-                 QString::number(cluster.valueStats_.cwiseMin()[0], 'f', 3),
-                 QString::number(cluster.valueStats_.cwiseMax()[0], 'f', 3)});
+                 QString::number(cluster.valueStats_.cwiseMin()[0]/2.0, 'f', 3),
+                 QString::number(cluster.valueStats_.cwiseMax()[0]/2.0, 'f', 3)});
 
         item->setCheckState(0, Qt::CheckState::Unchecked);
 
@@ -338,18 +356,25 @@ void InPsightsWidget::loadData() {
 
         auto structures = doc["Clusters"][clusterId]["Structures"];
 
-        for (int structureId = 1; structureId < static_cast<int>(structures.size()); ++structureId) {
-            auto subItem = new IntegerSortedTreeWidgetItem(item, QStringList({QString::number(structureId)}));
-            subItem->setCheckState(0, Qt::CheckState::Unchecked);
+        if (structures.size() > 1) {
+            for (int structureId = 0; structureId < static_cast<int>(structures.size()); ++structureId) {
+                auto subItem = new IntegerSortedTreeWidgetItem(item, QStringList({
+                                                                                         QString::number(structureId),
+                                                                                         QString::number(1.0 *
+                                                                                                         cluster.subN_[structureId] /
+                                                                                                         cluster.N_,
+                                                                                                         'f', 4)}));
+                subItem->setCheckState(0, Qt::CheckState::Unchecked);
 
-            id = {clusterId, structureId};
-            subItem->setData(0, Qt::ItemDataRole::UserRole, id);
-            item->addChild(subItem);
-        }
+                id = {clusterId, structureId};
+                subItem->setData(0, Qt::ItemDataRole::UserRole, id);
+                item->addChild(subItem);
+            }
 
-        maximaList->addTopLevelItem(item);
-        for (int i = 0; i < maximaList->columnCount(); ++i) {
-            maximaList->resizeColumnToContents(i);
+            maximaList->addTopLevelItem(item);
+            for (int i = 0; i < maximaList->columnCount(); ++i) {
+                maximaList->resizeColumnToContents(i);
+            }
         }
     }
 }
@@ -363,6 +388,14 @@ double InPsightsWidget::sumProbabilities(){
     for (int i = 0; i < root->childCount(); ++i) {
         if(root->child(i)->checkState(0) == Qt::Checked) {
             summedProbability += root->child(i)->text(1).toDouble();
+        }
+        else{
+            for (int j = 0; j<root->child(i)->childCount(); ++j){
+                if(root->child(i)->child(j)->checkState(0) == Qt::Checked){
+                    summedProbability += root->child(i)->child(j)->text(1).toDouble()*
+                            root->child(i)->text(1).toDouble();
+                }
+            }
         }
     }
     return summedProbability;
@@ -391,4 +424,29 @@ std::string InPsightsWidget::filenameWithoutExtension(){
 
 bool InPsightsWidget::plotAllActiveQ() {
     return plotAllCheckBox->checkState() == Qt::Checked;
+}
+
+void InPsightsWidget::onSedsExport(bool) {
+    for (auto &sed : moleculeWidget->activeSedsMap_){
+        auto clusterId = sed.first;
+        int i = 0;
+        for (auto &voxelCube : clusterCollection_[clusterId].voxelCubes_){
+            std::string fileName = "sed-"+std::to_string(clusterId)+"-"+std::to_string(i)+".txt";
+            std::string comment = filename_ + " cluster " + std::to_string(clusterId) + " SED " + std::to_string(i);
+            voxelCube.exportMacmolplt(fileName, comment);
+            i += 1;
+        }
+    }
+    spdlog::info("Exported SEDs");
+}
+
+void InPsightsWidget::onDeselectAll(bool) {
+    auto* root = maximaList->invisibleRootItem();
+    // iterate over topLevelItems
+    for (int i = 0; i < root->childCount(); ++i) {
+        root->child(i)->setCheckState(0, Qt::Unchecked);
+        for (int j = 0; j<root->child(i)->childCount(); ++j){
+            root->child(i)->child(j)->setCheckState(0, Qt::Unchecked);
+        }
+    }
 }

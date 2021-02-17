@@ -101,12 +101,12 @@ TEST(ASurfaceTest, SphereFromDensity) {
             VoxelCube::offset_,
             VoxelCube::offset_);
     int32_t p = 0;
-    for (int32_t z = 0; z < cube.getDimension(); ++z) {
-        float const nZ = float(z) * cube.inverseDimension_;
-        for (int32_t y = 0; y < cube.getDimension(); ++y) {
-            float const nY = float(y) * cube.inverseDimension_;
-            for (int32_t x = 0; x < cube.getDimension(); ++x, ++p) {
-                float const nX = float(x) * cube.inverseDimension_;
+    for (int32_t z = 0; z < cube.getDimensions()[2]; ++z) {
+        float const nZ = float(z) * cube.inverseDimensions_[2];
+        for (int32_t y = 0; y < cube.getDimensions()[1]; ++y) {
+            float const nY = float(y) * cube.inverseDimensions_[1];
+            for (int32_t x = 0; x < cube.getDimensions()[0]; ++x, ++p) {
+                float const nX = float(x) * cube.inverseDimensions_[0];
 
                 float rho = a.eval(nX, nY, nZ);
                 if (rho > 1.0f) rho = 1.0f;

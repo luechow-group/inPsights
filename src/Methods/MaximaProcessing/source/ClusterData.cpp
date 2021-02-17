@@ -1,4 +1,5 @@
 // Copyright (C) 2018-2019 Michael Heuer.
+// Copyright (C) 2021 Leonard Reuter.
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include <ClusterData.h>
@@ -19,7 +20,8 @@ ClusterData::ClusterData(unsigned totalNumberOfStructures,
                          const TriangularMatrixStatistics & ReeStats,
                          const MatrixStatistics RenStats,
                          const std::vector<VoxelCube> &seds,
-                         const Eigen::MatrixXd& sedOverlaps
+                         const Eigen::MatrixXd& sedOverlaps,
+                         const std::vector<unsigned>& subCounts
 )
         :
         N_(totalNumberOfStructures),
@@ -36,7 +38,8 @@ ClusterData::ClusterData(unsigned totalNumberOfStructures,
         ReeStats_(ReeStats),
         RenStats_(RenStats),
         voxelCubes_(seds),
-        overlaps_(sedOverlaps)
+        overlaps_(sedOverlaps),
+        subN_(subCounts)
 {};
 
 ClusterData::ClusterData(unsigned totalNumberOfStructures,
@@ -57,7 +60,8 @@ ClusterData::ClusterData(unsigned totalNumberOfStructures,
             const std::vector<VoxelCube> &seds,
             const Eigen::MatrixXd& sedOverlaps,
             const SelectionEnergyCalculator::SelectionInteractionEnergies & selectionInteractionEnergies,
-            const std::vector<MolecularSelection>& selections
+            const std::vector<MolecularSelection>& selections,
+            const std::vector<unsigned>& subCounts
             )
         :
         N_(totalNumberOfStructures),
@@ -76,7 +80,8 @@ ClusterData::ClusterData(unsigned totalNumberOfStructures,
         voxelCubes_(seds),
         overlaps_(sedOverlaps),
         selectionInteractionEnergies_(selectionInteractionEnergies),
-        selections_(selections)
+        selections_(selections),
+        subN_(subCounts)
         {};
 
 ElectronsVector ClusterData::representativeStructure() const {
@@ -103,6 +108,7 @@ namespace YAML {
         node["Ven"] = rhs.electronicEnergyStats_.Ven();
         node["VoxelCubes"] = rhs.voxelCubes_;
         node["SedOverlaps"] = rhs.overlaps_;
+        node["SubStructureN"] = rhs.subN_;
         return node;
     }
 
@@ -128,6 +134,16 @@ namespace YAML {
         else
             sampleAverage = {};
 
+        std::vector<unsigned> subCounts;
+        if (node["SubStructureN"]) {
+            subCounts = node["SubStructureN"].as<std::vector<unsigned>>();
+        }
+        else{
+            for (int i=0; i<structures.size();++i){
+                subCounts.emplace_back(NAN);
+            }
+        }
+
         rhs = ClusterData(
                 node["N"].as<unsigned>(),
                 structures,
@@ -145,7 +161,8 @@ namespace YAML {
                 node["Ree"].as<TriangularMatrixStatistics>(),
                 node["Ren"].as<MatrixStatistics>(),
                 cubes,
-                sedOverlaps
+                sedOverlaps,
+                subCounts
                 );
         
         return true;
@@ -172,6 +189,7 @@ namespace YAML {
             << Key << "Ven" << Comment("[Eh]") << Value << rhs.electronicEnergyStats_.Ven()
             << Key << "VoxelCubes" << Value << rhs.voxelCubes_
             << Key << "SedOverlaps" << Value << rhs.overlaps_
+            << Key << "SubStructureN" << Value << rhs.subN_
             << EndMap;
 
         return out;

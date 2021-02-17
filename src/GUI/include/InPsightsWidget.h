@@ -1,4 +1,5 @@
 // Copyright (C) 2018-2019 Michael Heuer.
+// Copyright (C) 2021 Leonard Reuter.
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #ifndef INPSIGHTS_INPSIGHTSWIDGET_H
@@ -27,6 +28,8 @@ public slots:
     void onSpinCorrelationsChecked(int stateId= 0);
     void onPlotAllChecked(int stateId= 0);
     void onSpinCorrelationsBoxChanged(double value);
+    void onSedsExport(bool);
+    void onDeselectAll(bool);
 
 private:
     std::string filename_;
@@ -35,6 +38,7 @@ private:
     QCheckBox *atomsCheckBox, *bondsCheckBox, *axesCheckBox, *sampleAverageCheckBox, *spinCorrelationsCheckBox,
     *sedsCheckBox,*maximaHullsCheckBox, *plotAllCheckBox, *coloredCheckBox;
     QDoubleSpinBox *spinCorrelationBox, *sedPercentageBox;
+    QPushButton *sedsExportButton, *deselectAllButton;
     QTreeWidget *maximaList;
     QLabel *probabilitySum;
     std::vector<ClusterData> clusterCollection_;
