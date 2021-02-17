@@ -61,10 +61,16 @@ void InPsightsWidget::createWidget() {
     hbox->addLayout(vboxOuter, 1);
 
     // put into MaximaTreeWidget class
-    auto headerLabels = QList<QString>({"ID", "Prob.", "min(\u03A6)", "max(\u03A6)"});
+    auto headerLabels = QList<QString>({"ID", "P", "min(Φ)", "max(Φ)"});
     maximaList->setColumnCount(headerLabels.size());
     maximaList->setHeaderLabels(headerLabels);
     maximaList->header()->setStretchLastSection(false);
+
+    maximaList->headerItem()->setToolTip(0,QString("IDs sorted by Φ value"));
+    maximaList->headerItem()->setToolTip(1,QString("Probability"));
+    maximaList->headerItem()->setToolTip(2,QString("Φ = -ħ/2m ln|Ψ|²"));
+    maximaList->headerItem()->setToolTip(3,QString("Φ = -ħ/2m ln|Ψ|²"));
+
     maximaList->header()->setSectionResizeMode(0,QHeaderView::Stretch);
     maximaList->header()->setSectionResizeMode(1,QHeaderView::ResizeToContents);
     maximaList->header()->setSectionResizeMode(2,QHeaderView::ResizeToContents);
