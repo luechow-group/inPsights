@@ -12,7 +12,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 project(inPsights)
 
 include(cmake/findSharedMemoryParallelismLibraries.cmake)
-include(cmake/inPsightsVersion.cmake)
+include(cmake/buildInfo.cmake)
 
 if(DEFINED ENV{BOOST_ROOT})
     set(BOOST_ROOT "$ENV{BOOST_ROOT}")

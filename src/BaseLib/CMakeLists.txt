@@ -6,12 +6,12 @@ set ( PROJECT_PATH ${PROJECT_NAME})
 set ( OUTPUT_NAME "${PROJECT_FOLDER_NAME}" )
 message ( "-- ++ CREATING PROJECT OR MAKEFILE ---> ${OUTPUT_NAME}" )
 
-set_source_files_properties(source/Version.cpp PROPERTIES COMPILE_FLAGS
-        "${INPSIGHTS_VERSION_FLAG} ${INPSIGHTS_CXX_COMPILER_FLAG}"
+set_source_files_properties(source/BuildInfo.cpp PROPERTIES COMPILE_FLAGS
+        "${INPSIGHTS_VERSION_INFO_FLAG} ${INPSIGHTS_CXX_COMPILER_INFO_FLAG}"
         )
 
-add_library(inPsightsVersion STATIC include/Version.h source/Version.cpp)
-target_include_directories(inPsightsVersion
+add_library(inPsightsInfo STATIC include/BuildInfo.h source/BuildInfo.cpp)
+target_include_directories(inPsightsInfo
         PUBLIC include
         PRIVATE source
         )
@@ -110,7 +110,7 @@ target_include_directories(${PROJECT_NAME}
 )
 
 target_link_libraries(${PROJECT_NAME}
-        inPsightsVersion
+        inPsightsInfo
         yaml-cpp
         spdlog
         )

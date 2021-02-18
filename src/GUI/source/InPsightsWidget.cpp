@@ -11,7 +11,7 @@
 #include <QTimer>
 #include <QHeaderView>
 #include "IntegerSortedTreeWidgetItem.h"
-#include <Version.h>
+#include <BuildInfo.h>
 #include <vector>
 #include <ParticlesVector.h>
 #include "CameraSettings.h"

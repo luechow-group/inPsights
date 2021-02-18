@@ -4,7 +4,7 @@
 #ifndef INPSIGHTS_LOGO_H
 #define INPSIGHTS_LOGO_H
 
-#include <Version.h>
+#include <BuildInfo.h>
 
 namespace inPsights {
     const std::string logo = "                  ▀▓▓▓▓▀ ▄▄■■■■▄▄\n"

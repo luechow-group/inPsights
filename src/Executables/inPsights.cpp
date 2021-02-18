@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include <InPsightsWidget.h>
-#include <Version.h>
+#include <BuildInfo.h>
 #include <QApplication>
 #include <memory>
 #include <spdlog/spdlog.h>
