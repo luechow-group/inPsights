@@ -1,6 +1,6 @@
 {
   "title": "inPsights",
-  "description": "<p><strong>Chemical Insights from |&Psi;|&sup2; Analysis</strong></p>",
+  "description": "<p><strong>Chemical Insights from |Ψ|² Analysis</strong></p>",
   "license": "GPL-3.0-or-later",
   "creators": [
     {
@@ -15,6 +15,7 @@
     }
   ],
   "keywords": [
+    "quantum chemistry",
     "probability density analysis",
     "electronic structure",
     "chemical bonding",
