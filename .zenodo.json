@@ -1,0 +1,26 @@
+{
+  "title": "inPsights",
+  "description": "<p><strong>Chemical Insights from |&Psi;|&sup2; Analysis</strong></p>",
+  "license": "GPL-3.0-or-later",
+  "creators": [
+    {
+      "orcid": "0000-0003-2113-6129",
+      "affiliation": "RWTH Aachen University",
+      "name": "Heuer, Michael Andree"
+    },
+    {
+      "orcid": "0000-0001-5758-843X",
+      "affiliation": "RWTH Aachen University",
+      "name": "Reuter, Leonard"
+    }
+  ],
+  "keywords": [
+    "probability density analysis",
+    "electronic structure",
+    "chemical bonding",
+    "maxima processing",
+    "similarity clustering",
+    "spin-correlation analysis",
+    "energy partitioning"
+  ]
+}
