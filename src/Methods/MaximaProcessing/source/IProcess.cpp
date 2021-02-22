@@ -16,12 +16,6 @@ IProcess::ProcessType IProcess::typeFromString(const std::string& processName) {
     else if(processName == "SOAPClusterer")
         return ProcessType::SOAPClusterer;
 
-    // Analyzer Processes
-    else if(processName == "ClusterNumberAnalyzer")
-        return ProcessType::ClusterNumberAnalyzer;
-    else if(processName == "TotalWeightDifferenceAnalyzer")
-        return ProcessType::TotalWeightDifferenceAnalyzer;
-
     // Unknown Process name
     else
         return ProcessType::invalid;
