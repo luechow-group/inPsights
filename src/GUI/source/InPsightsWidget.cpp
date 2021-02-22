@@ -204,7 +204,7 @@ void InPsightsWidget::selectedStructure(QTreeWidgetItem *item, int column) {
             if (clusterCollection_[clusterId].voxelCubes_.empty())
                 spdlog::warn("Voxel cubes were not calculated.");
             else
-                moleculeWidget->addSeds(clusterId, clusterCollection_, sedPercentageBox->value());
+                moleculeWidget->addSeds(clusterId, structureId, clusterCollection_, sedPercentageBox->value());
         }
 
         if(maximaHullsCheckBox->checkState() == Qt::CheckState::Checked

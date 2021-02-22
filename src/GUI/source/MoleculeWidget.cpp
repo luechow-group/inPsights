@@ -200,8 +200,8 @@ void MoleculeWidget::setSharedAtomsVector(AtomsVector atomsVector) {
     sharedAtomsVector_ = std::make_shared<AtomsVector>(std::move(atomsVector));
 }
 
-void MoleculeWidget::addSeds(int clusterId, const std::vector<ClusterData> &clusterData, double includedPercentage) {
-    auto spins = clusterData[clusterId].representativeStructure().typesVector();
+void MoleculeWidget::addSeds(int clusterId, int structureId, const std::vector<ClusterData> &clusterData, double includedPercentage) {
+    auto spins = clusterData[clusterId].exemplaricStructures_[structureId].typesVector();
     auto N = spins.numberOfEntities();
 
     std::vector<Surface*> seds(N);
@@ -274,6 +274,7 @@ void MoleculeWidget::onElectronsChecked(std::vector<int> selectedParticles) {
 
 void MoleculeWidget::onElectronsHighlighted(std::vector<int> selectedParticles) {
     auto &particles = activeElectronsVectorsMap_.begin()->second.begin()->second->particles3D_;
+    
     for (int i = 0; i < static_cast<int>(particles.size()); ++i) {
         auto foundQ = std::find(selectedParticles.begin(), selectedParticles.end(), i) != selectedParticles.end();
         particles[i]->onHighlighted(foundQ);
