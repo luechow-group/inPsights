@@ -10,7 +10,7 @@ std::string inPsights::version() {
 #define TOSTRING(x) STRINGIFY(x)
     version = TOSTRING(INPSIGHTS_VERSION_INFO);
     // remove quotation marks
-    version.substr(1, version.size() - 2);
+    version = version.substr(1,version.size()-2);
 #else
     version = "unkown!";
 #endif
@@ -24,7 +24,7 @@ std::string inPsights::compiler() {
 #define TOSTRING(x) STRINGIFY(x)
     compiler = TOSTRING(INPSIGHTS_CXX_COMPILER_INFO);
     // remove quotation marks
-    compiler.substr(1, compiler.size() - 2);
+    compiler = compiler.substr(1,compiler.size()-2);
 #else
     compiler = "unkown!";
 #endif
