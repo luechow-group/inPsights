@@ -11,7 +11,6 @@ GNU build:
   image: registry.git.rwth-aachen.de/luechow-group/inpsights/gnu:7.3.0
   stage: build
   before_script:
-  - export CC=/usr/bin/gcc
   - export CXX=/usr/bin/g++
   script:
   - mkdir -p cmake-build-debug-gnu
@@ -29,7 +28,6 @@ Intel build:
   stage: build
   before_script:
   - source /opt/intel/parallel_studio_xe_2019/psxevars.sh intel64
-  - export CC=/opt/intel/bin/icc
   - export CXX=/opt/intel/bin/icpc
   - export MKLROOT=/opt/intel/mkl
   script:

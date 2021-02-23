@@ -11,7 +11,7 @@
 #include <QTimer>
 #include <QHeaderView>
 #include "IntegerSortedTreeWidgetItem.h"
-#include <Version.h>
+#include <BuildInfo.h>
 #include <vector>
 #include <ParticlesVector.h>
 #include "CameraSettings.h"
@@ -174,7 +174,11 @@ void InPsightsWidget::selectedStructure(QTreeWidgetItem *item, int column) {
 
     auto id = item->data(0, Qt::ItemDataRole::UserRole).toList();
     auto clusterId = id[0].toInt();
-    auto structureId = id[1].toInt();
+    auto secondId = id[1].toInt();
+    auto structureId = secondId;
+    if (structureId == -1){  // if secondId == -1, the top level checkbox is marked
+        structureId = 0;  // taking structure 0 to visualize the top level cluster
+    }
 
     auto createQ = item->checkState(0) == Qt::CheckState::Checked;
 
@@ -182,15 +186,15 @@ void InPsightsWidget::selectedStructure(QTreeWidgetItem *item, int column) {
         auto sampleAverage = clusterCollection_[clusterId].sampleAverage_;
 
         if(sampleAverageCheckBox->checkState() == Qt::CheckState::Checked && sampleAverage.numberOfEntities() > 0) {
-            moleculeWidget->addElectronsVector(sampleAverage, clusterId, structureId, coloredCheckBox->checkState() == Qt::Checked);
+            moleculeWidget->addElectronsVector(sampleAverage, clusterId, secondId, coloredCheckBox->checkState() == Qt::Checked);
         } else if (sampleAverageCheckBox->checkState() == Qt::CheckState::Checked
         && sampleAverage.numberOfEntities() == 0) {
             moleculeWidget->addElectronsVector(clusterCollection_[clusterId].exemplaricStructures_[structureId],
-                                               clusterId, structureId, coloredCheckBox->checkState() == Qt::Checked);
+                                               clusterId, secondId, coloredCheckBox->checkState() == Qt::Checked);
             spdlog::warn("Sample averaged vectors were not calculated. Plotting the first maximum instead...");
         } else {
             moleculeWidget->addElectronsVector(clusterCollection_[clusterId].exemplaricStructures_[structureId],
-                                               clusterId, structureId, coloredCheckBox->checkState() == Qt::Checked);
+                                               clusterId, secondId, coloredCheckBox->checkState() == Qt::Checked);
         }
 
         maximaProcessingWidget->updateData(clusterCollection_[clusterId]);
@@ -200,7 +204,7 @@ void InPsightsWidget::selectedStructure(QTreeWidgetItem *item, int column) {
             if (clusterCollection_[clusterId].voxelCubes_.empty())
                 spdlog::warn("Voxel cubes were not calculated.");
             else
-                moleculeWidget->addSeds(clusterId, clusterCollection_, sedPercentageBox->value());
+                moleculeWidget->addSeds(clusterId, structureId, clusterCollection_, sedPercentageBox->value());
         }
 
         if(maximaHullsCheckBox->checkState() == Qt::CheckState::Checked
@@ -212,7 +216,7 @@ void InPsightsWidget::selectedStructure(QTreeWidgetItem *item, int column) {
         }
 
     } else {
-        moleculeWidget->removeElectronsVector(clusterId, structureId);
+        moleculeWidget->removeElectronsVector(clusterId, secondId);
 
         if(moleculeWidget->activeSedsMap_.find(clusterId) != moleculeWidget->activeSedsMap_.end())
             moleculeWidget->removeSeds(clusterId);
@@ -292,7 +296,7 @@ void InPsightsWidget::showSplashScreen() {
     splashScreen->show();
 
     std::string message = inPsights::version() + " (alpha)\n "\
-                          "Copyright © 2016-2020  Michael A. Heuer.";
+                          "Copyright © 2016-2021  Michael A. Heuer.";
     splashScreen->showMessage(message.c_str(), Qt::AlignBottom, Qt::gray);
 
     splashScreen->finish(this);
@@ -351,7 +355,7 @@ void InPsightsWidget::loadData() {
 
         item->setCheckState(0, Qt::CheckState::Unchecked);
 
-        QList<QVariant> id = {clusterId, 0};
+        QList<QVariant> id = {clusterId, -1};
         item->setData(0, Qt::ItemDataRole::UserRole, id);
 
         auto structures = doc["Clusters"][clusterId]["Structures"];

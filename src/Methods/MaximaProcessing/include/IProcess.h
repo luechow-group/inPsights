@@ -16,10 +16,6 @@ public:
         SOAPClusterer,
         ReferencePositionsClusterer,
 
-        // Analyzer Processes
-        ClusterNumberAnalyzer,
-        TotalWeightDifferenceAnalyzer,
-
         // Unknown Process
         invalid
     };

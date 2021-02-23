@@ -10,8 +10,6 @@
 #include <SOAPClusterer.h>
 #include <ReferencePositionsClusterer.h>
 #include <ElectronSelection.h>
-#include <ClusterNumberAnalyzer.h>
-#include <TotalWeightDifferenceAnalyzer.h>
 #include <MaximaProcessor.h>
 #include <GeneralStatistics.h>
 #include <algorithm>
@@ -64,14 +62,6 @@ void validateClusteringSettings(const YAML::Node &inputYaml) {
                     SOAP::Angular::settings = Settings::SOAP::Angular(soapSettings);
                 if (soapSettings[SOAP::Cutoff::settings.name()])
                     SOAP::Cutoff::settings = Settings::SOAP::Cutoff(soapSettings);
-                break;
-            }
-            case IProcess::ProcessType::ClusterNumberAnalyzer: {
-                ClusterNumberAnalyzer::settings = Settings::ClusterNumberAnalyzer(clusteringNode);
-                break;
-            }
-            case IProcess::ProcessType::TotalWeightDifferenceAnalyzer: {
-                TotalWeightDifferenceAnalyzer::settings = Settings::TotalWeightDifferenceAnalyzer(clusteringNode);
                 break;
             }
             default:
@@ -255,30 +245,6 @@ int main(int argc, char *argv[]) {
                 SOAP::Angular::settings.appendToNode(usedSoapSettings);
                 SOAP::Cutoff::settings.appendToNode(usedSoapSettings);
 
-                break;
-            }
-            case IProcess::ProcessType::ClusterNumberAnalyzer: {
-                auto &settings = ClusterNumberAnalyzer::settings;
-                settings = Settings::ClusterNumberAnalyzer(node.second);
-
-                ClusterNumberAnalyzer analyzer;
-                maxima.sortAll(); // TODO necessary?
-                analyzer.analyze(maxima);
-                clusterNumberGraphAnalysisResults.emplace_back(analyzer.getResults());
-
-                settings.appendToNode(usedClusteringSettings);
-                break;
-            }
-            case IProcess::ProcessType::TotalWeightDifferenceAnalyzer: {
-                auto &settings = TotalWeightDifferenceAnalyzer::settings;
-                settings = Settings::TotalWeightDifferenceAnalyzer(node.second);
-
-                TotalWeightDifferenceAnalyzer analyzer;
-                maxima.sortAll(); // TODO necessary?
-                analyzer.analyze(maxima);
-                totalWeightDifferencesAnalysisResults.emplace_back(analyzer.getResults());
-
-                settings.appendToNode(usedClusteringSettings);
                 break;
             }
             default:

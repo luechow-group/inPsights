@@ -27,9 +27,7 @@ set(HEADER_FILES
         include/ReferencePositionsClusterer.h
         include/VoxelCubeOverlapCalculation.h
         include/SpinCorrelationValueHistogram.h
-        include/ClusterNumberAnalyzer.h
         include/ClusterAnalysis.h
-        include/TotalWeightDifferenceAnalyzer.h
         include/SelectionEnergyCalculator.h
         include/EnergyResultsBundle.h
         include/ClusteringMetric.h
@@ -55,9 +53,7 @@ set(SOURCE_FILES
         source/ReferencePositionsClusterer.cpp
         source/VoxelCubeOverlapCalculation.cpp
         source/SpinCorrelationValueHistogram.cpp
-        source/ClusterNumberAnalyzer.cpp
         source/ClusterAnalysis.cpp
-        source/TotalWeightDifferenceAnalyzer.cpp
         source/SelectionEnergyCalculator.cpp
         source/ClusteringMetric.cpp
         )

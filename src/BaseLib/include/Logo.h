@@ -4,7 +4,7 @@
 #ifndef INPSIGHTS_LOGO_H
 #define INPSIGHTS_LOGO_H
 
-#include <Version.h>
+#include <BuildInfo.h>
 
 namespace inPsights {
     const std::string logo = "                  ▀▓▓▓▓▀ ▄▄■■■■▄▄\n"
@@ -20,6 +20,8 @@ namespace inPsights {
                              "                                  ▀■■■■▀\n"
                              "Version:\n"
                              "  " + inPsights::version() + "\n"
+                             "Compiler:\n"
+                             "  " + inPsights::compiler() + "\n"
                              "\n"
                              " Main author:\n"
                              "  Michael A. Heuer, RWTH Aachen University\n"
