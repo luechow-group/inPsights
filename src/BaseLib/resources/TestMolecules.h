@@ -209,10 +209,13 @@ namespace TestMolecules {
     }
 
     namespace HeH {
+        const MolecularGeometry nuclei = {
+                AtomsVector({
+                                    {Element::He, {0, 0, 0.37}},
+                                    {Element::H, {0, 0, -0.37}}}),{}};
         namespace ElectronsInCores {
             const MolecularGeometry normal = {
-                    AtomsVector({{Element::He,{0, 0, 0.37}},
-                                 {Element::H, {0, 0,-0.37}}}),
+                    nuclei.atoms(),
                     ElectronsVector({{Spin::alpha,{0, 0, 0.37}},
                                      {Spin::alpha,{0, 0, 0.37}},
                                      {Spin::beta, {0, 0,-0.37}}})};
