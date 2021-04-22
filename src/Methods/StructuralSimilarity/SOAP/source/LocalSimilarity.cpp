@@ -110,7 +110,7 @@ namespace SOAP {
         double kernelDistance(const TypeSpecificNeighborhoodsAtOneCenter &expansions1,
                               const TypeSpecificNeighborhoodsAtOneCenter &expansions2, double zeta) {
 
-            return sqrt(2.0 - 2.0 * kernel(expansions1, expansions1, zeta));
+            return sqrt(2.0 - 2.0 * kernel(expansions1, expansions2, zeta));
         }
 
 
