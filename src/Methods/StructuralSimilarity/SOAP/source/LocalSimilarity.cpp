@@ -14,7 +14,7 @@ namespace SOAP {
             auto expansion1 = expander.computeParticularExpansions(e1);
             auto expansion2 = expander.computeParticularExpansions(e2);
 
-            return pow(kernel(expansion1, expansion2), zeta);
+            return kernel(expansion1, expansion2, zeta);
         }
 
         double unnormalizedKernel(const Environment &e1, const Environment &e2) {
