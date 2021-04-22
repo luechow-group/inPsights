@@ -113,6 +113,16 @@ namespace SOAP {
             return sqrt(2.0 - 2.0 * kernel(expansions1, expansions2, zeta));
         }
 
+        double kernelDistance(const Environment &e1, const Environment &e2, double zeta) {
+            assert(zeta > 0 && "Zeta must be positive.");
+            NeighborhoodExpander expander;
+            auto expansion1 = expander.computeParticularExpansions(e1);
+            auto expansion2 = expander.computeParticularExpansions(e2);
+
+            return kernelDistance(expansion1, expansion2, zeta);
+        }
+
+
 
         double internal::typeAgnostic(const TypeSpecificNeighborhoodsAtOneCenter &expansions) {
             int noneType = 0;
