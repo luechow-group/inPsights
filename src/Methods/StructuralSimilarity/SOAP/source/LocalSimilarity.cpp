@@ -14,7 +14,7 @@ namespace SOAP {
             auto expansion1 = expander.computeParticularExpansions(e1);
             auto expansion2 = expander.computeParticularExpansions(e2);
 
-            return pow(kernel(expansion1, expansion2), zeta);
+            return kernel(expansion1, expansion2, zeta);
         }
 
         double unnormalizedKernel(const Environment &e1, const Environment &e2) {
@@ -110,8 +110,18 @@ namespace SOAP {
         double kernelDistance(const TypeSpecificNeighborhoodsAtOneCenter &expansions1,
                               const TypeSpecificNeighborhoodsAtOneCenter &expansions2, double zeta) {
 
-            return sqrt(2.0 - 2.0 * kernel(expansions1, expansions1, zeta));
+            return sqrt(2.0 - 2.0 * kernel(expansions1, expansions2, zeta));
         }
+
+        double kernelDistance(const Environment &e1, const Environment &e2, double zeta) {
+            assert(zeta > 0 && "Zeta must be positive.");
+            NeighborhoodExpander expander;
+            auto expansion1 = expander.computeParticularExpansions(e1);
+            auto expansion2 = expander.computeParticularExpansions(e2);
+
+            return kernelDistance(expansion1, expansion2, zeta);
+        }
+
 
 
         double internal::typeAgnostic(const TypeSpecificNeighborhoodsAtOneCenter &expansions) {

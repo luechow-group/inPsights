@@ -24,6 +24,32 @@ public:
     };
 };
 
+TEST_F(ALocalSimilarityTest, LocalSimilarityMaxSimilarityBound) {
+    General::settings.mode = General::Mode::chemical;
+    ParticleKit::create(TestMolecules::H2::nuclei);
+
+    auto H2 = TestMolecules::H2::nuclei;
+
+    Environment h0(H2, EnumeratedType<int>(int(Element::H), 0));
+    Environment h1(H2, EnumeratedType<int>(int(Element::H), 1));
+
+    ASSERT_NEAR(LocalSimilarity::kernel(h0, h1), 1.0, eps);
+    ASSERT_NEAR(LocalSimilarity::kernelDistance(h0, h1), 0.0, eps);
+}
+
+TEST_F(ALocalSimilarityTest, LocalSimilarityMinSimilarityBound) {
+    General::settings.mode = General::Mode::chemical;
+    ParticleKit::create(TestMolecules::HeH::nuclei);
+
+    auto HeH = TestMolecules::HeH::nuclei;
+
+    Environment he0(HeH, EnumeratedType<int>(int(Element::He), 0));
+    Environment h0(HeH, EnumeratedType<int>(int(Element::H), 0));
+
+    ASSERT_NEAR(LocalSimilarity::kernel(he0, h0), 0.0, eps);
+    ASSERT_NEAR(LocalSimilarity::kernelDistance(he0, h0), std::sqrt(2.0), eps);
+}
+
 TEST_F(ALocalSimilarityTest, GenericNormalization) {
     ParticleKit::create(molecule);
     General::settings.mode = General::Mode::typeAgnostic;

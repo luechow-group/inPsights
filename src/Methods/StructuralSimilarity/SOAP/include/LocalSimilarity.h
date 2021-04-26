@@ -29,6 +29,10 @@ namespace SOAP {
                       const TypeSpecificNeighborhoodsAtOneCenter &expansions2,
                       double zeta = General::settings.zeta());
 
+        double kernelDistance(const Environment &e1,
+                              const Environment &e2,
+                              double zeta = General::settings.zeta());
+
         double kernelDistance(const TypeSpecificNeighborhoodsAtOneCenter &expansions1,
                               const TypeSpecificNeighborhoodsAtOneCenter &expansions2,
                               double zeta = General::settings.zeta());
