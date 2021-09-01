@@ -28,7 +28,7 @@ namespace Settings {
         }
 
         if (node[className]["length"]) {
-            auto length = node[className]["dimension"].as<VoxelCube::VertexComponentsType>();
+            auto length = node[className]["length"].as<VoxelCube::VertexComponentsType>();
             lengths = {{length, length, length}, VARNAME(lengths)};
         }
         else{
