@@ -7,7 +7,6 @@
 #include <spdlog/spdlog.h>
 #include <EigenYamlConversion.h>
 #include <Varname.h>
-#include <Enumerate.h>
 #include <ToString.h>
 #include <fstream>
 #include <cmath>
