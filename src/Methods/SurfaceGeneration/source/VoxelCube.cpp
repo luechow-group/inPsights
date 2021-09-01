@@ -7,28 +7,28 @@
 #include <spdlog/spdlog.h>
 #include <EigenYamlConversion.h>
 #include <Varname.h>
-#include <Enumerate.h>
 #include <ToString.h>
 #include <fstream>
 #include <cmath>
 #include <iostream>
+#include <utility>
 
 VoxelCube::VoxelCube(const Eigen::Matrix<IndexType, 3, 1> &dimensions,
-                     const Eigen::Matrix<VertexComponentsType, 3, 1> &lengths,
-                     const Eigen::Matrix<VertexComponentsType, 3, 1> &center,
+                     Eigen::Matrix<VertexComponentsType, 3, 1> lengths,
+                     Eigen::Matrix<VertexComponentsType, 3, 1> center,
                      bool smoothQ)
         : smoothQ_(smoothQ), dimensions_(dimensions), insideWeight_(0), totalWeight_(0),
-          lengths_(lengths),
+          lengths_(std::move(lengths)),
           inverseDimensions_({1.0f / float(dimensions[0] - 1),
                               1.0f / float(dimensions[1] - 1),
                               1.0f / float(dimensions[2] - 1)}),
-          center_(center),
+          center_(std::move(center)),
           data_(static_cast<size_t>(dimensions.prod())) {}
 
 VoxelCube::VoxelCube(
         IndexType dimension,
         VertexComponentsType length,
-        const Eigen::Matrix<VertexComponentsType, 3, 1> &center,
+        Eigen::Matrix<VertexComponentsType, 3, 1> center,
         bool boxSmoothQ)
         :
         smoothQ_(boxSmoothQ),
@@ -37,7 +37,7 @@ VoxelCube::VoxelCube(
         totalWeight_(0),
         lengths_({length, length, length}),
         inverseDimensions_({1.0f / float(dimension - 1), 1.0f / float(dimension - 1), 1.0f / float(dimension - 1)}),
-        center_(center),
+        center_(std::move(center)),
         data_(static_cast<size_t>(dimension * dimension * dimension)) {
     assert(dimension > 3 && "The cube dimensions must be greater than 3.");
     assert(length > 0 && "Length must be positive.");
@@ -47,11 +47,11 @@ std::size_t VoxelCube::index(IndexType i, IndexType j, IndexType k) const {
     return i + dimensions_[0] * (j + dimensions_[1] * k);
 }
 
-Eigen::Vector3i VoxelCube::getVoxelIndices(const Eigen::Vector3d& pos){
+Eigen::Vector3i VoxelCube::getVoxelIndices(const Eigen::Vector3d &pos) {
     Eigen::Vector3i indices;
-    auto origin = center_ - lengths_/2;
-    for (int i=0; i<3; ++i){
-        indices[i] = IndexType(lround((pos[i] - origin[i]) / lengths_[i] * dimensions_[i]));
+    auto origin = center_ - lengths_ / 2;
+    for (int i = 0; i < 3; ++i) {
+        indices[i] = IndexType((pos[i] - origin[i]) / lengths_[i] * dimensions_[i]);
     }
     return indices;
 }
@@ -63,14 +63,14 @@ void VoxelCube::add(const Eigen::Vector3d &pos, VolumeDataType weight) {
     IndexType j = indices[1];
     IndexType k = indices[2];
 
-    add(i,j,k,weight);
+    add(i, j, k, weight);
 };
 
 void VoxelCube::add(IndexType i, IndexType j, IndexType k, VolumeDataType weight) {
-    if(totalWeight_ == std::numeric_limits<VolumeDataType>::max())
+    if (totalWeight_ == std::numeric_limits<VolumeDataType>::max())
         spdlog::critical("Overflow in voxel cell. The maximum value for the {} of {} has been exceeded.",
-                VARNAME(VolumeDataType),
-                std::numeric_limits<VolumeDataType>::max());
+                         VARNAME(VolumeDataType),
+                         std::numeric_limits<VolumeDataType>::max());
 
     if ((0 <= i && i < dimensions_[0])
         && (0 <= j && j < dimensions_[1])
@@ -84,18 +84,18 @@ void VoxelCube::add(IndexType i, IndexType j, IndexType k, VolumeDataType weight
 
 
 void VoxelCube::shiftDualMCResults(std::vector<dualmc::Vertex> &vertices) {
-    for (auto &v : vertices) {
+    for (auto &v: vertices) {
         v.x = (v.x * inverseDimensions_[0] - offset_) * lengths_[0] + center_[0];
         v.y = (v.y * inverseDimensions_[1] - offset_) * lengths_[1] + center_[1];
         v.z = (v.z * inverseDimensions_[2] - offset_) * lengths_[2] + center_[2];
     }
 }
 
-Eigen::Matrix<VoxelCube::IndexType,3,1> VoxelCube::getDimensions() const {
+Eigen::Matrix<VoxelCube::IndexType, 3, 1> VoxelCube::getDimensions() const {
     return dimensions_;
 }
 
-Eigen::Matrix<VoxelCube::VertexComponentsType,3,1> VoxelCube::getLengths() const {
+Eigen::Matrix<VoxelCube::VertexComponentsType, 3, 1> VoxelCube::getLengths() const {
     return lengths_;
 }
 
@@ -107,8 +107,8 @@ const std::vector<VoxelCube::VolumeDataType> &VoxelCube::getData() const {
     return data_;
 }
 
-VoxelCube::VolumeDataType VoxelCube::getData(IndexType i, IndexType j, IndexType k) const{
-    return data_[index(i,j,k)];
+VoxelCube::VolumeDataType VoxelCube::getData(IndexType i, IndexType j, IndexType k) const {
+    return data_[index(i, j, k)];
 };
 
 void VoxelCube::setData(const std::vector<VoxelCube::VolumeDataType> &data) {
@@ -139,7 +139,7 @@ VoxelCube::cubeAverage(IndexType i, IndexType j, IndexType k, IndexType neighbor
         }
     }
     // Attention: division by integer
-    average /= numberOfAveragedBoxes; 
+    average /= numberOfAveragedBoxes;
 
     return average;
 }
@@ -156,28 +156,28 @@ void VoxelCube::smooth(VoxelCube::IndexType neighbors) {
     data_ = dataSmoothed;
 }
 
-void VoxelCube::exportMacmolplt(const std::string& filename, const std::string& comment) {
+void VoxelCube::exportMacmolplt(const std::string &filename, const std::string &comment) {
     std::ofstream file;
     file.open(filename);
     auto increments = lengths_;
-    double a0 =  0.529177210903;  // in Angstrom
+    double a0 = 0.529177210903;  // in Angstrom
     for (auto i = 0; i < 3; ++i) {
-        increments[i] /= dimensions_[i];
+        increments[i] /= float(dimensions_[i]);
     }
 
-    auto origin = center_ - lengths_/2;
+    auto origin = center_ - lengths_ / 2;
     file << comment << '\n'
          << dimensions_[0] << ' ' << dimensions_[1] << ' ' << dimensions_[2] << "   //nx ny nz\n"
          << ToString::doubleToString(origin[0] * a0, 5, 0, false) << ' '
          << ToString::doubleToString(origin[1] * a0, 5, 0, false) << ' '
          << ToString::doubleToString(origin[2] * a0, 5, 0, false) << "   //Origin of the 3D grid\n"
-         << ToString::doubleToString(increments[0]*a0, 6, 0, false) << ' '
-         << ToString::doubleToString(increments[1]*a0, 6, 0, false) << ' '
-         << ToString::doubleToString(increments[2]*a0, 6, 0, false)
+         << ToString::doubleToString(increments[0] * a0, 6, 0, false) << ' '
+         << ToString::doubleToString(increments[1] * a0, 6, 0, false) << ' '
+         << ToString::doubleToString(increments[2] * a0, 6, 0, false)
          << "   //x increment, y inc, z inc/ grid(x(y(z)))\n";
 
     double totalWeightd = 0.0;
-    for (auto &weight : data_){
+    for (auto &weight: data_) {
         totalWeightd += double(weight);
     }
 
@@ -216,33 +216,30 @@ namespace YAML {
             return false;
 
         bool smoothed = false;
-        if(node["smoothed"])
+        if (node["smoothed"])
             smoothed = node["smoothed"].as<bool>();
 
         // if statements for backwards compatibility with old keywords dimension, length, and origin
         Eigen::Matrix<VoxelCube::IndexType, 3, 1> dimensions;
-        if(node["dimensions"]) {
+        if (node["dimensions"]) {
             dimensions = node["dimensions"].as<Eigen::Matrix<VoxelCube::IndexType, 3, 1>>();
-        }
-        else {
+        } else {
             auto dimension = node["dimension"].as<VoxelCube::IndexType>();
             dimensions = Eigen::Matrix<VoxelCube::IndexType, 3, 1>({dimension, dimension, dimension});
         }
 
         Eigen::Matrix<VoxelCube::VertexComponentsType, 3, 1> lengths;
-        if(node["lengths"]) {
+        if (node["lengths"]) {
             lengths = node["lengths"].as<Eigen::Matrix<VoxelCube::VertexComponentsType, 3, 1>>();
-        }
-        else {
+        } else {
             auto length = node["length"].as<VoxelCube::VertexComponentsType>();
             lengths = Eigen::Matrix<VoxelCube::VertexComponentsType, 3, 1>({length, length, length});
         }
 
         Eigen::Matrix<VoxelCube::VertexComponentsType, 3, 1> center;
-        if(node["center"]) {
+        if (node["center"]) {
             center = node["center"].as<Eigen::Matrix<VoxelCube::VertexComponentsType, 3, 1>>();
-        }
-        else{
+        } else {
             center = node["origin"].as<Eigen::Matrix<VoxelCube::VertexComponentsType, 3, 1>>();
         }
 
@@ -258,7 +255,7 @@ namespace YAML {
             << Key << "lengths" << Value << rhs.getLengths()
             << Key << "center" << Value << rhs.getCenter()
             << Key << "data" << Value << Flow << BeginSeq;
-        for (const auto &i : rhs.getData()) {
+        for (const auto &i: rhs.getData()) {
             out << int(i);
         }
         out << EndSeq << EndMap;
