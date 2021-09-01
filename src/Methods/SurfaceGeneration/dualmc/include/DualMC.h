@@ -169,8 +169,8 @@ namespace dualmc {
 
         /// Functor for dual point key hash generation
         struct DualPointKeyHash {
-            size_t operator()(DualPointKey const &k) const {
-                return size_t(k.linearizedCellID) | (size_t(k.pointCode) << 32u);
+            std::size_t operator()(DualPointKey const &k) const {
+                return std::size_t(k.linearizedCellID) | (std::size_t(k.pointCode) << 32u);
             }
         };
 
