@@ -63,10 +63,11 @@ std::vector<VoxelCube> VoxelCubeGeneration::fromCluster(const Cluster &maxima, c
 
 std::vector<VoxelCube>
 VoxelCubeGeneration::getVoxels(const Cluster &maxima, const std::vector<Sample> &samples,
-                               Eigen::Matrix<VoxelCube::IndexType, 3, 1> dimensions,
-                               Eigen::Matrix<VoxelCube::VertexComponentsType, 3, 1> lengths, bool centerCubesAtElectronsQ,
+                               const Eigen::Matrix<VoxelCube::IndexType, 3, 1>& dimensions,
+                               const Eigen::Matrix<VoxelCube::VertexComponentsType, 3, 1>& lengths,
+                               bool centerCubesAtElectronsQ,
                                bool smoothingQ, VoxelCube::IndexType smoothingNeighbors,
-                               Eigen::Matrix<VoxelCube::VertexComponentsType , 3, 1> center) {
+                               const Eigen::Matrix<VoxelCube::VertexComponentsType , 3, 1>& center) {
 
     ElectronsVector representativeMax = maxima.representative()->maximum(); //TODO use averaged point
     std::vector<VoxelCube> voxels(static_cast<unsigned long>(representativeMax.numberOfEntities()));
