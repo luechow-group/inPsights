@@ -51,7 +51,7 @@ Eigen::Vector3i VoxelCube::getVoxelIndices(const Eigen::Vector3d &pos) {
     Eigen::Vector3i indices;
     auto origin = center_ - lengths_ / 2;
     for (int i = 0; i < 3; ++i) {
-        indices[i] = IndexType(lround((pos[i] - origin[i]) / lengths_[i] * dimensions_[i]));
+        indices[i] = IndexType((pos[i] - origin[i]) / lengths_[i] * dimensions_[i]);
     }
     return indices;
 }
