@@ -14,7 +14,7 @@
 
 class X3domConverter{
 public:
-    X3domConverter(const std::string &filename);
+    explicit X3domConverter(const std::string &filename);
 
     X3domConverter(const std::string &filename,
                    const std::string& title,
