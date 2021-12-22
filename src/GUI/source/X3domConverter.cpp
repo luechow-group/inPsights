@@ -7,17 +7,15 @@
 
 X3domConverter::X3domConverter(const std::string &filename,
                                const std::string& title,
-                               const std::string& comment,
                                const QVector3D& lightDirection) {
     file.open(filename);
-    startScene(title, comment, lightDirection);
+    startScene(title, lightDirection);
 }
 X3domConverter::X3domConverter(const std::string &filename)
-    : X3domConverter(filename, filename, "", QVector3D(0.0, 0.0, -1.0)){}
+    : X3domConverter(filename, filename, QVector3D(0.0, 0.0, -1.0)){}
 
 
-void X3domConverter::startScene(const std::string& title, const std::string& comment,
-                                const QVector3D& lightDirection) {
+void X3domConverter::startScene(const std::string& title, const QVector3D& lightDirection) {
     file << "<html> \n"
             "<head> \n"
             "<title>" + title + "</title>\n"
@@ -25,8 +23,6 @@ void X3domConverter::startScene(const std::string& title, const std::string& com
             "<link rel='stylesheet' type='text/css' href='http://www.x3dom.org/download/x3dom.css'></link>\n"
             "</head>\n"
             "<body>\n"
-            /*"<h1>" + title + "</h1>\n"
-            "<p>" + comment + "</p>\n"*/
             "<center> \n"
             "<x3d width='100%' height='100%'> \n"
             "<scene>\n"

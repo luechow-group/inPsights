@@ -378,7 +378,7 @@ void MoleculeWidget::onX3dExport(bool) {
 
     auto filename = createFilenameFromActiveElectronvectors() + ".html";
 
-    X3domConverter x3Dconverter(filename, filename, "", light_->worldDirection());
+    X3domConverter x3Dconverter(filename, filename, light_->worldDirection());
     auto atoms3d = atomsVector3D_->particles3D_;
 
     for (const auto & a : atoms3d) {
