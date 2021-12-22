@@ -43,7 +43,8 @@ MoleculeWidget::MoleculeWidget(QWidget *parent)
         panTiltRollText_(new QLabel("pan/tilt/roll")),
         zoomText_(new QLabel("zoom")),
         atomsVector3D_(nullptr),
-        cartesianAxes_(nullptr){
+        cartesianAxes_(nullptr),
+        light_(new Qt3DRender::QDirectionalLight(root_)){
 
     auto outerLayout = new QVBoxLayout(this);
     auto innerLayout = new QHBoxLayout();
@@ -77,6 +78,11 @@ MoleculeWidget::MoleculeWidget(QWidget *parent)
     connect(zoom_, qOverload<int>(&QSpinBox::valueChanged),
             this, &MoleculeWidget::onCameraBoxesChanged);
 
+    // initialize light
+    light_->setColor("white");
+    light_->setIntensity(0.3);
+    root_->addComponent(light_);
+
     setMouseTracking(true);
 }
 
@@ -87,6 +93,10 @@ void MoleculeWidget::onCameraBoxesChanged(int) {
     qt3DWindow_->camera()->rollAboutViewCenter(float(roll_->value()));
     qt3DWindow_->camera()->viewSphere({0, 0, 0},
                                       100.0f / float(zoom_->value()) * defaultCameraRadius_);
+
+    QVector3D v1 = -qt3DWindow_->camera()->position()/qt3DWindow_->camera()->position().length();
+    QVector3D v2 = -qt3DWindow_->camera()->upVector();
+    light_->setWorldDirection(v1 + v2 + QVector3D::crossProduct(v1,v2));
 }
 
 Qt3DCore::QEntity *MoleculeWidget::getMoleculeEntity() {
