@@ -14,13 +14,13 @@
 
 class X3domConverter{
 public:
-    X3domConverter(const std::string &filename);
+    explicit X3domConverter(const std::string &filename);
 
     X3domConverter(const std::string &filename,
                    const std::string& title,
-                   const std::string& comment);
+                   const QVector3D& lightDirection);
 
-    void startScene(const std::string& title, const std::string& comment);
+    void startScene(const std::string& title, const QVector3D& lightDirection);
 
     void addSphere(const Sphere & sphere, unsigned sortKey = 1);
     void addCylinder(const Cylinder & cylinder, unsigned sortKey = 1);
