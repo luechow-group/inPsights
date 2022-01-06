@@ -71,7 +71,7 @@ void SpinCorrelations3D::createConnections(const ElectronsVector &electronsVecto
                             color = Qt::magenta;
                         }
                         else {
-                            break;
+                            continue;
                         }
                     }
                     if (positionPair.first != positionPair.second) {
