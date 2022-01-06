@@ -138,7 +138,6 @@ void InPsightsWidget::connectSignals() {
     connect(plotAllCheckBox, &QCheckBox::stateChanged,
             this, &InPsightsWidget::onPlotAllChecked);
 
-
     connect(spinCorrelationBox, qOverload<double>(&QDoubleSpinBox::valueChanged),
             this, &InPsightsWidget::onSpinCorrelationsBoxChanged);
 
@@ -245,14 +244,7 @@ void InPsightsWidget::onPlotAllChecked(int stateId)  {
 }
 
 void InPsightsWidget::redrawSpinDecorations() {
-    if(spinCorrelationsCheckBox->checkState() == Qt::Checked){
-        onSpinCorrelationsChecked(Qt::Unchecked);
-        onSpinCorrelationsChecked(Qt::Checked);
-    }
-    else if(spinCorrelationsCheckBox->checkState() == Qt::PartiallyChecked){
-        onSpinCorrelationsChecked(Qt::Unchecked);
-        onSpinCorrelationsChecked(Qt::PartiallyChecked);
-    }
+    onSpinCorrelationsChecked(spinCorrelationsCheckBox->checkState());
 }
 
 void InPsightsWidget::onAtomsChecked(int stateId) {
@@ -276,7 +268,7 @@ void InPsightsWidget::onSpinCorrelationsChecked(int stateId) {
 }
 
 void InPsightsWidget::onSpinCorrelationsBoxChanged(double value) {
-    onSpinCorrelationsChecked(spinCorrelationsCheckBox->checkState());
+    redrawSpinDecorations();
 }
 
 void InPsightsWidget::showSplashScreen() {
