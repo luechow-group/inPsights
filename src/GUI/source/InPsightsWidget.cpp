@@ -268,24 +268,15 @@ void InPsightsWidget::onAxesChecked(int stateId) {
 }
 
 void InPsightsWidget::onSpinCorrelationsChecked(int stateId) {
+    moleculeWidget->deleteSpinCorrelations();
     if(Qt::CheckState(stateId) == Qt::Checked)
-        moleculeWidget->drawSpinCorrelations(true,clusterCollection_, spinCorrelationBox->value(),true);
+        moleculeWidget->drawSpinCorrelations(clusterCollection_, spinCorrelationBox->value(),true);
     else if(Qt::CheckState(stateId) == Qt::PartiallyChecked)
-        moleculeWidget->drawSpinCorrelations(true,clusterCollection_, spinCorrelationBox->value(),false);
-    else
-        moleculeWidget->drawSpinCorrelations(false,clusterCollection_, spinCorrelationBox->value(),false);
+        moleculeWidget->drawSpinCorrelations(clusterCollection_, spinCorrelationBox->value(),false);
 }
 
 void InPsightsWidget::onSpinCorrelationsBoxChanged(double value) {
-    if (spinCorrelationsCheckBox->checkState() == Qt::CheckState::Checked) {
-        onSpinCorrelationsChecked(Qt::CheckState::Unchecked); //TODO ugly, create update() function in SpinCorrelation3D and make it accessible
-        onSpinCorrelationsChecked(Qt::CheckState::Checked);
-    } else if (spinCorrelationsCheckBox->checkState() == Qt::CheckState::PartiallyChecked) {
-            onSpinCorrelationsChecked(Qt::CheckState::Unchecked);
-            onSpinCorrelationsChecked(Qt::CheckState::PartiallyChecked);
-    }else {
-         onSpinCorrelationsChecked(Qt::CheckState::Unchecked);
-    }
+    onSpinCorrelationsChecked(spinCorrelationsCheckBox->checkState());
 }
 
 void InPsightsWidget::showSplashScreen() {

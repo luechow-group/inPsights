@@ -32,9 +32,9 @@ public:
     void drawAxes(bool drawQ = true);
     void drawAtoms(bool drawQ = true);
     void drawBonds(bool drawQ = true);
-    void drawSpinCorrelations(bool drawQ,
-                              const std::vector<ClusterData> &clusterData,
+    void drawSpinCorrelations(const std::vector<ClusterData> &clusterData,
                               double spinCorrelationThreshold, bool drawSameSpinCorrelationsQ);
+    void deleteSpinCorrelations();
 
     void initialCameraSetup(int zoom, int pan, int tilt, int roll);
     void setupCameraBoxes(int pan, int tilt, int roll, int zoom);
