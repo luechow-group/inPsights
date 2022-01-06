@@ -74,8 +74,10 @@ void SpinCorrelations3D::createConnections(const ElectronsVector &electronsVecto
                             break;
                         }
                     }
-                    c = new Cylinder(this, color, positionPair, electronRadius / 7.5f, absCorr);
-                    c->material->setShininess(0);
+                    if (positionPair.first != positionPair.second) {
+                        c = new Cylinder(this, color, positionPair, electronRadius / 7.5f, absCorr);
+                        c->material->setShininess(0);
+                    }
                 }
             }
         }

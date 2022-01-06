@@ -54,8 +54,14 @@ std::pair<QVector3D, QVector3D> GuiHelper::sphericalSurfacePositionPair(
 
     Eigen::Vector3d v12 = position2-position1;
     float distance =  v12.norm();
-    Eigen::Vector3d p1 = position1 + v12 * radius1 / distance;
-    Eigen::Vector3d p2 = position2 - v12 * radius2 / distance;
-
+    Eigen::Vector3d p1, p2;
+    if (distance > radius1 + radius2) {
+        p1 = position1 + v12 * radius1 / distance;
+        p2 = position2 - v12 * radius2 / distance;
+    }
+    else {
+        p1 = position1 + 0.5*v12;
+        p2 = p1;
+    }
     return {GuiHelper::toQVector3D(p1), GuiHelper::toQVector3D(p2)};
 }
