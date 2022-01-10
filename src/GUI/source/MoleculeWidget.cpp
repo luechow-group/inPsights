@@ -86,6 +86,10 @@ MoleculeWidget::MoleculeWidget(QWidget *parent)
     setMouseTracking(true);
 }
 
+int MoleculeWidget::getAtomsNumber() {
+    return sharedAtomsVector_->positionsVector().numberOfEntities();
+}
+
 void MoleculeWidget::onCameraBoxesChanged(int) {
     defaultCameraView();
     qt3DWindow_->camera()->panAboutViewCenter(float(pan_->value()));
@@ -254,41 +258,35 @@ void MoleculeWidget::deleteSpinCorrelations() {
         }
 };
 
-void MoleculeWidget::onAtomsChecked(std::vector<int> selectedParticles) {
+void MoleculeWidget::onAtomsChecked(int selectedParticle) {
     auto &particles = atomsVector3D_->particles3D_;
 
     for (int i = 0; i < static_cast<int>(particles.size()); ++i) {
-        auto foundQ = std::find(selectedParticles.begin(), selectedParticles.end(), i) != selectedParticles.end();
-        particles[i]->onSelected(foundQ);
+        particles[i]->onSelected(i == selectedParticle);
     }
 }
 
-void MoleculeWidget::onAtomsHighlighted(std::vector<int> selectedParticles) {
+void MoleculeWidget::onAtomsHighlighted(int selectedParticle) {
     auto &particles = atomsVector3D_->particles3D_;
 
     for (int i = 0; i < static_cast<int>(particles.size()); ++i) {
-        auto foundQ = std::find(selectedParticles.begin(), selectedParticles.end(), i) != selectedParticles.end();
-        particles[i]->onHighlighted(foundQ); //TODO add highlight, select and normal function
+        particles[i]->onHighlighted(i == selectedParticle);
     }
 }
 
-
-void MoleculeWidget::onElectronsChecked(std::vector<int> selectedParticles) {
+void MoleculeWidget::onElectronsChecked(int selectedParticle) {
     auto &particles = activeElectronsVectorsMap_.begin()->second.begin()->second->particles3D_;
 
     for (int i = 0; i < static_cast<int>(particles.size()); ++i) {
-        auto foundQ = std::find(selectedParticles.begin(), selectedParticles.end(), i) != selectedParticles.end();
-        particles[i]->onSelected(foundQ);
+        particles[i]->onSelected(i == selectedParticle);
     }
-
 }
 
-void MoleculeWidget::onElectronsHighlighted(std::vector<int> selectedParticles) {
+void MoleculeWidget::onElectronsHighlighted(int selectedParticle) {
     auto &particles = activeElectronsVectorsMap_.begin()->second.begin()->second->particles3D_;
-    
+
     for (int i = 0; i < static_cast<int>(particles.size()); ++i) {
-        auto foundQ = std::find(selectedParticles.begin(), selectedParticles.end(), i) != selectedParticles.end();
-        particles[i]->onHighlighted(foundQ);
+        particles[i]->onHighlighted(i == selectedParticle);
     }
 }
 

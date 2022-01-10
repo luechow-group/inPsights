@@ -53,12 +53,14 @@ public:
     void addMaximaHulls(int clusterId, const std::vector<ClusterData> &clusterData);
     void removeMaximaHulls(int clusterId);
 
+    int getAtomsNumber();
+
 public slots:
     void activateCompatabilityMode();
-    void onAtomsChecked(std::vector<int>);
-    void onElectronsChecked(std::vector<int>);
-    void onAtomsHighlighted(std::vector<int>);
-    void onElectronsHighlighted(std::vector<int>);
+    void onAtomsChecked(int);
+    void onElectronsChecked(int);
+    void onAtomsHighlighted(int);
+    void onElectronsHighlighted(int);
 
     void onCameraBoxesChanged(int);
     void onScreenshot(bool);

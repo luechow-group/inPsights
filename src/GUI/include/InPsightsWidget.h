@@ -28,6 +28,10 @@ public slots:
     void onSpinCorrelationsChecked(int stateId= 0);
     void onPlotAllChecked(int stateId= 0);
     void onSpinCorrelationsBoxChanged(double value);
+    void onElectron1BoxChanged(int value);
+    void onElectron2BoxChanged(int value);
+    void onAtom1BoxChanged(int value);
+    void onAtom2BoxChanged(int value);
     void onSedsExport(bool);
     void onDeselectAll(bool);
 
@@ -38,6 +42,7 @@ private:
     QCheckBox *atomsCheckBox, *bondsCheckBox, *axesCheckBox, *sampleAverageCheckBox, *spinCorrelationsCheckBox,
     *sedsCheckBox,*maximaHullsCheckBox, *plotAllCheckBox, *coloredCheckBox;
     QDoubleSpinBox *spinCorrelationBox, *sedPercentageBox;
+    QSpinBox *atom1Box, *atom2Box, *electron1Box, *electron2Box;
     QPushButton *sedsExportButton, *deselectAllButton;
     QTreeWidget *maximaList;
     QLabel *probabilitySum;

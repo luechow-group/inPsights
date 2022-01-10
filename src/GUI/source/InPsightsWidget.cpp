@@ -24,7 +24,7 @@ InPsightsWidget::InPsightsWidget(QWidget *parent, const std::string& filename)
         filename_(filename),
         moleculeWidget(new MoleculeWidget(this)),
         //maximaProcessingWidget(new MaximaProcessingWidget(this)),
-        atomsCheckBox(new QCheckBox("Atoms", this)),
+        atomsCheckBox(new QCheckBox("Nuclei", this)),
         bondsCheckBox(new QCheckBox("Bonds", this)),
         axesCheckBox(new QCheckBox("Axes", this)),
         sampleAverageCheckBox(new QCheckBox("Sample Average", this)),
@@ -36,6 +36,10 @@ InPsightsWidget::InPsightsWidget(QWidget *parent, const std::string& filename)
         coloredCheckBox(new QCheckBox("Multicolored", this)),
         spinCorrelationBox(new QDoubleSpinBox(this)),
         sedPercentageBox(new QDoubleSpinBox(this)),
+        atom1Box(new QSpinBox(this)),
+        atom2Box(new QSpinBox(this)),
+        electron1Box(new QSpinBox(this)),
+        electron2Box(new QSpinBox(this)),
         maximaList(new QTreeWidget(this)),
         probabilitySum(new QLabel(this)),
         deselectAllButton(new QPushButton("deselect all", this))
@@ -55,7 +59,9 @@ void InPsightsWidget::createWidget() {
     auto hbox = new QHBoxLayout(this);
     auto vboxOuter = new QVBoxLayout();
     auto vboxInner = new QVBoxLayout();
-    auto gbox = new QGroupBox("Settings:");
+    auto vboxInner2 = new QVBoxLayout();
+    auto selectorBox = new QGroupBox("Particle highlighting:");
+    auto settingsBox = new QGroupBox("Settings:");
 
     setLayout(hbox);
 
@@ -86,9 +92,21 @@ void InPsightsWidget::createWidget() {
     lineGrid->addWidget(probabilitySum,0,0);
     lineGrid->addWidget(deselectAllButton,0,1);
 
+    vboxOuter->addWidget(selectorBox);
+    selectorBox->setLayout(vboxInner2);
+
+    auto selectorGrid = new QGridLayout();
+    vboxInner2->addLayout(selectorGrid,1);
+    selectorGrid->addWidget(new QLabel("Nuclei"),0,0);
+    selectorGrid->addWidget(atom1Box,1,0);
+    selectorGrid->addWidget(atom2Box,1,1);
+    selectorGrid->addWidget(new QLabel("Electrons"),2,0);
+    selectorGrid->addWidget(electron1Box,3,0);
+    selectorGrid->addWidget(electron2Box,3,1);
+
     //vboxOuter->addWidget(maximaProcessingWidget,1);
-    vboxOuter->addWidget(gbox);
-    gbox->setLayout(vboxInner);
+    vboxOuter->addWidget(settingsBox);
+    settingsBox->setLayout(vboxInner);
 
     maximaList->setSortingEnabled(true);
 
@@ -148,6 +166,18 @@ void InPsightsWidget::connectSignals() {
     connect(spinCorrelationBox, qOverload<double>(&QDoubleSpinBox::valueChanged),
             this, &InPsightsWidget::onSpinCorrelationsBoxChanged);
 
+    connect(atom1Box, qOverload<int>(&QSpinBox::valueChanged),
+            this, &InPsightsWidget::onAtom1BoxChanged);
+
+    connect(atom2Box, qOverload<int>(&QSpinBox::valueChanged),
+            this, &InPsightsWidget::onAtom2BoxChanged);
+
+    connect(electron1Box, qOverload<int>(&QSpinBox::valueChanged),
+            this, &InPsightsWidget::onElectron1BoxChanged);
+
+    connect(electron2Box, qOverload<int>(&QSpinBox::valueChanged),
+            this, &InPsightsWidget::onElectron2BoxChanged);
+
     /*
     connect(maximaProcessingWidget, &MaximaProcessingWidget::atomsChecked,
             moleculeWidget, &MoleculeWidget::onAtomsChecked);
@@ -171,6 +201,22 @@ void InPsightsWidget::setupSpinBoxes() {
     sedPercentageBox->setRange(0.0,1.0);
     sedPercentageBox->setSingleStep(0.01);
     sedPercentageBox->setValue(0.2);
+
+    atom1Box->setRange(-1,moleculeWidget->getAtomsNumber()-1);
+    atom1Box->setSingleStep(1);
+    atom1Box->setValue(-1);
+
+    atom2Box->setRange(-1,moleculeWidget->getAtomsNumber()-1);
+    atom2Box->setSingleStep(1);
+    atom2Box->setValue(-1);
+
+    electron1Box->setRange(-1,clusterCollection_[0].representativeStructure().numberOfEntities()-1);
+    electron1Box->setSingleStep(1);
+    electron1Box->setValue(-1);
+
+    electron2Box->setRange(-1,clusterCollection_[0].representativeStructure().numberOfEntities()-1);
+    electron2Box->setSingleStep(1);
+    electron2Box->setValue(-1);
 }
 
 void InPsightsWidget::selectedStructure(QTreeWidgetItem *item, int column) {
@@ -277,6 +323,22 @@ void InPsightsWidget::onSpinCorrelationsChecked(int stateId) {
 
 void InPsightsWidget::onSpinCorrelationsBoxChanged(double value) {
     redrawSpinDecorations();
+}
+
+void InPsightsWidget::onAtom1BoxChanged(int value) {
+    moleculeWidget->onAtomsHighlighted(value);
+}
+
+void InPsightsWidget::onAtom2BoxChanged(int value) {
+    moleculeWidget->onAtomsChecked(value);
+}
+
+void InPsightsWidget::onElectron1BoxChanged(int value) {
+    moleculeWidget->onElectronsHighlighted(value);
+}
+
+void InPsightsWidget::onElectron2BoxChanged(int value) {
+    moleculeWidget->onElectronsChecked(value);
 }
 
 void InPsightsWidget::showSplashScreen() {
