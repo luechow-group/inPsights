@@ -34,7 +34,7 @@ public slots:
 private:
     std::string filename_;
     MoleculeWidget *moleculeWidget;
-    MaximaProcessingWidget *maximaProcessingWidget;
+    //MaximaProcessingWidget *maximaProcessingWidget;
     QCheckBox *atomsCheckBox, *bondsCheckBox, *axesCheckBox, *sampleAverageCheckBox, *spinCorrelationsCheckBox,
     *sedsCheckBox,*maximaHullsCheckBox, *plotAllCheckBox, *coloredCheckBox;
     QDoubleSpinBox *spinCorrelationBox, *sedPercentageBox;
