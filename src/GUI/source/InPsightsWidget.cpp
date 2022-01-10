@@ -29,7 +29,6 @@ InPsightsWidget::InPsightsWidget(QWidget *parent, const std::string& filename)
         axesCheckBox(new QCheckBox("Axes", this)),
         sampleAverageCheckBox(new QCheckBox("Sample Average", this)),
         spinCorrelationsCheckBox(new QCheckBox("Spin Correlations", this)),
-        sedsExportButton(new QPushButton("export SEDs", this)),
         sedsCheckBox(new QCheckBox("SEDs", this)),
         maximaHullsCheckBox(new QCheckBox("Maxima Hulls", this)),
         plotAllCheckBox(new QCheckBox("All of Cluster", this)),
@@ -127,8 +126,7 @@ void InPsightsWidget::createWidget() {
     checkboxGrid->addWidget(maximaHullsCheckBox,2,1);
 
     //fourth row
-    checkboxGrid->addWidget(sedsExportButton,3,0);
-    checkboxGrid->addWidget(plotAllCheckBox,3,1);
+    checkboxGrid->addWidget(plotAllCheckBox,3,0);
 
     //fifth row
     checkboxGrid->addWidget(sedsCheckBox,4,0);
@@ -201,7 +199,6 @@ void InPsightsWidget::connectSignals() {
     connect(maximaProcessingWidget, &MaximaProcessingWidget::electronsHighlighted,
             moleculeWidget, &MoleculeWidget::onElectronsHighlighted);
     */
-    connect(sedsExportButton, &QPushButton::clicked, this, &InPsightsWidget::onSedsExport);
     connect(deselectAllButton, &QPushButton::clicked, this, &InPsightsWidget::onDeselectAll);
 }
 
@@ -545,20 +542,6 @@ std::string InPsightsWidget::filenameWithoutExtension(){
 
 bool InPsightsWidget::plotAllActiveQ() {
     return plotAllCheckBox->checkState() == Qt::Checked;
-}
-
-void InPsightsWidget::onSedsExport(bool) {
-    for (auto &sed : moleculeWidget->activeSedsMap_){
-        auto clusterId = sed.first;
-        int i = 0;
-        for (auto &voxelCube : clusterCollection_[clusterId].voxelCubes_){
-            std::string fileName = "sed-"+std::to_string(clusterId)+"-"+std::to_string(i)+".txt";
-            std::string comment = filename_ + " cluster " + std::to_string(clusterId) + " SED " + std::to_string(i);
-            voxelCube.exportMacmolplt(fileName, comment);
-            i += 1;
-        }
-    }
-    spdlog::info("Exported SEDs");
 }
 
 void InPsightsWidget::onDeselectAll(bool) {

@@ -29,6 +29,7 @@ MoleculeWidget::MoleculeWidget(QWidget *parent)
         cameraController_(new Qt3DExtras::QOrbitCameraController(root_)),
         screenshotButton_(new QPushButton("Save image", this)),
         x3dExportButton_(new QPushButton("Save x3d", this)),
+        sedsExportButton_(new QPushButton("Export SEDs", this)),
         resetCameraButton_(new QPushButton("Reset camera", this)),
         pan_(new QSpinBox(this)),
         tilt_(new QSpinBox(this)),
@@ -54,6 +55,7 @@ MoleculeWidget::MoleculeWidget(QWidget *parent)
     outerLayout->addLayout(innerLayout,0);
     innerLayout->addWidget(screenshotButton_,4);
     innerLayout->addWidget(x3dExportButton_,4);
+    innerLayout->addWidget(sedsExportButton_,4);
     innerLayout->addWidget(fileInfoText_, 10);
     innerLayout->addWidget(resetCameraButton_,4);
     innerLayout->addWidget(zoomText_,1);
@@ -67,6 +69,7 @@ MoleculeWidget::MoleculeWidget(QWidget *parent)
 
     connect(screenshotButton_, &QPushButton::clicked, this, &MoleculeWidget::onScreenshot);
     connect(x3dExportButton_, &QPushButton::clicked, this, &MoleculeWidget::onX3dExport);
+    connect(sedsExportButton_, &QPushButton::clicked, this, &MoleculeWidget::onSedsExport);
     connect(resetCameraButton_, &QPushButton::clicked, this, &MoleculeWidget::onResetCamera);
 
     connect(pan_, qOverload<int>(&QSpinBox::valueChanged),
@@ -419,4 +422,21 @@ void MoleculeWidget::onX3dExport(bool) {
 
 void MoleculeWidget::activateCompatabilityMode() {
     compatabilityMode_ = true;
+}
+
+void MoleculeWidget::onSedsExport(bool) {
+    auto inPsightsWidget = dynamic_cast<InPsightsWidget*>(parent());
+    if(inPsightsWidget) {
+        for (auto &sed: activeSedsMap_) {
+            auto clusterId = sed.first;
+            int i = 0;
+            for (auto &voxelCube: inPsightsWidget->clusterCollection_[clusterId].voxelCubes_) {
+                std::string fileName = "sed-" + std::to_string(clusterId) + "-" + std::to_string(i) + ".txt";
+                std::string comment = " cluster " + std::to_string(clusterId) + " SED " + std::to_string(i);
+                voxelCube.exportMacmolplt(fileName, comment);
+                i += 1;
+            }
+        }
+        spdlog::info("Exported SEDs");
+    }
 }

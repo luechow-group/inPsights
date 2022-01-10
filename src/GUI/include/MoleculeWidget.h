@@ -66,13 +66,14 @@ public slots:
     void onScreenshot(bool);
     void onX3dExport(bool);
     void onResetCamera(bool);
+    void onSedsExport(bool);
 
 private:
     bool compatabilityMode_;
     Qt3DExtras::Qt3DWindow *qt3DWindow_;
     Qt3DCore::QEntity *root_, *moleculeEntity_;
     Qt3DExtras::QOrbitCameraController *cameraController_;
-    QPushButton *screenshotButton_, *x3dExportButton_, *resetCameraButton_;
+    QPushButton *screenshotButton_, *x3dExportButton_, *resetCameraButton_, *sedsExportButton_;
     QSpinBox *pan_, *tilt_, *roll_, *zoom_;
     Qt3DRender::QDirectionalLight *light_;
     int initPan_, initTilt_, initRoll_,initZoom_;

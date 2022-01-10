@@ -19,6 +19,7 @@ public:
     explicit InPsightsWidget(QWidget *parent = nullptr, const std::string &filename = "");
     bool plotAllActiveQ();
     std::string filenameWithoutExtension();
+    std::vector<ClusterData> clusterCollection_;
 
 public slots:
     void selectedStructure(QTreeWidgetItem *item, int column);
@@ -32,7 +33,6 @@ public slots:
     void onElectron2BoxChanged(int value);
     void onAtom1BoxChanged(int value);
     void onAtom2BoxChanged(int value);
-    void onSedsExport(bool);
     void onDeselectAll(bool);
     void onSedChecked(int stateId);
     void updateSelectedStructures(int);
@@ -48,7 +48,6 @@ private:
     QPushButton *sedsExportButton, *deselectAllButton;
     QTreeWidget *maximaList;
     QLabel *probabilitySum;
-    std::vector<ClusterData> clusterCollection_;
 
     void showSplashScreen();
     void loadData();
