@@ -57,6 +57,7 @@ MoleculeWidget::MoleculeWidget(QWidget *parent)
     innerLayout->addWidget(x3dExportButton_,4);
     innerLayout->addWidget(sedsExportButton_,4);
     innerLayout->addWidget(fileInfoText_, 10);
+    fileInfoText_->setAlignment(Qt::AlignCenter);
     innerLayout->addWidget(resetCameraButton_,4);
     innerLayout->addWidget(zoomText_,1);
     innerLayout->addWidget(zoom_,2);
