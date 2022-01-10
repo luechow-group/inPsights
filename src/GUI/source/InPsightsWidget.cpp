@@ -209,26 +209,42 @@ void InPsightsWidget::setupSpinBoxes() {
     spinCorrelationBox->setRange(0.0,1.0);
     spinCorrelationBox->setSingleStep(0.01);
     spinCorrelationBox->setValue(1.0);
+    spinCorrelationBox->setButtonSymbols(QAbstractSpinBox::PlusMinus);
+    spinCorrelationBox->setAccelerated(true);
 
     sedPercentageBox->setRange(0.0,1.0);
     sedPercentageBox->setSingleStep(0.01);
     sedPercentageBox->setValue(0.2);
+    sedPercentageBox->setButtonSymbols(QAbstractSpinBox::PlusMinus);
+    sedPercentageBox->setAccelerated(true);
 
     atom1Box->setRange(-1,moleculeWidget->getAtomsNumber()-1);
+    atom1Box->setWrapping(true);
     atom1Box->setSingleStep(1);
     atom1Box->setValue(-1);
+    atom1Box->setSpecialValueText(tr("none"));
+    atom1Box->setAccelerated(true);
 
     atom2Box->setRange(-1,moleculeWidget->getAtomsNumber()-1);
+    atom2Box->setWrapping(true);
     atom2Box->setSingleStep(1);
     atom2Box->setValue(-1);
+    atom2Box->setSpecialValueText(tr("none"));
+    atom2Box->setAccelerated(true);
 
     electron1Box->setRange(-1,clusterCollection_[0].representativeStructure().numberOfEntities()-1);
+    electron1Box->setWrapping(true);
     electron1Box->setSingleStep(1);
     electron1Box->setValue(-1);
+    electron1Box->setSpecialValueText(tr("none"));
+    electron1Box->setAccelerated(true);
 
     electron2Box->setRange(-1,clusterCollection_[0].representativeStructure().numberOfEntities()-1);
+    electron2Box->setWrapping(true);
     electron2Box->setSingleStep(1);
     electron2Box->setValue(-1);
+    electron2Box->setSpecialValueText(tr("none"));
+    electron2Box->setAccelerated(true);
 }
 
 void InPsightsWidget::selectedStructure(QTreeWidgetItem *item, int column) {

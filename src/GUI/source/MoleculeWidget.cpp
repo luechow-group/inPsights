@@ -116,24 +116,32 @@ void MoleculeWidget::setupCameraBoxes(int pan, int tilt, int roll, int zoom) {
     pan_->setSingleStep(5);
     pan_->setValue(pan);
     pan_->setSuffix(" °");
+    pan_->setButtonSymbols(QAbstractSpinBox::PlusMinus);
+    pan_->setAccelerated(true);
 
     tilt_->setRange(-180,180);
     tilt_->setWrapping(true);
     tilt_->setSingleStep(5);
     tilt_->setValue(tilt);
     tilt_->setSuffix(" °");
+    tilt_->setButtonSymbols(QAbstractSpinBox::PlusMinus);
+    tilt_->setAccelerated(true);
 
     roll_->setRange(-180,180);
     roll_->setWrapping(true);
     roll_->setSingleStep(5);
     roll_->setValue(roll);
     roll_->setSuffix(" °");
+    roll_->setButtonSymbols(QAbstractSpinBox::PlusMinus);
+    roll_->setAccelerated(true);
 
     // max value for zoom is 999 instead of INT_MAX, since it determines the box width
     zoom_->setRange(0,999);
     zoom_->setSingleStep(5);
     zoom_->setValue(zoom);
     zoom_->setSuffix(" %");
+    zoom_->setButtonSymbols(QAbstractSpinBox::PlusMinus);
+    zoom_->setAccelerated(true);
 }
 
 void MoleculeWidget::initialCameraSetup(int zoom, int pan, int tilt, int roll) {
