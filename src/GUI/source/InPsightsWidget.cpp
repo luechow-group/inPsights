@@ -69,7 +69,7 @@ void InPsightsWidget::createWidget() {
     hbox->addLayout(vboxOuter, 1);
 
     // put into MaximaTreeWidget class
-    auto headerLabels = QList<QString>({"ID", "P", "min(Φ)", "max(Φ)"});
+    auto headerLabels = QList<QString>({"ID", "Weight", "min(Φ)", "max(Φ)"});
     maximaList->setColumnCount(headerLabels.size());
     maximaList->setHeaderLabels(headerLabels);
     maximaList->header()->setStretchLastSection(false);
