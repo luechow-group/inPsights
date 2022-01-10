@@ -138,7 +138,6 @@ void InPsightsWidget::connectSignals() {
     connect(plotAllCheckBox, &QCheckBox::stateChanged,
             this, &InPsightsWidget::onPlotAllChecked);
 
-
     connect(spinCorrelationBox, qOverload<double>(&QDoubleSpinBox::valueChanged),
             this, &InPsightsWidget::onSpinCorrelationsBoxChanged);
 
@@ -245,14 +244,7 @@ void InPsightsWidget::onPlotAllChecked(int stateId)  {
 }
 
 void InPsightsWidget::redrawSpinDecorations() {
-    if(spinCorrelationsCheckBox->checkState() == Qt::Checked){
-        onSpinCorrelationsChecked(Qt::Unchecked);
-        onSpinCorrelationsChecked(Qt::Checked);
-    }
-    else if(spinCorrelationsCheckBox->checkState() == Qt::PartiallyChecked){
-        onSpinCorrelationsChecked(Qt::Unchecked);
-        onSpinCorrelationsChecked(Qt::PartiallyChecked);
-    }
+    onSpinCorrelationsChecked(spinCorrelationsCheckBox->checkState());
 }
 
 void InPsightsWidget::onAtomsChecked(int stateId) {
@@ -268,24 +260,15 @@ void InPsightsWidget::onAxesChecked(int stateId) {
 }
 
 void InPsightsWidget::onSpinCorrelationsChecked(int stateId) {
+    moleculeWidget->deleteSpinCorrelations();
     if(Qt::CheckState(stateId) == Qt::Checked)
-        moleculeWidget->drawSpinCorrelations(true,clusterCollection_, spinCorrelationBox->value(),true);
+        moleculeWidget->drawSpinCorrelations(clusterCollection_, spinCorrelationBox->value(),true);
     else if(Qt::CheckState(stateId) == Qt::PartiallyChecked)
-        moleculeWidget->drawSpinCorrelations(true,clusterCollection_, spinCorrelationBox->value(),false);
-    else
-        moleculeWidget->drawSpinCorrelations(false,clusterCollection_, spinCorrelationBox->value(),false);
+        moleculeWidget->drawSpinCorrelations(clusterCollection_, spinCorrelationBox->value(),false);
 }
 
 void InPsightsWidget::onSpinCorrelationsBoxChanged(double value) {
-    if (spinCorrelationsCheckBox->checkState() == Qt::CheckState::Checked) {
-        onSpinCorrelationsChecked(Qt::CheckState::Unchecked); //TODO ugly, create update() function in SpinCorrelation3D and make it accessible
-        onSpinCorrelationsChecked(Qt::CheckState::Checked);
-    } else if (spinCorrelationsCheckBox->checkState() == Qt::CheckState::PartiallyChecked) {
-            onSpinCorrelationsChecked(Qt::CheckState::Unchecked);
-            onSpinCorrelationsChecked(Qt::CheckState::PartiallyChecked);
-    }else {
-         onSpinCorrelationsChecked(Qt::CheckState::Unchecked);
-    }
+    redrawSpinDecorations();
 }
 
 void InPsightsWidget::showSplashScreen() {

@@ -235,23 +235,24 @@ void MoleculeWidget::removeSeds(int clusterId) {
 }
 
 
-void MoleculeWidget::drawSpinCorrelations(bool drawQ,
-                                          const std::vector<ClusterData> &clusterData,
+void MoleculeWidget::drawSpinCorrelations(const std::vector<ClusterData> &clusterData,
                                           double spinCorrelationThreshold, bool drawSameSpinCorrelationsQ) {
-    //TODO SPLIT INTO DRAW AND DELETE METHODS
     for (auto &cluster : activeElectronsVectorsMap_)
         for (auto &structure : cluster.second) {
-            if (drawQ) {
                 new SpinCorrelations3D(structure.second,
                         clusterData[cluster.first].SeeStats_,
                         spinCorrelationThreshold,
                         drawSameSpinCorrelationsQ,
                         compatabilityMode_);
-            } else {
-                structure.second->deleteCorrelations();
-            }
         }
 }
+
+void MoleculeWidget::deleteSpinCorrelations() {
+    for (auto &cluster : activeElectronsVectorsMap_)
+        for (auto &structure : cluster.second) {
+            structure.second->deleteCorrelations();
+        }
+};
 
 void MoleculeWidget::onAtomsChecked(std::vector<int> selectedParticles) {
     auto &particles = atomsVector3D_->particles3D_;

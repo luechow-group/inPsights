@@ -58,11 +58,24 @@ void SpinCorrelations3D::createConnections(const ElectronsVector &electronsVecto
                             electronsVector.positionsVector()[i], electronRadius,
                             electronsVector.positionsVector()[j], electronRadius);
 
+                    Qt::GlobalColor color;
                     if (corr < 0) {
-                        c = new Cylinder(this, Qt::green, positionPair, electronRadius / 7.5f, absCorr);
-                        c->material->setShininess(0);
-                    } else if (drawSameSpinCorrelationsQ) {
-                        c = new Cylinder(this, Qt::magenta, positionPair, electronRadius / 7.5f, absCorr);
+                        if (drawSameSpinCorrelationsQ) {
+                            color = Qt::green;
+                        }
+                        else {
+                            color = Qt::black;
+                        }
+                    } else {
+                        if (drawSameSpinCorrelationsQ) {
+                            color = Qt::magenta;
+                        }
+                        else {
+                            continue;
+                        }
+                    }
+                    if (positionPair.first != positionPair.second) {
+                        c = new Cylinder(this, color, positionPair, electronRadius / 5.0f, absCorr);
                         c->material->setShininess(0);
                     }
                 }
