@@ -40,8 +40,8 @@ MoleculeWidget::MoleculeWidget(QWidget *parent)
         initZoom_(100),
         defaultCameraRadius_(0.0f),
         fileInfoText_(new QLabel("Info text")),
-        panTiltRollText_(new QLabel("pan/tilt/roll")),
-        zoomText_(new QLabel("zoom")),
+        panTiltRollText_(new QLabel("Pan/Tilt/Roll")),
+        zoomText_(new QLabel("Zoom")),
         atomsVector3D_(nullptr),
         cartesianAxes_(nullptr),
         light_(new Qt3DRender::QDirectionalLight(root_)){
@@ -52,16 +52,16 @@ MoleculeWidget::MoleculeWidget(QWidget *parent)
     setLayout(outerLayout);
     outerLayout->addWidget(createWindowContainer(qt3DWindow_),1);
     outerLayout->addLayout(innerLayout,0);
-    innerLayout->addWidget(screenshotButton_,2);
-    innerLayout->addWidget(x3dExportButton_,2);
-    innerLayout->addWidget(fileInfoText_, 5);
-    innerLayout->addWidget(resetCameraButton_,2);
+    innerLayout->addWidget(screenshotButton_,4);
+    innerLayout->addWidget(x3dExportButton_,4);
+    innerLayout->addWidget(fileInfoText_, 10);
+    innerLayout->addWidget(resetCameraButton_,4);
     innerLayout->addWidget(zoomText_,1);
-    innerLayout->addWidget(zoom_,1);
-    innerLayout->addWidget(panTiltRollText_,1);
-    innerLayout->addWidget(pan_,1);
-    innerLayout->addWidget(tilt_,1);
-    innerLayout->addWidget(roll_,1);
+    innerLayout->addWidget(zoom_,2);
+    innerLayout->addWidget(panTiltRollText_,2);
+    innerLayout->addWidget(pan_,2);
+    innerLayout->addWidget(tilt_,2);
+    innerLayout->addWidget(roll_,2);
 
     qt3DWindow_->setRootEntity(root_);
 
