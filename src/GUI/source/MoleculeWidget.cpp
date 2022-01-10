@@ -112,16 +112,19 @@ Qt3DCore::QEntity *MoleculeWidget::getMoleculeEntity() {
 
 void MoleculeWidget::setupCameraBoxes(int pan, int tilt, int roll, int zoom) {
     pan_->setRange(-180,180);
+    pan_->setWrapping(true);
     pan_->setSingleStep(5);
     pan_->setValue(pan);
     pan_->setSuffix(" °");
 
     tilt_->setRange(-180,180);
+    tilt_->setWrapping(true);
     tilt_->setSingleStep(5);
     tilt_->setValue(tilt);
     tilt_->setSuffix(" °");
 
     roll_->setRange(-180,180);
+    roll_->setWrapping(true);
     roll_->setSingleStep(5);
     roll_->setValue(roll);
     roll_->setSuffix(" °");
