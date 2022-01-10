@@ -181,7 +181,6 @@ void MoleculeWidget::drawAtoms(bool drawQ) {
     if (drawQ) {
         atomsVector3D_ = new AtomsVector3D(moleculeEntity_, *sharedAtomsVector_);
     } else {
-        atomsVector3D_->deleteConnections();
         atomsVector3D_->deleteLater();
     }
 }
@@ -273,18 +272,20 @@ void MoleculeWidget::onAtomsHighlighted(int selectedParticle) {
 }
 
 void MoleculeWidget::onElectronsChecked(int selectedParticle) {
-    auto &particles = activeElectronsVectorsMap_.begin()->second.begin()->second->particles3D_;
-
-    for (int i = 0; i < static_cast<int>(particles.size()); ++i) {
-        particles[i]->onSelected(i == selectedParticle);
+    for (auto &cluster : activeElectronsVectorsMap_){
+        auto &particles = cluster.second.begin()->second->particles3D_;
+        for (int i = 0; i < static_cast<int>(particles.size()); ++i) {
+            particles[i]->onSelected(i == selectedParticle);
+        }
     }
 }
 
 void MoleculeWidget::onElectronsHighlighted(int selectedParticle) {
-    auto &particles = activeElectronsVectorsMap_.begin()->second.begin()->second->particles3D_;
-
-    for (int i = 0; i < static_cast<int>(particles.size()); ++i) {
-        particles[i]->onHighlighted(i == selectedParticle);
+    for (auto &cluster : activeElectronsVectorsMap_){
+        auto &particles = cluster.second.begin()->second->particles3D_;
+        for (int i = 0; i < static_cast<int>(particles.size()); ++i) {
+            particles[i]->onHighlighted(i == selectedParticle);
+        }
     }
 }
 

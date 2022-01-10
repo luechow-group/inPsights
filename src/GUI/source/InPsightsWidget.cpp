@@ -268,6 +268,8 @@ void InPsightsWidget::selectedStructure(QTreeWidgetItem *item, int column) {
                 moleculeWidget->addMaximaHulls(clusterId, clusterCollection_);
         }
 
+        onElectron1BoxChanged(electron1Box->value());
+        onElectron2BoxChanged(electron2Box->value());
     } else {
         moleculeWidget->removeElectronsVector(clusterId, secondId);
 
@@ -302,11 +304,23 @@ void InPsightsWidget::redrawSpinDecorations() {
 }
 
 void InPsightsWidget::onAtomsChecked(int stateId) {
+    bondsCheckBox->setCheckState(Qt::CheckState::Unchecked);
     moleculeWidget->drawAtoms(Qt::CheckState(stateId) == Qt::CheckState::Checked);
+    if (Qt::CheckState(stateId) == Qt::CheckState::Checked) {
+        onAtom1BoxChanged(atom1Box->value());
+        onAtom2BoxChanged(atom2Box->value());
+    }
 }
 
 void InPsightsWidget::onBondsChecked(int stateId) {
-    moleculeWidget->drawBonds(Qt::CheckState(stateId) == Qt::CheckState::Checked);
+    if (atomsCheckBox->isChecked()) {
+        moleculeWidget->drawBonds(Qt::CheckState(stateId) == Qt::CheckState::Checked);
+    }
+    else {
+        if (Qt::CheckState(stateId) == Qt::CheckState::Checked) {
+            bondsCheckBox->setCheckState(Qt::CheckState::Unchecked);
+        }
+    }
 }
 
 void InPsightsWidget::onAxesChecked(int stateId) {
