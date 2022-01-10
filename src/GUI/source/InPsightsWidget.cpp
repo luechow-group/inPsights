@@ -75,7 +75,7 @@ void InPsightsWidget::createWidget() {
     maximaList->setHeaderLabels(headerLabels);
     maximaList->header()->setStretchLastSection(false);
 
-    maximaList->headerItem()->setToolTip(0,QString("IDs sorted by Φ value"));
+    maximaList->headerItem()->setToolTip(0,QString("IDs sorted by potential Φ"));
     maximaList->headerItem()->setToolTip(1,QString("Probability"));
     maximaList->headerItem()->setToolTip(2,QString("Φ = -ħ/2m ln|Ψ|²"));
     maximaList->headerItem()->setToolTip(3,QString("Φ = -ħ/2m ln|Ψ|²"));
@@ -178,6 +178,18 @@ void InPsightsWidget::connectSignals() {
     connect(electron2Box, qOverload<int>(&QSpinBox::valueChanged),
             this, &InPsightsWidget::onElectron2BoxChanged);
 
+    connect(sedsCheckBox, &QCheckBox::stateChanged,
+            this, &InPsightsWidget::onSedChecked);
+
+    connect(coloredCheckBox, &QCheckBox::stateChanged,
+            this, &InPsightsWidget::updateSelectedStructures);
+
+    connect(maximaHullsCheckBox, &QCheckBox::stateChanged,
+            this, &InPsightsWidget::updateSelectedStructures);
+
+    connect(sampleAverageCheckBox, &QCheckBox::stateChanged,
+            this, &InPsightsWidget::updateSelectedStructures);
+
     /*
     connect(maximaProcessingWidget, &MaximaProcessingWidget::atomsChecked,
             moleculeWidget, &MoleculeWidget::onAtomsChecked);
@@ -238,10 +250,12 @@ void InPsightsWidget::selectedStructure(QTreeWidgetItem *item, int column) {
     if (createQ) {
         auto sampleAverage = clusterCollection_[clusterId].sampleAverage_;
 
-        if(sampleAverageCheckBox->checkState() == Qt::CheckState::Checked && sampleAverage.numberOfEntities() > 0) {
-            moleculeWidget->addElectronsVector(sampleAverage, clusterId, secondId, coloredCheckBox->checkState() == Qt::Checked);
+        if (sampleAverageCheckBox->checkState() == Qt::CheckState::Checked &&
+            sampleAverage.numberOfEntities() > 0) {
+            moleculeWidget->addElectronsVector(sampleAverage, clusterId, secondId,
+                                               coloredCheckBox->checkState() == Qt::Checked);
         } else if (sampleAverageCheckBox->checkState() == Qt::CheckState::Checked
-        && sampleAverage.numberOfEntities() == 0) {
+                   && sampleAverage.numberOfEntities() == 0) {
             moleculeWidget->addElectronsVector(clusterCollection_[clusterId].exemplaricStructures_[structureId],
                                                clusterId, secondId, coloredCheckBox->checkState() == Qt::Checked);
             spdlog::warn("Sample averaged vectors were not calculated. Plotting the first maximum instead...");
@@ -252,16 +266,14 @@ void InPsightsWidget::selectedStructure(QTreeWidgetItem *item, int column) {
 
         //maximaProcessingWidget->updateData(clusterCollection_[clusterId]);
 
-        if(sedsCheckBox->checkState() == Qt::CheckState::Checked
-        && moleculeWidget->activeSedsMap_.find(clusterId) == moleculeWidget->activeSedsMap_.end()) {
-            if (clusterCollection_[clusterId].voxelCubes_.empty())
-                spdlog::warn("Voxel cubes were not calculated.");
-            else
-                moleculeWidget->addSeds(clusterId, structureId, clusterCollection_, sedPercentageBox->value());
+        if (sedsCheckBox->checkState() == Qt::CheckState::Checked
+            && moleculeWidget->activeSedsMap_.find(clusterId) == moleculeWidget->activeSedsMap_.end()) {
+            moleculeWidget->addSeds(clusterId, structureId, clusterCollection_, sedPercentageBox->value());
         }
 
-        if(maximaHullsCheckBox->checkState() == Qt::CheckState::Checked
-           && moleculeWidget->activeMaximaHullsMap_.find(clusterId) == moleculeWidget->activeMaximaHullsMap_.end()) {
+        if (maximaHullsCheckBox->checkState() == Qt::CheckState::Checked
+            &&
+            moleculeWidget->activeMaximaHullsMap_.find(clusterId) == moleculeWidget->activeMaximaHullsMap_.end()) {
             if (clusterCollection_[clusterId].exemplaricStructures_.empty())
                 spdlog::warn("Voxel cubes were not calculated.");
             else
@@ -273,15 +285,48 @@ void InPsightsWidget::selectedStructure(QTreeWidgetItem *item, int column) {
     } else {
         moleculeWidget->removeElectronsVector(clusterId, secondId);
 
-        if(moleculeWidget->activeSedsMap_.find(clusterId) != moleculeWidget->activeSedsMap_.end())
+        if (moleculeWidget->activeSedsMap_.find(clusterId) != moleculeWidget->activeSedsMap_.end())
             moleculeWidget->removeSeds(clusterId);
 
-        if(moleculeWidget->activeMaximaHullsMap_.find(clusterId) != moleculeWidget->activeMaximaHullsMap_.end())
+        if (moleculeWidget->activeMaximaHullsMap_.find(clusterId) != moleculeWidget->activeMaximaHullsMap_.end())
             moleculeWidget->removeMaximaHulls(clusterId);
     }
     redrawSpinDecorations();
     probabilitySum->setText(QString("Σ=") + QString::number(sumProbabilities(), 'f', 4));
+
 };
+
+void InPsightsWidget::updateSelectedStructures(int stateId) {
+    auto* root = maximaList->invisibleRootItem();
+
+    // iterate over topLevelItems
+    for (int i = 0; i < root->childCount(); ++i) {
+        if(root->child(i)->checkState(0) == Qt::Checked) {
+            root->child(i)->setCheckState(0, Qt::Unchecked);
+            root->child(i)->setCheckState(0, Qt::Checked);
+        }
+        // iterate over childs of topLevelItem i
+        for (int j = 0; j<root->child(i)->childCount(); ++j) {
+            if(root->child(i)->child(j)->checkState(0) == Qt::Checked) {
+                root->child(i)->child(j)->setCheckState(0, Qt::Unchecked);
+                root->child(i)->child(j)->setCheckState(0, Qt::Checked);
+            }
+        }
+    }
+};
+
+void InPsightsWidget::onSedChecked(int stateId) {
+    // guessing that all voxelCubes are empty, if first is empty. Should be fine
+    if(clusterCollection_[0].voxelCubes_.empty()) {
+        if (Qt::CheckState(stateId) == Qt::CheckState::Checked) {
+            spdlog::warn("Voxel cubes were not calculated.");
+            sedsCheckBox->setCheckState(Qt::CheckState::Unchecked);
+        }
+    }
+    else {
+        updateSelectedStructures(Qt::CheckState::Checked);
+    }
+}
 
 void InPsightsWidget::onPlotAllChecked(int stateId)  {
     auto plotAllQ = Qt::CheckState(stateId);

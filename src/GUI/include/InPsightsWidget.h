@@ -34,6 +34,8 @@ public slots:
     void onAtom2BoxChanged(int value);
     void onSedsExport(bool);
     void onDeselectAll(bool);
+    void onSedChecked(int stateId);
+    void updateSelectedStructures(int stateId);
 
 private:
     std::string filename_;
