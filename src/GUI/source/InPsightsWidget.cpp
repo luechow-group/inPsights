@@ -480,11 +480,21 @@ void InPsightsWidget::loadData() {
         clusterCollection_.emplace_back(doc["Clusters"][clusterId].as<ClusterData>());
         const auto & cluster = clusterCollection_.back();
 
+        float minPhi = cluster.valueStats_.cwiseMin()[0]/2.0;
+        auto minPhiString = QString::number(minPhi, 'f', 3);
+        if (minPhi > 0)
+            minPhiString = QString(' ') + minPhiString;
+
+        float maxPhi = cluster.valueStats_.cwiseMax()[0]/2.0;
+        auto maxPhiString = QString::number(maxPhi, 'f', 3);
+        if (maxPhi > 0)
+            maxPhiString = QString(' ') + maxPhiString;
+
         auto item = new IntegerSortedTreeWidgetItem(
                 maximaList, {QString::number(clusterId),
                  QString::number(1.0 * cluster.N_ / doc["NSamples"].as<unsigned>(), 'f', 4),
-                 QString::number(cluster.valueStats_.cwiseMin()[0]/2.0, 'f', 3),
-                 QString::number(cluster.valueStats_.cwiseMax()[0]/2.0, 'f', 3)});
+                 minPhiString.left(6),
+                 maxPhiString.left(6)});
 
         item->setCheckState(0, Qt::CheckState::Unchecked);
 
