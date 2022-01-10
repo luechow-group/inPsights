@@ -6,7 +6,6 @@
 #define INPSIGHTS_INPSIGHTSWIDGET_H
 
 #include <MoleculeWidget.h>
-#include <MaximaProcessingWidget.h>
 
 #include <QCheckBox>
 #include <QDoubleSpinBox>
@@ -41,7 +40,6 @@ public slots:
 private:
     std::string filename_;
     MoleculeWidget *moleculeWidget;
-    //MaximaProcessingWidget *maximaProcessingWidget;
     QCheckBox *atomsCheckBox, *bondsCheckBox, *axesCheckBox, *sampleAverageCheckBox, *spinCorrelationsCheckBox,
     *sedsCheckBox,*maximaHullsCheckBox, *plotAllCheckBox, *coloredCheckBox;
     QDoubleSpinBox *spinCorrelationBox, *sedPercentageBox;

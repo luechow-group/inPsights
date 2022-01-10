@@ -23,7 +23,6 @@ InPsightsWidget::InPsightsWidget(QWidget *parent, const std::string& filename)
         QWidget(parent),
         filename_(filename),
         moleculeWidget(new MoleculeWidget(this)),
-        //maximaProcessingWidget(new MaximaProcessingWidget(this)),
         atomsCheckBox(new QCheckBox("Nuclei", this)),
         bondsCheckBox(new QCheckBox("Bonds", this)),
         axesCheckBox(new QCheckBox("Axes", this)),
@@ -193,17 +192,6 @@ void InPsightsWidget::connectSignals() {
     connect(sampleAverageCheckBox, &QCheckBox::stateChanged,
             this, &InPsightsWidget::updateSelectedStructures);
 
-    /*
-    connect(maximaProcessingWidget, &MaximaProcessingWidget::atomsChecked,
-            moleculeWidget, &MoleculeWidget::onAtomsChecked);
-    connect(maximaProcessingWidget, &MaximaProcessingWidget::electronsChecked,
-            moleculeWidget, &MoleculeWidget::onElectronsChecked);
-
-    connect(maximaProcessingWidget, &MaximaProcessingWidget::atomsHighlighted,
-            moleculeWidget, &MoleculeWidget::onAtomsHighlighted);
-    connect(maximaProcessingWidget, &MaximaProcessingWidget::electronsHighlighted,
-            moleculeWidget, &MoleculeWidget::onElectronsHighlighted);
-    */
     connect(deselectAllButton, &QPushButton::clicked, this, &InPsightsWidget::onDeselectAll);
 }
 
@@ -281,8 +269,6 @@ void InPsightsWidget::selectedStructure(QTreeWidgetItem *item, int column) {
             moleculeWidget->addElectronsVector(clusterCollection_[clusterId].exemplaricStructures_[structureId],
                                                clusterId, secondId, coloredCheckBox->checkState() == Qt::Checked);
         }
-
-        //maximaProcessingWidget->updateData(clusterCollection_[clusterId]);
 
         if (sedsCheckBox->checkState() == Qt::CheckState::Checked
             && moleculeWidget->activeSedsMap_.find(clusterId) == moleculeWidget->activeSedsMap_.end()) {
@@ -458,16 +444,6 @@ void InPsightsWidget::loadData() {
      */
     if(doc["CompatabilityMode"] && doc["CompatabilityMode"].as<bool>())
         moleculeWidget->activateCompatabilityMode();
-
-    /*
-    auto nElectrons = doc["Clusters"][0]["Structures"][0].as<ElectronsVector>().numberOfEntities();
-
-    auto EnStats = doc["En"].as<VectorStatistics>();
-    maximaProcessingWidget->setAtomEnergies(EnStats);
-    maximaProcessingWidget->setAtomsVector(atoms);
-    maximaProcessingWidget->initializeTreeItems(maximaProcessingWidget->atomsTreeWidget(), int(atoms.numberOfEntities()));
-    maximaProcessingWidget->initializeTreeItems(maximaProcessingWidget->electronsTreeWidget(), int(nElectrons));
-    */
 
     moleculeWidget->setSharedAtomsVector(atoms);
 
