@@ -41,7 +41,7 @@ InPsightsWidget::InPsightsWidget(QWidget *parent, const std::string& filename)
         electron2Box(new QSpinBox(this)),
         maximaList(new QTreeWidget(this)),
         probabilitySum(new QLabel(this)),
-        deselectAllButton(new QPushButton("deselect all", this))
+        deselectAllButton(new QPushButton("Deselect all", this))
         {
 
     loadData();
