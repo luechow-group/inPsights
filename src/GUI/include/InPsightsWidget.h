@@ -35,6 +35,7 @@ public slots:
     void onAtom2BoxChanged(int value);
     void onDeselectAll(bool);
     void onSedChecked(int stateId);
+    void onSedBoxChanged(double value);
     void updateSelectedStructures(int);
 
 private:

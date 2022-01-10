@@ -179,6 +179,9 @@ void InPsightsWidget::connectSignals() {
     connect(sedsCheckBox, &QCheckBox::stateChanged,
             this, &InPsightsWidget::onSedChecked);
 
+    connect(sedPercentageBox,qOverload<double>(&QDoubleSpinBox::valueChanged),
+            this, &InPsightsWidget::onSedBoxChanged);
+
     connect(coloredCheckBox, &QCheckBox::stateChanged,
             this, &InPsightsWidget::updateSelectedStructures);
 
@@ -553,4 +556,9 @@ void InPsightsWidget::onDeselectAll(bool) {
             root->child(i)->child(j)->setCheckState(0, Qt::Unchecked);
         }
     }
+}
+
+void InPsightsWidget::onSedBoxChanged(double) {
+    if (sedsCheckBox->isChecked())
+        updateSelectedStructures(Qt::CheckState::Checked);
 }
