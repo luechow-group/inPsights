@@ -19,26 +19,27 @@ public:
                    GuiHelper::QColorFromType<Type>(this->type()),
                    GuiHelper::toQVector3D(this->position()),
                    GuiHelper::radiusFromType<Type>(this->type()),
-                   1.0, 12, 24
+                   1.0, 48, 96
                            ) {
         if(std::is_same<Type,Element>())
-            material->setAlpha(0.33f);
-        else if (std::is_same<Type,Spin>())
             material->setAlpha(0.5f);
+        else if (std::is_same<Type,Spin>())
+            material->setAlpha(0.75f);
     }
 
-    // colored constructor
-    Particle3D(Qt3DCore::QEntity *root, const Particle<Type>& particle, const QColor& color)
+    // colored constructor with optional arguments
+    Particle3D(Qt3DCore::QEntity *root, const Particle<Type>& particle, const QColor& color,
+               const float& radiusFactor = 1.0f, const int& rings=48, const int& slices=96, const float& elecAlpha=0.75f)
             : Particle<Type>::Particle(particle),
               Sphere(root, color,
                      GuiHelper::toQVector3D(this->position()),
-                     GuiHelper::radiusFromType<Type>(this->type())/3.0,
-                     1.0, 2, 4
+                     GuiHelper::radiusFromType<Type>(this->type())*radiusFactor,
+                     1.0, rings, slices
               ) {
         if(std::is_same<Type,Element>())
-            material->setAlpha(0.33);
+            material->setAlpha(0.5f);
         else if (std::is_same<Type,Spin>())
-            material->setAlpha(1.0f);
+            material->setAlpha(elecAlpha);
     }
 
 
