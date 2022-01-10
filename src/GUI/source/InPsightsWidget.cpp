@@ -296,7 +296,7 @@ void InPsightsWidget::selectedStructure(QTreeWidgetItem *item, int column) {
 
 };
 
-void InPsightsWidget::updateSelectedStructures(int stateId) {
+void InPsightsWidget::updateSelectedStructures(int) {
     auto* root = maximaList->invisibleRootItem();
 
     // iterate over topLevelItems

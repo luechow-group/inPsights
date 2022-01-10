@@ -35,7 +35,7 @@ public slots:
     void onSedsExport(bool);
     void onDeselectAll(bool);
     void onSedChecked(int stateId);
-    void updateSelectedStructures(int stateId);
+    void updateSelectedStructures(int);
 
 private:
     std::string filename_;
