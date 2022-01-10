@@ -174,7 +174,6 @@ void MoleculeWidget::drawAxes(bool drawQ) {
         cartesianAxes_ = new CartesianAxes(moleculeEntity_);
     } else {
         cartesianAxes_->deleteLater();
-        delete cartesianAxes_;
     }
 }
 
@@ -184,7 +183,6 @@ void MoleculeWidget::drawAtoms(bool drawQ) {
     } else {
         atomsVector3D_->deleteConnections();
         atomsVector3D_->deleteLater();
-        delete atomsVector3D_;
     }
 }
 
