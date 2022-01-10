@@ -59,8 +59,8 @@ void InPsightsWidget::createWidget() {
 
     setLayout(hbox);
 
-    resize(1280, 800);
-    hbox->addWidget(moleculeWidget, 2);
+    resize(1424, 801);
+    hbox->addWidget(moleculeWidget, 5);
     hbox->addLayout(vboxOuter, 1);
 
     // put into MaximaTreeWidget class
@@ -95,23 +95,30 @@ void InPsightsWidget::createWidget() {
     auto checkboxGrid = new QGridLayout();
     vboxInner->addLayout(checkboxGrid,1);
 
-    // first column
+    // first row
     checkboxGrid->addWidget(atomsCheckBox,0,0);
-    checkboxGrid->addWidget(bondsCheckBox,1,0);
-    checkboxGrid->addWidget(axesCheckBox,2,0);
+    checkboxGrid->addWidget(bondsCheckBox,0,1);
+
+    //second row
+    checkboxGrid->addWidget(axesCheckBox,1,0);
+    checkboxGrid->addWidget(sampleAverageCheckBox,1,1);
+
+
+    //third row
+    checkboxGrid->addWidget(coloredCheckBox,2,0);
+    checkboxGrid->addWidget(maximaHullsCheckBox,2,1);
+
+    //fourth row
     checkboxGrid->addWidget(sedsExportButton,3,0);
+    checkboxGrid->addWidget(plotAllCheckBox,3,1);
 
-    // second column
-    checkboxGrid->addWidget(sampleAverageCheckBox,0,1);
-    checkboxGrid->addWidget(maximaHullsCheckBox,1,1);
-    checkboxGrid->addWidget(spinCorrelationsCheckBox,2,1);
-    checkboxGrid->addWidget(sedsCheckBox,3,1);
+    //fifth row
+    checkboxGrid->addWidget(sedsCheckBox,4,0);
+    checkboxGrid->addWidget(sedPercentageBox,4,1);
 
-    // third column
-    checkboxGrid->addWidget(plotAllCheckBox,0,2);
-    checkboxGrid->addWidget(coloredCheckBox,1,2);
-    checkboxGrid->addWidget(spinCorrelationBox,2,2);
-    checkboxGrid->addWidget(sedPercentageBox,3,2);
+    //sixth row
+    checkboxGrid->addWidget(spinCorrelationsCheckBox,5,0);
+    checkboxGrid->addWidget(spinCorrelationBox,5,1);
 
     setupSpinBoxes();
 }
