@@ -308,7 +308,7 @@ void InPsightsWidget::selectedStructure(QTreeWidgetItem *item, int column) {
             moleculeWidget->removeMaximaHulls(clusterId);
     }
     redrawSpinDecorations();
-    probabilitySum->setText(QString("Σ=") + QString::number(sumProbabilities(), 'f', 4));
+    probabilitySum->setText(QString("Σ Weight = ") + QString::number(sumProbabilities(), 'f', 4));
 
 };
 
