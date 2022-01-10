@@ -65,8 +65,10 @@ void InPsightsWidget::createWidget() {
     setLayout(hbox);
 
     resize(1424, 801);
-    hbox->addWidget(moleculeWidget, 5);
-    hbox->addLayout(vboxOuter, 1);
+    hbox->addWidget(moleculeWidget, 1);
+    hbox->addLayout(vboxOuter, 0);
+
+    maximaList->setMinimumWidth(350);
 
     // put into MaximaTreeWidget class
     auto headerLabels = QList<QString>({"ID", "Weight", "min(Φ)", "max(Φ)"});
