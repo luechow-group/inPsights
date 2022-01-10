@@ -425,7 +425,10 @@ void InPsightsWidget::loadData() {
                                                 QString("YAML files (*.yml *.yaml *.json)")).toStdString();
     }
 
-    moleculeWidget->fileInfoText_->setText(filename_.c_str());
+    auto fileString = filename_;
+    // cutting the path, so that only the actual filename remains
+    fileString.erase(0,fileString.rfind('/') + 1);
+    moleculeWidget->fileInfoText_->setText(fileString.c_str());
 
     YAML::Node doc = YAML::LoadAllFromFile(filename_)[1]; // load results
     auto atoms = doc["Atoms"].as<AtomsVector>();
