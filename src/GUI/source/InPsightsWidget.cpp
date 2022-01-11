@@ -26,11 +26,11 @@ InPsightsWidget::InPsightsWidget(QWidget *parent, const std::string& filename)
         atomsCheckBox(new QCheckBox("Nuclei", this)),
         bondsCheckBox(new QCheckBox("Bonds", this)),
         axesCheckBox(new QCheckBox("Axes", this)),
-        sampleAverageCheckBox(new QCheckBox("Sample Average", this)),
-        spinCorrelationsCheckBox(new QCheckBox("Spin Correlations", this)),
+        sampleAverageCheckBox(new QCheckBox("Sample average", this)),
+        spinCorrelationsCheckBox(new QCheckBox("Spin correlations", this)),
         sedsCheckBox(new QCheckBox("SEDs", this)),
-        maximaHullsCheckBox(new QCheckBox("Maxima Hulls", this)),
-        plotAllCheckBox(new QCheckBox("All of Cluster", this)),
+        maximaHullsCheckBox(new QCheckBox("Maxima hulls", this)),
+        plotAllCheckBox(new QCheckBox("All of cluster", this)),
         coloredCheckBox(new QCheckBox("Multicolored", this)),
         spinCorrelationBox(new QDoubleSpinBox(this)),
         sedPercentageBox(new QDoubleSpinBox(this)),
@@ -219,7 +219,7 @@ void InPsightsWidget::setupSpinBoxes() {
     bondBox->setValue(0.5);
     bondBox->setButtonSymbols(QAbstractSpinBox::PlusMinus);
     bondBox->setAccelerated(true);
-    bondBox->setToolTip("Threshold as multiple of the summed vdW radii");
+    bondBox->setToolTip("Threshold as multiple of the summed vdW radii.");
 
     atom1Box->setRange(-1,moleculeWidget->getAtomsNumber()-1);
     atom1Box->setWrapping(true);
