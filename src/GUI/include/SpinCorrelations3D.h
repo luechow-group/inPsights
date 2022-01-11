@@ -16,14 +16,14 @@ public:
                        const TriangularMatrixStatistics& SeeStats,
                        double spinCorrelationThreshold,
                        bool drawSameSpinCorrelationsQ = false,
-                       bool compatabilityMode = false);
+                       bool compatibilityMode = false);
 
     void createConnections(const ElectronsVector &electronsVector,
                            const TriangularMatrixStatistics &SeeStats,
                            double spinCorrelationThreshold,
                            bool drawSameSpinCorrelationsQ);
 private:
-    bool compatabilityMode_;
+    bool compatibilityMode_;
 };
 
 #endif //INPSIGHTS_SPINCORRELATIONS3D_H

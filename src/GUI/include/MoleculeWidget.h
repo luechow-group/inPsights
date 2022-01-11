@@ -56,7 +56,7 @@ public:
     int getAtomsNumber();
 
 public slots:
-    void activateCompatabilityMode();
+    void activateCompatibilityMode();
     void onAtomsChecked(int);
     void onElectronsChecked(int);
     void onAtomsHighlighted(int);
@@ -69,7 +69,7 @@ public slots:
     void onSedsExport(bool);
 
 private:
-    bool compatabilityMode_;
+    bool compatibilityMode_;
     Qt3DExtras::Qt3DWindow *qt3DWindow_;
     Qt3DCore::QEntity *root_, *moleculeEntity_;
     Qt3DExtras::QOrbitCameraController *cameraController_;

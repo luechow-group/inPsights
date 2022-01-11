@@ -22,7 +22,7 @@
 MoleculeWidget::MoleculeWidget(QWidget *parent)
         :
         QWidget(parent),
-        compatabilityMode_(false),
+        compatibilityMode_(false),
         qt3DWindow_(new Qt3DExtras::Qt3DWindow()),
         root_(new Qt3DCore::QEntity()),
         moleculeEntity_(new Qt3DCore::QEntity(root_)),
@@ -256,10 +256,10 @@ void MoleculeWidget::drawSpinCorrelations(const std::vector<ClusterData> &cluste
     for (auto &cluster : activeElectronsVectorsMap_)
         for (auto &structure : cluster.second) {
                 new SpinCorrelations3D(structure.second,
-                        clusterData[cluster.first].SeeStats_,
-                        spinCorrelationThreshold,
-                        drawSameSpinCorrelationsQ,
-                        compatabilityMode_);
+                                       clusterData[cluster.first].SeeStats_,
+                                       spinCorrelationThreshold,
+                                       drawSameSpinCorrelationsQ,
+                                       compatibilityMode_);
         }
 }
 
@@ -432,8 +432,8 @@ void MoleculeWidget::onX3dExport(bool) {
     x3Dconverter.closeScene();
 }
 
-void MoleculeWidget::activateCompatabilityMode() {
-    compatabilityMode_ = true;
+void MoleculeWidget::activateCompatibilityMode() {
+    compatibilityMode_ = true;
 }
 
 void MoleculeWidget::onSedsExport(bool) {

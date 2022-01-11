@@ -439,11 +439,13 @@ void InPsightsWidget::loadData() {
 
     /* Note on the compatibility mode:
      * Clusters from result files produced without initial electron indices shuffling contain
-     * artificial correlation between the core electrons, presumably originating from the Hungarian selecting the first
-     * viable permutation. These artificial correlations are removed manually in the visualization.
+     * artificial correlation between the core (or ionic) electrons, presumably originating from the
+     * Hungarian selecting the first viable permutation. These artificial correlations are removed
+     * manually in the visualization.
      */
-    if(doc["CompatabilityMode"] && doc["CompatabilityMode"].as<bool>())
-        moleculeWidget->activateCompatabilityMode();
+    if(!doc["CompatibilityMode"] or doc["CompatibilityMode"].as<bool>()) {
+        moleculeWidget->activateCompatibilityMode();
+    }
 
     moleculeWidget->setSharedAtomsVector(atoms);
 
