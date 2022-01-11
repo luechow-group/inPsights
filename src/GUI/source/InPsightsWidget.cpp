@@ -117,6 +117,7 @@ void InPsightsWidget::createWidget() {
     // first row
     checkboxGrid->addWidget(atomsCheckBox,0,0);
     checkboxGrid->addWidget(axesCheckBox,0,1);
+    axesCheckBox->setToolTip("x, y, and z axes in red, green, and blue, respectively.");
 
     //second row
     checkboxGrid->addWidget(bondsCheckBox,1,0);
