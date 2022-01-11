@@ -35,6 +35,7 @@ public slots:
     void onDeselectAll(bool);
     void onSedChecked(int stateId);
     void onSedBoxChanged(double value);
+    void onBondBoxChanged(double value);
     void updateSelectedStructures(int);
 
 private:
@@ -42,7 +43,7 @@ private:
     MoleculeWidget *moleculeWidget;
     QCheckBox *atomsCheckBox, *bondsCheckBox, *axesCheckBox, *sampleAverageCheckBox, *spinCorrelationsCheckBox,
     *sedsCheckBox,*maximaHullsCheckBox, *plotAllCheckBox, *coloredCheckBox;
-    QDoubleSpinBox *spinCorrelationBox, *sedPercentageBox;
+    QDoubleSpinBox *spinCorrelationBox, *sedPercentageBox, *bondBox;
     QSpinBox *atom1Box, *atom2Box, *electron1Box, *electron2Box;
     QPushButton *deselectAllButton;
     QTreeWidget *maximaList;

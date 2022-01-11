@@ -200,10 +200,10 @@ void MoleculeWidget::drawAtoms(bool drawQ) {
     }
 }
 
-void MoleculeWidget::drawBonds(bool drawQ) {
+void MoleculeWidget::drawBonds(bool drawQ, double limit) {
     if (atomsVector3D_) {
         if (drawQ)
-            atomsVector3D_->drawConnections();
+            atomsVector3D_->drawConnections(limit);
         else
             atomsVector3D_->deleteConnections();
     }
@@ -399,18 +399,18 @@ void MoleculeWidget::onX3dExport(bool) {
     }
 
     //TODO Refactor
-    double bondDrawingLimit = 1.40 * 1e-10 / AU::length;
+    double bondDrawingLimit = 0.5;
     for (long i = 0; i < atomsVector3D_->numberOfEntities(); ++i) {
         for (long j = i+1; j < atomsVector3D_->numberOfEntities(); ++j) {
 
             auto atomDistance = Metrics::distance(
                     atomsVector3D_->operator[](i).position(),
                     atomsVector3D_->operator[](j).position());
-            auto addedGuiRadii = (GuiHelper::radiusFromType(atomsVector3D_->operator[](i).type())
+            auto addedGuiRadii = 10*(GuiHelper::radiusFromType(atomsVector3D_->operator[](i).type())
                                   + GuiHelper::radiusFromType(atomsVector3D_->operator[](j).type()));
 
 
-            if (atomDistance - 0.5*addedGuiRadii < bondDrawingLimit) {
+            if (atomDistance/addedGuiRadii < bondDrawingLimit) {
                 Qt3DCore::QEntity root;
                 Bond3D bond(&root, *atomsVector3D_->particles3D_[i], *atomsVector3D_->particles3D_[j]);
                 x3Dconverter.addCylinder(*bond.srcCylinder_,2);

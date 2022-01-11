@@ -31,7 +31,7 @@ public:
 
     void drawAxes(bool drawQ = true);
     void drawAtoms(bool drawQ = true);
-    void drawBonds(bool drawQ = true);
+    void drawBonds(bool drawQ = true, double limit = 0.5);
     void drawSpinCorrelations(const std::vector<ClusterData> &clusterData,
                               double spinCorrelationThreshold, bool drawSameSpinCorrelationsQ);
     void deleteSpinCorrelations();

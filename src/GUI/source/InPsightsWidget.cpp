@@ -34,6 +34,7 @@ InPsightsWidget::InPsightsWidget(QWidget *parent, const std::string& filename)
         coloredCheckBox(new QCheckBox("Multicolored", this)),
         spinCorrelationBox(new QDoubleSpinBox(this)),
         sedPercentageBox(new QDoubleSpinBox(this)),
+        bondBox(new QDoubleSpinBox(this)),
         atom1Box(new QSpinBox(this)),
         atom2Box(new QSpinBox(this)),
         electron1Box(new QSpinBox(this)),
@@ -115,19 +116,20 @@ void InPsightsWidget::createWidget() {
 
     // first row
     checkboxGrid->addWidget(atomsCheckBox,0,0);
-    checkboxGrid->addWidget(bondsCheckBox,0,1);
+    checkboxGrid->addWidget(axesCheckBox,0,1);
 
     //second row
-    checkboxGrid->addWidget(axesCheckBox,1,0);
-    checkboxGrid->addWidget(sampleAverageCheckBox,1,1);
-
+    checkboxGrid->addWidget(bondsCheckBox,1,0);
+    checkboxGrid->addWidget(bondBox,1,1);
 
     //third row
-    checkboxGrid->addWidget(coloredCheckBox,2,0);
-    checkboxGrid->addWidget(maximaHullsCheckBox,2,1);
+    checkboxGrid->addWidget(sampleAverageCheckBox,2,0);
+    checkboxGrid->addWidget(coloredCheckBox,2,1);
+
 
     //fourth row
-    checkboxGrid->addWidget(plotAllCheckBox,3,0);
+    checkboxGrid->addWidget(maximaHullsCheckBox,3,0);
+    checkboxGrid->addWidget(plotAllCheckBox,3,1);
 
     //fifth row
     checkboxGrid->addWidget(sedsCheckBox,4,0);
@@ -183,6 +185,9 @@ void InPsightsWidget::connectSignals() {
     connect(sedPercentageBox,qOverload<double>(&QDoubleSpinBox::valueChanged),
             this, &InPsightsWidget::onSedBoxChanged);
 
+    connect(bondBox,qOverload<double>(&QDoubleSpinBox::valueChanged),
+            this, &InPsightsWidget::onBondBoxChanged);
+
     connect(coloredCheckBox, &QCheckBox::stateChanged,
             this, &InPsightsWidget::updateSelectedStructures);
 
@@ -207,6 +212,13 @@ void InPsightsWidget::setupSpinBoxes() {
     sedPercentageBox->setValue(0.2);
     sedPercentageBox->setButtonSymbols(QAbstractSpinBox::PlusMinus);
     sedPercentageBox->setAccelerated(true);
+
+    bondBox->setRange(0.0,2.0);
+    bondBox->setSingleStep(0.01);
+    bondBox->setValue(0.5);
+    bondBox->setButtonSymbols(QAbstractSpinBox::PlusMinus);
+    bondBox->setAccelerated(true);
+    bondBox->setToolTip("Threshold as multiple of the summed vdW radii");
 
     atom1Box->setRange(-1,moleculeWidget->getAtomsNumber()-1);
     atom1Box->setWrapping(true);
@@ -363,7 +375,7 @@ void InPsightsWidget::onAtomsChecked(int stateId) {
 
 void InPsightsWidget::onBondsChecked(int stateId) {
     if (atomsCheckBox->isChecked()) {
-        moleculeWidget->drawBonds(Qt::CheckState(stateId) == Qt::CheckState::Checked);
+        moleculeWidget->drawBonds(Qt::CheckState(stateId) == Qt::CheckState::Checked, bondBox->value());
     }
     else {
         if (Qt::CheckState(stateId) == Qt::CheckState::Checked) {
@@ -386,6 +398,14 @@ void InPsightsWidget::onSpinCorrelationsChecked(int stateId) {
 
 void InPsightsWidget::onSpinCorrelationsBoxChanged(double value) {
     redrawSpinDecorations();
+}
+
+void InPsightsWidget::onBondBoxChanged(double value) {
+
+    if (bondsCheckBox->isChecked()) {
+        bondsCheckBox->setCheckState(Qt::Unchecked);
+        bondsCheckBox->setCheckState(Qt::Checked);
+    }
 }
 
 void InPsightsWidget::onAtom1BoxChanged(int value) {

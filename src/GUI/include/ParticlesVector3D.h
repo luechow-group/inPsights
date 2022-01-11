@@ -51,7 +51,7 @@ public slots:
                 particles3D_.erase(it);
 };
 
-    void drawConnections() {};
+    void drawConnections(const double &limit) {};
 
     void deleteConnections(){
         connections_->deleteLater();
@@ -72,9 +72,9 @@ using AtomsVector3D = ParticlesVector3D<Element>;
 using ElectronsVector3D = ParticlesVector3D<Spin>;
 
 template<>
-void AtomsVector3D::drawConnections();
+void AtomsVector3D::drawConnections(const double &limit);
 template<>
-void ElectronsVector3D::drawConnections();
+void ElectronsVector3D::drawConnections(const double &limit);
 
 
 #endif //INPSIGHTS_PARTICLESVECTOR3D_H

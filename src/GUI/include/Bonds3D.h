@@ -10,7 +10,7 @@
 
 class Bonds3D : public IConnection {
 public:
-    explicit Bonds3D(AtomsVector3D *atomsVector3D, double bondDrawingLimit = 1.40 * 1e-10 / AU::length);
+    explicit Bonds3D(AtomsVector3D *atomsVector3D, double bondDrawingLimit = 0.5);
 
 private:
     double bondDrawingLimit_;
