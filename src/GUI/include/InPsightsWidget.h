@@ -44,7 +44,7 @@ private:
     *sedsCheckBox,*maximaHullsCheckBox, *plotAllCheckBox, *coloredCheckBox;
     QDoubleSpinBox *spinCorrelationBox, *sedPercentageBox;
     QSpinBox *atom1Box, *atom2Box, *electron1Box, *electron2Box;
-    QPushButton *sedsExportButton, *deselectAllButton;
+    QPushButton *deselectAllButton;
     QTreeWidget *maximaList;
     QLabel *probabilitySum;
 
