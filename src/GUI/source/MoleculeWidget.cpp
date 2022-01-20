@@ -22,13 +22,14 @@
 MoleculeWidget::MoleculeWidget(QWidget *parent)
         :
         QWidget(parent),
-        compatabilityMode_(false),
+        compatibilityMode_(false),
         qt3DWindow_(new Qt3DExtras::Qt3DWindow()),
         root_(new Qt3DCore::QEntity()),
         moleculeEntity_(new Qt3DCore::QEntity(root_)),
         cameraController_(new Qt3DExtras::QOrbitCameraController(root_)),
-        screenshotButton_(new QPushButton("Save image", this)),
-        x3dExportButton_(new QPushButton("Save x3d", this)),
+        screenshotButton_(new QPushButton("Save .png", this)),
+        x3dExportButton_(new QPushButton("Save .html", this)),
+        sedsExportButton_(new QPushButton("Export SEDs", this)),
         resetCameraButton_(new QPushButton("Reset camera", this)),
         pan_(new QSpinBox(this)),
         tilt_(new QSpinBox(this)),
@@ -40,8 +41,8 @@ MoleculeWidget::MoleculeWidget(QWidget *parent)
         initZoom_(100),
         defaultCameraRadius_(0.0f),
         fileInfoText_(new QLabel("Info text")),
-        panTiltRollText_(new QLabel("pan/tilt/roll")),
-        zoomText_(new QLabel("zoom")),
+        panTiltRollText_(new QLabel("Pan/Tilt/Roll")),
+        zoomText_(new QLabel("Zoom")),
         atomsVector3D_(nullptr),
         cartesianAxes_(nullptr),
         light_(new Qt3DRender::QDirectionalLight(root_)){
@@ -52,21 +53,24 @@ MoleculeWidget::MoleculeWidget(QWidget *parent)
     setLayout(outerLayout);
     outerLayout->addWidget(createWindowContainer(qt3DWindow_),1);
     outerLayout->addLayout(innerLayout,0);
-    innerLayout->addWidget(screenshotButton_,2);
-    innerLayout->addWidget(x3dExportButton_,2);
-    innerLayout->addWidget(fileInfoText_, 5);
-    innerLayout->addWidget(resetCameraButton_,2);
+    innerLayout->addWidget(screenshotButton_,4);
+    innerLayout->addWidget(x3dExportButton_,4);
+    innerLayout->addWidget(sedsExportButton_,4);
+    innerLayout->addWidget(fileInfoText_, 10);
+    fileInfoText_->setAlignment(Qt::AlignCenter);
+    innerLayout->addWidget(resetCameraButton_,4);
     innerLayout->addWidget(zoomText_,1);
-    innerLayout->addWidget(zoom_,1);
-    innerLayout->addWidget(panTiltRollText_,1);
-    innerLayout->addWidget(pan_,1);
-    innerLayout->addWidget(tilt_,1);
-    innerLayout->addWidget(roll_,1);
+    innerLayout->addWidget(zoom_,2);
+    innerLayout->addWidget(panTiltRollText_,2);
+    innerLayout->addWidget(pan_,2);
+    innerLayout->addWidget(tilt_,2);
+    innerLayout->addWidget(roll_,2);
 
     qt3DWindow_->setRootEntity(root_);
 
     connect(screenshotButton_, &QPushButton::clicked, this, &MoleculeWidget::onScreenshot);
     connect(x3dExportButton_, &QPushButton::clicked, this, &MoleculeWidget::onX3dExport);
+    connect(sedsExportButton_, &QPushButton::clicked, this, &MoleculeWidget::onSedsExport);
     connect(resetCameraButton_, &QPushButton::clicked, this, &MoleculeWidget::onResetCamera);
 
     connect(pan_, qOverload<int>(&QSpinBox::valueChanged),
@@ -84,6 +88,10 @@ MoleculeWidget::MoleculeWidget(QWidget *parent)
     root_->addComponent(light_);
 
     setMouseTracking(true);
+}
+
+int MoleculeWidget::getAtomsNumber() {
+    return sharedAtomsVector_->positionsVector().numberOfEntities();
 }
 
 void MoleculeWidget::onCameraBoxesChanged(int) {
@@ -105,25 +113,36 @@ Qt3DCore::QEntity *MoleculeWidget::getMoleculeEntity() {
 
 void MoleculeWidget::setupCameraBoxes(int pan, int tilt, int roll, int zoom) {
     pan_->setRange(-180,180);
+    pan_->setWrapping(true);
     pan_->setSingleStep(5);
     pan_->setValue(pan);
     pan_->setSuffix(" °");
+    pan_->setButtonSymbols(QAbstractSpinBox::PlusMinus);
+    pan_->setAccelerated(true);
 
     tilt_->setRange(-180,180);
+    tilt_->setWrapping(true);
     tilt_->setSingleStep(5);
     tilt_->setValue(tilt);
     tilt_->setSuffix(" °");
+    tilt_->setButtonSymbols(QAbstractSpinBox::PlusMinus);
+    tilt_->setAccelerated(true);
 
     roll_->setRange(-180,180);
+    roll_->setWrapping(true);
     roll_->setSingleStep(5);
     roll_->setValue(roll);
     roll_->setSuffix(" °");
+    roll_->setButtonSymbols(QAbstractSpinBox::PlusMinus);
+    roll_->setAccelerated(true);
 
     // max value for zoom is 999 instead of INT_MAX, since it determines the box width
     zoom_->setRange(0,999);
     zoom_->setSingleStep(5);
     zoom_->setValue(zoom);
     zoom_->setSuffix(" %");
+    zoom_->setButtonSymbols(QAbstractSpinBox::PlusMinus);
+    zoom_->setAccelerated(true);
 }
 
 void MoleculeWidget::initialCameraSetup(int zoom, int pan, int tilt, int roll) {
@@ -170,7 +189,6 @@ void MoleculeWidget::drawAxes(bool drawQ) {
         cartesianAxes_ = new CartesianAxes(moleculeEntity_);
     } else {
         cartesianAxes_->deleteLater();
-        delete cartesianAxes_;
     }
 }
 
@@ -178,16 +196,14 @@ void MoleculeWidget::drawAtoms(bool drawQ) {
     if (drawQ) {
         atomsVector3D_ = new AtomsVector3D(moleculeEntity_, *sharedAtomsVector_);
     } else {
-        atomsVector3D_->deleteConnections();
         atomsVector3D_->deleteLater();
-        delete atomsVector3D_;
     }
 }
 
-void MoleculeWidget::drawBonds(bool drawQ) {
+void MoleculeWidget::drawBonds(bool drawQ, double limit) {
     if (atomsVector3D_) {
         if (drawQ)
-            atomsVector3D_->drawConnections();
+            atomsVector3D_->drawConnections(limit);
         else
             atomsVector3D_->deleteConnections();
     }
@@ -240,10 +256,10 @@ void MoleculeWidget::drawSpinCorrelations(const std::vector<ClusterData> &cluste
     for (auto &cluster : activeElectronsVectorsMap_)
         for (auto &structure : cluster.second) {
                 new SpinCorrelations3D(structure.second,
-                        clusterData[cluster.first].SeeStats_,
-                        spinCorrelationThreshold,
-                        drawSameSpinCorrelationsQ,
-                        compatabilityMode_);
+                                       clusterData[cluster.first].SeeStats_,
+                                       spinCorrelationThreshold,
+                                       drawSameSpinCorrelationsQ,
+                                       compatibilityMode_);
         }
 }
 
@@ -254,41 +270,37 @@ void MoleculeWidget::deleteSpinCorrelations() {
         }
 };
 
-void MoleculeWidget::onAtomsChecked(std::vector<int> selectedParticles) {
+void MoleculeWidget::onAtomsChecked(int selectedParticle) {
     auto &particles = atomsVector3D_->particles3D_;
 
     for (int i = 0; i < static_cast<int>(particles.size()); ++i) {
-        auto foundQ = std::find(selectedParticles.begin(), selectedParticles.end(), i) != selectedParticles.end();
-        particles[i]->onSelected(foundQ);
+        particles[i]->onSelected(i == selectedParticle);
     }
 }
 
-void MoleculeWidget::onAtomsHighlighted(std::vector<int> selectedParticles) {
+void MoleculeWidget::onAtomsHighlighted(int selectedParticle) {
     auto &particles = atomsVector3D_->particles3D_;
 
     for (int i = 0; i < static_cast<int>(particles.size()); ++i) {
-        auto foundQ = std::find(selectedParticles.begin(), selectedParticles.end(), i) != selectedParticles.end();
-        particles[i]->onHighlighted(foundQ); //TODO add highlight, select and normal function
+        particles[i]->onHighlighted(i == selectedParticle);
     }
 }
 
-
-void MoleculeWidget::onElectronsChecked(std::vector<int> selectedParticles) {
-    auto &particles = activeElectronsVectorsMap_.begin()->second.begin()->second->particles3D_;
-
-    for (int i = 0; i < static_cast<int>(particles.size()); ++i) {
-        auto foundQ = std::find(selectedParticles.begin(), selectedParticles.end(), i) != selectedParticles.end();
-        particles[i]->onSelected(foundQ);
+void MoleculeWidget::onElectronsChecked(int selectedParticle) {
+    for (auto &cluster : activeElectronsVectorsMap_){
+        auto &particles = cluster.second.begin()->second->particles3D_;
+        for (int i = 0; i < static_cast<int>(particles.size()); ++i) {
+            particles[i]->onSelected(i == selectedParticle);
+        }
     }
-
 }
 
-void MoleculeWidget::onElectronsHighlighted(std::vector<int> selectedParticles) {
-    auto &particles = activeElectronsVectorsMap_.begin()->second.begin()->second->particles3D_;
-    
-    for (int i = 0; i < static_cast<int>(particles.size()); ++i) {
-        auto foundQ = std::find(selectedParticles.begin(), selectedParticles.end(), i) != selectedParticles.end();
-        particles[i]->onHighlighted(foundQ);
+void MoleculeWidget::onElectronsHighlighted(int selectedParticle) {
+    for (auto &cluster : activeElectronsVectorsMap_){
+        auto &particles = cluster.second.begin()->second->particles3D_;
+        for (int i = 0; i < static_cast<int>(particles.size()); ++i) {
+            particles[i]->onHighlighted(i == selectedParticle);
+        }
     }
 }
 
@@ -387,18 +399,18 @@ void MoleculeWidget::onX3dExport(bool) {
     }
 
     //TODO Refactor
-    double bondDrawingLimit = 1.40 * 1e-10 / AU::length;
+    double bondDrawingLimit = 0.5;
     for (long i = 0; i < atomsVector3D_->numberOfEntities(); ++i) {
         for (long j = i+1; j < atomsVector3D_->numberOfEntities(); ++j) {
 
             auto atomDistance = Metrics::distance(
                     atomsVector3D_->operator[](i).position(),
                     atomsVector3D_->operator[](j).position());
-            auto addedGuiRadii = (GuiHelper::radiusFromType(atomsVector3D_->operator[](i).type())
+            auto addedGuiRadii = 10*(GuiHelper::radiusFromType(atomsVector3D_->operator[](i).type())
                                   + GuiHelper::radiusFromType(atomsVector3D_->operator[](j).type()));
 
 
-            if (atomDistance - 0.5*addedGuiRadii < bondDrawingLimit) {
+            if (atomDistance/addedGuiRadii < bondDrawingLimit) {
                 Qt3DCore::QEntity root;
                 Bond3D bond(&root, *atomsVector3D_->particles3D_[i], *atomsVector3D_->particles3D_[j]);
                 x3Dconverter.addCylinder(*bond.srcCylinder_,2);
@@ -420,6 +432,23 @@ void MoleculeWidget::onX3dExport(bool) {
     x3Dconverter.closeScene();
 }
 
-void MoleculeWidget::activateCompatabilityMode() {
-    compatabilityMode_ = true;
+void MoleculeWidget::activateCompatibilityMode() {
+    compatibilityMode_ = true;
+}
+
+void MoleculeWidget::onSedsExport(bool) {
+    auto inPsightsWidget = dynamic_cast<InPsightsWidget*>(parent());
+    if(inPsightsWidget) {
+        for (auto &sed: activeSedsMap_) {
+            auto clusterId = sed.first;
+            int i = 0;
+            for (auto &voxelCube: inPsightsWidget->clusterCollection_[clusterId].voxelCubes_) {
+                std::string fileName = "sed-" + std::to_string(clusterId) + "-" + std::to_string(i) + ".txt";
+                std::string comment = " cluster " + std::to_string(clusterId) + " SED " + std::to_string(i);
+                voxelCube.exportMacmolplt(fileName, comment);
+                i += 1;
+            }
+        }
+        spdlog::info("Exported SEDs");
+    }
 }

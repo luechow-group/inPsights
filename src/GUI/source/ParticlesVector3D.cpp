@@ -5,8 +5,8 @@
 #include <Bonds3D.h>
 
 template <>
-void AtomsVector3D::drawConnections() {
-    new Bonds3D(this);
+void AtomsVector3D::drawConnections(const double &limit) {
+    new Bonds3D(this, limit);
 }
 
 //void ElectronsVector3D::drawCorrelations() {}

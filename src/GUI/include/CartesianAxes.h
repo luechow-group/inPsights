@@ -10,9 +10,9 @@
 class CartesianAxes : public Abstract3dObject{
 public:
     CartesianAxes(Qt3DCore::QEntity *root, QVector3D origin = {0,0,0},
-            float length = 1.0f,
-            float baseRadius = 0.025f,
-            float alpha = 0.25f);
+            float length = 5.0f,
+            float baseRadius = 0.01f,
+            float alpha = 0.75f);
 
 private:
     Arrow *x_, *y_, *z_;

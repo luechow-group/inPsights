@@ -9,10 +9,10 @@ SpinCorrelations3D::SpinCorrelations3D(ElectronsVector3D *electronsVector3D,
                                        const TriangularMatrixStatistics &SeeStats,
                                        double spinCorrelationThreshold,
                                        bool drawSameSpinCorrelationsQ,
-                                       bool compatabilityMode)
+                                       bool compatibilityMode)
         :
         IConnection(electronsVector3D->correlations_),
-        compatabilityMode_(compatabilityMode) {
+        compatibilityMode_(compatibilityMode) {
 
     createConnections(*electronsVector3D, SeeStats, spinCorrelationThreshold, drawSameSpinCorrelationsQ);
 }
@@ -27,7 +27,7 @@ void SpinCorrelations3D::createConnections(const ElectronsVector &electronsVecto
     // make list of electrons at same positions
 
     std::list<Eigen::Index> electronsAtSamePositions;
-    if(compatabilityMode_) {
+    if(compatibilityMode_) {
         for (auto i = 0; i < electronsVector.numberOfEntities() - 1; ++i) {
             for (auto j = i + 1; j < electronsVector.numberOfEntities(); ++j) {
                 if (SpinPairClassification::atSamePositionQ({i, j}, electronsVector)) {

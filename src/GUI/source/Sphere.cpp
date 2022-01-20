@@ -67,7 +67,7 @@ void Sphere::addToXml(std::ostream &os, unsigned int sortKey) const {
 
 void Sphere::update() {
     if(highlightedQ_) {
-        mesh_->setRadius(radius_ * 1.25f);
+        mesh_->setRadius(radius_);
         material->setAmbient(QColor(0, 255, 255));
     } else if (selectedQ_) {
         mesh_->setRadius(radius_);
