@@ -6,7 +6,6 @@
 #define INPSIGHTS_INPSIGHTSWIDGET_H
 
 #include <MoleculeWidget.h>
-#include <MaximaProcessingWidget.h>
 
 #include <QCheckBox>
 #include <QDoubleSpinBox>
@@ -19,6 +18,7 @@ public:
     explicit InPsightsWidget(QWidget *parent = nullptr, const std::string &filename = "");
     bool plotAllActiveQ();
     std::string filenameWithoutExtension();
+    std::vector<ClusterData> clusterCollection_;
 
 public slots:
     void selectedStructure(QTreeWidgetItem *item, int column);
@@ -28,20 +28,26 @@ public slots:
     void onSpinCorrelationsChecked(int stateId= 0);
     void onPlotAllChecked(int stateId= 0);
     void onSpinCorrelationsBoxChanged(double value);
-    void onSedsExport(bool);
+    void onElectron1BoxChanged(int value);
+    void onElectron2BoxChanged(int value);
+    void onAtom1BoxChanged(int value);
+    void onAtom2BoxChanged(int value);
     void onDeselectAll(bool);
+    void onSedChecked(int stateId);
+    void onSedBoxChanged(double value);
+    void onBondBoxChanged(double value);
+    void updateSelectedStructures(int);
 
 private:
     std::string filename_;
     MoleculeWidget *moleculeWidget;
-    MaximaProcessingWidget *maximaProcessingWidget;
     QCheckBox *atomsCheckBox, *bondsCheckBox, *axesCheckBox, *sampleAverageCheckBox, *spinCorrelationsCheckBox,
     *sedsCheckBox,*maximaHullsCheckBox, *plotAllCheckBox, *coloredCheckBox;
-    QDoubleSpinBox *spinCorrelationBox, *sedPercentageBox;
-    QPushButton *sedsExportButton, *deselectAllButton;
+    QDoubleSpinBox *spinCorrelationBox, *sedPercentageBox, *bondBox;
+    QSpinBox *atom1Box, *atom2Box, *electron1Box, *electron2Box;
+    QPushButton *deselectAllButton;
     QTreeWidget *maximaList;
     QLabel *probabilitySum;
-    std::vector<ClusterData> clusterCollection_;
 
     void showSplashScreen();
     void loadData();

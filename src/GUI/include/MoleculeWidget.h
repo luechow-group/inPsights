@@ -31,10 +31,10 @@ public:
 
     void drawAxes(bool drawQ = true);
     void drawAtoms(bool drawQ = true);
-    void drawBonds(bool drawQ = true);
-    void drawSpinCorrelations(bool drawQ,
-                              const std::vector<ClusterData> &clusterData,
+    void drawBonds(bool drawQ = true, double limit = 0.5);
+    void drawSpinCorrelations(const std::vector<ClusterData> &clusterData,
                               double spinCorrelationThreshold, bool drawSameSpinCorrelationsQ);
+    void deleteSpinCorrelations();
 
     void initialCameraSetup(int zoom, int pan, int tilt, int roll);
     void setupCameraBoxes(int pan, int tilt, int roll, int zoom);
@@ -53,25 +53,29 @@ public:
     void addMaximaHulls(int clusterId, const std::vector<ClusterData> &clusterData);
     void removeMaximaHulls(int clusterId);
 
+    int getAtomsNumber();
+
 public slots:
-    void activateCompatabilityMode();
-    void onAtomsChecked(std::vector<int>);
-    void onElectronsChecked(std::vector<int>);
-    void onAtomsHighlighted(std::vector<int>);
-    void onElectronsHighlighted(std::vector<int>);
+    void activateCompatibilityMode();
+    void onAtomsChecked(int);
+    void onElectronsChecked(int);
+    void onAtomsHighlighted(int);
+    void onElectronsHighlighted(int);
 
     void onCameraBoxesChanged(int);
     void onScreenshot(bool);
     void onX3dExport(bool);
     void onResetCamera(bool);
+    void onSedsExport(bool);
 
 private:
-    bool compatabilityMode_;
+    bool compatibilityMode_;
     Qt3DExtras::Qt3DWindow *qt3DWindow_;
     Qt3DCore::QEntity *root_, *moleculeEntity_;
     Qt3DExtras::QOrbitCameraController *cameraController_;
-    QPushButton *screenshotButton_, *x3dExportButton_, *resetCameraButton_;
+    QPushButton *screenshotButton_, *x3dExportButton_, *resetCameraButton_, *sedsExportButton_;
     QSpinBox *pan_, *tilt_, *roll_, *zoom_;
+    Qt3DRender::QDirectionalLight *light_;
     int initPan_, initTilt_, initRoll_,initZoom_;
     float defaultCameraRadius_;
 public:

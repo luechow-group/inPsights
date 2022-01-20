@@ -9,10 +9,10 @@ SpinCorrelations3D::SpinCorrelations3D(ElectronsVector3D *electronsVector3D,
                                        const TriangularMatrixStatistics &SeeStats,
                                        double spinCorrelationThreshold,
                                        bool drawSameSpinCorrelationsQ,
-                                       bool compatabilityMode)
+                                       bool compatibilityMode)
         :
         IConnection(electronsVector3D->correlations_),
-        compatabilityMode_(compatabilityMode) {
+        compatibilityMode_(compatibilityMode) {
 
     createConnections(*electronsVector3D, SeeStats, spinCorrelationThreshold, drawSameSpinCorrelationsQ);
 }
@@ -27,7 +27,7 @@ void SpinCorrelations3D::createConnections(const ElectronsVector &electronsVecto
     // make list of electrons at same positions
 
     std::list<Eigen::Index> electronsAtSamePositions;
-    if(compatabilityMode_) {
+    if(compatibilityMode_) {
         for (auto i = 0; i < electronsVector.numberOfEntities() - 1; ++i) {
             for (auto j = i + 1; j < electronsVector.numberOfEntities(); ++j) {
                 if (SpinPairClassification::atSamePositionQ({i, j}, electronsVector)) {
@@ -58,11 +58,24 @@ void SpinCorrelations3D::createConnections(const ElectronsVector &electronsVecto
                             electronsVector.positionsVector()[i], electronRadius,
                             electronsVector.positionsVector()[j], electronRadius);
 
+                    Qt::GlobalColor color;
                     if (corr < 0) {
-                        c = new Cylinder(this, Qt::green, positionPair, electronRadius / 7.5f, absCorr);
-                        c->material->setShininess(0);
-                    } else if (drawSameSpinCorrelationsQ) {
-                        c = new Cylinder(this, Qt::magenta, positionPair, electronRadius / 7.5f, absCorr);
+                        if (drawSameSpinCorrelationsQ) {
+                            color = Qt::green;
+                        }
+                        else {
+                            color = Qt::black;
+                        }
+                    } else {
+                        if (drawSameSpinCorrelationsQ) {
+                            color = Qt::magenta;
+                        }
+                        else {
+                            continue;
+                        }
+                    }
+                    if (positionPair.first != positionPair.second) {
+                        c = new Cylinder(this, color, positionPair, electronRadius / 5.0f, absCorr);
                         c->material->setShininess(0);
                     }
                 }
