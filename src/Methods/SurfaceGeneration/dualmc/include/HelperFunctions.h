@@ -389,9 +389,9 @@ void DualMC<T>::buildQuadSoup(
             }
 
     // generate triangle soup quads
-    size_t const numQuads = vertices.size() / 4;
+    std::size_t const numQuads = vertices.size() / 4;
     quads.reserve(numQuads);
-    for (size_t i = 0; i < numQuads; ++i) {
+    for (std::size_t i = 0; i < numQuads; ++i) {
         quads.emplace_back(i * 4, i * 4 + 1, i * 4 + 2, i * 4 + 3);
     }
 }

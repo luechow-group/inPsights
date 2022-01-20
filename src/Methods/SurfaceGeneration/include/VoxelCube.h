@@ -21,12 +21,12 @@ public:
     explicit VoxelCube(
             IndexType dimension = 16,
             VertexComponentsType length = VertexComponentsType(8 * ConversionFactors::angstrom2bohr),
-            const Eigen::Matrix<VertexComponentsType,3,1>& center = {0, 0, 0},
+            Eigen::Matrix<VertexComponentsType,3,1>  center = {0, 0, 0},
             bool boxSmoothQ = false);
 
     VoxelCube(const Eigen::Matrix<IndexType, 3, 1> &dimensions,
-              const Eigen::Matrix<VertexComponentsType, 3, 1> &lengths,
-              const Eigen::Matrix<VertexComponentsType, 3, 1> &center = {0, 0, 0},
+              Eigen::Matrix<VertexComponentsType, 3, 1> lengths,
+              Eigen::Matrix<VertexComponentsType, 3, 1> center = {0, 0, 0},
               bool smoothQ = false);
 
     std::size_t index(IndexType i, IndexType j, IndexType k) const;

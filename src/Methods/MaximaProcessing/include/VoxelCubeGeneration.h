@@ -41,11 +41,11 @@ namespace VoxelCubeGeneration{
     std::vector<VoxelCube> fromCluster(const Cluster &maxima, const std::vector<Sample> &samples);
 
     std::vector<VoxelCube> getVoxels(const Cluster &maxima, const std::vector<Sample> &samples,
-                                     Eigen::Matrix<VoxelCube::IndexType, 3, 1> dimensions,
-                                     Eigen::Matrix<VoxelCube::VertexComponentsType , 3, 1> lengths,
+                                     const Eigen::Matrix<VoxelCube::IndexType, 3, 1>& dimensions,
+                                     const Eigen::Matrix<VoxelCube::VertexComponentsType , 3, 1>& lengths,
                                      bool centerCubesAtElectronsQ, bool smoothingQ,
                                      VoxelCube::IndexType smoothingNeighbors,
-                                     Eigen::Matrix<VoxelCube::VertexComponentsType , 3, 1> center);
+                                     const Eigen::Matrix<VoxelCube::VertexComponentsType , 3, 1>& center);
 };
 
 #endif //INPSIGHTS_VOXELCUBEGENERATION_H

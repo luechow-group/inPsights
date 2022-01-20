@@ -18,10 +18,11 @@ void Bonds3D::createBonds(AtomsVector3D *atomsVector3D) {
             auto atomDistance = Metrics::distance(
                     atomsVector3D->operator[](i).position(),
                     atomsVector3D->operator[](j).position());
-            auto addedGuiRadii = (GuiHelper::radiusFromType(atomsVector3D->operator[](i).type())
+            // GuiHelper::radiusFromType returns vdWRadius/10 and is thus taken times 10 in order to recover vdW radius
+            auto addedGuiRadii = 10*(GuiHelper::radiusFromType(atomsVector3D->operator[](i).type())
                                 + GuiHelper::radiusFromType(atomsVector3D->operator[](j).type()));
 
-            if (atomDistance - 0.5*addedGuiRadii < bondDrawingLimit_)
+            if (atomDistance/addedGuiRadii < bondDrawingLimit_)
                 new Bond3D(this, *atomsVector3D->particles3D_[i], *atomsVector3D->particles3D_[j]);
         }
     }

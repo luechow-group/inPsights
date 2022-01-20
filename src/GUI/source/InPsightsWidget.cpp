@@ -23,22 +23,25 @@ InPsightsWidget::InPsightsWidget(QWidget *parent, const std::string& filename)
         QWidget(parent),
         filename_(filename),
         moleculeWidget(new MoleculeWidget(this)),
-        maximaProcessingWidget(new MaximaProcessingWidget(this)),
-        atomsCheckBox(new QCheckBox("Atoms", this)),
+        atomsCheckBox(new QCheckBox("Nuclei", this)),
         bondsCheckBox(new QCheckBox("Bonds", this)),
         axesCheckBox(new QCheckBox("Axes", this)),
-        sampleAverageCheckBox(new QCheckBox("Sample Average", this)),
-        spinCorrelationsCheckBox(new QCheckBox("Spin Correlations", this)),
-        sedsExportButton(new QPushButton("export SEDs", this)),
+        sampleAverageCheckBox(new QCheckBox("Sample average", this)),
+        spinCorrelationsCheckBox(new QCheckBox("Spin correlations", this)),
         sedsCheckBox(new QCheckBox("SEDs", this)),
-        maximaHullsCheckBox(new QCheckBox("Maxima Hulls", this)),
-        plotAllCheckBox(new QCheckBox("All of Cluster", this)),
+        maximaHullsCheckBox(new QCheckBox("Maxima hulls", this)),
+        plotAllCheckBox(new QCheckBox("All of cluster", this)),
         coloredCheckBox(new QCheckBox("Multicolored", this)),
         spinCorrelationBox(new QDoubleSpinBox(this)),
         sedPercentageBox(new QDoubleSpinBox(this)),
+        bondBox(new QDoubleSpinBox(this)),
+        atom1Box(new QSpinBox(this)),
+        atom2Box(new QSpinBox(this)),
+        electron1Box(new QSpinBox(this)),
+        electron2Box(new QSpinBox(this)),
         maximaList(new QTreeWidget(this)),
         probabilitySum(new QLabel(this)),
-        deselectAllButton(new QPushButton("deselect all", this))
+        deselectAllButton(new QPushButton("Deselect all", this))
         {
 
     loadData();
@@ -55,21 +58,25 @@ void InPsightsWidget::createWidget() {
     auto hbox = new QHBoxLayout(this);
     auto vboxOuter = new QVBoxLayout();
     auto vboxInner = new QVBoxLayout();
-    auto gbox = new QGroupBox("Settings:");
+    auto vboxInner2 = new QVBoxLayout();
+    auto selectorBox = new QGroupBox("Particle highlighting:");
+    auto settingsBox = new QGroupBox("Settings:");
 
     setLayout(hbox);
 
-    resize(1280, 800);
-    hbox->addWidget(moleculeWidget, 2);
-    hbox->addLayout(vboxOuter, 1);
+    resize(1424, 801);
+    hbox->addWidget(moleculeWidget, 1);
+    hbox->addLayout(vboxOuter, 0);
+
+    maximaList->setMinimumWidth(350);
 
     // put into MaximaTreeWidget class
-    auto headerLabels = QList<QString>({"ID", "P", "min(Φ)", "max(Φ)"});
+    auto headerLabels = QList<QString>({"ID", "Weight", "min(Φ)", "max(Φ)"});
     maximaList->setColumnCount(headerLabels.size());
     maximaList->setHeaderLabels(headerLabels);
     maximaList->header()->setStretchLastSection(false);
 
-    maximaList->headerItem()->setToolTip(0,QString("IDs sorted by Φ value"));
+    maximaList->headerItem()->setToolTip(0,QString("IDs sorted by potential Φ"));
     maximaList->headerItem()->setToolTip(1,QString("Probability"));
     maximaList->headerItem()->setToolTip(2,QString("Φ = -ħ/2m ln|Ψ|²"));
     maximaList->headerItem()->setToolTip(3,QString("Φ = -ħ/2m ln|Ψ|²"));
@@ -86,32 +93,52 @@ void InPsightsWidget::createWidget() {
     lineGrid->addWidget(probabilitySum,0,0);
     lineGrid->addWidget(deselectAllButton,0,1);
 
-    vboxOuter->addWidget(maximaProcessingWidget,1);
-    vboxOuter->addWidget(gbox);
-    gbox->setLayout(vboxInner);
+    vboxOuter->addWidget(selectorBox);
+    selectorBox->setLayout(vboxInner2);
+
+    auto selectorGrid = new QGridLayout();
+    vboxInner2->addLayout(selectorGrid,1);
+    selectorGrid->addWidget(new QLabel("Nuclei"),0,0);
+    selectorGrid->addWidget(atom1Box,1,0);
+    selectorGrid->addWidget(atom2Box,1,1);
+    selectorGrid->addWidget(new QLabel("Electrons"),2,0);
+    selectorGrid->addWidget(electron1Box,3,0);
+    selectorGrid->addWidget(electron2Box,3,1);
+
+    //vboxOuter->addWidget(maximaProcessingWidget,1);
+    vboxOuter->addWidget(settingsBox);
+    settingsBox->setLayout(vboxInner);
 
     maximaList->setSortingEnabled(true);
 
     auto checkboxGrid = new QGridLayout();
     vboxInner->addLayout(checkboxGrid,1);
 
-    // first column
+    // first row
     checkboxGrid->addWidget(atomsCheckBox,0,0);
+    checkboxGrid->addWidget(axesCheckBox,0,1);
+    axesCheckBox->setToolTip("x, y, and z axes in red, green, and blue, respectively.");
+
+    //second row
     checkboxGrid->addWidget(bondsCheckBox,1,0);
-    checkboxGrid->addWidget(axesCheckBox,2,0);
-    checkboxGrid->addWidget(sedsExportButton,3,0);
+    checkboxGrid->addWidget(bondBox,1,1);
 
-    // second column
-    checkboxGrid->addWidget(sampleAverageCheckBox,0,1);
-    checkboxGrid->addWidget(maximaHullsCheckBox,1,1);
-    checkboxGrid->addWidget(spinCorrelationsCheckBox,2,1);
-    checkboxGrid->addWidget(sedsCheckBox,3,1);
+    //third row
+    checkboxGrid->addWidget(sampleAverageCheckBox,2,0);
+    checkboxGrid->addWidget(coloredCheckBox,2,1);
 
-    // third column
-    checkboxGrid->addWidget(plotAllCheckBox,0,2);
-    checkboxGrid->addWidget(coloredCheckBox,1,2);
-    checkboxGrid->addWidget(spinCorrelationBox,2,2);
-    checkboxGrid->addWidget(sedPercentageBox,3,2);
+
+    //fourth row
+    checkboxGrid->addWidget(maximaHullsCheckBox,3,0);
+    checkboxGrid->addWidget(plotAllCheckBox,3,1);
+
+    //fifth row
+    checkboxGrid->addWidget(sedsCheckBox,4,0);
+    checkboxGrid->addWidget(sedPercentageBox,4,1);
+
+    //sixth row
+    checkboxGrid->addWidget(spinCorrelationsCheckBox,5,0);
+    checkboxGrid->addWidget(spinCorrelationBox,5,1);
 
     setupSpinBoxes();
 }
@@ -138,21 +165,39 @@ void InPsightsWidget::connectSignals() {
     connect(plotAllCheckBox, &QCheckBox::stateChanged,
             this, &InPsightsWidget::onPlotAllChecked);
 
-
     connect(spinCorrelationBox, qOverload<double>(&QDoubleSpinBox::valueChanged),
             this, &InPsightsWidget::onSpinCorrelationsBoxChanged);
 
-    connect(maximaProcessingWidget, &MaximaProcessingWidget::atomsChecked,
-            moleculeWidget, &MoleculeWidget::onAtomsChecked);
-    connect(maximaProcessingWidget, &MaximaProcessingWidget::electronsChecked,
-            moleculeWidget, &MoleculeWidget::onElectronsChecked);
+    connect(atom1Box, qOverload<int>(&QSpinBox::valueChanged),
+            this, &InPsightsWidget::onAtom1BoxChanged);
 
-    connect(maximaProcessingWidget, &MaximaProcessingWidget::atomsHighlighted,
-            moleculeWidget, &MoleculeWidget::onAtomsHighlighted);
-    connect(maximaProcessingWidget, &MaximaProcessingWidget::electronsHighlighted,
-            moleculeWidget, &MoleculeWidget::onElectronsHighlighted);
+    connect(atom2Box, qOverload<int>(&QSpinBox::valueChanged),
+            this, &InPsightsWidget::onAtom2BoxChanged);
 
-    connect(sedsExportButton, &QPushButton::clicked, this, &InPsightsWidget::onSedsExport);
+    connect(electron1Box, qOverload<int>(&QSpinBox::valueChanged),
+            this, &InPsightsWidget::onElectron1BoxChanged);
+
+    connect(electron2Box, qOverload<int>(&QSpinBox::valueChanged),
+            this, &InPsightsWidget::onElectron2BoxChanged);
+
+    connect(sedsCheckBox, &QCheckBox::stateChanged,
+            this, &InPsightsWidget::onSedChecked);
+
+    connect(sedPercentageBox,qOverload<double>(&QDoubleSpinBox::valueChanged),
+            this, &InPsightsWidget::onSedBoxChanged);
+
+    connect(bondBox,qOverload<double>(&QDoubleSpinBox::valueChanged),
+            this, &InPsightsWidget::onBondBoxChanged);
+
+    connect(coloredCheckBox, &QCheckBox::stateChanged,
+            this, &InPsightsWidget::updateSelectedStructures);
+
+    connect(maximaHullsCheckBox, &QCheckBox::stateChanged,
+            this, &InPsightsWidget::updateSelectedStructures);
+
+    connect(sampleAverageCheckBox, &QCheckBox::stateChanged,
+            this, &InPsightsWidget::updateSelectedStructures);
+
     connect(deselectAllButton, &QPushButton::clicked, this, &InPsightsWidget::onDeselectAll);
 }
 
@@ -160,10 +205,49 @@ void InPsightsWidget::setupSpinBoxes() {
     spinCorrelationBox->setRange(0.0,1.0);
     spinCorrelationBox->setSingleStep(0.01);
     spinCorrelationBox->setValue(1.0);
+    spinCorrelationBox->setButtonSymbols(QAbstractSpinBox::PlusMinus);
+    spinCorrelationBox->setAccelerated(true);
 
     sedPercentageBox->setRange(0.0,1.0);
     sedPercentageBox->setSingleStep(0.01);
     sedPercentageBox->setValue(0.2);
+    sedPercentageBox->setButtonSymbols(QAbstractSpinBox::PlusMinus);
+    sedPercentageBox->setAccelerated(true);
+
+    bondBox->setRange(0.0,2.0);
+    bondBox->setSingleStep(0.01);
+    bondBox->setValue(0.5);
+    bondBox->setButtonSymbols(QAbstractSpinBox::PlusMinus);
+    bondBox->setAccelerated(true);
+    bondBox->setToolTip("Threshold as multiple of the summed vdW radii.");
+
+    atom1Box->setRange(-1,moleculeWidget->getAtomsNumber()-1);
+    atom1Box->setWrapping(true);
+    atom1Box->setSingleStep(1);
+    atom1Box->setValue(-1);
+    atom1Box->setSpecialValueText(tr("none"));
+    atom1Box->setAccelerated(true);
+
+    atom2Box->setRange(-1,moleculeWidget->getAtomsNumber()-1);
+    atom2Box->setWrapping(true);
+    atom2Box->setSingleStep(1);
+    atom2Box->setValue(-1);
+    atom2Box->setSpecialValueText(tr("none"));
+    atom2Box->setAccelerated(true);
+
+    electron1Box->setRange(-1,clusterCollection_[0].representativeStructure().numberOfEntities()-1);
+    electron1Box->setWrapping(true);
+    electron1Box->setSingleStep(1);
+    electron1Box->setValue(-1);
+    electron1Box->setSpecialValueText(tr("none"));
+    electron1Box->setAccelerated(true);
+
+    electron2Box->setRange(-1,clusterCollection_[0].representativeStructure().numberOfEntities()-1);
+    electron2Box->setWrapping(true);
+    electron2Box->setSingleStep(1);
+    electron2Box->setValue(-1);
+    electron2Box->setSpecialValueText(tr("none"));
+    electron2Box->setAccelerated(true);
 }
 
 void InPsightsWidget::selectedStructure(QTreeWidgetItem *item, int column) {
@@ -185,10 +269,12 @@ void InPsightsWidget::selectedStructure(QTreeWidgetItem *item, int column) {
     if (createQ) {
         auto sampleAverage = clusterCollection_[clusterId].sampleAverage_;
 
-        if(sampleAverageCheckBox->checkState() == Qt::CheckState::Checked && sampleAverage.numberOfEntities() > 0) {
-            moleculeWidget->addElectronsVector(sampleAverage, clusterId, secondId, coloredCheckBox->checkState() == Qt::Checked);
+        if (sampleAverageCheckBox->checkState() == Qt::CheckState::Checked &&
+            sampleAverage.numberOfEntities() > 0) {
+            moleculeWidget->addElectronsVector(sampleAverage, clusterId, secondId,
+                                               coloredCheckBox->checkState() == Qt::Checked);
         } else if (sampleAverageCheckBox->checkState() == Qt::CheckState::Checked
-        && sampleAverage.numberOfEntities() == 0) {
+                   && sampleAverage.numberOfEntities() == 0) {
             moleculeWidget->addElectronsVector(clusterCollection_[clusterId].exemplaricStructures_[structureId],
                                                clusterId, secondId, coloredCheckBox->checkState() == Qt::Checked);
             spdlog::warn("Sample averaged vectors were not calculated. Plotting the first maximum instead...");
@@ -197,36 +283,67 @@ void InPsightsWidget::selectedStructure(QTreeWidgetItem *item, int column) {
                                                clusterId, secondId, coloredCheckBox->checkState() == Qt::Checked);
         }
 
-        maximaProcessingWidget->updateData(clusterCollection_[clusterId]);
-
-        if(sedsCheckBox->checkState() == Qt::CheckState::Checked
-        && moleculeWidget->activeSedsMap_.find(clusterId) == moleculeWidget->activeSedsMap_.end()) {
-            if (clusterCollection_[clusterId].voxelCubes_.empty())
-                spdlog::warn("Voxel cubes were not calculated.");
-            else
-                moleculeWidget->addSeds(clusterId, structureId, clusterCollection_, sedPercentageBox->value());
+        if (sedsCheckBox->checkState() == Qt::CheckState::Checked
+            && moleculeWidget->activeSedsMap_.find(clusterId) == moleculeWidget->activeSedsMap_.end()) {
+            moleculeWidget->addSeds(clusterId, structureId, clusterCollection_, sedPercentageBox->value());
         }
 
-        if(maximaHullsCheckBox->checkState() == Qt::CheckState::Checked
-           && moleculeWidget->activeMaximaHullsMap_.find(clusterId) == moleculeWidget->activeMaximaHullsMap_.end()) {
+        if (maximaHullsCheckBox->checkState() == Qt::CheckState::Checked
+            &&
+            moleculeWidget->activeMaximaHullsMap_.find(clusterId) == moleculeWidget->activeMaximaHullsMap_.end()) {
             if (clusterCollection_[clusterId].exemplaricStructures_.empty())
                 spdlog::warn("Voxel cubes were not calculated.");
             else
                 moleculeWidget->addMaximaHulls(clusterId, clusterCollection_);
         }
 
+        onElectron1BoxChanged(electron1Box->value());
+        onElectron2BoxChanged(electron2Box->value());
     } else {
         moleculeWidget->removeElectronsVector(clusterId, secondId);
 
-        if(moleculeWidget->activeSedsMap_.find(clusterId) != moleculeWidget->activeSedsMap_.end())
+        if (moleculeWidget->activeSedsMap_.find(clusterId) != moleculeWidget->activeSedsMap_.end())
             moleculeWidget->removeSeds(clusterId);
 
-        if(moleculeWidget->activeMaximaHullsMap_.find(clusterId) != moleculeWidget->activeMaximaHullsMap_.end())
+        if (moleculeWidget->activeMaximaHullsMap_.find(clusterId) != moleculeWidget->activeMaximaHullsMap_.end())
             moleculeWidget->removeMaximaHulls(clusterId);
     }
     redrawSpinDecorations();
-    probabilitySum->setText(QString("Σ=") + QString::number(sumProbabilities(), 'f', 4));
+    probabilitySum->setText(QString("Σ Weight = ") + QString::number(sumProbabilities(), 'f', 4));
+
 };
+
+void InPsightsWidget::updateSelectedStructures(int) {
+    auto* root = maximaList->invisibleRootItem();
+
+    // iterate over topLevelItems
+    for (int i = 0; i < root->childCount(); ++i) {
+        if(root->child(i)->checkState(0) == Qt::Checked) {
+            root->child(i)->setCheckState(0, Qt::Unchecked);
+            root->child(i)->setCheckState(0, Qt::Checked);
+        }
+        // iterate over childs of topLevelItem i
+        for (int j = 0; j<root->child(i)->childCount(); ++j) {
+            if(root->child(i)->child(j)->checkState(0) == Qt::Checked) {
+                root->child(i)->child(j)->setCheckState(0, Qt::Unchecked);
+                root->child(i)->child(j)->setCheckState(0, Qt::Checked);
+            }
+        }
+    }
+};
+
+void InPsightsWidget::onSedChecked(int stateId) {
+    // guessing that all voxelCubes are empty, if first is empty. Should be fine
+    if(clusterCollection_[0].voxelCubes_.empty()) {
+        if (Qt::CheckState(stateId) == Qt::CheckState::Checked) {
+            spdlog::warn("Voxel cubes were not calculated.");
+            sedsCheckBox->setCheckState(Qt::CheckState::Unchecked);
+        }
+    }
+    else {
+        updateSelectedStructures(Qt::CheckState::Checked);
+    }
+}
 
 void InPsightsWidget::onPlotAllChecked(int stateId)  {
     auto plotAllQ = Qt::CheckState(stateId);
@@ -245,22 +362,27 @@ void InPsightsWidget::onPlotAllChecked(int stateId)  {
 }
 
 void InPsightsWidget::redrawSpinDecorations() {
-    if(spinCorrelationsCheckBox->checkState() == Qt::Checked){
-        onSpinCorrelationsChecked(Qt::Unchecked);
-        onSpinCorrelationsChecked(Qt::Checked);
-    }
-    else if(spinCorrelationsCheckBox->checkState() == Qt::PartiallyChecked){
-        onSpinCorrelationsChecked(Qt::Unchecked);
-        onSpinCorrelationsChecked(Qt::PartiallyChecked);
-    }
+    onSpinCorrelationsChecked(spinCorrelationsCheckBox->checkState());
 }
 
 void InPsightsWidget::onAtomsChecked(int stateId) {
+    bondsCheckBox->setCheckState(Qt::CheckState::Unchecked);
     moleculeWidget->drawAtoms(Qt::CheckState(stateId) == Qt::CheckState::Checked);
+    if (Qt::CheckState(stateId) == Qt::CheckState::Checked) {
+        onAtom1BoxChanged(atom1Box->value());
+        onAtom2BoxChanged(atom2Box->value());
+    }
 }
 
 void InPsightsWidget::onBondsChecked(int stateId) {
-    moleculeWidget->drawBonds(Qt::CheckState(stateId) == Qt::CheckState::Checked);
+    if (atomsCheckBox->isChecked()) {
+        moleculeWidget->drawBonds(Qt::CheckState(stateId) == Qt::CheckState::Checked, bondBox->value());
+    }
+    else {
+        if (Qt::CheckState(stateId) == Qt::CheckState::Checked) {
+            bondsCheckBox->setCheckState(Qt::CheckState::Unchecked);
+        }
+    }
 }
 
 void InPsightsWidget::onAxesChecked(int stateId) {
@@ -268,35 +390,52 @@ void InPsightsWidget::onAxesChecked(int stateId) {
 }
 
 void InPsightsWidget::onSpinCorrelationsChecked(int stateId) {
+    moleculeWidget->deleteSpinCorrelations();
     if(Qt::CheckState(stateId) == Qt::Checked)
-        moleculeWidget->drawSpinCorrelations(true,clusterCollection_, spinCorrelationBox->value(),true);
+        moleculeWidget->drawSpinCorrelations(clusterCollection_, spinCorrelationBox->value(),true);
     else if(Qt::CheckState(stateId) == Qt::PartiallyChecked)
-        moleculeWidget->drawSpinCorrelations(true,clusterCollection_, spinCorrelationBox->value(),false);
-    else
-        moleculeWidget->drawSpinCorrelations(false,clusterCollection_, spinCorrelationBox->value(),false);
+        moleculeWidget->drawSpinCorrelations(clusterCollection_, spinCorrelationBox->value(),false);
 }
 
 void InPsightsWidget::onSpinCorrelationsBoxChanged(double value) {
-    if (spinCorrelationsCheckBox->checkState() == Qt::CheckState::Checked) {
-        onSpinCorrelationsChecked(Qt::CheckState::Unchecked); //TODO ugly, create update() function in SpinCorrelation3D and make it accessible
-        onSpinCorrelationsChecked(Qt::CheckState::Checked);
-    } else if (spinCorrelationsCheckBox->checkState() == Qt::CheckState::PartiallyChecked) {
-            onSpinCorrelationsChecked(Qt::CheckState::Unchecked);
-            onSpinCorrelationsChecked(Qt::CheckState::PartiallyChecked);
-    }else {
-         onSpinCorrelationsChecked(Qt::CheckState::Unchecked);
+    redrawSpinDecorations();
+}
+
+void InPsightsWidget::onBondBoxChanged(double value) {
+
+    if (bondsCheckBox->isChecked()) {
+        bondsCheckBox->setCheckState(Qt::Unchecked);
+        bondsCheckBox->setCheckState(Qt::Checked);
     }
+}
+
+void InPsightsWidget::onAtom1BoxChanged(int value) {
+    moleculeWidget->onAtomsHighlighted(value);
+}
+
+void InPsightsWidget::onAtom2BoxChanged(int value) {
+    moleculeWidget->onAtomsChecked(value);
+}
+
+void InPsightsWidget::onElectron1BoxChanged(int value) {
+    moleculeWidget->onElectronsHighlighted(value);
+}
+
+void InPsightsWidget::onElectron2BoxChanged(int value) {
+    moleculeWidget->onElectronsChecked(value);
 }
 
 void InPsightsWidget::showSplashScreen() {
     auto splashScreen = new QSplashScreen();
-    auto pixmap = QPixmap(":inPsights.png").scaledToWidth(400, Qt::TransformationMode::SmoothTransformation);
+    auto pixmap = QPixmap(":inPsights.png").scaledToWidth(450, Qt::TransformationMode::SmoothTransformation);
 
     splashScreen->setPixmap(pixmap);
     splashScreen->show();
 
-    std::string message = inPsights::version() + " (alpha)\n "\
-                          "Copyright © 2016-2021  Michael A. Heuer.";
+    std::string message = inPsights::version() + "\n"\
+                          "Copyright © 2016-2021  Michael A. Heuer.\n"\
+                          "Copyright © 2018-2022  Leonard Reuter.";
+
     splashScreen->showMessage(message.c_str(), Qt::AlignBottom, Qt::gray);
 
     splashScreen->finish(this);
@@ -311,28 +450,23 @@ void InPsightsWidget::loadData() {
                                                 QString("YAML files (*.yml *.yaml *.json)")).toStdString();
     }
 
-    moleculeWidget->fileInfoText_->setText(filename_.c_str());
+    auto fileString = filename_;
+    // cutting the path, so that only the actual filename remains
+    fileString.erase(0,fileString.rfind('/') + 1);
+    moleculeWidget->fileInfoText_->setText(fileString.c_str());
 
     YAML::Node doc = YAML::LoadAllFromFile(filename_)[1]; // load results
     auto atoms = doc["Atoms"].as<AtomsVector>();
 
     /* Note on the compatibility mode:
      * Clusters from result files produced without initial electron indices shuffling contain
-     * artificial correlation between the core electrons, presumably originating from the Hungarian selecting the first
-     * viable permutation. These artificial correlations are removed manually in the visualization.
+     * artificial correlation between the core (or ionic) electrons, presumably originating from the
+     * Hungarian selecting the first viable permutation. These artificial correlations are removed
+     * manually in the visualization.
      */
-    if(doc["CompatabilityMode"] && doc["CompatabilityMode"].as<bool>())
-        moleculeWidget->activateCompatabilityMode();
-
-
-    auto nElectrons = doc["Clusters"][0]["Structures"][0].as<ElectronsVector>().numberOfEntities();
-
-    auto EnStats = doc["En"].as<VectorStatistics>();
-    maximaProcessingWidget->setAtomEnergies(EnStats);
-    maximaProcessingWidget->setAtomsVector(atoms);
-    maximaProcessingWidget->initializeTreeItems(maximaProcessingWidget->atomsTreeWidget(), int(atoms.numberOfEntities()));
-    maximaProcessingWidget->initializeTreeItems(maximaProcessingWidget->electronsTreeWidget(), int(nElectrons));
-
+    if(!doc["CompatibilityMode"] or doc["CompatibilityMode"].as<bool>()) {
+        moleculeWidget->activateCompatibilityMode();
+    }
 
     moleculeWidget->setSharedAtomsVector(atoms);
 
@@ -347,11 +481,21 @@ void InPsightsWidget::loadData() {
         clusterCollection_.emplace_back(doc["Clusters"][clusterId].as<ClusterData>());
         const auto & cluster = clusterCollection_.back();
 
+        float minPhi = cluster.valueStats_.cwiseMin()[0]/2.0;
+        auto minPhiString = QString::number(minPhi, 'f', 3);
+        if (minPhi > 0)
+            minPhiString = QString(' ') + minPhiString;
+
+        float maxPhi = cluster.valueStats_.cwiseMax()[0]/2.0;
+        auto maxPhiString = QString::number(maxPhi, 'f', 3);
+        if (maxPhi > 0)
+            maxPhiString = QString(' ') + maxPhiString;
+
         auto item = new IntegerSortedTreeWidgetItem(
                 maximaList, {QString::number(clusterId),
                  QString::number(1.0 * cluster.N_ / doc["NSamples"].as<unsigned>(), 'f', 4),
-                 QString::number(cluster.valueStats_.cwiseMin()[0]/2.0, 'f', 3),
-                 QString::number(cluster.valueStats_.cwiseMax()[0]/2.0, 'f', 3)});
+                 minPhiString.left(6),
+                 maxPhiString.left(6)});
 
         item->setCheckState(0, Qt::CheckState::Unchecked);
 
@@ -430,20 +574,6 @@ bool InPsightsWidget::plotAllActiveQ() {
     return plotAllCheckBox->checkState() == Qt::Checked;
 }
 
-void InPsightsWidget::onSedsExport(bool) {
-    for (auto &sed : moleculeWidget->activeSedsMap_){
-        auto clusterId = sed.first;
-        int i = 0;
-        for (auto &voxelCube : clusterCollection_[clusterId].voxelCubes_){
-            std::string fileName = "sed-"+std::to_string(clusterId)+"-"+std::to_string(i)+".txt";
-            std::string comment = filename_ + " cluster " + std::to_string(clusterId) + " SED " + std::to_string(i);
-            voxelCube.exportMacmolplt(fileName, comment);
-            i += 1;
-        }
-    }
-    spdlog::info("Exported SEDs");
-}
-
 void InPsightsWidget::onDeselectAll(bool) {
     auto* root = maximaList->invisibleRootItem();
     // iterate over topLevelItems
@@ -453,4 +583,9 @@ void InPsightsWidget::onDeselectAll(bool) {
             root->child(i)->child(j)->setCheckState(0, Qt::Unchecked);
         }
     }
+}
+
+void InPsightsWidget::onSedBoxChanged(double) {
+    if (sedsCheckBox->isChecked())
+        updateSelectedStructures(Qt::CheckState::Checked);
 }
