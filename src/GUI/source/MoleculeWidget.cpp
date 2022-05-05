@@ -45,6 +45,7 @@ MoleculeWidget::MoleculeWidget(QWidget *parent)
         zoomText_(new QLabel("Zoom")),
         atomsVector3D_(nullptr),
         cartesianAxes_(nullptr),
+        eigenvectors_(),
         light_(new Qt3DRender::QDirectionalLight(root_)){
 
     auto outerLayout = new QVBoxLayout(this);
@@ -190,6 +191,40 @@ void MoleculeWidget::drawAxes(bool drawQ) {
     } else {
         cartesianAxes_->deleteLater();
     }
+}
+
+void MoleculeWidget::drawEigenvectors(bool drawQ, unsigned clusterId, unsigned structureId, unsigned eigenvalueId, float scale) {
+    auto inPsightsWidget = dynamic_cast<InPsightsWidget*>(parent());
+    unsigned electronsNumber = inPsightsWidget->clusterCollection_[clusterId].exemplaricStructures_[structureId].numberOfEntities();
+    if (drawQ) {
+        if (not eigenvectors_.empty()) {
+            for (auto eigenvector : eigenvectors_) {
+                eigenvector->deleteLater();
+            }
+            eigenvectors_ = std::vector<Arrow*>();
+        }
+        for (unsigned i = 0; i < electronsNumber; i++) {
+            Eigen::Vector3d ePosVector =inPsightsWidget->clusterCollection_[clusterId].exemplaricStructures_[structureId].positionsVector()[i];
+            Eigen::Vector3d eigenVector = inPsightsWidget->clusterCollection_[clusterId].eigenvectors_[structureId][eigenvalueId * electronsNumber + i] * scale;
+            Eigen::Vector3d tempVector = ePosVector + eigenVector;
+            QString color = "blue";
+            if (inPsightsWidget->clusterCollection_[clusterId].exemplaricStructures_[structureId].typesVector()[i] == Spins::fromString("a")) {
+                color = "red";
+            }
+            eigenvectors_.emplace_back(new Arrow(moleculeEntity_, QColor(color),
+                                                 {GuiHelper::toQVector3D(ePosVector), GuiHelper::toQVector3D(tempVector)}, 0.01f, 0.25f, 2.0f));
+        }
+    }
+    else {
+        removeEigenvectors();
+    }
+}
+
+void MoleculeWidget::removeEigenvectors() {
+    for (auto eigenvector : eigenvectors_) {
+        eigenvector->deleteLater();
+    }
+    eigenvectors_ = std::vector<Arrow*>();
 }
 
 void MoleculeWidget::drawAtoms(bool drawQ) {
