@@ -21,7 +21,9 @@ ClusterData::ClusterData(unsigned totalNumberOfStructures,
                          const MatrixStatistics RenStats,
                          const std::vector<VoxelCube> &seds,
                          const Eigen::MatrixXd& sedOverlaps,
-                         const std::vector<unsigned>& subCounts
+                         const std::vector<unsigned>& subCounts,
+                         const std::vector<Eigen::VectorXd> &eigenvalues,
+                         const std::vector<std::vector<Eigen::Vector3d>> &eigenvectors
 )
         :
         N_(totalNumberOfStructures),
@@ -39,7 +41,9 @@ ClusterData::ClusterData(unsigned totalNumberOfStructures,
         RenStats_(RenStats),
         voxelCubes_(seds),
         overlaps_(sedOverlaps),
-        subN_(subCounts)
+        subN_(subCounts),
+        eigenvalues_(eigenvalues),
+        eigenvectors_(eigenvectors)
 {};
 
 ClusterData::ClusterData(unsigned totalNumberOfStructures,
@@ -81,7 +85,9 @@ ClusterData::ClusterData(unsigned totalNumberOfStructures,
         overlaps_(sedOverlaps),
         selectionInteractionEnergies_(selectionInteractionEnergies),
         selections_(selections),
-        subN_(subCounts)
+        subN_(subCounts),
+        eigenvalues_(),
+        eigenvectors_()
         {};
 
 ElectronsVector ClusterData::representativeStructure() const {
@@ -90,6 +96,7 @@ ElectronsVector ClusterData::representativeStructure() const {
 
 namespace YAML {
     Node convert<ClusterData>::encode(const ClusterData &rhs) {
+        // TODO add eigenvalues and eigenvectors?
         Node node;
         node["N"] = rhs.N_;
         node["ValueRange"] = rhs.valueStats_;
@@ -144,6 +151,19 @@ namespace YAML {
             }
         }
 
+        std::vector<Eigen::VectorXd> eigenvalues;
+        std::vector<std::vector<Eigen::Vector3d>> eigenvectors;
+        for (auto subNode : node["Structures"]){
+            if (subNode["Eigenvalues"]){
+                eigenvalues.emplace_back(subNode["Eigenvalues"].as<Eigen::VectorXd>());
+                std::vector<Eigen::Vector3d> vecs3d;
+                for (auto eigenVec : subNode["Eigenvectors"]){
+                    vecs3d.emplace_back(eigenVec.as<Eigen::Vector3d>());
+                }
+                eigenvectors.emplace_back(vecs3d);
+            }
+        }
+
         rhs = ClusterData(
                 node["N"].as<unsigned>(),
                 structures,
@@ -162,7 +182,9 @@ namespace YAML {
                 node["Ren"].as<MatrixStatistics>(),
                 cubes,
                 sedOverlaps,
-                subCounts
+                subCounts,
+                eigenvalues,
+                eigenvectors
                 );
         
         return true;
