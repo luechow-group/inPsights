@@ -57,8 +57,8 @@ void InPsightsWidget::createWidget() {
 
     auto hbox = new QHBoxLayout(this);
     auto vboxOuter = new QVBoxLayout();
-    auto vboxInner = new QVBoxLayout();
-    auto vboxInner2 = new QVBoxLayout();
+    auto vboxSettings = new QVBoxLayout();
+    auto vboxParticleHighlighting = new QVBoxLayout();
     auto selectorBox = new QGroupBox("Particle highlighting:");
     auto settingsBox = new QGroupBox("Settings:");
 
@@ -94,10 +94,10 @@ void InPsightsWidget::createWidget() {
     lineGrid->addWidget(deselectAllButton,0,1);
 
     vboxOuter->addWidget(selectorBox);
-    selectorBox->setLayout(vboxInner2);
+    selectorBox->setLayout(vboxParticleHighlighting);
 
     auto selectorGrid = new QGridLayout();
-    vboxInner2->addLayout(selectorGrid,1);
+    vboxParticleHighlighting->addLayout(selectorGrid,1);
     selectorGrid->addWidget(new QLabel("Nuclei"),0,0);
     selectorGrid->addWidget(atom1Box,1,0);
     selectorGrid->addWidget(atom2Box,1,1);
@@ -107,12 +107,12 @@ void InPsightsWidget::createWidget() {
 
     //vboxOuter->addWidget(maximaProcessingWidget,1);
     vboxOuter->addWidget(settingsBox);
-    settingsBox->setLayout(vboxInner);
+    settingsBox->setLayout(vboxSettings);
 
     maximaList->setSortingEnabled(true);
 
     auto checkboxGrid = new QGridLayout();
-    vboxInner->addLayout(checkboxGrid,1);
+    vboxSettings->addLayout(checkboxGrid,1);
 
     // first row
     checkboxGrid->addWidget(atomsCheckBox,0,0);
