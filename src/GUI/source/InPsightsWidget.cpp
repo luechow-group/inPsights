@@ -650,6 +650,9 @@ void InPsightsWidget::onScaleVectorBoxChanged(double value) {
             addMovedElectronsVector(clusterId, structureId, secondId);
             moleculeWidget->drawEigenvectors(true, clusterId, structureId, eigenvectorSpinBox->value(), value);
         }
+        else {
+            moleculeWidget->drawEigenvectors(true, clusterId, structureId, eigenvectorSpinBox->value(), value);
+        }
     }
 }
 
