@@ -35,28 +35,36 @@ public slots:
     void onDeselectAll(bool);
     void onSedChecked(int stateId);
     void onSedBoxChanged(double value);
+    void onEigenvectorSpinBoxChanged(int value);
+    void onScaleVectorBoxChanged(double value);
     void onBondBoxChanged(double value);
+    void onMoveElectronsCheckBoxChecked(int stateId);
     void updateSelectedStructures(int);
+    void addMovedElectronsVector(int clusterId, int structureId, int secondId);
+    bool checkEigenvalues();
+    std::vector<int> getTickedStructuresCountVector();
 
 private:
     std::string filename_;
     MoleculeWidget *moleculeWidget;
     QCheckBox *atomsCheckBox, *bondsCheckBox, *axesCheckBox, *sampleAverageCheckBox, *spinCorrelationsCheckBox,
-    *sedsCheckBox,*maximaHullsCheckBox, *plotAllCheckBox, *coloredCheckBox;
-    QDoubleSpinBox *spinCorrelationBox, *sedPercentageBox, *bondBox;
-    QSpinBox *atom1Box, *atom2Box, *electron1Box, *electron2Box;
+    *sedsCheckBox,*maximaHullsCheckBox, *plotAllCheckBox, *coloredCheckBox, *moveElectronsCheckBox;
+    QDoubleSpinBox *spinCorrelationBox, *sedPercentageBox, *bondBox, *scaleVectorBox;
+    QSpinBox *atom1Box, *atom2Box, *electron1Box, *electron2Box, *eigenvectorSpinBox;
     QPushButton *deselectAllButton;
     QTreeWidget *maximaList;
-    QLabel *probabilitySum;
+    QLabel *probabilitySum, *eigenvalueLabel;
 
     void showSplashScreen();
     void loadData();
     void initialView();
     void setupSpinBoxes();
+    void setupLabels();
     void connectSignals();
     void createWidget();
     void redrawSpinDecorations();
     double sumProbabilities();
+    void resetEigenvalueLabel();
 };
 
 #endif //INPSIGHTS_INPSIGHTSWIDGET_H
