@@ -127,7 +127,13 @@ void InPsightsWidget::createWidget() {
         eigenvectorsGrid->addWidget(moveElectronsCheckBox,1,1);
         eigenvectorsGrid->addWidget(scaleVectorBox,1,0);
     }
-
+    else{
+        eigenvectorSpinBox->deleteLater();
+        eigenvalueLabel->deleteLater();
+        moveElectronsCheckBox->deleteLater();
+        scaleVectorBox->deleteLater();
+    }
+    
     //vboxOuter->addWidget(maximaProcessingWidget,1);
     vboxOuter->addWidget(settingsBox);
     settingsBox->setLayout(vboxSettings);
