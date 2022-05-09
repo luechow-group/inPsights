@@ -45,7 +45,8 @@ InPsightsWidget::InPsightsWidget(QWidget *parent, const std::string& filename)
         maximaList(new QTreeWidget(this)),
         probabilitySum(new QLabel(this)),
         eigenvalueLabel(new QLabel(this)),
-        deselectAllButton(new QPushButton("Deselect all", this))
+        deselectAllButton(new QPushButton("Deselect all", this)),
+        lastMovedElectronClusterVector({0, 0, -1})
         {
 
     loadData();
@@ -226,7 +227,7 @@ void InPsightsWidget::connectSignals() {
             this, &InPsightsWidget::updateSelectedStructures);
 
     connect(sampleAverageCheckBox, &QCheckBox::stateChanged,
-            this, &InPsightsWidget::updateSelectedStructures);
+            this, &InPsightsWidget::onSampleAverageCheckBoxChanged);
 
     connect(eigenvectorSpinBox, qOverload<int>(&QSpinBox::valueChanged),
             this, &InPsightsWidget::onEigenvectorSpinBoxChanged);
@@ -334,10 +335,22 @@ void InPsightsWidget::selectedStructure(QTreeWidgetItem *item, int column) {
     auto createQ = item->checkState(0) == Qt::CheckState::Checked;
 
     if (createQ) {
-        if (eigenvectorSpinBox->value() != -1 and count > 1) {
-            spdlog::warn("Chose only one structure for eigenvalues");
+        if (not clusterCollection_[0].eigenvalues_.empty()) {
+            if (eigenvectorSpinBox->value() != -1 and count > 1) {
+                spdlog::warn("Chose only one structure for eigenvalues");
+            }
         }
         if (sampleAverageCheckBox->checkState() == Qt::CheckState::Checked){
+            if (not clusterCollection_[0].eigenvalues_.empty()) {
+                if (eigenvectorSpinBox->value() != -1) {
+                    spdlog::warn("No eigenvectors were calculated for the sample average");
+                    eigenvectorSpinBox->setValue(-1);
+                }
+                if (moveElectronsCheckBox->isChecked()) {
+                    spdlog::warn("Cannot move electrons for the sample average");
+                    moveElectronsCheckBox->setCheckState(Qt::Unchecked);
+                }
+            }
             auto sampleAverage = clusterCollection_[clusterId].sampleAverage_;
             if (sampleAverage.numberOfEntities() > 0) {
                 moleculeWidget->addElectronsVector(sampleAverage, clusterId, secondId,
@@ -353,16 +366,25 @@ void InPsightsWidget::selectedStructure(QTreeWidgetItem *item, int column) {
             moleculeWidget->addElectronsVector(clusterCollection_[clusterId].exemplaricStructures_[structureId],
                                                clusterId, secondId, coloredCheckBox->checkState() == Qt::Checked);
         }
-
-        if (checkEigenvalues() and eigenvectorSpinBox->value() != -1) {
-            eigenvalueLabel->setText(QString::number(clusterCollection_[clusterId].eigenvalues_[structureId][eigenvectorSpinBox->value()], 'f', 4));
-            moleculeWidget->drawEigenvectors(true, clusterId, structureId, eigenvectorSpinBox->value(), scaleVectorBox->value());
+        if (not clusterCollection_[0].eigenvalues_.empty()) {
+            if (checkEigenvalues() and eigenvectorSpinBox->value() != -1) {
+                eigenvalueLabel->setText(QString::number(clusterCollection_[clusterId].eigenvalues_[structureId][eigenvectorSpinBox->value()], 'f', 4));
+                moleculeWidget->drawEigenvectors(true, clusterId, structureId, eigenvectorSpinBox->value(), scaleVectorBox->value());
+            }
+            else {
+                if (moveElectronsCheckBox->isChecked()) {
+                    moveElectronsCheckBox->setCheckState(Qt::Unchecked);
+                    std::cout << lastMovedElectronClusterVector[0] << " " << lastMovedElectronClusterVector[1] << " " << lastMovedElectronClusterVector[2] << std::endl;
+                    moleculeWidget->removeElectronsVector(lastMovedElectronClusterVector[0], lastMovedElectronClusterVector[2]);
+                    moleculeWidget->addElectronsVector(clusterCollection_[lastMovedElectronClusterVector[0]]
+                                                        .exemplaricStructures_[lastMovedElectronClusterVector[1]],
+                                                       lastMovedElectronClusterVector[0], lastMovedElectronClusterVector[2],
+                                                       coloredCheckBox->checkState() == Qt::Checked);
+                }
+                moleculeWidget->removeEigenvectors();
+                eigenvalueLabel->setText(QString(" "));
+            }
         }
-        else {
-            moleculeWidget->removeEigenvectors();
-            eigenvalueLabel->setText(QString(" "));
-        }
-
         if (sedsCheckBox->checkState() == Qt::CheckState::Checked
             && moleculeWidget->activeSedsMap_.find(clusterId) == moleculeWidget->activeSedsMap_.end()) {
             moleculeWidget->addSeds(clusterId, structureId, clusterCollection_, sedPercentageBox->value());
@@ -381,36 +403,39 @@ void InPsightsWidget::selectedStructure(QTreeWidgetItem *item, int column) {
         onElectron2BoxChanged(electron2Box->value());
     }
     else {
-        if (eigenvectorSpinBox->value() != -1 and count > 1) {
-            spdlog::warn("Chose only one structure for eigenvalues");
-        }
-        if (not checkEigenval) {
-            moveElectronsCheckBox->setCheckState(Qt::Unchecked);
-        }
-        if (checkEigenval and eigenvectorSpinBox->value() != -1) {
-            auto* root = maximaList->invisibleRootItem();
-            unsigned cluId = -1;
-            unsigned strId = 0;
-            // iterate over topLevelItems
-            for (int i = 0; i < root->childCount(); ++i) {
-                if(root->child(i)->checkState(0) == Qt::Checked) {
-                    cluId = i;
-                }
-                // iterate over childs of topLevelItem i
-                for (int j = 0; j<root->child(i)->childCount(); ++j) {
-                    if(root->child(i)->child(j)->checkState(0) == Qt::Checked) {
+        if (not clusterCollection_[0].eigenvalues_.empty()) {
+            if (eigenvectorSpinBox->value() != -1 and count > 1) {
+                spdlog::warn("Chose only one structure for eigenvalues");
+            }
+            if (not checkEigenval) {
+                moveElectronsCheckBox->setCheckState(Qt::Unchecked);
+            }
+            if (checkEigenval and eigenvectorSpinBox->value() != -1) {
+                auto* root = maximaList->invisibleRootItem();
+                unsigned cluId = -1;
+                unsigned strId = 0;
+                // iterate over topLevelItems
+                for (int i = 0; i < root->childCount(); ++i) {
+                    if(root->child(i)->checkState(0) == Qt::Checked) {
                         cluId = i;
-                        strId = j;
+                    }
+                    // iterate over childs of topLevelItem i
+                    for (int j = 0; j<root->child(i)->childCount(); ++j) {
+                        if(root->child(i)->child(j)->checkState(0) == Qt::Checked) {
+                            cluId = i;
+                            strId = j;
+                        }
                     }
                 }
+                eigenvalueLabel->setText(QString::number(clusterCollection_[cluId].eigenvalues_[strId][eigenvectorSpinBox->value()], 'f', 4));
+                moleculeWidget->drawEigenvectors(true, cluId, strId, eigenvectorSpinBox->value(), scaleVectorBox->value());
             }
-            eigenvalueLabel->setText(QString::number(clusterCollection_[cluId].eigenvalues_[strId][eigenvectorSpinBox->value()], 'f', 4));
-            moleculeWidget->drawEigenvectors(true, cluId, strId, eigenvectorSpinBox->value(), scaleVectorBox->value());
+            else {
+                moleculeWidget->removeEigenvectors();
+                eigenvalueLabel->setText(QString(" "));
+            }
         }
-        else {
-            moleculeWidget->removeEigenvectors();
-            eigenvalueLabel->setText(QString(" "));
-        }
+
         moleculeWidget->removeElectronsVector(clusterId, secondId);
 
         if (moleculeWidget->activeSedsMap_.find(clusterId) != moleculeWidget->activeSedsMap_.end())
@@ -440,6 +465,9 @@ void InPsightsWidget::addMovedElectronsVector(int clusterId, int structureId, in
     auto movedElectronsVector = ElectronsVector(movedElectronPositions,
                                                 startElectronsVector.typesVector());
     moleculeWidget->addElectronsVector(movedElectronsVector, clusterId, secondId);
+    lastMovedElectronClusterVector[0] = clusterId;
+    lastMovedElectronClusterVector[1] = structureId;
+    lastMovedElectronClusterVector[2] = secondId;
 }
 
 bool InPsightsWidget::checkEigenvalues() {
@@ -484,6 +512,26 @@ std::vector<int> InPsightsWidget::getTickedStructuresCountVector() {
     TickedStructuresCountVector.emplace_back(clusterId);
     TickedStructuresCountVector.emplace_back(structureId);
     return TickedStructuresCountVector;
+}
+
+void InPsightsWidget::onSampleAverageCheckBoxChanged(int stateId) {
+    if (not clusterCollection_[0].eigenvalues_.empty()) {
+        if (moveElectronsCheckBox->isChecked()) {
+            sampleAverageCheckBox->setCheckState(Qt::Unchecked);
+            spdlog::warn("Cannot move electrons for the sample average");
+        }
+        if (eigenvectorSpinBox->value() != -1) {
+            sampleAverageCheckBox->setCheckState(Qt::Unchecked);
+            spdlog::warn("No eigenvectors were calculated for the sample average");
+        }
+        if (not moveElectronsCheckBox->isChecked() and eigenvectorSpinBox->value() == -1) {
+            updateSelectedStructures(42);
+        }
+    }
+    else {
+        updateSelectedStructures(42);
+    }
+
 }
 
 void InPsightsWidget::updateSelectedStructures(int) {
@@ -602,18 +650,31 @@ void InPsightsWidget::onElectron2BoxChanged(int value) {
     moleculeWidget->onElectronsChecked(value);
 }
 
-
-
 void InPsightsWidget::onEigenvectorSpinBoxChanged(int value) {
-    if (value != -1) {
-        std::vector<int> tickedStructuresCountVector = getTickedStructuresCountVector();
-        int count = tickedStructuresCountVector[0];
-        int id = tickedStructuresCountVector[1];
-        int secondId = tickedStructuresCountVector[2];
-        int structureId = secondId;
-        if (structureId == -1) {
-            structureId = 0;
+    if (sampleAverageCheckBox->isChecked() and value != -1) {
+        eigenvectorSpinBox->setValue(-1);
+        value = -1;
+        spdlog::warn("No eigenvectors were calculated for the sample average");
+    }
+    std::vector<int> tickedStructuresCountVector = getTickedStructuresCountVector();
+    int count = tickedStructuresCountVector[0];
+    int id = tickedStructuresCountVector[1];
+    int secondId = tickedStructuresCountVector[2];
+    int structureId = secondId;
+    if (structureId == -1) {
+        structureId = 0;
+    }
+    if (value == -1) {
+        if (not sampleAverageCheckBox->isChecked() and moveElectronsCheckBox->isChecked()) {
+            moveElectronsCheckBox->setCheckState(Qt::Unchecked);
+            spdlog::warn("Chose an eigenvector to move the electrons");
+            moleculeWidget->removeElectronsVector(id, secondId);
+            moleculeWidget->addElectronsVector(clusterCollection_[id].exemplaricStructures_[structureId],
+                                               id, secondId,
+                                               coloredCheckBox->checkState() == Qt::Checked);
         }
+    }
+    if (value != -1) {
         if (count > 1) {
             spdlog::warn("Chose only one structure for eigenvalues");
         }
@@ -663,7 +724,10 @@ void InPsightsWidget::onScaleVectorBoxChanged(double value) {
 }
 
 void InPsightsWidget::onMoveElectronsCheckBoxChecked(int stateId){
-    spinCorrelationsCheckBox->setCheckState(Qt::Unchecked);
+    if (sampleAverageCheckBox->isChecked() and moveElectronsCheckBox->isChecked()) {
+        moveElectronsCheckBox->setCheckState(Qt::Unchecked);
+        spdlog::warn("Cannot move electrons for the sample average");
+    }
     std::vector<int> tickedStructuresCountVector = getTickedStructuresCountVector();
     int count = tickedStructuresCountVector[0];
     if (moveElectronsCheckBox->isChecked()) {

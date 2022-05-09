@@ -42,6 +42,7 @@ public slots:
     void updateSelectedStructures(int);
     void addMovedElectronsVector(int clusterId, int structureId, int secondId);
     bool checkEigenvalues();
+    void onSampleAverageCheckBoxChanged(int stateId);
     std::vector<int> getTickedStructuresCountVector();
 
 private:
@@ -54,6 +55,7 @@ private:
     QPushButton *deselectAllButton;
     QTreeWidget *maximaList;
     QLabel *probabilitySum, *eigenvalueLabel;
+    std::vector<int> lastMovedElectronClusterVector;
 
     void showSplashScreen();
     void loadData();
