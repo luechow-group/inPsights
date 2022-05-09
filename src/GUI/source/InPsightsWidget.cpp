@@ -683,10 +683,6 @@ void InPsightsWidget::onEigenvectorSpinBoxChanged(int value) {
             moleculeWidget->drawEigenvectors(true, id, structureId, value, scaleVectorBox->value());
             if (moveElectronsCheckBox->isChecked()) {
                 moveElectronsCheckBox->setCheckState(Qt::Unchecked);
-                updateSelectedStructures(42);
-            }
-            else {
-                updateSelectedStructures(42);
             }
         }
         if (count == 0) {
@@ -697,12 +693,10 @@ void InPsightsWidget::onEigenvectorSpinBoxChanged(int value) {
     if (value == -1 ) {
         eigenvalueLabel->setText(QString(" "));
         moleculeWidget->removeEigenvectors();
-        //moleculeWidget->drawEigenvectors(false);
     }
 }
 
 void InPsightsWidget::onScaleVectorBoxChanged(double value) {
-//    updateSelectedStructures(42);
     std::vector<int> tickedStructuresCountVector = getTickedStructuresCountVector();
     int count = tickedStructuresCountVector[0];
     if (count == 1 and eigenvectorSpinBox->value() != -1) {
@@ -721,6 +715,7 @@ void InPsightsWidget::onScaleVectorBoxChanged(double value) {
             moleculeWidget->drawEigenvectors(true, clusterId, structureId, eigenvectorSpinBox->value(), value);
         }
     }
+    redrawSpinDecorations();
 }
 
 void InPsightsWidget::onMoveElectronsCheckBoxChecked(int stateId){
@@ -732,15 +727,15 @@ void InPsightsWidget::onMoveElectronsCheckBoxChecked(int stateId){
     int count = tickedStructuresCountVector[0];
     if (moveElectronsCheckBox->isChecked()) {
         if (count == 0){
-            spdlog::warn("Chose a structure for moving the electrons");
+            spdlog::warn("Chose a structure to move the electrons");
             moveElectronsCheckBox->setCheckState(Qt::Unchecked);
         }
         if (count > 1) {
-            spdlog::warn("Chose only one structure for moving the electrons");
+            spdlog::warn("Chose only one structure to move the electrons");
             moveElectronsCheckBox->setCheckState(Qt::Unchecked);
         }
         if (count == 1 and eigenvectorSpinBox->value() == -1) {
-            spdlog::warn("Chose an eigenvector for moving the electrons");
+            spdlog::warn("Chose an eigenvector to move the electrons");
             moveElectronsCheckBox->setCheckState(Qt::Unchecked);
         }
     }
@@ -763,9 +758,7 @@ void InPsightsWidget::onMoveElectronsCheckBoxChecked(int stateId){
             addMovedElectronsVector(clusterId, structureId, secondId);
         }
     }
-//    else {
-//        updateSelectedStructures(42);
-//    }
+    redrawSpinDecorations();
 }
 
 void InPsightsWidget::showSplashScreen() {
