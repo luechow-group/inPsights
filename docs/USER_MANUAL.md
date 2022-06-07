@@ -141,3 +141,8 @@ The `inPsights` executable is the `Qt5` based GUI to visualize the processed dat
 Execution of `inPsights input-out.yml` from the command-line starts the GUI in a separate window.
 
 * `globalMinPhi` (`float`): Can be added to the `-out.yml` file to change the reference for the ΔΦ values. Default: lowest value that was found.
+
+#### Camera:
+The `Camera` settings can be adjusted in the `-out.yml` file. The `Reset camera` button always returns to these settings given in the input file:
+* `zoom` (`int`): Initial zoom for the camera. Default: `100`.
+* `pan`, `tilt`, `roll` (`int`): initial pan, tilt, and roll angles. Default: `0`.
