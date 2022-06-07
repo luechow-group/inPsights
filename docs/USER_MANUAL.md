@@ -140,3 +140,4 @@ Possible options are:
 The `inPsights` executable is the `Qt5` based GUI to visualize the processed data and requires an `-out.yml` file as an input.
 Execution of `inPsights input-out.yml` from the command-line starts the GUI in a separate window.
 
+* `globalMinPhi` (`float`): Can be added to the `-out.yml` file to change the reference for the ΔΦ values. Default: lowest value that was found.

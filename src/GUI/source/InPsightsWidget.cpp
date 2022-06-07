@@ -75,10 +75,10 @@ void InPsightsWidget::createWidget() {
     hbox->addWidget(moleculeWidget, 1);
     hbox->addLayout(vboxOuter, 0);
 
-    maximaList->setMinimumWidth(350);
+    maximaList->setMinimumWidth(352);
 
     // put into MaximaTreeWidget class
-    auto headerLabels = QList<QString>({"ID", "Weight", "min(Φ)", "max(Φ)"});
+    auto headerLabels = QList<QString>({"ID", "Weight", "min ΔΦ", "max ΔΦ"});
     maximaList->setColumnCount(headerLabels.size());
     maximaList->setHeaderLabels(headerLabels);
     maximaList->header()->setStretchLastSection(false);
@@ -811,6 +811,13 @@ void InPsightsWidget::loadData() {
         Camera::settings = Settings::Camera(doc);
     }
 
+    float globalMinPhi;
+    if (doc["GlobalMinPhi"]) {
+        globalMinPhi = doc["GlobalMinPhi"].as<float>();
+    }
+    else {
+        globalMinPhi = doc["Clusters"][0].as<ClusterData>().valueStats_.cwiseMin()[0]/2.0;
+    }
     for (int clusterId = 0; clusterId < static_cast<int>(doc["Clusters"].size()); ++clusterId) {
         spdlog::info("{} out of {} clusters loaded...", clusterId+1, static_cast<int>(doc["Clusters"].size()));
 
@@ -818,20 +825,20 @@ void InPsightsWidget::loadData() {
         const auto & cluster = clusterCollection_.back();
 
         float minPhi = cluster.valueStats_.cwiseMin()[0]/2.0;
-        auto minPhiString = QString::number(minPhi, 'f', 3);
-        if (minPhi > 0)
+        auto minPhiString = QString::number(minPhi-globalMinPhi, 'f', 4);
+        if (minPhi-globalMinPhi >= 0)
             minPhiString = QString(' ') + minPhiString;
 
         float maxPhi = cluster.valueStats_.cwiseMax()[0]/2.0;
-        auto maxPhiString = QString::number(maxPhi, 'f', 3);
-        if (maxPhi > 0)
+        auto maxPhiString = QString::number(maxPhi-globalMinPhi, 'f', 4);
+        if (maxPhi-globalMinPhi >= 0)
             maxPhiString = QString(' ') + maxPhiString;
 
         auto item = new IntegerSortedTreeWidgetItem(
                 maximaList, {QString::number(clusterId),
                  QString::number(1.0 * cluster.N_ / doc["NSamples"].as<unsigned>(), 'f', 4),
-                 minPhiString.left(6),
-                 maxPhiString.left(6)});
+                 minPhiString.left(7),
+                 maxPhiString.left(7)});
 
         item->setCheckState(0, Qt::CheckState::Unchecked);
 
