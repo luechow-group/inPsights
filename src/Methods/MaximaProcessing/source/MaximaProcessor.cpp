@@ -193,7 +193,7 @@ void MaximaProcessor::calculateStatistics(const Cluster &cluster,
             }
         }
 
-        auto maximalNumberOfStructuresToPrint = MaximaProcessing::settings.maximalNumberOfStructuresToPrint();
+        auto maximalNumberOfStructuresToPrint = MaximaProcessing::settings.maximalStructuresNumber();
 
         std::vector<ElectronsVector> maxima;
         if(MaximaProcessing::settings.printAllMaxima())
@@ -201,8 +201,10 @@ void MaximaProcessor::calculateStatistics(const Cluster &cluster,
         else
             maxima = subCluster.getAllRepresentativeMaxima();
 
-        if(maxima.size() > maximalNumberOfStructuresToPrint)
+        if(maxima.size() > maximalNumberOfStructuresToPrint) {
             maxima.resize(maximalNumberOfStructuresToPrint);
+            subSubClusterCounts.resize(maximalNumberOfStructuresToPrint);
+        }
 
         // SpinCorrelationDistribution
         if (calcSpinCorr_)
