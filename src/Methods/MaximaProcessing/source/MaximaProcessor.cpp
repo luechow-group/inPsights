@@ -70,15 +70,21 @@ void MotifEnergyCalculator::partitionLowestLevel(
     }
 }
 
-MaximaProcessor::MaximaProcessor(YAML::Emitter& yamlDocument, const std::vector<Sample>& samples, const AtomsVector& atoms)
+MaximaProcessor::MaximaProcessor(YAML::Emitter& yamlDocument,
+                                 const std::vector<Sample>& samples,
+                                 const AtomsVector& atoms,
+                                 const bool& doEpart)
         :
         yamlDocument_(yamlDocument),
         samples_(samples),
         atoms_(atoms),
-        Vnn_(CoulombPotential::energies<Element>(atoms_))
+        Vnn_(CoulombPotential::energies<Element>(atoms_)),
+        doEpart_(doEpart)
 {
-    VnnStats_.add(Vnn_);
-    EnStats_.add(EnergyPartitioning::ParticleBased::oneAtomEnergies(Vnn_));
+    if (doEpart_){
+        VnnStats_.add(Vnn_);
+        EnStats_.add(EnergyPartitioning::ParticleBased::oneAtomEnergies(Vnn_));
+    }
 }
 
 unsigned long MaximaProcessor::addMaximum(const Maximum &maximum) {
@@ -91,30 +97,34 @@ unsigned long MaximaProcessor::addMaximum(const Maximum &maximum) {
     valueStats_.add(value, count);
     SeeStats_.add(spinCorrelations_, count);
 
-    auto permutedNuclei = maximum.nuclei();
-    permutedNuclei.permute(maximum.nuclearPermutation());
+    if (doEpart_) {
+        auto permutedNuclei = maximum.nuclei();
+        permutedNuclei.permute(maximum.nuclearPermutation());
 
-    // Sample related statistics
-    for (auto & id : maximum.sampleIds()) {
-        auto & electrons = samples_[id].sample_;
-        Eigen::VectorXd Te = samples_[id].kineticEnergies_;
-        Eigen::MatrixXd Vee = CoulombPotential::energies(electrons);
-        Eigen::MatrixXd Ven = CoulombPotential::energies(electrons, permutedNuclei);
+        // Sample related statistics
+        for (auto &id: maximum.sampleIds()) {
+            auto &electrons = samples_[id].sample_;
+            Eigen::VectorXd Te = samples_[id].kineticEnergies_;
+            Eigen::MatrixXd Vee = CoulombPotential::energies(electrons);
+            Eigen::MatrixXd Ven = CoulombPotential::energies(electrons, permutedNuclei);
 
-        Eigen::VectorXd Ee = EnergyPartitioning::ParticleBased::oneElectronEnergies(Te, Vee, Ven, Vnn_); // TODO wrong and deprecated -> remove
-        Eigen::MatrixXd Ree = Metrics::positionalDistances(electrons.positionsVector());
-        Eigen::MatrixXd Ren = Metrics::positionalDistances(electrons.positionsVector(), permutedNuclei.positionsVector());
+            Eigen::VectorXd Ee = EnergyPartitioning::ParticleBased::oneElectronEnergies(Te, Vee, Ven,
+                                                                                        Vnn_); // TODO wrong and deprecated -> remove
+            Eigen::MatrixXd Ree = Metrics::positionalDistances(electrons.positionsVector());
+            Eigen::MatrixXd Ren = Metrics::positionalDistances(electrons.positionsVector(),
+                                                               permutedNuclei.positionsVector());
 
-        TeStats_.add(Te,1);
-        VeeStats_.add(Vee,1);
-        VenStats_.add(Ven,1);
-        EeStats_.add(Ee,1);
-        ReeStats_.add(Ree,1);
-        RenStats_.add(Ren,1);
+            TeStats_.add(Te, 1);
+            VeeStats_.add(Vee, 1);
+            VenStats_.add(Ven, 1);
+            EeStats_.add(Ee, 1);
+            ReeStats_.add(Ree, 1);
+            RenStats_.add(Ren, 1);
 
-        Eigen::VectorXd Etot(1);
-        Etot << EnergyPartitioning::calculateTotalEnergy(Te,Vee,Ven, Vnn_);
-        EtotalStats_.add(Etot);
+            Eigen::VectorXd Etot(1);
+            Etot << EnergyPartitioning::calculateTotalEnergy(Te, Vee, Ven, Vnn_);
+            EtotalStats_.add(Etot);
+        }
     }
 
     return count;
@@ -140,9 +150,11 @@ void MaximaProcessor::calculateStatistics(const Cluster &cluster,
                                           ){
     using namespace YAML;
 
-    yamlDocument_ << Key << "Vnn" << Comment("[Eh]") << Value << VnnStats_
-                  << Key << "En" << Comment("[Eh]") << Value << EnStats_
-                  << Key << "Clusters" << BeginSeq;
+    if (doEpart_) {
+        yamlDocument_ << Key << "Vnn" << Comment("[Eh]") << Value << VnnStats_
+                      << Key << "En" << Comment("[Eh]") << Value << EnStats_;
+    }
+    yamlDocument_ << Key << "Clusters" << BeginSeq;
 
     unsigned totalCount = 0;
     double totalWeight = 0.0;
@@ -156,13 +168,15 @@ void MaximaProcessor::calculateStatistics(const Cluster &cluster,
 
         valueStats_.reset();
         SeeStats_.reset();
-        TeStats_.reset();
-        EeStats_.reset();
-        VeeStats_.reset();
-        VenStats_.reset();
-        EtotalStats_.reset();
-        ReeStats_.reset();
-        RenStats_.reset();
+        if (doEpart_) {
+            TeStats_.reset();
+            EeStats_.reset();
+            VeeStats_.reset();
+            VenStats_.reset();
+            EtotalStats_.reset();
+            ReeStats_.reset();
+            RenStats_.reset();
+        }
 
         if(subCluster.isLeaf()){
             totalCount += addAllMaxima(subCluster); // this sets all statistic objects internally
@@ -187,22 +201,30 @@ void MaximaProcessor::calculateStatistics(const Cluster &cluster,
 
         // SpinCorrelationDistribution
         spinCorrelationDistribution.addSpinStatistic(SeeStats_);
-        
-        // Motif analysis (requires spin correlation data)
-        auto adjacencyMatrix = GraphAnalysis::filter(SeeStats_.mean().cwiseAbs(), MaximaProcessing::settings.motifThreshold());
 
-        auto mol = MolecularGeometry(atoms_, subCluster.representative()->maximum());
-        Motifs motifs(adjacencyMatrix, mol);
-        
-        // merge motifs
-        for(const auto& nucleiMergeList : nucleiMergeLists){
-            auto motifMergeIndices = motifs.findMotifMergeIndices(mol, nucleiMergeList);
+        Motifs motifs;
+        VectorStatistics intraMotifEnergyStats;
+        TriangularMatrixStatistics interMotifEnergyStats;
+        if (doEpart_) {
+            // Motif analysis (requires spin correlation data)
+            auto adjacencyMatrix = GraphAnalysis::filter(SeeStats_.mean().cwiseAbs(),
+                                                         MaximaProcessing::settings.motifThreshold());
 
-            motifs.mergeMotifs(motifMergeIndices);
+            auto mol = MolecularGeometry(atoms_, subCluster.representative()->maximum());
+            motifs = Motifs(adjacencyMatrix, mol);
+
+            // merge motifs
+            for (const auto &nucleiMergeList: nucleiMergeLists) {
+                auto motifMergeIndices = motifs.findMotifMergeIndices(mol, nucleiMergeList);
+
+                motifs.mergeMotifs(motifMergeIndices);
+            }
+
+            // Motif energies
+            auto[intraMotifEnergyStats_, interMotifEnergyStats_] = MotifEnergyCalculator::partition(subCluster, samples_,motifs);
+            intraMotifEnergyStats = std::move(intraMotifEnergyStats_);
+            interMotifEnergyStats = std::move(interMotifEnergyStats_);
         }
-
-        // Motif energies
-        auto [intraMotifEnergyStats, interMotifEnergyStats] = MotifEnergyCalculator::partition(subCluster, samples_, motifs);
 
         // SEDs
         std::vector<VoxelCube> voxelCubes;
@@ -214,7 +236,7 @@ void MaximaProcessor::calculateStatistics(const Cluster &cluster,
         if(VoxelCubeOverlapCalculation::settings.calculateOverlapQ())
             overlaps = VoxelCubeOverlapCalculation::fromCluster(subCluster, samples_);
 
-        auto weight = double(TeStats_.getTotalWeight())/double(samples_.size());
+        auto weight = double(valueStats_.getTotalWeight())/double(samples_.size());
         if(weight >= MaximaProcessing::settings.minimalClusterWeight.get()) {
 
             selectionEnergyCalculator.addTopLevel(subCluster);
@@ -226,7 +248,7 @@ void MaximaProcessor::calculateStatistics(const Cluster &cluster,
 
             ElectronsVector sampleAverage = {subCluster.electronsVectorFromAveragedPositionsVector(subCluster.averagedSamplePositionsVector(samples_))};
 
-            yamlDocument_ << ClusterData(TeStats_.getTotalWeight(), maxima, sampleAverage,
+            yamlDocument_ << ClusterData(valueStats_.getTotalWeight(), maxima, sampleAverage,
                                          valueStats_, TeStats_, EeStats_,
                                          SeeStats_, VeeStats_, VenStats_,
                                          motifs, EtotalStats_, intraMotifEnergyStats, interMotifEnergyStats,

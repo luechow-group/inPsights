@@ -53,6 +53,7 @@ namespace Settings {
         doubleProperty ::decode(node[className], motifThreshold);
         boolProperty ::decode(node[className], deleteCoreElectrons);
         boolProperty ::decode(node[className], printAllMaxima);
+        boolProperty ::decode(node[className], doEnergyPartitioning);
     }
 
     void MaximaProcessing::appendToNode(YAML::Node &node) const {
@@ -64,6 +65,7 @@ namespace Settings {
         node[className][motifThreshold.name()] = motifThreshold.get();
         node[className][deleteCoreElectrons.name()] = deleteCoreElectrons.get();
         node[className][printAllMaxima.name()] = printAllMaxima.get();
+        node[className][doEnergyPartitioning.name()] = doEnergyPartitioning.get();
     }
 }
 

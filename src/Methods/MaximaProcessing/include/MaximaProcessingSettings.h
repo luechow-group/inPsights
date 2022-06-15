@@ -25,6 +25,7 @@ namespace Settings {
         Property<double> motifThreshold = {1.00, VARNAME(motifThreshold)};
         Property<bool> deleteCoreElectrons = {false, VARNAME(deleteCoreElectrons)};
         Property<bool> printAllMaxima = {false, VARNAME(printAllMaxima)};
+        Property<bool> doEnergyPartitioning = {false, VARNAME(doEnergyPartitioning)};
 
         MaximaProcessing();
         explicit MaximaProcessing(const YAML::Node &node);

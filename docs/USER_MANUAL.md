@@ -20,6 +20,7 @@ MaximaProcessing:
   samplesToAnalyze: 0         # 0 = all
   minimalClusterWeight: 0.0
   deleteCoreElectrons: false
+  doEnergyPartitioning: true
 Clustering:
   PreClusterer:
     radius: 0.01 # [a0]
@@ -48,6 +49,7 @@ General settings have to be given under the top-level YAML node `MaximaProcessin
 * `samplesToAnalyze` (`unsigned integer`): Samples/maxima to analyze. A value of `0` means all samples/maxima from the subsequent `.bin` files are processed.
 * `minimalClusterWeight` (`positive float`): minimal weight of clusters to be printed in the output file .
 * `deleteCoreElectrons` (`bool`):  If `true`, all core electrons are deleted and thus not considered in the clustering or any statistic.
+* `doEnergyPartitioning` (`bool`): If `true`, values for energy partitioning are calcularted. Default: `false`.
 
 #### Clustering
 The clustering process is specified under the top level YAML node `Clustering` and consists of a list of clusterers.

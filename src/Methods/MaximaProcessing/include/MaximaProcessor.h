@@ -37,7 +37,8 @@ namespace MotifEnergyCalculator {
 class MaximaProcessor {
 public:
 
-    MaximaProcessor(YAML::Emitter &yamlDocument, const std::vector<Sample> &samples, const AtomsVector &atoms);
+    MaximaProcessor(YAML::Emitter &yamlDocument, const std::vector<Sample> &samples, const AtomsVector &atoms,
+                    const bool &doEpart);
 
     size_t addMaximum(const Maximum &maximum);
 
@@ -61,6 +62,7 @@ private:
     VectorStatistics TeStats_, EeStats_, EnStats_;
     TriangularMatrixStatistics SeeStats_, VeeStats_, VnnStats_, ReeStats_;
     MatrixStatistics VenStats_, RenStats_;
+    bool doEpart_;
 
     Eigen::MatrixXd Vnn_;
 };

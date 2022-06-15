@@ -281,42 +281,41 @@ int main(int argc, char *argv[]) {
                << Key << "OverallResults" << Value << results;
 
     spdlog::info("Calculating statistics...");
+    MaximaProcessor maximaProcessor(outputYaml, samples, atoms, MaximaProcessing::settings.doEnergyPartitioning());
 
-    MaximaProcessor maximaProcessor(outputYaml, samples, atoms);
-
-    // TODO REFACTOR
     std::vector<std::vector<std::vector<size_t>>> nucleiMergeLists;
-    if(inputYaml["MotifMerge"]) {
-        auto motifMergeNode = inputYaml["MotifMerge"];
-        for (YAML::iterator it = motifMergeNode.begin(); it != motifMergeNode.end(); ++it) {
-            const YAML::Node &nucleiMergeListNode = *it;
-
-            auto nucleiMergeList = it->as<std::vector<std::vector<size_t>>>();
-            nucleiMergeLists.emplace_back(nucleiMergeList);
-        }
-    }
-
-    std::vector<DynamicMolecularSelection> selections;
-    if(inputYaml["EnergySelections"]) {
-        auto energySelectionNode = inputYaml["EnergySelections"];
-        for (YAML::iterator it = energySelectionNode.begin(); it != energySelectionNode.end(); ++it) {
-            const YAML::Node &node = *it;
-
-            auto nucleiIndices = node["Nuclei"].as<ParticleIndices>();
-            auto nearestElectronsSettings = Settings::ElectronSelection(node["ElectronSelection"], atoms);
-
-            selections.emplace_back(DynamicMolecularSelection(nearestElectronsSettings, nucleiIndices));
-        }
-    }
-
-
-    // local particle energies
     std::vector<size_t> nucleiIndices(0);
-    if(inputYaml["LocalParticleEnergies"]) {
-        auto collectiveEnergyNode = inputYaml["LocalParticleEnergies"];
-        nucleiIndices = collectiveEnergyNode["nuclei"].as<std::vector<size_t>>();
-    }
+    std::vector<DynamicMolecularSelection> selections;
+    if (MaximaProcessing::settings.doEnergyPartitioning()) {
+        // TODO REFACTOR
+        if (inputYaml["MotifMerge"]) {
+            auto motifMergeNode = inputYaml["MotifMerge"];
+            for (YAML::iterator it = motifMergeNode.begin(); it != motifMergeNode.end(); ++it) {
+                const YAML::Node &nucleiMergeListNode = *it;
 
+                auto nucleiMergeList = it->as<std::vector<std::vector<size_t>>>();
+                nucleiMergeLists.emplace_back(nucleiMergeList);
+            }
+        }
+
+        if (inputYaml["EnergySelections"]) {
+            auto energySelectionNode = inputYaml["EnergySelections"];
+            for (YAML::iterator it = energySelectionNode.begin(); it != energySelectionNode.end(); ++it) {
+                const YAML::Node &node = *it;
+
+                auto nucleiIndices = node["Nuclei"].as<ParticleIndices>();
+                auto nearestElectronsSettings = Settings::ElectronSelection(node["ElectronSelection"], atoms);
+
+                selections.emplace_back(DynamicMolecularSelection(nearestElectronsSettings, nucleiIndices));
+            }
+        }
+
+        // local particle energies
+        if (inputYaml["LocalParticleEnergies"]) {
+            auto collectiveEnergyNode = inputYaml["LocalParticleEnergies"];
+            nucleiIndices = collectiveEnergyNode["nuclei"].as<std::vector<size_t>>();
+        }
+    }
     maximaProcessor.calculateStatistics(maxima, nucleiMergeLists, nucleiIndices, selections);
 
     outputYaml << EndMap << EndDoc;
