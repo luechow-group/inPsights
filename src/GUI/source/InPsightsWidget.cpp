@@ -190,9 +190,6 @@ void InPsightsWidget::connectSignals() {
     connect(spinCorrelationsCheckBox, &QCheckBox::stateChanged,
             this, &InPsightsWidget::onSpinCorrelationsChecked);
 
-    connect(spinCorrelationsCheckBox, &QCheckBox::stateChanged,
-            this, &InPsightsWidget::onSpinCorrelationsChecked);
-
     connect(plotAllCheckBox, &QCheckBox::stateChanged,
             this, &InPsightsWidget::onPlotAllChecked);
 
@@ -611,19 +608,27 @@ void InPsightsWidget::onAxesChecked(int stateId) {
 }
 
 void InPsightsWidget::onSpinCorrelationsChecked(int stateId) {
-    moleculeWidget->deleteSpinCorrelations();
-    if(Qt::CheckState(stateId) == Qt::Checked)
-        moleculeWidget->drawSpinCorrelations(clusterCollection_, spinCorrelationBox->value(),true);
-    else if(Qt::CheckState(stateId) == Qt::PartiallyChecked)
-        moleculeWidget->drawSpinCorrelations(clusterCollection_, spinCorrelationBox->value(),false);
+    if (clusterCollection_[0].SeeStats_.getTotalWeight() == 0) {
+        if ((Qt::CheckState(stateId) == Qt::CheckState::Checked) or (Qt::CheckState(stateId) == Qt::CheckState::PartiallyChecked)) {
+            spdlog::warn("Spin correlations were not calculated.");
+            spinCorrelationsCheckBox->setCheckState(Qt::CheckState::Unchecked);
+        }
+    }
+    else {
+        moleculeWidget->deleteSpinCorrelations();
+        if(Qt::CheckState(stateId) == Qt::Checked)
+            moleculeWidget->drawSpinCorrelations(clusterCollection_, spinCorrelationBox->value(),true);
+        else if(Qt::CheckState(stateId) == Qt::PartiallyChecked)
+            moleculeWidget->drawSpinCorrelations(clusterCollection_, spinCorrelationBox->value(),false);
+    }
 }
 
-void InPsightsWidget::onSpinCorrelationsBoxChanged(double value) {
-    redrawSpinDecorations();
+void InPsightsWidget::onSpinCorrelationsBoxChanged(double value){
+    if (clusterCollection_[0].SeeStats_.getTotalWeight() > 0)
+        redrawSpinDecorations();
 }
 
 void InPsightsWidget::onBondBoxChanged(double value) {
-
     if (bondsCheckBox->isChecked()) {
         bondsCheckBox->setCheckState(Qt::Unchecked);
         bondsCheckBox->setCheckState(Qt::Checked);

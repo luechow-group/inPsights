@@ -281,7 +281,9 @@ int main(int argc, char *argv[]) {
                << Key << "OverallResults" << Value << results;
 
     spdlog::info("Calculating statistics...");
-    MaximaProcessor maximaProcessor(outputYaml, samples, atoms, MaximaProcessing::settings.doEnergyPartitioning());
+    MaximaProcessor maximaProcessor(outputYaml, samples, atoms,
+                                    MaximaProcessing::settings.doEnergyPartitioning(),
+                                    MaximaProcessing::settings.calculateSpinCorrelations());
 
     std::vector<std::vector<std::vector<size_t>>> nucleiMergeLists;
     std::vector<size_t> nucleiIndices(0);

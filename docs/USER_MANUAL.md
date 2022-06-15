@@ -50,6 +50,7 @@ General settings have to be given under the top-level YAML node `MaximaProcessin
 * `minimalClusterWeight` (`positive float`): minimal weight of clusters to be printed in the output file .
 * `deleteCoreElectrons` (`bool`):  If `true`, all core electrons are deleted and thus not considered in the clustering or any statistic.
 * `doEnergyPartitioning` (`bool`): If `true`, values for energy partitioning are calcularted. Default: `false`.
+* `calculateSpinCorrelations` (`bool`): If `true`, spin correlations are calculated. Has to be true for energy partitioning. Default: `true`.
 
 #### Clustering
 The clustering process is specified under the top level YAML node `Clustering` and consists of a list of clusterers.

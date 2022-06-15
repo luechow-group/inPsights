@@ -171,6 +171,9 @@ namespace YAML {
         VectorStatistics EeStats;
         if (node["Ee"])
             EeStats = node["Te"].as<VectorStatistics>();
+        TriangularMatrixStatistics SpinCorrelationsStats;
+        if (node["SpinCorrelations"])
+            SpinCorrelationsStats = node["SpinCorrelations"].as<TriangularMatrixStatistics>();
         TriangularMatrixStatistics VeeStats;
         if (node["Vee"])
             VeeStats = node["Vee"].as<TriangularMatrixStatistics>();
@@ -200,7 +203,7 @@ namespace YAML {
                 node["ValueRange"].as<SingleValueStatistics>(),
                 TeStats,
                 EeStats,
-                node["SpinCorrelations"].as<TriangularMatrixStatistics>(),
+                SpinCorrelationsStats,
                 VeeStats,
                 VenStats,
                 Motifs(motifVector),
@@ -233,8 +236,9 @@ namespace YAML {
         if (not rhs.selections_.empty())
             out << Key << "Selections" << Value << rhs.selections_
                 << Key << "SelectionEnergyCalculation" << Value << rhs.selectionInteractionEnergies_;
-        out << Key << "Structures" << Comment("[a0]") << Value << rhs.exemplaricStructures_ << Newline
-            << Key << "SpinCorrelations" << Comment("[]") << Value << rhs.SeeStats_;
+        out << Key << "Structures" << Comment("[a0]") << Value << rhs.exemplaricStructures_ << Newline;
+        if (rhs.SeeStats_.getTotalWeight() > 0)
+            out << Key << "SpinCorrelations" << Comment("[]") << Value << rhs.SeeStats_;
         if (rhs.ReeStats_.getTotalWeight() > 0)
             out << Key << "Ree" << Comment("[a0]") << Value << rhs.ReeStats_
                 << Key << "Ren" << Comment("[a0]") << Value << rhs.RenStats_

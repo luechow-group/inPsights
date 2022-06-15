@@ -54,6 +54,9 @@ namespace Settings {
         boolProperty ::decode(node[className], deleteCoreElectrons);
         boolProperty ::decode(node[className], printAllMaxima);
         boolProperty ::decode(node[className], doEnergyPartitioning);
+        boolProperty ::decode(node[className], calculateSpinCorrelations);
+        if (doEnergyPartitioning.get() and not calculateSpinCorrelations.get())
+            throw std::invalid_argument("calcSpinCorrelation has to be true, if doEnergyPartitioning is true.");
     }
 
     void MaximaProcessing::appendToNode(YAML::Node &node) const {
@@ -66,6 +69,7 @@ namespace Settings {
         node[className][deleteCoreElectrons.name()] = deleteCoreElectrons.get();
         node[className][printAllMaxima.name()] = printAllMaxima.get();
         node[className][doEnergyPartitioning.name()] = doEnergyPartitioning.get();
+        node[className][calculateSpinCorrelations.name()] = calculateSpinCorrelations.get();
     }
 }
 

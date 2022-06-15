@@ -73,15 +73,17 @@ void MotifEnergyCalculator::partitionLowestLevel(
 MaximaProcessor::MaximaProcessor(YAML::Emitter& yamlDocument,
                                  const std::vector<Sample>& samples,
                                  const AtomsVector& atoms,
-                                 const bool& doEpart)
+                                 const bool& doEpart,
+                                 const bool &calcSpinCorr)
         :
         yamlDocument_(yamlDocument),
         samples_(samples),
         atoms_(atoms),
-        Vnn_(CoulombPotential::energies<Element>(atoms_)),
-        doEpart_(doEpart)
+        doEpart_(doEpart),
+        calcSpinCorr_(calcSpinCorr)
 {
     if (doEpart_){
+        Vnn_ = CoulombPotential::energies<Element>(atoms_);
         VnnStats_.add(Vnn_);
         EnStats_.add(EnergyPartitioning::ParticleBased::oneAtomEnergies(Vnn_));
     }
@@ -90,12 +92,13 @@ MaximaProcessor::MaximaProcessor(YAML::Emitter& yamlDocument,
 unsigned long MaximaProcessor::addMaximum(const Maximum &maximum) {
     auto count = unsigned(maximum.count());
 
-    Eigen::VectorXd value = Eigen::VectorXd::Constant(1, maximum.value());
-    Eigen::MatrixXd spinCorrelations_ = SpinCorrelation::spinCorrelations(maximum.maximum().typesVector()).cast<double>();
-
     // Maximum related statistics
+    Eigen::VectorXd value = Eigen::VectorXd::Constant(1, maximum.value());
     valueStats_.add(value, count);
-    SeeStats_.add(spinCorrelations_, count);
+    if (calcSpinCorr_){
+        Eigen::MatrixXd spinCorrelations_ = SpinCorrelation::spinCorrelations(maximum.maximum().typesVector()).cast<double>();
+        SeeStats_.add(spinCorrelations_, count);
+    }
 
     if (doEpart_) {
         auto permutedNuclei = maximum.nuclei();
@@ -167,7 +170,9 @@ void MaximaProcessor::calculateStatistics(const Cluster &cluster,
         std::vector<unsigned> subSubClusterCounts;
 
         valueStats_.reset();
-        SeeStats_.reset();
+        if (calcSpinCorr_) {
+            SeeStats_.reset();
+        }
         if (doEpart_) {
             TeStats_.reset();
             EeStats_.reset();
@@ -200,7 +205,8 @@ void MaximaProcessor::calculateStatistics(const Cluster &cluster,
             maxima.resize(maximalNumberOfStructuresToPrint);
 
         // SpinCorrelationDistribution
-        spinCorrelationDistribution.addSpinStatistic(SeeStats_);
+        if (calcSpinCorr_)
+            spinCorrelationDistribution.addSpinStatistic(SeeStats_);
 
         Motifs motifs;
         VectorStatistics intraMotifEnergyStats;
@@ -266,11 +272,13 @@ void MaximaProcessor::calculateStatistics(const Cluster &cluster,
     yamlDocument_ << EndSeq;
 
     // add spinCorrelationDistribution
-    auto hist = spinCorrelationDistribution.getHistogramVector();
-    hist /= hist.sum();
-    yamlDocument_ << Key << "SpinCorrelationDistribution" << Value << hist;
-    yamlDocument_ << Key << "SelectionEnergyCalculation"  << Value << selectionEnergyCalculator.selectionInteractions_;
-
+    if (calcSpinCorr_){
+        auto hist = spinCorrelationDistribution.getHistogramVector();
+        hist /= hist.sum();
+        yamlDocument_ << Key << "SpinCorrelationDistribution" << Value << hist;
+    }
+    if (doEpart_)
+        yamlDocument_ << Key << "SelectionEnergyCalculation"  << Value << selectionEnergyCalculator.selectionInteractions_;
 
     assert(yamlDocument_.good());
 }
