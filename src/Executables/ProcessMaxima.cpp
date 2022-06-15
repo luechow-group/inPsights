@@ -75,7 +75,8 @@ void validateInput(const YAML::Node &inputYaml) {
 
     Settings::MaximaProcessing maximaProcessingSettings(inputYaml);
     validateClusteringSettings(inputYaml);
-    VoxelCubeGeneration::settings = Settings::VoxelCubeGeneration(inputYaml);
+    if (inputYaml["VoxelCubeGeneration"])
+        VoxelCubeGeneration::settings = Settings::VoxelCubeGeneration(inputYaml);
 
     spdlog::set_level(spdlog::level::info);
     spdlog::info("Input is valid.");
@@ -253,11 +254,15 @@ int main(int argc, char *argv[]) {
 
     usedSettings["Clustering"] = usedClusteringSettings;
 
-    VoxelCubeGeneration::settings = Settings::VoxelCubeGeneration(inputYaml);
-    VoxelCubeGeneration::settings.appendToNode(usedSettings);
+    if (inputYaml["VoxelCubeGeneration"]){
+        VoxelCubeGeneration::settings = Settings::VoxelCubeGeneration(inputYaml);
+        VoxelCubeGeneration::settings.appendToNode(usedSettings);
+    }
 
-    VoxelCubeOverlapCalculation::settings = Settings::VoxelCubeOverlapCalculation(inputYaml);
-    VoxelCubeOverlapCalculation::settings.appendToNode(usedSettings);
+    if (inputYaml["VoxelCubeOverlapCalculation"]){
+        VoxelCubeOverlapCalculation::settings = Settings::VoxelCubeOverlapCalculation(inputYaml);
+        VoxelCubeOverlapCalculation::settings.appendToNode(usedSettings);
+    }
 
     outputYaml << BeginDoc
     << Comment("input from \"" + inputFilename + "\"") << inputYaml << EndDoc;
