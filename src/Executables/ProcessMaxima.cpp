@@ -139,9 +139,6 @@ int main(int argc, char *argv[]) {
 
     auto clusteringNode = inputYaml["Clustering"];
 
-    std::vector<std::vector<std::size_t>> clusterNumberGraphAnalysisResults;
-    std::vector<std::vector<double>> totalWeightDifferencesAnalysisResults;
-
     maxima.sortAll();
     for (const auto& node : clusteringNode) {
         auto methodName = node.first.as<std::string>();
@@ -276,17 +273,7 @@ int main(int argc, char *argv[]) {
     outputYaml << Key << "Atoms" << Value << atoms << Comment("[a0]")
                << Key << "Rnn" << Value << Metrics::positionalDistances(atoms.positionsVector()) << Comment("[a0]")
                << Key << "NSamples" << Value << samples.size()
-               << Key << "OverallResults" << Value << results
-               << Key << "ClusterNumberGraphAnalysis" << BeginSeq;
-    for (const auto & graphAnalysisResult : clusterNumberGraphAnalysisResults) {
-        outputYaml << YAML::Flow << graphAnalysisResult;
-    }
-    outputYaml << EndSeq;
-    outputYaml << Key << "TotalClusterWeightDifferenceAnalysis" << BeginSeq;
-    for (const auto & weightDifferenceAnalysisResult  : totalWeightDifferencesAnalysisResults) {
-        outputYaml << YAML::Flow << weightDifferenceAnalysisResult;
-    }
-    outputYaml << EndSeq;
+               << Key << "OverallResults" << Value << results;
 
     spdlog::info("Calculating statistics...");
 
