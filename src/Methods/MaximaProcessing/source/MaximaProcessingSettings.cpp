@@ -55,6 +55,7 @@ namespace Settings {
         boolProperty ::decode(node[className], printAllMaxima);
         boolProperty ::decode(node[className], doEnergyPartitioning);
         boolProperty ::decode(node[className], calculateSpinCorrelations);
+        boolProperty ::decode(node[className], shuffleMaxima);
         if (doEnergyPartitioning.get() and not calculateSpinCorrelations.get())
             throw std::invalid_argument("calcSpinCorrelation has to be true, if doEnergyPartitioning is true.");
     }
@@ -70,6 +71,7 @@ namespace Settings {
         node[className][printAllMaxima.name()] = printAllMaxima.get();
         node[className][doEnergyPartitioning.name()] = doEnergyPartitioning.get();
         node[className][calculateSpinCorrelations.name()] = calculateSpinCorrelations.get();
+        node[className][shuffleMaxima.name()] = shuffleMaxima.get();
     }
 }
 

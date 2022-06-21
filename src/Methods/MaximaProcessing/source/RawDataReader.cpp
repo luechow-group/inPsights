@@ -22,7 +22,7 @@ RawDataReader::RawDataReader(
 
 
 void RawDataReader::read(const std::string &basename) {
-    read(basename, std::numeric_limits<size_t>::max()); // read all samples
+    read(basename, std::numeric_limits<size_t>::max(), false); // read all samples
 }
 
 void RawDataReader::readAtomsHeader(std::ifstream &input) {
@@ -45,7 +45,7 @@ void RawDataReader::readAtomsHeader(std::ifstream &input) {
     atoms_ = AtomsVector(PositionsVector(atomCoords), elementTypes);
 }
 
-void RawDataReader::readSamplesAndMaxima(std::ifstream &input, int fileLength, size_t numberOfSamples) {
+void RawDataReader::readSamplesAndMaxima(std::ifstream &input, int fileLength, size_t numberOfSamples, bool shuffle) {
     auto ne = spins_.numberOfEntities();
 
     while (checkEOF(input, fileLength) && id_ < numberOfSamples) {
@@ -75,17 +75,19 @@ void RawDataReader::readSamplesAndMaxima(std::ifstream &input, int fileLength, s
         id_++;
     }
 
-    // Random shuffled vector to remove method artifacts
-    Eigen::PermutationMatrix<Eigen::Dynamic,Eigen::Dynamic> perm(ne);
-    perm.setIdentity();
-    for(auto& ref : maxima_){
-        std::shuffle(perm.indices().data(), perm.indices().data()+perm.indices().size(),
-                std::mt19937(MaximaProcessing::settings.seed()));
-        ref.permuteAll(perm,samples_);
+    if (shuffle) {
+        // Random shuffled vector to remove method artifacts
+        Eigen::PermutationMatrix<Eigen::Dynamic, Eigen::Dynamic> perm(ne);
+        perm.setIdentity();
+        for (auto &ref: maxima_) {
+            std::shuffle(perm.indices().data(), perm.indices().data() + perm.indices().size(),
+                         std::mt19937(MaximaProcessing::settings.seed()));
+            ref.permuteAll(perm, samples_);
+        }
     }
 }
 
-void RawDataReader::read(const std::string &basename, size_t numberOfSamples){
+void RawDataReader::read(const std::string &basename, size_t numberOfSamples, bool shuffle){
 
     unsigned fileCounter = 0;
     int fileLength;
@@ -103,7 +105,7 @@ void RawDataReader::read(const std::string &basename, size_t numberOfSamples){
     auto samplesLimit = (numberOfSamples == 0)? std::numeric_limits<size_t>::max() : numberOfSamples;
 
     while(input.good() && maxima_.size() < samplesLimit) {
-            readSamplesAndMaxima(input, fileLength, samplesLimit);
+            readSamplesAndMaxima(input, fileLength, samplesLimit, shuffle);
             input.close();
 
             fileCounter++;

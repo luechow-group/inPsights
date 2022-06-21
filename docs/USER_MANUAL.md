@@ -52,6 +52,7 @@ General settings have to be given under the top-level YAML node `MaximaProcessin
 * `doEnergyPartitioning` (`bool`): If `true`, values for energy partitioning are calcularted. Default: `false`.
 * `calculateSpinCorrelations` (`bool`): If `true`, spin correlations are calculated. Has to be true for energy partitioning. Default: `true`.
 * `maximalStructuresNumber` (`int`): If given, restricts the number of structures, that are saved per cluster.
+* `shuffleMaxima` (`bool`): if `true`, all maxima are randomly permuted to avoid method artifacts. Default: `true`
 
 #### Clustering
 The clustering process is specified under the top level YAML node `Clustering` and consists of a list of clusterers.

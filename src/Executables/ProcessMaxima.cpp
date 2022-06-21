@@ -127,7 +127,9 @@ int main(int argc, char *argv[]) {
     std::vector<Sample> samples;
     RawDataReader reader(maxima, samples);
 
-    reader.read(MaximaProcessing::settings.binaryFileBasename(), MaximaProcessing::settings.samplesToAnalyze());
+    reader.read(MaximaProcessing::settings.binaryFileBasename(),
+                MaximaProcessing::settings.samplesToAnalyze(),
+                MaximaProcessing::settings.shuffleMaxima());
     auto atoms = reader.getAtoms();
 
     spdlog::info("number of inital refs {}", maxima.size());

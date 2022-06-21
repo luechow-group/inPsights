@@ -27,6 +27,7 @@ namespace Settings {
         Property<bool> printAllMaxima = {false, VARNAME(printAllMaxima)};
         Property<bool> doEnergyPartitioning = {false, VARNAME(doEnergyPartitioning)};
         Property<bool> calculateSpinCorrelations = {true, VARNAME(calculateSpinCorrelations)};
+        Property<bool> shuffleMaxima = {true, VARNAME(shuffleMaxima)};
 
         MaximaProcessing();
         explicit MaximaProcessing(const YAML::Node &node);
