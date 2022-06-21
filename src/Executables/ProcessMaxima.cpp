@@ -28,44 +28,46 @@ using namespace YAML;
 
 void validateClusteringSettings(const YAML::Node &inputYaml) {
 
-    auto clusteringNode = inputYaml["Clustering"];
+    if (inputYaml["Clustering"]){
+        auto clusteringNode = inputYaml["Clustering"];
 
-    for (const auto& node : clusteringNode) {
-        auto methodName = node.first.as<std::string>();
+        for (const auto& node : clusteringNode) {
+            auto methodName = node.first.as<std::string>();
 
-        switch (IProcess::typeFromString(methodName)) {
-            case IProcess::ProcessType::IdentityClusterer: {
-                IdentityClusterer::settings = Settings::IdentityClusterer(clusteringNode);
-                break;
-            }
-            case IProcess::ProcessType::DistanceClusterer: {
-                PreClusterer::settings = Settings::PreClusterer(clusteringNode);
-                break;
-            }
-            case IProcess::ProcessType::DensityBasedClusterer: {
-                DensityBasedClusterer::settings = Settings::DensityBasedClusterer(clusteringNode);
-                break;
-            }
-            case IProcess::ProcessType::ReferencePositionsClusterer: {
-                ReferencePositionsClusterer::settings = Settings::ReferencePositionsClusterer(clusteringNode);
-                break;
-            }
-            case IProcess::ProcessType::SOAPClusterer: {
-                SOAPClusterer::settings = Settings::SOAPClusterer(clusteringNode);
+            switch (IProcess::typeFromString(methodName)) {
+                case IProcess::ProcessType::IdentityClusterer: {
+                    IdentityClusterer::settings = Settings::IdentityClusterer(clusteringNode);
+                    break;
+                }
+                case IProcess::ProcessType::DistanceClusterer: {
+                    PreClusterer::settings = Settings::PreClusterer(clusteringNode);
+                    break;
+                }
+                case IProcess::ProcessType::DensityBasedClusterer: {
+                    DensityBasedClusterer::settings = Settings::DensityBasedClusterer(clusteringNode);
+                    break;
+                }
+                case IProcess::ProcessType::ReferencePositionsClusterer: {
+                    ReferencePositionsClusterer::settings = Settings::ReferencePositionsClusterer(clusteringNode);
+                    break;
+                }
+                case IProcess::ProcessType::SOAPClusterer: {
+                    SOAPClusterer::settings = Settings::SOAPClusterer(clusteringNode);
 
-                auto soapSettings = node.second["SOAP"];
-                if (soapSettings[SOAP::General::settings.name()])
-                    SOAP::General::settings = Settings::SOAP::General(soapSettings);
-                if (soapSettings[SOAP::Radial::settings.name()])
-                    SOAP::Radial::settings = Settings::SOAP::Radial(soapSettings);
-                if (soapSettings[SOAP::Angular::settings.name()])
-                    SOAP::Angular::settings = Settings::SOAP::Angular(soapSettings);
-                if (soapSettings[SOAP::Cutoff::settings.name()])
-                    SOAP::Cutoff::settings = Settings::SOAP::Cutoff(soapSettings);
-                break;
+                    auto soapSettings = node.second["SOAP"];
+                    if (soapSettings[SOAP::General::settings.name()])
+                        SOAP::General::settings = Settings::SOAP::General(soapSettings);
+                    if (soapSettings[SOAP::Radial::settings.name()])
+                        SOAP::Radial::settings = Settings::SOAP::Radial(soapSettings);
+                    if (soapSettings[SOAP::Angular::settings.name()])
+                        SOAP::Angular::settings = Settings::SOAP::Angular(soapSettings);
+                    if (soapSettings[SOAP::Cutoff::settings.name()])
+                        SOAP::Cutoff::settings = Settings::SOAP::Cutoff(soapSettings);
+                    break;
+                }
+                default:
+                    throw std::invalid_argument("Unknown clustering method \"" + methodName + "\".");
             }
-            default:
-                throw std::invalid_argument("Unknown clustering method \"" + methodName + "\".");
         }
     }
 }
@@ -135,124 +137,127 @@ int main(int argc, char *argv[]) {
     auto valueStandardError = results.valueStats_.standardError()(0, 0);
 
     // write used settings
-    YAML::Node usedSettings, usedClusteringSettings;
+    YAML::Node usedSettings;
     MaximaProcessing::settings.appendToNode(usedSettings);
 
-    auto clusteringNode = inputYaml["Clustering"];
+    if (inputYaml["Clustering"]){
+        YAML::Node usedClusteringSettings;
+        auto clusteringNode = inputYaml["Clustering"];
 
-    maxima.sortAll();
-    for (const auto& node : clusteringNode) {
-        auto methodName = node.first.as<std::string>();
-        spdlog::info("Starting {}...", methodName);
+        maxima.sortAll();
+        for (const auto& node : clusteringNode) {
+            auto methodName = node.first.as<std::string>();
+            spdlog::info("Starting {}...", methodName);
 
-        if (usedClusteringSettings[methodName])
-            spdlog::warn("Method \"{}\" is being applied multiple times! Overwriting old settings...", methodName);
+            if (usedClusteringSettings[methodName])
+                spdlog::warn("Method \"{}\" is being applied multiple times! Overwriting old settings...", methodName);
 
-        switch (IProcess::typeFromString(methodName)) {
-            case IProcess::ProcessType::IdentityClusterer: {
-                auto &settings = IdentityClusterer::settings;
+            switch (IProcess::typeFromString(methodName)) {
+                case IProcess::ProcessType::IdentityClusterer: {
+                    auto &settings = IdentityClusterer::settings;
 
-                settings = Settings::IdentityClusterer(node.second);
+                    settings = Settings::IdentityClusterer(node.second);
 
-                IdentityClusterer identityClusterer(samples);
-                if (!node.second[settings.valueIncrement.name()])
-                    settings.valueIncrement = valueStandardError * 1e-4;
+                    IdentityClusterer identityClusterer(samples);
+                    if (!node.second[settings.valueIncrement.name()])
+                        settings.valueIncrement = valueStandardError * 1e-4;
 
-                identityClusterer.cluster(maxima);
+                    identityClusterer.cluster(maxima);
 
-                settings.appendToNode(usedClusteringSettings);
-                break;
-            }
-            case IProcess::ProcessType::DistanceClusterer: {
-                auto &settings = PreClusterer::settings;
-
-                settings = Settings::PreClusterer(node.second);
-
-                PreClusterer distanceClusterer(samples);
-                if (!node.second[settings.valueIncrement.name()])
-                    settings.valueIncrement = valueStandardError * 1e-2;
-                distanceClusterer.cluster(maxima);
-
-                settings.appendToNode(usedClusteringSettings);
-                break;
-            }
-            case IProcess::ProcessType::DensityBasedClusterer: {
-                auto &settings = DensityBasedClusterer::settings;
-
-                settings = Settings::DensityBasedClusterer(node.second);
-
-                if(settings.local()) {
-                    auto electronSelectionSettings = node.second[VARNAME(ElectronSelection)];
-                    if (electronSelectionSettings)
-                        ElectronSelection::settings = Settings::ElectronSelection(electronSelectionSettings, atoms);
+                    settings.appendToNode(usedClusteringSettings);
+                    break;
                 }
+                case IProcess::ProcessType::DistanceClusterer: {
+                    auto &settings = PreClusterer::settings;
 
-                DensityBasedClusterer densityBasedClusterer(samples);
-                densityBasedClusterer.cluster(maxima);
+                    settings = Settings::PreClusterer(node.second);
 
-                if(settings.local()) {
-                    ElectronSelection::settings.appendToNode(usedClusteringSettings); // TODO FIX USED SETTINGS APPEND
+                    PreClusterer distanceClusterer(samples);
+                    if (!node.second[settings.valueIncrement.name()])
+                        settings.valueIncrement = valueStandardError * 1e-2;
+                    distanceClusterer.cluster(maxima);
+
+                    settings.appendToNode(usedClusteringSettings);
+                    break;
                 }
+                case IProcess::ProcessType::DensityBasedClusterer: {
+                    auto &settings = DensityBasedClusterer::settings;
 
-                settings.appendToNode(usedClusteringSettings);
-                break;
-            }
-            case IProcess::ProcessType::ReferencePositionsClusterer: {
-                auto &settings = ReferencePositionsClusterer::settings;
+                    settings = Settings::DensityBasedClusterer(node.second);
 
-                settings = Settings::ReferencePositionsClusterer(node.second);
+                    if(settings.local()) {
+                        auto electronSelectionSettings = node.second[VARNAME(ElectronSelection)];
+                        if (electronSelectionSettings)
+                            ElectronSelection::settings = Settings::ElectronSelection(electronSelectionSettings, atoms);
+                    }
 
-                if(settings.local()) {
-                    auto electronSelectionSettings = node.second[VARNAME(ElectronSelection)];
-                    if (electronSelectionSettings)
-                        ElectronSelection::settings = Settings::ElectronSelection(electronSelectionSettings, atoms);
+                    DensityBasedClusterer densityBasedClusterer(samples);
+                    densityBasedClusterer.cluster(maxima);
+
+                    if(settings.local()) {
+                        ElectronSelection::settings.appendToNode(usedClusteringSettings); // TODO FIX USED SETTINGS APPEND
+                    }
+
+                    settings.appendToNode(usedClusteringSettings);
+                    break;
                 }
-                ReferencePositionsClusterer ReferencePositionsClusterer(samples);
-                ReferencePositionsClusterer.cluster(maxima);
+                case IProcess::ProcessType::ReferencePositionsClusterer: {
+                    auto &settings = ReferencePositionsClusterer::settings;
 
-                settings.appendToNode(usedClusteringSettings);
+                    settings = Settings::ReferencePositionsClusterer(node.second);
 
-                if(settings.local()) {
-                    ElectronSelection::settings.appendToNode(usedClusteringSettings); // TODO FIX USED SETTINGS APPEND
+                    if(settings.local()) {
+                        auto electronSelectionSettings = node.second[VARNAME(ElectronSelection)];
+                        if (electronSelectionSettings)
+                            ElectronSelection::settings = Settings::ElectronSelection(electronSelectionSettings, atoms);
+                    }
+                    ReferencePositionsClusterer ReferencePositionsClusterer(samples);
+                    ReferencePositionsClusterer.cluster(maxima);
+
+                    settings.appendToNode(usedClusteringSettings);
+
+                    if(settings.local()) {
+                        ElectronSelection::settings.appendToNode(usedClusteringSettings); // TODO FIX USED SETTINGS APPEND
+                    }
+
+                    break;
                 }
+                case IProcess::ProcessType::SOAPClusterer: {
+                    auto &settings = SOAPClusterer::settings;
 
-                break;
+                    settings = Settings::SOAPClusterer(node.second);
+
+                    auto soapSettings = node.second["SOAP"]; //TODO what if node "SOAP" is not present?
+                    if (soapSettings[SOAP::General::settings.name()])
+                        SOAP::General::settings = Settings::SOAP::General(soapSettings);
+                    if (soapSettings[SOAP::Radial::settings.name()])
+                        SOAP::Radial::settings = Settings::SOAP::Radial(soapSettings);
+                    if (soapSettings[SOAP::Angular::settings.name()])
+                        SOAP::Angular::settings = Settings::SOAP::Angular(soapSettings);
+                    if (soapSettings[SOAP::Cutoff::settings.name()])
+                        SOAP::Cutoff::settings = Settings::SOAP::Cutoff(soapSettings);
+
+                    SOAPClusterer sOAPClusterer(atoms, samples);
+                    sOAPClusterer.cluster(maxima);
+
+                    settings.appendToNode(usedClusteringSettings);
+                    auto usedSoapSettings = usedClusteringSettings[settings.name()]["SOAP"];
+                    SOAP::General::settings.appendToNode(usedSoapSettings);
+                    SOAP::Radial::settings.appendToNode(usedSoapSettings);
+                    SOAP::Angular::settings.appendToNode(usedSoapSettings);
+                    SOAP::Cutoff::settings.appendToNode(usedSoapSettings);
+
+                    break;
+                }
+                default:
+                    throw std::invalid_argument("Unknown clustering method \"" + methodName + "\".");
             }
-            case IProcess::ProcessType::SOAPClusterer: {
-                auto &settings = SOAPClusterer::settings;
-
-                settings = Settings::SOAPClusterer(node.second);
-
-                auto soapSettings = node.second["SOAP"]; //TODO what if node "SOAP" is not present?
-                if (soapSettings[SOAP::General::settings.name()])
-                    SOAP::General::settings = Settings::SOAP::General(soapSettings);
-                if (soapSettings[SOAP::Radial::settings.name()])
-                    SOAP::Radial::settings = Settings::SOAP::Radial(soapSettings);
-                if (soapSettings[SOAP::Angular::settings.name()])
-                    SOAP::Angular::settings = Settings::SOAP::Angular(soapSettings);
-                if (soapSettings[SOAP::Cutoff::settings.name()])
-                    SOAP::Cutoff::settings = Settings::SOAP::Cutoff(soapSettings);
-
-                SOAPClusterer sOAPClusterer(atoms, samples);
-                sOAPClusterer.cluster(maxima);
-
-                settings.appendToNode(usedClusteringSettings);
-                auto usedSoapSettings = usedClusteringSettings[settings.name()]["SOAP"];
-                SOAP::General::settings.appendToNode(usedSoapSettings);
-                SOAP::Radial::settings.appendToNode(usedSoapSettings);
-                SOAP::Angular::settings.appendToNode(usedSoapSettings);
-                SOAP::Cutoff::settings.appendToNode(usedSoapSettings);
-
-                break;
-            }
-            default:
-                throw std::invalid_argument("Unknown clustering method \"" + methodName + "\".");
+            spdlog::info("number of elements after {}: {}", methodName, maxima.size());
         }
-        spdlog::info("number of elements after {}: {}", methodName, maxima.size());
-    }
-    maxima.sortAll();
+        maxima.sortAll();
 
-    usedSettings["Clustering"] = usedClusteringSettings;
+        usedSettings["Clustering"] = usedClusteringSettings;
+    }
 
     if (inputYaml["VoxelCubeGeneration"]){
         VoxelCubeGeneration::settings = Settings::VoxelCubeGeneration(inputYaml);
