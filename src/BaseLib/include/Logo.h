@@ -27,6 +27,7 @@ namespace inPsights {
                              "  Michael A. Heuer, RWTH Aachen University\n"
                              "\n"
                              " With contributions from:\n"
-                             "  Leonard Reuter, RWTH Aachen University\n";
+                             "  Leonard Reuter, RWTH Aachen University\n"
+                             "  Michel V. Heinz, RWTH Aachen University\n";
 }
 #endif //INPSIGHTS_LOGO_H
