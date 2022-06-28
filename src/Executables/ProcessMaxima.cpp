@@ -256,10 +256,9 @@ int main(int argc, char *argv[]) {
             }
             spdlog::info("number of elements after {}: {}", methodName, maxima.size());
         }
-        maxima.sortAll();
-
         usedSettings["Clustering"] = usedClusteringSettings;
     }
+    maxima.sortAll();
 
     if (inputYaml["VoxelCubeGeneration"]){
         VoxelCubeGeneration::settings = Settings::VoxelCubeGeneration(inputYaml);
