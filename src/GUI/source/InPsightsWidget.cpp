@@ -33,6 +33,7 @@ InPsightsWidget::InPsightsWidget(QWidget *parent, const std::string& filename)
         plotAllCheckBox(new QCheckBox("All of cluster", this)),
         coloredCheckBox(new QCheckBox("Multicolored", this)),
         moveElectronsCheckBox(new QCheckBox("Move electrons", this)),
+        electronsNumberCheckBox(new QCheckBox("Display indices", this)),
         spinCorrelationBox(new QDoubleSpinBox(this)),
         sedPercentageBox(new QDoubleSpinBox(this)),
         scaleVectorBox(new QDoubleSpinBox(this)),
@@ -170,6 +171,9 @@ void InPsightsWidget::createWidget() {
     checkboxGrid->addWidget(spinCorrelationsCheckBox,5,0);
     checkboxGrid->addWidget(spinCorrelationBox,5,1);
 
+    //seventh row
+    checkboxGrid->addWidget(electronsNumberCheckBox,6,0);
+
     setupSpinBoxes();
     setupLabels();
 }
@@ -195,6 +199,9 @@ void InPsightsWidget::connectSignals() {
 
     connect(spinCorrelationBox, qOverload<double>(&QDoubleSpinBox::valueChanged),
             this, &InPsightsWidget::onSpinCorrelationsBoxChanged);
+
+    connect(electronsNumberCheckBox, &QCheckBox::stateChanged,
+            this, &InPsightsWidget::onIndicesChecked);
 
     connect(atom1Box, qOverload<int>(&QSpinBox::valueChanged),
             this, &InPsightsWidget::onAtom1BoxChanged);
@@ -590,6 +597,10 @@ void InPsightsWidget::onAtomsChecked(int stateId) {
         onAtom1BoxChanged(atom1Box->value());
         onAtom2BoxChanged(atom2Box->value());
     }
+}
+
+void InPsightsWidget::onIndicesChecked(int stateId) {
+    moleculeWidget->drawIndices(Qt::CheckState(stateId) == Qt::CheckState::Checked);
 }
 
 void InPsightsWidget::onBondsChecked(int stateId) {

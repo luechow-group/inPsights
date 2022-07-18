@@ -43,13 +43,16 @@ public slots:
     void addMovedElectronsVector(int clusterId, int structureId, int secondId);
     bool checkEigenvalues();
     void onSampleAverageCheckBoxChanged(int stateId);
+    void onIndicesChecked(int stateId);
+
     std::vector<int> getTickedStructuresCountVector();
 
 private:
     std::string filename_;
     MoleculeWidget *moleculeWidget;
     QCheckBox *atomsCheckBox, *bondsCheckBox, *axesCheckBox, *sampleAverageCheckBox, *spinCorrelationsCheckBox,
-    *sedsCheckBox,*maximaHullsCheckBox, *plotAllCheckBox, *coloredCheckBox, *moveElectronsCheckBox;
+    *sedsCheckBox,*maximaHullsCheckBox, *plotAllCheckBox, *coloredCheckBox, *moveElectronsCheckBox,
+    *electronsNumberCheckBox;
     QDoubleSpinBox *spinCorrelationBox, *sedPercentageBox, *bondBox, *scaleVectorBox;
     QSpinBox *atom1Box, *atom2Box, *electron1Box, *electron2Box, *eigenvectorSpinBox;
     QPushButton *deselectAllButton;

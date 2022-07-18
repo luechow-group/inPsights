@@ -45,6 +45,7 @@ MoleculeWidget::MoleculeWidget(QWidget *parent)
         zoomText_(new QLabel("Zoom")),
         atomsVector3D_(nullptr),
         cartesianAxes_(nullptr),
+        indices_(),
         eigenvectors_(),
         light_(new Qt3DRender::QDirectionalLight(root_)){
 
@@ -193,6 +194,51 @@ void MoleculeWidget::drawAxes(bool drawQ) {
     }
 }
 
+void MoleculeWidget::drawIndices(bool drawQ) {
+    if (drawQ) {
+        indices_ = std::vector<Qt3DExtras::QText2DEntity*>();
+        for (auto &cluster : activeElectronsVectorsMap_) {
+            for (auto &structure: cluster.second) {
+                for (int i=0; i < structure.second->particles3D_.size(); i++){
+                    bool showIndex = true;
+                    for (int j=0; j < structure.second->particles3D_.size(); j++) {
+                        if (j != i) {
+                            if (Metrics::distance(structure.second->particles3D_[i]->position(),
+                                                  structure.second->particles3D_[j]->position()) < 0.01) {
+                                showIndex = false;
+                                break;
+                            }
+                        }
+                    }
+                    if (showIndex) {
+                        // *index = new Qt3DExtras::QText2DEntity(moleculeEntity_);
+                        // does not work due to bug in Qt: a call to setScene is missing
+                        // https://forum.qt.io/topic/92944/qt3d-how-to-print-text-qtext2dentity/7
+                        // therefore, index is created with nullptr as parent and the parent is
+                        // set the line after
+                        auto *index = new Qt3DExtras::QText2DEntity();
+                        index->setParent(moleculeEntity_);
+                        index->setText(QString::number(i));
+                        index->setHeight(25);
+                        index->setWidth(25);
+                        index->setFont(QFont("monospace"));
+                        index->setColor(GuiHelper::QColorFromType<Spin>(structure.second->particles3D_[i]->type()));
+                        auto *textTransform = new Qt3DCore::QTransform(index);
+                        textTransform->setRotation(QQuaternion::fromDirection(
+                                qt3DWindow_->camera()->position(), qt3DWindow_->camera()->upVector()));
+                        textTransform->setTranslation(GuiHelper::toQVector3D(structure.second->particles3D_[i]->position()));
+                        textTransform->setScale(1.0 / 92);
+                        index->addComponent(textTransform);
+                        indices_.emplace_back(index);
+                    }
+                }
+            }
+        }
+    } else {
+        removeIndices();
+    }
+}
+
 void MoleculeWidget::drawEigenvectors(bool drawQ, unsigned clusterId, unsigned structureId, unsigned eigenvalueId, float scale) {
     auto inPsightsWidget = dynamic_cast<InPsightsWidget*>(parent());
     unsigned electronsNumber = inPsightsWidget->clusterCollection_[clusterId].exemplaricStructures_[structureId].numberOfEntities();
@@ -204,7 +250,7 @@ void MoleculeWidget::drawEigenvectors(bool drawQ, unsigned clusterId, unsigned s
             eigenvectors_ = std::vector<Arrow*>();
         }
         for (unsigned i = 0; i < electronsNumber; i++) {
-            Eigen::Vector3d ePosVector =inPsightsWidget->clusterCollection_[clusterId].exemplaricStructures_[structureId].positionsVector()[i];
+            Eigen::Vector3d ePosVector = inPsightsWidget->clusterCollection_[clusterId].exemplaricStructures_[structureId].positionsVector()[i];
             Eigen::Vector3d eigenVector = inPsightsWidget->clusterCollection_[clusterId].eigenvectors_[structureId][eigenvalueId * electronsNumber + i] * scale;
             Eigen::Vector3d tempVector = ePosVector + eigenVector;
             QString color = "blue";
@@ -225,6 +271,14 @@ void MoleculeWidget::removeEigenvectors() {
         eigenvector->deleteLater();
     }
     eigenvectors_ = std::vector<Arrow*>();
+}
+
+void MoleculeWidget::removeIndices() {
+    // TODO: fix the segfault
+    for (auto index : indices_) {
+        index->deleteLater();
+    }
+    indices_ = std::vector<Qt3DExtras::QText2DEntity*>();
 }
 
 void MoleculeWidget::drawAtoms(bool drawQ) {
