@@ -47,7 +47,8 @@ InPsightsWidget::InPsightsWidget(QWidget *parent, const std::string& filename)
         probabilitySum(new QLabel(this)),
         eigenvalueLabel(new QLabel(this)),
         deselectAllButton(new QPushButton("Deselect all", this)),
-        lastMovedElectronClusterVector({0, 0, -1})
+        lastMovedElectronClusterVector({0, 0, -1}),
+        globalMinPhi(0.0f)
         {
 
     loadData();
@@ -828,7 +829,6 @@ void InPsightsWidget::loadData() {
         Camera::settings = Settings::Camera(doc);
     }
 
-    float globalMinPhi;
     if (doc["GlobalMinPhi"]) {
         globalMinPhi = doc["GlobalMinPhi"].as<float>();
     }
@@ -840,22 +840,13 @@ void InPsightsWidget::loadData() {
 
         clusterCollection_.emplace_back(doc["Clusters"][clusterId].as<ClusterData>());
         const auto & cluster = clusterCollection_.back();
-
-        float minPhi = cluster.valueStats_.cwiseMin()[0]/2.0;
-        auto minPhiString = QString::number(minPhi-globalMinPhi, 'f', 4);
-        if (minPhi-globalMinPhi >= 0)
-            minPhiString = QString(' ') + minPhiString;
-
-        float maxPhi = cluster.valueStats_.cwiseMax()[0]/2.0;
-        auto maxPhiString = QString::number(maxPhi-globalMinPhi, 'f', 4);
-        if (maxPhi-globalMinPhi >= 0)
-            maxPhiString = QString(' ') + maxPhiString;
+        auto phiStrings = getPhiStrings(cluster.valueStats_);
 
         auto item = new IntegerSortedTreeWidgetItem(
                 maximaList, {QString::number(clusterId),
                  QString::number(1.0 * cluster.N_ / doc["NSamples"].as<unsigned>(), 'f', 4),
-                 minPhiString.left(7),
-                 maxPhiString.left(7)});
+                 phiStrings.first,
+                 phiStrings.second});
 
         item->setCheckState(0, Qt::CheckState::Unchecked);
 
@@ -866,12 +857,21 @@ void InPsightsWidget::loadData() {
 
         if (structures.size() > 1) {
             for (int structureId = 0; structureId < static_cast<int>(structures.size()); ++structureId) {
-                auto subItem = new IntegerSortedTreeWidgetItem(item, QStringList({
-                                                                                         QString::number(structureId),
-                                                                                         QString::number(1.0 *
-                                                                                                         cluster.subN_[structureId] /
-                                                                                                         cluster.N_,
-                                                                                                         'f', 4)}));
+                if (not cluster.subValueStats_.empty()){
+                    phiStrings = getPhiStrings(cluster.subValueStats_[structureId]);
+                }else{
+                    phiStrings = std::pair<QString, QString>(QString(' '),QString(' '));
+                }
+
+                auto subItem = new IntegerSortedTreeWidgetItem(item,
+                                                               QStringList({
+                                                                  QString::number(structureId),
+                                                                  QString::number(1.0 *
+                                                                                  cluster.subN_[structureId] /
+                                                                                  cluster.N_,
+                                                                                  'f', 4),
+                                                                  phiStrings.first,
+                                                                  phiStrings.second}));
                 subItem->setCheckState(0, Qt::CheckState::Unchecked);
 
                 id = {clusterId, structureId};
@@ -885,6 +885,19 @@ void InPsightsWidget::loadData() {
             }
         }
     }
+}
+
+std::pair<QString, QString> InPsightsWidget::getPhiStrings(const SingleValueStatistics& valueStats){
+    float minPhi = valueStats.cwiseMin()[0]/2.0;
+    auto minPhiString = QString::number(minPhi-globalMinPhi, 'f', 4);
+    if (minPhi-globalMinPhi >= 0)
+        minPhiString = QString(' ') + minPhiString;
+
+    float maxPhi = valueStats.cwiseMax()[0]/2.0;
+    auto maxPhiString = QString::number(maxPhi-globalMinPhi, 'f', 4);
+    if (maxPhi-globalMinPhi >= 0)
+        maxPhiString = QString(' ') + maxPhiString;
+    return std::pair<QString, QString>(minPhiString.left(7), maxPhiString.left(7));
 }
 
 double InPsightsWidget::sumProbabilities(){

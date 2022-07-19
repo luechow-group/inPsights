@@ -50,6 +50,8 @@ public:
                              const std::vector<DynamicMolecularSelection>& selections
                              );
 
+    void getValueStats(const Cluster &cluster, SingleValueStatistics &valueStats);
+
     YAML::Node getYamlNode();
 
     std::string getYamlDocumentString();

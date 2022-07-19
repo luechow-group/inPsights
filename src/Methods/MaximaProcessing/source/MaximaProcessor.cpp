@@ -146,6 +146,20 @@ size_t  MaximaProcessor::addAllMaxima(const Cluster &cluster) {
     return totalCount;
 }
 
+
+void MaximaProcessor::getValueStats(const Cluster &cluster, SingleValueStatistics &valueStats) {
+    if(cluster.isLeaf()){
+        auto count = unsigned(cluster.representative()->count());
+        Eigen::VectorXd value = Eigen::VectorXd::Constant(1, cluster.representative()->value());
+        valueStats.add(value, count);
+    }
+    else{
+        for(const auto &subcluster : cluster)
+            getValueStats(subcluster, valueStats);
+    }
+}
+
+
 void MaximaProcessor::calculateStatistics(const Cluster &cluster,
                                           const std::vector<std::vector<std::vector<size_t>>> & nucleiMergeLists,
                                           const std::vector<size_t> &nucleiIndices,
@@ -168,6 +182,7 @@ void MaximaProcessor::calculateStatistics(const Cluster &cluster,
 
     for (auto& subCluster : cluster) {
         std::vector<unsigned> subSubClusterCounts;
+        std::vector<SingleValueStatistics> subValueStats;
 
         valueStats_.reset();
         if (calcSpinCorr_) {
@@ -190,6 +205,9 @@ void MaximaProcessor::calculateStatistics(const Cluster &cluster,
             for (auto& subSubCluster : subCluster){
                 subSubClusterCounts.emplace_back(addAllMaxima(subSubCluster)); // this sets all statistic objects internally
                 totalCount += subSubClusterCounts.back();
+                SingleValueStatistics subValueStat;
+                getValueStats(subSubCluster, subValueStat);
+                subValueStats.emplace_back(subValueStat);
             }
         }
 
@@ -263,7 +281,7 @@ void MaximaProcessor::calculateStatistics(const Cluster &cluster,
                                          ReeStats_, RenStats_, voxelCubes, overlaps,
                                          selectionEnergyCalculatorPerCluster.selectionInteractions_,
                                          selectionEnergyCalculatorPerCluster.molecularSelections_,
-                                         subSubClusterCounts
+                                         subSubClusterCounts, subValueStats
                                          );
         }
     }

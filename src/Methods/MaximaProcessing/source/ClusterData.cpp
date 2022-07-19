@@ -22,6 +22,7 @@ ClusterData::ClusterData(unsigned totalNumberOfStructures,
                          const std::vector<VoxelCube> &seds,
                          const Eigen::MatrixXd& sedOverlaps,
                          const std::vector<unsigned>& subCounts,
+                         const std::vector<SingleValueStatistics>& subValueStats,
                          const std::vector<Eigen::VectorXd> &eigenvalues,
                          const std::vector<std::vector<Eigen::Vector3d>> &eigenvectors
 )
@@ -42,6 +43,7 @@ ClusterData::ClusterData(unsigned totalNumberOfStructures,
         voxelCubes_(seds),
         overlaps_(sedOverlaps),
         subN_(subCounts),
+        subValueStats_(subValueStats),
         eigenvalues_(eigenvalues),
         eigenvectors_(eigenvectors)
 {};
@@ -65,7 +67,8 @@ ClusterData::ClusterData(unsigned totalNumberOfStructures,
             const Eigen::MatrixXd& sedOverlaps,
             const SelectionEnergyCalculator::SelectionInteractionEnergies & selectionInteractionEnergies,
             const std::vector<MolecularSelection>& selections,
-            const std::vector<unsigned>& subCounts
+            const std::vector<unsigned>& subCounts,
+            const std::vector<SingleValueStatistics>& subValueStats
             )
         :
         N_(totalNumberOfStructures),
@@ -86,6 +89,7 @@ ClusterData::ClusterData(unsigned totalNumberOfStructures,
         selectionInteractionEnergies_(selectionInteractionEnergies),
         selections_(selections),
         subN_(subCounts),
+        subValueStats_(subValueStats),
         eigenvalues_(),
         eigenvectors_()
         {};
@@ -115,6 +119,7 @@ namespace YAML {
         node["VoxelCubes"] = rhs.voxelCubes_;
         node["SedOverlaps"] = rhs.overlaps_;
         node["SubStructureN"] = rhs.subN_;
+        node["SubStructureValueRange"] = rhs.subValueStats_;
         return node;
     }
 
@@ -150,6 +155,10 @@ namespace YAML {
             for (int i=0; i<structures.size();++i){
                 subCounts.emplace_back(NAN);
             }
+        }
+        std::vector<SingleValueStatistics> subValueStats;
+        if (node["SubStructureValueRange"]) {
+            subValueStats = node["SubStructureValueRange"].as<std::vector<SingleValueStatistics>>();
         }
 
         std::vector<Eigen::VectorXd> eigenvalues;
@@ -215,6 +224,7 @@ namespace YAML {
                 cubes,
                 sedOverlaps,
                 subCounts,
+                subValueStats,
                 eigenvalues,
                 eigenvectors
                 );
@@ -251,8 +261,10 @@ namespace YAML {
         if (rhs.overlaps_.size() > 0)
             out << Key << "SedOverlaps" << Value << rhs.overlaps_;
 
-        out << Key << "SubStructureN" << Value << rhs.subN_
-           << EndMap;
+        out << Key << "SubStructureN" << Value << rhs.subN_;
+
+        out << Key << "SubStructureValueRange" << Value << rhs.subValueStats_
+            << EndMap;
 
         return out;
     }

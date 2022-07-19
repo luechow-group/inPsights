@@ -58,6 +58,7 @@ private:
     QPushButton *deselectAllButton;
     QTreeWidget *maximaList;
     QLabel *probabilitySum, *eigenvalueLabel;
+    float globalMinPhi;
     std::vector<int> lastMovedElectronClusterVector;
 
     void showSplashScreen();
@@ -70,6 +71,7 @@ private:
     void redrawSpinDecorations();
     double sumProbabilities();
     void resetEigenvalueLabel();
+    std::pair<QString, QString> getPhiStrings(const SingleValueStatistics& valueStats);
 };
 
 #endif //INPSIGHTS_INPSIGHTSWIDGET_H
