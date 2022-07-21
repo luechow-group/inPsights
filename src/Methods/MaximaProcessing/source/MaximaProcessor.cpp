@@ -286,7 +286,7 @@ void MaximaProcessor::calculateStatistics(const Cluster &cluster,
         }
     }
     spdlog::info("Overall count {}. Some structures might be lost "
-                 "by being classified as noise during density-based clustering.", totalCount);
+                 "by being classified as noise during single linkage clustering.", totalCount);
     spdlog::info("Considered weight: {}, discarded weight: {}", totalWeight, 1.0 - totalWeight);
 
     yamlDocument_ << EndSeq;

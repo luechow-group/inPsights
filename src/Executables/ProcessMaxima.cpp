@@ -6,7 +6,7 @@
 #include <ElementInfo.h>
 #include <IdentityClusterer.h>
 #include <PreClusterer.h>
-#include <DensityBasedClusterer.h>
+#include <SingleLinkageClusterer.h>
 #include <SOAPClusterer.h>
 #include <ReferencePositionsClusterer.h>
 #include <ElectronSelection.h>
@@ -43,8 +43,8 @@ void validateClusteringSettings(const YAML::Node &inputYaml) {
                     PreClusterer::settings = Settings::PreClusterer(clusteringNode);
                     break;
                 }
-                case IProcess::ProcessType::DensityBasedClusterer: {
-                    DensityBasedClusterer::settings = Settings::DensityBasedClusterer(clusteringNode);
+                case IProcess::ProcessType::SingleLinkageClusterer: {
+                    SingleLinkageClusterer::settings = Settings::SingleLinkageClusterer(clusteringNode);
                     break;
                 }
                 case IProcess::ProcessType::ReferencePositionsClusterer: {
@@ -182,10 +182,10 @@ int main(int argc, char *argv[]) {
                     settings.appendToNode(usedClusteringSettings);
                     break;
                 }
-                case IProcess::ProcessType::DensityBasedClusterer: {
-                    auto &settings = DensityBasedClusterer::settings;
+                case IProcess::ProcessType::SingleLinkageClusterer: {
+                    auto &settings = SingleLinkageClusterer::settings;
 
-                    settings = Settings::DensityBasedClusterer(node.second);
+                    settings = Settings::SingleLinkageClusterer(node.second);
 
                     if(settings.local()) {
                         auto electronSelectionSettings = node.second[VARNAME(ElectronSelection)];
@@ -193,8 +193,8 @@ int main(int argc, char *argv[]) {
                             ElectronSelection::settings = Settings::ElectronSelection(electronSelectionSettings, atoms);
                     }
 
-                    DensityBasedClusterer densityBasedClusterer(samples);
-                    densityBasedClusterer.cluster(maxima);
+                    SingleLinkageClusterer singleLinkageClusterer(samples);
+                    singleLinkageClusterer.cluster(maxima);
 
                     if(settings.local()) {
                         ElectronSelection::settings.appendToNode(usedClusteringSettings); // TODO FIX USED SETTINGS APPEND
