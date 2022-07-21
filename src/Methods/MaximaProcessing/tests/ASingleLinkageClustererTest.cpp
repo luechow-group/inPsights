@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include <gmock/gmock.h>
-#include <DensityBasedClusterer.h>
+#include <SingleLinkageClusterer.h>
 #include <PreClusterer.h>
 #include <random>
 #include <TestMolecules.h>
@@ -13,7 +13,7 @@
 
 using namespace testing;
 
-class ADensityBasedClustererTest : public ::testing::Test {
+class ASingleLinkageClustererTest : public ::testing::Test {
 public:
     void SetUp() override {
         spdlog::set_level(spdlog::level::off);
@@ -58,8 +58,8 @@ public:
     }
 };
 
-TEST_F(ADensityBasedClustererTest, RotationallySymmetricCluster){
-    DensityBasedClusterer::settings.radius = 0.1;
+TEST_F(ASingleLinkageClustererTest, RotationallySymmetricCluster){
+    SingleLinkageClusterer::settings.radius = 0.1;
 
     unsigned n = 20;
 
@@ -78,7 +78,7 @@ TEST_F(ADensityBasedClustererTest, RotationallySymmetricCluster){
         ASSERT_EQ(references.size(), n);
         std::shuffle(references.begin(), references.end(), rng);
 
-        DensityBasedClusterer globalClusterSorter(samples);
+        SingleLinkageClusterer globalClusterSorter(samples);
         globalClusterSorter.cluster(references);
 
         ASSERT_EQ(references.size(), 1);
@@ -95,8 +95,8 @@ TEST_F(ADensityBasedClustererTest, RotationallySymmetricCluster){
     }
 }
 
-TEST_F(ADensityBasedClustererTest, RotationallySymmetricAndPointLikeCluster){
-    DensityBasedClusterer::settings.radius = 0.1;
+TEST_F(ASingleLinkageClustererTest, RotationallySymmetricAndPointLikeCluster){
+    SingleLinkageClusterer::settings.radius = 0.1;
 
     unsigned n = 20;
     unsigned m = 5;
@@ -117,7 +117,7 @@ TEST_F(ADensityBasedClustererTest, RotationallySymmetricAndPointLikeCluster){
         references.emplace_back(Maximum(ionic.atoms(), 10, ionic.electrons(), 0));
         for (unsigned i = 1; i < m; ++i) {
             auto evCopy = ionic.electrons();
-            evCopy.positionsVector().shake(DensityBasedClusterer::settings.radius.get(), rng);
+            evCopy.positionsVector().shake(SingleLinkageClusterer::settings.radius.get(), rng);
 
             // random permutation
             evCopy.permute(evCopy.randomPermutation(rng));
@@ -131,7 +131,7 @@ TEST_F(ADensityBasedClustererTest, RotationallySymmetricAndPointLikeCluster){
 
         std::shuffle(references.begin(), references.end(), rng);
 
-        DensityBasedClusterer globalClusterSorter(samples);
+        SingleLinkageClusterer globalClusterSorter(samples);
         globalClusterSorter.cluster(references);
 
         ASSERT_EQ(references.size(), 2);
@@ -149,7 +149,7 @@ TEST_F(ADensityBasedClustererTest, RotationallySymmetricAndPointLikeCluster){
                 // since every particle can be displaced by radius, the distance between
                 // two particles can change by 2*radius
                 ASSERT_TRUE(distanceMatrix.isApprox(referenceDistanceMatrix,
-                                                    2 * DensityBasedClusterer::settings.radius.get()));
+                                                    2 * SingleLinkageClusterer::settings.radius.get()));
             }
         }
     }

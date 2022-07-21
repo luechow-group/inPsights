@@ -1,8 +1,8 @@
 // Copyright (C) 2018-2020 Michael Heuer.
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#ifndef INPSIGHTS_DENSITYBASEDCLUSTERER_H
-#define INPSIGHTS_DENSITYBASEDCLUSTERER_H
+#ifndef INPSIGHTS_SINGLELINKAGECLUSTERER_H
+#define INPSIGHTS_SINGLELINKAGECLUSTERER_H
 
 #include <DensityBasedScan.h>
 #include <ISettings.h>
@@ -12,26 +12,26 @@
 #include "ClusteringMetric.h"
 
 namespace Settings {
-    class DensityBasedClusterer : public ISettings {
+    class SingleLinkageClusterer : public ISettings {
     public:
         Property<double> radius = {0.2, VARNAME(radius)};
         Property<size_t> minimalClusterSize = {1, VARNAME(minimalClusterSize)};
         Property<bool> local =  {false, VARNAME(local)}; // TODO unite all general clusterer settigns in a parent settings class
         Property<bool> sortRemainder = {false, VARNAME(sortRemainder)};
 
-        DensityBasedClusterer();
-        explicit DensityBasedClusterer(const YAML::Node &node);
+        SingleLinkageClusterer();
+        explicit SingleLinkageClusterer(const YAML::Node &node);
         void appendToNode(YAML::Node &node) const override;
     };
 }
-YAML_SETTINGS_DECLARATION(Settings::DensityBasedClusterer)
+YAML_SETTINGS_DECLARATION(Settings::SingleLinkageClusterer)
 
 
-class DensityBasedClusterer : public IClusterer {
+class SingleLinkageClusterer : public IClusterer {
 public:
-    static Settings::DensityBasedClusterer settings;
+    static Settings::SingleLinkageClusterer settings;
 
-    explicit DensityBasedClusterer(std::vector<Sample> &samples);
+    explicit SingleLinkageClusterer(std::vector<Sample> &samples);
 
     void cluster(Cluster &group) override;
 
@@ -131,4 +131,4 @@ private:
     }
 };
 
-#endif //INPSIGHTS_DENSITYBASEDCLUSTERER_H
+#endif //INPSIGHTS_SINGLELINKAGECLUSTERER_H

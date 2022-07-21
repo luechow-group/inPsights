@@ -9,8 +9,8 @@ IProcess::ProcessType IProcess::typeFromString(const std::string& processName) {
         return ProcessType::IdentityClusterer;
     else if(processName == "PreClusterer")
         return ProcessType::DistanceClusterer;
-    else if(processName == "DensityBasedClusterer")
-        return ProcessType::DensityBasedClusterer;
+    else if(processName == "DensityBasedClusterer" or processName == "SingleLinkageClusterer")
+        return ProcessType::SingleLinkageClusterer;
     else if(processName == "ReferencePositionsClusterer")
         return ProcessType::ReferencePositionsClusterer;
     else if(processName == "SOAPClusterer")

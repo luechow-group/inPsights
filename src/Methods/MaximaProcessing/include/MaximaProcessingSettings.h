@@ -21,10 +21,13 @@ namespace Settings {
         Property<std::string> binaryFileBasename = {"(name of the .yml input file)", VARNAME(binaryFileBasename)};
         Property<unsigned> samplesToAnalyze = {unsigned(SamplesToAnalyze::small), VARNAME(samplesToAnalyze)};
         Property<double> minimalClusterWeight = {0.01, VARNAME(minimalClusterWeight)};
-        Property<unsigned> maximalNumberOfStructuresToPrint = {std::numeric_limits<unsigned>::max(), VARNAME(maximalNumberOfStructuresToPrint)};
+        Property<unsigned> maximalStructuresNumber = {std::numeric_limits<unsigned>::max(), VARNAME(maximalStructuresNumber)};
         Property<double> motifThreshold = {1.00, VARNAME(motifThreshold)};
         Property<bool> deleteCoreElectrons = {false, VARNAME(deleteCoreElectrons)};
         Property<bool> printAllMaxima = {false, VARNAME(printAllMaxima)};
+        Property<bool> doEnergyPartitioning = {false, VARNAME(doEnergyPartitioning)};
+        Property<bool> calculateSpinCorrelations = {true, VARNAME(calculateSpinCorrelations)};
+        Property<bool> shuffleMaxima = {true, VARNAME(shuffleMaxima)};
 
         MaximaProcessing();
         explicit MaximaProcessing(const YAML::Node &node);

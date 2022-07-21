@@ -12,9 +12,10 @@ Arrow::Arrow(Qt3DCore::QEntity *root,
              float relativeTipBottomRadius,
              float alpha)
         :
-        Cylinder(root, color, {pair.first,calculateReducedCylinderEnd(pair, relativeTipLength)},
-                 baseRadius, alpha),
-        tip_(new Cone(root, color, {calculateReducedCylinderEnd(pair, relativeTipLength), pair.second}, baseRadius * relativeTipBottomRadius, 0.0f, alpha)) {
+        Abstract3dObject(root, QColor(), {0, 0, 0}),
+        shaft_(new Cylinder(this, color, {pair.first,calculateReducedCylinderEnd(pair, relativeTipLength)},
+                 baseRadius, alpha)),
+        tip_(new Cone(this, color, {calculateReducedCylinderEnd(pair, relativeTipLength), pair.second}, baseRadius * relativeTipBottomRadius, 0.0f, alpha)) {
     assert(baseRadius > 0);
     assert(relativeTipLength > 0 && "The relative tip length must be a positive value.");
     assert(relativeTipLength < 0.5f && "The relative tip length must be shorter than the half length of the vector.");

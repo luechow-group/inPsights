@@ -14,7 +14,7 @@ set(HEADER_FILES
         include/ClusterData.h
         include/IdentityClusterer.h
         include/PreClusterer.h
-        include/DensityBasedClusterer.h
+        include/SingleLinkageClusterer.h
         include/SOAPClusterer.h
         include/MaximaProcessor.h
         include/GeneralStatistics.h
@@ -40,7 +40,7 @@ set(SOURCE_FILES
         source/ClusterData.cpp
         source/IdentityClusterer.cpp
         source/PreClusterer.cpp
-        source/DensityBasedClusterer.cpp
+        source/SingleLinkageClusterer.cpp
         source/SOAPClusterer.cpp
         source/MaximaProcessor.cpp
         source/GeneralStatistics.cpp

@@ -12,7 +12,7 @@ public:
         // Clusterer Processes
         IdentityClusterer,
         DistanceClusterer,
-        DensityBasedClusterer,
+        SingleLinkageClusterer,
         SOAPClusterer,
         ReferencePositionsClusterer,
 
