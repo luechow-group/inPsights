@@ -373,7 +373,7 @@ void InPsightsWidget::selectedStructure(QTreeWidgetItem *item, int column) {
         }
         if (not clusterCollection_[0].eigenvalues_.empty()) {
             if (checkEigenvalues() and eigenvectorSpinBox->value() != -1) {
-                eigenvalueLabel->setText(QString::number(clusterCollection_[clusterId].eigenvalues_[structureId][eigenvectorSpinBox->value()], 'f', 4));
+                eigenvalueLabel->setText(QString::number(clusterCollection_[clusterId].eigenvalues_[structureId][eigenvectorSpinBox->value()] / 2, 'f', 4));
                 moleculeWidget->drawEigenvectors(true, clusterId, structureId, eigenvectorSpinBox->value(), scaleVectorBox->value());
             }
             else {
@@ -432,7 +432,7 @@ void InPsightsWidget::selectedStructure(QTreeWidgetItem *item, int column) {
                         }
                     }
                 }
-                eigenvalueLabel->setText(QString::number(clusterCollection_[cluId].eigenvalues_[strId][eigenvectorSpinBox->value()], 'f', 4));
+                eigenvalueLabel->setText(QString::number(clusterCollection_[cluId].eigenvalues_[strId][eigenvectorSpinBox->value()] / 2, 'f', 4));
                 moleculeWidget->drawEigenvectors(true, cluId, strId, eigenvectorSpinBox->value(), scaleVectorBox->value());
             }
             else {
@@ -696,7 +696,7 @@ void InPsightsWidget::onEigenvectorSpinBoxChanged(int value) {
             spdlog::warn("Chose only one structure for eigenvalues");
         }
         else if (count == 1){
-            eigenvalueLabel->setText(QString::number(clusterCollection_[id].eigenvalues_[structureId][value], 'f', 4));
+            eigenvalueLabel->setText(QString::number(clusterCollection_[id].eigenvalues_[structureId][value] / 2, 'f', 4));
             moleculeWidget->drawEigenvectors(true, id, structureId, value, scaleVectorBox->value());
             if (moveElectronsCheckBox->isChecked()) {
                 moveElectronsCheckBox->setCheckState(Qt::Unchecked);
