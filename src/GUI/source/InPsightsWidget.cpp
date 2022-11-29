@@ -780,15 +780,13 @@ void InPsightsWidget::onMoveElectronsCheckBoxChecked(int stateId){
 
 void InPsightsWidget::showSplashScreen() {
     auto splashScreen = new QSplashScreen();
-    auto pixmap = QPixmap(":inPsights.png").scaledToWidth(550, Qt::TransformationMode::SmoothTransformation);
+    auto pixmap = QPixmap(":inPsights.png").scaledToWidth(400, Qt::TransformationMode::SmoothTransformation);
 
     splashScreen->setPixmap(pixmap);
     splashScreen->show();
 
     std::string message = inPsights::version() + "\n"\
-                          "Copyright © 2016-2021  Michael A. Heuer.\n"\
-                          "Copyright © 2018-2022  Leonard Reuter.\n"\
-                          "Copyright © 2022-2022  Michel V. Heinz.";
+                          "LuFG Theoretical Chemistry, RWTH Aachen University";
 
     splashScreen->showMessage(message.c_str(), Qt::AlignBottom, Qt::gray);
 
