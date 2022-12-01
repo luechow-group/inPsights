@@ -32,16 +32,23 @@ InPsightsWidget::InPsightsWidget(QWidget *parent, const std::string& filename)
         maximaHullsCheckBox(new QCheckBox("Maxima hulls", this)),
         plotAllCheckBox(new QCheckBox("All of cluster", this)),
         coloredCheckBox(new QCheckBox("Multicolored", this)),
+        moveElectronsCheckBox(new QCheckBox("Move electrons", this)),
+        electronsNumberCheckBox(new QCheckBox("Display indices", this)),
         spinCorrelationBox(new QDoubleSpinBox(this)),
         sedPercentageBox(new QDoubleSpinBox(this)),
+        scaleVectorBox(new QDoubleSpinBox(this)),
         bondBox(new QDoubleSpinBox(this)),
         atom1Box(new QSpinBox(this)),
         atom2Box(new QSpinBox(this)),
+        eigenvectorSpinBox(new QSpinBox(this)),
         electron1Box(new QSpinBox(this)),
         electron2Box(new QSpinBox(this)),
         maximaList(new QTreeWidget(this)),
         probabilitySum(new QLabel(this)),
-        deselectAllButton(new QPushButton("Deselect all", this))
+        eigenvalueLabel(new QLabel(this)),
+        deselectAllButton(new QPushButton("Deselect all", this)),
+        lastMovedElectronClusterVector({0, 0, -1}),
+        globalMinPhi(0.0f)
         {
 
     loadData();
@@ -57,10 +64,12 @@ void InPsightsWidget::createWidget() {
 
     auto hbox = new QHBoxLayout(this);
     auto vboxOuter = new QVBoxLayout();
-    auto vboxInner = new QVBoxLayout();
-    auto vboxInner2 = new QVBoxLayout();
+    auto vboxSettings = new QVBoxLayout();
+    auto vboxParticleHighlighting = new QVBoxLayout();
+    auto vboxEigenvectors = new QVBoxLayout();
     auto selectorBox = new QGroupBox("Particle highlighting:");
     auto settingsBox = new QGroupBox("Settings:");
+    auto eigenvectorsBox = new QGroupBox("Eigenvectors:");
 
     setLayout(hbox);
 
@@ -68,10 +77,10 @@ void InPsightsWidget::createWidget() {
     hbox->addWidget(moleculeWidget, 1);
     hbox->addLayout(vboxOuter, 0);
 
-    maximaList->setMinimumWidth(350);
+    maximaList->setMinimumWidth(352);
 
     // put into MaximaTreeWidget class
-    auto headerLabels = QList<QString>({"ID", "Weight", "min(Φ)", "max(Φ)"});
+    auto headerLabels = QList<QString>({"ID", "Weight", "min ΔΦ", "max ΔΦ"});
     maximaList->setColumnCount(headerLabels.size());
     maximaList->setHeaderLabels(headerLabels);
     maximaList->header()->setStretchLastSection(false);
@@ -94,25 +103,48 @@ void InPsightsWidget::createWidget() {
     lineGrid->addWidget(deselectAllButton,0,1);
 
     vboxOuter->addWidget(selectorBox);
-    selectorBox->setLayout(vboxInner2);
+    selectorBox->setLayout(vboxParticleHighlighting);
 
     auto selectorGrid = new QGridLayout();
-    vboxInner2->addLayout(selectorGrid,1);
+    vboxParticleHighlighting->addLayout(selectorGrid,1);
     selectorGrid->addWidget(new QLabel("Nuclei"),0,0);
-    selectorGrid->addWidget(atom1Box,1,0);
-    selectorGrid->addWidget(atom2Box,1,1);
-    selectorGrid->addWidget(new QLabel("Electrons"),2,0);
-    selectorGrid->addWidget(electron1Box,3,0);
-    selectorGrid->addWidget(electron2Box,3,1);
+    selectorGrid->addWidget(atom1Box,0,1);
+    selectorGrid->addWidget(atom2Box,0,2);
+    selectorGrid->addWidget(new QLabel("Electrons"),1,0);
+    selectorGrid->addWidget(electron1Box,1,1);
+    selectorGrid->addWidget(electron2Box,1,2);
 
+    if (not clusterCollection_[0].eigenvalues_.empty()) {
+        vboxOuter->addWidget(eigenvectorsBox);
+        eigenvectorsBox->setLayout(vboxEigenvectors);
+
+        auto eigenvectorsGrid = new QGridLayout();
+        vboxEigenvectors->addLayout(eigenvectorsGrid, 1);
+
+        // first row
+        eigenvectorsGrid->addWidget(eigenvectorSpinBox,0,0);
+        eigenvectorsGrid->addWidget(eigenvalueLabel,0,1);
+        resetEigenvalueLabel();
+
+        //second row
+        eigenvectorsGrid->addWidget(moveElectronsCheckBox,1,1);
+        eigenvectorsGrid->addWidget(scaleVectorBox,1,0);
+    }
+    else{
+        eigenvectorSpinBox->deleteLater();
+        eigenvalueLabel->deleteLater();
+        moveElectronsCheckBox->deleteLater();
+        scaleVectorBox->deleteLater();
+    }
+    
     //vboxOuter->addWidget(maximaProcessingWidget,1);
     vboxOuter->addWidget(settingsBox);
-    settingsBox->setLayout(vboxInner);
+    settingsBox->setLayout(vboxSettings);
 
     maximaList->setSortingEnabled(true);
 
     auto checkboxGrid = new QGridLayout();
-    vboxInner->addLayout(checkboxGrid,1);
+    vboxSettings->addLayout(checkboxGrid,1);
 
     // first row
     checkboxGrid->addWidget(atomsCheckBox,0,0);
@@ -140,7 +172,11 @@ void InPsightsWidget::createWidget() {
     checkboxGrid->addWidget(spinCorrelationsCheckBox,5,0);
     checkboxGrid->addWidget(spinCorrelationBox,5,1);
 
+    //seventh row
+    checkboxGrid->addWidget(electronsNumberCheckBox,6,0);
+
     setupSpinBoxes();
+    setupLabels();
 }
 
 void InPsightsWidget::connectSignals() {
@@ -159,14 +195,14 @@ void InPsightsWidget::connectSignals() {
     connect(spinCorrelationsCheckBox, &QCheckBox::stateChanged,
             this, &InPsightsWidget::onSpinCorrelationsChecked);
 
-    connect(spinCorrelationsCheckBox, &QCheckBox::stateChanged,
-            this, &InPsightsWidget::onSpinCorrelationsChecked);
-
     connect(plotAllCheckBox, &QCheckBox::stateChanged,
             this, &InPsightsWidget::onPlotAllChecked);
 
     connect(spinCorrelationBox, qOverload<double>(&QDoubleSpinBox::valueChanged),
             this, &InPsightsWidget::onSpinCorrelationsBoxChanged);
+
+    connect(electronsNumberCheckBox, &QCheckBox::stateChanged,
+            this, &InPsightsWidget::onIndicesChecked);
 
     connect(atom1Box, qOverload<int>(&QSpinBox::valueChanged),
             this, &InPsightsWidget::onAtom1BoxChanged);
@@ -196,12 +232,47 @@ void InPsightsWidget::connectSignals() {
             this, &InPsightsWidget::updateSelectedStructures);
 
     connect(sampleAverageCheckBox, &QCheckBox::stateChanged,
-            this, &InPsightsWidget::updateSelectedStructures);
+            this, &InPsightsWidget::onSampleAverageCheckBoxChanged);
 
-    connect(deselectAllButton, &QPushButton::clicked, this, &InPsightsWidget::onDeselectAll);
+    connect(eigenvectorSpinBox, qOverload<int>(&QSpinBox::valueChanged),
+            this, &InPsightsWidget::onEigenvectorSpinBoxChanged);
+
+    connect(scaleVectorBox, qOverload<double>(&QDoubleSpinBox::valueChanged),
+            this, &InPsightsWidget::onScaleVectorBoxChanged);
+
+    connect(moveElectronsCheckBox, &QCheckBox::stateChanged,
+            this, &InPsightsWidget::onMoveElectronsCheckBoxChecked);
+
+    connect(deselectAllButton, &QPushButton::clicked,
+            this, &InPsightsWidget::onDeselectAll);
+}
+
+void InPsightsWidget::setupLabels() {
+    eigenvalueLabel->setAlignment(Qt::AlignCenter);
 }
 
 void InPsightsWidget::setupSpinBoxes() {
+
+    scaleVectorBox->setRange(-10,10);
+    scaleVectorBox->setWrapping(false);
+    scaleVectorBox->setSingleStep(0.1);
+    scaleVectorBox->setValue(1);
+    scaleVectorBox->setAccelerated(true);
+
+    int numberEigenvalues;
+    if(clusterCollection_[0].eigenvalues_.empty()) {
+        numberEigenvalues = 1;
+    }
+    else {
+        numberEigenvalues = clusterCollection_[0].eigenvalues_[0].size();
+    }
+    eigenvectorSpinBox->setRange(-1,numberEigenvalues-1);
+    eigenvectorSpinBox->setWrapping(true);
+    eigenvectorSpinBox->setSingleStep(1);
+    eigenvectorSpinBox->setValue(-1);
+    eigenvectorSpinBox->setSpecialValueText(tr("none"));
+    eigenvectorSpinBox->setAccelerated(true);
+
     spinCorrelationBox->setRange(0.0,1.0);
     spinCorrelationBox->setSingleStep(0.01);
     spinCorrelationBox->setValue(1.0);
@@ -255,7 +326,9 @@ void InPsightsWidget::selectedStructure(QTreeWidgetItem *item, int column) {
 
     if (column != 0)
         spdlog::critical("Column 0 expected but got {} ", column);
-
+    std::vector<int> TickedStructuresCountVector = getTickedStructuresCountVector();
+    int count = TickedStructuresCountVector[0];
+    bool checkEigenval = checkEigenvalues();
     auto id = item->data(0, Qt::ItemDataRole::UserRole).toList();
     auto clusterId = id[0].toInt();
     auto secondId = id[1].toInt();
@@ -267,22 +340,56 @@ void InPsightsWidget::selectedStructure(QTreeWidgetItem *item, int column) {
     auto createQ = item->checkState(0) == Qt::CheckState::Checked;
 
     if (createQ) {
-        auto sampleAverage = clusterCollection_[clusterId].sampleAverage_;
-
-        if (sampleAverageCheckBox->checkState() == Qt::CheckState::Checked &&
-            sampleAverage.numberOfEntities() > 0) {
-            moleculeWidget->addElectronsVector(sampleAverage, clusterId, secondId,
-                                               coloredCheckBox->checkState() == Qt::Checked);
-        } else if (sampleAverageCheckBox->checkState() == Qt::CheckState::Checked
-                   && sampleAverage.numberOfEntities() == 0) {
-            moleculeWidget->addElectronsVector(clusterCollection_[clusterId].exemplaricStructures_[structureId],
-                                               clusterId, secondId, coloredCheckBox->checkState() == Qt::Checked);
-            spdlog::warn("Sample averaged vectors were not calculated. Plotting the first maximum instead...");
-        } else {
+        if (not clusterCollection_[0].eigenvalues_.empty()) {
+            if (eigenvectorSpinBox->value() != -1 and count > 1) {
+                spdlog::warn("Chose only one structure for eigenvalues");
+            }
+        }
+        if (sampleAverageCheckBox->checkState() == Qt::CheckState::Checked){
+            if (not clusterCollection_[0].eigenvalues_.empty()) {
+                if (eigenvectorSpinBox->value() != -1) {
+                    spdlog::warn("No eigenvectors were calculated for the sample average");
+                    eigenvectorSpinBox->setValue(-1);
+                }
+                if (moveElectronsCheckBox->isChecked()) {
+                    spdlog::warn("Cannot move electrons for the sample average");
+                    moveElectronsCheckBox->setCheckState(Qt::Unchecked);
+                }
+            }
+            auto sampleAverage = clusterCollection_[clusterId].sampleAverage_;
+            if (sampleAverage.numberOfEntities() > 0) {
+                moleculeWidget->addElectronsVector(sampleAverage, clusterId, secondId,
+                                                   coloredCheckBox->checkState() == Qt::Checked);
+            }
+            else {
+                moleculeWidget->addElectronsVector(clusterCollection_[clusterId].exemplaricStructures_[structureId],
+                                                   clusterId, secondId, coloredCheckBox->checkState() == Qt::Checked);
+                spdlog::warn("Sample averaged vectors were not calculated. Plotting the first maximum instead...");
+            }
+        }
+        else {
             moleculeWidget->addElectronsVector(clusterCollection_[clusterId].exemplaricStructures_[structureId],
                                                clusterId, secondId, coloredCheckBox->checkState() == Qt::Checked);
         }
-
+        if (not clusterCollection_[0].eigenvalues_.empty()) {
+            if (checkEigenvalues() and eigenvectorSpinBox->value() != -1) {
+                eigenvalueLabel->setText(QString::number(clusterCollection_[clusterId].eigenvalues_[structureId][eigenvectorSpinBox->value()] / 2, 'f', 4));
+                moleculeWidget->drawEigenvectors(true, clusterId, structureId, eigenvectorSpinBox->value(), scaleVectorBox->value());
+            }
+            else {
+                if (moveElectronsCheckBox->isChecked()) {
+                    moveElectronsCheckBox->setCheckState(Qt::Unchecked);
+                    std::cout << lastMovedElectronClusterVector[0] << " " << lastMovedElectronClusterVector[1] << " " << lastMovedElectronClusterVector[2] << std::endl;
+                    moleculeWidget->removeElectronsVector(lastMovedElectronClusterVector[0], lastMovedElectronClusterVector[2]);
+                    moleculeWidget->addElectronsVector(clusterCollection_[lastMovedElectronClusterVector[0]]
+                                                        .exemplaricStructures_[lastMovedElectronClusterVector[1]],
+                                                       lastMovedElectronClusterVector[0], lastMovedElectronClusterVector[2],
+                                                       coloredCheckBox->checkState() == Qt::Checked);
+                }
+                moleculeWidget->removeEigenvectors();
+                eigenvalueLabel->setText(QString(" "));
+            }
+        }
         if (sedsCheckBox->checkState() == Qt::CheckState::Checked
             && moleculeWidget->activeSedsMap_.find(clusterId) == moleculeWidget->activeSedsMap_.end()) {
             moleculeWidget->addSeds(clusterId, structureId, clusterCollection_, sedPercentageBox->value());
@@ -299,7 +406,41 @@ void InPsightsWidget::selectedStructure(QTreeWidgetItem *item, int column) {
 
         onElectron1BoxChanged(electron1Box->value());
         onElectron2BoxChanged(electron2Box->value());
-    } else {
+    }
+    else {
+        if (not clusterCollection_[0].eigenvalues_.empty()) {
+            if (eigenvectorSpinBox->value() != -1 and count > 1) {
+                spdlog::warn("Chose only one structure for eigenvalues");
+            }
+            if (not checkEigenval) {
+                moveElectronsCheckBox->setCheckState(Qt::Unchecked);
+            }
+            if (checkEigenval and eigenvectorSpinBox->value() != -1) {
+                auto* root = maximaList->invisibleRootItem();
+                unsigned cluId = -1;
+                unsigned strId = 0;
+                // iterate over topLevelItems
+                for (int i = 0; i < root->childCount(); ++i) {
+                    if(root->child(i)->checkState(0) == Qt::Checked) {
+                        cluId = i;
+                    }
+                    // iterate over childs of topLevelItem i
+                    for (int j = 0; j<root->child(i)->childCount(); ++j) {
+                        if(root->child(i)->child(j)->checkState(0) == Qt::Checked) {
+                            cluId = i;
+                            strId = j;
+                        }
+                    }
+                }
+                eigenvalueLabel->setText(QString::number(clusterCollection_[cluId].eigenvalues_[strId][eigenvectorSpinBox->value()] / 2, 'f', 4));
+                moleculeWidget->drawEigenvectors(true, cluId, strId, eigenvectorSpinBox->value(), scaleVectorBox->value());
+            }
+            else {
+                moleculeWidget->removeEigenvectors();
+                eigenvalueLabel->setText(QString(" "));
+            }
+        }
+
         moleculeWidget->removeElectronsVector(clusterId, secondId);
 
         if (moleculeWidget->activeSedsMap_.find(clusterId) != moleculeWidget->activeSedsMap_.end())
@@ -310,8 +451,93 @@ void InPsightsWidget::selectedStructure(QTreeWidgetItem *item, int column) {
     }
     redrawSpinDecorations();
     probabilitySum->setText(QString("Σ Weight = ") + QString::number(sumProbabilities(), 'f', 4));
-
 };
+
+void InPsightsWidget::resetEigenvalueLabel() {
+    eigenvalueLabel->setText(QString(" "));
+}
+
+void InPsightsWidget::addMovedElectronsVector(int clusterId, int structureId, int secondId) {
+    unsigned electronsNumber = clusterCollection_[clusterId].exemplaricStructures_[structureId].numberOfEntities();
+    auto startElectronsVector = clusterCollection_[clusterId].exemplaricStructures_[structureId];
+    auto eigenvector = clusterCollection_[clusterId].eigenvectors_[structureId];
+    PositionsVector movedElectronPositions;
+    for (unsigned i = 0; i < electronsNumber; ++i) {
+        movedElectronPositions.append(startElectronsVector.positionsVector()[i] +
+                                      eigenvector[eigenvectorSpinBox->value() * electronsNumber + i] *
+                                      scaleVectorBox->value());
+    }
+    auto movedElectronsVector = ElectronsVector(movedElectronPositions,
+                                                startElectronsVector.typesVector());
+    moleculeWidget->addElectronsVector(movedElectronsVector, clusterId, secondId);
+    lastMovedElectronClusterVector[0] = clusterId;
+    lastMovedElectronClusterVector[1] = structureId;
+    lastMovedElectronClusterVector[2] = secondId;
+}
+
+bool InPsightsWidget::checkEigenvalues() {
+    if(clusterCollection_[0].eigenvalues_.empty()) {
+        return false;
+    }
+    else {
+        std::vector<int> TickedStructuresCountVector = getTickedStructuresCountVector();
+        int count = TickedStructuresCountVector[0];
+        if (count > 1) {
+            return false;
+        }
+        if (count == 0) {
+            return false;
+        }
+    }
+    return true;
+}
+
+std::vector<int> InPsightsWidget::getTickedStructuresCountVector() {
+    auto* root = maximaList->invisibleRootItem();
+    std::vector<int> TickedStructuresCountVector;
+    unsigned count = 0;
+    unsigned clusterId = -1;
+    unsigned structureId = -1;
+    // iterate over topLevelItems
+    for (int i = 0; i < root->childCount(); ++i) {
+        if(root->child(i)->checkState(0) == Qt::Checked) {
+            count += 1;
+            clusterId = i;
+        }
+        // iterate over childs of topLevelItem i
+        for (int j = 0; j<root->child(i)->childCount(); ++j) {
+            if(root->child(i)->child(j)->checkState(0) == Qt::Checked) {
+                count += 1;
+                clusterId = i;
+                structureId = j;
+            }
+        }
+    }
+    TickedStructuresCountVector.emplace_back(count);
+    TickedStructuresCountVector.emplace_back(clusterId);
+    TickedStructuresCountVector.emplace_back(structureId);
+    return TickedStructuresCountVector;
+}
+
+void InPsightsWidget::onSampleAverageCheckBoxChanged(int stateId) {
+    if (not clusterCollection_[0].eigenvalues_.empty()) {
+        if (moveElectronsCheckBox->isChecked()) {
+            sampleAverageCheckBox->setCheckState(Qt::Unchecked);
+            spdlog::warn("Cannot move electrons for the sample average");
+        }
+        if (eigenvectorSpinBox->value() != -1) {
+            sampleAverageCheckBox->setCheckState(Qt::Unchecked);
+            spdlog::warn("No eigenvectors were calculated for the sample average");
+        }
+        if (not moveElectronsCheckBox->isChecked() and eigenvectorSpinBox->value() == -1) {
+            updateSelectedStructures(42);
+        }
+    }
+    else {
+        updateSelectedStructures(42);
+    }
+
+}
 
 void InPsightsWidget::updateSelectedStructures(int) {
     auto* root = maximaList->invisibleRootItem();
@@ -374,6 +600,10 @@ void InPsightsWidget::onAtomsChecked(int stateId) {
     }
 }
 
+void InPsightsWidget::onIndicesChecked(int stateId) {
+    moleculeWidget->drawIndices(Qt::CheckState(stateId) == Qt::CheckState::Checked);
+}
+
 void InPsightsWidget::onBondsChecked(int stateId) {
     if (atomsCheckBox->isChecked()) {
         moleculeWidget->drawBonds(Qt::CheckState(stateId) == Qt::CheckState::Checked, bondBox->value());
@@ -390,19 +620,27 @@ void InPsightsWidget::onAxesChecked(int stateId) {
 }
 
 void InPsightsWidget::onSpinCorrelationsChecked(int stateId) {
-    moleculeWidget->deleteSpinCorrelations();
-    if(Qt::CheckState(stateId) == Qt::Checked)
-        moleculeWidget->drawSpinCorrelations(clusterCollection_, spinCorrelationBox->value(),true);
-    else if(Qt::CheckState(stateId) == Qt::PartiallyChecked)
-        moleculeWidget->drawSpinCorrelations(clusterCollection_, spinCorrelationBox->value(),false);
+    if (clusterCollection_[0].SeeStats_.getTotalWeight() == 0) {
+        if ((Qt::CheckState(stateId) == Qt::CheckState::Checked) or (Qt::CheckState(stateId) == Qt::CheckState::PartiallyChecked)) {
+            spdlog::warn("Spin correlations were not calculated.");
+            spinCorrelationsCheckBox->setCheckState(Qt::CheckState::Unchecked);
+        }
+    }
+    else {
+        moleculeWidget->deleteSpinCorrelations();
+        if(Qt::CheckState(stateId) == Qt::Checked)
+            moleculeWidget->drawSpinCorrelations(clusterCollection_, spinCorrelationBox->value(),true);
+        else if(Qt::CheckState(stateId) == Qt::PartiallyChecked)
+            moleculeWidget->drawSpinCorrelations(clusterCollection_, spinCorrelationBox->value(),false);
+    }
 }
 
-void InPsightsWidget::onSpinCorrelationsBoxChanged(double value) {
-    redrawSpinDecorations();
+void InPsightsWidget::onSpinCorrelationsBoxChanged(double value){
+    if (clusterCollection_[0].SeeStats_.getTotalWeight() > 0)
+        redrawSpinDecorations();
 }
 
 void InPsightsWidget::onBondBoxChanged(double value) {
-
     if (bondsCheckBox->isChecked()) {
         bondsCheckBox->setCheckState(Qt::Unchecked);
         bondsCheckBox->setCheckState(Qt::Checked);
@@ -410,11 +648,15 @@ void InPsightsWidget::onBondBoxChanged(double value) {
 }
 
 void InPsightsWidget::onAtom1BoxChanged(int value) {
-    moleculeWidget->onAtomsHighlighted(value);
+    if (atomsCheckBox->isChecked()) {
+        moleculeWidget->onAtomsHighlighted(value);
+    }
 }
 
 void InPsightsWidget::onAtom2BoxChanged(int value) {
-    moleculeWidget->onAtomsChecked(value);
+    if (atomsCheckBox->isChecked()) {
+        moleculeWidget->onAtomsChecked(value);
+    }
 }
 
 void InPsightsWidget::onElectron1BoxChanged(int value) {
@@ -425,16 +667,126 @@ void InPsightsWidget::onElectron2BoxChanged(int value) {
     moleculeWidget->onElectronsChecked(value);
 }
 
+void InPsightsWidget::onEigenvectorSpinBoxChanged(int value) {
+    if (sampleAverageCheckBox->isChecked() and value != -1) {
+        eigenvectorSpinBox->setValue(-1);
+        value = -1;
+        spdlog::warn("No eigenvectors were calculated for the sample average");
+    }
+    std::vector<int> tickedStructuresCountVector = getTickedStructuresCountVector();
+    int count = tickedStructuresCountVector[0];
+    int id = tickedStructuresCountVector[1];
+    int secondId = tickedStructuresCountVector[2];
+    int structureId = secondId;
+    if (structureId == -1) {
+        structureId = 0;
+    }
+    if (value == -1) {
+        if (not sampleAverageCheckBox->isChecked() and moveElectronsCheckBox->isChecked()) {
+            moveElectronsCheckBox->setCheckState(Qt::Unchecked);
+            spdlog::warn("Chose an eigenvector to move the electrons");
+            moleculeWidget->removeElectronsVector(id, secondId);
+            moleculeWidget->addElectronsVector(clusterCollection_[id].exemplaricStructures_[structureId],
+                                               id, secondId,
+                                               coloredCheckBox->checkState() == Qt::Checked);
+        }
+    }
+    if (value != -1) {
+        if (count > 1) {
+            spdlog::warn("Chose only one structure for eigenvalues");
+        }
+        else if (count == 1){
+            eigenvalueLabel->setText(QString::number(clusterCollection_[id].eigenvalues_[structureId][value] / 2, 'f', 4));
+            moleculeWidget->drawEigenvectors(true, id, structureId, value, scaleVectorBox->value());
+            if (moveElectronsCheckBox->isChecked()) {
+                moveElectronsCheckBox->setCheckState(Qt::Unchecked);
+            }
+        }
+        if (count == 0) {
+            eigenvalueLabel->setText(QString(" "));
+            spdlog::warn("Chose a structure for eigenvalues");
+        }
+    }
+    if (value == -1 ) {
+        eigenvalueLabel->setText(QString(" "));
+        moleculeWidget->removeEigenvectors();
+    }
+}
+
+void InPsightsWidget::onScaleVectorBoxChanged(double value) {
+    std::vector<int> tickedStructuresCountVector = getTickedStructuresCountVector();
+    int count = tickedStructuresCountVector[0];
+    if (count == 1 and eigenvectorSpinBox->value() != -1) {
+        int clusterId = tickedStructuresCountVector[1];
+        int structureId = tickedStructuresCountVector[2];
+        int secondId = structureId;
+        if (structureId == -1) {
+            structureId = 0;
+        }
+        if (moveElectronsCheckBox->checkState() == Qt::Checked) {
+            moleculeWidget->removeElectronsVector(clusterId, secondId);
+            addMovedElectronsVector(clusterId, structureId, secondId);
+            moleculeWidget->drawEigenvectors(true, clusterId, structureId, eigenvectorSpinBox->value(), value);
+        }
+        else {
+            moleculeWidget->drawEigenvectors(true, clusterId, structureId, eigenvectorSpinBox->value(), value);
+        }
+    }
+    redrawSpinDecorations();
+}
+
+void InPsightsWidget::onMoveElectronsCheckBoxChecked(int stateId){
+    if (sampleAverageCheckBox->isChecked() and moveElectronsCheckBox->isChecked()) {
+        moveElectronsCheckBox->setCheckState(Qt::Unchecked);
+        spdlog::warn("Cannot move electrons for the sample average");
+    }
+    std::vector<int> tickedStructuresCountVector = getTickedStructuresCountVector();
+    int count = tickedStructuresCountVector[0];
+    if (moveElectronsCheckBox->isChecked()) {
+        if (count == 0){
+            spdlog::warn("Chose a structure to move the electrons");
+            moveElectronsCheckBox->setCheckState(Qt::Unchecked);
+        }
+        if (count > 1) {
+            spdlog::warn("Chose only one structure to move the electrons");
+            moveElectronsCheckBox->setCheckState(Qt::Unchecked);
+        }
+        if (count == 1 and eigenvectorSpinBox->value() == -1) {
+            spdlog::warn("Chose an eigenvector to move the electrons");
+            moveElectronsCheckBox->setCheckState(Qt::Unchecked);
+        }
+    }
+
+    if (count == 1 and eigenvectorSpinBox->value() != -1) {
+        int clusterId = tickedStructuresCountVector[1];
+        int structureId = tickedStructuresCountVector[2];
+        int secondId = structureId;
+        if (structureId == -1) {
+            structureId = 0;
+        }
+        if (moveElectronsCheckBox->checkState() == Qt::Unchecked) {
+            moleculeWidget->removeElectronsVector(clusterId, secondId);
+            moleculeWidget->addElectronsVector(clusterCollection_[clusterId].exemplaricStructures_[structureId],
+                                               clusterId, secondId,
+                                               coloredCheckBox->checkState() == Qt::Checked);
+        }
+        else {
+            moleculeWidget->removeElectronsVector(clusterId, secondId);
+            addMovedElectronsVector(clusterId, structureId, secondId);
+        }
+    }
+    redrawSpinDecorations();
+}
+
 void InPsightsWidget::showSplashScreen() {
     auto splashScreen = new QSplashScreen();
-    auto pixmap = QPixmap(":inPsights.png").scaledToWidth(450, Qt::TransformationMode::SmoothTransformation);
+    auto pixmap = QPixmap(":inPsights.png").scaledToWidth(400, Qt::TransformationMode::SmoothTransformation);
 
     splashScreen->setPixmap(pixmap);
     splashScreen->show();
 
     std::string message = inPsights::version() + "\n"\
-                          "Copyright © 2016-2021  Michael A. Heuer.\n"\
-                          "Copyright © 2018-2022  Leonard Reuter.";
+                          "LuFG Theoretical Chemistry, RWTH Aachen University";
 
     splashScreen->showMessage(message.c_str(), Qt::AlignBottom, Qt::gray);
 
@@ -475,27 +827,24 @@ void InPsightsWidget::loadData() {
         Camera::settings = Settings::Camera(doc);
     }
 
+    if (doc["GlobalMinPhi"]) {
+        globalMinPhi = doc["GlobalMinPhi"].as<float>();
+    }
+    else {
+        globalMinPhi = doc["Clusters"][0].as<ClusterData>().valueStats_.cwiseMin()[0]/2.0;
+    }
     for (int clusterId = 0; clusterId < static_cast<int>(doc["Clusters"].size()); ++clusterId) {
         spdlog::info("{} out of {} clusters loaded...", clusterId+1, static_cast<int>(doc["Clusters"].size()));
 
         clusterCollection_.emplace_back(doc["Clusters"][clusterId].as<ClusterData>());
         const auto & cluster = clusterCollection_.back();
-
-        float minPhi = cluster.valueStats_.cwiseMin()[0]/2.0;
-        auto minPhiString = QString::number(minPhi, 'f', 3);
-        if (minPhi > 0)
-            minPhiString = QString(' ') + minPhiString;
-
-        float maxPhi = cluster.valueStats_.cwiseMax()[0]/2.0;
-        auto maxPhiString = QString::number(maxPhi, 'f', 3);
-        if (maxPhi > 0)
-            maxPhiString = QString(' ') + maxPhiString;
+        auto phiStrings = getPhiStrings(cluster.valueStats_);
 
         auto item = new IntegerSortedTreeWidgetItem(
                 maximaList, {QString::number(clusterId),
                  QString::number(1.0 * cluster.N_ / doc["NSamples"].as<unsigned>(), 'f', 4),
-                 minPhiString.left(6),
-                 maxPhiString.left(6)});
+                 phiStrings.first,
+                 phiStrings.second});
 
         item->setCheckState(0, Qt::CheckState::Unchecked);
 
@@ -506,12 +855,21 @@ void InPsightsWidget::loadData() {
 
         if (structures.size() > 1) {
             for (int structureId = 0; structureId < static_cast<int>(structures.size()); ++structureId) {
-                auto subItem = new IntegerSortedTreeWidgetItem(item, QStringList({
-                                                                                         QString::number(structureId),
-                                                                                         QString::number(1.0 *
-                                                                                                         cluster.subN_[structureId] /
-                                                                                                         cluster.N_,
-                                                                                                         'f', 4)}));
+                if (not cluster.subValueStats_.empty()){
+                    phiStrings = getPhiStrings(cluster.subValueStats_[structureId]);
+                }else{
+                    phiStrings = std::pair<QString, QString>(QString(' '),QString(' '));
+                }
+
+                auto subItem = new IntegerSortedTreeWidgetItem(item,
+                                                               QStringList({
+                                                                  QString::number(structureId),
+                                                                  QString::number(1.0 *
+                                                                                  cluster.subN_[structureId] /
+                                                                                  cluster.N_,
+                                                                                  'f', 4),
+                                                                  phiStrings.first,
+                                                                  phiStrings.second}));
                 subItem->setCheckState(0, Qt::CheckState::Unchecked);
 
                 id = {clusterId, structureId};
@@ -525,6 +883,19 @@ void InPsightsWidget::loadData() {
             }
         }
     }
+}
+
+std::pair<QString, QString> InPsightsWidget::getPhiStrings(const SingleValueStatistics& valueStats){
+    float minPhi = valueStats.cwiseMin()[0]/2.0;
+    auto minPhiString = QString::number(minPhi-globalMinPhi, 'f', 4);
+    if (minPhi-globalMinPhi >= 0)
+        minPhiString = QString(' ') + minPhiString;
+
+    float maxPhi = valueStats.cwiseMax()[0]/2.0;
+    auto maxPhiString = QString::number(maxPhi-globalMinPhi, 'f', 4);
+    if (maxPhi-globalMinPhi >= 0)
+        maxPhiString = QString(' ') + maxPhiString;
+    return std::pair<QString, QString>(minPhiString.left(7), maxPhiString.left(7));
 }
 
 double InPsightsWidget::sumProbabilities(){

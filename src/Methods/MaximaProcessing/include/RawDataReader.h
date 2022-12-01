@@ -17,7 +17,7 @@ public:
 
     void read(const std::string& basename) override;
     
-    void read(const std::string& basename, size_t numberOfSamples);
+    void read(const std::string& basename, size_t numberOfSamples, bool shuffle);
 
     std::pair<Sample, Maximum> removeNonValenceElectrons(const Sample &sample, const Maximum &reference);
 
@@ -27,7 +27,7 @@ private:
     void readHeader(std::ifstream& input);
     void readAtomsHeader(std::ifstream &input);
     void readElectronsHeader(std::ifstream &input);
-    void readSamplesAndMaxima(std::ifstream &input, int fileLength, size_t numberOfSamples);
+    void readSamplesAndMaxima(std::ifstream &input, int fileLength, size_t numberOfSamples, bool shuffle);
     std::string zeroPadNumber(int num);
     long long int getFileLength(std::ifstream &input) const;
     std::string getFilename(const std::string &basename, unsigned fileCounter);

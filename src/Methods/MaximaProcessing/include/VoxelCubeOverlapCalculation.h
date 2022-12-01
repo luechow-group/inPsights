@@ -14,7 +14,7 @@ namespace Settings {
     class VoxelCubeOverlapCalculation : public ISettings {
         inline static const std::string className = {VARNAME(VoxelCubeOverlapCalculation)};
     public:
-        Property<bool> calculateOverlapQ = {true, VARNAME(calculateOverlapQ)};
+        Property<bool> calculateOverlapQ = {false, VARNAME(calculateOverlapQ)};
         Property<uint16_t> dimension = {100, VARNAME(dimension)};
         Property<VoxelCube::VertexComponentsType > length = {20, VARNAME(length)};
 

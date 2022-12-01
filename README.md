@@ -78,15 +78,10 @@ Otherwise the default compilers are used.
 #### Qt5
 To build the inPsights GUI, environment variables to the Qt5 libraries are required.
 
-If Qt5 was installed via homebrew, the following environment variable must be exported:
+If Qt5 is not found or a wrong Qt5 version is found, the following environment variable must be exported:
 
 ```bash
 export CMAKE_PREFIX_PATH=/usr/local/Cellar/qt/5.XX.X
-```
-
-If Qt5 was download from the webpage and installed via the installer, the following environment variable must be exported:
-```bash
-export Qt5_DIR=/home/<username>/Qt/5.XX.X/gcc_64
 ```
 
 If Qt5 was installed via `apt-get`, CMake should find the library automatically.

@@ -33,7 +33,10 @@ public:
                 const MatrixStatistics RenStats,
                 const std::vector<VoxelCube>& seds,
                 const Eigen::MatrixXd& sedOverlaps,
-                const std::vector<unsigned>& subCounts
+                const std::vector<unsigned>& subCounts,
+                const std::vector<SingleValueStatistics>& subValueStats,
+                const std::vector<Eigen::VectorXd> &eigenvalues,
+                const std::vector<std::vector<Eigen::Vector3d>> &eigenvectors
     );
 
     // TODO Refactor (hacky solution for local clustering)
@@ -56,13 +59,15 @@ public:
                 const Eigen::MatrixXd& sedOverlaps,
                 const SelectionEnergyCalculator::SelectionInteractionEnergies & selectionInteractionEnergies,
                 const std::vector<MolecularSelection>& selections,
-                const std::vector<unsigned>& subCounts
+                const std::vector<unsigned>& subCounts,
+                const std::vector<SingleValueStatistics>& subValueStats
                 );
 
     ElectronsVector representativeStructure() const;
 
     unsigned N_;
     std::vector<unsigned> subN_;
+    std::vector<SingleValueStatistics> subValueStats_;
     std::vector<ElectronsVector> exemplaricStructures_;
     ElectronsVector sampleAverage_;
     Motifs motifs_;
@@ -75,6 +80,8 @@ public:
     Eigen::MatrixXd overlaps_;
     SelectionEnergyCalculator::SelectionInteractionEnergies  selectionInteractionEnergies_;
     std::vector<MolecularSelection> selections_;
+    std::vector<Eigen::VectorXd> eigenvalues_;
+    std::vector<std::vector<Eigen::Vector3d>> eigenvectors_;
 };
 
 namespace YAML {

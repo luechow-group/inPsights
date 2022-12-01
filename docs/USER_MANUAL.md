@@ -20,10 +20,11 @@ MaximaProcessing:
   samplesToAnalyze: 0         # 0 = all
   minimalClusterWeight: 0.0
   deleteCoreElectrons: false
+  doEnergyPartitioning: true
 Clustering:
   PreClusterer:
     radius: 0.01 # [a0]
-  DensityBasedClusterer:
+  SingleLinkageClusterer:
     radius: 0.2  # [a0]
 VoxelCubeGeneration:
   generateVoxelCubesQ: true
@@ -48,6 +49,10 @@ General settings have to be given under the top-level YAML node `MaximaProcessin
 * `samplesToAnalyze` (`unsigned integer`): Samples/maxima to analyze. A value of `0` means all samples/maxima from the subsequent `.bin` files are processed.
 * `minimalClusterWeight` (`positive float`): minimal weight of clusters to be printed in the output file .
 * `deleteCoreElectrons` (`bool`):  If `true`, all core electrons are deleted and thus not considered in the clustering or any statistic.
+* `doEnergyPartitioning` (`bool`): If `true`, values for energy partitioning are calcularted. Default: `false`.
+* `calculateSpinCorrelations` (`bool`): If `true`, spin correlations are calculated. Has to be true for energy partitioning. Default: `true`.
+* `maximalStructuresNumber` (`int`): If given, restricts the number of structures, that are saved per cluster.
+* `shuffleMaxima` (`bool`): if `true`, all maxima are randomly permuted to avoid method artifacts. Default: `true`
 
 #### Clustering
 The clustering process is specified under the top level YAML node `Clustering` and consists of a list of clusterers.
@@ -58,7 +63,7 @@ Example:
 Clustering:
   PreClusterer:      # 1. spherical pre-clustering with the PreClusterer and a small radius of 0.01 a0
     radius: 0.01  # [a0]
-  DensityBasedClusterer:  # 2. density-based clustering with the DensityBasedClusterer and a radius of 0.2 a0
+  SingleLinkageClusterer:  # 2. single linkage clustering with the SingleLinkageClusterer and a radius of 0.2 a0
     radius: 0.2  # [a0]
 ```
 
@@ -77,14 +82,14 @@ Spherical clusterer employing a spin-agnostic best-match distance metric.
 * `local` (`bool`): true unlocks the `ElectronSelection` Options in which the subset of considered electrons can be specified.
 
 
-##### DensityBasedClusterer
-Density-based clusterer employing a spin-agnostic best-match distance metric.
+##### SingleLinkageClusterer
+Single linkage clusterer employing a spin-agnostic best-match distance metric.
 * `radius` (`positive float`,`[a0]`): radius in which similar, density connected maxima (irrespective of spin) are clustered together
 * `local` (`bool`): true unlocks the `ElectronSelection` options in which the subset of considered electrons can be specified.
 
 
 ##### Local Clustering with the `ElectronSelection` Option
-`ElectronSelection` is A sub-node that can be added to a `SphericalClusterer` or `DensityBasedClusterer` node.
+`ElectronSelection` is A sub-node that can be added to a `SphericalClusterer` or `SingleLinkageClusterer` node.
 The following options can be specified:
 * `maximalCount` (`unsigned int`): Maximal number of electrons that are compared for clustering (the subset).
 * `maximalDistance` (`positive float`,`[a0]`): Maximal distance of electrons from the reference positions to be included in the subset for comparison.
@@ -101,12 +106,12 @@ The following options can be specified:
     * `add`: Give a list of positions (as above) to add them. 
     * `multiply`: Give a list of positions (as above) to multiply them element-wise. 
 
-Example: Density-based clustering of the four valence electrons closest to the point in between the 4. and 5. atom and sort the remaining electrons.
+Example: Single linkage clustering of the four valence electrons closest to the point in between the 4. and 5. atom and sort the remaining electrons.
 ```yaml
 Clustering:
   PreClusterer:
     radius: 0.01
-  DensityBasedClusterer:
+  SingleLinkageClusterer:
     radius: 0.2
     local: true
     sortRemainder: true
@@ -140,3 +145,9 @@ Possible options are:
 The `inPsights` executable is the `Qt5` based GUI to visualize the processed data and requires an `-out.yml` file as an input.
 Execution of `inPsights input-out.yml` from the command-line starts the GUI in a separate window.
 
+* `globalMinPhi` (`float`): Can be added to the `-out.yml` file to change the reference for the ΔΦ values. Default: lowest value that was found.
+
+#### Camera:
+The `Camera` settings can be adjusted in the `-out.yml` file. The `Reset camera` button always returns to these settings given in the input file:
+* `zoom` (`int`): Initial zoom for the camera. Default: `100`.
+* `pan`, `tilt`, `roll` (`int`): initial pan, tilt, and roll angles. Default: `0`.

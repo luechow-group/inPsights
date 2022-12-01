@@ -41,7 +41,7 @@ void Cone::rotateToOrientation(const QVector3D &orientation) {
 
   auto perpendicular = QVector3D::crossProduct(origVec, orientation);
   auto l = perpendicular.length();
-  float epsilon = 0.00001;
+  double epsilon = 1.0e-14f;
 
   if (l > epsilon) {
     QVector3D axis = perpendicular.normalized();

@@ -8,7 +8,7 @@
 #include "Cone.h"
 #include <NaturalConstants.h>
 
-class Arrow : public Cylinder {
+class Arrow : public Abstract3dObject {
 
 public:
     Arrow(Qt3DCore::QEntity *root, QColor color,
@@ -18,6 +18,7 @@ public:
              float relativeTipBottomRadius = 1.25f,
              float alpha = 1.0f);
 private:
+    Cylinder* shaft_;
     Cone* tip_;
 
     QVector3D calculateReducedCylinderEnd(const std::pair<QVector3D, QVector3D> &pair, float relativeTipLength);

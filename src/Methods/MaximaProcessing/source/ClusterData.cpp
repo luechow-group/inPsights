@@ -21,7 +21,10 @@ ClusterData::ClusterData(unsigned totalNumberOfStructures,
                          const MatrixStatistics RenStats,
                          const std::vector<VoxelCube> &seds,
                          const Eigen::MatrixXd& sedOverlaps,
-                         const std::vector<unsigned>& subCounts
+                         const std::vector<unsigned>& subCounts,
+                         const std::vector<SingleValueStatistics>& subValueStats,
+                         const std::vector<Eigen::VectorXd> &eigenvalues,
+                         const std::vector<std::vector<Eigen::Vector3d>> &eigenvectors
 )
         :
         N_(totalNumberOfStructures),
@@ -39,7 +42,10 @@ ClusterData::ClusterData(unsigned totalNumberOfStructures,
         RenStats_(RenStats),
         voxelCubes_(seds),
         overlaps_(sedOverlaps),
-        subN_(subCounts)
+        subN_(subCounts),
+        subValueStats_(subValueStats),
+        eigenvalues_(eigenvalues),
+        eigenvectors_(eigenvectors)
 {};
 
 ClusterData::ClusterData(unsigned totalNumberOfStructures,
@@ -61,7 +67,8 @@ ClusterData::ClusterData(unsigned totalNumberOfStructures,
             const Eigen::MatrixXd& sedOverlaps,
             const SelectionEnergyCalculator::SelectionInteractionEnergies & selectionInteractionEnergies,
             const std::vector<MolecularSelection>& selections,
-            const std::vector<unsigned>& subCounts
+            const std::vector<unsigned>& subCounts,
+            const std::vector<SingleValueStatistics>& subValueStats
             )
         :
         N_(totalNumberOfStructures),
@@ -81,7 +88,10 @@ ClusterData::ClusterData(unsigned totalNumberOfStructures,
         overlaps_(sedOverlaps),
         selectionInteractionEnergies_(selectionInteractionEnergies),
         selections_(selections),
-        subN_(subCounts)
+        subN_(subCounts),
+        subValueStats_(subValueStats),
+        eigenvalues_(),
+        eigenvectors_()
         {};
 
 ElectronsVector ClusterData::representativeStructure() const {
@@ -109,6 +119,7 @@ namespace YAML {
         node["VoxelCubes"] = rhs.voxelCubes_;
         node["SedOverlaps"] = rhs.overlaps_;
         node["SubStructureN"] = rhs.subN_;
+        node["SubStructureValueRange"] = rhs.subValueStats_;
         return node;
     }
 
@@ -124,7 +135,9 @@ namespace YAML {
             if (node["SedOverlaps"].IsMap()  && node["SedOverlaps"][0])
                 sedOverlaps= node["SedOverlaps"].as<Eigen::MatrixXd>();
 
-        auto motifVector = node["Motifs"].as<std::vector<Motif>>();
+        std::vector<Motif> motifVector;
+        if (node["Motifs"])
+            motifVector = node["Motifs"].as<std::vector<Motif>>();
 
         auto structures = node["Structures"].as<std::vector<ElectronsVector>>();
 
@@ -143,26 +156,77 @@ namespace YAML {
                 subCounts.emplace_back(NAN);
             }
         }
+        std::vector<SingleValueStatistics> subValueStats;
+        if (node["SubStructureValueRange"]) {
+            subValueStats = node["SubStructureValueRange"].as<std::vector<SingleValueStatistics>>();
+        }
+
+        std::vector<Eigen::VectorXd> eigenvalues;
+        std::vector<std::vector<Eigen::Vector3d>> eigenvectors;
+        for (auto subNode : node["Structures"]){
+            if (subNode["Eigenvalues"]){
+                eigenvalues.emplace_back(subNode["Eigenvalues"].as<Eigen::VectorXd>());
+                std::vector<Eigen::Vector3d> vecs3d;
+                for (auto eigenVec : subNode["Eigenvectors"]){
+                    vecs3d.emplace_back(eigenVec.as<Eigen::Vector3d>());
+                }
+                eigenvectors.emplace_back(vecs3d);
+            }
+        }
+
+        VectorStatistics TeStats;
+        if (node["Te"])
+            TeStats = node["Te"].as<VectorStatistics>();
+        VectorStatistics EeStats;
+        if (node["Ee"])
+            EeStats = node["Te"].as<VectorStatistics>();
+        TriangularMatrixStatistics SpinCorrelationsStats;
+        if (node["SpinCorrelations"])
+            SpinCorrelationsStats = node["SpinCorrelations"].as<TriangularMatrixStatistics>();
+        TriangularMatrixStatistics VeeStats;
+        if (node["Vee"])
+            VeeStats = node["Vee"].as<TriangularMatrixStatistics>();
+        MatrixStatistics VenStats;
+        if (node["Ven"])
+            VenStats = node["Ven"].as<MatrixStatistics>();
+        SingleValueStatistics EtotalStats;
+        if (node["Etotal"])
+            EtotalStats = node["Ven"].as<SingleValueStatistics>();
+        VectorStatistics IntraMotifEnergiesStats;
+        if (node["IntraMotifEnergies"])
+            IntraMotifEnergiesStats = node["IntraMotifEnergies"].as<VectorStatistics>();
+        TriangularMatrixStatistics InterMotifEnergiesStats;
+        if (node["InterMotifEnergies"])
+            InterMotifEnergiesStats = node["InterMotifEnergies"].as<TriangularMatrixStatistics>();
+        TriangularMatrixStatistics ReeStats;
+        if (node["Ree"])
+            ReeStats = node["Ree"].as<TriangularMatrixStatistics>();
+        MatrixStatistics RenStats;
+        if (node["Ren"])
+            RenStats = node["Ren"].as<MatrixStatistics>();
 
         rhs = ClusterData(
                 node["N"].as<unsigned>(),
                 structures,
                 sampleAverage,
                 node["ValueRange"].as<SingleValueStatistics>(),
-                node["Te"].as<VectorStatistics>(),
-                node["Ee"].as<VectorStatistics>(),
-                node["SpinCorrelations"].as<TriangularMatrixStatistics>(),
-                node["Vee"].as<TriangularMatrixStatistics>(),
-                node["Ven"].as<MatrixStatistics>(),
+                TeStats,
+                EeStats,
+                SpinCorrelationsStats,
+                VeeStats,
+                VenStats,
                 Motifs(motifVector),
-                node["Etotal"].as<SingleValueStatistics>(),
-                node["IntraMotifEnergies"].as<VectorStatistics>(),
-                node["InterMotifEnergies"].as<TriangularMatrixStatistics>(),
-                node["Ree"].as<TriangularMatrixStatistics>(),
-                node["Ren"].as<MatrixStatistics>(),
+                EtotalStats,
+                IntraMotifEnergiesStats,
+                InterMotifEnergiesStats,
+                ReeStats,
+                RenStats,
                 cubes,
                 sedOverlaps,
-                subCounts
+                subCounts,
+                subValueStats,
+                eigenvalues,
+                eigenvectors
                 );
         
         return true;
@@ -172,24 +236,34 @@ namespace YAML {
         out << BeginMap
             << Key << "N" << Value << rhs.N_
             << Key << "ValueRange" << Value << Comment("[]") << rhs.valueStats_
-            << Key << "SampleAverage" << Comment("[a0]") << Value << rhs.sampleAverage_<< Newline
-            << Key << "Motifs" << Value << rhs.motifs_.motifs_
-            << Key << "Etotal" << Comment("[Eh]") << Value << rhs.EtotalStats_
-            << Key << "IntraMotifEnergies" << Comment("[Eh]") << Value << rhs.intraMotifEnergyStats_
-            << Key << "InterMotifEnergies" << Comment("[Eh]") << Value << rhs.interMotifEnergyStats_
-            << Key << "Selections" << Value << rhs.selections_
-            << Key << "SelectionEnergyCalculation" << Value << rhs.selectionInteractionEnergies_
-            << Key << "Structures" << Comment("[a0]") << Value << rhs.exemplaricStructures_ << Newline
-            << Key << "SpinCorrelations" << Comment("[]") << Value << rhs.SeeStats_
-            << Key << "Ree" << Comment("[a0]") << Value << rhs.ReeStats_
-            << Key << "Ren" << Comment("[a0]") << Value << rhs.RenStats_
-            << Key << "Te" << Comment("[Eh]") << Value << rhs.electronicEnergyStats_.Te()
-            << Key << "Ee" << Comment("[Eh]") << Value << rhs.EeStats_
-            << Key << "Vee" << Comment("[Eh]") << Value << rhs.electronicEnergyStats_.Vee()
-            << Key << "Ven" << Comment("[Eh]") << Value << rhs.electronicEnergyStats_.Ven()
-            << Key << "VoxelCubes" << Value << rhs.voxelCubes_
-            << Key << "SedOverlaps" << Value << rhs.overlaps_
-            << Key << "SubStructureN" << Value << rhs.subN_
+            << Key << "SampleAverage" << Comment("[a0]") << Value << rhs.sampleAverage_<< Newline;
+        if (rhs.EtotalStats_.getTotalWeight() > 0)
+            out << Key << "Etotal" << Comment("[Eh]") << Value << rhs.EtotalStats_;
+        if (not rhs.motifs_.motifs_.empty())
+            out << Key << "Motifs" << Value << rhs.motifs_.motifs_
+                << Key << "IntraMotifEnergies" << Comment("[Eh]") << Value << rhs.intraMotifEnergyStats_
+                << Key << "InterMotifEnergies" << Comment("[Eh]") << Value << rhs.interMotifEnergyStats_;
+        if (not rhs.selections_.empty())
+            out << Key << "Selections" << Value << rhs.selections_
+                << Key << "SelectionEnergyCalculation" << Value << rhs.selectionInteractionEnergies_;
+        out << Key << "Structures" << Comment("[a0]") << Value << rhs.exemplaricStructures_ << Newline;
+        if (rhs.SeeStats_.getTotalWeight() > 0)
+            out << Key << "SpinCorrelations" << Comment("[]") << Value << rhs.SeeStats_;
+        if (rhs.ReeStats_.getTotalWeight() > 0)
+            out << Key << "Ree" << Comment("[a0]") << Value << rhs.ReeStats_
+                << Key << "Ren" << Comment("[a0]") << Value << rhs.RenStats_
+                << Key << "Te" << Comment("[Eh]") << Value << rhs.electronicEnergyStats_.Te()
+                << Key << "Ee" << Comment("[Eh]") << Value << rhs.EeStats_
+                << Key << "Vee" << Comment("[Eh]") << Value << rhs.electronicEnergyStats_.Vee()
+                << Key << "Ven" << Comment("[Eh]") << Value << rhs.electronicEnergyStats_.Ven();
+        if (not rhs.voxelCubes_.empty())
+            out << Key << "VoxelCubes" << Value << rhs.voxelCubes_;
+        if (rhs.overlaps_.size() > 0)
+            out << Key << "SedOverlaps" << Value << rhs.overlaps_;
+
+        out << Key << "SubStructureN" << Value << rhs.subN_;
+
+        out << Key << "SubStructureValueRange" << Value << rhs.subValueStats_
             << EndMap;
 
         return out;

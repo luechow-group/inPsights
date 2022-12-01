@@ -2,7 +2,7 @@
 // Copyright (C) 2018 Leonard Reuter.
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#include <DensityBasedClusterer.h>
+#include <SingleLinkageClusterer.h>
 #include <PreClusterer.h>
 #include <DistanceBasedMetric.h>
 #include <Enumerate.h>
@@ -10,8 +10,8 @@
 #include "ClusteringMetric.h"
 
 namespace Settings {
-    DensityBasedClusterer::DensityBasedClusterer()
-    : ISettings(VARNAME(DensityBasedClusterer)) {
+    SingleLinkageClusterer::SingleLinkageClusterer()
+    : ISettings(VARNAME(SingleLinkageClusterer)) {
         radius.onChange_.connect(
                 [&](double value) {
                     if(value < ::PreClusterer::settings.radius())
@@ -35,30 +35,30 @@ namespace Settings {
                 });
     }
 
-    DensityBasedClusterer::DensityBasedClusterer(const YAML::Node &node)
-            : DensityBasedClusterer() {
+    SingleLinkageClusterer::SingleLinkageClusterer(const YAML::Node &node)
+            : SingleLinkageClusterer() {
         doubleProperty::decode(node, radius);
         size_tProperty ::decode(node, minimalClusterSize);
         boolProperty::decode(node, local);
         boolProperty::decode(node, sortRemainder);
     }
 
-    void DensityBasedClusterer::appendToNode(YAML::Node &node) const {
+    void SingleLinkageClusterer::appendToNode(YAML::Node &node) const {
         node[className][radius.name()] = radius();
         node[className][minimalClusterSize.name()] = minimalClusterSize();
         node[className][local.name()] = local();
         node[className][sortRemainder.name()] = sortRemainder();
     }
 }
-YAML_SETTINGS_DEFINITION(Settings::DensityBasedClusterer)
+YAML_SETTINGS_DEFINITION(Settings::SingleLinkageClusterer)
 
-Settings::DensityBasedClusterer DensityBasedClusterer::settings = Settings::DensityBasedClusterer();
+Settings::SingleLinkageClusterer SingleLinkageClusterer::settings = Settings::SingleLinkageClusterer();
 
 
-DensityBasedClusterer::DensityBasedClusterer(std::vector<Sample> &samples)
+SingleLinkageClusterer::SingleLinkageClusterer(std::vector<Sample> &samples)
         : IClusterer(samples) {};
 
-void DensityBasedClusterer::cluster(Cluster& cluster) {
+void SingleLinkageClusterer::cluster(Cluster& cluster) {
     assert(!cluster.empty() && "The cluster cannot be empty.");
 
     auto localQ = settings.local();

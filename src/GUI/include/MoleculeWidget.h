@@ -19,6 +19,7 @@
 #include <Surface.h>
 #include <Polyline.h>
 #include <CartesianAxes.h>
+#include<Arrow.h>
 
 class MoleculeWidget : public QWidget{
     Q_OBJECT
@@ -30,6 +31,9 @@ public:
     //TODO make base MoleculeWidget and InPsightsMoleculeWidget child
 
     void drawAxes(bool drawQ = true);
+    void drawIndices(bool drawQ = true);
+    void drawEigenvectors(bool drawQ = true, unsigned clusterId = 0, unsigned structureId = 0, unsigned eigenvalueId = 0,
+                          float scale = 1.0f);
     void drawAtoms(bool drawQ = true);
     void drawBonds(bool drawQ = true, double limit = 0.5);
     void drawSpinCorrelations(const std::vector<ClusterData> &clusterData,
@@ -46,6 +50,8 @@ public:
     void setSharedAtomsVector(AtomsVector atomsVector);
     void addElectronsVector(const ElectronsVector& electronsVector, int clusterId = 0, int structureId = 0, bool coloredQ = false);
     void removeElectronsVector(int clusterId = 0, int structureId = 0);
+    void removeEigenvectors();
+    void removeIndices();
 
     void addSeds(int clusterId, int structureId, const std::vector<ClusterData> &clusterData, double includedPercentage);
     void removeSeds(int clusterId);
@@ -76,6 +82,7 @@ private:
     QPushButton *screenshotButton_, *x3dExportButton_, *resetCameraButton_, *sedsExportButton_;
     QSpinBox *pan_, *tilt_, *roll_, *zoom_;
     Qt3DRender::QDirectionalLight *light_;
+    std::vector<Qt3DExtras::QText2DEntity*> indices_;
     int initPan_, initTilt_, initRoll_,initZoom_;
     float defaultCameraRadius_;
 public:
@@ -84,6 +91,7 @@ private:
     std::shared_ptr<AtomsVector> sharedAtomsVector_;
     AtomsVector3D *atomsVector3D_;
     CartesianAxes *cartesianAxes_;
+    std::vector<Arrow*> eigenvectors_;
 public:
     std::map<int, std::vector<Surface*>> activeSedsMap_, activeMaximaHullsMap_;
     std::map<int, std::map<int,ElectronsVector3D*>> activeElectronsVectorsMap_;

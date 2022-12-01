@@ -37,7 +37,8 @@ namespace MotifEnergyCalculator {
 class MaximaProcessor {
 public:
 
-    MaximaProcessor(YAML::Emitter &yamlDocument, const std::vector<Sample> &samples, const AtomsVector &atoms);
+    MaximaProcessor(YAML::Emitter &yamlDocument, const std::vector<Sample> &samples, const AtomsVector &atoms,
+                    const bool &doEpart, const bool &calcSpinCorr);
 
     size_t addMaximum(const Maximum &maximum);
 
@@ -48,6 +49,8 @@ public:
                              const std::vector<size_t> &nucleiIndices,
                              const std::vector<DynamicMolecularSelection>& selections
                              );
+
+    void getValueStats(const Cluster &cluster, SingleValueStatistics &valueStats);
 
     YAML::Node getYamlNode();
 
@@ -61,6 +64,7 @@ private:
     VectorStatistics TeStats_, EeStats_, EnStats_;
     TriangularMatrixStatistics SeeStats_, VeeStats_, VnnStats_, ReeStats_;
     MatrixStatistics VenStats_, RenStats_;
+    bool doEpart_, calcSpinCorr_;
 
     Eigen::MatrixXd Vnn_;
 };
